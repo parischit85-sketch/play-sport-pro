@@ -268,13 +268,13 @@ export default function BookingDetailModal({
                 <div className="flex gap-3 mt-4 pt-3 border-t border-gray-200">
                   <button
                     onClick={handleSaveChanges}
-                    className="flex-1 bg-green-600 text-white py-2.5 px-4 rounded-xl text-sm font-medium hover:bg-green-700 transition-colors"
+                    className="flex-1 bg-green-600 text-white py-3 px-4 rounded-xl text-sm font-medium hover:bg-green-700 transition-colors"
                   >
                     💾 Salva Modifiche
                   </button>
                   <button
                     onClick={handleCancelEdit}
-                    className="flex-1 bg-gray-500 text-white py-2.5 px-4 rounded-xl text-sm font-medium hover:bg-gray-600 transition-colors"
+                    className="flex-1 bg-gray-500 text-white py-3 px-4 rounded-xl text-sm font-medium hover:bg-gray-600 transition-colors"
                   >
                     ❌ Annulla
                   </button>
@@ -353,11 +353,11 @@ export default function BookingDetailModal({
         </div>
 
         {/* Azioni compatte */}
-        <div className="space-y-2">
+        <div className="space-y-2 pb-4 md:pb-0">
           {!isPast && canEdit && (
             <button 
               onClick={handleToggleEdit}
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 px-3 rounded-lg text-sm font-medium transition-colors"
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-3 rounded-lg text-sm font-medium transition-colors"
             >
               {isEditingPlayers ? '💾 Salva Modifiche' : '✏️ Modifica Giocatori'}
             </button>
@@ -365,7 +365,7 @@ export default function BookingDetailModal({
           
           {/* Messaggio se non si può modificare */}
           {!isPast && !canEdit && (
-            <div className="w-full bg-gray-100 text-gray-600 py-2.5 px-3 rounded-lg text-sm text-center">
+            <div className="w-full bg-gray-100 text-gray-600 py-3 px-3 rounded-lg text-sm text-center">
               ⏰ Modifiche disponibili fino a 30 ore prima
             </div>
           )}
@@ -375,19 +375,19 @@ export default function BookingDetailModal({
               <>
                 <button 
                   onClick={() => onShare && onShare(booking)}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-3 rounded-lg text-sm font-medium transition-colors"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-3 rounded-lg text-sm font-medium transition-colors"
                 >
                   📧 Condividi
                 </button>
                 {canCancel ? (
                   <button 
                     onClick={() => onCancel && onCancel(booking)}
-                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2.5 px-3 rounded-lg text-sm font-medium transition-colors"
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-3 rounded-lg text-sm font-medium transition-colors"
                   >
                     🚫 Cancella
                   </button>
                 ) : (
-                  <div className="flex-1 bg-gray-300 text-gray-600 py-2.5 px-3 rounded-lg text-sm text-center">
+                  <div className="flex-1 bg-gray-300 text-gray-600 py-3 px-3 rounded-lg text-sm text-center">
                     ⏰ Non cancellabile (meno di 30h)
                   </div>
                 )}
@@ -395,7 +395,7 @@ export default function BookingDetailModal({
             ) : (
               <button 
                 onClick={() => onReview && onReview(booking)}
-                className="w-full bg-gray-600 hover:bg-gray-700 text-white py-2.5 px-3 rounded-lg text-sm font-medium transition-colors"
+                className="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 px-3 rounded-lg text-sm font-medium transition-colors"
               >
                 ⭐ Lascia Recensione
               </button>

@@ -13,7 +13,7 @@ import StatsCard from '@ui/StatsCard.jsx';
 // Lazy load heavy components
 const UserBookingsCard = React.lazy(() => import('@ui/UserBookingsCard.jsx'));
 
-// Memoized components for performance
+// Performance optimized quick actions
 const QuickAction = React.memo(({ action, T }) => (
   <button
     onClick={action.action}

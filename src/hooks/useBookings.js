@@ -6,6 +6,10 @@ import { useAuth } from '@contexts/AuthContext.jsx';
 import { useLeague } from '@contexts/LeagueContext.jsx';
 import { createBooking, getPublicBookings, getUserBookings, cancelBooking } from '@services/cloud-bookings.js';
 
+// Per evitare conflitti con il nuovo hook performante, questo rimane per compatibilità
+// ma con ottimizzazioni per ridurre le chiamate multiple
+const requestCache = new Map();
+
 export function useBookings() {
   const { user } = useAuth();
   const { state, setState } = useLeague();
@@ -15,13 +19,23 @@ export function useBookings() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Load public bookings
+  // Load public bookings with simple cache
   const loadPublicBookings = useCallback(async () => {
+    const cacheKey = 'public-bookings';
+    const cached = requestCache.get(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < 30000) { // 30s cache
+      setPublicBookings(cached.data);
+      return cached.data;
+    }
+
     try {
       setLoading(true);
       const bookings = await getPublicBookings();
+      requestCache.set(cacheKey, { data: bookings, timestamp: Date.now() });
       setPublicBookings(bookings);
       setError(null);
+      return bookings;
     } catch (err) {
       console.error('Error loading public bookings:', err);
       setError(err);
@@ -30,18 +44,28 @@ export function useBookings() {
     }
   }, []);
 
-  // Load user bookings
+  // Load user bookings with cache and deduplication
   const loadUserBookings = useCallback(async () => {
     if (!user) {
       setUserBookings([]);
       return;
     }
 
+    const cacheKey = `user-bookings-${user.uid}`;
+    const cached = requestCache.get(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < 30000) { // 30s cache
+      setUserBookings(cached.data);
+      return cached.data;
+    }
+
     try {
       setLoading(true);
       const bookings = await getUserBookings(user.uid);
+      requestCache.set(cacheKey, { data: bookings, timestamp: Date.now() });
       setUserBookings(bookings);
       setError(null);
+      return bookings;
     } catch (err) {
       console.error('Error loading user bookings:', err);
       setError(err);
@@ -125,13 +149,21 @@ export function useBookings() {
     }
   }, [user, state, setState, loadPublicBookings, loadUserBookings]);
 
-  // Load initial data
+  // Load initial data con throttling
   useEffect(() => {
-    loadPublicBookings();
+    const timer = setTimeout(() => {
+      loadPublicBookings();
+    }, 100); // Small delay to avoid mount storms
+    
+    return () => clearTimeout(timer);
   }, [loadPublicBookings]);
 
   useEffect(() => {
-    loadUserBookings();
+    const timer = setTimeout(() => {
+      loadUserBookings();
+    }, 200); // Slight delay after public bookings
+    
+    return () => clearTimeout(timer);
   }, [loadUserBookings]);
 
   // Derived data
@@ -154,6 +186,10 @@ export function useBookings() {
     error,
     createBooking: createBookingMutation,
     cancelBooking: cancelBookingMutation,
-    refreshBookings: () => Promise.all([loadPublicBookings(), loadUserBookings()]),
+    refreshBookings: () => {
+      // Clear cache for fresh data
+      requestCache.clear();
+      return Promise.all([loadPublicBookings(), loadUserBookings()]);
+    },
   };
 }

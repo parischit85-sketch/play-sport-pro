@@ -5,6 +5,7 @@ import Section from '@ui/Section';
 import Modal from '@ui/Modal';
 import Extra from '@features/extra/Extra';
 import NotificationSettings from '@components/NotificationSettings';
+import NativeTestButtons from '@components/NativeTestButtons';
 import PWAInstallButton from '@components/PWAInstallButton';
 import { loadActiveUserBookings, loadBookingHistory, cancelCloudBooking } from '@services/cloud-bookings.js';
 
@@ -576,6 +577,9 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
         {activeTab === 'notifications' && (
           <div className="space-y-6">
             <NotificationSettings className="shadow-sm" />
+            
+            {/* Test Features Native */}
+            <NativeTestButtons />
             
             {/* Info aggiuntive sulle notifiche */}
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">

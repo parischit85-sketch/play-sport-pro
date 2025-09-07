@@ -4,7 +4,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BOOKING_CONFIG, updateBooking } from '@services/bookings.js';
-import { useUserBookingsLoad } from '@hooks/useOptimizedLoad.js';
+import { useUserBookingsFast } from '@hooks/useBookingPerformance.js';
 import Badge from '@ui/Badge.jsx';
 import BookingDetailModal from '@ui/BookingDetailModal.jsx';
 
@@ -116,8 +116,18 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const navigate = useNavigate();
 
-  // Use optimized loading hook
-  const { data: userBookings = [], loading: isLoading, error, reload } = useUserBookingsLoad(user);
+  // Use high-performance booking hook
+  const { 
+    bookings: userBookings, 
+    loading: isLoading, 
+    error, 
+    refresh,
+    hasBookings,
+    lastUpdate 
+  } = useUserBookingsFast({
+    refreshInterval: 30000, // 30 seconds
+    enableBackground: true
+  });
 
   // Memoize courts lookup for performance
   const courts = useMemo(() => state?.courts || BOOKING_CONFIG.courts, [state?.courts]);
@@ -158,9 +168,9 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
       // TODO: Implementare logica di cancellazione
       console.log('Cancellazione prenotazione:', booking);
       handleCloseModal();
-      reload(); // Ricarica le prenotazioni
+      refresh(); // Use new refresh method
     }
-  }, [handleCloseModal, reload]);
+  }, [handleCloseModal, refresh]);
 
   const handleEdit = useCallback(async (booking) => {
     // Se il booking ha solo cambiamenti ai giocatori, aggiorna direttamente
@@ -178,7 +188,7 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
         setSelectedBooking(updatedBooking);
         
         // Ricarica i dati
-        reload();
+        refresh();
         
         console.log('Prenotazione aggiornata con successo');
       } catch (error) {
@@ -190,7 +200,7 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
       navigate(`/admin-bookings?edit=${booking.id}`);
       handleCloseModal();
     }
-  }, [navigate, handleCloseModal, selectedBooking, reload]);
+  }, [navigate, handleCloseModal, selectedBooking, refresh]);
 
   const handleReview = useCallback((booking) => {
     // TODO: Implementare sistema di recensioni
@@ -199,10 +209,29 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
   }, []);
 
   // Mostra tutte le prenotazioni in scroll orizzontale
-  const displayBookings = userBookings;
+  const displayBookings = userBookings || [];
 
-  // Loading skeleton
-  if (isLoading) {
+  // Early return per performance - no loading skeleton if we have cached data
+  if (!user) {
+    return (
+      <div className={`${T.cardBg} ${T.border} p-6 rounded-xl`}>
+        <div className="text-center">
+          <div className="text-4xl mb-3">📅</div>
+          <h3 className={`font-semibold mb-2 ${T.text}`}>Accedi per vedere le prenotazioni</h3>
+          <p className={`text-sm ${T.subtext} mb-4`}>Effettua il login per gestire le tue prenotazioni</p>
+          <button
+            onClick={() => navigate('/login')}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Accedi
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading only on initial load
+  if (isLoading && (!displayBookings.length || lastUpdate === 0)) {
     return (
       <div className={`${T.cardBg} ${T.border} p-6 rounded-xl`}>
         <div className="flex items-center justify-between mb-4">
@@ -240,7 +269,7 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
     );
   }
 
-  if (!user || userBookings.length === 0) {
+  if (!hasBookings && !isLoading) {
     return (
       <div className={`${T.cardBg} ${T.border} p-6 rounded-xl`}>
         <div className="text-center">
@@ -260,12 +289,22 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
 
   return (
     <div className={`${T.cardBg} ${T.border} p-6 rounded-xl`}>
-      <h3 className={`font-semibold text-sm ${T.text} mb-2`}>Le Tue Prenotazioni</h3>
+      {/* Header con indicatore di aggiornamento */}
+      <div className="flex items-center justify-between mb-2">
+        <h3 className={`font-semibold text-sm ${T.text}`}>Le Tue Prenotazioni</h3>
+        {isLoading && (
+          <div className="flex items-center gap-1">
+            <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse"></div>
+            <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse delay-100"></div>
+            <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse delay-200"></div>
+          </div>
+        )}
+      </div>
 
       {/* Scroll orizzontale ultra-compatto - stile Playtomic */}
       <div className="overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0">
         <div className="flex gap-2 w-max sm:grid sm:grid-cols-1 sm:gap-3 sm:w-full">
-          {userBookings.map((booking) => (
+          {displayBookings.map((booking) => (
             <BookingCard
               key={booking.id}
               booking={booking}
@@ -298,13 +337,13 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
       </div>
       
       {/* Indicatori scroll minimalisti */}
-      {userBookings.length > 0 && (
+      {displayBookings.length > 0 && (
         <div className="flex justify-center mt-2 sm:hidden">
           <div className="flex gap-0.5">
-            {userBookings.slice(0, Math.min(6, userBookings.length)).map((_, index) => (
+            {displayBookings.slice(0, Math.min(6, displayBookings.length)).map((_, index) => (
               <div key={index} className="w-0.5 h-0.5 rounded-full bg-gray-300"></div>
             ))}
-            {userBookings.length > 6 && (
+            {displayBookings.length > 6 && (
               <div className="w-0.5 h-0.5 rounded-full bg-blue-500"></div>
             )}
           </div>

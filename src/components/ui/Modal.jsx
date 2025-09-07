@@ -15,7 +15,7 @@ export default function Modal({ open, onClose, title, children, T, size = 'md' }
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-[1000000] flex items-center justify-center"
       aria-modal="true"
       role="dialog"
     >
@@ -33,7 +33,10 @@ export default function Modal({ open, onClose, title, children, T, size = 'md' }
         }}
       />
       <div
-        className={`relative z-10 rounded-2xl bg-white ring-1 ring-black/10 p-4 lg:p-6 ${sizeClasses[size]} shadow-2xl max-h-[90vh] overflow-y-auto`}
+        className={`relative z-10 rounded-2xl bg-white ring-1 ring-black/10 p-4 lg:p-6 ${sizeClasses[size]} shadow-2xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto mb-16 md:mb-0`}
+        style={{
+          paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)'
+        }}
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">{title}</h3>
@@ -45,7 +48,7 @@ export default function Modal({ open, onClose, title, children, T, size = 'md' }
             ✕
           </button>
         </div>
-        <div className="text-sm">{children}</div>
+        <div className="text-sm pb-4 md:pb-0">{children}</div>
       </div>
     </div>
   );

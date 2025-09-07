@@ -6,6 +6,22 @@ import './index.css';
 import { createRoot } from 'react-dom/client';
 import AppRouter from './router/AppRouter.jsx';
 
+// Capacitor mobile initialization
+import { Capacitor } from '@capacitor/core';
+import { StatusBar, Style } from '@capacitor/status-bar';
+
+// Initialize status bar for mobile
+if (Capacitor.isNativePlatform()) {
+  StatusBar.setStyle({ style: Style.Dark })
+    .catch(err => console.warn('StatusBar style not supported:', err));
+  
+  StatusBar.setBackgroundColor({ color: '#ffffff' })
+    .catch(err => console.warn('StatusBar background not supported:', err));
+  
+  StatusBar.show()
+    .catch(err => console.warn('StatusBar show not supported:', err));
+}
+
 // Development health check
 if (import.meta.env.DEV) {
   import('./utils/health-check.js');

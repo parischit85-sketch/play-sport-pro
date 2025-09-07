@@ -51,9 +51,9 @@ export default function AppLayout() {
 
   const isDashboard = currentPath === '/dashboard' || currentPath === '/' ;
   return (
-    <div className={`min-h-screen ${T.text} ${isDashboard ? 'bg-gradient-to-b from-neutral-50 via-white to-neutral-100' : T.pageBg}`}>
+    <div className={`min-h-screen safe-area-top safe-area-bottom ${T.text} ${isDashboard ? 'bg-gradient-to-b from-neutral-50 via-white to-neutral-100' : T.pageBg}`}>
       {/* Header */}
-      <header className={`sticky top-0 z-20 ${T.headerBg}`}>
+      <header className={`sticky top-0 z-20 ${T.headerBg} safe-area-left safe-area-right`}>
         <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <img
@@ -85,7 +85,7 @@ export default function AppLayout() {
       </header>
 
       {/* Main Content */}
-  <main className={`max-w-6xl mx-auto px-3 sm:px-4 py-5 sm:py-6 ${
+  <main className={`max-w-6xl mx-auto px-3 sm:px-4 py-5 sm:py-6 safe-area-left safe-area-right ${
         // Add bottom padding on mobile to account for bottom navigation
         'pb-20 md:pb-5'
       }`}>
