@@ -1,0 +1,308 @@
+// =============================================
+// FILE: src/features/profile/Profile.jsx
+// =============================================
+import React, { useEffect, useState } from 'react';
+import Section from '@ui/Section.jsx';
+import { auth } from '@services/auth';
+import { getUserProfile, saveUserProfile, setDisplayName, logout } from '@services/auth';
+
+export default function Profile({ T }) {
+  const user = auth.currentUser;
+
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    phone: '',
+    fiscalCode: '',
+    birthDate: '',
+    address: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      if (user) {
+        const data = await getUserProfile(user.uid);
+        if (active) {
+          setForm((f) => ({
+            ...f,
+            firstName: data.firstName || '',
+            lastName: data.lastName || '',
+            phone: data.phone || '',
+            fiscalCode: data.fiscalCode || '',
+            birthDate: data.birthDate || '',
+            address: data.address || '',
+          }));
+        }
+      }
+      setLoading(false);
+    })();
+    return () => { active = false; };
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    try {
+      setSaving(true);
+      await saveUserProfile(user.uid, form);
+      const name = [form.firstName, form.lastName].filter(Boolean).join(' ');
+      if (name) await setDisplayName(user, name);
+      alert('Profilo salvato!');
+    } catch (e) {
+      alert('Errore salvataggio: ' + (e?.message || e));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    if (window.confirm('Sei sicuro di voler uscire?')) {
+      try {
+        await logout();
+      } catch (e) {
+        alert('Errore durante il logout: ' + (e?.message || e));
+      }
+    }
+  };
+
+  const getProviderIcon = (providerId) => {
+    switch (providerId) {
+      case 'google.com':
+        return (
+          <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+        );
+      case 'facebook.com':
+        return (
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        );
+      default:
+        return (
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H9C7.9 1 7 1.9 7 3V21C7 22.1 7.9 23 9 23H15C16.1 23 17 22.1 17 21V19L21 15V9H21ZM15 3V7H19L15 3ZM9 19V21H15V19H9Z"/>
+          </svg>
+        );
+    }
+  };
+
+  const getProviderName = (providerId) => {
+    switch (providerId) {
+      case 'google.com': return 'Google';
+      case 'facebook.com': return 'Facebook';
+      default: return 'Email';
+    }
+  };
+
+  if (!user) {
+    return (
+      <Section title="Profilo" T={T}>
+        <div className={`rounded-2xl ${T.cardBg} ${T.border} p-4`}>
+          <div className="text-sm">Devi effettuare l’accesso per gestire il profilo (vai nella tab “Accesso”).</div>
+        </div>
+      </Section>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Informazioni Account */}
+      <Section title="Informazioni Account" T={T}>
+        <div className={`rounded-2xl ${T.cardBg} ${T.border} p-4 space-y-4`}>
+          {/* Header con avatar e info principali */}
+          <div className="flex items-center gap-4">
+            {user.photoURL ? (
+              <img 
+                src={user.photoURL} 
+                alt="Avatar" 
+                className="w-16 h-16 rounded-full object-cover ring-2 ring-emerald-500/20"
+              />
+            ) : (
+              <div className={`w-16 h-16 rounded-full ${T.cardBg} ring-2 ring-emerald-500/20 flex items-center justify-center text-2xl font-bold`}>
+                {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
+              </div>
+            )}
+            
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-semibold truncate">
+                {user.displayName || 'Utente'}
+              </h3>
+              <p className={`text-sm ${T.subtext} truncate`}>
+                {user.email}
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                {user.providerData[0] && getProviderIcon(user.providerData[0].providerId)}
+                <span className={`text-xs ${T.subtext}`}>
+                  Accesso tramite {user.providerData[0] ? getProviderName(user.providerData[0].providerId) : 'Email'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Stato Account */}
+          <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-500/10 rounded-xl">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
+              <span className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                Account Attivo
+              </span>
+            </div>
+            <span className={`text-xs ${T.subtext}`}>
+              ✓ Email verificata
+            </span>
+          </div>
+
+          {/* Statistiche account */}
+          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-black/5 dark:border-white/5">
+            <div className="text-center">
+              <div className="text-lg font-bold text-emerald-500">
+                {user.metadata.creationTime ? 
+                  new Date(user.metadata.creationTime).toLocaleDateString('it-IT') : 
+                  'N/A'
+                }
+              </div>
+              <div className={`text-xs ${T.subtext}`}>Registrato il</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-emerald-500">
+                {user.metadata.lastSignInTime ? 
+                  new Date(user.metadata.lastSignInTime).toLocaleDateString('it-IT') : 
+                  'N/A'
+                }
+              </div>
+              <div className={`text-xs ${T.subtext}`}>Ultimo accesso</div>
+            </div>
+          </div>
+
+          {/* Pulsante Logout */}
+          <div className="pt-4 border-t border-black/5 dark:border-white/5">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors ring-1 ring-rose-500/20 hover:ring-rose-500/30"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Esci dall'account
+            </button>
+          </div>
+        </div>
+      </Section>
+
+      {/* Gestione Profilo */}
+      <Section title="Gestione Profilo" T={T}>
+        <div className={`rounded-2xl ${T.cardBg} ${T.border} p-4`}>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-sm">Caricamento profilo...</div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div className="flex flex-col">
+                  <label className={`text-xs font-medium ${T.subtext} mb-1`}>
+                    Nome *
+                  </label>
+                  <input
+                    className={T.input}
+                    value={form.firstName}
+                    onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
+                    placeholder="Inserisci il tuo nome"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className={`text-xs font-medium ${T.subtext} mb-1`}>
+                    Cognome
+                  </label>
+                  <input
+                    className={T.input}
+                    value={form.lastName}
+                    onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
+                    placeholder="Inserisci il tuo cognome"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className={`text-xs font-medium ${T.subtext} mb-1`}>
+                    Telefono *
+                  </label>
+                  <input
+                    className={T.input}
+                    value={form.phone}
+                    onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                    placeholder="+39 123 456 7890"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className={`text-xs font-medium ${T.subtext} mb-1`}>
+                    Codice Fiscale
+                  </label>
+                  <input
+                    className={T.input}
+                    value={form.fiscalCode}
+                    onChange={(e) => setForm((f) => ({ ...f, fiscalCode: e.target.value }))}
+                    placeholder="RSSMRA80A01H501U"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className={`text-xs font-medium ${T.subtext} mb-1`}>
+                    Data di nascita
+                  </label>
+                  <input
+                    type="date"
+                    className={T.input}
+                    value={form.birthDate}
+                    onChange={(e) => setForm((f) => ({ ...f, birthDate: e.target.value }))}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className={`text-xs font-medium ${T.subtext} mb-1`}>
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    className={`${T.input} opacity-50 cursor-not-allowed`}
+                    value={user.email || ''}
+                    disabled
+                  />
+                </div>
+                <div className="flex flex-col sm:col-span-2">
+                  <label className={`text-xs font-medium ${T.subtext} mb-1`}>
+                    Indirizzo
+                  </label>
+                  <input
+                    className={T.input}
+                    value={form.address}
+                    onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
+                    placeholder="Via, Città, CAP"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <button
+                  type="button"
+                  className={T.btnPrimary}
+                  onClick={handleSaveProfile}
+                  disabled={saving}
+                >
+                  {saving ? 'Salvando...' : 'Salva Modifiche'}
+                </button>
+              </div>
+
+              <p className={`text-xs ${T.subtext}`}>
+                * Campi obbligatori
+              </p>
+            </div>
+          )}
+        </div>
+      </Section>
+    </div>
+  );
+}

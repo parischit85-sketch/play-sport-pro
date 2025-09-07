@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": ["src/app/*"],
+      "@features/*": ["src/features/*"],
+      "@ui/*": ["src/components/ui/*"],
+      "@lib/*": ["src/lib/*"],
+      "@data/*": ["src/data/*"],
+  "@services/*": ["src/services/*"],
+  "@contexts/*": ["src/contexts/*"],
+  "@hooks/*": ["src/hooks/*"],
+  "@pages/*": ["src/pages/*"],
+  "@layouts/*": ["src/layouts/*"],
+  "@components/*": ["src/components/*"],
+  "@utils/*": ["src/utils/*"]
+      // opzionale, solo se vuoi "@/":
+      // "@/*": ["src/*"]
+    }
+  }
+}

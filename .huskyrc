@@ -1,0 +1,2 @@
+# Husky v9+ uses .husky/ folder with shell scripts created via `husky add`
+# This file is an indicator for older setups; current hooks are created with `npm run prepare` then `npx husky add`.
