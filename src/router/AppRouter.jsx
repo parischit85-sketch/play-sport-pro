@@ -23,6 +23,7 @@ const TournamentsPage = React.lazy(() => import('@pages/TournamentsPage.jsx'));
 const ProfilePage = React.lazy(() => import('@pages/ProfilePage.jsx'));
 const ExtraPage = React.lazy(() => import('@pages/ExtraPage.jsx'));
 const AdminBookingsPage = React.lazy(() => import('@pages/AdminBookingsPage.jsx'));
+const NativeFeaturesTest = React.lazy(() => import('@components/NativeFeaturesTest.jsx'));
 
 export default function AppRouter() {
   return (
@@ -72,6 +73,9 @@ export default function AppRouter() {
                     
                     {/* User Routes */}
                     <Route path="profile" element={<ProfilePage />} />
+                    
+                    {/* Native Features Test Route */}
+                    <Route path="native-test" element={<NativeFeaturesTest />} />
                   </Route>
 
                   {/* Fallback */}

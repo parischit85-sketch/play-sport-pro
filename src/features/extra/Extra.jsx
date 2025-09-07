@@ -2,10 +2,12 @@
 // FILE: src/features/extra/Extra.jsx
 // =============================================
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Section from '@ui/Section.jsx';
 import { loadLeague, saveLeague } from '@services/cloud.js';
 import { toCSV, downloadBlob } from '@lib/csv.js';
 import { getDefaultBookingConfig } from '@data/seed.js';
+import { Capacitor } from '@capacitor/core';
 
 // Nuovo componente per gestione campi avanzata
 import AdvancedCourtsManager from './AdvancedCourtsManager.jsx';
@@ -24,6 +26,7 @@ export default function Extra({
   T
 }) {
   const [cloudMsg, setCloudMsg] = React.useState('');
+  const navigate = useNavigate();
 
   // === Sblocco pannello (gate amministrazione)
   const [pwd, setPwd] = useState('');
@@ -637,6 +640,40 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
               <div><b>League ID Corrente:</b> <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">{leagueId}</code></div>
               <div><b>Backup Selezionato:</b> <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">{selectedBackup || leagueId}</code></div>
               <div><b>Firebase Project:</b> <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">m-padelweb</code></div>
+            </div>
+          </div>
+          
+          {/* Native Features Test Section */}
+          <div className={`${T.card} ${T.space} space-y-4`}>
+            <h3 className={`text-lg font-bold ${T.text} flex items-center gap-2`}>
+              📱 Test Funzionalità Native
+            </h3>
+            
+            <div className={`p-4 rounded-lg ${Capacitor.isNativePlatform() ? 'bg-green-50 dark:bg-green-900/20' : 'bg-blue-50 dark:bg-blue-900/20'}`}>
+              <div className={`text-sm ${T.subtext} space-y-2`}>
+                <p><b>Piattaforma:</b> {Capacitor.getPlatform()}</p>
+                <p><b>Ambiente:</b> {Capacitor.isNativePlatform() ? '📱 App Nativa' : '🌐 Browser Web'}</p>
+                <p><b>Plugin Caricati:</b> {Object.keys(Capacitor.Plugins).length}</p>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <button
+                onClick={() => navigate('/native-test')}
+                className={`${T.btnPrimary} w-full flex items-center justify-center gap-2`}
+              >
+                🧪 Apri Pagina Test Native
+              </button>
+              
+              <div className={`text-xs ${T.subtext} space-y-1`}>
+                <p><b>Funzionalità Testabili:</b></p>
+                <ul className="list-disc list-inside ml-4 space-y-1">
+                  <li>📍 GPS e Geolocalizzazione</li>
+                  <li>🔔 Notifiche Push e Locali</li>
+                  <li>📤 Condivisione Nativa</li>
+                  <li>📱 Informazioni Piattaforma</li>
+                </ul>
+              </div>
             </div>
           </div>
         </>
