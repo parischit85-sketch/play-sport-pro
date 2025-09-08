@@ -39,16 +39,17 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        // Force new hash generation
+        // Force new hash generation with timestamp
         assetFileNames: (assetInfo) => {
           const ext = assetInfo.name.split('.').at(1);
+          const timestamp = Date.now().toString(36);
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
-            return `assets/[name]-[hash][extname]`;
+            return `assets/[name]-${timestamp}-[hash][extname]`;
           }
-          return `assets/[name]-[hash][extname]`;
+          return `assets/[name]-${timestamp}-[hash][extname]`;
         },
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: `assets/[name]-${Date.now().toString(36)}-[hash].js`,
+        entryFileNames: `assets/[name]-${Date.now().toString(36)}-[hash].js`,
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],

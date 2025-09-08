@@ -1,0 +1,422 @@
+const __vite__mapDeps = (
+  i,
+  m = __vite__mapDeps,
+  d = m.f ||
+    (m.f = [
+      'assets/cloud-bookings-mfbc5cuw-D5b_T57O.js',
+      'assets/firebase-mfbc5cuw-jcIpuiEY.js',
+      'assets/index-mfbc5cuw-B5KdbvAg.js',
+      'assets/vendor-mfbc5cuw-D3F3s8fL.js',
+      'assets/router-mfbc5cuw-tw9hraEf.js',
+      'assets/index-mfbc5lw0-D_wbwNnW.css',
+    ])
+) => i.map((i) => d[i]);
+import { j as m, _ as I } from './index-mfbc5cuw-B5KdbvAg.js';
+import './router-mfbc5cuw-tw9hraEf.js';
+import {
+  getPublicBookings as v,
+  createCloudBooking as T,
+  loadPublicBookings as L,
+  updateCloudBooking as M,
+} from './cloud-bookings-mfbc5cuw-D5b_T57O.js';
+const y = {
+    default: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
+    success: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',
+    danger: 'bg-rose-100 text-rose-800 dark:bg-rose-900/20 dark:text-rose-400',
+    warning: 'bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400',
+    info: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+    primary: 'bg-emerald-500 text-black font-medium',
+  },
+  B = {
+    xs: 'px-1.5 py-0.5 text-xs',
+    sm: 'px-2 py-1 text-xs',
+    md: 'px-2.5 py-1 text-sm',
+    lg: 'px-3 py-1.5 text-sm',
+  };
+function G({
+  children: e,
+  variant: t = 'default',
+  size: a = 'sm',
+  icon: r,
+  removable: s = !1,
+  onRemove: i,
+  T: n,
+}) {
+  const l = y[t] || y.default,
+    o = B[a] || B.sm,
+    c = n?.borderMd || 'rounded-md',
+    N = n?.transitionFast || 'transition-all duration-200';
+  return m.jsxs('span', {
+    className: `
+      inline-flex items-center gap-1 
+      ${c} 
+      ${l} 
+      ${o}
+      font-medium
+      ${N}
+    `,
+    children: [
+      r && m.jsx('span', { className: 'w-3 h-3', children: r }),
+      e,
+      s &&
+        i &&
+        m.jsx('button', {
+          onClick: i,
+          className:
+            'ml-1 hover:bg-black/10 rounded-full w-3 h-3 flex items-center justify-center text-xs',
+          children: '×',
+        }),
+    ],
+  });
+}
+const P = {
+  courts: [
+    {
+      id: 'campo1',
+      name: 'Campo 1 - Centrale',
+      type: 'terra-rossa',
+      price60: 45,
+      price90: 65,
+      features: ['Terra rossa', 'Illuminazione LED', 'Riscaldamento'],
+      hasLighting: !0,
+      hasHeating: !0,
+      isOutdoor: !1,
+      premium: !0,
+    },
+    {
+      id: 'campo2',
+      name: 'Campo 2',
+      type: 'terra-rossa',
+      price60: 40,
+      price90: 58,
+      features: ['Terra rossa', 'Illuminazione', 'Riscaldamento'],
+      hasLighting: !0,
+      hasHeating: !0,
+      isOutdoor: !1,
+      premium: !1,
+    },
+    {
+      id: 'campo3',
+      name: 'Campo 3',
+      type: 'cemento',
+      price60: 35,
+      price90: 50,
+      features: ['Cemento', 'Illuminazione', 'Riscaldamento'],
+      hasLighting: !0,
+      hasHeating: !0,
+      isOutdoor: !1,
+      premium: !1,
+    },
+    {
+      id: 'campo4',
+      name: 'Campo 4 - Scoperto',
+      type: 'terra-rossa',
+      price60: 30,
+      price90: 42,
+      features: ['Terra rossa', 'Solo diurno'],
+      hasLighting: !1,
+      hasHeating: !1,
+      isOutdoor: !0,
+      premium: !1,
+    },
+    {
+      id: 'campo5',
+      name: 'Campo 5',
+      type: 'cemento',
+      price60: 32,
+      price90: 46,
+      features: ['Cemento', 'Illuminazione'],
+      hasLighting: !0,
+      hasHeating: !1,
+      isOutdoor: !1,
+      premium: !1,
+    },
+    {
+      id: 'campo6',
+      name: 'Campo 6 - Padel',
+      type: 'padel',
+      price60: 25,
+      price90: 35,
+      features: ['Padel', 'Illuminazione', 'Riscaldamento'],
+      hasLighting: !0,
+      hasHeating: !0,
+      isOutdoor: !1,
+      premium: !1,
+    },
+    {
+      id: 'campo7',
+      name: 'Campo 7 - Calcetto',
+      type: 'calcetto',
+      price60: 40,
+      price90: 55,
+      features: ['Calcetto', 'Illuminazione', 'Riscaldamento'],
+      hasLighting: !0,
+      hasHeating: !0,
+      isOutdoor: !1,
+      premium: !1,
+    },
+  ],
+};
+function z(e, t, a, r, s, i = null) {
+  const n = a,
+    l = w(a, r);
+  return !s.some((o) => {
+    if (o.id === i || o.courtId !== e || o.date !== t || o.status === 'cancelled') return !1;
+    const c = w(o.time, o.duration);
+    return (n >= o.time && n < c) || (l > o.time && l <= c) || (n <= o.time && l >= c);
+  });
+}
+function w(e, t) {
+  const [a, r] = e.split(':').map(Number),
+    s = a * 60 + r + t,
+    i = Math.floor(s / 60),
+    n = s % 60;
+  return `${i.toString().padStart(2, '0')}:${n.toString().padStart(2, '0')}`;
+}
+function E() {
+  return `booking-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+const f = { CONFIRMED: 'confirmed' },
+  $ = 'ml-field-bookings';
+let d = !1,
+  O = null,
+  x = !1;
+function _(e, t = null) {
+  ((d = e), (O = t));
+}
+async function A() {
+  if (d && O)
+    try {
+      return await L();
+    } catch (e) {
+      return (console.warn('Errore caricamento da cloud, fallback a localStorage:', e), u());
+    }
+  return u();
+}
+function u() {
+  try {
+    const e = localStorage.getItem($);
+    return e ? JSON.parse(e) : [];
+  } catch {
+    return [];
+  }
+}
+function g(e) {
+  try {
+    return (localStorage.setItem($, JSON.stringify(e)), !0);
+  } catch {
+    return !1;
+  }
+}
+async function R(e, t) {
+  if (d && t)
+    try {
+      return { ...(await T(e, t)), _storage: 'cloud' };
+    } catch (r) {
+      return (
+        console.warn('Errore creazione nel cloud, fallback a localStorage:', r),
+        { ...S(e, t), _storage: 'local' }
+      );
+    }
+  return { ...S(e, t), _storage: 'local' };
+}
+function S(e, t) {
+  const a = {
+      id: E(),
+      courtId: e.courtId,
+      courtName: e.courtName,
+      date: e.date,
+      time: e.time,
+      duration: e.duration,
+      lighting: e.lighting || !1,
+      heating: e.heating || !1,
+      price: e.price,
+      bookedBy: t?.displayName || t?.email || 'Anonimo',
+      userEmail: t?.email,
+      userPhone: e.userPhone || '',
+      players: e.players || [],
+      notes: e.notes || '',
+      status: f.CONFIRMED,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      createdBy: t?.uid || null,
+    },
+    r = u();
+  return (r.push(a), g(r), a);
+}
+async function j(e, t, a) {
+  if (d && a)
+    try {
+      return await M(e, t, a);
+    } catch (r) {
+      return (
+        console.warn('Errore aggiornamento nel cloud, fallback a localStorage:', r),
+        k(e, t, a)
+      );
+    }
+  return k(e, t, a);
+}
+function k(e, t, a) {
+  const r = u(),
+    s = r.findIndex((n) => n.id === e);
+  if (s === -1) return null;
+  const i = { ...r[s], ...t, updatedAt: new Date().toISOString(), updatedBy: a?.uid || null };
+  return ((r[s] = i), g(r), i);
+}
+async function p() {
+  if (d)
+    try {
+      return await v();
+    } catch (e) {
+      return (
+        e?.code === 'failed-precondition'
+          ? x ||
+            (console.warn('Cloud bookings richiedono un indice: uso dati locali (fallback).'),
+            (x = !0))
+          : console.warn('Errore caricamento pubbliche da cloud, fallback a localStorage:', e),
+        C()
+      );
+    }
+  return C();
+}
+function C() {
+  return u()
+    .filter((t) => t.status === f.CONFIRMED)
+    .map((t) => ({
+      id: t.id,
+      courtId: t.courtId,
+      courtName: t.courtName,
+      date: t.date,
+      time: t.time,
+      duration: t.duration,
+      status: t.status,
+    }));
+}
+async function b(e) {
+  try {
+    _(!!e?.uid, e);
+    const t = await p();
+    if (e && e.uid)
+      try {
+        const { loadActiveUserBookings: a } = await I(
+            async () => {
+              const { loadActiveUserBookings: s } = await import(
+                './cloud-bookings-mfbc5cuw-D5b_T57O.js'
+              );
+              return { loadActiveUserBookings: s };
+            },
+            __vite__mapDeps([0, 1, 2, 3, 4, 5])
+          ),
+          r = await a(e.uid);
+      } catch (a) {
+        console.warn('initializeBookingSystem: Cloud user data failed:', a);
+      }
+    return (await h(), !0);
+  } catch (t) {
+    return (console.error('initializeBookingSystem: Failed:', t), !1);
+  }
+}
+async function h() {
+  try {
+    let e = [];
+    try {
+      e = [...(await p())];
+    } catch (t) {
+      console.warn('syncAllBookings: Failed to load public bookings:', t);
+    }
+    try {
+      const t = await u(),
+        a = new Map();
+      (e.forEach((r) => {
+        const s = r.id || `${r.date}-${r.time}-${r.courtId}`;
+        a.set(s, r);
+      }),
+        t.forEach((r) => {
+          const s = r.id || `${r.date}-${r.time}-${r.courtId}`;
+          a.has(s) || a.set(s, r);
+        }),
+        (e = Array.from(a.values())),
+        await g(e));
+    } catch (t) {
+      console.warn('syncAllBookings: Failed to sync local storage:', t);
+    }
+    return e;
+  } catch (e) {
+    return (console.error('syncAllBookings: Complete failure:', e), []);
+  }
+}
+async function F(e, t = !1) {
+  if (!e) return [];
+  try {
+    t ? await b(e) : await h();
+    let a = [];
+    if (d && e.uid)
+      try {
+        const { loadActiveUserBookings: i } = await I(
+            async () => {
+              const { loadActiveUserBookings: l } = await import(
+                './cloud-bookings-mfbc5cuw-D5b_T57O.js'
+              );
+              return { loadActiveUserBookings: l };
+            },
+            __vite__mapDeps([0, 1, 2, 3, 4, 5])
+          ),
+          n = await i(e.uid);
+        n && n.length > 0 && (a = n);
+      } catch (i) {
+        console.warn('Cloud user bookings not available:', i);
+      }
+    try {
+      const n = (await A()).filter(
+        (l) => l.userEmail === e.email || l.email === e.email || l.userId === e.uid
+      );
+      if (a.length > 0 && n.length > 0) {
+        const l = new Map();
+        (a.forEach((o) => {
+          l.set(o.id || `${o.date}-${o.time}-${o.courtId}`, o);
+        }),
+          n.forEach((o) => {
+            const c = o.id || `${o.date}-${o.time}-${o.courtId}`;
+            l.has(c) || l.set(c, o);
+          }),
+          (a = Array.from(l.values())));
+      } else n.length > 0 && (a = n);
+    } catch (i) {
+      console.warn('localStorage user bookings not available:', i);
+    }
+    const r = new Date(),
+      s = a.filter((i) => new Date(`${i.date}T${i.time}:00`) > r);
+    return (
+      s.sort((i, n) => {
+        const l = new Date(`${i.date}T${i.time}:00`),
+          o = new Date(`${n.date}T${n.time}:00`);
+        return l - o;
+      }),
+      s
+    );
+  } catch (a) {
+    return (console.error('Error loading user bookings:', a), []);
+  }
+}
+const K = Object.freeze(
+  Object.defineProperty(
+    {
+      __proto__: null,
+      BOOKING_CONFIG: P,
+      BOOKING_STATUS: f,
+      createBooking: R,
+      generateBookingId: E,
+      getPublicBookings: p,
+      getUserBookings: F,
+      initializeBookingSystem: b,
+      isSlotAvailable: z,
+      loadBookings: A,
+      setCloudMode: _,
+      syncAllBookings: h,
+      updateBooking: j,
+    },
+    Symbol.toStringTag,
+    { value: 'Module' }
+  )
+);
+export { G as B, P as a, K as b, R as c, p as g, z as i, _ as s, j as u };

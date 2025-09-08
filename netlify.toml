@@ -6,7 +6,7 @@
   NODE_VERSION = "18"
 
 [site]
-  name = "play-sport-pro-fixed"
+  name = "play-sport-pro-v2-2025"
 
 # Force complete cache invalidation
 [[headers]]
