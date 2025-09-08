@@ -1,4 +1,4 @@
-import { j as e } from './index-DPfO8u6W.js';
+import { j as e } from './index-oP5O6b6Q.js';
 import './router-CwEi7VLz.js';
 function c({ open: i, onClose: s, title: a, children: l, T: m, size: n = 'md' }) {
   if (!i) return null;

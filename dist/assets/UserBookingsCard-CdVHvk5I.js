@@ -3,22 +3,22 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/cloud-bookings-XstLxDs7.js',
+      'assets/cloud-bookings-CWOpYfom.js',
       'assets/firebase-jcIpuiEY.js',
-      'assets/index-DPfO8u6W.js',
+      'assets/index-oP5O6b6Q.js',
       'assets/vendor-D3F3s8fL.js',
       'assets/router-CwEi7VLz.js',
-      'assets/index-DlErbkcE.css',
-      'assets/bookings-2Jb6seEW.js',
+      'assets/index-D_wbwNnW.css',
+      'assets/bookings-BfW19wQf.js',
     ])
 ) => i.map((i) => d[i]);
-import { u as V, _ as L, j as e } from './index-DPfO8u6W.js';
+import { u as V, _ as L, j as e } from './index-oP5O6b6Q.js';
 import { r as d, c as Z, b as H } from './router-CwEi7VLz.js';
-import { a as T, B as E, u as J } from './bookings-2Jb6seEW.js';
-import { M as Q } from './Modal-C4Y5UcGH.js';
+import { a as T, B as E, u as J } from './bookings-BfW19wQf.js';
+import { M as Q } from './Modal-BEAiK9DG.js';
 import './vendor-D3F3s8fL.js';
 import './firebase-jcIpuiEY.js';
-import './cloud-bookings-XstLxDs7.js';
+import './cloud-bookings-CWOpYfom.js';
 const M = new Map(),
   z = new Map();
 function W(s = {}) {
@@ -133,7 +133,7 @@ async function Y(s) {
   try {
     const { loadActiveUserBookings: r } = await L(
       async () => {
-        const { loadActiveUserBookings: a } = await import('./cloud-bookings-XstLxDs7.js');
+        const { loadActiveUserBookings: a } = await import('./cloud-bookings-CWOpYfom.js');
         return { loadActiveUserBookings: a };
       },
       __vite__mapDeps([0, 1, 2, 3, 4, 5])
@@ -150,7 +150,7 @@ async function ee(s) {
   try {
     const { getUserBookings: r } = await L(
       async () => {
-        const { getUserBookings: a } = await import('./bookings-2Jb6seEW.js').then((u) => u.b);
+        const { getUserBookings: a } = await import('./bookings-BfW19wQf.js').then((u) => u.b);
         return { getUserBookings: a };
       },
       __vite__mapDeps([6, 2, 3, 4, 1, 5, 0])
@@ -492,41 +492,39 @@ function se({
                       children: [
                         s.players &&
                           s.players.length > 1 &&
-                          s.players
-                            .slice(1)
-                            .map((n, v) =>
-                              e.jsxs(
-                                'div',
-                                {
-                                  className:
-                                    'flex items-center gap-2 bg-white rounded px-2 py-1 border',
-                                  children: [
-                                    e.jsx('div', {
-                                      className:
-                                        'w-6 h-6 rounded-full bg-green-500 flex items-center justify-center',
-                                      children: e.jsx('span', {
-                                        className: 'text-white text-xs font-bold',
-                                        children: v + 2,
+                          s.players.slice(1).map((n, v) =>
+                            e.jsxs(
+                              'div',
+                              {
+                                className:
+                                  'flex items-center gap-2 bg-white rounded px-2 py-1 border',
+                                children: [
+                                  e.jsx('div', {
+                                    className:
+                                      'w-6 h-6 rounded-full bg-green-500 flex items-center justify-center',
+                                    children: e.jsx('span', {
+                                      className: 'text-white text-xs font-bold',
+                                      children: v + 2,
+                                    }),
+                                  }),
+                                  e.jsxs('div', {
+                                    className: 'flex-1',
+                                    children: [
+                                      e.jsx('div', {
+                                        className: 'text-sm font-medium text-gray-900',
+                                        children: A(n),
                                       }),
-                                    }),
-                                    e.jsxs('div', {
-                                      className: 'flex-1',
-                                      children: [
-                                        e.jsx('div', {
-                                          className: 'text-sm font-medium text-gray-900',
-                                          children: A(n),
-                                        }),
-                                        e.jsxs('div', {
-                                          className: 'text-xs text-gray-500',
-                                          children: ['Giocatore ', v + 2],
-                                        }),
-                                      ],
-                                    }),
-                                  ],
-                                },
-                                v
-                              )
-                            ),
+                                      e.jsxs('div', {
+                                        className: 'text-xs text-gray-500',
+                                        children: ['Giocatore ', v + 2],
+                                      }),
+                                    ],
+                                  }),
+                                ],
+                              },
+                              v
+                            )
+                          ),
                         (() => {
                           const n = s.players?.length || 1,
                             v = 4 - n;
@@ -738,20 +736,18 @@ const te = H.memo(({ booking: s, onBookingClick: r, courts: a, user: u, T: f }) 
                       e.jsxs('span', {
                         children: [
                           s.bookedBy ? ' + ' : '',
-                          s.players
-                            .slice(0, 2)
-                            .map((i, m) =>
-                              e.jsxs(
-                                'span',
-                                {
-                                  children: [
-                                    i.name || i,
-                                    m < s.players.slice(0, 2).length - 1 ? ', ' : '',
-                                  ],
-                                },
-                                m
-                              )
-                            ),
+                          s.players.slice(0, 2).map((i, m) =>
+                            e.jsxs(
+                              'span',
+                              {
+                                children: [
+                                  i.name || i,
+                                  m < s.players.slice(0, 2).length - 1 ? ', ' : '',
+                                ],
+                              },
+                              m
+                            )
+                          ),
                           s.players.length > 2 &&
                             e.jsxs('span', { children: [' +', s.players.length - 2, ' altri'] }),
                         ],

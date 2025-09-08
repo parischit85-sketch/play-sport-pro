@@ -3,11 +3,11 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/index-DPfO8u6W.js',
+      'assets/index-oP5O6b6Q.js',
       'assets/vendor-D3F3s8fL.js',
       'assets/router-CwEi7VLz.js',
       'assets/firebase-jcIpuiEY.js',
-      'assets/index-DlErbkcE.css',
+      'assets/index-D_wbwNnW.css',
     ])
 ) => i.map((i) => d[i]);
 import {
@@ -22,9 +22,9 @@ import {
   u as H,
   t as O,
   L as W,
-} from './index-DPfO8u6W.js';
+} from './index-oP5O6b6Q.js';
 import { r as l, b as D } from './router-CwEi7VLz.js';
-import { S as y } from './Section-CKvEY5Ph.js';
+import { S as y } from './Section-7B07Uw41.js';
 import './vendor-D3F3s8fL.js';
 import './firebase-jcIpuiEY.js';
 function V({ T: s, user: o, userProfile: i, setUserProfile: m }) {
@@ -86,7 +86,7 @@ function V({ T: s, user: o, userProfile: i, setUserProfile: m }) {
           console.log('🔐 Attempting registration for:', c.trim());
           const { registerWithEmailPassword: t } = await f(
             async () => {
-              const { registerWithEmailPassword: a } = await import('./index-DPfO8u6W.js').then(
+              const { registerWithEmailPassword: a } = await import('./index-oP5O6b6Q.js').then(
                 (p) => p.q
               );
               return { registerWithEmailPassword: a };
@@ -98,7 +98,7 @@ function V({ T: s, user: o, userProfile: i, setUserProfile: m }) {
           console.log('🔐 Attempting login for:', c.trim());
           const { loginWithEmailPassword: t } = await f(
             async () => {
-              const { loginWithEmailPassword: a } = await import('./index-DPfO8u6W.js').then(
+              const { loginWithEmailPassword: a } = await import('./index-oP5O6b6Q.js').then(
                 (p) => p.q
               );
               return { loginWithEmailPassword: a };
@@ -132,7 +132,7 @@ function V({ T: s, user: o, userProfile: i, setUserProfile: m }) {
       try {
         const { sendResetPassword: t } = await f(
           async () => {
-            const { sendResetPassword: a } = await import('./index-DPfO8u6W.js').then((p) => p.q);
+            const { sendResetPassword: a } = await import('./index-oP5O6b6Q.js').then((p) => p.q);
             return { sendResetPassword: a };
           },
           __vite__mapDeps([0, 1, 2, 3, 4])

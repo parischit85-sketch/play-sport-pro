@@ -1,4 +1,4 @@
-import { j as a, _ as y } from './index-DPfO8u6W.js';
+import { j as a, _ as y } from './index-oP5O6b6Q.js';
 import './router-CwEi7VLz.js';
 function N({ title: o, url: u, captureRef: g, captionBuilder: l, size: f = 'sm', T: s }) {
   const n = u || (typeof window < 'u' ? window.location.href : ''),

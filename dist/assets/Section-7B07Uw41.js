@@ -1,4 +1,4 @@
-import { j as s } from './index-DPfO8u6W.js';
+import { j as s } from './index-oP5O6b6Q.js';
 import './router-CwEi7VLz.js';
 function o({ title: a, right: t, children: c, T: e, variant: d = 'default' }) {
   const r = {

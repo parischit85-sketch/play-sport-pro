@@ -3,30 +3,30 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/LoginPage-B8VghsNk.js',
+      'assets/LoginPage-gLp_UmHw.js',
       'assets/router-CwEi7VLz.js',
       'assets/vendor-D3F3s8fL.js',
-      'assets/Section-CKvEY5Ph.js',
+      'assets/Section-7B07Uw41.js',
       'assets/firebase-jcIpuiEY.js',
-      'assets/DashboardPage-dwhn5nDg.js',
-      'assets/ClassificaPage-D2YxjGpT.js',
+      'assets/DashboardPage-B16QakX6.js',
+      'assets/ClassificaPage-BknBSM_M.js',
       'assets/charts-DchiamWW.js',
-      'assets/ShareButtons-CCcoLklX.js',
-      'assets/StatsPage-B5kly0Mt.js',
-      'assets/Modal-C4Y5UcGH.js',
+      'assets/ShareButtons-Ck5XpsBa.js',
+      'assets/StatsPage-CdcEMy66.js',
+      'assets/Modal-BEAiK9DG.js',
       'assets/names-BW9lV2zG.js',
-      'assets/BookingPage-_QebnMSQ.js',
-      'assets/bookings-2Jb6seEW.js',
-      'assets/cloud-bookings-XstLxDs7.js',
+      'assets/BookingPage-B2GvNlT5.js',
+      'assets/bookings-BfW19wQf.js',
+      'assets/cloud-bookings-CWOpYfom.js',
       'assets/pricing-CpqSxGe3.js',
-      'assets/PlayersPage-BVoBjFqx.js',
-      'assets/MatchesPage-BU6tyNjn.js',
-      'assets/TournamentsPage-BixMW7UT.js',
-      'assets/ProfilePage-Cz8xcRY_.js',
-      'assets/Extra-T91T_LYT.js',
+      'assets/PlayersPage-DWDFgfCF.js',
+      'assets/MatchesPage-em9eKOD_.js',
+      'assets/TournamentsPage-DvQSzqyi.js',
+      'assets/ProfilePage-C77AQmXW.js',
+      'assets/Extra-CD4Z8i4I.js',
       'assets/format-DAEZv7Mi.js',
-      'assets/ExtraPage-5Jr30wnE.js',
-      'assets/AdminBookingsPage-D2sCXSAU.js',
+      'assets/ExtraPage-DeOj1WD0.js',
+      'assets/AdminBookingsPage-DoYRpTu1.js',
     ])
 ) => i.map((i) => d[i]);
 import { r as Re, a as De } from './vendor-D3F3s8fL.js';
@@ -2188,36 +2188,36 @@ function Ot() {
   });
 }
 const Wt = C.lazy(() =>
-    B(() => import('./LoginPage-B8VghsNk.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
+    B(() => import('./LoginPage-gLp_UmHw.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
   ),
-  $t = C.lazy(() => B(() => import('./DashboardPage-dwhn5nDg.js'), __vite__mapDeps([5, 1, 2, 4]))),
+  $t = C.lazy(() => B(() => import('./DashboardPage-B16QakX6.js'), __vite__mapDeps([5, 1, 2, 4]))),
   Ft = C.lazy(() =>
-    B(() => import('./ClassificaPage-D2YxjGpT.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
+    B(() => import('./ClassificaPage-BknBSM_M.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
   ),
   Ut = C.lazy(() =>
-    B(() => import('./StatsPage-B5kly0Mt.js'), __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4]))
+    B(() => import('./StatsPage-CdcEMy66.js'), __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4]))
   ),
   Vt = C.lazy(() =>
-    B(() => import('./BookingPage-_QebnMSQ.js'), __vite__mapDeps([12, 1, 2, 13, 14, 4, 15]))
+    B(() => import('./BookingPage-B2GvNlT5.js'), __vite__mapDeps([12, 1, 2, 13, 14, 4, 15]))
   ),
   Ht = C.lazy(() =>
-    B(() => import('./PlayersPage-BVoBjFqx.js'), __vite__mapDeps([16, 1, 2, 3, 11, 4]))
+    B(() => import('./PlayersPage-DWDFgfCF.js'), __vite__mapDeps([16, 1, 2, 3, 11, 4]))
   ),
   qt = C.lazy(() =>
-    B(() => import('./MatchesPage-BU6tyNjn.js'), __vite__mapDeps([17, 1, 2, 3, 11, 4]))
+    B(() => import('./MatchesPage-em9eKOD_.js'), __vite__mapDeps([17, 1, 2, 3, 11, 4]))
   ),
   Gt = C.lazy(() =>
-    B(() => import('./TournamentsPage-BixMW7UT.js'), __vite__mapDeps([18, 1, 2, 3, 4]))
+    B(() => import('./TournamentsPage-DvQSzqyi.js'), __vite__mapDeps([18, 1, 2, 3, 4]))
   ),
   Jt = C.lazy(() =>
-    B(() => import('./ProfilePage-Cz8xcRY_.js'), __vite__mapDeps([19, 1, 2, 3, 10, 20, 21, 14, 4]))
+    B(() => import('./ProfilePage-C77AQmXW.js'), __vite__mapDeps([19, 1, 2, 3, 10, 20, 21, 14, 4]))
   ),
   Kt = C.lazy(() =>
-    B(() => import('./ExtraPage-5Jr30wnE.js'), __vite__mapDeps([22, 1, 2, 20, 3, 21, 4]))
+    B(() => import('./ExtraPage-DeOj1WD0.js'), __vite__mapDeps([22, 1, 2, 20, 3, 21, 4]))
   ),
   Yt = C.lazy(() =>
     B(
-      () => import('./AdminBookingsPage-D2sCXSAU.js'),
+      () => import('./AdminBookingsPage-DoYRpTu1.js'),
       __vite__mapDeps([23, 1, 2, 3, 10, 21, 15, 4])
     )
   );
