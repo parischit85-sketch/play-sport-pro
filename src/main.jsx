@@ -6,21 +6,7 @@ import './index.css';
 import { createRoot } from 'react-dom/client';
 import AppRouter from './router/AppRouter.jsx';
 
-// Capacitor mobile initialization
-import { Capacitor } from '@capacitor/core';
-import { StatusBar, Style } from '@capacitor/status-bar';
-
-// Initialize status bar for mobile
-if (Capacitor.isNativePlatform()) {
-  StatusBar.setStyle({ style: Style.Dark })
-    .catch(err => console.warn('StatusBar style not supported:', err));
-  
-  StatusBar.setBackgroundColor({ color: '#ffffff' })
-    .catch(err => console.warn('StatusBar background not supported:', err));
-  
-  StatusBar.show()
-    .catch(err => console.warn('StatusBar show not supported:', err));
-}
+// PWA web application initialization
 
 // Development health check
 if (import.meta.env.DEV) {
@@ -36,10 +22,11 @@ if (import.meta.env.PROD) {
 // PWA Service Worker Registration
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    navigator.serviceWorker
+      .register('/sw.js')
       .then((registration) => {
         console.log('✅ SW registered: ', registration);
-        
+
         // Gestione degli aggiornamenti del SW
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;

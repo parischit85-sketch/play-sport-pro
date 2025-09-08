@@ -23,7 +23,6 @@ const TournamentsPage = React.lazy(() => import('@pages/TournamentsPage.jsx'));
 const ProfilePage = React.lazy(() => import('@pages/ProfilePage.jsx'));
 const ExtraPage = React.lazy(() => import('@pages/ExtraPage.jsx'));
 const AdminBookingsPage = React.lazy(() => import('@pages/AdminBookingsPage.jsx'));
-const NativeFeaturesTest = React.lazy(() => import('@components/NativeFeaturesTest.jsx'));
 
 export default function AppRouter() {
   return (
@@ -55,27 +54,24 @@ export default function AppRouter() {
                   >
                     {/* Default redirect to dashboard */}
                     <Route index element={<Navigate to="dashboard" replace />} />
-                    
+
                     {/* Dashboard */}
                     <Route path="dashboard" element={<DashboardPage />} />
-                    
+
                     {/* Public League Routes */}
                     <Route path="classifica" element={<ClassificaPage />} />
                     <Route path="stats" element={<StatsPage />} />
                     <Route path="booking" element={<BookingPage />} />
                     <Route path="extra" element={<ExtraPage />} />
-                    
+
                     {/* Club Mode Routes */}
                     <Route path="players" element={<PlayersPage />} />
                     <Route path="matches/create" element={<MatchesPage />} />
                     <Route path="tournaments" element={<TournamentsPage />} />
                     <Route path="admin/bookings" element={<AdminBookingsPage />} />
-                    
+
                     {/* User Routes */}
                     <Route path="profile" element={<ProfilePage />} />
-                    
-                    {/* Native Features Test Route */}
-                    <Route path="native-test" element={<NativeFeaturesTest />} />
                   </Route>
 
                   {/* Fallback */}

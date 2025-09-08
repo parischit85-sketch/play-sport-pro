@@ -1,37 +1,25 @@
 // =============================================
 // FILE: src/services/notificationService.js
-// Servizio completo per la gestione delle notifiche
+// Servizio notifiche per web/PWA (senza Capacitor)
 // =============================================
-
-import {
-  PushNotifications,
-  ActionPerformed,
-  PushNotificationSchema,
-  Token,
-} from '@capacitor/push-notifications';
-
-import { LocalNotifications, LocalNotificationSchema } from '@capacitor/local-notifications';
-
-import { Capacitor } from '@capacitor/core';
 
 class NotificationService {
   constructor() {
     this.isInitialized = false;
-    this.token = null;
+    this.registration = null;
   }
 
-  // Inizializza il servizio notifiche
+  // Inizializza il servizio notifiche web
   async initialize() {
-    if (!Capacitor.isNativePlatform()) {
-      console.log('Notifiche disponibili solo su piattaforme native');
-      return false;
-    }
-
     try {
+      if (!('Notification' in window)) {
+        console.log('Il browser non supporta le notifiche');
+        return false;
+      }
+
       await this.requestPermissions();
-      await this.registerListeners();
       this.isInitialized = true;
-      console.log('NotificationService inizializzato');
+      console.log('NotificationService (web) inizializzato');
       return true;
     } catch (error) {
       console.error('Errore inizializzazione notifiche:', error);
@@ -39,121 +27,72 @@ class NotificationService {
     }
   }
 
-  // Richiede i permessi per le notifiche
+  // Richiede i permessi per le notifiche web
   async requestPermissions() {
     try {
-      // Permessi per push notifications
-      let pushResult = await PushNotifications.requestPermissions();
-      if (pushResult.receive === 'granted') {
-        await PushNotifications.register();
-        console.log('Push notifications registrate');
-      }
-
-      // Permessi per notifiche locali
-      let localResult = await LocalNotifications.requestPermissions();
-      console.log('Permessi notifiche locali:', localResult);
+      const permission = await Notification.requestPermission();
+      console.log('Permessi notifiche web:', permission);
 
       return {
-        push: pushResult.receive === 'granted',
-        local: localResult.display === 'granted',
+        web: permission === 'granted',
+        granted: permission === 'granted',
       };
     } catch (error) {
       console.error('Errore richiesta permessi:', error);
-      return { push: false, local: false };
+      return { web: false, granted: false };
     }
   }
 
-  // Registra i listener per gli eventi delle notifiche
-  async registerListeners() {
-    // Listener per token registration
-    PushNotifications.addListener('registration', (token) => {
-      console.log('Push registration success, token: ' + token.value);
-      this.token = token.value;
-      this.onTokenReceived(token.value);
-    });
-
-    // Listener per errori di registrazione
-    PushNotifications.addListener('registrationError', (error) => {
-      console.error('Error on registration: ' + JSON.stringify(error));
-    });
-
-    // Listener per notifiche ricevute
-    PushNotifications.addListener('pushNotificationReceived', (notification) => {
-      console.log('Push received: ' + JSON.stringify(notification));
-      this.onNotificationReceived(notification);
-    });
-
-    // Listener per azioni su notifiche
-    PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-      console.log('Push action performed: ' + JSON.stringify(notification));
-      this.onNotificationAction(notification);
-    });
-
-    // Listener per notifiche locali
-    LocalNotifications.addListener('localNotificationReceived', (notification) => {
-      console.log('Local notification received: ' + JSON.stringify(notification));
-    });
-
-    LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
-      console.log('Local notification action: ' + JSON.stringify(notification));
-      this.onLocalNotificationAction(notification);
-    });
-  }
-
-  // Ottiene il push token
-  getPushToken() {
-    return this.token;
-  }
-
-  // Mostra una notifica locale
-  async showLocalNotification(options) {
+  // Mostra una notifica web
+  async showNotification(options) {
     try {
-      const notification = {
-        title: options.title || 'Play Sport Pro',
-        body: options.body || '',
-        id: options.id || Date.now(),
-        schedule: options.schedule || null,
-        sound: options.sound || 'default',
-        attachments: options.attachments || null,
-        actionTypeId: options.actionTypeId || '',
-        extra: options.extra || {},
-      };
+      if (Notification.permission !== 'granted') {
+        console.warn('Permessi notifiche non concessi');
+        return false;
+      }
 
-      await LocalNotifications.schedule({
-        notifications: [notification],
+      const notification = new Notification(options.title || 'Play Sport Pro', {
+        body: options.body || '',
+        icon: '/play-sport-pro_icon_only.svg',
+        badge: '/play-sport-pro_icon_only.svg',
+        tag: options.tag || 'default',
+        data: options.extra || {},
+        requireInteraction: options.requireInteraction || false,
+        silent: options.silent || false,
+        vibrate: options.vibrate || [200, 100, 200],
       });
 
-      console.log('Notifica locale programmata:', notification);
+      notification.onclick = () => {
+        console.log('Notifica cliccata:', options.title);
+        this.onNotificationClick(options.extra || {});
+        notification.close();
+      };
+
+      // Auto-close dopo 5 secondi se non specificato diversamente
+      if (!options.requireInteraction) {
+        setTimeout(() => notification.close(), 5000);
+      }
+
+      console.log('Notifica web mostrata:', options.title);
       return true;
     } catch (error) {
-      console.error('Errore notifica locale:', error);
+      console.error('Errore notifica web:', error);
       return false;
     }
   }
 
   // Callback personalizzabili
-  onTokenReceived(token) {
-    console.log('Token ricevuto:', token);
-  }
-
-  onNotificationReceived(notification) {
-    console.log('Notifica ricevuta:', notification);
-  }
-
-  onNotificationAction(actionData) {
-    console.log('Azione notifica:', actionData);
-  }
-
-  onLocalNotificationAction(actionData) {
-    console.log('Azione notifica locale:', actionData);
+  onNotificationClick(data) {
+    console.log('Notifica cliccata con data:', data);
+    // Qui puoi implementare la navigazione o altre azioni
   }
 
   // Metodi di utilità per l'app Play Sport Pro
 
-  // Test notifica locale
-  async testLocalNotification() {
-    return await this.showLocalNotification({
-      title: '🧪 Test Notifica',
+  // Test notifica web
+  async testNotification() {
+    return await this.showNotification({
+      title: '🧪 Test Notifica Web',
       body: 'Questa è una notifica di test per Play Sport Pro',
       extra: { type: 'test' },
     });
@@ -161,42 +100,59 @@ class NotificationService {
 
   // Notifica per prenotazione confermata
   async notifyBookingConfirmed(bookingDetails) {
-    return await this.showLocalNotification({
+    return await this.showNotification({
       title: '✅ Prenotazione Confermata',
       body: `Campo ${bookingDetails.court} prenotato per ${bookingDetails.date} alle ${bookingDetails.time}`,
+      tag: 'booking',
       extra: { type: 'booking_confirmed', bookingId: bookingDetails.id },
     });
   }
 
   // Notifica per risultato partita
   async notifyMatchResult(matchResult) {
-    return await this.showLocalNotification({
+    return await this.showNotification({
       title: '🏆 Risultato Partita',
       body: `Vincitore: ${matchResult.winner} - ${matchResult.score}`,
+      tag: 'match',
+      requireInteraction: true,
+      vibrate: [300, 200, 300, 200, 300],
       extra: { type: 'match_result', matchId: matchResult.id },
     });
   }
 
   // Notifica per promemoria partita
   async notifyMatchReminder(matchDetails, minutesBefore = 30) {
-    const scheduleTime = new Date(matchDetails.datetime);
-    scheduleTime.setMinutes(scheduleTime.getMinutes() - minutesBefore);
-
-    return await this.showLocalNotification({
+    return await this.showNotification({
       title: '🏆 Partita Imminente',
       body: `La tua partita inizia tra ${minutesBefore} minuti!`,
-      schedule: { at: scheduleTime },
+      tag: 'reminder',
+      requireInteraction: true,
+      vibrate: [100, 50, 100, 50, 100, 50, 100],
       extra: { type: 'match_reminder', matchId: matchDetails.id },
     });
   }
 
   // Notifica per nuovo torneo
   async notifyNewTournament(tournamentDetails) {
-    return await this.showLocalNotification({
+    return await this.showNotification({
       title: '🏆 Nuovo Torneo Disponibile',
       body: `${tournamentDetails.name} - Iscriviti ora!`,
+      tag: 'tournament',
       extra: { type: 'new_tournament', tournamentId: tournamentDetails.id },
     });
+  }
+
+  // Verifica se le notifiche sono supportate
+  isSupported() {
+    return 'Notification' in window;
+  }
+
+  // Stato corrente dei permessi
+  getPermissionStatus() {
+    if (!this.isSupported()) {
+      return 'not_supported';
+    }
+    return Notification.permission;
   }
 }
 

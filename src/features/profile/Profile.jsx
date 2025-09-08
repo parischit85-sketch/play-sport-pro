@@ -5,9 +5,12 @@ import Section from '@ui/Section';
 import Modal from '@ui/Modal';
 import Extra from '@features/extra/Extra';
 import NotificationSettings from '@components/NotificationSettings';
-import NativeTestButtons from '@components/NativeTestButtons';
 import PWAInstallButton from '@components/PWAInstallButton';
-import { loadActiveUserBookings, loadBookingHistory, cancelCloudBooking } from '@services/cloud-bookings.js';
+import {
+  loadActiveUserBookings,
+  loadBookingHistory,
+  cancelCloudBooking,
+} from '@services/cloud-bookings.js';
 
 function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode, setClubMode }) {
   const [user, setUser] = useState(null);
@@ -15,7 +18,7 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [isEditing, setIsEditing] = useState(false);
-  
+
   // Stati per prenotazioni
   const [activeBookings, setActiveBookings] = useState([]);
   const [bookingHistory, setBookingHistory] = useState([]);
@@ -25,7 +28,7 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
       setLoading(false);
-      
+
       // Carica prenotazioni se l'utente è autenticato
       if (user) {
         loadUserBookings(user);
@@ -37,18 +40,18 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
 
     return () => unsubscribe();
   }, []);
-  
+
   // Funzione per caricare le prenotazioni dell'utente
   const loadUserBookings = async (user) => {
     if (!user) return;
-    
+
     setLoadingBookings(true);
     try {
       const [active, history] = await Promise.all([
         loadActiveUserBookings(user.uid),
-        loadBookingHistory(user.uid)
+        loadBookingHistory(user.uid),
       ]);
-      
+
       setActiveBookings(active);
       setBookingHistory(history);
     } catch (error) {
@@ -57,11 +60,11 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
       setLoadingBookings(false);
     }
   };
-  
+
   // Funzione per cancellare una prenotazione
   const handleCancelBooking = async (bookingId) => {
     if (!confirm('Sei sicuro di voler cancellare questa prenotazione?')) return;
-    
+
     try {
       await cancelCloudBooking(bookingId, user);
       // Ricarica le prenotazioni
@@ -174,8 +177,12 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
                 </span>
                 <span className="px-3 py-1 bg-white/20 rounded-full text-xs sm:text-sm font-medium backdrop-blur-sm">
                   {getProviderIcon(user.providerData[0]?.providerId)}{' '}
-                  <span className="hidden sm:inline">{getProviderName(user.providerData[0]?.providerId)}</span>
-                  <span className="sm:hidden">{getProviderName(user.providerData[0]?.providerId).split('/')[0]}</span>
+                  <span className="hidden sm:inline">
+                    {getProviderName(user.providerData[0]?.providerId)}
+                  </span>
+                  <span className="sm:hidden">
+                    {getProviderName(user.providerData[0]?.providerId).split('/')[0]}
+                  </span>
                 </span>
               </div>
             </div>
@@ -343,20 +350,31 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-4 lg:p-6 shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M6.938 12.79a2.121 2.121 0 000-1.58c.232-.382.555-.728.955-.955C8.667 9.75 10.25 9 12 9s3.333.75 4.107 1.255c.4.227.723.573.955.955a2.121 2.121 0 000 1.58m-4.498 1.175l1.436-1.436m0 0l1.436 1.436m-1.436-1.436v4" />
+                    <svg
+                      className="w-5 h-5 text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 18h.01M6.938 12.79a2.121 2.121 0 000-1.58c.232-.382.555-.728.955-.955C8.667 9.75 10.25 9 12 9s3.333.75 4.107 1.255c.4.227.723.573.955.955a2.121 2.121 0 000 1.58m-4.498 1.175l1.436-1.436m0 0l1.436 1.436m-1.436-1.436v4"
+                      />
                     </svg>
                   </div>
                   <h3 className="text-lg font-semibold text-blue-900">📱 Installa App</h3>
                 </div>
-                
+
                 <p className="text-sm text-blue-800 mb-4">
-                  Installa Paris League come app sul tuo dispositivo per un accesso più veloce e notifiche push.
+                  Installa Paris League come app sul tuo dispositivo per un accesso più veloce e
+                  notifiche push.
                 </p>
 
                 {/* Pulsante di installazione */}
                 <PWAInstallButton className="w-full justify-center mb-3" />
-                
+
                 {/* Benefici dell'installazione */}
                 <div className="bg-white/50 rounded-lg p-3 mt-3">
                   <h4 className="text-sm font-medium text-blue-900 mb-2">✨ Vantaggi dell'app:</h4>
@@ -386,7 +404,12 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
                   className="w-full mt-3 px-3 py-2 text-sm font-medium text-blue-700 hover:bg-white/30 rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5-5-5h5V12h10v5z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 17h5l-5 5-5-5h5V12h10v5z"
+                    />
                   </svg>
                   Configura Notifiche
                 </button>
@@ -417,14 +440,19 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
               ) : activeBookings.length === 0 ? (
                 <div className="text-center py-8">
                   <div className="text-6xl mb-4">📅</div>
-                  <h4 className="text-lg font-medium text-gray-900 mb-2">Nessuna prenotazione attiva</h4>
+                  <h4 className="text-lg font-medium text-gray-900 mb-2">
+                    Nessuna prenotazione attiva
+                  </h4>
                   <p className="text-gray-600">Le tue prossime prenotazioni appariranno qui.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {activeBookings.map((booking) => (
-                    <div key={booking.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
+                    <div
+                      key={booking.id}
+                      className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
                         <div className="flex-1 mb-3 sm:mb-0">
                           <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2">
                             <span className="text-base sm:text-lg font-semibold text-emerald-600 mb-1 sm:mb-0">
@@ -439,17 +467,19 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
                               <span className="font-medium">📅 Data:</span>
                               <br />
                               <span className="text-xs sm:text-sm">
-                                {new Date(booking.date).toLocaleDateString('it-IT', { 
-                                  weekday: 'short', 
-                                  day: 'numeric', 
-                                  month: 'short' 
+                                {new Date(booking.date).toLocaleDateString('it-IT', {
+                                  weekday: 'short',
+                                  day: 'numeric',
+                                  month: 'short',
                                 })}
                               </span>
                             </div>
                             <div>
                               <span className="font-medium">🕐 Orario:</span>
                               <br />
-                              <span className="text-xs sm:text-sm">{booking.time} ({booking.duration}min)</span>
+                              <span className="text-xs sm:text-sm">
+                                {booking.time} ({booking.duration}min)
+                              </span>
                             </div>
                             <div>
                               <span className="font-medium">💰 Prezzo:</span>
@@ -459,7 +489,9 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
                             <div>
                               <span className="font-medium">👥 Giocatori:</span>
                               <br />
-                              <span className="text-xs sm:text-sm">{booking.players?.length || 1}</span>
+                              <span className="text-xs sm:text-sm">
+                                {booking.players?.length || 1}
+                              </span>
                             </div>
                           </div>
                           {booking.notes && (
@@ -507,26 +539,38 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
               ) : bookingHistory.length === 0 ? (
                 <div className="text-center py-8">
                   <div className="text-6xl mb-4">🗂️</div>
-                  <h4 className="text-lg font-medium text-gray-900 mb-2">Nessuna prenotazione passata</h4>
+                  <h4 className="text-lg font-medium text-gray-900 mb-2">
+                    Nessuna prenotazione passata
+                  </h4>
                   <p className="text-gray-600">Lo storico delle tue prenotazioni apparirà qui.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {bookingHistory.map((booking) => (
-                    <div key={booking.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200 opacity-75">
+                    <div
+                      key={booking.id}
+                      className="bg-gray-50 rounded-lg p-4 border border-gray-200 opacity-75"
+                    >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center space-x-3 mb-2">
                             <span className="text-lg font-semibold text-gray-600">
                               {booking.courtName || `Campo ${booking.courtId}`}
                             </span>
-                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                              booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                              booking.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              {booking.status === 'confirmed' ? 'Completata' : 
-                               booking.status === 'cancelled' ? 'Cancellata' : booking.status}
+                            <span
+                              className={`px-2 py-1 text-xs font-medium rounded-full ${
+                                booking.status === 'confirmed'
+                                  ? 'bg-green-100 text-green-800'
+                                  : booking.status === 'cancelled'
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {booking.status === 'confirmed'
+                                ? 'Completata'
+                                : booking.status === 'cancelled'
+                                  ? 'Cancellata'
+                                  : booking.status}
                             </span>
                           </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 text-sm text-gray-600">
@@ -534,18 +578,20 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
                               <span className="font-medium">📅 Data:</span>
                               <br />
                               <span className="text-xs sm:text-sm">
-                                {new Date(booking.date).toLocaleDateString('it-IT', { 
-                                  weekday: 'short', 
-                                  day: 'numeric', 
+                                {new Date(booking.date).toLocaleDateString('it-IT', {
+                                  weekday: 'short',
+                                  day: 'numeric',
                                   month: 'short',
-                                  year: 'numeric'
+                                  year: 'numeric',
                                 })}
                               </span>
                             </div>
                             <div>
                               <span className="font-medium">🕐 Orario:</span>
                               <br />
-                              <span className="text-xs sm:text-sm">{booking.time} ({booking.duration}min)</span>
+                              <span className="text-xs sm:text-sm">
+                                {booking.time} ({booking.duration}min)
+                              </span>
                             </div>
                             <div>
                               <span className="font-medium">💰 Prezzo:</span>
@@ -555,7 +601,9 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
                             <div>
                               <span className="font-medium">👥 Giocatori:</span>
                               <br />
-                              <span className="text-xs sm:text-sm">{booking.players?.length || 1}</span>
+                              <span className="text-xs sm:text-sm">
+                                {booking.players?.length || 1}
+                              </span>
                             </div>
                           </div>
                           {booking.notes && (
@@ -577,31 +625,50 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
         {activeTab === 'notifications' && (
           <div className="space-y-6">
             <NotificationSettings className="shadow-sm" />
-            
-            {/* Test Features Native */}
-            <NativeTestButtons />
-            
+
             {/* Info aggiuntive sulle notifiche */}
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-medium text-blue-900 mb-2">💡 Come funzionano le notifiche</h4>
+                  <h4 className="font-medium text-blue-900 mb-2">
+                    💡 Come funzionano le notifiche
+                  </h4>
                   <div className="text-sm text-blue-800 space-y-2">
-                    <p>• <strong>Prenotazioni:</strong> Riceverai conferme immediate quando prenoti un campo</p>
-                    <p>• <strong>Promemoria:</strong> Ti avvisiamo 30 minuti prima dell'inizio partita</p>
-                    <p>• <strong>Tornei:</strong> Aggiornamenti su bracket e risultati dei tornei</p>
-                    <p>• <strong>Classifica:</strong> Notifiche quando la tua posizione cambia</p>
+                    <p>
+                      • <strong>Prenotazioni:</strong> Riceverai conferme immediate quando prenoti
+                      un campo
+                    </p>
+                    <p>
+                      • <strong>Promemoria:</strong> Ti avvisiamo 30 minuti prima dell'inizio
+                      partita
+                    </p>
+                    <p>
+                      • <strong>Tornei:</strong> Aggiornamenti su bracket e risultati dei tornei
+                    </p>
+                    <p>
+                      • <strong>Classifica:</strong> Notifiche quando la tua posizione cambia
+                    </p>
                   </div>
-                  
+
                   <div className="mt-4 p-3 bg-white/50 rounded-lg">
                     <p className="text-sm text-blue-700">
-                      <span className="font-medium">🔒 Privacy:</span> Le notifiche sono gestite localmente. 
-                      Nessun dato personale viene condiviso con server esterni.
+                      <span className="font-medium">🔒 Privacy:</span> Le notifiche sono gestite
+                      localmente. Nessun dato personale viene condiviso con server esterni.
                     </p>
                   </div>
                 </div>
@@ -611,7 +678,7 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
             {/* Statistiche notifiche (se implementato) */}
             <div className="bg-white border border-gray-200 rounded-xl p-6">
               <h4 className="font-medium text-gray-900 mb-4">📊 Statistiche Notifiche</h4>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-50 rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-green-600">0</div>
@@ -622,7 +689,7 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
                   <div className="text-sm text-gray-600">Totali settimana</div>
                 </div>
               </div>
-              
+
               <p className="text-xs text-gray-500 mt-4 text-center">
                 Le statistiche saranno disponibili dopo aver ricevuto le prime notifiche
               </p>
