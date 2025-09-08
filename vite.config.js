@@ -1,7 +1,7 @@
 // vite.config.js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -21,31 +21,41 @@ export default defineConfig({
       '@utils': path.resolve(__dirname, 'src/utils'),
       // (opzionale) se vuoi anche lo stile "@/qualcosa"
       // '@': path.resolve(__dirname, 'src'),
-    }
+    },
   },
   server: {
     headers: {
       'Cross-Origin-Opener-Policy': 'unsafe-none',
-      'Cross-Origin-Embedder-Policy': 'unsafe-none'
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
     },
     cors: {
       origin: ['http://localhost:5173', 'https://*.firebaseapp.com', 'https://*.googleapis.com'],
-      credentials: true
-    }
+      credentials: true,
+    },
   },
   css: {
-    devSourcemap: true
+    devSourcemap: true,
   },
   build: {
     rollupOptions: {
       output: {
+        // Force new hash generation
+        assetFileNames: (assetInfo) => {
+          const ext = assetInfo.name.split('.').at(1);
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+            return `assets/[name]-[hash][extname]`;
+          }
+          return `assets/[name]-[hash][extname]`;
+        },
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
         manualChunks: {
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
           firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
           charts: ['recharts'],
-        }
-      }
-    }
-  }
-})
+        },
+      },
+    },
+  },
+});

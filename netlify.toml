@@ -5,6 +5,17 @@
 [build.environment]
   NODE_VERSION = "18"
 
+[site]
+  name = "play-sport-pro-fixed"
+
+# Force complete cache invalidation
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate, private"
+    Pragma = "no-cache"
+    Expires = "0"
+
 # Gestione MIME types per asset
 [[headers]]
   for = "/assets/*.css"
