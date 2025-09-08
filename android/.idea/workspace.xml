@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="43e179e9-1fa0-4267-a03b-bbf62d6eb73e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../APK_DOCUMENTATION.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../PlaySportPro-debug.apk" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/AndroidProjectSystem.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/migrations.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/capacitor.build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/proguard-rules.pro" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/playsportpro/app/MainActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-land-hdpi/splash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-land-mdpi/splash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-land-xhdpi/splash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-land-xxhdpi/splash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-land-xxxhdpi/splash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-port-hdpi/splash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-port-mdpi/splash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-port-xhdpi/splash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-port-xxhdpi/splash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-port-xxxhdpi/splash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/splash.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_main.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-hdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-ldpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-mdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/ic_launcher_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/strings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/xml/file_paths.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/test/java/com/getcapacitor/myapp/ExampleUnitTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/capacitor.settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/variables.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../build-apk-simple.ps1" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../capacitor.config.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_core.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_core.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_core.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_core.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_geolocation.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_geolocation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_geolocation.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_geolocation.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_local-notifications.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_local-notifications.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_local-notifications.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_local-notifications.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_push-notifications.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_push-notifications.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_push-notifications.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_push-notifications.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_share.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_share.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_share.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/@capacitor_share.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/_metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-DRWLMN53.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-DRWLMN53.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-G3PMV62Z.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-G3PMV62Z.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-G3PMV62Z.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-G3PMV62Z.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-NXBGYFMC.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-NXBGYFMC.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-NXBGYFMC.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-NXBGYFMC.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-NXESFFTV.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-NXESFFTV.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-O4IFIHIT.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/chunk-O4IFIHIT.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_app.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_app.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_app.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_auth.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_auth.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_firestore.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_firestore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_firestore.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/firebase_firestore.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/html-to-image.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/html-to-image.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/html-to-image.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/html-to-image.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react-dom.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react-dom.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react-dom.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react-dom.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react-dom_client.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react-dom_client.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react-dom_client.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react-dom_client.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react-router-dom.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react-router-dom.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react-router-dom.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react-router-dom.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react_jsx-dev-runtime.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react_jsx-dev-runtime.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react_jsx-dev-runtime.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react_jsx-dev-runtime.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react_jsx-runtime.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react_jsx-runtime.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/react_jsx-runtime.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/react_jsx-runtime.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/recharts.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/recharts.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/recharts.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/recharts.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/web-2332KCU3.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/web-2332KCU3.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/web-2332KCU3.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/web-2332KCU3.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/web-3IULUMUK.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/web-3IULUMUK.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/web-3IULUMUK.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/web-3IULUMUK.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/web-MW27MJHN.js" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/web-MW27MJHN.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/.vite/deps/web-MW27MJHN.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/.vite/deps/web-MW27MJHN.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/@capacitor/status-bar/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/@capacitor/status-bar/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/@img/sharp-win32-x64/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/@img/sharp-win32-x64/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/color-string/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/color-string/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/color/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/color/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/sharp/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/sharp/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/simple-swizzle/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/simple-swizzle/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../node_modules/simple-swizzle/node_modules/is-arrayish/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../node_modules/simple-swizzle/node_modules/is-arrayish/README.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=C:\Users\paris\.android\avd\Medium_Phone.avd)]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="32PSYiqoImzHPQXptzwNSBTsNkn" />
+  <component name="ProjectReloadState">
+    <option name="STATE" value="1" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Android App.app.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App" activateToolWindowBeforeRun="false">
+      <module name="android.app" />
+      <option name="ANDROID_RUN_CONFIGURATION_SCHEMA_VERSION" value="1" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="ALLOW_ASSUME_VERIFIED" value="false" />
+      <option name="CLEAR_APP_STORAGE" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="RESTORE_ENABLED" value="false" />
+      <option name="RESTORE_FILE" value="" />
+      <option name="RESTORE_FRESH_INSTALL_ONLY" value="false" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Hybrid>
+      <Java>
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Java>
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="43e179e9-1fa0-4267-a03b-bbf62d6eb73e" name="Changes" comment="" />
+      <created>1757320767250</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1757320767250</updated>
+    </task>
+    <servers />
+  </component>
+</project>
