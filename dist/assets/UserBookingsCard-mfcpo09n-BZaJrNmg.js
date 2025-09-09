@@ -3,22 +3,22 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/cloud-bookings-mfcpc59i-cWaUvgoz.js',
-      'assets/firebase-mfcpc59i-BteSMG94.js',
-      'assets/index-mfcpc59i-PpofX80g.js',
-      'assets/vendor-mfcpc59i-D3F3s8fL.js',
-      'assets/router-mfcpc59i-D7zFZhMN.js',
-      'assets/index-mfcpcauj-BBYtpoEP.css',
-      'assets/bookings-mfcpc59i-CVZv2cx1.js',
+      'assets/cloud-bookings-mfcpo09n-XKyj7U0-.js',
+      'assets/firebase-mfcpo09n-BteSMG94.js',
+      'assets/index-mfcpo09n-Drnu4aiH.js',
+      'assets/vendor-mfcpo09n-D3F3s8fL.js',
+      'assets/router-mfcpo09n-HwcQM0Ja.js',
+      'assets/index-mfcpo7om-BBYtpoEP.css',
+      'assets/bookings-mfcpo09n-vDqXalGW.js',
     ])
 ) => i.map((i) => d[i]);
-import { u as V, _ as L, j as e } from './index-mfcpc59i-PpofX80g.js';
-import { r as d, c as Z, b as H } from './router-mfcpc59i-D7zFZhMN.js';
-import { a as T, B as E, u as J } from './bookings-mfcpc59i-CVZv2cx1.js';
-import { M as Q } from './Modal-mfcpc59i-CwYeunog.js';
-import './vendor-mfcpc59i-D3F3s8fL.js';
-import './firebase-mfcpc59i-BteSMG94.js';
-import './cloud-bookings-mfcpc59i-cWaUvgoz.js';
+import { u as V, _ as L, j as e } from './index-mfcpo09n-Drnu4aiH.js';
+import { r as d, c as Z, b as H } from './router-mfcpo09n-HwcQM0Ja.js';
+import { a as T, B as E, u as J } from './bookings-mfcpo09n-vDqXalGW.js';
+import { M as Q } from './Modal-mfcpo09n-DHlo9sFt.js';
+import './vendor-mfcpo09n-D3F3s8fL.js';
+import './firebase-mfcpo09n-BteSMG94.js';
+import './cloud-bookings-mfcpo09n-XKyj7U0-.js';
 const M = new Map(),
   z = new Map();
 function W(s = {}) {
@@ -133,7 +133,7 @@ async function Y(s) {
   try {
     const { loadActiveUserBookings: r } = await L(
       async () => {
-        const { loadActiveUserBookings: a } = await import('./cloud-bookings-mfcpc59i-cWaUvgoz.js');
+        const { loadActiveUserBookings: a } = await import('./cloud-bookings-mfcpo09n-XKyj7U0-.js');
         return { loadActiveUserBookings: a };
       },
       __vite__mapDeps([0, 1, 2, 3, 4, 5])
@@ -150,7 +150,7 @@ async function ee(s) {
   try {
     const { getUserBookings: r } = await L(
       async () => {
-        const { getUserBookings: a } = await import('./bookings-mfcpc59i-CVZv2cx1.js').then(
+        const { getUserBookings: a } = await import('./bookings-mfcpo09n-vDqXalGW.js').then(
           (u) => u.b
         );
         return { getUserBookings: a };
@@ -494,39 +494,41 @@ function se({
                       children: [
                         s.players &&
                           s.players.length > 1 &&
-                          s.players.slice(1).map((n, v) =>
-                            e.jsxs(
-                              'div',
-                              {
-                                className:
-                                  'flex items-center gap-2 bg-white rounded px-2 py-1 border',
-                                children: [
-                                  e.jsx('div', {
-                                    className:
-                                      'w-6 h-6 rounded-full bg-green-500 flex items-center justify-center',
-                                    children: e.jsx('span', {
-                                      className: 'text-white text-xs font-bold',
-                                      children: v + 2,
+                          s.players
+                            .slice(1)
+                            .map((n, v) =>
+                              e.jsxs(
+                                'div',
+                                {
+                                  className:
+                                    'flex items-center gap-2 bg-white rounded px-2 py-1 border',
+                                  children: [
+                                    e.jsx('div', {
+                                      className:
+                                        'w-6 h-6 rounded-full bg-green-500 flex items-center justify-center',
+                                      children: e.jsx('span', {
+                                        className: 'text-white text-xs font-bold',
+                                        children: v + 2,
+                                      }),
                                     }),
-                                  }),
-                                  e.jsxs('div', {
-                                    className: 'flex-1',
-                                    children: [
-                                      e.jsx('div', {
-                                        className: 'text-sm font-medium text-gray-900',
-                                        children: A(n),
-                                      }),
-                                      e.jsxs('div', {
-                                        className: 'text-xs text-gray-500',
-                                        children: ['Giocatore ', v + 2],
-                                      }),
-                                    ],
-                                  }),
-                                ],
-                              },
-                              v
-                            )
-                          ),
+                                    e.jsxs('div', {
+                                      className: 'flex-1',
+                                      children: [
+                                        e.jsx('div', {
+                                          className: 'text-sm font-medium text-gray-900',
+                                          children: A(n),
+                                        }),
+                                        e.jsxs('div', {
+                                          className: 'text-xs text-gray-500',
+                                          children: ['Giocatore ', v + 2],
+                                        }),
+                                      ],
+                                    }),
+                                  ],
+                                },
+                                v
+                              )
+                            ),
                         (() => {
                           const n = s.players?.length || 1,
                             v = 4 - n;
@@ -738,18 +740,20 @@ const te = H.memo(({ booking: s, onBookingClick: r, courts: a, user: u, T: f }) 
                       e.jsxs('span', {
                         children: [
                           s.bookedBy ? ' + ' : '',
-                          s.players.slice(0, 2).map((i, m) =>
-                            e.jsxs(
-                              'span',
-                              {
-                                children: [
-                                  i.name || i,
-                                  m < s.players.slice(0, 2).length - 1 ? ', ' : '',
-                                ],
-                              },
-                              m
-                            )
-                          ),
+                          s.players
+                            .slice(0, 2)
+                            .map((i, m) =>
+                              e.jsxs(
+                                'span',
+                                {
+                                  children: [
+                                    i.name || i,
+                                    m < s.players.slice(0, 2).length - 1 ? ', ' : '',
+                                  ],
+                                },
+                                m
+                              )
+                            ),
                           s.players.length > 2 &&
                             e.jsxs('span', { children: [' +', s.players.length - 2, ' altri'] }),
                         ],

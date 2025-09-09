@@ -1,9 +1,9 @@
-import { u as Me, j as e, f as Ie, k as Be, t as ze } from './index-mfcpc59i-PpofX80g.js';
-import { r as g, b as ye, c as Ee } from './router-mfcpc59i-D7zFZhMN.js';
-import { S as Pe } from './Section-mfcpc59i-BMO9MkVE.js';
-import { M as Le } from './Modal-mfcpc59i-CwYeunog.js';
-import { a as Z, e as Fe } from './format-mfcpc59i-DAEZv7Mi.js';
-import { g as le, c as be, i as O } from './pricing-mfcpc59i-DMaWA4wL.js';
+import { u as Me, j as e, f as Ie, k as Be, t as ze } from './index-mfcpo09n-Drnu4aiH.js';
+import { r as g, b as ye, c as Ee } from './router-mfcpo09n-HwcQM0Ja.js';
+import { S as Pe } from './Section-mfcpo09n-C_lKTld0.js';
+import { M as Le } from './Modal-mfcpo09n-DHlo9sFt.js';
+import { a as Z, e as Fe } from './format-mfcpo09n-DAEZv7Mi.js';
+import { g as le, c as be, i as O } from './pricing-mfcpo09n-DMaWA4wL.js';
 import {
   loadPublicBookings as He,
   subscribeToPublicBookings as Ae,
@@ -11,9 +11,9 @@ import {
   updateCloudBooking as fe,
   cancelCloudBooking as Re,
   deleteCloudBooking as Oe,
-} from './cloud-bookings-mfcpc59i-cWaUvgoz.js';
-import './vendor-mfcpc59i-D3F3s8fL.js';
-import './firebase-mfcpc59i-BteSMG94.js';
+} from './cloud-bookings-mfcpo09n-XKyj7U0-.js';
+import './vendor-mfcpo09n-D3F3s8fL.js';
+import './firebase-mfcpo09n-BteSMG94.js';
 function Ye(x, b) {
   return (
     x.getFullYear() === b.getFullYear() &&
@@ -545,9 +545,11 @@ function Te({ state: x, setState: b, players: h, playersById: w, T: n }) {
                     className: 'font-bold text-[15px] leading-tight',
                     children: [
                       S.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                      ' - ',
+                      ' -',
+                      ' ',
                       p.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                      ' • ',
+                      ' •',
+                      ' ',
                       Z(r.price),
                     ],
                   }),
@@ -578,7 +580,8 @@ function Te({ state: x, setState: b, players: h, playersById: w, T: n }) {
           e.jsxs('div', {
             className: 'text-[12px] opacity-80 truncate',
             children: [
-              'Prenotato da: ',
+              'Prenotato da:',
+              ' ',
               e.jsx('span', {
                 className: 'font-semibold',
                 children: r.bookedByName || D[0] || '—',

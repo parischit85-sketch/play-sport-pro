@@ -7,14 +7,14 @@ import {
   m as q,
   u as K,
   t as Q,
-} from './index-mfcpc59i-PpofX80g.js';
-import { r as j, c as Z, b as J } from './router-mfcpc59i-D7zFZhMN.js';
-import { S as X } from './Section-mfcpc59i-BMO9MkVE.js';
-import { M as G } from './Modal-mfcpc59i-CwYeunog.js';
-import { b as T } from './names-mfcpc59i-BW9lV2zG.js';
-import { loadBookingsForPlayer as ee } from './cloud-bookings-mfcpc59i-cWaUvgoz.js';
-import './vendor-mfcpc59i-D3F3s8fL.js';
-import './firebase-mfcpc59i-BteSMG94.js';
+} from './index-mfcpo09n-Drnu4aiH.js';
+import { r as j, c as Z, b as J } from './router-mfcpo09n-HwcQM0Ja.js';
+import { S as X } from './Section-mfcpo09n-C_lKTld0.js';
+import { M as G } from './Modal-mfcpo09n-DHlo9sFt.js';
+import { b as T } from './names-mfcpo09n-BW9lV2zG.js';
+import { loadBookingsForPlayer as ee } from './cloud-bookings-mfcpo09n-XKyj7U0-.js';
+import './vendor-mfcpo09n-D3F3s8fL.js';
+import './firebase-mfcpo09n-BteSMG94.js';
 const S = { MEMBER: 'member', NON_MEMBER: 'non-member', GUEST: 'guest', VIP: 'vip' },
   I = {
     GENERAL: 'general',
@@ -259,17 +259,19 @@ function te({ player: a, playersById: t, onEdit: i, onDelete: l, onView: n, onSt
                     e.jsxs('div', {
                       className: 'flex gap-1 flex-wrap',
                       children: [
-                        c.slice(0, 3).map((s, o) =>
-                          e.jsx(
-                            'span',
-                            {
-                              className:
-                                'px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-[11px] break-words max-w-[10rem]',
-                              children: s,
-                            },
-                            o
-                          )
-                        ),
+                        c
+                          .slice(0, 3)
+                          .map((s, o) =>
+                            e.jsx(
+                              'span',
+                              {
+                                className:
+                                  'px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-[11px] break-words max-w-[10rem]',
+                                children: s,
+                              },
+                              o
+                            )
+                          ),
                         c.length > 3 &&
                           e.jsxs('span', {
                             className: `text-[11px] ${d.subtext}`,

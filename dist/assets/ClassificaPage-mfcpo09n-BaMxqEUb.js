@@ -1,6 +1,6 @@
-import { j as e, g as D, f as G, t as T } from './index-mfcpc59i-PpofX80g.js';
-import { r as j, b as V, c as H } from './router-mfcpc59i-D7zFZhMN.js';
-import { S as O } from './Section-mfcpc59i-BMO9MkVE.js';
+import { j as e, g as D, f as G, t as T } from './index-mfcpo09n-Drnu4aiH.js';
+import { r as j, b as V, c as H } from './router-mfcpo09n-HwcQM0Ja.js';
+import { S as O } from './Section-mfcpo09n-C_lKTld0.js';
 import {
   R as _,
   L as X,
@@ -9,10 +9,10 @@ import {
   T as J,
   a as Q,
   b as Z,
-} from './charts-mfcpc59i-CodDicdT.js';
-import { S as K } from './ShareButtons-mfcpc59i-BMXeOcIL.js';
-import './vendor-mfcpc59i-D3F3s8fL.js';
-import './firebase-mfcpc59i-BteSMG94.js';
+} from './charts-mfcpo09n-DPDXeU2L.js';
+import { S as K } from './ShareButtons-mfcpo09n-q5uIhngm.js';
+import './vendor-mfcpo09n-D3F3s8fL.js';
+import './firebase-mfcpo09n-BteSMG94.js';
 function I({ total: o = 0, pos: h = 0, neg: f = 0 }) {
   const n = `Ultime 5: +${Math.round(h)} / -${Math.round(f)} = ${o >= 0 ? '+' : ''}${Math.round(o)}`;
   return o > 0
@@ -54,11 +54,13 @@ function ee({
   const N = j.useMemo(() => {
       if (o.length === 0) return [];
       const c = d ? 8 : 15;
-      return o.slice(-c).map((w, s) => ({
-        index: s + 1,
-        period: d ? `P${s + 1}` : `Partita ${s + 1}`,
-        ...h.reduce((t, a) => ((t[a] = w[a] || 0), t), {}),
-      }));
+      return o
+        .slice(-c)
+        .map((w, s) => ({
+          index: s + 1,
+          period: d ? `P${s + 1}` : `Partita ${s + 1}`,
+          ...h.reduce((t, a) => ((t[a] = w[a] || 0), t), {}),
+        }));
     }, [o, h, d]),
     k = (c) => {
       const g = new Set(y);
@@ -646,53 +648,55 @@ function se({ players: o, matches: h, onOpenStats: f, T: n }) {
                 }),
                 e.jsx('div', {
                   className: 'block md:hidden space-y-1',
-                  children: d.slice(0, 8).map((s, t) =>
-                    e.jsxs(
-                      'div',
-                      {
-                        className:
-                          'flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-800 last:border-b-0',
-                        children: [
-                          e.jsxs('div', {
-                            className: 'flex items-center gap-2',
-                            children: [
-                              e.jsxs('span', {
-                                className:
-                                  'text-xs font-bold text-amber-600 dark:text-amber-400 w-6',
-                                children: ['#', t + 1],
-                              }),
-                              e.jsxs('span', {
-                                className: 'text-sm font-medium text-gray-900 dark:text-gray-100',
-                                children: [
-                                  s.players[0].split(' ').pop(),
-                                  ' & ',
-                                  s.players[1].split(' ').pop(),
-                                ],
-                              }),
-                            ],
-                          }),
-                          e.jsxs('div', {
-                            className: 'flex items-center gap-2 text-xs',
-                            children: [
-                              e.jsxs('span', {
-                                className: 'text-green-600 dark:text-green-400',
-                                children: [s.wins, 'V'],
-                              }),
-                              e.jsxs('span', {
-                                className: 'text-red-600 dark:text-red-400',
-                                children: [s.losses, 'S'],
-                              }),
-                              e.jsxs('span', {
-                                className: 'font-bold text-amber-700 dark:text-amber-300 text-sm',
-                                children: [s.winRate.toFixed(0), '%'],
-                              }),
-                            ],
-                          }),
-                        ],
-                      },
-                      s.key
-                    )
-                  ),
+                  children: d
+                    .slice(0, 8)
+                    .map((s, t) =>
+                      e.jsxs(
+                        'div',
+                        {
+                          className:
+                            'flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-800 last:border-b-0',
+                          children: [
+                            e.jsxs('div', {
+                              className: 'flex items-center gap-2',
+                              children: [
+                                e.jsxs('span', {
+                                  className:
+                                    'text-xs font-bold text-amber-600 dark:text-amber-400 w-6',
+                                  children: ['#', t + 1],
+                                }),
+                                e.jsxs('span', {
+                                  className: 'text-sm font-medium text-gray-900 dark:text-gray-100',
+                                  children: [
+                                    s.players[0].split(' ').pop(),
+                                    ' & ',
+                                    s.players[1].split(' ').pop(),
+                                  ],
+                                }),
+                              ],
+                            }),
+                            e.jsxs('div', {
+                              className: 'flex items-center gap-2 text-xs',
+                              children: [
+                                e.jsxs('span', {
+                                  className: 'text-green-600 dark:text-green-400',
+                                  children: [s.wins, 'V'],
+                                }),
+                                e.jsxs('span', {
+                                  className: 'text-red-600 dark:text-red-400',
+                                  children: [s.losses, 'S'],
+                                }),
+                                e.jsxs('span', {
+                                  className: 'font-bold text-amber-700 dark:text-amber-300 text-sm',
+                                  children: [s.winRate.toFixed(0), '%'],
+                                }),
+                              ],
+                            }),
+                          ],
+                        },
+                        s.key
+                      )
+                    ),
                 }),
                 e.jsx('div', {
                   className: 'hidden md:block overflow-x-auto',
@@ -711,41 +715,43 @@ function se({ players: o, matches: h, onOpenStats: f, T: n }) {
                         }),
                       }),
                       e.jsx('tbody', {
-                        children: d.slice(0, 8).map((s, t) =>
-                          e.jsxs(
-                            'tr',
-                            {
-                              className:
-                                'border-b border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5',
-                              children: [
-                                e.jsx('td', { className: 'py-2 pr-3', children: t + 1 }),
-                                e.jsxs('td', {
-                                  className: 'py-2 pr-3 font-medium text-xs',
-                                  children: [s.players[0], ' & ', s.players[1]],
-                                }),
-                                e.jsxs('td', {
-                                  className: 'py-2 pr-3 text-xs',
-                                  children: [
-                                    e.jsx('span', {
-                                      className: 'text-green-600 dark:text-green-400',
-                                      children: s.wins,
-                                    }),
-                                    '/',
-                                    e.jsx('span', {
-                                      className: 'text-red-600 dark:text-red-400',
-                                      children: s.losses,
-                                    }),
-                                  ],
-                                }),
-                                e.jsxs('td', {
-                                  className: 'py-2 pr-3 font-semibold',
-                                  children: [s.winRate.toFixed(0), '%'],
-                                }),
-                              ],
-                            },
-                            s.key
-                          )
-                        ),
+                        children: d
+                          .slice(0, 8)
+                          .map((s, t) =>
+                            e.jsxs(
+                              'tr',
+                              {
+                                className:
+                                  'border-b border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5',
+                                children: [
+                                  e.jsx('td', { className: 'py-2 pr-3', children: t + 1 }),
+                                  e.jsxs('td', {
+                                    className: 'py-2 pr-3 font-medium text-xs',
+                                    children: [s.players[0], ' & ', s.players[1]],
+                                  }),
+                                  e.jsxs('td', {
+                                    className: 'py-2 pr-3 text-xs',
+                                    children: [
+                                      e.jsx('span', {
+                                        className: 'text-green-600 dark:text-green-400',
+                                        children: s.wins,
+                                      }),
+                                      '/',
+                                      e.jsx('span', {
+                                        className: 'text-red-600 dark:text-red-400',
+                                        children: s.losses,
+                                      }),
+                                    ],
+                                  }),
+                                  e.jsxs('td', {
+                                    className: 'py-2 pr-3 font-semibold',
+                                    children: [s.winRate.toFixed(0), '%'],
+                                  }),
+                                ],
+                              },
+                              s.key
+                            )
+                          ),
                       }),
                     ],
                   }),
@@ -934,49 +940,52 @@ function se({ players: o, matches: h, onOpenStats: f, T: n }) {
                 }),
                 e.jsx('div', {
                   className: 'block md:hidden space-y-1',
-                  children: N.positive.slice(0, 8).map((s, t) =>
-                    e.jsxs(
-                      'div',
-                      {
-                        className:
-                          'flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-800 last:border-b-0',
-                        children: [
-                          e.jsxs('div', {
-                            className: 'flex items-center gap-2',
-                            children: [
-                              e.jsxs('span', {
-                                className:
-                                  'text-xs font-bold text-green-600 dark:text-green-400 w-6',
-                                children: ['#', t + 1],
-                              }),
-                              e.jsx('button', {
-                                className:
-                                  n.link + ' text-sm font-medium text-gray-900 dark:text-gray-100',
-                                onClick: () => f(s.id),
-                                children: s.name,
-                              }),
-                            ],
-                          }),
-                          e.jsxs('div', {
-                            className: 'flex items-center gap-2 text-xs',
-                            children: [
-                              s.streakType === 'win'
-                                ? e.jsxs('span', {
-                                    className: 'text-green-600 dark:text-green-400',
-                                    children: ['🔥', s.currentStreak],
-                                  })
-                                : e.jsx('span', { className: 'text-gray-400', children: '-' }),
-                              e.jsx('span', {
-                                className: 'font-bold text-green-700 dark:text-green-300 text-sm',
-                                children: s.bestWinStreak,
-                              }),
-                            ],
-                          }),
-                        ],
-                      },
-                      s.id
-                    )
-                  ),
+                  children: N.positive
+                    .slice(0, 8)
+                    .map((s, t) =>
+                      e.jsxs(
+                        'div',
+                        {
+                          className:
+                            'flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-800 last:border-b-0',
+                          children: [
+                            e.jsxs('div', {
+                              className: 'flex items-center gap-2',
+                              children: [
+                                e.jsxs('span', {
+                                  className:
+                                    'text-xs font-bold text-green-600 dark:text-green-400 w-6',
+                                  children: ['#', t + 1],
+                                }),
+                                e.jsx('button', {
+                                  className:
+                                    n.link +
+                                    ' text-sm font-medium text-gray-900 dark:text-gray-100',
+                                  onClick: () => f(s.id),
+                                  children: s.name,
+                                }),
+                              ],
+                            }),
+                            e.jsxs('div', {
+                              className: 'flex items-center gap-2 text-xs',
+                              children: [
+                                s.streakType === 'win'
+                                  ? e.jsxs('span', {
+                                      className: 'text-green-600 dark:text-green-400',
+                                      children: ['🔥', s.currentStreak],
+                                    })
+                                  : e.jsx('span', { className: 'text-gray-400', children: '-' }),
+                                e.jsx('span', {
+                                  className: 'font-bold text-green-700 dark:text-green-300 text-sm',
+                                  children: s.bestWinStreak,
+                                }),
+                              ],
+                            }),
+                          ],
+                        },
+                        s.id
+                      )
+                    ),
                 }),
                 e.jsx('div', {
                   className: 'hidden md:block overflow-x-auto',
@@ -995,46 +1004,48 @@ function se({ players: o, matches: h, onOpenStats: f, T: n }) {
                         }),
                       }),
                       e.jsx('tbody', {
-                        children: N.positive.slice(0, 8).map((s, t) =>
-                          e.jsxs(
-                            'tr',
-                            {
-                              className:
-                                'border-b border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5',
-                              children: [
-                                e.jsx('td', { className: 'py-2 pr-3', children: t + 1 }),
-                                e.jsx('td', {
-                                  className: 'py-2 pr-3',
-                                  children: e.jsx('button', {
-                                    className: n.link + ' text-xs',
-                                    onClick: () => f(s.id),
-                                    children: s.name,
+                        children: N.positive
+                          .slice(0, 8)
+                          .map((s, t) =>
+                            e.jsxs(
+                              'tr',
+                              {
+                                className:
+                                  'border-b border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5',
+                                children: [
+                                  e.jsx('td', { className: 'py-2 pr-3', children: t + 1 }),
+                                  e.jsx('td', {
+                                    className: 'py-2 pr-3',
+                                    children: e.jsx('button', {
+                                      className: n.link + ' text-xs',
+                                      onClick: () => f(s.id),
+                                      children: s.name,
+                                    }),
                                   }),
-                                }),
-                                e.jsx('td', {
-                                  className:
-                                    'py-2 pr-3 font-bold text-green-600 dark:text-green-400',
-                                  children: s.bestWinStreak,
-                                }),
-                                e.jsx('td', {
-                                  className: 'py-2 pr-3',
-                                  children:
-                                    s.streakType === 'win'
-                                      ? e.jsxs('span', {
-                                          className:
-                                            'text-xs text-green-600 dark:text-green-400 font-semibold',
-                                          children: ['🔥 +', s.currentStreak],
-                                        })
-                                      : e.jsx('span', {
-                                          className: 'text-xs text-gray-500',
-                                          children: '-',
-                                        }),
-                                }),
-                              ],
-                            },
-                            s.id
-                          )
-                        ),
+                                  e.jsx('td', {
+                                    className:
+                                      'py-2 pr-3 font-bold text-green-600 dark:text-green-400',
+                                    children: s.bestWinStreak,
+                                  }),
+                                  e.jsx('td', {
+                                    className: 'py-2 pr-3',
+                                    children:
+                                      s.streakType === 'win'
+                                        ? e.jsxs('span', {
+                                            className:
+                                              'text-xs text-green-600 dark:text-green-400 font-semibold',
+                                            children: ['🔥 +', s.currentStreak],
+                                          })
+                                        : e.jsx('span', {
+                                            className: 'text-xs text-gray-500',
+                                            children: '-',
+                                          }),
+                                  }),
+                                ],
+                              },
+                              s.id
+                            )
+                          ),
                       }),
                     ],
                   }),
@@ -1076,51 +1087,55 @@ function se({ players: o, matches: h, onOpenStats: f, T: n }) {
                 }),
                 e.jsx('div', {
                   className: 'block md:hidden space-y-1',
-                  children: N.ingiocabili.slice(0, 8).map((s, t) =>
-                    e.jsxs(
-                      'div',
-                      {
-                        className:
-                          'flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-800 last:border-b-0',
-                        children: [
-                          e.jsxs('div', {
-                            className: 'flex items-center gap-2',
-                            children: [
-                              e.jsxs('span', {
-                                className:
-                                  'text-xs font-bold text-purple-600 dark:text-purple-400 w-6',
-                                children: ['#', t + 1],
-                              }),
-                              e.jsx('button', {
-                                className:
-                                  n.link + ' text-sm font-medium text-gray-900 dark:text-gray-100',
-                                onClick: () => f(s.id),
-                                children: s.name,
-                              }),
-                            ],
-                          }),
-                          e.jsxs('div', {
-                            className: 'flex items-center gap-2 text-xs',
-                            children: [
-                              e.jsxs('span', {
-                                className: 'text-green-600 dark:text-green-400',
-                                children: [s.totalWins, 'V'],
-                              }),
-                              e.jsxs('span', {
-                                className: 'text-red-600 dark:text-red-400',
-                                children: [s.totalLosses, 'S'],
-                              }),
-                              e.jsxs('span', {
-                                className: 'font-bold text-purple-700 dark:text-purple-300 text-sm',
-                                children: [s.lossRatio.toFixed(1), '%'],
-                              }),
-                            ],
-                          }),
-                        ],
-                      },
-                      s.id
-                    )
-                  ),
+                  children: N.ingiocabili
+                    .slice(0, 8)
+                    .map((s, t) =>
+                      e.jsxs(
+                        'div',
+                        {
+                          className:
+                            'flex items-center justify-between py-1 border-b border-gray-100 dark:border-gray-800 last:border-b-0',
+                          children: [
+                            e.jsxs('div', {
+                              className: 'flex items-center gap-2',
+                              children: [
+                                e.jsxs('span', {
+                                  className:
+                                    'text-xs font-bold text-purple-600 dark:text-purple-400 w-6',
+                                  children: ['#', t + 1],
+                                }),
+                                e.jsx('button', {
+                                  className:
+                                    n.link +
+                                    ' text-sm font-medium text-gray-900 dark:text-gray-100',
+                                  onClick: () => f(s.id),
+                                  children: s.name,
+                                }),
+                              ],
+                            }),
+                            e.jsxs('div', {
+                              className: 'flex items-center gap-2 text-xs',
+                              children: [
+                                e.jsxs('span', {
+                                  className: 'text-green-600 dark:text-green-400',
+                                  children: [s.totalWins, 'V'],
+                                }),
+                                e.jsxs('span', {
+                                  className: 'text-red-600 dark:text-red-400',
+                                  children: [s.totalLosses, 'S'],
+                                }),
+                                e.jsxs('span', {
+                                  className:
+                                    'font-bold text-purple-700 dark:text-purple-300 text-sm',
+                                  children: [s.lossRatio.toFixed(1), '%'],
+                                }),
+                              ],
+                            }),
+                          ],
+                        },
+                        s.id
+                      )
+                    ),
                 }),
                 e.jsx('div', {
                   className: 'hidden md:block overflow-x-auto',
@@ -1139,46 +1154,48 @@ function se({ players: o, matches: h, onOpenStats: f, T: n }) {
                         }),
                       }),
                       e.jsx('tbody', {
-                        children: N.ingiocabili.slice(0, 8).map((s, t) =>
-                          e.jsxs(
-                            'tr',
-                            {
-                              className:
-                                'border-b border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5',
-                              children: [
-                                e.jsx('td', { className: 'py-2 pr-3', children: t + 1 }),
-                                e.jsx('td', {
-                                  className: 'py-2 pr-3',
-                                  children: e.jsx('button', {
-                                    className: n.link + ' text-xs',
-                                    onClick: () => f(s.id),
-                                    children: s.name,
+                        children: N.ingiocabili
+                          .slice(0, 8)
+                          .map((s, t) =>
+                            e.jsxs(
+                              'tr',
+                              {
+                                className:
+                                  'border-b border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5',
+                                children: [
+                                  e.jsx('td', { className: 'py-2 pr-3', children: t + 1 }),
+                                  e.jsx('td', {
+                                    className: 'py-2 pr-3',
+                                    children: e.jsx('button', {
+                                      className: n.link + ' text-xs',
+                                      onClick: () => f(s.id),
+                                      children: s.name,
+                                    }),
                                   }),
-                                }),
-                                e.jsxs('td', {
-                                  className:
-                                    'py-2 pr-3 font-bold text-purple-600 dark:text-purple-400',
-                                  children: [s.lossRatio.toFixed(1), '%'],
-                                }),
-                                e.jsxs('td', {
-                                  className: 'py-2 pr-3 text-xs',
-                                  children: [
-                                    e.jsx('span', {
-                                      className: 'text-green-600 dark:text-green-400',
-                                      children: s.totalWins,
-                                    }),
-                                    '/',
-                                    e.jsx('span', {
-                                      className: 'text-red-600 dark:text-red-400',
-                                      children: s.totalLosses,
-                                    }),
-                                  ],
-                                }),
-                              ],
-                            },
-                            s.id
-                          )
-                        ),
+                                  e.jsxs('td', {
+                                    className:
+                                      'py-2 pr-3 font-bold text-purple-600 dark:text-purple-400',
+                                    children: [s.lossRatio.toFixed(1), '%'],
+                                  }),
+                                  e.jsxs('td', {
+                                    className: 'py-2 pr-3 text-xs',
+                                    children: [
+                                      e.jsx('span', {
+                                        className: 'text-green-600 dark:text-green-400',
+                                        children: s.totalWins,
+                                      }),
+                                      '/',
+                                      e.jsx('span', {
+                                        className: 'text-red-600 dark:text-red-400',
+                                        children: s.totalLosses,
+                                      }),
+                                    ],
+                                  }),
+                                ],
+                              },
+                              s.id
+                            )
+                          ),
                       }),
                     ],
                   }),
