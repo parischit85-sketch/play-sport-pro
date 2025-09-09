@@ -3,33 +3,33 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/LoginPage-mfcpx05w-YtWnJNhL.js',
-      'assets/router-mfcpx05w-B6EAHESI.js',
-      'assets/vendor-mfcpx05w-D3F3s8fL.js',
-      'assets/Section-mfcpx05w-C4AGls91.js',
-      'assets/firebase-mfcpx05w-BteSMG94.js',
-      'assets/DashboardPage-mfcpx05w-BpeqwjRp.js',
-      'assets/ClassificaPage-mfcpx05w-DkdjTsOT.js',
-      'assets/charts-mfcpx05w-NWl3yTf8.js',
-      'assets/ShareButtons-mfcpx05w-CfLf4RiF.js',
-      'assets/StatsPage-mfcpx05w-DKUels-l.js',
-      'assets/Modal-mfcpx05w-MGNFh50T.js',
-      'assets/names-mfcpx05w-BW9lV2zG.js',
-      'assets/BookingPage-mfcpx05w-BaTsLvzs.js',
-      'assets/bookings-mfcpx05w-CKrSQ_LE.js',
-      'assets/cloud-bookings-mfcpx05w-BNqF8YtB.js',
-      'assets/pricing-mfcpx05w-DMaWA4wL.js',
-      'assets/PlayersPage-mfcpx05w-BO0MzDrU.js',
-      'assets/MatchesPage-mfcpx05w-B15LH4lp.js',
-      'assets/TournamentsPage-mfcpx05w-D5Cm4qxg.js',
-      'assets/ProfilePage-mfcpx05w-kUbrlt7V.js',
-      'assets/Extra-mfcpx05w-DOwxrbmu.js',
-      'assets/format-mfcpx05w-DAEZv7Mi.js',
-      'assets/ExtraPage-mfcpx05w-BgzEqBjv.js',
-      'assets/AdminBookingsPage-mfcpx05w-CuZmwUYh.js',
+      'assets/LoginPage-mfcr7y8l-D8XmUafj.js',
+      'assets/router-mfcr7y8l-COlwQr_J.js',
+      'assets/vendor-mfcr7y8l-D3F3s8fL.js',
+      'assets/Section-mfcr7y8l-B1zoYEzP.js',
+      'assets/firebase-mfcr7y8l-BteSMG94.js',
+      'assets/DashboardPage-mfcr7y8l-CDVNisCh.js',
+      'assets/ClassificaPage-mfcr7y8l-B0rXbzUW.js',
+      'assets/charts-mfcr7y8l-CP5mmXPT.js',
+      'assets/ShareButtons-mfcr7y8l-CPOY-04m.js',
+      'assets/StatsPage-mfcr7y8l-B8R-2MPW.js',
+      'assets/Modal-mfcr7y8l-B2-ER630.js',
+      'assets/names-mfcr7y8l-BW9lV2zG.js',
+      'assets/BookingPage-mfcr7y8l-a08MaW2C.js',
+      'assets/bookings-mfcr7y8l-C5rrMLag.js',
+      'assets/cloud-bookings-mfcr7y8l-eG9BgzuM.js',
+      'assets/pricing-mfcr7y8l-DMaWA4wL.js',
+      'assets/PlayersPage-mfcr7y8l-BhvSuHbp.js',
+      'assets/MatchesPage-mfcr7y8l-BgUd8g8D.js',
+      'assets/TournamentsPage-mfcr7y8l-LGxb7vGo.js',
+      'assets/ProfilePage-mfcr7y8l-CGWUVgrB.js',
+      'assets/Extra-mfcr7y8l-g8fW4iEC.js',
+      'assets/format-mfcr7y8l-DAEZv7Mi.js',
+      'assets/ExtraPage-mfcr7y8l-B9EA2cqF.js',
+      'assets/AdminBookingsPage-mfcr7y8l-SFNU6CDp.js',
     ])
 ) => i.map((i) => d[i]);
-import { r as Te, a as ze } from './vendor-mfcpx05w-D3F3s8fL.js';
+import { r as Te, a as ze } from './vendor-mfcr7y8l-D3F3s8fL.js';
 import {
   r as x,
   b as P,
@@ -40,7 +40,7 @@ import {
   B as $e,
   d as Fe,
   e as _,
-} from './router-mfcpx05w-B6EAHESI.js';
+} from './router-mfcr7y8l-COlwQr_J.js';
 import {
   g as me,
   a as fe,
@@ -67,7 +67,7 @@ import {
   t as et,
   v as tt,
   w as st,
-} from './firebase-mfcpx05w-BteSMG94.js';
+} from './firebase-mfcr7y8l-BteSMG94.js';
 (function () {
   const s = document.createElement('link').relList;
   if (s && s.supports && s.supports('modulepreload')) return;
@@ -2217,50 +2217,50 @@ function Ft() {
   });
 }
 const Ut = P.lazy(() =>
-    B(() => import('./LoginPage-mfcpx05w-YtWnJNhL.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
+    B(() => import('./LoginPage-mfcr7y8l-D8XmUafj.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
   ),
   Vt = P.lazy(() =>
-    B(() => import('./DashboardPage-mfcpx05w-BpeqwjRp.js'), __vite__mapDeps([5, 1, 2, 4]))
+    B(() => import('./DashboardPage-mfcr7y8l-CDVNisCh.js'), __vite__mapDeps([5, 1, 2, 4]))
   ),
   Ht = P.lazy(() =>
-    B(() => import('./ClassificaPage-mfcpx05w-DkdjTsOT.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
+    B(() => import('./ClassificaPage-mfcr7y8l-B0rXbzUW.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
   ),
   qt = P.lazy(() =>
     B(
-      () => import('./StatsPage-mfcpx05w-DKUels-l.js'),
+      () => import('./StatsPage-mfcr7y8l-B8R-2MPW.js'),
       __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4])
     )
   ),
   Gt = P.lazy(() =>
     B(
-      () => import('./BookingPage-mfcpx05w-BaTsLvzs.js'),
+      () => import('./BookingPage-mfcr7y8l-a08MaW2C.js'),
       __vite__mapDeps([12, 1, 2, 13, 14, 4, 15])
     )
   ),
   Jt = P.lazy(() =>
     B(
-      () => import('./PlayersPage-mfcpx05w-BO0MzDrU.js'),
+      () => import('./PlayersPage-mfcr7y8l-BhvSuHbp.js'),
       __vite__mapDeps([16, 1, 2, 3, 10, 11, 14, 4])
     )
   ),
   Kt = P.lazy(() =>
-    B(() => import('./MatchesPage-mfcpx05w-B15LH4lp.js'), __vite__mapDeps([17, 1, 2, 3, 11, 4]))
+    B(() => import('./MatchesPage-mfcr7y8l-BgUd8g8D.js'), __vite__mapDeps([17, 1, 2, 3, 11, 4]))
   ),
   Yt = P.lazy(() =>
-    B(() => import('./TournamentsPage-mfcpx05w-D5Cm4qxg.js'), __vite__mapDeps([18, 1, 2, 3, 4]))
+    B(() => import('./TournamentsPage-mfcr7y8l-LGxb7vGo.js'), __vite__mapDeps([18, 1, 2, 3, 4]))
   ),
   Xt = P.lazy(() =>
     B(
-      () => import('./ProfilePage-mfcpx05w-kUbrlt7V.js'),
+      () => import('./ProfilePage-mfcr7y8l-CGWUVgrB.js'),
       __vite__mapDeps([19, 1, 2, 3, 10, 20, 21, 14, 4])
     )
   ),
   Zt = P.lazy(() =>
-    B(() => import('./ExtraPage-mfcpx05w-BgzEqBjv.js'), __vite__mapDeps([22, 1, 2, 20, 3, 21, 4]))
+    B(() => import('./ExtraPage-mfcr7y8l-B9EA2cqF.js'), __vite__mapDeps([22, 1, 2, 20, 3, 21, 4]))
   ),
   Qt = P.lazy(() =>
     B(
-      () => import('./AdminBookingsPage-mfcpx05w-CuZmwUYh.js'),
+      () => import('./AdminBookingsPage-mfcr7y8l-SFNU6CDp.js'),
       __vite__mapDeps([23, 1, 2, 3, 10, 21, 15, 14, 4])
     )
   );

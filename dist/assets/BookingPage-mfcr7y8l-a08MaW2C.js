@@ -1,16 +1,16 @@
-import { j as e, u as Oe, f as Ie, t as Re } from './index-mfcpx05w-A0-6VM8D.js';
-import { r as o, b as _e } from './router-mfcpx05w-B6EAHESI.js';
-import { s as Le, i as K, w as A, B as me, c as Fe } from './bookings-mfcpx05w-CKrSQ_LE.js';
-import { i as J, c as z, g as Ge } from './pricing-mfcpx05w-DMaWA4wL.js';
+import { j as e, u as Ie, f as Re, t as _e } from './index-mfcr7y8l-vzxctmKg.js';
+import { r as o, b as Le } from './router-mfcr7y8l-COlwQr_J.js';
+import { s as Fe, i as K, w as A, a as J, B as Z, c as Ge } from './bookings-mfcr7y8l-C5rrMLag.js';
+import { i as ee, c as E, g as Ue } from './pricing-mfcr7y8l-DMaWA4wL.js';
 import {
-  subscribeToPublicBookings as Ue,
+  subscribeToPublicBookings as We,
   getPublicBookings as O,
-  loadActiveUserBookings as We,
-} from './cloud-bookings-mfcpx05w-BNqF8YtB.js';
-import './vendor-mfcpx05w-D3F3s8fL.js';
-import './firebase-mfcpx05w-BteSMG94.js';
+  loadActiveUserBookings as Qe,
+} from './cloud-bookings-mfcr7y8l-eG9BgzuM.js';
+import './vendor-mfcr7y8l-D3F3s8fL.js';
+import './firebase-mfcr7y8l-BteSMG94.js';
 const I = { xs: 'p-1', sm: 'p-2', md: 'p-4', elementMb: 'mb-3' },
-  j = {
+  v = {
     h1: 'text-3xl font-bold',
     h2: 'text-2xl font-bold',
     h3: 'text-xl font-semibold',
@@ -26,23 +26,23 @@ const I = { xs: 'p-1', sm: 'p-2', md: 'p-4', elementMb: 'mb-3' },
     grid3: 'grid grid-cols-1 md:grid-cols-3',
     grid4: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
   },
-  Z = {
+  te = {
     success: 'text-emerald-500',
     error: 'text-rose-500',
     warning: 'text-amber-500',
     info: 'text-blue-500',
   },
-  De = {
+  Ce = {
     card: 'shadow-[0_0_0_1px_rgba(0,0,0,0.02)] shadow-sm',
     cardHover: 'shadow-[0_0_0_1px_rgba(0,0,0,0.04)] shadow-md',
   },
-  ee = { md: 'rounded-md', xl: 'rounded-xl', xxl: 'rounded-2xl' },
-  Qe = { normal: 'transition-all duration-200 ease-in-out' },
+  se = { md: 'rounded-md', xl: 'rounded-xl', xxl: 'rounded-2xl' },
+  Ye = { normal: 'transition-all duration-200 ease-in-out' },
   R = {
-    card: (s) => `${ee.xxl} ${s.cardBg} ${s.border} ${I.md} ${De.card}`,
-    cardHover: (s) => `${ee.xxl} ${s.cardBg} ${s.border} ${I.md} ${De.cardHover} ${Qe.normal}`,
+    card: (s) => `${se.xxl} ${s.cardBg} ${s.border} ${I.md} ${Ce.card}`,
+    cardHover: (s) => `${se.xxl} ${s.cardBg} ${s.border} ${I.md} ${Ce.cardHover} ${Ye.normal}`,
     sectionHeader: (s) => `${B.flexBetween} ${I.elementMb}`,
-    sectionTitle: (s) => `${j.h3} ${s.neonText}`,
+    sectionTitle: (s) => `${v.h3} ${s.neonText}`,
     btnVariants: {
       primary: (s) => s.btnPrimary,
       ghost: (s) => s.btnGhost,
@@ -50,11 +50,11 @@ const I = { xs: 'p-1', sm: 'p-2', md: 'p-4', elementMb: 'mb-3' },
     },
     input: (s) => s.input,
     statCard: (s) => `${R.card(s)} text-center`,
-    listItem: (s) => `${ee.xl} ${s.cardBg} ${s.border} ${I.sm} ${B.flexBetween}`,
-    badge: (s) => `inline-flex items-center ${I.xs} ${ee.md} ${j.bodyXs} ${j.medium}`,
+    listItem: (s) => `${se.xl} ${s.cardBg} ${s.border} ${I.sm} ${B.flexBetween}`,
+    badge: (s) => `inline-flex items-center ${I.xs} ${se.md} ${v.bodyXs} ${v.medium}`,
     skeleton: 'animate-pulse bg-gray-200 rounded',
   };
-function Ye(s) {
+function qe(s) {
   return {
     card: R.card(s),
     cardHover: R.cardHover(s),
@@ -64,34 +64,34 @@ function Ye(s) {
     flexCenter: B.flexCenter,
     grid3: B.grid3,
     grid4: B.grid4,
-    h1: `${j.h1} ${s.text}`,
-    h2: `${j.h2} ${s.text}`,
-    h3: `${j.h3} ${s.text}`,
-    body: `${j.body} ${s.text}`,
-    bodySm: `${j.bodySm} ${s.subtext}`,
-    label: `${j.label} ${s.subtext}`,
+    h1: `${v.h1} ${s.text}`,
+    h2: `${v.h2} ${s.text}`,
+    h3: `${v.h3} ${s.text}`,
+    body: `${v.body} ${s.text}`,
+    bodySm: `${v.bodySm} ${s.subtext}`,
+    label: `${v.label} ${s.subtext}`,
     btnPrimary: s.btnPrimary,
     btnGhost: s.btnGhost,
     btnGhostSm: s.btnGhostSm,
     input: s.input,
-    success: Z.success,
-    error: Z.error,
-    warning: Z.warning,
-    info: Z.info,
+    success: te.success,
+    error: te.error,
+    warning: te.warning,
+    info: te.info,
   };
 }
-function qe({ user: s, T: k, state: S, setState: _ }) {
-  Ye(k);
-  const x = S?.bookingConfig || {
+function Ve({ user: s, T: w, state: S, setState: _ }) {
+  qe(w);
+  const h = S?.bookingConfig || {
       slotMinutes: 30,
       dayStartHour: 8,
       dayEndHour: 23,
       defaultDurations: [60, 90, 120],
       addons: {},
     },
-    u = Array.isArray(S?.courts) ? S.courts : [],
+    b = Array.isArray(S?.courts) ? S.courts : [],
     $ = o.useMemo(() => {
-      let t = x?.defaultDurations;
+      let t = h?.defaultDurations;
       if (
         (typeof t == 'string' &&
           (t = t
@@ -107,44 +107,44 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
         .map(Number)
         .sort((a, r) => a - r);
       return n.length ? n : [60, 90, 120];
-    }, [x?.defaultDurations]),
-    xe = o.useRef(null),
-    te = o.useRef(null),
-    [i, ue] = o.useState(''),
-    [l, se] = o.useState(''),
-    [c, L] = o.useState(null),
-    [h, ae] = o.useState(60),
-    [F, Ce] = o.useState(!0),
-    [P, he] = o.useState(!1),
-    [w, ne] = o.useState(!1),
-    [Ve, Ae] = o.useState(''),
+    }, [h?.defaultDurations]),
+    ue = o.useRef(null),
+    ae = o.useRef(null),
+    [i, he] = o.useState(''),
+    [d, ie] = o.useState(''),
+    [m, L] = o.useState(null),
+    [x, ne] = o.useState(60),
+    [F, Ae] = o.useState(!0),
+    [P, be] = o.useState(!1),
+    [k, re] = o.useState(!1),
     [Xe, Be] = o.useState(''),
-    [y, ie] = o.useState([]),
-    [G, re] = o.useState(''),
-    [be, D] = o.useState(!1),
-    [Pe, ge] = o.useState(!1),
-    [Me, fe] = o.useState(!1),
+    [Ke, Pe] = o.useState(''),
+    [j, oe] = o.useState([]),
+    [G, le] = o.useState(''),
+    [ge, D] = o.useState(!1),
+    [Te, fe] = o.useState(!1),
+    [He, pe] = o.useState(!1),
     [f, C] = o.useState([]),
-    [Ke, U] = o.useState([]),
-    [Je, W] = o.useState([]),
-    [Q, oe] = o.useState(!1),
-    [le, N] = o.useState(null);
+    [Je, U] = o.useState([]),
+    [Ze, W] = o.useState([]),
+    [Q, de] = o.useState(!1),
+    [ce, N] = o.useState(null);
   (o.useEffect(() => {
-    $.includes(h) || ae($[0] || 60);
+    $.includes(x) || ne($[0] || 60);
   }, [$.join(',')]),
     o.useEffect(() => {
-      (Le(!!s?.uid, s),
+      (Fe(!!s?.uid, s),
         (async () => {
           try {
             const n = await O();
-            (C(n), s ? await pe() : (U([]), W([])));
+            (C(n), s ? await ye() : (U([]), W([])));
           } catch {}
         })());
     }, [s]),
     o.useEffect(() => {
       let t;
       try {
-        t = Ue((n) => {
+        t = We((n) => {
           const a = (n || []).map((r) => ({
             id: r.id,
             courtId: r.courtId,
@@ -163,21 +163,21 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
         typeof t == 'function' && t();
       };
     }, []));
-  const pe = async () => {
+  const ye = async () => {
       if (!s) {
         (U([]), W([]));
         return;
       }
       try {
         if (s.uid) {
-          const t = await We(s.uid);
+          const t = await Qe(s.uid);
           (W(t), U(t));
         }
       } catch {
         (U([]), W([]));
       }
     },
-    ye = (t, n = 100) => {
+    je = (t, n = 100) => {
       t?.current &&
         setTimeout(() => {
           t.current &&
@@ -190,32 +190,32 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
         n = t.getFullYear(),
         a = String(t.getMonth() + 1).padStart(2, '0'),
         r = String(t.getDate()).padStart(2, '0');
-      ue(`${n}-${a}-${r}`);
+      he(`${n}-${a}-${r}`);
     }
   }, [i]),
     o.useEffect(() => {
-      c && !c.hasHeating && w && ne(!1);
-    }, [c, w]),
+      m && !m.hasHeating && k && re(!1);
+    }, [m, k]),
     o.useEffect(() => {
-      l &&
-        te.current &&
+      d &&
+        ae.current &&
         setTimeout(() => {
-          ye(te, 50);
+          je(ae, 50);
         }, 100);
-    }, [l]));
-  const Y = o.useCallback((t, n, a) => K(t, n, a, h, f), [h, f]),
-    He = o.useMemo(() => {
+    }, [d]));
+  const Y = o.useCallback((t, n, a) => K(t, n, a, x, f), [x, f]),
+    Me = o.useMemo(() => {
       const t = [],
         n = ['DOM', 'LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB'];
       for (let a = 0; a < 7; a++) {
         const r = new Date();
         r.setDate(r.getDate() + a);
-        const m = r.getFullYear(),
-          d = String(r.getMonth() + 1).padStart(2, '0'),
-          b = String(r.getDate()).padStart(2, '0'),
-          g = `${m}-${d}-${b}`;
+        const l = r.getFullYear(),
+          g = String(r.getMonth() + 1).padStart(2, '0'),
+          c = String(r.getDate()).padStart(2, '0'),
+          u = `${l}-${g}-${c}`;
         t.push({
-          date: g,
+          date: u,
           dayName: n[r.getDay()],
           dayNumber: r.getDate(),
           monthName: r.toLocaleDateString('it-IT', { month: 'short' }),
@@ -224,159 +224,169 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
       }
       return t;
     }, []),
-    je = o.useMemo(() => {
+    Ne = o.useMemo(() => {
       const t = [],
-        n = x.dayStartHour || 8,
-        a = x.dayEndHour || 23,
-        r = x.slotMinutes || 30,
-        m = new Date(),
-        d = new Date().toISOString().split('T')[0];
-      for (let b = n; b < a; b++)
-        for (let g = 0; g < 60; g += r) {
-          const v = `${String(b).padStart(2, '0')}:${String(g).padStart(2, '0')}`;
-          if (i === d && new Date(`${i}T${v}:00`) <= m) continue;
-          const p = new Date(`${i}T${v}:00`);
+        n = h.dayStartHour || 8,
+        a = h.dayEndHour || 23,
+        r = h.slotMinutes || 30,
+        l = new Date(),
+        g = new Date().toISOString().split('T')[0];
+      for (let c = n; c < a; c++)
+        for (let u = 0; u < 60; u += r) {
+          const y = `${String(c).padStart(2, '0')}:${String(u).padStart(2, '0')}`;
+          if (i === g && new Date(`${i}T${y}:00`) <= l) continue;
+          const p = new Date(`${i}T${y}:00`);
           let H = !1,
-            E = !1,
+            M = !1,
             V = !1,
-            de = 0,
-            Se = 0;
-          for (const X of u) {
-            if (!J(p, X.id, u)) continue;
-            if (((H = !0), !Y(X.id, i, v))) {
+            me = 0,
+            $e = 0;
+          for (const X of b) {
+            if (!ee(p, X.id, b)) continue;
+            if (((H = !0), !Y(X.id, i, y))) {
               V = !0;
               continue;
             }
-            ((E = !0), de++, A(X.id, i, v, h, f) && Se++);
+            ((M = !0), me++, A(X.id, i, y, x, f) && $e++);
           }
-          const $e = de > 0 && Se === de,
-            ce = H && E && !$e;
-          let T = null;
-          (ce ||
+          const De = me > 0 && $e === me,
+            xe = H && M && !De;
+          let z = null;
+          (xe ||
             (H
-              ? V && !E
-                ? (T = 'occupied')
-                : $e
-                  ? (T = 'hole')
-                  : (T = 'occupied')
-              : (T = 'out-of-schedule')),
-            (!F || ce) &&
+              ? V && !M
+                ? (z = 'occupied')
+                : De
+                  ? (z = 'hole')
+                  : (z = 'occupied')
+              : (z = 'out-of-schedule')),
+            (!F || xe) &&
               t.push({
-                time: v,
-                isAvailable: ce,
+                time: y,
+                isAvailable: xe,
                 availableCourts: 0,
-                totalCourts: u.length,
-                reason: T,
+                totalCourts: b.length,
+                reason: z,
               }));
         }
       return t;
-    }, [i, h, f, u, Y, F, x]),
-    Ee = (t, n) => (n && Ge(n, x, t, u).isPromo) || !1,
-    Ne = async () => {
+    }, [i, x, f, b, Y, F, h]),
+    ze = (t, n) => (n && Ue(n, h, t, b).isPromo) || !1,
+    ve = async () => {
       if (!s) {
         N({ type: 'error', text: 'Devi effettuare il login per prenotare un campo' });
         return;
       }
-      if (!i || !l || !c) {
+      if (!i || !d || !m) {
         N({ type: 'error', text: 'Seleziona data, orario e campo' });
         return;
       }
-      if (!K(c.id, i, l, h, f)) {
-        (fe(!0),
+      if (!K(m.id, i, d, x, f)) {
+        (pe(!0),
           setTimeout(() => {
-            fe(!1);
+            pe(!1);
           }, 3e3));
-        const n = await O();
-        C(n);
+        const r = await O();
+        C(r);
         return;
       }
-      if (A(c.id, i, l, h, f)) {
+      const n = A(m.id, i, d, x, f),
+        a = J(m.id, i, d, x, f);
+      if (n && !a) {
         N({
           type: 'error',
           text: 'Questa scelta crea un buco di 30 minuti. Seleziona alle :00 o :30 adiacente, oppure sposta di 30 minuti.',
         });
         return;
       }
-      (oe(!0), N(null));
+      (n &&
+        a &&
+        N({
+          type: 'info',
+          text: 'Deroga applicata: Orario intrappolato tra prenotazioni - permessa creazione buco.',
+        }),
+        de(!0),
+        N(null));
       try {
-        const n = {
-            courtId: c.id,
-            courtName: c.name,
+        const r = {
+            courtId: m.id,
+            courtName: m.name,
             date: i,
-            time: l,
-            duration: h,
+            time: d,
+            duration: x,
             lighting: !!P,
-            heating: !!w,
-            price: z(new Date(`${i}T${l}:00`), h, x, { lighting: !!P, heating: !!w }, c.id, u),
+            heating: !!k,
+            price: E(new Date(`${i}T${d}:00`), x, h, { lighting: !!P, heating: !!k }, m.id, b),
             userPhone: '',
             notes: '',
-            players: [s.displayName || s.email, ...y.map((m) => m.name)],
+            players: [s.displayName || s.email, ...j.map((c) => c.name)],
           },
-          a = await Fe(n, s);
-        if (!a) {
+          l = await Ge(r, s);
+        if (!l) {
           (N({
             type: 'error',
             text: 'Errore nel salvare la prenotazione. Potrebbe essere già stata prenotata da qualcun altro.',
           }),
-            oe(!1));
-          const m = await O();
-          C(m);
+            de(!1));
+          const c = await O();
+          C(c);
           return;
         }
-        const r = await O();
-        if ((C(r), await pe(), S && _)) {
-          const m = {
-            id: a.id,
-            courtId: a.courtId,
-            start: new Date(`${a.date}T${a.time}:00`).toISOString(),
-            duration: a.duration,
+        const g = await O();
+        if ((C(g), await ye(), S && _)) {
+          const c = {
+            id: l.id,
+            courtId: l.courtId,
+            start: new Date(`${l.date}T${l.time}:00`).toISOString(),
+            duration: l.duration,
             players: [],
-            playerNames: y.map((d) => d.name),
-            guestNames: y.map((d) => d.name),
-            price: a.price,
-            note: a.notes || '',
-            bookedByName: a.bookedBy || '',
-            addons: { lighting: !!a.lighting, heating: !!a.heating },
+            playerNames: j.map((u) => u.name),
+            guestNames: j.map((u) => u.name),
+            price: l.price,
+            note: l.notes || '',
+            bookedByName: l.bookedBy || '',
+            addons: { lighting: !!l.lighting, heating: !!l.heating },
             status: 'booked',
             createdAt: Date.now(),
           };
-          _((d) => ({ ...d, bookings: [...(d.bookings || []), m] }));
+          _((u) => ({ ...u, bookings: [...(u.bookings || []), c] }));
         }
-        (ge(!0),
+        (fe(!0),
           setTimeout(() => {
-            ge(!1);
+            fe(!1);
           }, 3e3),
-          se(''),
+          ie(''),
           L(null),
-          he(!1),
-          ne(!1),
-          Ae(''),
+          be(!1),
+          re(!1),
           Be(''),
-          ie([]),
-          re(''),
+          Pe(''),
+          oe([]),
+          le(''),
           D(!1),
           N({
             type: 'success',
-            text: `Prenotazione confermata! Campo ${c?.name} il ${new Date(i).toLocaleDateString('it-IT')} alle ${l}`,
+            text: `Prenotazione confermata! Campo ${m?.name} il ${new Date(i).toLocaleDateString('it-IT')} alle ${d}`,
           }));
       } catch {
         N({ type: 'error', text: 'Errore durante la prenotazione. Riprova.' });
       } finally {
-        oe(!1);
+        de(!1);
       }
     },
-    Te = async (t) => {
+    Ee = async (t) => {
       if (!t.isAvailable) return;
       try {
         const a = await O();
         if (
           (C(a),
-          !u.some((m) => {
-            const d = new Date(`${i}T${t.time}:00`),
-              b = J(d, m.id, u),
-              g = K(m.id, i, t.time, h, a),
-              v = A(m.id, i, t.time, h, a);
-            return b && g && !v;
+          !b.some((l) => {
+            const g = new Date(`${i}T${t.time}:00`),
+              c = ee(g, l.id, b),
+              u = K(l.id, i, t.time, x, a),
+              y = A(l.id, i, t.time, x, a),
+              p = J(l.id, i, t.time, x, a);
+            return c && u && (!y || p);
           }))
         ) {
           N({
@@ -388,59 +398,60 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
       } catch (a) {
         console.warn("Errore nell'aggiornamento delle prenotazioni:", a);
       }
-      se(t.time);
-      const n = u.filter((a) => {
+      ie(t.time);
+      const n = b.filter((a) => {
         const r = new Date(`${i}T${t.time}:00`),
-          m = J(r, a.id, u),
-          d = Y(a.id, i, t.time),
-          b = A(a.id, i, t.time, h, f);
-        return m && d && !b;
+          l = ee(r, a.id, b),
+          g = Y(a.id, i, t.time),
+          c = A(a.id, i, t.time, x, f),
+          u = J(a.id, i, t.time, x, f);
+        return l && g && (!c || u);
       });
       n.length === 1 && (L(n[0]), D(!0));
     },
-    ve = () => {
-      G.trim() && y.length < 3 && (ie([...y, { id: Date.now(), name: G.trim() }]), re(''));
+    we = () => {
+      G.trim() && j.length < 3 && (oe([...j, { id: Date.now(), name: G.trim() }]), le(''));
     },
-    ze = (t) => {
-      ie(y.filter((n) => n.id !== t));
+    Oe = (t) => {
+      oe(j.filter((n) => n.id !== t));
     },
-    q = c && i && l ? z(new Date(`${i}T${l}:00`), h, x, { lighting: P, heating: w }, c.id, u) : 0,
-    we = o.useCallback(
+    q = m && i && d ? E(new Date(`${i}T${d}:00`), x, h, { lighting: P, heating: k }, m.id, b) : 0,
+    ke = o.useCallback(
       (t, n, a) => {
         if (!t || !a) return !1;
-        const r = u.find((p) => p.id === a);
+        const r = b.find((p) => p.id === a);
         if (!r?.timeSlots?.length) return !1;
-        const m = t.getDay(),
-          d = t.getHours() * 60 + t.getMinutes(),
-          b = (p = '00:00') => {
-            const [H, E] = String(p)
+        const l = t.getDay(),
+          g = t.getHours() * 60 + t.getMinutes(),
+          c = (p = '00:00') => {
+            const [H, M] = String(p)
               .split(':')
               .map((V) => +V || 0);
-            return H * 60 + E;
+            return H * 60 + M;
           },
-          g = r.timeSlots.find(
-            (p) => Array.isArray(p.days) && p.days.includes(m) && d >= b(p.from) && d < b(p.to)
+          u = r.timeSlots.find(
+            (p) => Array.isArray(p.days) && p.days.includes(l) && g >= c(p.from) && g < c(p.to)
           );
-        return g ? d + Number(n || 0) <= b(g.to) : !1;
+        return u ? g + Number(n || 0) <= c(u.to) : !1;
       },
-      [u]
+      [b]
     ),
-    ke = o.useCallback(
+    Se = o.useCallback(
       (t) => {
-        if (!c || !i || !l) return !1;
-        const n = new Date(`${i}T${l}:00`);
-        return !(!we(n, t, c.id) || !K(c.id, i, l, t, f) || A(c.id, i, l, t, f));
+        if (!m || !i || !d) return !1;
+        const n = new Date(`${i}T${d}:00`);
+        return !(!ke(n, t, m.id) || !K(m.id, i, d, t, f) || A(m.id, i, d, t, f));
       },
-      [c, i, l, f, we]
+      [m, i, d, f, ke]
     ),
-    M = o.useMemo(() => {
+    T = o.useMemo(() => {
       const t = [60, 90, 120].filter((n) => $.includes(n));
-      return !c || !i || !l ? t : t.filter((n) => ke(n));
-    }, [$, c, i, l, ke]);
+      return !m || !i || !d ? t : t.filter((n) => Se(n));
+    }, [$, m, i, d, Se]);
   return (
     o.useEffect(() => {
-      M.includes(h) || (M.length && ae(M[0]));
-    }, [M.join(',')]),
+      T.includes(x) || (T.length && ne(T[0]));
+    }, [T.join(',')]),
     e.jsxs('div', {
       className: 'min-h-screen bg-gray-50',
       children: [
@@ -454,10 +465,10 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
         e.jsxs('div', {
           className: 'max-w-6xl mx-auto px-4 py-6',
           children: [
-            le &&
+            ce &&
               e.jsx('div', {
-                className: `mb-6 p-3 sm:p-4 rounded-lg text-sm ${le.type === 'error' ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'}`,
-                children: le.text,
+                className: `mb-6 p-3 sm:p-4 rounded-lg text-sm ${ce.type === 'error' ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'}`,
+                children: ce.text,
               }),
             e.jsxs('div', {
               className: 'bg-white rounded-lg shadow-sm border p-3 sm:p-6 mb-4 sm:mb-6',
@@ -471,12 +482,12 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                   children: e.jsx('div', {
                     className: 'flex gap-2 pb-2',
                     style: { minWidth: 'max-content' },
-                    children: He.slice(0, 10).map((t) =>
+                    children: Me.slice(0, 10).map((t) =>
                       e.jsxs(
                         'button',
                         {
                           onClick: () => {
-                            (ue(t.date), se(''), L(null), ye(xe, 200));
+                            (he(t.date), ie(''), L(null), je(ue, 200));
                           },
                           className: `flex-shrink-0 p-2 sm:p-3 rounded-lg border text-center transition-all min-w-[60px] sm:min-w-[80px] ${i === t.date ? 'bg-blue-500 text-white border-blue-500 shadow-md' : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100'}`,
                           children: [
@@ -503,7 +514,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
             }),
             i &&
               e.jsxs('div', {
-                ref: xe,
+                ref: ue,
                 className: 'bg-white rounded-lg shadow-sm border p-3 sm:p-6 mb-4 sm:mb-6',
                 children: [
                   e.jsxs('div', {
@@ -520,7 +531,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                           e.jsx('input', {
                             type: 'checkbox',
                             checked: F,
-                            onChange: (t) => Ce(t.target.checked),
+                            onChange: (t) => Ae(t.target.checked),
                             className: 'rounded text-blue-500',
                           }),
                           e.jsx('span', {
@@ -533,13 +544,13 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                   }),
                   e.jsx('div', {
                     className: 'grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-8 gap-2',
-                    children: je.map((t) =>
+                    children: Ne.map((t) =>
                       e.jsxs(
                         'button',
                         {
-                          onClick: () => Te(t),
+                          onClick: () => Ee(t),
                           disabled: !t.isAvailable,
-                          className: `p-3 sm:p-3 rounded-lg border text-center transition-all relative min-h-[56px] touch-manipulation ${l === t.time ? 'bg-blue-500 text-white border-blue-500 shadow-md' : t.isAvailable ? 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer active:bg-blue-100' : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'}`,
+                          className: `p-3 sm:p-3 rounded-lg border text-center transition-all relative min-h-[56px] touch-manipulation ${d === t.time ? 'bg-blue-500 text-white border-blue-500 shadow-md' : t.isAvailable ? 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer active:bg-blue-100' : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'}`,
                           children: [
                             e.jsx('div', {
                               className: 'font-medium text-sm sm:text-base',
@@ -561,7 +572,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                       )
                     ),
                   }),
-                  je.length === 0 &&
+                  Ne.length === 0 &&
                     e.jsx('div', {
                       className: 'text-center py-8 text-gray-500',
                       children: F
@@ -570,9 +581,9 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                     }),
                 ],
               }),
-            l &&
+            d &&
               e.jsxs('div', {
-                ref: te,
+                ref: ae,
                 className: 'bg-white rounded-lg shadow-sm border p-3 sm:p-6 mb-4 sm:mb-6',
                 children: [
                   e.jsx('h2', {
@@ -581,19 +592,20 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                   }),
                   e.jsx('div', {
                     className: 'space-y-3 sm:space-y-4',
-                    children: u.map((t) => {
-                      const n = new Date(`${i}T${l}:00`),
-                        a = J(n, t.id, u),
-                        r = Y(t.id, i, l),
-                        m = a && r && A(t.id, i, l, h, f),
-                        d = a && r && !m;
+                    children: b.map((t) => {
+                      const n = new Date(`${i}T${d}:00`),
+                        a = ee(n, t.id, b),
+                        r = Y(t.id, i, d),
+                        l = a && r && A(t.id, i, d, x, f),
+                        g = J(t.id, i, d, x, f),
+                        c = a && r && (!l || g);
                       return e.jsx(
                         'div',
                         {
                           onClick: () => {
-                            d && (L(t), D(!0));
+                            c && (L(t), D(!0));
                           },
-                          className: `border rounded-lg p-3 sm:p-4 transition-all touch-manipulation ${d ? 'hover:shadow-md cursor-pointer hover:border-blue-300 active:bg-gray-50' : 'bg-gray-50 border-gray-200 cursor-not-allowed opacity-75'}`,
+                          className: `border rounded-lg p-3 sm:p-4 transition-all touch-manipulation ${c ? 'hover:shadow-md cursor-pointer hover:border-blue-300 active:bg-gray-50' : 'bg-gray-50 border-gray-200 cursor-not-allowed opacity-75'}`,
                           children: e.jsxs('div', {
                             className: 'flex justify-between items-start',
                             children: [
@@ -604,39 +616,48 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                                     className: 'flex items-center gap-2 mb-2',
                                     children: [
                                       e.jsx('h3', {
-                                        className: `font-semibold text-sm sm:text-base ${d ? 'text-gray-900' : 'text-gray-500'}`,
+                                        className: `font-semibold text-sm sm:text-base ${c ? 'text-gray-900' : 'text-gray-500'}`,
                                         children: t.name,
                                       }),
-                                      d &&
+                                      c &&
                                         t.premium &&
-                                        e.jsx(me, {
+                                        e.jsx(Z, {
                                           variant: 'warning',
                                           size: 'xs',
-                                          T: k,
+                                          T: w,
                                           children: 'Premium',
                                         }),
-                                      d &&
-                                        i &&
+                                      c &&
+                                        g &&
                                         l &&
-                                        Ee(t.id, new Date(`${i}T${l}:00`)) &&
-                                        e.jsx(me, {
+                                        e.jsx(Z, {
+                                          variant: 'info',
+                                          size: 'xs',
+                                          T: w,
+                                          children: '⚠️ Intrappolato',
+                                        }),
+                                      c &&
+                                        i &&
+                                        d &&
+                                        ze(t.id, new Date(`${i}T${d}:00`)) &&
+                                        e.jsx(Z, {
                                           variant: 'success',
                                           size: 'xs',
-                                          T: k,
+                                          T: w,
                                           children: '🏷️ Promo',
                                         }),
                                     ],
                                   }),
-                                  d &&
+                                  c &&
                                     t.features &&
                                     t.features.length > 0 &&
                                     e.jsx('div', {
                                       className: 'flex flex-wrap gap-1 mb-2',
-                                      children: t.features.map((b, g) =>
+                                      children: t.features.map((u, y) =>
                                         e.jsx(
-                                          me,
-                                          { variant: 'default', size: 'xs', T: k, children: b },
-                                          g
+                                          Z,
+                                          { variant: 'default', size: 'xs', T: w, children: u },
+                                          y
                                         )
                                       ),
                                     }),
@@ -644,13 +665,13 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                               }),
                               e.jsx('div', {
                                 className: 'text-right',
-                                children: d
+                                children: c
                                   ? e.jsxs(e.Fragment, {
                                       children: [
                                         e.jsxs('div', {
                                           className: 'text-xl sm:text-2xl font-bold text-blue-600',
                                           children: [
-                                            z(new Date(`${i}T${l}:00`), 90, x, {}, t.id, u),
+                                            E(new Date(`${i}T${d}:00`), 90, h, {}, t.id, b),
                                             '€',
                                           ],
                                         }),
@@ -662,7 +683,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                                           className: 'text-xs text-gray-400 mt-1',
                                           children: [
                                             (
-                                              z(new Date(`${i}T${l}:00`), 90, x, {}, t.id, u) / 4
+                                              E(new Date(`${i}T${d}:00`), 90, h, {}, t.id, b) / 4
                                             ).toFixed(1),
                                             '€ a persona',
                                           ],
@@ -698,8 +719,8 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
               }),
           ],
         }),
-        be &&
-          c &&
+        ge &&
+          m &&
           e.jsx('div', {
             className:
               'fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 backdrop-fade',
@@ -752,7 +773,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                             }),
                             e.jsx('h4', {
                               className: 'font-semibold text-gray-900 text-lg',
-                              children: c.name,
+                              children: m.name,
                             }),
                           ],
                         }),
@@ -776,14 +797,14 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                               className: 'flex items-center gap-2',
                               children: [
                                 e.jsx('span', { className: 'text-blue-500', children: '🕐' }),
-                                e.jsx('span', { children: l }),
+                                e.jsx('span', { children: d }),
                               ],
                             }),
                             e.jsxs('div', {
                               className: 'flex items-center gap-2',
                               children: [
                                 e.jsx('span', { className: 'text-blue-500', children: '⏱️' }),
-                                e.jsxs('span', { children: [h, ' min'] }),
+                                e.jsxs('span', { children: [x, ' min'] }),
                               ],
                             }),
                           ],
@@ -800,22 +821,22 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                         e.jsx('div', {
                           className: 'grid grid-cols-3 gap-3',
                           children: [60, 90, 120].map((t) => {
-                            const n = z(
-                                new Date(`${i}T${l}:00`),
+                            const n = E(
+                                new Date(`${i}T${d}:00`),
                                 t,
-                                x,
-                                { lighting: P, heating: w },
-                                c.id,
-                                u
+                                h,
+                                { lighting: P, heating: k },
+                                m.id,
+                                b
                               ),
                               a = (n / 4).toFixed(1),
-                              m = $.includes(t) && M.includes(t);
+                              l = $.includes(t) && T.includes(t);
                             return e.jsxs(
                               'button',
                               {
-                                onClick: () => m && ae(t),
-                                disabled: !m,
-                                className: `p-4 rounded-xl border-2 text-center transition-all touch-manipulation ${m ? (h === t ? 'bg-blue-500 text-white border-blue-500 shadow-lg scale-105' : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 active:bg-blue-100') : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'}`,
+                                onClick: () => l && ne(t),
+                                disabled: !l,
+                                className: `p-4 rounded-xl border-2 text-center transition-all touch-manipulation ${l ? (x === t ? 'bg-blue-500 text-white border-blue-500 shadow-lg scale-105' : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 active:bg-blue-100') : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'}`,
                                 children: [
                                   e.jsxs('div', {
                                     className: 'font-bold text-lg',
@@ -837,7 +858,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                         }),
                       ],
                     }),
-                    (x.addons?.lightingEnabled || x.addons?.heatingEnabled) &&
+                    (h.addons?.lightingEnabled || h.addons?.heatingEnabled) &&
                       e.jsxs('div', {
                         className: 'mb-6',
                         children: [
@@ -848,7 +869,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                           e.jsxs('div', {
                             className: 'space-y-3',
                             children: [
-                              x.addons?.lightingEnabled &&
+                              h.addons?.lightingEnabled &&
                                 e.jsxs('label', {
                                   className:
                                     'flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 touch-manipulation',
@@ -856,7 +877,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                                     e.jsx('input', {
                                       type: 'checkbox',
                                       checked: P,
-                                      onChange: (t) => he(t.target.checked),
+                                      onChange: (t) => be(t.target.checked),
                                       className: 'rounded w-5 h-5 text-blue-500',
                                     }),
                                     e.jsxs('div', {
@@ -868,23 +889,23 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                                         }),
                                         e.jsxs('div', {
                                           className: 'text-xs text-gray-600',
-                                          children: ['+', x.addons?.lightingFee || 0, '€'],
+                                          children: ['+', h.addons?.lightingFee || 0, '€'],
                                         }),
                                       ],
                                     }),
                                     e.jsx('span', { className: 'text-2xl', children: '💡' }),
                                   ],
                                 }),
-                              x.addons?.heatingEnabled &&
-                                c?.hasHeating &&
+                              h.addons?.heatingEnabled &&
+                                m?.hasHeating &&
                                 e.jsxs('label', {
                                   className:
                                     'flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 touch-manipulation',
                                   children: [
                                     e.jsx('input', {
                                       type: 'checkbox',
-                                      checked: w,
-                                      onChange: (t) => ne(t.target.checked),
+                                      checked: k,
+                                      onChange: (t) => re(t.target.checked),
                                       className: 'rounded w-5 h-5 text-blue-500',
                                     }),
                                     e.jsxs('div', {
@@ -896,7 +917,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                                         }),
                                         e.jsxs('div', {
                                           className: 'text-xs text-gray-600',
-                                          children: ['+', x.addons?.heatingFee || 0, '€'],
+                                          children: ['+', h.addons?.heatingFee || 0, '€'],
                                         }),
                                       ],
                                     }),
@@ -912,7 +933,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                       children: [
                         e.jsxs('label', {
                           className: 'block text-sm font-semibold mb-3 text-gray-900',
-                          children: ['Giocatori (', 1 + y.length, '/4)'],
+                          children: ['Giocatori (', 1 + j.length, '/4)'],
                         }),
                         e.jsx('div', {
                           className: 'mb-3 p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500',
@@ -945,7 +966,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                         }),
                         e.jsx('div', {
                           className: 'space-y-2 mb-4',
-                          children: y.map((t, n) =>
+                          children: j.map((t, n) =>
                             e.jsxs(
                               'div',
                               {
@@ -973,7 +994,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                                     ],
                                   }),
                                   e.jsx('button', {
-                                    onClick: () => ze(t.id),
+                                    onClick: () => Oe(t.id),
                                     className:
                                       'w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center touch-manipulation transition-colors',
                                     children: e.jsx('span', {
@@ -987,21 +1008,21 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                             )
                           ),
                         }),
-                        y.length < 3 &&
+                        j.length < 3 &&
                           e.jsxs('div', {
                             className: 'flex gap-3',
                             children: [
                               e.jsx('input', {
                                 type: 'text',
                                 value: G,
-                                onChange: (t) => re(t.target.value),
-                                onKeyDown: (t) => t.key === 'Enter' && ve(),
+                                onChange: (t) => le(t.target.value),
+                                onKeyDown: (t) => t.key === 'Enter' && we(),
                                 placeholder: 'Nome nuovo giocatore',
                                 className:
                                   'flex-1 p-3 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:outline-none',
                               }),
                               e.jsx('button', {
-                                onClick: ve,
+                                onClick: we,
                                 disabled: !G.trim(),
                                 className:
                                   'px-6 py-3 bg-blue-500 text-white rounded-xl text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation hover:bg-blue-600 transition-colors',
@@ -1068,7 +1089,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                         children: 'Annulla',
                       }),
                       e.jsx('button', {
-                        onClick: Ne,
+                        onClick: ve,
                         disabled: Q || !s,
                         className:
                           'flex-2 py-4 px-6 bg-blue-500 text-white rounded-xl text-sm font-semibold hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation transition-colors shadow-lg',
@@ -1091,10 +1112,10 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
               ],
             }),
           }),
-        be &&
-          c &&
+        ge &&
+          m &&
           i &&
-          l &&
+          d &&
           e.jsx('div', {
             className: 'lg:hidden fixed bottom-24 left-4 right-4 z-[99999]',
             children: e.jsxs('div', {
@@ -1107,7 +1128,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
                   children: 'Annulla',
                 }),
                 e.jsx('button', {
-                  onClick: Ne,
+                  onClick: ve,
                   disabled: Q || !s,
                   className:
                     'flex-1 backdrop-blur-md bg-blue-600/90 text-white py-3 px-4 rounded-xl font-medium text-sm transition-all shadow-lg hover:bg-blue-600/95 disabled:opacity-50 disabled:cursor-not-allowed',
@@ -1127,7 +1148,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
               ],
             }),
           }),
-        Pe &&
+        Te &&
           e.jsx('div', {
             className:
               'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]',
@@ -1168,7 +1189,7 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
               ],
             }),
           }),
-        Me &&
+        He &&
           e.jsx('div', {
             className:
               'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]',
@@ -1214,10 +1235,10 @@ function qe({ user: s, T: k, state: S, setState: _ }) {
     })
   );
 }
-function dt() {
-  const { user: s } = Oe(),
-    { state: k, setState: S } = Ie(),
-    _ = _e.useMemo(() => Re(), []);
-  return e.jsx(qe, { T: _, user: s, state: k, setState: S });
+function ct() {
+  const { user: s } = Ie(),
+    { state: w, setState: S } = Re(),
+    _ = Le.useMemo(() => _e(), []);
+  return e.jsx(Ve, { T: _, user: s, state: w, setState: S });
 }
-export { dt as default };
+export { ct as default };

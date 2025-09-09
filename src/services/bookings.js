@@ -254,6 +254,61 @@ export function wouldCreateHalfHourHole(
   return false;
 }
 
+// Verifica se un orario è "intrappolato" tra due prenotazioni (deroga automatica)
+export function isTimeSlotTrapped(
+  courtId,
+  date,
+  time,
+  duration,
+  bookings,
+  excludeBookingId = null
+) {
+  const startMin = timeToMinutes(time);
+  const endTime = calculateEndTime(time, duration);
+  const endMin = timeToMinutes(endTime);
+
+  // Filtra prenotazioni rilevanti sullo stesso campo/data
+  const sameCourt = (bookings || []).filter((b) => {
+    if (excludeBookingId && b.id === excludeBookingId) return false;
+    if (b.courtId !== courtId || b.date !== date) return false;
+    return b.status !== BOOKING_STATUS.CANCELLED;
+  });
+
+  if (sameCourt.length < 2) return false; // Serve almeno una prenotazione prima e una dopo
+
+  // Trova la prenotazione più vicina prima e dopo
+  let prevEndMin = null;
+  let nextStartMin = null;
+
+  for (const b of sameCourt) {
+    const bStartMin = timeToMinutes(b.time);
+    const bEndMin = timeToMinutes(calculateEndTime(b.time, b.duration));
+
+    if (bEndMin <= startMin) {
+      // Candidata come precedente
+      if (prevEndMin === null || bEndMin > prevEndMin) prevEndMin = bEndMin;
+    }
+    if (bStartMin >= endMin) {
+      // Candidata come successiva
+      if (nextStartMin === null || bStartMin < nextStartMin) nextStartMin = bStartMin;
+    }
+  }
+
+  // È intrappolato se:
+  // 1. Esistono sia una prenotazione precedente che una successiva
+  // 2. Lo spazio disponibile è esattamente quello che occorre alla prenotazione + 30 minuti prima o dopo
+  // 3. Non c'è altro spazio disponibile per evitare il buco
+  if (prevEndMin !== null && nextStartMin !== null) {
+    const totalSpaceBefore = startMin - prevEndMin;
+    const totalSpaceAfter = nextStartMin - endMin;
+
+    // Se c'è esattamente 30 minuti di gap prima o dopo, è intrappolato
+    return totalSpaceBefore === 30 || totalSpaceAfter === 30;
+  }
+
+  return false;
+}
+
 // Calcola prezzo totale
 export function calculatePrice(court, duration, lighting = false, heating = false) {
   if (!court) return 0;

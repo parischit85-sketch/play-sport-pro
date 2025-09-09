@@ -7,6 +7,7 @@ import { computePrice, getRateInfo, isCourtBookableAt } from '@lib/pricing.js';
 import {
   isSlotAvailable,
   wouldCreateHalfHourHole,
+  isTimeSlotTrapped,
   createBooking,
   loadBookings,
   setCloudMode,
@@ -363,13 +364,37 @@ function ModernBookingInterface({ user, T, state, setState }) {
       return;
     }
 
-    // Evita creare buchi di 30 minuti
-    if (wouldCreateHalfHourHole(selectedCourt.id, selectedDate, selectedTime, duration, bookings)) {
+    // Evita creare buchi di 30 minuti (con deroga per situazioni intrappolate)
+    const wouldCreateHole = wouldCreateHalfHourHole(
+      selectedCourt.id,
+      selectedDate,
+      selectedTime,
+      duration,
+      bookings
+    );
+
+    const isTrapped = isTimeSlotTrapped(
+      selectedCourt.id,
+      selectedDate,
+      selectedTime,
+      duration,
+      bookings
+    );
+
+    if (wouldCreateHole && !isTrapped) {
       setMessage({
         type: 'error',
         text: 'Questa scelta crea un buco di 30 minuti. Seleziona alle :00 o :30 adiacente, oppure sposta di 30 minuti.',
       });
       return;
+    }
+
+    // Messaggio informativo quando si applica la deroga per slot intrappolato
+    if (wouldCreateHole && isTrapped) {
+      setMessage({
+        type: 'info',
+        text: 'Deroga applicata: Orario intrappolato tra prenotazioni - permessa creazione buco.',
+      });
     }
 
     setIsSubmitting(true);
@@ -491,7 +516,15 @@ function ModernBookingInterface({ user, T, state, setState }) {
           duration,
           freshBookings
         );
-        return scheduleOk && free && !hole;
+        const isTrapped = isTimeSlotTrapped(
+          court.id,
+          selectedDate,
+          timeSlot.time,
+          duration,
+          freshBookings
+        );
+        // Deroga per slot intrappolati: è disponibile anche se crea buco
+        return scheduleOk && free && (!hole || isTrapped);
       });
 
       if (!stillAvailable) {
@@ -521,7 +554,15 @@ function ModernBookingInterface({ user, T, state, setState }) {
         duration,
         bookings
       );
-      return scheduleOk && free && !hole;
+      const isTrapped = isTimeSlotTrapped(
+        court.id,
+        selectedDate,
+        timeSlot.time,
+        duration,
+        bookings
+      );
+      // Deroga per slot intrappolati: è disponibile anche se crea buco
+      return scheduleOk && free && (!hole || isTrapped);
     });
 
     if (availableCourts.length === 1) {
@@ -755,7 +796,15 @@ function ModernBookingInterface({ user, T, state, setState }) {
                   isWithinSchedule &&
                   free &&
                   wouldCreateHalfHourHole(court.id, selectedDate, selectedTime, duration, bookings);
-                const isAvailable = isWithinSchedule && free && !createsHole;
+                const isTrapped = isTimeSlotTrapped(
+                  court.id,
+                  selectedDate,
+                  selectedTime,
+                  duration,
+                  bookings
+                );
+                // Deroga per slot intrappolati: è disponibile anche se crea buco
+                const isAvailable = isWithinSchedule && free && (!createsHole || isTrapped);
                 return (
                   <div
                     key={court.id}
@@ -784,6 +833,11 @@ function ModernBookingInterface({ user, T, state, setState }) {
                           {isAvailable && court.premium && (
                             <Badge variant="warning" size="xs" T={T}>
                               Premium
+                            </Badge>
+                          )}
+                          {isAvailable && isTrapped && createsHole && (
+                            <Badge variant="info" size="xs" T={T}>
+                              ⚠️ Intrappolato
                             </Badge>
                           )}
                           {isAvailable &&
