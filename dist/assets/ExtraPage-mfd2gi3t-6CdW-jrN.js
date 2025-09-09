@@ -1,10 +1,10 @@
-import { f as i, k as p, t as n, j as d } from './index-mfcs8s2v-Cf-KQmcH.js';
-import { b as c } from './router-mfcs8s2v-DNUHJuYl.js';
-import { E as f } from './Extra-mfcs8s2v-C8VNBEJD.js';
-import './vendor-mfcs8s2v-D3F3s8fL.js';
-import './firebase-mfcs8s2v-BteSMG94.js';
-import './Section-mfcs8s2v-B9xuQ5Fq.js';
-import './format-mfcs8s2v-DAEZv7Mi.js';
+import { f as i, k as p, t as n, j as d } from './index-mfd2gi3t-DST8bGSD.js';
+import { b as c } from './router-mfd2gi3t-qe2057RM.js';
+import { E as f } from './Extra-mfd2gi3t-CNm4Qx5y.js';
+import './vendor-mfd2gi3t-D3F3s8fL.js';
+import './firebase-mfd2gi3t-BteSMG94.js';
+import './Section-mfd2gi3t-D3PZCtCX.js';
+import './format-mfd2gi3t-DAEZv7Mi.js';
 function M() {
   const { state: e, setState: t, derived: s, leagueId: o, setLeagueId: a } = i(),
     { clubMode: r, setClubMode: m } = p(),
