@@ -3,21 +3,21 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/UserBookingsCard-mfcrqai8-Q_UI34P2.js',
-      'assets/index-mfcrqai8-SK5xfcQr.js',
-      'assets/vendor-mfcrqai8-D3F3s8fL.js',
-      'assets/router-mfcrqai8-B0glbTOM.js',
-      'assets/firebase-mfcrqai8-BteSMG94.js',
-      'assets/index-mfcrqfp1-BBYtpoEP.css',
-      'assets/bookings-mfcrqai8-Kr_Xz312.js',
-      'assets/cloud-bookings-mfcrqai8-d3aOF8gM.js',
-      'assets/Modal-mfcrqai8-D4fdDW46.js',
+      'assets/UserBookingsCard-mfcrw3bo-DiwD1kfe.js',
+      'assets/index-mfcrw3bo-CoIG1RjF.js',
+      'assets/vendor-mfcrw3bo-D3F3s8fL.js',
+      'assets/router-mfcrw3bo-C59D-9ls.js',
+      'assets/firebase-mfcrw3bo-BteSMG94.js',
+      'assets/index-mfcrw8e5-BBYtpoEP.css',
+      'assets/bookings-mfcrw3bo-Dr3-1wdW.js',
+      'assets/cloud-bookings-mfcrw3bo-DSo6Sgyb.js',
+      'assets/Modal-mfcrw3bo-DdYOEGdM.js',
     ])
 ) => i.map((i) => d[i]);
-import { j as e, e as N, u as w, f as y, t as M, _ as C } from './index-mfcrqai8-SK5xfcQr.js';
-import { r as h, c as I, b as l } from './router-mfcrqai8-B0glbTOM.js';
-import './vendor-mfcrqai8-D3F3s8fL.js';
-import './firebase-mfcrqai8-BteSMG94.js';
+import { j as e, e as N, u as w, f as y, t as M, _ as C } from './index-mfcrw3bo-CoIG1RjF.js';
+import { r as h, c as I, b as l } from './router-mfcrw3bo-C59D-9ls.js';
+import './vendor-mfcrw3bo-D3F3s8fL.js';
+import './firebase-mfcrw3bo-BteSMG94.js';
 const u = ({ onProfileClick: t, onBackupClick: a }) =>
   e.jsxs('button', {
     onClick: t,
@@ -285,7 +285,7 @@ function g({ className: t = '' }) {
 }
 const p = l.lazy(() =>
     C(
-      () => import('./UserBookingsCard-mfcrqai8-Q_UI34P2.js'),
+      () => import('./UserBookingsCard-mfcrw3bo-DiwD1kfe.js'),
       __vite__mapDeps([0, 1, 2, 3, 4, 5, 6, 7, 8])
     )
   ),

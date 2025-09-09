@@ -8,12 +8,12 @@ import {
   f as ie,
   k as de,
   t as ce,
-} from './index-mfcrqai8-SK5xfcQr.js';
-import { r as $, b as D } from './router-mfcrqai8-B0glbTOM.js';
-import { S as Z } from './Section-mfcrqai8-0tUIBI0p.js';
-import { s as H, b as oe } from './names-mfcrqai8-BW9lV2zG.js';
-import './vendor-mfcrqai8-D3F3s8fL.js';
-import './firebase-mfcrqai8-BteSMG94.js';
+} from './index-mfcrw3bo-CoIG1RjF.js';
+import { r as $, b as D } from './router-mfcrw3bo-C59D-9ls.js';
+import { S as Z } from './Section-mfcrw3bo-DETEukMw.js';
+import { s as H, b as oe } from './names-mfcrw3bo-BW9lV2zG.js';
+import './vendor-mfcrw3bo-D3F3s8fL.js';
+import './firebase-mfcrw3bo-BteSMG94.js';
 function xe({ m: a, playersById: t, onShowFormula: r, onDelete: d, T: i }) {
   const [s, x] = $.useState(!1),
     n = (j) => t?.[j]?.name ?? j,
