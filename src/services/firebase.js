@@ -2,7 +2,7 @@
 // FILE: src/services/firebase.js
 // =============================================
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { initializeFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -28,7 +28,12 @@ if (missingConfig.length > 0) {
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-const db = getFirestore(app);
+// Use auto-detected long polling to avoid QUIC/HTTP3 issues on some networks
+const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true,
+  experimentalForceLongPolling: import.meta.env.VITE_FIRESTORE_FORCE_LONG_POLLING === 'true',
+  useFetchStreams: false,
+});
 const auth = getAuth(app);
 
 // Imposta la lingua dell'interfaccia utente
@@ -60,7 +65,7 @@ try {
         isDev: import.meta.env.DEV === true,
         user: auth?.currentUser ? { uid: auth.currentUser.uid } : null,
       };
-      // eslint-disable-next-line no-console
+
       console.log('[Firebase][authdebug]', info);
     }
   }

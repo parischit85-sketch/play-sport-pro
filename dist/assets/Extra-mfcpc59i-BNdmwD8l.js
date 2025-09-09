@@ -3,17 +3,17 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/index-mfce5qh5-Bjue6Tcf.js',
-      'assets/vendor-mfce5qh5-D3F3s8fL.js',
-      'assets/router-mfce5qh5-SMEpEpls.js',
-      'assets/firebase-mfce5qh5-jcIpuiEY.js',
-      'assets/index-mfce5vqz-D6BV2l8J.css',
+      'assets/index-mfcpc59i-PpofX80g.js',
+      'assets/vendor-mfcpc59i-D3F3s8fL.js',
+      'assets/router-mfcpc59i-D7zFZhMN.js',
+      'assets/firebase-mfcpc59i-BteSMG94.js',
+      'assets/index-mfcpcauj-BBYtpoEP.css',
     ])
 ) => i.map((i) => d[i]);
-import { j as e, o as z, _ as A } from './index-mfce5qh5-Bjue6Tcf.js';
-import { r as k, b as S, c as D } from './router-mfce5qh5-SMEpEpls.js';
-import { S as L } from './Section-mfce5qh5-BVq7CZw3.js';
-import { e as F } from './format-mfce5qh5-DAEZv7Mi.js';
+import { j as e, p as z, _ as A } from './index-mfcpc59i-PpofX80g.js';
+import { r as k, b as S, c as D } from './router-mfcpc59i-D7zFZhMN.js';
+import { S as L } from './Section-mfcpc59i-BMO9MkVE.js';
+import { e as F } from './format-mfcpc59i-DAEZv7Mi.js';
 function _({ value: a = [], onChange: r, T: o }) {
   const t = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
     x = (d) => {
@@ -973,8 +973,8 @@ function M({ T: a, leagueId: r, setState: o, cloudMsg: t, setCloudMsg: x }) {
     try {
       const { listLeagues: c } = await A(
           async () => {
-            const { listLeagues: v } = await import('./index-mfce5qh5-Bjue6Tcf.js').then(
-              ($) => $.v
+            const { listLeagues: v } = await import('./index-mfcpc59i-PpofX80g.js').then(
+              ($) => $.w
             );
             return { listLeagues: v };
           },
@@ -992,7 +992,7 @@ function M({ T: a, leagueId: r, setState: o, cloudMsg: t, setCloudMsg: x }) {
     try {
       const { saveLeague: c } = await A(
           async () => {
-            const { saveLeague: v } = await import('./index-mfce5qh5-Bjue6Tcf.js').then(($) => $.v);
+            const { saveLeague: v } = await import('./index-mfcpc59i-PpofX80g.js').then(($) => $.w);
             return { saveLeague: v };
           },
           __vite__mapDeps([0, 1, 2, 3, 4])
@@ -1010,7 +1010,7 @@ function M({ T: a, leagueId: r, setState: o, cloudMsg: t, setCloudMsg: x }) {
     try {
       const { loadLeague: N } = await A(
           async () => {
-            const { loadLeague: $ } = await import('./index-mfce5qh5-Bjue6Tcf.js').then((w) => w.v);
+            const { loadLeague: $ } = await import('./index-mfcpc59i-PpofX80g.js').then((w) => w.w);
             return { loadLeague: $ };
           },
           __vite__mapDeps([0, 1, 2, 3, 4])

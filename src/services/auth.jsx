@@ -18,7 +18,15 @@ import {
   sendPasswordResetEmail,
   updateProfile,
 } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  limit as qLimit,
+  setDoc,
+} from 'firebase/firestore';
 
 // Listener auth con gestione errori
 export function onAuth(callback) {
@@ -274,3 +282,16 @@ export async function setDisplayName(user, name) {
 
 // (opzionale) esponi auth se serve in UI
 export { auth };
+
+// ====== LISTA PROFILI (per collegamento giocatori) ======
+export async function listAllUserProfiles(max = 500) {
+  // Ritorna array di { uid, ...profile }
+  const ref = collection(db, 'profiles');
+  const snap = await getDocs(query(ref, qLimit(max)));
+  const out = [];
+  snap.forEach((docSnap) => {
+    const data = docSnap.data() || {};
+    out.push({ uid: docSnap.id, ...data });
+  });
+  return out;
+}

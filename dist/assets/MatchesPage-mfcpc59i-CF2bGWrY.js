@@ -3,17 +3,17 @@ import {
   h as W,
   j as e,
   r as ee,
-  m as ne,
+  n as ne,
   i as le,
   f as ie,
   k as de,
   t as ce,
-} from './index-mfce5qh5-Bjue6Tcf.js';
-import { r as $, b as D } from './router-mfce5qh5-SMEpEpls.js';
-import { S as Z } from './Section-mfce5qh5-BVq7CZw3.js';
-import { s as H, b as oe } from './names-mfce5qh5-BW9lV2zG.js';
-import './vendor-mfce5qh5-D3F3s8fL.js';
-import './firebase-mfce5qh5-jcIpuiEY.js';
+} from './index-mfcpc59i-PpofX80g.js';
+import { r as $, b as D } from './router-mfcpc59i-D7zFZhMN.js';
+import { S as Z } from './Section-mfcpc59i-BMO9MkVE.js';
+import { s as H, b as oe } from './names-mfcpc59i-BW9lV2zG.js';
+import './vendor-mfcpc59i-D3F3s8fL.js';
+import './firebase-mfcpc59i-BteSMG94.js';
 function xe({ m: a, playersById: t, onShowFormula: r, onDelete: d, T: i }) {
   const [s, x] = $.useState(!1),
     n = (j) => t?.[j]?.name ?? j,

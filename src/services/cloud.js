@@ -3,7 +3,15 @@
 // =============================================
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection, getDocs } from 'firebase/firestore';
+import {
+  initializeFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  onSnapshot,
+  collection,
+  getDocs,
+} from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -13,7 +21,12 @@ const firebaseConfig = {
 
 const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+// Firestore with long-polling fallback to avoid QUIC errors
+export const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true,
+  experimentalForceLongPolling: import.meta.env.VITE_FIRESTORE_FORCE_LONG_POLLING === 'true',
+  useFetchStreams: false,
+});
 
 export async function loginWithGoogle() {
   const provider = new GoogleAuthProvider();
@@ -37,7 +50,7 @@ export async function listLeagues() {
         players: data.players?.length || 0,
         matches: data.matches?.length || 0,
         lastUpdated: data._updatedAt ? new Date(data._updatedAt).toLocaleString() : 'N/A',
-        courts: data.courts?.length || 0
+        courts: data.courts?.length || 0,
       });
     });
     return leagues.sort((a, b) => (b._updatedAt || 0) - (a._updatedAt || 0));
@@ -53,8 +66,13 @@ export async function saveLeague(leagueId, data) {
   if (data._restored) {
     console.log('🔥 Ripristino manuale autorizzato - bypassando protezioni');
   } else if (data.players && data.players.length < 5) {
-    console.warn('🚨 PROTEZIONE ATTIVA: Rifiutato salvataggio di dati con pochi giocatori (possibili seed data)');
-    console.warn('Dati non salvati:', { players: data.players?.length, matches: data.matches?.length });
+    console.warn(
+      '🚨 PROTEZIONE ATTIVA: Rifiutato salvataggio di dati con pochi giocatori (possibili seed data)'
+    );
+    console.warn('Dati non salvati:', {
+      players: data.players?.length,
+      matches: data.matches?.length,
+    });
     return;
   }
 
@@ -63,11 +81,14 @@ export async function saveLeague(leagueId, data) {
     const existing = await loadLeague(leagueId);
     if (existing && existing.players && existing.players.length > (data.players?.length || 0)) {
       const backupKey = `firebase-backup-${Date.now()}`;
-      localStorage.setItem(backupKey, JSON.stringify({
-        timestamp: new Date().toISOString(),
-        data: existing,
-        reason: 'Auto-backup before potential data loss'
-      }));
+      localStorage.setItem(
+        backupKey,
+        JSON.stringify({
+          timestamp: new Date().toISOString(),
+          data: existing,
+          reason: 'Auto-backup before potential data loss',
+        })
+      );
       console.log('🔒 Backup automatico creato prima del salvataggio:', backupKey);
     }
   } catch (e) {
@@ -76,7 +97,10 @@ export async function saveLeague(leagueId, data) {
 
   // merge per non sovrascrivere tutto
   await setDoc(doc(db, 'leagues', leagueId), data, { merge: true });
-  console.log('✅ Dati salvati nel cloud:', { players: data.players?.length, matches: data.matches?.length });
+  console.log('✅ Dati salvati nel cloud:', {
+    players: data.players?.length,
+    matches: data.matches?.length,
+  });
 }
 
 export function subscribeLeague(leagueId, cb) {

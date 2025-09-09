@@ -1,19 +1,20 @@
 // Service Worker per Paris League PWA
-const CACHE_NAME = 'paris-league-v1.1.1';
+const CACHE_NAME = 'paris-league-v1.2.0';
 const urlsToCache = [
   '/',
-  '/src/main.jsx',
   '/logo.png',
   '/favicon.ico',
   '/manifest.json',
-  // Aggiungi altre risorse critiche qui
+  '/icons/icon.svg',
+  // Rimosso /src/main.jsx per evitare caching di asset di sviluppo
 ];
 
 // Installazione del Service Worker
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing Service Worker');
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches
+      .open(CACHE_NAME)
       .then((cache) => {
         console.log('[SW] Caching app shell');
         return cache.addAll(urlsToCache);
@@ -22,22 +23,30 @@ self.addEventListener('install', (event) => {
         console.error('[SW] Cache installation failed:', error);
       })
   );
+  // Forza l'aggiornamento immediato
+  self.skipWaiting();
 });
 
 // Attivazione del Service Worker
 self.addEventListener('activate', (event) => {
   console.log('[SW] Activating Service Worker');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches
+      .keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) {
+              console.log('[SW] Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+      .then(() => {
+        // Forza il nuovo SW a prendere il controllo immediatamente
+        return self.clients.claim();
+      })
   );
 });
 
@@ -48,40 +57,61 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Se è in cache, restituisci la versione cached
-        if (response) {
-          return response;
-        }
+  // Network first per asset JS/CSS per evitare stale code, cache first per altri asset
+  const url = new URL(event.request.url);
+  const isAsset =
+    url.pathname.startsWith('/assets/') ||
+    url.pathname.endsWith('.js') ||
+    url.pathname.endsWith('.css');
+  const isApiCall = url.pathname.includes('api') || url.hostname.includes('firebase');
 
-        // Altrimenti, fetch dalla rete
-        return fetch(event.request)
-          .then((response) => {
-            // Verifica se la risposta è valida
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
+  // API calls: sempre network first
+  if (isApiCall) {
+    event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
 
-            // Clona la risposta per la cache
+  // JS/CSS assets: network first per evitare codice obsoleto
+  if (isAsset) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
             const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
 
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
+  // Altri asset: cache first
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      if (response) {
+        return response;
+      }
 
+      return fetch(event.request)
+        .then((response) => {
+          if (!response || response.status !== 200 || response.type !== 'basic') {
             return response;
-          })
-          .catch((error) => {
-            console.error('[SW] Fetch failed:', error);
-            // Ritorna una pagina offline personalizzata se disponibile
-            if (event.request.destination === 'document') {
-              return caches.match('/');
-            }
-          });
-      })
+          }
+
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+
+          return response;
+        })
+        .catch((error) => {
+          console.error('[SW] Fetch failed:', error);
+          if (event.request.destination === 'document') {
+            return caches.match('/');
+          }
+        });
+    })
   );
 });
 
@@ -111,7 +141,7 @@ self.addEventListener('controllerchange', () => {
 // Gestione ricezione push notifications
 self.addEventListener('push', (event) => {
   console.log('[SW] Push notification received');
-  
+
   let data = {};
   try {
     data = event.data ? event.data.json() : {};
@@ -129,42 +159,43 @@ self.addEventListener('push', (event) => {
     data: {
       url: data.url || '/',
       timestamp: Date.now(),
-      ...data.data
+      ...data.data,
     },
     actions: [
       {
         action: 'open',
         title: 'Apri App',
-        icon: '/icons/icon.svg'
+        icon: '/icons/icon.svg',
       },
       {
-        action: 'dismiss', 
+        action: 'dismiss',
         title: 'Ignora',
-        icon: '/icons/icon.svg'
-      }
+        icon: '/icons/icon.svg',
+      },
     ],
     tag: data.tag || 'default',
     requireInteraction: data.requireInteraction || false,
     silent: data.silent || false,
     vibrate: [200, 100, 200],
-    timestamp: Date.now()
+    timestamp: Date.now(),
   };
 
   event.waitUntil(
-    self.registration.showNotification(options.title, options)
+    self.registration
+      .showNotification(options.title, options)
       .then(() => console.log('[SW] Notification displayed'))
-      .catch(error => console.error('[SW] Notification display failed:', error))
+      .catch((error) => console.error('[SW] Notification display failed:', error))
   );
 });
 
 // Gestione click su notifica
 self.addEventListener('notificationclick', (event) => {
   console.log('[SW] Notification clicked:', event.notification);
-  
+
   const notification = event.notification;
   const action = event.action;
   const data = notification.data || {};
-  
+
   notification.close();
 
   if (action === 'dismiss') {
@@ -173,11 +204,12 @@ self.addEventListener('notificationclick', (event) => {
   }
 
   // Apri/Focus app
-  const urlToOpen = action === 'open' || !action ? (data.url || '/') : '/';
-  
+  const urlToOpen = action === 'open' || !action ? data.url || '/' : '/';
+
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true })
-      .then(clients => {
+    clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clients) => {
         // Cerca una finestra già aperta
         for (const client of clients) {
           if (client.url.includes(urlToOpen.split('?')[0]) && 'focus' in client) {
@@ -185,21 +217,21 @@ self.addEventListener('notificationclick', (event) => {
             return client.focus();
           }
         }
-        
+
         // Apri nuova finestra
         if (clients.openWindow) {
           console.log('[SW] Opening new window:', urlToOpen);
           return clients.openWindow(urlToOpen);
         }
       })
-      .catch(error => console.error('[SW] Notification click handling failed:', error))
+      .catch((error) => console.error('[SW] Notification click handling failed:', error))
   );
 });
 
 // Gestione chiusura notifica
 self.addEventListener('notificationclose', (event) => {
   console.log('[SW] Notification closed:', event.notification.tag);
-  
+
   // Analytics tracking opzionale
   // gtag('event', 'notification_closed', {
   //   notification_tag: event.notification.tag

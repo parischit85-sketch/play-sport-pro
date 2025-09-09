@@ -3,69 +3,71 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/LoginPage-mfce5qh5-Cl5UCzwQ.js',
-      'assets/router-mfce5qh5-SMEpEpls.js',
-      'assets/vendor-mfce5qh5-D3F3s8fL.js',
-      'assets/Section-mfce5qh5-BVq7CZw3.js',
-      'assets/firebase-mfce5qh5-jcIpuiEY.js',
-      'assets/DashboardPage-mfce5qh5-DH3AOQA7.js',
-      'assets/ClassificaPage-mfce5qh5-fl8Eg0CJ.js',
-      'assets/charts-mfce5qh5-CuPksH5K.js',
-      'assets/ShareButtons-mfce5qh5-D7D0pxed.js',
-      'assets/StatsPage-mfce5qh5-C6rwJDkC.js',
-      'assets/Modal-mfce5qh5-Dv_rJ4XO.js',
-      'assets/names-mfce5qh5-BW9lV2zG.js',
-      'assets/BookingPage-mfce5qh5-CrqOq0us.js',
-      'assets/bookings-mfce5qh5-Bt3mFPyD.js',
-      'assets/cloud-bookings-mfce5qh5-C7X43DHA.js',
-      'assets/pricing-mfce5qh5-CpqSxGe3.js',
-      'assets/PlayersPage-mfce5qh5-BdFWdkTm.js',
-      'assets/MatchesPage-mfce5qh5-BNvDAYpx.js',
-      'assets/TournamentsPage-mfce5qh5-CLX7gnk5.js',
-      'assets/ProfilePage-mfce5qh5-DO1tXP1h.js',
-      'assets/Extra-mfce5qh5-BJJkP5BA.js',
-      'assets/format-mfce5qh5-DAEZv7Mi.js',
-      'assets/ExtraPage-mfce5qh5-CO2f3oJ0.js',
-      'assets/AdminBookingsPage-mfce5qh5-C_NaYJBB.js',
+      'assets/LoginPage-mfcpc59i-CrMfgFNV.js',
+      'assets/router-mfcpc59i-D7zFZhMN.js',
+      'assets/vendor-mfcpc59i-D3F3s8fL.js',
+      'assets/Section-mfcpc59i-BMO9MkVE.js',
+      'assets/firebase-mfcpc59i-BteSMG94.js',
+      'assets/DashboardPage-mfcpc59i-CrACviT3.js',
+      'assets/ClassificaPage-mfcpc59i-BA25TTeR.js',
+      'assets/charts-mfcpc59i-CodDicdT.js',
+      'assets/ShareButtons-mfcpc59i-BMXeOcIL.js',
+      'assets/StatsPage-mfcpc59i-BtHLFKn9.js',
+      'assets/Modal-mfcpc59i-CwYeunog.js',
+      'assets/names-mfcpc59i-BW9lV2zG.js',
+      'assets/BookingPage-mfcpc59i-B5Bp8c-3.js',
+      'assets/bookings-mfcpc59i-CVZv2cx1.js',
+      'assets/cloud-bookings-mfcpc59i-cWaUvgoz.js',
+      'assets/pricing-mfcpc59i-DMaWA4wL.js',
+      'assets/PlayersPage-mfcpc59i-B7bPQcnY.js',
+      'assets/MatchesPage-mfcpc59i-CF2bGWrY.js',
+      'assets/TournamentsPage-mfcpc59i-QxcAvAOD.js',
+      'assets/ProfilePage-mfcpc59i-C11FW6DL.js',
+      'assets/Extra-mfcpc59i-BNdmwD8l.js',
+      'assets/format-mfcpc59i-DAEZv7Mi.js',
+      'assets/ExtraPage-mfcpc59i-Nn9iQ7dR.js',
+      'assets/AdminBookingsPage-mfcpc59i-CL8LCE-8.js',
     ])
 ) => i.map((i) => d[i]);
-import { r as Re, a as De } from './vendor-mfce5qh5-D3F3s8fL.js';
+import { r as Te, a as ze } from './vendor-mfcpc59i-D3F3s8fL.js';
 import {
   r as x,
-  b as C,
+  b as P,
   u as Q,
   N as W,
-  c as Te,
-  O as ze,
-  B as Oe,
-  d as We,
+  c as Oe,
+  O as We,
+  B as $e,
+  d as Fe,
   e as _,
-} from './router-mfce5qh5-SMEpEpls.js';
+} from './router-mfcpc59i-D7zFZhMN.js';
 import {
-  g as ue,
-  a as me,
-  i as fe,
-  b as ge,
-  c as he,
-  d as $e,
-  s as Fe,
-  e as Ue,
-  G as Ve,
-  f as pe,
-  h as He,
-  F as qe,
-  j as Ge,
-  k as Je,
-  l as Ke,
+  g as me,
+  a as fe,
+  i as ge,
+  b as he,
+  c as pe,
+  d as Ue,
+  s as Ve,
+  e as He,
+  G as qe,
+  f as xe,
+  h as Ge,
+  F as Je,
+  j as Ke,
+  k as Ye,
+  l as Xe,
   m as $,
-  n as xe,
-  u as Ye,
-  o as be,
-  p as Xe,
-  q as Ze,
+  n as be,
+  u as Ze,
+  o as we,
+  p as ve,
+  q as ye,
   r as Qe,
   t as et,
-} from './firebase-mfce5qh5-jcIpuiEY.js';
+  v as tt,
+  w as st,
+} from './firebase-mfcpc59i-BteSMG94.js';
 (function () {
   const s = document.createElement('link').relList;
   if (s && s.supports && s.supports('modulepreload')) return;
@@ -105,55 +107,55 @@ var J = { exports: {} },
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- */ var ne;
-function tt() {
-  if (ne) return T;
-  ne = 1;
-  var t = Re(),
+ */ var oe;
+function rt() {
+  if (oe) return T;
+  oe = 1;
+  var t = Te(),
     s = Symbol.for('react.element'),
     r = Symbol.for('react.fragment'),
     a = Object.prototype.hasOwnProperty,
     n = t.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner,
     f = { key: !0, ref: !0, __self: !0, __source: !0 };
-  function o(l, d, u) {
+  function o(l, u, d) {
     var m,
       g = {},
       i = null,
       c = null;
-    (u !== void 0 && (i = '' + u),
-      d.key !== void 0 && (i = '' + d.key),
-      d.ref !== void 0 && (c = d.ref));
-    for (m in d) a.call(d, m) && !f.hasOwnProperty(m) && (g[m] = d[m]);
-    if (l && l.defaultProps) for (m in ((d = l.defaultProps), d)) g[m] === void 0 && (g[m] = d[m]);
+    (d !== void 0 && (i = '' + d),
+      u.key !== void 0 && (i = '' + u.key),
+      u.ref !== void 0 && (c = u.ref));
+    for (m in u) a.call(u, m) && !f.hasOwnProperty(m) && (g[m] = u[m]);
+    if (l && l.defaultProps) for (m in ((u = l.defaultProps), u)) g[m] === void 0 && (g[m] = u[m]);
     return { $$typeof: s, type: l, key: i, ref: c, props: g, _owner: n.current };
   }
   return ((T.Fragment = r), (T.jsx = o), (T.jsxs = o), T);
 }
-var oe;
-function st() {
-  return (oe || ((oe = 1), (J.exports = tt())), J.exports);
+var ie;
+function at() {
+  return (ie || ((ie = 1), (J.exports = rt())), J.exports);
 }
-var e = st(),
+var e = at(),
   H = {},
-  ie;
-function rt() {
-  if (ie) return H;
-  ie = 1;
-  var t = De();
+  le;
+function nt() {
+  if (le) return H;
+  le = 1;
+  var t = ze();
   return ((H.createRoot = t.createRoot), (H.hydrateRoot = t.hydrateRoot), H);
 }
-var at = rt();
-const nt = 'modulepreload',
-  ot = function (t) {
+var ot = nt();
+const it = 'modulepreload',
+  lt = function (t) {
     return '/' + t;
   },
-  le = {},
+  ce = {},
   B = function (s, r, a) {
     let n = Promise.resolve();
     if (r && r.length > 0) {
-      let d = function (u) {
+      let u = function (d) {
         return Promise.all(
-          u.map((m) =>
+          d.map((m) =>
             Promise.resolve(m).then(
               (g) => ({ status: 'fulfilled', value: g }),
               (g) => ({ status: 'rejected', reason: g })
@@ -164,26 +166,26 @@ const nt = 'modulepreload',
       document.getElementsByTagName('link');
       const o = document.querySelector('meta[property=csp-nonce]'),
         l = o?.nonce || o?.getAttribute('nonce');
-      n = d(
-        r.map((u) => {
-          if (((u = ot(u)), u in le)) return;
-          le[u] = !0;
-          const m = u.endsWith('.css'),
+      n = u(
+        r.map((d) => {
+          if (((d = lt(d)), d in ce)) return;
+          ce[d] = !0;
+          const m = d.endsWith('.css'),
             g = m ? '[rel="stylesheet"]' : '';
-          if (document.querySelector(`link[href="${u}"]${g}`)) return;
+          if (document.querySelector(`link[href="${d}"]${g}`)) return;
           const i = document.createElement('link');
           if (
-            ((i.rel = m ? 'stylesheet' : nt),
+            ((i.rel = m ? 'stylesheet' : it),
             m || (i.as = 'script'),
             (i.crossOrigin = ''),
-            (i.href = u),
+            (i.href = d),
             l && i.setAttribute('nonce', l),
             document.head.appendChild(i),
             m)
           )
             return new Promise((c, p) => {
               (i.addEventListener('load', c),
-                i.addEventListener('error', () => p(new Error(`Unable to preload CSS for ${u}`))));
+                i.addEventListener('error', () => p(new Error(`Unable to preload CSS for ${d}`))));
             });
         })
       );
@@ -206,12 +208,16 @@ const nt = 'modulepreload',
     messagingSenderId: '1004722051733',
     measurementId: 'G-0XZCHGMWVR',
   },
-  it = ['apiKey', 'authDomain', 'projectId', 'appId'],
-  ce = it.filter((t) => !O[t]);
-if (ce.length > 0) throw new Error(`Missing Firebase configuration: ${ce.join(', ')}`);
-const we = ue().length ? me() : fe(O),
-  ve = ge(we),
-  L = he(we);
+  ct = ['apiKey', 'authDomain', 'projectId', 'appId'],
+  ue = ct.filter((t) => !O[t]);
+if (ue.length > 0) throw new Error(`Missing Firebase configuration: ${ue.join(', ')}`);
+const je = me().length ? fe() : ge(O),
+  ee = he(je, {
+    experimentalAutoDetectLongPolling: !0,
+    experimentalForceLongPolling: !1,
+    useFetchStreams: !1,
+  }),
+  L = pe(je);
 L.useDeviceLanguage && L.useDeviceLanguage();
 try {
   if (typeof window < 'u' && new URLSearchParams(window.location.search || '').has('authdebug')) {
@@ -226,8 +232,8 @@ try {
     console.log('[Firebase][authdebug]', s);
   }
 } catch {}
-function ye(t) {
-  return Xe(
+function ke(t) {
+  return tt(
     L,
     (s) => {
       try {
@@ -241,12 +247,12 @@ function ye(t) {
     }
   );
 }
-async function lt() {
-  const t = new Ve();
+async function ut() {
+  const t = new qe();
   (t.addScope('email'), t.addScope('profile'), t.setCustomParameters({ prompt: 'select_account' }));
   let s = null;
   try {
-    s = await pe(L, t);
+    s = await xe(L, t);
   } catch (r) {
     const a = String(r?.message || '').toLowerCase(),
       n = String(r?.code || '').toLowerCase();
@@ -260,12 +266,12 @@ async function lt() {
       a.includes('cross-origin') ||
       a.includes('popup')
     )
-      return (await He(L, t), null);
+      return (await Ge(L, t), null);
     throw r;
   }
-  return (s && s.user && (await je(s.user)), s);
+  return (s && s.user && (await Ae(s.user)), s);
 }
-async function je(t) {
+async function Ae(t) {
   try {
     const s = await F(t.uid);
     if (!s.email || !s.firstName) {
@@ -285,15 +291,15 @@ async function je(t) {
     console.warn('Errore creazione/aggiornamento profilo:', s);
   }
 }
-async function ct() {
-  const t = new qe();
+async function dt() {
+  const t = new Je();
   (t.addScope('email'), t.addScope('public_profile'));
-  const s = await pe(L, t);
-  return (s && s.user && (await je(s.user)), s);
+  const s = await xe(L, t);
+  return (s && s.user && (await Ae(s.user)), s);
 }
-async function dt(t, s) {
+async function mt(t, s) {
   if (!t || !s) throw new Error('Email e password sono obbligatorie');
-  const r = await Ge(L, t, s);
+  const r = await Ke(L, t, s);
   if (r.user) {
     const a = await F(r.user.uid);
     a.email ||
@@ -308,24 +314,24 @@ async function dt(t, s) {
   }
   return r;
 }
-async function ut(t, s) {
+async function ft(t, s) {
   if (!t || !s) throw new Error('Email e password sono obbligatorie');
-  return Je(L, t, s);
+  return Ye(L, t, s);
 }
-async function mt(t) {
+async function gt(t) {
   if (!t) throw new Error('Email obbligatoria');
-  return Ke(L, t);
+  return Xe(L, t);
 }
-async function ft() {
+async function ht() {
   try {
     const t = window.location.href;
-    if (!$e(L, t)) return null;
+    if (!Ue(L, t)) return null;
     let s = null;
     try {
       s = localStorage.getItem('ml-magic-email');
     } catch {}
     s || (s = window.prompt('Per completare l’accesso, inserisci la tua email:') || '');
-    const r = await Fe(L, s, t);
+    const r = await Ve(L, s, t);
     try {
       localStorage.removeItem('ml-magic-email');
     } catch {}
@@ -348,71 +354,84 @@ async function ft() {
     throw (console.warn('completeMagicLinkIfPresent error:', t), t);
   }
 }
-async function gt() {
-  await Ue(L);
+async function pt() {
+  await He(L);
 }
 async function F(t) {
-  const s = $(ve, 'profiles', t),
-    r = await be(s);
+  const s = $(ee, 'profiles', t),
+    r = await we(s);
   return r.exists() ? r.data() : {};
 }
 async function q(t, s) {
-  const r = $(ve, 'profiles', t);
-  await xe(r, { ...s, _updatedAt: Date.now() }, { merge: !0 });
+  const r = $(ee, 'profiles', t);
+  await be(r, { ...s, _updatedAt: Date.now() }, { merge: !0 });
 }
-async function ht(t, s) {
-  await Ye(t, { displayName: s });
+async function xt(t, s) {
+  await Ze(t, { displayName: s });
 }
-const ts = Object.freeze(
+async function bt(t = 500) {
+  const s = ve(ee, 'profiles'),
+    r = await ye(Qe(s, et(t))),
+    a = [];
+  return (
+    r.forEach((n) => {
+      const f = n.data() || {};
+      a.push({ uid: n.id, ...f });
+    }),
+    a
+  );
+}
+const as = Object.freeze(
     Object.defineProperty(
       {
         __proto__: null,
         auth: L,
-        completeMagicLinkIfPresent: ft,
+        completeMagicLinkIfPresent: ht,
         getUserProfile: F,
-        loginWithEmailPassword: ut,
-        loginWithFacebook: ct,
-        loginWithGoogle: lt,
-        logout: gt,
-        onAuth: ye,
-        registerWithEmailPassword: dt,
+        listAllUserProfiles: bt,
+        loginWithEmailPassword: ft,
+        loginWithFacebook: dt,
+        loginWithGoogle: ut,
+        logout: pt,
+        onAuth: ke,
+        registerWithEmailPassword: mt,
         saveUserProfile: q,
-        sendResetPassword: mt,
-        setDisplayName: ht,
+        sendResetPassword: gt,
+        setDisplayName: xt,
       },
       Symbol.toStringTag,
       { value: 'Module' }
     )
   ),
-  ke = x.createContext(null),
+  Ne = x.createContext(null),
   G = () => {
-    const t = x.useContext(ke);
+    const t = x.useContext(Ne);
     if (!t) throw new Error('useAuth must be used within an AuthProvider');
     return t;
   };
-function pt({ children: t }) {
+function wt({ children: t }) {
   const [s, r] = x.useState(null),
     [a, n] = x.useState(null),
     [f, o] = x.useState(!0),
-    [l, d] = x.useState(null);
+    [l, u] = x.useState(null);
   x.useEffect(
     () =>
-      ye(async (c) => {
+      ke(async (c) => {
         try {
           if ((r(c), c)) {
             const p = await F(c.uid);
             n(p);
           } else n(null);
-          d(null);
+          u(null);
         } catch (p) {
-          (console.error('Auth error:', p), d(p), n(null));
+          (console.error('Auth error:', p), u(p), n(null));
         } finally {
           o(!1);
         }
       }),
     []
   );
-  const u = !!s,
+  const d = !!s,
     m = a?.firstName && a?.phone,
     g = {
       user: s,
@@ -420,26 +439,30 @@ function pt({ children: t }) {
       setUserProfile: n,
       loading: f,
       error: l,
-      isAuthenticated: u,
+      isAuthenticated: d,
       isProfileComplete: m,
     };
-  return e.jsx(ke.Provider, { value: g, children: t });
+  return e.jsx(Ne.Provider, { value: g, children: t });
 }
-const xt = {
+const vt = {
     apiKey: 'AIzaSyDMP7772cyEY1oLzo8f9hMW7Leu4lWc6OU',
     authDomain: 'm-padelweb.firebaseapp.com',
     projectId: 'm-padelweb',
   },
-  Ne = ue().length ? me() : fe(xt);
-he(Ne);
-const U = ge(Ne);
-async function ee(t) {
-  const s = await be($(U, 'leagues', t));
+  Se = me().length ? fe() : ge(vt);
+pe(Se);
+const U = he(Se, {
+  experimentalAutoDetectLongPolling: !0,
+  experimentalForceLongPolling: !1,
+  useFetchStreams: !1,
+});
+async function te(t) {
+  const s = await we($(U, 'leagues', t));
   return s.exists() ? s.data() : null;
 }
-async function bt() {
+async function yt() {
   try {
-    const t = await Ze(Qe(U, 'leagues')),
+    const t = await ye(ve(U, 'leagues')),
       s = [];
     return (
       t.forEach((r) => {
@@ -459,7 +482,7 @@ async function bt() {
     return (console.error('Errore nel recupero della lista backup:', t), []);
   }
 }
-async function Ae(t, s) {
+async function Ie(t, s) {
   if (s._restored) console.log('🔥 Ripristino manuale autorizzato - bypassando protezioni');
   else if (s.players && s.players.length < 5) {
     (console.warn(
@@ -472,7 +495,7 @@ async function Ae(t, s) {
     return;
   }
   try {
-    const r = await ee(t);
+    const r = await te(t);
     if (r && r.players && r.players.length > (s.players?.length || 0)) {
       const a = `firebase-backup-${Date.now()}`;
       (localStorage.setItem(
@@ -488,26 +511,26 @@ async function Ae(t, s) {
   } catch (r) {
     console.warn('Impossibile creare backup automatico:', r);
   }
-  (await xe($(U, 'leagues', t), s, { merge: !0 }),
+  (await be($(U, 'leagues', t), s, { merge: !0 }),
     console.log('✅ Dati salvati nel cloud:', {
       players: s.players?.length,
       matches: s.matches?.length,
     }));
 }
-function Se(t, s) {
-  return et($(U, 'leagues', t), (r) => {
+function Pe(t, s) {
+  return st($(U, 'leagues', t), (r) => {
     r.exists() && s(r.data());
   });
 }
-const ss = Object.freeze(
+const ns = Object.freeze(
     Object.defineProperty(
       {
         __proto__: null,
         db: U,
-        listLeagues: bt,
-        loadLeague: ee,
-        saveLeague: Ae,
-        subscribeLeague: Se,
+        listLeagues: yt,
+        loadLeague: te,
+        saveLeague: Ie,
+        subscribeLeague: Pe,
       },
       Symbol.toStringTag,
       { value: 'Module' }
@@ -515,7 +538,7 @@ const ss = Object.freeze(
   ),
   z = (t) => Math.round(Number(t || 0)),
   K = (t) => Number(t || 0).toFixed(2);
-function wt(t) {
+function jt(t) {
   return (t || [])
     .filter((s) => String(s?.a ?? '') !== '' || String(s?.b ?? '') !== '')
     .map((s) => `${Number(s.a || 0)}-${Number(s.b || 0)}`)
@@ -528,8 +551,8 @@ function Y(t) {
     n = 0;
   for (const o of t || []) {
     const l = Number(o?.a || 0),
-      d = Number(o?.b || 0);
-    (String(l) === '' && String(d) === '') || ((a += l), (n += d), l > d ? s++ : d > l && r++);
+      u = Number(o?.b || 0);
+    (String(l) === '' && String(u) === '') || ((a += l), (n += u), l > u ? s++ : u > l && r++);
   }
   let f = null;
   return (
@@ -537,7 +560,7 @@ function Y(t) {
     { setsA: s, setsB: r, gamesA: a, gamesB: n, winner: f }
   );
 }
-function vt(t) {
+function kt(t) {
   return t <= -2e3
     ? 0.4
     : t <= -1500
@@ -556,7 +579,7 @@ function vt(t) {
                   ? 1.4
                   : 1.6;
 }
-function yt(t) {
+function At(t) {
   return t <= -2e3
     ? 'gap ≤ −2000 ⇒ 0.40'
     : t <= -1500
@@ -585,26 +608,26 @@ function X({
   winner: o,
   sets: l,
 }) {
-  const d = Number(t || 0),
-    u = Number(s || 0),
+  const u = Number(t || 0),
+    d = Number(s || 0),
     m = Number(r || 0),
     g = Number(a || 0),
-    i = d + u,
+    i = u + d,
     c = m + g,
     p = o === 'A' ? i : c,
     w = o === 'A' ? c : i,
     h = (i + c) / 100,
-    N = w - p,
-    S = vt(N),
+    A = w - p,
+    S = kt(A),
     E = o === 'A' ? n - f : f - n,
     y = (h + E) * S,
     v = Math.round(y),
-    A = o === 'A' ? v : -v,
+    N = o === 'A' ? v : -v,
     j = o === 'B' ? v : -v,
-    b = `Risultato set: ${wt(l)}`,
-    P =
-      `Team A=${z(i)}, Team B=${z(c)}, Gap=${z(N)}
-Fascia: ${yt(N)}
+    b = `Risultato set: ${jt(l)}`,
+    C =
+      `Team A=${z(i)}, Team B=${z(c)}, Gap=${z(A)}
+Fascia: ${At(A)}
 
 Base = (${z(i)} + ${z(c)})/100 = ${K(h)}
 DG (Differenza Game) = ${E}
@@ -616,22 +639,22 @@ Punti (arrotondato) = ${v}
       `
 ${b}`;
   return {
-    deltaA: A,
+    deltaA: N,
     deltaB: j,
     pts: v,
     base: h,
     factor: S,
-    gap: N,
+    gap: A,
     sumA: i,
     sumB: c,
     gd: E,
-    formula: P,
+    formula: C,
   };
 }
-const rs = () => Math.random().toString(36).slice(2, 10),
+const os = () => Math.random().toString(36).slice(2, 10),
   I = 1e3,
   D = 'paris-league-v1';
-function jt(t, s) {
+function Nt(t, s) {
   const r = new Map(
       t.map((o) => {
         const l = Number(o.baseRating ?? o.startRating ?? o.rating ?? I);
@@ -655,14 +678,14 @@ function jt(t, s) {
     f = [...(s || [])].sort((o, l) => new Date(o.date) - new Date(l.date));
   for (const o of f) {
     const l = r.get(o.teamA[0]),
-      d = r.get(o.teamA[1]),
-      u = r.get(o.teamB[0]),
+      u = r.get(o.teamA[1]),
+      d = r.get(o.teamB[0]),
       m = r.get(o.teamB[1]),
       g = Y(o.sets),
       i = X({
         ratingA1: l?.rating ?? I,
-        ratingA2: d?.rating ?? I,
-        ratingB1: u?.rating ?? I,
+        ratingA2: u?.rating ?? I,
+        ratingB1: d?.rating ?? I,
         ratingB2: m?.rating ?? I,
         gamesA: g.gamesA,
         gamesB: g.gamesB,
@@ -673,53 +696,53 @@ function jt(t, s) {
     n.push(c);
     const p = (w, h) => {
       if (!w) return;
-      const N = a.get(w) || [];
-      (N.push(h), a.set(w, N));
+      const A = a.get(w) || [];
+      (A.push(h), a.set(w, A));
     };
     (p(l?.id, i.deltaA),
-      p(d?.id, i.deltaA),
-      p(u?.id, i.deltaB),
+      p(u?.id, i.deltaA),
+      p(d?.id, i.deltaB),
       p(m?.id, i.deltaB),
       l && (l.lastDelta = i.deltaA),
-      d && (d.lastDelta = i.deltaA),
-      u && (u.lastDelta = i.deltaB),
+      u && (u.lastDelta = i.deltaA),
+      d && (d.lastDelta = i.deltaB),
       m && (m.lastDelta = i.deltaB),
       g.winner === 'A'
         ? (l && (l.rating += i.deltaA),
-          d && (d.rating += i.deltaA),
-          u && (u.rating += i.deltaB),
+          u && (u.rating += i.deltaA),
+          d && (d.rating += i.deltaB),
           m && (m.rating += i.deltaB),
           l && l.wins++,
-          d && d.wins++,
-          u && u.losses++,
+          u && u.wins++,
+          d && d.losses++,
           m && m.losses++)
         : g.winner === 'B' &&
           (l && (l.rating += i.deltaA),
-          d && (d.rating += i.deltaA),
-          u && (u.rating += i.deltaB),
+          u && (u.rating += i.deltaA),
+          d && (d.rating += i.deltaB),
           m && (m.rating += i.deltaB),
-          u && u.wins++,
+          d && d.wins++,
           m && m.wins++,
           l && l.losses++,
-          d && d.losses++));
+          u && u.losses++));
   }
   for (const o of r.values()) {
-    const d = (a.get(o.id) || []).slice(-5);
-    let u = 0,
+    const u = (a.get(o.id) || []).slice(-5);
+    let d = 0,
       m = 0,
       g = 0;
-    for (const i of d) ((g += i), i >= 0 ? (u += i) : (m += -i));
-    ((o.trend5Total = g), (o.trend5Pos = u), (o.trend5Neg = m));
+    for (const i of u) ((g += i), i >= 0 ? (d += i) : (m += -i));
+    ((o.trend5Total = g), (o.trend5Pos = d), (o.trend5Neg = m));
   }
   return { players: Array.from(r.values()), matches: n };
 }
-function as(t, s, r) {
+function is(t, s, r) {
   const a = new Map(t.map((c) => [c.id, c.name])),
     f = [...(s || [])].sort((c, p) => new Date(c.date) - new Date(p.date)).slice(-15),
     o = new Map(t.map((c) => [c.id, Number(c.rating ?? I)])),
     l = new Map(o),
-    d = [...f].reverse();
-  for (const c of d) {
+    u = [...f].reverse();
+  for (const c of u) {
     const p = Y(c.sets),
       w = X({
         ratingA1: l.get(c.teamA[0]) ?? I,
@@ -731,35 +754,35 @@ function as(t, s, r) {
         winner: p.winner,
         sets: c.sets,
       }),
-      h = (N, S) => l.set(N, (l.get(N) ?? I) - S);
+      h = (A, S) => l.set(A, (l.get(A) ?? I) - S);
     (h(c.teamA[0], w.deltaA),
       h(c.teamA[1], w.deltaA),
       h(c.teamB[0], w.deltaB),
       h(c.teamB[1], w.deltaB));
   }
-  const u = new Map(l),
+  const d = new Map(l),
     m = [],
     g = { label: 'Inizio periodo' };
-  for (const c of r) g[a.get(c) || c] = Math.round(u.get(c) ?? I);
+  for (const c of r) g[a.get(c) || c] = Math.round(d.get(c) ?? I);
   m.push(g);
   for (const c of f) {
     const p = Y(c.sets),
       w = X({
-        ratingA1: u.get(c.teamA[0]) ?? I,
-        ratingA2: u.get(c.teamA[1]) ?? I,
-        ratingB1: u.get(c.teamB[0]) ?? I,
-        ratingB2: u.get(c.teamB[1]) ?? I,
+        ratingA1: d.get(c.teamA[0]) ?? I,
+        ratingA2: d.get(c.teamA[1]) ?? I,
+        ratingB1: d.get(c.teamB[0]) ?? I,
+        ratingB2: d.get(c.teamB[1]) ?? I,
         gamesA: p.gamesA,
         gamesB: p.gamesB,
         winner: p.winner,
         sets: c.sets,
       }),
-      h = (S, E) => u.set(S, (u.get(S) ?? I) + E);
+      h = (S, E) => d.set(S, (d.get(S) ?? I) + E);
     (h(c.teamA[0], w.deltaA),
       h(c.teamA[1], w.deltaA),
       h(c.teamB[0], w.deltaB),
       h(c.teamB[1], w.deltaB));
-    const N = {
+    const A = {
       label: new Date(c.date).toLocaleString('it-IT', {
         day: '2-digit',
         month: '2-digit',
@@ -767,8 +790,8 @@ function as(t, s, r) {
         minute: '2-digit',
       }),
     };
-    for (const S of r) N[a.get(S) || S] = Math.round(u.get(S) ?? I);
-    m.push(N);
+    for (const S of r) A[a.get(S) || S] = Math.round(d.get(S) ?? I);
+    m.push(A);
   }
   const i = { label: 'Attuale' };
   for (const c of r) i[a.get(c) || c] = Math.round(o.get(c) ?? I);
@@ -792,18 +815,18 @@ function R() {
 function de() {
   return { players: [], matches: [], courts: [], bookings: [], bookingConfig: R() };
 }
-const Ie = x.createContext(null),
-  kt = () => {
-    const t = x.useContext(Ie);
+const Ce = x.createContext(null),
+  St = () => {
+    const t = x.useContext(Ce);
     if (!t) throw new Error('useLeague must be used within a LeagueProvider');
     return t;
   };
-function Nt({ children: t }) {
+function It({ children: t }) {
   const { user: s, loading: r } = G(),
     [a, n] = x.useState(null),
     [f, o] = x.useState(!0),
-    [l, d] = x.useState(null),
-    [u, m] = x.useState(!1),
+    [l, u] = x.useState(null),
+    [d, m] = x.useState(!1),
     [g, i] = x.useState(localStorage.getItem(D + '-leagueId') || 'lega-andrea-2025'),
     c = x.useRef(null);
   if (!c.current) {
@@ -830,28 +853,28 @@ function Nt({ children: t }) {
   }, [g]);
   const h = (y) => {
     n((v) => {
-      const A = typeof y == 'function' ? y(v) : y,
+      const N = typeof y == 'function' ? y(v) : y,
         j = Date.now(),
         b = (v?._rev || 0) + 1;
-      return ((p.current = j + 2e3), { ...A, _updatedAt: j, _rev: b, _lastWriter: c.current });
+      return ((p.current = j + 2e3), { ...N, _updatedAt: j, _rev: b, _lastWriter: c.current });
     });
   };
   (x.useEffect(() => {
     r ||
       (async () => {
         try {
-          if ((o(!0), d(null), s)) {
-            const A = await ee(g);
-            if (A && typeof A == 'object' && Array.isArray(A.players) && Array.isArray(A.matches)) {
-              const b = { ...A };
+          if ((o(!0), u(null), s)) {
+            const N = await te(g);
+            if (N && typeof N == 'object' && Array.isArray(N.players) && Array.isArray(N.matches)) {
+              const b = { ...N };
               (Array.isArray(b.courts) || (b.courts = []),
                 Array.isArray(b.bookings) || (b.bookings = []),
                 b.bookingConfig || (b.bookingConfig = R()),
                 b.bookingConfig.pricing || (b.bookingConfig.pricing = R().pricing),
                 b.bookingConfig.addons || (b.bookingConfig.addons = R().addons),
                 n(b));
-              const P = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
-              w.current = P.reduce((M, V) => ((M[V] = b[V]), M), {});
+              const C = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
+              w.current = C.reduce((M, V) => ((M[V] = b[V]), M), {});
               try {
                 localStorage.setItem(D, JSON.stringify(b));
               } catch {}
@@ -859,13 +882,13 @@ function Nt({ children: t }) {
             }
           }
           try {
-            const A = localStorage.getItem(D);
-            if (A) {
-              const j = JSON.parse(A);
+            const N = localStorage.getItem(D);
+            if (N) {
+              const j = JSON.parse(N);
               if (j && Array.isArray(j.players) && Array.isArray(j.matches)) {
                 n(j);
                 const b = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
-                w.current = b.reduce((P, M) => ((P[M] = j[M] || []), P), {});
+                w.current = b.reduce((C, M) => ((C[M] = j[M] || []), C), {});
                 return;
               }
             }
@@ -873,13 +896,13 @@ function Nt({ children: t }) {
           const y = de();
           n(y);
           const v = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
-          ((w.current = v.reduce((A, j) => ((A[j] = y[j] || []), A), {})),
+          ((w.current = v.reduce((N, j) => ((N[j] = y[j] || []), N), {})),
             console.log('� App inizializzata con stato vuoto - aggiungi i tuoi dati!'));
           try {
             localStorage.setItem(D, JSON.stringify(y));
           } catch {}
         } catch (y) {
-          (console.error('League load error:', y), d(y));
+          (console.error('League load error:', y), u(y));
           const v = de();
           n(v);
         } finally {
@@ -891,7 +914,7 @@ function Nt({ children: t }) {
       if (!g || !s || r) return;
       let y = null;
       try {
-        y = Se(g, (v) => {
+        y = Pe(g, (v) => {
           if (
             !(v && typeof v == 'object' && Array.isArray(v.players) && Array.isArray(v.matches)) ||
             Date.now() < p.current
@@ -905,16 +928,16 @@ function Nt({ children: t }) {
             j.bookingConfig.addons || (j.bookingConfig.addons = R().addons),
             m(!0),
             n((b) => {
-              const P = b?._rev ?? 0,
+              const C = b?._rev ?? 0,
                 M = j?._rev ?? 0,
                 V = b?._updatedAt ?? 0,
-                Be = j?._updatedAt ?? 0,
-                se = M > P || (M === P && Be > V);
-              if (se) {
-                const Me = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
-                w.current = Me.reduce((re, ae) => ((re[ae] = j[ae]), re), {});
+                Re = j?._updatedAt ?? 0,
+                re = M > C || (M === C && Re > V);
+              if (re) {
+                const De = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
+                w.current = De.reduce((ae, ne) => ((ae[ne] = j[ne]), ae), {});
               }
-              return se ? j : b;
+              return re ? j : b;
             }),
             m(!1));
         });
@@ -924,11 +947,11 @@ function Nt({ children: t }) {
       return () => y && y();
     }, [g, s, r]),
     x.useEffect(() => {
-      if (!a || u || !s) return;
+      if (!a || d || !s) return;
       const y = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'],
-        v = y.reduce((b, P) => ((b[P] = a[P]), b), {}),
-        A = w.current;
-      if (!A || y.some((b) => JSON.stringify(v[b]) !== JSON.stringify(A[b])))
+        v = y.reduce((b, C) => ((b[C] = a[C]), b), {}),
+        N = w.current;
+      if (!N || y.some((b) => JSON.stringify(v[b]) !== JSON.stringify(N[b])))
         try {
           localStorage.setItem(D, JSON.stringify(a));
           const b = {
@@ -937,43 +960,43 @@ function Nt({ children: t }) {
               _lastWriter: c.current,
               _rev: (a._rev || 0) + 1,
             },
-            P = setTimeout(async () => {
+            C = setTimeout(async () => {
               try {
-                (await Ae(g, b), (w.current = v));
+                (await Ie(g, b), (w.current = v));
               } catch (M) {
                 console.error('Cloud save error:', M);
               }
             }, 800);
-          return () => clearTimeout(P);
+          return () => clearTimeout(C);
         } catch (b) {
           console.error('LocalStorage save error:', b);
         }
-    }, [a, g, u, s]));
-  const N = C.useMemo(
-      () => (a ? jt(a.players || [], a.matches || []) : { players: [], matches: [] }),
+    }, [a, g, d, s]));
+  const A = P.useMemo(
+      () => (a ? Nt(a.players || [], a.matches || []) : { players: [], matches: [] }),
       [a]
     ),
-    S = C.useMemo(() => Object.fromEntries((N.players || []).map((y) => [y.id, y])), [N]),
+    S = P.useMemo(() => Object.fromEntries((A.players || []).map((y) => [y.id, y])), [A]),
     E = {
       state: a,
       setState: h,
-      derived: N,
+      derived: A,
       playersById: S,
       leagueId: g,
       setLeagueId: i,
       loading: f,
       error: l,
-      updatingFromCloud: u,
+      updatingFromCloud: d,
     };
-  return e.jsx(Ie.Provider, { value: E, children: t });
+  return e.jsx(Ce.Provider, { value: E, children: t });
 }
-const Ce = x.createContext(null),
-  Pe = () => {
-    const t = x.useContext(Ce);
+const Le = x.createContext(null),
+  _e = () => {
+    const t = x.useContext(Le);
     if (!t) throw new Error('useUI must be used within a UIProvider');
     return t;
   };
-function At({ children: t }) {
+function Pt({ children: t }) {
   const [s, r] = x.useState(() => {
       try {
         const p = sessionStorage.getItem('ml-extra-unlocked') === '1',
@@ -985,17 +1008,17 @@ function At({ children: t }) {
     }),
     [a, n] = x.useState([]),
     [f, o] = x.useState(!1),
-    [l, d] = x.useState(null);
-  C.useEffect(() => {
+    [l, u] = x.useState(null);
+  P.useEffect(() => {
     try {
       s ? sessionStorage.setItem('ml-club-mode', '1') : sessionStorage.removeItem('ml-club-mode');
     } catch {}
   }, [s]);
-  const u = (p) => {
+  const d = (p) => {
       const w = Math.random().toString(36).slice(2),
         h = { id: w, ...p };
       return (
-        n((N) => [...N, h]),
+        n((A) => [...A, h]),
         setTimeout(() => {
           m(w);
         }, 5e3),
@@ -1009,21 +1032,21 @@ function At({ children: t }) {
       clubMode: s,
       setClubMode: r,
       notifications: a,
-      addNotification: u,
+      addNotification: d,
       removeNotification: m,
       loading: f,
       setLoading: o,
       modal: l,
       showModal: (p) => {
-        d(p);
+        u(p);
       },
       hideModal: () => {
-        d(null);
+        u(null);
       },
     };
-  return e.jsx(Ce.Provider, { value: c, children: t });
+  return e.jsx(Le.Provider, { value: c, children: t });
 }
-class St extends C.Component {
+class Ct extends P.Component {
   constructor(s) {
     (super(s), (this.state = { hasError: !1, error: null, errorInfo: null }));
   }
@@ -1108,25 +1131,25 @@ class St extends C.Component {
     return this.props.children;
   }
 }
-function Le({ size: t = 'md', className: s = '' }) {
+function Ee({ size: t = 'md', className: s = '' }) {
   const r = { sm: 'h-4 w-4', md: 'h-8 w-8', lg: 'h-12 w-12', xl: 'h-16 w-16' };
   return e.jsx('div', {
     className: `animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 ${r[t]} ${s}`,
   });
 }
-function te({ message: t = 'Caricamento...' }) {
+function se({ message: t = 'Caricamento...' }) {
   return e.jsx('div', {
     className: 'min-h-screen bg-gray-50 flex items-center justify-center',
     children: e.jsxs('div', {
       className: 'text-center',
       children: [
-        e.jsx(Le, { size: 'xl', className: 'mx-auto mb-4' }),
+        e.jsx(Ee, { size: 'xl', className: 'mx-auto mb-4' }),
         e.jsx('p', { className: 'text-gray-600 text-lg', children: t }),
       ],
     }),
   });
 }
-function It({ message: t = 'Caricamento...', visible: s = !0 }) {
+function Lt({ message: t = 'Caricamento...', visible: s = !0 }) {
   return s
     ? e.jsx('div', {
         className: 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center',
@@ -1134,7 +1157,7 @@ function It({ message: t = 'Caricamento...', visible: s = !0 }) {
         children: e.jsxs('div', {
           className: 'bg-white rounded-lg p-6 flex items-center space-x-3',
           children: [
-            e.jsx(Le, { size: 'md' }),
+            e.jsx(Ee, { size: 'md' }),
             e.jsx('span', { className: 'text-gray-700', children: t }),
           ],
         }),
@@ -1144,7 +1167,7 @@ function It({ message: t = 'Caricamento...', visible: s = !0 }) {
 function Z(t, s, r) {
   return t !== s;
 }
-function Ct(t, s) {
+function _t(t, s) {
   const r = t.pathname;
   if (r === '/login') {
     const a = t.state?.from?.pathname;
@@ -1152,31 +1175,31 @@ function Ct(t, s) {
   }
   return r === '/' ? '/dashboard' : null;
 }
-function Pt({ children: t, requireProfile: s = !0 }) {
+function Et({ children: t, requireProfile: s = !0 }) {
   const { user: r, userProfile: a, isAuthenticated: n, isProfileComplete: f, loading: o } = G(),
     l = Q();
-  if (o) return e.jsx(te, { message: 'Verifica autenticazione...' });
+  if (o) return e.jsx(se, { message: 'Verifica autenticazione...' });
   if (!n) {
-    const d = '/login';
-    if (Z(l.pathname, d)) return e.jsx(W, { to: d, state: { from: l }, replace: !0 });
+    const u = '/login';
+    if (Z(l.pathname, u)) return e.jsx(W, { to: u, state: { from: l }, replace: !0 });
   }
   if (n && s && a !== null && !f) {
-    const d = '/profile';
-    if (Z(l.pathname, d)) return e.jsx(W, { to: d, state: { from: l }, replace: !0 });
+    const u = '/profile';
+    if (Z(l.pathname, u)) return e.jsx(W, { to: u, state: { from: l }, replace: !0 });
   }
   return t;
 }
-function Lt({ children: t }) {
+function Bt({ children: t }) {
   const { isAuthenticated: s, loading: r } = G(),
     a = Q();
-  if (r) return e.jsx(te, { message: 'Verifica autenticazione...' });
+  if (r) return e.jsx(se, { message: 'Verifica autenticazione...' });
   if (s) {
-    const n = Ct(a);
+    const n = _t(a);
     if (n && Z(a.pathname, n)) return e.jsx(W, { to: n, replace: !0 });
   }
   return t;
 }
-const _t = '/play-sport-pro_horizontal.svg',
+const Mt = '/play-sport-pro_horizontal.svg',
   k = {
     borderRadius: { sm: 'rounded-lg', md: 'rounded-xl', lg: 'rounded-2xl', full: 'rounded-full' },
     spacing: { xs: 'p-2', sm: 'p-3', md: 'p-4', lg: 'p-6', xl: 'p-8' },
@@ -1192,7 +1215,7 @@ const _t = '/play-sport-pro_horizontal.svg',
       slow: 'transition-all duration-300 ease-in-out',
     },
   };
-function Et() {
+function Rt() {
   return {
     name: 'modern',
     ...{
@@ -1237,17 +1260,17 @@ function Et() {
     cardHover: `${k.borderRadius.lg} bg-white ring-1 ring-black/10 ${k.spacing.md} ${k.shadows.md} hover:shadow-lg ${k.transitions.normal}`,
   };
 }
-function Bt() {
-  const { notifications: t, removeNotification: s } = Pe();
+function Dt() {
+  const { notifications: t, removeNotification: s } = _e();
   return t.length === 0
     ? null
     : e.jsx('div', {
         className: 'fixed top-4 right-4 space-y-2',
         style: { zIndex: 100001 },
-        children: t.map((r) => e.jsx(Mt, { notification: r, onRemove: s }, r.id)),
+        children: t.map((r) => e.jsx(Tt, { notification: r, onRemove: s }, r.id)),
       });
 }
-function Mt({ notification: t, onRemove: s }) {
+function Tt({ notification: t, onRemove: s }) {
   const { id: r, type: a = 'info', title: n, message: f, autoClose: o = !0 } = t,
     l = {
       success: 'bg-green-500 text-white',
@@ -1255,14 +1278,14 @@ function Mt({ notification: t, onRemove: s }) {
       warning: 'bg-yellow-500 text-black',
       info: 'bg-blue-500 text-white',
     },
-    d = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+    u = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
   return (
-    C.useEffect(() => {
+    P.useEffect(() => {
       if (o) {
-        const u = setTimeout(() => {
+        const d = setTimeout(() => {
           s(r);
         }, 5e3);
-        return () => clearTimeout(u);
+        return () => clearTimeout(d);
       }
     }, [r, o, s]),
     e.jsx('div', {
@@ -1271,7 +1294,7 @@ function Mt({ notification: t, onRemove: s }) {
       children: e.jsxs('div', {
         className: 'flex items-start',
         children: [
-          e.jsx('span', { className: 'text-lg mr-2', children: d[a] }),
+          e.jsx('span', { className: 'text-lg mr-2', children: u[a] }),
           e.jsxs('div', {
             className: 'flex-1',
             children: [
@@ -1290,7 +1313,7 @@ function Mt({ notification: t, onRemove: s }) {
     })
   );
 }
-function Rt({ active: t, setActive: s, clubMode: r, T: a, user: n, navigation: f }) {
+function zt({ active: t, setActive: s, clubMode: r, T: a, user: n, navigation: f }) {
   const o = f || [
     { id: 'classifica', label: 'Classifica' },
     { id: 'stats', label: 'Statistiche' },
@@ -1323,7 +1346,7 @@ function Rt({ active: t, setActive: s, clubMode: r, T: a, user: n, navigation: f
     ),
   });
 }
-function Dt({ active: t, setActive: s, navigation: r = [], clubMode: a = !1 }) {
+function Ot({ active: t, setActive: s, navigation: r = [], clubMode: a = !1 }) {
   const [n, f] = x.useState(!1);
   x.useEffect(() => {
     n && f(!1);
@@ -1502,8 +1525,8 @@ function Dt({ active: t, setActive: s, navigation: r = [], clubMode: a = !1 }) {
         }),
       },
     ],
-    d = o,
-    u = (i) => {
+    u = o,
+    d = (i) => {
       (s(i.id), n && f(!1));
     },
     m = (i) => {
@@ -1584,13 +1607,13 @@ function Dt({ active: t, setActive: s, navigation: r = [], clubMode: a = !1 }) {
       e.jsxs('div', {
         className: `grid h-16 ${a ? 'grid-cols-5' : 'grid-cols-4'}`,
         children: [
-          d.map((i) =>
+          u.map((i) =>
             e.jsxs(
               'div',
               {
                 className: `bottom-nav-item flex flex-col items-center justify-center space-y-1 ${t === i.id ? 'text-blue-600 bg-blue-50' : 'text-gray-600'}`,
-                onClick: () => u(i),
-                onTouchEnd: () => u(i),
+                onClick: () => d(i),
+                onTouchEnd: () => d(i),
                 style: {
                   WebkitTapHighlightColor: 'rgba(0,0,0,0)',
                   WebkitTouchCallout: 'none',
@@ -1642,7 +1665,7 @@ function Dt({ active: t, setActive: s, navigation: r = [], clubMode: a = !1 }) {
     ],
   });
 }
-function _e() {
+function Be() {
   const [t, s] = x.useState(null),
     [r, a] = x.useState(!1),
     [n, f] = x.useState(!1),
@@ -1650,34 +1673,34 @@ function _e() {
   x.useEffect(() => {
     ((() => {
       const h = navigator.userAgent,
-        N = /iPad|iPhone|iPod/.test(h),
+        A = /iPad|iPhone|iPod/.test(h),
         S = /Android/.test(h),
-        E = N || S || /Mobile|Tablet/.test(h),
+        E = A || S || /Mobile|Tablet/.test(h),
         y = /Chrome/.test(h) && !/Edge|Edg/.test(h),
         v = /Edge|Edg/.test(h),
-        A = /Firefox/.test(h),
+        N = /Firefox/.test(h),
         j = /Safari/.test(h) && !/Chrome|CriOS|FxiOS/.test(h),
         b = /OPR|Opera/.test(h),
-        P = /SamsungBrowser/.test(h);
+        C = /SamsungBrowser/.test(h);
       l({
-        isIOS: N,
+        isIOS: A,
         isAndroid: S,
         isMobile: E,
         isChrome: y,
         isEdge: v,
-        isFirefox: A,
+        isFirefox: N,
         isSafari: j,
         isOpera: b,
-        isSamsung: P,
-        supportsInstallPrompt: y || v || P || b,
+        isSamsung: C,
+        supportsInstallPrompt: y || v || C || b,
       });
     })(),
       (() => {
         const h = window.matchMedia('(display-mode: standalone)').matches,
-          N = window.navigator.standalone === !0,
+          A = window.navigator.standalone === !0,
           S = window.matchMedia('(display-mode: fullscreen)').matches,
           E = window.matchMedia('(display-mode: minimal-ui)').matches,
-          y = h || N || S || E;
+          y = h || A || S || E;
         (f(y), y && console.log('✅ PWA is already installed'));
       })());
     const p = (h) => {
@@ -1700,7 +1723,7 @@ function _e() {
       }
     );
   }, [o.supportsInstallPrompt]);
-  const d = async () => {
+  const u = async () => {
       if (!t) return (console.warn('⚠️ No deferred prompt available'), !1);
       try {
         t.prompt();
@@ -1712,8 +1735,8 @@ function _e() {
         return (console.error('❌ PWA installation failed:', i), !1);
       }
     },
-    u = () => {
-      const { isIOS: i, isAndroid: c, isSafari: p, isFirefox: w, isChrome: h, isEdge: N } = o;
+    d = () => {
+      const { isIOS: i, isAndroid: c, isSafari: p, isFirefox: w, isChrome: h, isEdge: A } = o;
       return i && p
         ? {
             show: !0,
@@ -1743,7 +1766,7 @@ function _e() {
                     'Conferma cliccando "Installa"',
                   ],
             }
-          : c && (h || N)
+          : c && (h || A)
             ? {
                 show: !0,
                 title: 'Installa su Android',
@@ -1755,7 +1778,7 @@ function _e() {
                   "L'app verrà aggiunta alla home screen",
                 ],
               }
-            : !o.isMobile && (h || N)
+            : !o.isMobile && (h || A)
               ? {
                   show: !0,
                   title: 'Installa sul Desktop',
@@ -1777,13 +1800,13 @@ function _e() {
   return {
     isInstallable: n ? !1 : !!((o.isIOS && o.isSafari) || (r && t) || o.isFirefox),
     isInstalled: n,
-    installApp: d,
+    installApp: u,
     browserInfo: o,
     isPWASupported: m(),
-    installInstructions: u(),
+    installInstructions: d(),
   };
 }
-function Tt({ className: t = '' }) {
+function Wt({ className: t = '' }) {
   const {
       isInstallable: s,
       isInstalled: r,
@@ -1791,8 +1814,8 @@ function Tt({ className: t = '' }) {
       browserInfo: n,
       isPWASupported: f,
       installInstructions: o,
-    } = _e(),
-    [l, d] = x.useState(!1);
+    } = Be(),
+    [l, u] = x.useState(!1);
   if (r)
     return e.jsxs('div', {
       className: `flex items-center gap-2 text-green-600 text-sm ${t}`,
@@ -1812,15 +1835,15 @@ function Tt({ className: t = '' }) {
       children: 'Browser non supportato per PWA',
     });
   if (!s) return null;
-  const u = async () => {
+  const d = async () => {
       if (o.show) {
-        d(!0);
+        u(!0);
         return;
       }
       try {
-        (await a()) || (o.show && d(!0));
+        (await a()) || (o.show && u(!0));
       } catch (g) {
-        (console.error('Install failed:', g), o.show && d(!0));
+        (console.error('Install failed:', g), o.show && u(!0));
       }
     },
     m = () =>
@@ -1834,7 +1857,7 @@ function Tt({ className: t = '' }) {
   return e.jsxs(e.Fragment, {
     children: [
       e.jsxs('button', {
-        onClick: u,
+        onClick: d,
         className: `flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${t}`,
         children: [
           e.jsx('svg', {
@@ -1927,7 +1950,7 @@ function Tt({ className: t = '' }) {
                   className: 'flex gap-3',
                   children: [
                     e.jsx('button', {
-                      onClick: () => d(!1),
+                      onClick: () => u(!1),
                       className:
                         'flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-3 px-4 rounded-xl font-medium transition-colors',
                       children: 'Chiudi',
@@ -1936,7 +1959,7 @@ function Tt({ className: t = '' }) {
                       !n.isFirefox &&
                       e.jsx('button', {
                         onClick: async () => {
-                          (d(!1), await a());
+                          (u(!1), await a());
                         },
                         className:
                           'flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-4 rounded-xl font-medium transition-all shadow-lg',
@@ -1951,18 +1974,18 @@ function Tt({ className: t = '' }) {
     ],
   });
 }
-function zt() {
+function $t() {
   const {
       isInstallable: t,
       isInstalled: s,
       installApp: r,
       browserInfo: a,
       installInstructions: n,
-    } = _e(),
+    } = Be(),
     [f, o] = x.useState(!1),
-    [l, d] = x.useState(!1);
+    [l, u] = x.useState(!1);
   if (s || !t) return null;
-  const u = async () => {
+  const d = async () => {
       if (n && n.show) {
         o(!0);
         return;
@@ -1980,7 +2003,7 @@ function zt() {
         className: 'sm:hidden fixed right-4 bottom-20 z-[9999]',
         children: l
           ? e.jsx('button', {
-              onClick: () => d(!1),
+              onClick: () => u(!1),
               className:
                 'w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center backdrop-blur-sm',
               children: e.jsx('svg', {
@@ -2001,7 +2024,7 @@ function zt() {
                 'flex items-center bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full shadow-lg backdrop-blur-sm',
               children: [
                 e.jsxs('button', {
-                  onClick: u,
+                  onClick: d,
                   className: 'flex items-center gap-2 px-4 py-3 text-sm font-medium',
                   children: [
                     e.jsx('svg', {
@@ -2020,7 +2043,7 @@ function zt() {
                   ],
                 }),
                 e.jsx('button', {
-                  onClick: () => d(!0),
+                  onClick: () => u(!0),
                   className: 'px-3 py-3 text-white/70 hover:text-white border-l border-white/20',
                   children: e.jsx('svg', {
                     className: 'w-3 h-3',
@@ -2111,13 +2134,13 @@ function zt() {
     ],
   });
 }
-function Ot() {
+function Ft() {
   const { user: t } = G(),
-    { clubMode: s, loading: r } = Pe(),
-    { updatingFromCloud: a } = kt(),
+    { clubMode: s, loading: r } = _e(),
+    { updatingFromCloud: a } = St(),
     n = Q(),
-    f = Te(),
-    o = C.useMemo(() => Et(), []),
+    f = Oe(),
+    o = P.useMemo(() => Rt(), []),
     l = [
       { id: 'dashboard', label: 'Dashboard', path: '/dashboard', public: !0 },
       { id: 'classifica', label: 'Classifica', path: '/classifica', public: !0 },
@@ -2138,13 +2161,13 @@ function Ot() {
       },
       { id: 'extra', label: 'Extra', path: '/extra', public: !0 },
     ],
-    d = n.pathname,
-    u = l.find((i) => i.path === d)?.id || '',
+    u = n.pathname,
+    d = l.find((i) => i.path === u)?.id || '',
     m = (i) => {
       const c = l.find((p) => p.id === i);
       c && f(c.path);
     },
-    g = d === '/dashboard' || d === '/';
+    g = u === '/dashboard' || u === '/';
   return e.jsxs('div', {
     className: `min-h-screen safe-area-top safe-area-bottom ${o.text} ${g ? 'bg-gradient-to-b from-neutral-50 via-white to-neutral-100' : o.pageBg}`,
     children: [
@@ -2158,7 +2181,7 @@ function Ot() {
               className: 'flex items-center gap-2 sm:gap-3 min-w-0',
               children: [
                 e.jsx('img', {
-                  src: _t,
+                  src: Mt,
                   alt: 'Sporting Cat',
                   className: 'h-8 w-auto rounded-md shadow shrink-0',
                 }),
@@ -2173,9 +2196,9 @@ function Ot() {
               children: [
                 e.jsx('div', {
                   className: 'hidden sm:block',
-                  children: e.jsx(Tt, { className: 'text-xs px-3 py-1.5' }),
+                  children: e.jsx(Wt, { className: 'text-xs px-3 py-1.5' }),
                 }),
-                e.jsx(Rt, { active: u, setActive: m, clubMode: s, T: o, user: t, navigation: l }),
+                e.jsx(zt, { active: d, setActive: m, clubMode: s, T: o, user: t, navigation: l }),
               ],
             }),
           ],
@@ -2184,89 +2207,89 @@ function Ot() {
       e.jsx('main', {
         className:
           'max-w-[1800px] mx-auto px-3 sm:px-4 py-5 sm:py-6 safe-area-left safe-area-right pb-20 md:pb-5',
-        children: e.jsx(ze, {}),
+        children: e.jsx(We, {}),
       }),
-      e.jsx(Dt, { active: u, setActive: m, navigation: l, clubMode: s }),
-      e.jsx(zt, {}),
-      e.jsx(Bt, {}),
-      e.jsx(It, { visible: r || a, message: a ? 'Sincronizzazione...' : 'Caricamento...' }),
+      e.jsx(Ot, { active: d, setActive: m, navigation: l, clubMode: s }),
+      e.jsx($t, {}),
+      e.jsx(Dt, {}),
+      e.jsx(Lt, { visible: r || a, message: a ? 'Sincronizzazione...' : 'Caricamento...' }),
     ],
   });
 }
-const Wt = C.lazy(() =>
-    B(() => import('./LoginPage-mfce5qh5-Cl5UCzwQ.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
+const Ut = P.lazy(() =>
+    B(() => import('./LoginPage-mfcpc59i-CrMfgFNV.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
   ),
-  $t = C.lazy(() =>
-    B(() => import('./DashboardPage-mfce5qh5-DH3AOQA7.js'), __vite__mapDeps([5, 1, 2, 4]))
+  Vt = P.lazy(() =>
+    B(() => import('./DashboardPage-mfcpc59i-CrACviT3.js'), __vite__mapDeps([5, 1, 2, 4]))
   ),
-  Ft = C.lazy(() =>
-    B(() => import('./ClassificaPage-mfce5qh5-fl8Eg0CJ.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
+  Ht = P.lazy(() =>
+    B(() => import('./ClassificaPage-mfcpc59i-BA25TTeR.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
   ),
-  Ut = C.lazy(() =>
+  qt = P.lazy(() =>
     B(
-      () => import('./StatsPage-mfce5qh5-C6rwJDkC.js'),
+      () => import('./StatsPage-mfcpc59i-BtHLFKn9.js'),
       __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4])
     )
   ),
-  Vt = C.lazy(() =>
+  Gt = P.lazy(() =>
     B(
-      () => import('./BookingPage-mfce5qh5-CrqOq0us.js'),
+      () => import('./BookingPage-mfcpc59i-B5Bp8c-3.js'),
       __vite__mapDeps([12, 1, 2, 13, 14, 4, 15])
     )
   ),
-  Ht = C.lazy(() =>
+  Jt = P.lazy(() =>
     B(
-      () => import('./PlayersPage-mfce5qh5-BdFWdkTm.js'),
+      () => import('./PlayersPage-mfcpc59i-B7bPQcnY.js'),
       __vite__mapDeps([16, 1, 2, 3, 10, 11, 14, 4])
     )
   ),
-  qt = C.lazy(() =>
-    B(() => import('./MatchesPage-mfce5qh5-BNvDAYpx.js'), __vite__mapDeps([17, 1, 2, 3, 11, 4]))
+  Kt = P.lazy(() =>
+    B(() => import('./MatchesPage-mfcpc59i-CF2bGWrY.js'), __vite__mapDeps([17, 1, 2, 3, 11, 4]))
   ),
-  Gt = C.lazy(() =>
-    B(() => import('./TournamentsPage-mfce5qh5-CLX7gnk5.js'), __vite__mapDeps([18, 1, 2, 3, 4]))
+  Yt = P.lazy(() =>
+    B(() => import('./TournamentsPage-mfcpc59i-QxcAvAOD.js'), __vite__mapDeps([18, 1, 2, 3, 4]))
   ),
-  Jt = C.lazy(() =>
+  Xt = P.lazy(() =>
     B(
-      () => import('./ProfilePage-mfce5qh5-DO1tXP1h.js'),
+      () => import('./ProfilePage-mfcpc59i-C11FW6DL.js'),
       __vite__mapDeps([19, 1, 2, 3, 10, 20, 21, 14, 4])
     )
   ),
-  Kt = C.lazy(() =>
-    B(() => import('./ExtraPage-mfce5qh5-CO2f3oJ0.js'), __vite__mapDeps([22, 1, 2, 20, 3, 21, 4]))
+  Zt = P.lazy(() =>
+    B(() => import('./ExtraPage-mfcpc59i-Nn9iQ7dR.js'), __vite__mapDeps([22, 1, 2, 20, 3, 21, 4]))
   ),
-  Yt = C.lazy(() =>
+  Qt = P.lazy(() =>
     B(
-      () => import('./AdminBookingsPage-mfce5qh5-C_NaYJBB.js'),
-      __vite__mapDeps([23, 1, 2, 3, 10, 21, 15, 4])
+      () => import('./AdminBookingsPage-mfcpc59i-CL8LCE-8.js'),
+      __vite__mapDeps([23, 1, 2, 3, 10, 21, 15, 14, 4])
     )
   );
-function Xt() {
-  return e.jsx(St, {
-    children: e.jsx(Oe, {
-      children: e.jsx(pt, {
-        children: e.jsx(Nt, {
-          children: e.jsx(At, {
+function es() {
+  return e.jsx(Ct, {
+    children: e.jsx($e, {
+      children: e.jsx(wt, {
+        children: e.jsx(It, {
+          children: e.jsx(Pt, {
             children: e.jsx(x.Suspense, {
-              fallback: e.jsx(te, {}),
-              children: e.jsxs(We, {
+              fallback: e.jsx(se, {}),
+              children: e.jsxs(Fe, {
                 children: [
-                  e.jsx(_, { path: '/login', element: e.jsx(Lt, { children: e.jsx(Wt, {}) }) }),
+                  e.jsx(_, { path: '/login', element: e.jsx(Bt, { children: e.jsx(Ut, {}) }) }),
                   e.jsxs(_, {
                     path: '/',
-                    element: e.jsx(Pt, { children: e.jsx(Ot, {}) }),
+                    element: e.jsx(Et, { children: e.jsx(Ft, {}) }),
                     children: [
                       e.jsx(_, { index: !0, element: e.jsx(W, { to: 'dashboard', replace: !0 }) }),
-                      e.jsx(_, { path: 'dashboard', element: e.jsx($t, {}) }),
-                      e.jsx(_, { path: 'classifica', element: e.jsx(Ft, {}) }),
-                      e.jsx(_, { path: 'stats', element: e.jsx(Ut, {}) }),
-                      e.jsx(_, { path: 'booking', element: e.jsx(Vt, {}) }),
-                      e.jsx(_, { path: 'extra', element: e.jsx(Kt, {}) }),
-                      e.jsx(_, { path: 'players', element: e.jsx(Ht, {}) }),
-                      e.jsx(_, { path: 'matches/create', element: e.jsx(qt, {}) }),
-                      e.jsx(_, { path: 'tournaments', element: e.jsx(Gt, {}) }),
-                      e.jsx(_, { path: 'admin/bookings', element: e.jsx(Yt, {}) }),
-                      e.jsx(_, { path: 'profile', element: e.jsx(Jt, {}) }),
+                      e.jsx(_, { path: 'dashboard', element: e.jsx(Vt, {}) }),
+                      e.jsx(_, { path: 'classifica', element: e.jsx(Ht, {}) }),
+                      e.jsx(_, { path: 'stats', element: e.jsx(qt, {}) }),
+                      e.jsx(_, { path: 'booking', element: e.jsx(Gt, {}) }),
+                      e.jsx(_, { path: 'extra', element: e.jsx(Zt, {}) }),
+                      e.jsx(_, { path: 'players', element: e.jsx(Jt, {}) }),
+                      e.jsx(_, { path: 'matches/create', element: e.jsx(Kt, {}) }),
+                      e.jsx(_, { path: 'tournaments', element: e.jsx(Yt, {}) }),
+                      e.jsx(_, { path: 'admin/bookings', element: e.jsx(Qt, {}) }),
+                      e.jsx(_, { path: 'profile', element: e.jsx(Xt, {}) }),
                     ],
                   }),
                   e.jsx(_, { path: '*', element: e.jsx(W, { to: '/dashboard', replace: !0 }) }),
@@ -2298,34 +2321,35 @@ function Xt() {
         console.log('❌ SW registration failed: ', t);
       });
   });
-const Ee = document.getElementById('root');
-if (!Ee) throw new Error('Elemento #root non trovato in index.html');
-at.createRoot(Ee).render(e.jsx(C.StrictMode, { children: e.jsx(Xt, {}) }));
+const Me = document.getElementById('root');
+if (!Me) throw new Error('Elemento #root non trovato in index.html');
+ot.createRoot(Me).render(e.jsx(P.StrictMode, { children: e.jsx(es, {}) }));
 export {
   I as D,
-  _t as L,
-  Tt as P,
+  Mt as L,
+  Wt as P,
   B as _,
-  lt as a,
-  ct as b,
-  ft as c,
-  ht as d,
-  _e as e,
-  kt as f,
-  as as g,
+  ut as a,
+  dt as b,
+  ht as c,
+  xt as d,
+  Be as e,
+  St as f,
+  is as g,
   Y as h,
-  rs as i,
+  os as i,
   e as j,
-  Pe as k,
-  gt as l,
-  yt as m,
-  L as n,
-  R as o,
-  ve as p,
-  ts as q,
-  vt as r,
+  _e as k,
+  pt as l,
+  bt as m,
+  At as n,
+  L as o,
+  R as p,
+  ee as q,
+  kt as r,
   q as s,
-  Et as t,
+  Rt as t,
   G as u,
-  ss as v,
+  as as v,
+  ns as w,
 };

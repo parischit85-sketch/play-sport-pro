@@ -366,15 +366,17 @@ export async function loadBookingsForPlayer({ userId, email, name }) {
 export async function getPublicBookings() {
   const bookings = await loadPublicBookings();
   // Filtra solo i campi necessari per compatibilità
-  return bookings.map((booking) => ({
-    id: booking.id,
-    courtId: booking.courtId,
-    courtName: booking.courtName,
-    date: booking.date,
-    time: booking.time,
-    duration: booking.duration,
-    status: booking.status,
-  }));
+  return bookings
+    .filter((b) => b.status === 'confirmed')
+    .map((booking) => ({
+      id: booking.id,
+      courtId: booking.courtId,
+      courtName: booking.courtName,
+      date: booking.date,
+      time: booking.time,
+      duration: booking.duration,
+      status: booking.status,
+    }));
 }
 
 /**

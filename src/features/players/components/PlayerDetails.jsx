@@ -3,7 +3,9 @@
 // Vista dettagliata del giocatore con tab multiple
 // =============================================
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { listAllUserProfiles } from '@services/auth.jsx';
+import { useLeague } from '@contexts/LeagueContext.jsx';
 import { DEFAULT_RATING } from '@lib/ids.js';
 import { PLAYER_CATEGORIES } from '../types/playerTypes.js';
 import PlayerNotes from './PlayerNotes';
@@ -15,6 +17,65 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [linking, setLinking] = useState(false);
   const [linkEmail, setLinkEmail] = useState('');
+  const [accountSearch, setAccountSearch] = useState('');
+  const [accounts, setAccounts] = useState([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(false);
+  const { state } = useLeague();
+
+  const linkedEmailsSet = useMemo(
+    () =>
+      new Set(
+        (state?.players || [])
+          .filter((p) => p.id !== player.id && (p.isAccountLinked || p.linkedAccountEmail))
+          .map((p) => (p.linkedAccountEmail || '').toLowerCase())
+          .filter(Boolean)
+      ),
+    [state?.players, player.id]
+  );
+  const linkedIdsSet = useMemo(
+    () =>
+      new Set(
+        (state?.players || [])
+          .filter((p) => p.id !== player.id && (p.isAccountLinked || p.linkedAccountId))
+          .map((p) => p.linkedAccountId)
+          .filter(Boolean)
+      ),
+    [state?.players, player.id]
+  );
+
+  const unlinkedAccounts = useMemo(() => {
+    return (accounts || []).filter((acc) => {
+      const email = (acc.email || '').toLowerCase();
+      const uid = acc.uid;
+      if (!email) return false;
+      if (uid && linkedIdsSet.has(uid)) return false;
+      return !linkedEmailsSet.has(email);
+    });
+  }, [accounts, linkedEmailsSet, linkedIdsSet]);
+
+  const filteredAccounts = useMemo(() => {
+    const q = accountSearch.trim().toLowerCase();
+    if (!q) return unlinkedAccounts;
+    return unlinkedAccounts.filter((acc) => {
+      return (
+        (acc.email || '').toLowerCase().includes(q) ||
+        (acc.firstName || '').toLowerCase().includes(q) ||
+        (acc.lastName || '').toLowerCase().includes(q)
+      );
+    });
+  }, [unlinkedAccounts, accountSearch]);
+
+  const openAccountsPicker = async () => {
+    try {
+      setLoadingAccounts(true);
+      const res = await listAllUserProfiles(500);
+      setAccounts(res || []);
+      setAccountSearch('');
+      setLinking(true);
+    } finally {
+      setLoadingAccounts(false);
+    }
+  };
 
   const getCategoryLabel = (category) => {
     switch (category) {
@@ -232,39 +293,116 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
             </div>
 
             {!player.isAccountLinked && (
-              <div className="flex items-center gap-2">
-                {linking ? (
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="email"
-                      value={linkEmail}
-                      onChange={(e) => setLinkEmail(e.target.value)}
-                      placeholder="email@esempio.com"
-                      className={`${T.input} text-sm`}
-                    />
+              <div className="flex flex-col gap-2 w-full max-w-xl">
+                {!linking ? (
+                  <div className="flex items-center gap-2 justify-end">
                     <button
-                      onClick={handleLinkAccount}
-                      className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded"
+                      onClick={openAccountsPicker}
+                      className={`${T.btnSecondary} px-4 py-2 text-sm`}
+                      disabled={loadingAccounts}
                     >
-                      Collega
+                      {loadingAccounts ? 'Carico…' : '🔎 Cerca account'}
                     </button>
                     <button
-                      onClick={() => {
-                        setLinking(false);
-                        setLinkEmail('');
-                      }}
-                      className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded"
+                      onClick={() => setLinking(true)}
+                      className={`${T.btnSecondary} px-4 py-2 text-sm`}
                     >
-                      Annulla
+                      🔗 Collega via email
                     </button>
                   </div>
                 ) : (
-                  <button
-                    onClick={() => setLinking(true)}
-                    className={`${T.btnSecondary} px-4 py-2 text-sm`}
-                  >
-                    🔗 Collega Account
-                  </button>
+                  <div className="space-y-2">
+                    {/* Ricerca accounts */}
+                    {accounts.length > 0 ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={accountSearch}
+                            onChange={(e) => setAccountSearch(e.target.value)}
+                            placeholder="Cerca per nome o email…"
+                            className={`${T.input} text-sm flex-1`}
+                          />
+                          <button
+                            onClick={() => setAccounts([])}
+                            className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded"
+                          >
+                            Chiudi elenco
+                          </button>
+                        </div>
+                        <div
+                          className={`${T.cardBg} ${T.border} rounded-lg max-h-64 overflow-auto`}
+                        >
+                          {filteredAccounts.length === 0 ? (
+                            <div className={`p-3 text-sm ${T.subtext}`}>
+                              Nessun account disponibile
+                            </div>
+                          ) : (
+                            <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                              {filteredAccounts.map((acc) => (
+                                <li key={acc.uid} className="p-3 flex items-center justify-between">
+                                  <div className="min-w-0">
+                                    <div className={`${T.text} font-medium truncate`}>
+                                      {acc.firstName || acc.lastName
+                                        ? `${acc.firstName || ''} ${acc.lastName || ''}`.trim()
+                                        : acc.email || 'Senza nome'}
+                                    </div>
+                                    <div className={`text-xs ${T.subtext} truncate`}>
+                                      {acc.email}
+                                    </div>
+                                  </div>
+                                  <button
+                                    onClick={() => {
+                                      const email = acc.email || '';
+                                      if (!email) return;
+                                      onUpdate({
+                                        linkedAccountId: acc.uid,
+                                        linkedAccountEmail: email,
+                                        isAccountLinked: true,
+                                        updatedAt: new Date().toISOString(),
+                                      });
+                                      setLinking(false);
+                                      setAccounts([]);
+                                      setAccountSearch('');
+                                      setLinkEmail('');
+                                    }}
+                                    className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded ml-3 flex-shrink-0"
+                                  >
+                                    Collega
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="email"
+                          value={linkEmail}
+                          onChange={(e) => setLinkEmail(e.target.value)}
+                          placeholder="email@esempio.com"
+                          className={`${T.input} text-sm`}
+                        />
+                        <button
+                          onClick={handleLinkAccount}
+                          className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded"
+                        >
+                          Collega
+                        </button>
+                        <button
+                          onClick={() => {
+                            setLinking(false);
+                            setLinkEmail('');
+                          }}
+                          className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded"
+                        >
+                          Annulla
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             )}

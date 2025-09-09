@@ -1,28 +1,29 @@
 import {
   D as E,
   j as e,
-  i as G,
-  k as U,
-  u as _,
-  f as W,
-  t as V,
-} from './index-mfce5qh5-Bjue6Tcf.js';
-import { r as v, c as Y, b as H } from './router-mfce5qh5-SMEpEpls.js';
-import { S as q } from './Section-mfce5qh5-BVq7CZw3.js';
-import { M as L } from './Modal-mfce5qh5-Dv_rJ4XO.js';
-import { b as K } from './names-mfce5qh5-BW9lV2zG.js';
-import { loadBookingsForPlayer as Q } from './cloud-bookings-mfce5qh5-C7X43DHA.js';
-import './vendor-mfce5qh5-D3F3s8fL.js';
-import './firebase-mfce5qh5-jcIpuiEY.js';
-const w = { MEMBER: 'member', NON_MEMBER: 'non-member', GUEST: 'guest', VIP: 'vip' },
-  B = {
+  i as _,
+  k as Y,
+  f as H,
+  m as q,
+  u as K,
+  t as Q,
+} from './index-mfcpc59i-PpofX80g.js';
+import { r as j, c as Z, b as J } from './router-mfcpc59i-D7zFZhMN.js';
+import { S as X } from './Section-mfcpc59i-BMO9MkVE.js';
+import { M as G } from './Modal-mfcpc59i-CwYeunog.js';
+import { b as T } from './names-mfcpc59i-BW9lV2zG.js';
+import { loadBookingsForPlayer as ee } from './cloud-bookings-mfcpc59i-cWaUvgoz.js';
+import './vendor-mfcpc59i-D3F3s8fL.js';
+import './firebase-mfcpc59i-BteSMG94.js';
+const S = { MEMBER: 'member', NON_MEMBER: 'non-member', GUEST: 'guest', VIP: 'vip' },
+  I = {
     GENERAL: 'general',
     BOOKING: 'booking',
     PAYMENT: 'payment',
     DISCIPLINARY: 'disciplinary',
     MEDICAL: 'medical',
   },
-  F = () => ({
+  U = () => ({
     id: '',
     name: '',
     firstName: '',
@@ -34,7 +35,7 @@ const w = { MEMBER: 'member', NON_MEMBER: 'non-member', GUEST: 'guest', VIP: 'vi
     address: { street: '', city: '', province: '', postalCode: '', country: 'Italia' },
     baseRating: 1e3,
     rating: 1e3,
-    category: w.NON_MEMBER,
+    category: S.NON_MEMBER,
     linkedAccountId: null,
     linkedAccountEmail: null,
     isAccountLinked: !1,
@@ -52,7 +53,7 @@ const w = { MEMBER: 'member', NON_MEMBER: 'non-member', GUEST: 'guest', VIP: 'vi
     isActive: !0,
     communicationPreferences: { email: !0, sms: !1, whatsapp: !1, notifications: !0 },
   }),
-  z = () => ({
+  L = () => ({
     id: '',
     amount: 0,
     type: 'credit',
@@ -61,9 +62,9 @@ const w = { MEMBER: 'member', NON_MEMBER: 'non-member', GUEST: 'guest', VIP: 'vi
     createdAt: null,
     createdBy: null,
   }),
-  O = () => ({
+  F = () => ({
     id: '',
-    type: B.GENERAL,
+    type: I.GENERAL,
     title: '',
     content: '',
     isPrivate: !1,
@@ -71,50 +72,50 @@ const w = { MEMBER: 'member', NON_MEMBER: 'non-member', GUEST: 'guest', VIP: 'vi
     createdBy: null,
     tags: [],
   });
-function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onStats: m, T: d }) {
-  const g = t?.[a.id]?.rating ?? a.rating ?? E,
-    j = (s) => {
+function te({ player: a, playersById: t, onEdit: i, onDelete: l, onView: n, onStats: u, T: d }) {
+  const p = t?.[a.id]?.rating ?? a.rating ?? E,
+    v = (s) => {
       switch (s) {
-        case w.MEMBER:
+        case S.MEMBER:
           return 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300';
-        case w.VIP:
+        case S.VIP:
           return 'bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300';
-        case w.GUEST:
+        case S.GUEST:
           return 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300';
         default:
           return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300';
       }
     },
-    h = (s) => {
+    g = (s) => {
       switch (s) {
-        case w.MEMBER:
+        case S.MEMBER:
           return 'Membro';
-        case w.VIP:
+        case S.VIP:
           return 'VIP';
-        case w.GUEST:
+        case S.GUEST:
           return 'Ospite';
-        case w.NON_MEMBER:
+        case S.NON_MEMBER:
           return 'Non Membro';
         default:
           return 'N/A';
       }
     },
-    p = (s) => {
+    b = (s) => {
       if (!s) return 'Mai';
-      const x = Date.now() - new Date(s).getTime(),
-        f = Math.floor(x / (1e3 * 60 * 60 * 24));
-      return f === 0
+      const o = Date.now() - new Date(s).getTime(),
+        y = Math.floor(o / (1e3 * 60 * 60 * 24));
+      return y === 0
         ? 'Oggi'
-        : f === 1
+        : y === 1
           ? 'Ieri'
-          : f < 7
-            ? `${f} giorni fa`
-            : f < 30
-              ? `${Math.floor(f / 7)} settimane fa`
-              : `${Math.floor(f / 30)} mesi fa`;
+          : y < 7
+            ? `${y} giorni fa`
+            : y < 30
+              ? `${Math.floor(y / 7)} settimane fa`
+              : `${Math.floor(y / 30)} mesi fa`;
     },
-    k = a.subscriptions?.[a.subscriptions?.length - 1],
-    $ = a.bookingHistory?.length || 0,
+    w = a.subscriptions?.[a.subscriptions?.length - 1],
+    k = a.bookingHistory?.length || 0,
     C = a.notes?.length || 0,
     c = a.tags || [];
   return (
@@ -143,7 +144,7 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                           className: 'flex items-center gap-2 mb-1',
                           children: [
                             e.jsx('button', {
-                              onClick: r,
+                              onClick: n,
                               className:
                                 'font-semibold text-lg hover:opacity-80 transition truncate',
                               children:
@@ -193,14 +194,14 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                   className: 'flex flex-col items-start gap-1 min-w-[140px]',
                   children: [
                     e.jsx('span', {
-                      className: `px-2 py-1 rounded-full text-xs font-medium ${j(a.category)}`,
-                      children: h(a.category),
+                      className: `px-2 py-1 rounded-full text-xs font-medium ${v(a.category)}`,
+                      children: g(a.category),
                     }),
-                    k
+                    w
                       ? e.jsx('span', {
                           className: 'text-[11px] text-green-700 dark:text-green-300',
-                          title: `Scadenza: ${k.endDate ? new Date(k.endDate).toLocaleDateString('it-IT') : 'N/D'}`,
-                          children: k.type || 'Abbonamento',
+                          title: `Scadenza: ${w.endDate ? new Date(w.endDate).toLocaleDateString('it-IT') : 'N/D'}`,
+                          children: w.type || 'Abbonamento',
                         })
                       : e.jsx('span', {
                           className: `text-[11px] ${d.subtext}`,
@@ -213,7 +214,7 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                   children: [
                     e.jsx('div', {
                       className: 'text-2xl font-bold text-blue-600 dark:text-blue-400',
-                      children: Number(g).toFixed(0),
+                      children: Number(p).toFixed(0),
                     }),
                     e.jsx('div', { className: `text-xs ${d.subtext}`, children: 'Rating' }),
                   ],
@@ -231,12 +232,12 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                 e.jsxs('div', {
                   className: 'text-center min-w-[120px]',
                   children: [
-                    e.jsx('div', { className: 'text-sm font-medium', children: p(a.lastActivity) }),
+                    e.jsx('div', { className: 'text-sm font-medium', children: b(a.lastActivity) }),
                     e.jsx('div', {
                       className: `text-xs ${d.subtext}`,
                       children: 'Ultima attività',
                     }),
-                    e.jsxs('div', { className: 'text-xs mt-1', children: ['📅 ', $, ' prenot.'] }),
+                    e.jsxs('div', { className: 'text-xs mt-1', children: ['📅 ', k, ' prenot.'] }),
                   ],
                 }),
                 e.jsxs('div', {
@@ -258,7 +259,7 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                     e.jsxs('div', {
                       className: 'flex gap-1 flex-wrap',
                       children: [
-                        c.slice(0, 3).map((s, x) =>
+                        c.slice(0, 3).map((s, o) =>
                           e.jsx(
                             'span',
                             {
@@ -266,7 +267,7 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                                 'px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-[11px] break-words max-w-[10rem]',
                               children: s,
                             },
-                            x
+                            o
                           )
                         ),
                         c.length > 3 &&
@@ -282,19 +283,19 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                   className: 'flex items-center gap-2 ml-auto',
                   children: [
                     e.jsx('button', {
-                      onClick: r,
+                      onClick: n,
                       className: `${d.btnSecondary} px-3 py-1 text-sm`,
                       title: 'Visualizza dettagli',
                       children: '👁️',
                     }),
                     e.jsx('button', {
-                      onClick: n,
+                      onClick: i,
                       className: `${d.btnSecondary} px-3 py-1 text-sm`,
                       title: 'Modifica',
                       children: '✏️',
                     }),
                     e.jsx('button', {
-                      onClick: m,
+                      onClick: u,
                       className: `${d.btnSecondary} px-3 py-1 text-sm`,
                       title: 'Statistiche',
                       children: '📊',
@@ -344,7 +345,7 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                       className: 'flex items-center gap-2 mb-1',
                       children: [
                         e.jsx('button', {
-                          onClick: r,
+                          onClick: n,
                           className: 'font-semibold text-lg hover:opacity-80 transition truncate',
                           children:
                             a.name ||
@@ -366,8 +367,8 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                     e.jsx('div', {
                       className: 'flex items-center gap-2 mb-2',
                       children: e.jsx('span', {
-                        className: `px-2 py-1 rounded-full text-xs font-medium ${j(a.category)}`,
-                        children: h(a.category),
+                        className: `px-2 py-1 rounded-full text-xs font-medium ${v(a.category)}`,
+                        children: g(a.category),
                       }),
                     }),
                   ],
@@ -377,7 +378,7 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                   children: [
                     e.jsx('div', {
                       className: 'text-xl font-bold text-blue-600 dark:text-blue-400',
-                      children: Number(g).toFixed(0),
+                      children: Number(p).toFixed(0),
                     }),
                     e.jsx('div', { className: `text-xs ${d.subtext}`, children: 'Rating' }),
                   ],
@@ -398,7 +399,7 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                 }),
                 e.jsxs('div', {
                   children: [
-                    e.jsx('div', { className: 'text-sm font-medium', children: p(a.lastActivity) }),
+                    e.jsx('div', { className: 'text-sm font-medium', children: b(a.lastActivity) }),
                     e.jsx('div', {
                       className: `text-xs ${d.subtext}`,
                       children: 'Ultima attività',
@@ -414,7 +415,7 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
                   className: 'text-left',
                   children: [
                     e.jsx('div', { className: `${d.subtext}`, children: 'Prenotazioni' }),
-                    e.jsxs('div', { children: ['📅 ', $] }),
+                    e.jsxs('div', { children: ['📅 ', k] }),
                   ],
                 }),
                 e.jsxs('div', {
@@ -430,17 +431,17 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
               className: 'flex gap-2',
               children: [
                 e.jsx('button', {
-                  onClick: r,
+                  onClick: n,
                   className: `${d.btnSecondary} flex-1 py-2 text-sm`,
                   children: '👁️ Dettagli',
                 }),
                 e.jsx('button', {
-                  onClick: m,
+                  onClick: u,
                   className: `${d.btnSecondary} flex-1 py-2 text-sm`,
                   children: '📊 Stats',
                 }),
                 e.jsx('button', {
-                  onClick: n,
+                  onClick: i,
                   className: `${d.btnSecondary} px-4 py-2 text-sm`,
                   children: '✏️',
                 }),
@@ -458,43 +459,41 @@ function Z({ player: a, playersById: t, onEdit: n, onDelete: l, onView: r, onSta
     })
   );
 }
-function J({ player: a, onSave: t, onCancel: n, T: l }) {
-  const [r, m] = v.useState(F()),
-    [d, g] = v.useState({}),
-    [j, h] = v.useState('basic');
-  v.useEffect(() => {
-    a && m({ ...F(), ...a });
+function se({ player: a, onSave: t, onCancel: i, T: l }) {
+  const [n, u] = j.useState(U()),
+    [d, p] = j.useState({}),
+    [v, g] = j.useState('basic');
+  j.useEffect(() => {
+    a && u({ ...U(), ...a });
   }, [a]);
-  const p = (c, s) => {
-      (m((x) => {
+  const b = (c, s) => {
+      (u((o) => {
         if (c.includes('.')) {
-          const [f, i] = c.split('.');
-          return { ...x, [f]: { ...x[f], [i]: s } };
+          const [y, r] = c.split('.');
+          return { ...o, [y]: { ...o[y], [r]: s } };
         }
-        return { ...x, [c]: s };
+        return { ...o, [c]: s };
       }),
-        d[c] && g((x) => ({ ...x, [c]: void 0 })));
+        d[c] && p((o) => ({ ...o, [c]: void 0 })));
     },
-    k = () => {
+    w = () => {
       const c = {};
       return (
-        r.firstName?.trim() || (c.firstName = 'Nome richiesto'),
-        r.lastName?.trim() || (c.lastName = 'Cognome richiesto'),
-        r.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(r.email) && (c.email = 'Email non valida'),
-        r.phone &&
-          !/^[\d\s\+\-\(\)]+$/.test(r.phone) &&
-          (c.phone = 'Numero di telefono non valido'),
-        g(c),
+        n.firstName?.trim() || (c.firstName = 'Nome richiesto'),
+        n.lastName?.trim() || (c.lastName = 'Cognome richiesto'),
+        n.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(n.email) && (c.email = 'Email non valida'),
+        n.phone && !/^[\d\s+\-()]+$/.test(n.phone) && (c.phone = 'Numero di telefono non valido'),
+        p(c),
         Object.keys(c).length === 0
       );
     },
-    $ = (c) => {
-      if ((c.preventDefault(), !k())) return;
+    k = (c) => {
+      if ((c.preventDefault(), !w())) return;
       const s = {
-        ...r,
-        name: `${r.firstName} ${r.lastName}`.trim(),
-        baseRating: Number(r.baseRating) || E,
-        rating: Number(r.rating) || r.baseRating || E,
+        ...n,
+        name: `${n.firstName} ${n.lastName}`.trim(),
+        baseRating: Number(n.baseRating) || E,
+        rating: Number(n.rating) || n.baseRating || E,
       };
       t(s);
     },
@@ -506,7 +505,7 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
       { id: 'preferences', label: '⚙️ Preferenze', icon: '⚙️' },
     ];
   return e.jsxs('form', {
-    onSubmit: $,
+    onSubmit: k,
     className: 'space-y-6',
     children: [
       e.jsx('div', {
@@ -518,8 +517,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
               'button',
               {
                 type: 'button',
-                onClick: () => h(c.id),
-                className: `py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${j === c.id ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`,
+                onClick: () => g(c.id),
+                className: `py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${v === c.id ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`,
                 children: [
                   e.jsx('span', { className: 'hidden sm:inline', children: c.label }),
                   e.jsx('span', { className: 'sm:hidden text-lg', children: c.icon }),
@@ -533,7 +532,7 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
       e.jsxs('div', {
         className: 'min-h-[400px]',
         children: [
-          j === 'basic' &&
+          v === 'basic' &&
             e.jsxs('div', {
               className: 'space-y-4',
               children: [
@@ -548,8 +547,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                         }),
                         e.jsx('input', {
                           type: 'text',
-                          value: r.firstName || '',
-                          onChange: (c) => p('firstName', c.target.value),
+                          value: n.firstName || '',
+                          onChange: (c) => b('firstName', c.target.value),
                           className: `${l.input} w-full ${d.firstName ? 'border-red-500' : ''}`,
                           placeholder: 'Nome del giocatore',
                         }),
@@ -568,8 +567,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                         }),
                         e.jsx('input', {
                           type: 'text',
-                          value: r.lastName || '',
-                          onChange: (c) => p('lastName', c.target.value),
+                          value: n.lastName || '',
+                          onChange: (c) => b('lastName', c.target.value),
                           className: `${l.input} w-full ${d.lastName ? 'border-red-500' : ''}`,
                           placeholder: 'Cognome del giocatore',
                         }),
@@ -590,8 +589,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                     }),
                     e.jsx('input', {
                       type: 'date',
-                      value: r.dateOfBirth || '',
-                      onChange: (c) => p('dateOfBirth', c.target.value),
+                      value: n.dateOfBirth || '',
+                      onChange: (c) => b('dateOfBirth', c.target.value),
                       className: `${l.input} w-full`,
                     }),
                   ],
@@ -604,8 +603,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                     }),
                     e.jsx('input', {
                       type: 'text',
-                      value: r.fiscalCode || '',
-                      onChange: (c) => p('fiscalCode', c.target.value.toUpperCase()),
+                      value: n.fiscalCode || '',
+                      onChange: (c) => b('fiscalCode', c.target.value.toUpperCase()),
                       className: `${l.input} w-full`,
                       placeholder: 'RSSMRA80A01H501U',
                       maxLength: 16,
@@ -619,21 +618,21 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                       children: 'Categoria',
                     }),
                     e.jsxs('select', {
-                      value: r.category || w.NON_MEMBER,
-                      onChange: (c) => p('category', c.target.value),
+                      value: n.category || S.NON_MEMBER,
+                      onChange: (c) => b('category', c.target.value),
                       className: `${l.input} w-full`,
                       children: [
-                        e.jsx('option', { value: w.NON_MEMBER, children: 'Non Membro' }),
-                        e.jsx('option', { value: w.MEMBER, children: 'Membro' }),
-                        e.jsx('option', { value: w.GUEST, children: 'Ospite' }),
-                        e.jsx('option', { value: w.VIP, children: 'VIP' }),
+                        e.jsx('option', { value: S.NON_MEMBER, children: 'Non Membro' }),
+                        e.jsx('option', { value: S.MEMBER, children: 'Membro' }),
+                        e.jsx('option', { value: S.GUEST, children: 'Ospite' }),
+                        e.jsx('option', { value: S.VIP, children: 'VIP' }),
                       ],
                     }),
                   ],
                 }),
               ],
             }),
-          j === 'contact' &&
+          v === 'contact' &&
             e.jsxs('div', {
               className: 'space-y-4',
               children: [
@@ -645,8 +644,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                     }),
                     e.jsx('input', {
                       type: 'email',
-                      value: r.email || '',
-                      onChange: (c) => p('email', c.target.value),
+                      value: n.email || '',
+                      onChange: (c) => b('email', c.target.value),
                       className: `${l.input} w-full ${d.email ? 'border-red-500' : ''}`,
                       placeholder: 'email@esempio.com',
                     }),
@@ -662,8 +661,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                     }),
                     e.jsx('input', {
                       type: 'tel',
-                      value: r.phone || '',
-                      onChange: (c) => p('phone', c.target.value),
+                      value: n.phone || '',
+                      onChange: (c) => b('phone', c.target.value),
                       className: `${l.input} w-full ${d.phone ? 'border-red-500' : ''}`,
                       placeholder: '+39 123 456 7890',
                     }),
@@ -677,8 +676,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                     e.jsx('h4', { className: `font-medium ${l.text}`, children: 'Indirizzo' }),
                     e.jsx('input', {
                       type: 'text',
-                      value: r.address?.street || '',
-                      onChange: (c) => p('address.street', c.target.value),
+                      value: n.address?.street || '',
+                      onChange: (c) => b('address.street', c.target.value),
                       className: `${l.input} w-full`,
                       placeholder: 'Via, numero civico',
                     }),
@@ -687,15 +686,15 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                       children: [
                         e.jsx('input', {
                           type: 'text',
-                          value: r.address?.city || '',
-                          onChange: (c) => p('address.city', c.target.value),
+                          value: n.address?.city || '',
+                          onChange: (c) => b('address.city', c.target.value),
                           className: `${l.input} w-full`,
                           placeholder: 'Città',
                         }),
                         e.jsx('input', {
                           type: 'text',
-                          value: r.address?.province || '',
-                          onChange: (c) => p('address.province', c.target.value),
+                          value: n.address?.province || '',
+                          onChange: (c) => b('address.province', c.target.value),
                           className: `${l.input} w-full`,
                           placeholder: 'Provincia',
                         }),
@@ -706,15 +705,15 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                       children: [
                         e.jsx('input', {
                           type: 'text',
-                          value: r.address?.postalCode || '',
-                          onChange: (c) => p('address.postalCode', c.target.value),
+                          value: n.address?.postalCode || '',
+                          onChange: (c) => b('address.postalCode', c.target.value),
                           className: `${l.input} w-full`,
                           placeholder: 'CAP',
                         }),
                         e.jsx('input', {
                           type: 'text',
-                          value: r.address?.country || 'Italia',
-                          onChange: (c) => p('address.country', c.target.value),
+                          value: n.address?.country || 'Italia',
+                          onChange: (c) => b('address.country', c.target.value),
                           className: `${l.input} w-full`,
                           placeholder: 'Paese',
                         }),
@@ -724,7 +723,7 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                 }),
               ],
             }),
-          j === 'sports' &&
+          v === 'sports' &&
             e.jsxs('div', {
               className: 'space-y-4',
               children: [
@@ -739,8 +738,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                         }),
                         e.jsx('input', {
                           type: 'number',
-                          value: r.baseRating || E,
-                          onChange: (c) => p('baseRating', Number(c.target.value)),
+                          value: n.baseRating || E,
+                          onChange: (c) => b('baseRating', Number(c.target.value)),
                           className: `${l.input} w-full`,
                           min: '0',
                           max: '3000',
@@ -760,8 +759,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                         }),
                         e.jsx('input', {
                           type: 'number',
-                          value: r.rating || r.baseRating || E,
-                          onChange: (c) => p('rating', Number(c.target.value)),
+                          value: n.rating || n.baseRating || E,
+                          onChange: (c) => b('rating', Number(c.target.value)),
                           className: `${l.input} w-full`,
                           min: '0',
                           max: '3000',
@@ -782,8 +781,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                       children: [
                         e.jsx('input', {
                           type: 'checkbox',
-                          checked: r.isActive !== !1,
-                          onChange: (c) => p('isActive', c.target.checked),
+                          checked: n.isActive !== !1,
+                          onChange: (c) => b('isActive', c.target.checked),
                           className: 'rounded',
                         }),
                         'Giocatore attivo',
@@ -797,7 +796,7 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                 }),
               ],
             }),
-          j === 'wallet' &&
+          v === 'wallet' &&
             e.jsxs('div', {
               className: 'space-y-4',
               children: [
@@ -809,8 +808,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                     }),
                     e.jsx('input', {
                       type: 'number',
-                      value: r.wallet?.balance || 0,
-                      onChange: (c) => p('wallet.balance', Number(c.target.value)),
+                      value: n.wallet?.balance || 0,
+                      onChange: (c) => b('wallet.balance', Number(c.target.value)),
                       className: `${l.input} w-full`,
                       min: '0',
                       step: '0.01',
@@ -836,7 +835,7 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                           className: 'flex justify-between',
                           children: [
                             e.jsx('span', { className: l.subtext, children: 'Transazioni:' }),
-                            e.jsx('span', { children: r.wallet?.transactions?.length || 0 }),
+                            e.jsx('span', { children: n.wallet?.transactions?.length || 0 }),
                           ],
                         }),
                         e.jsxs('div', {
@@ -847,8 +846,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                               children: 'Ultimo aggiornamento:',
                             }),
                             e.jsx('span', {
-                              children: r.wallet?.lastUpdate
-                                ? new Date(r.wallet.lastUpdate).toLocaleDateString()
+                              children: n.wallet?.lastUpdate
+                                ? new Date(n.wallet.lastUpdate).toLocaleDateString()
                                 : 'Mai',
                             }),
                           ],
@@ -859,7 +858,7 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                 }),
               ],
             }),
-          j === 'preferences' &&
+          v === 'preferences' &&
             e.jsxs('div', {
               className: 'space-y-4',
               children: [
@@ -877,9 +876,9 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                           children: [
                             e.jsx('input', {
                               type: 'checkbox',
-                              checked: r.communicationPreferences?.email !== !1,
+                              checked: n.communicationPreferences?.email !== !1,
                               onChange: (c) =>
-                                p('communicationPreferences.email', c.target.checked),
+                                b('communicationPreferences.email', c.target.checked),
                               className: 'rounded',
                             }),
                             'Ricevi email',
@@ -890,8 +889,8 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                           children: [
                             e.jsx('input', {
                               type: 'checkbox',
-                              checked: r.communicationPreferences?.sms === !0,
-                              onChange: (c) => p('communicationPreferences.sms', c.target.checked),
+                              checked: n.communicationPreferences?.sms === !0,
+                              onChange: (c) => b('communicationPreferences.sms', c.target.checked),
                               className: 'rounded',
                             }),
                             'Ricevi SMS',
@@ -902,9 +901,9 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                           children: [
                             e.jsx('input', {
                               type: 'checkbox',
-                              checked: r.communicationPreferences?.whatsapp === !0,
+                              checked: n.communicationPreferences?.whatsapp === !0,
                               onChange: (c) =>
-                                p('communicationPreferences.whatsapp', c.target.checked),
+                                b('communicationPreferences.whatsapp', c.target.checked),
                               className: 'rounded',
                             }),
                             'Ricevi WhatsApp',
@@ -915,9 +914,9 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                           children: [
                             e.jsx('input', {
                               type: 'checkbox',
-                              checked: r.communicationPreferences?.notifications !== !1,
+                              checked: n.communicationPreferences?.notifications !== !1,
                               onChange: (c) =>
-                                p('communicationPreferences.notifications', c.target.checked),
+                                b('communicationPreferences.notifications', c.target.checked),
                               className: 'rounded',
                             }),
                             'Ricevi notifiche push',
@@ -935,9 +934,9 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
                     }),
                     e.jsx('input', {
                       type: 'text',
-                      value: r.tags?.join(', ') || '',
+                      value: n.tags?.join(', ') || '',
                       onChange: (c) =>
-                        p(
+                        b(
                           'tags',
                           c.target.value
                             .split(',')
@@ -962,7 +961,7 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
         children: [
           e.jsx('button', {
             type: 'button',
-            onClick: n,
+            onClick: i,
             className: `${l.btnSecondary} px-6 py-2`,
             children: 'Annulla',
           }),
@@ -976,42 +975,42 @@ function J({ player: a, onSave: t, onCancel: n, T: l }) {
     ],
   });
 }
-function X({ player: a, onUpdate: t, T: n }) {
-  const [l, r] = v.useState(!1),
-    [m, d] = v.useState(null),
-    [g, j] = v.useState(O()),
-    h = a.notes || [],
-    p = () => {
-      if (!g.title.trim() || !g.content.trim()) return;
+function ae({ player: a, onUpdate: t, T: i }) {
+  const [l, n] = j.useState(!1),
+    [u, d] = j.useState(null),
+    [p, v] = j.useState(F()),
+    g = a.notes || [],
+    b = () => {
+      if (!p.title.trim() || !p.content.trim()) return;
       const s = {
-          ...g,
-          id: m?.id || G(),
-          createdAt: m?.createdAt || new Date().toISOString(),
+          ...p,
+          id: u?.id || _(),
+          createdAt: u?.createdAt || new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           createdBy: 'current-user',
         },
-        x = m ? h.map((f) => (f.id === m.id ? s : f)) : [...h, s];
-      (t({ notes: x, updatedAt: new Date().toISOString() }), j(O()), r(!1), d(null));
+        o = u ? g.map((y) => (y.id === u.id ? s : y)) : [...g, s];
+      (t({ notes: o, updatedAt: new Date().toISOString() }), v(F()), n(!1), d(null));
+    },
+    w = (s) => {
+      (v(s), d(s), n(!0));
     },
     k = (s) => {
-      (j(s), d(s), r(!0));
-    },
-    $ = (s) => {
       if (!confirm('Sei sicuro di voler eliminare questa nota?')) return;
-      const x = h.filter((f) => f.id !== s);
-      t({ notes: x, updatedAt: new Date().toISOString() });
+      const o = g.filter((y) => y.id !== s);
+      t({ notes: o, updatedAt: new Date().toISOString() });
     },
     C = (s) => {
       switch (s) {
-        case B.GENERAL:
+        case I.GENERAL:
           return '📝 Generale';
-        case B.BOOKING:
+        case I.BOOKING:
           return '📅 Prenotazione';
-        case B.PAYMENT:
+        case I.PAYMENT:
           return '💰 Pagamento';
-        case B.DISCIPLINARY:
+        case I.DISCIPLINARY:
           return '⚠️ Disciplinare';
-        case B.MEDICAL:
+        case I.MEDICAL:
           return '🏥 Medica';
         default:
           return '📝 Generale';
@@ -1019,13 +1018,13 @@ function X({ player: a, onUpdate: t, T: n }) {
     },
     c = (s) => {
       switch (s) {
-        case B.BOOKING:
+        case I.BOOKING:
           return 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400';
-        case B.PAYMENT:
+        case I.PAYMENT:
           return 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400';
-        case B.DISCIPLINARY:
+        case I.DISCIPLINARY:
           return 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400';
-        case B.MEDICAL:
+        case I.MEDICAL:
           return 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400';
         default:
           return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400';
@@ -1038,25 +1037,25 @@ function X({ player: a, onUpdate: t, T: n }) {
         className: 'flex justify-between items-center',
         children: [
           e.jsxs('h3', {
-            className: `text-lg font-semibold ${n.text}`,
-            children: ['Note Giocatore (', h.length, ')'],
+            className: `text-lg font-semibold ${i.text}`,
+            children: ['Note Giocatore (', g.length, ')'],
           }),
           e.jsx('button', {
             onClick: () => {
-              (j(O()), d(null), r(!0));
+              (v(F()), d(null), n(!0));
             },
-            className: `${n.btnPrimary} px-4 py-2`,
+            className: `${i.btnPrimary} px-4 py-2`,
             children: '➕ Nuova Nota',
           }),
         ],
       }),
       l &&
         e.jsxs('div', {
-          className: `${n.cardBg} ${n.border} rounded-xl p-4`,
+          className: `${i.cardBg} ${i.border} rounded-xl p-4`,
           children: [
             e.jsx('h4', {
-              className: `font-medium ${n.text} mb-4`,
-              children: m ? 'Modifica Nota' : 'Nuova Nota',
+              className: `font-medium ${i.text} mb-4`,
+              children: u ? 'Modifica Nota' : 'Nuova Nota',
             }),
             e.jsxs('div', {
               className: 'space-y-4',
@@ -1067,14 +1066,14 @@ function X({ player: a, onUpdate: t, T: n }) {
                     e.jsxs('div', {
                       children: [
                         e.jsx('label', {
-                          className: `block text-sm font-medium ${n.text} mb-1`,
+                          className: `block text-sm font-medium ${i.text} mb-1`,
                           children: 'Titolo',
                         }),
                         e.jsx('input', {
                           type: 'text',
-                          value: g.title,
-                          onChange: (s) => j((x) => ({ ...x, title: s.target.value })),
-                          className: `${n.input} w-full`,
+                          value: p.title,
+                          onChange: (s) => v((o) => ({ ...o, title: s.target.value })),
+                          className: `${i.input} w-full`,
                           placeholder: 'Titolo della nota',
                         }),
                       ],
@@ -1082,14 +1081,14 @@ function X({ player: a, onUpdate: t, T: n }) {
                     e.jsxs('div', {
                       children: [
                         e.jsx('label', {
-                          className: `block text-sm font-medium ${n.text} mb-1`,
+                          className: `block text-sm font-medium ${i.text} mb-1`,
                           children: 'Tipo',
                         }),
                         e.jsx('select', {
-                          value: g.type,
-                          onChange: (s) => j((x) => ({ ...x, type: s.target.value })),
-                          className: `${n.input} w-full`,
-                          children: Object.values(B).map((s) =>
+                          value: p.type,
+                          onChange: (s) => v((o) => ({ ...o, type: s.target.value })),
+                          className: `${i.input} w-full`,
+                          children: Object.values(I).map((s) =>
                             e.jsx('option', { value: s, children: C(s) }, s)
                           ),
                         }),
@@ -1100,13 +1099,13 @@ function X({ player: a, onUpdate: t, T: n }) {
                 e.jsxs('div', {
                   children: [
                     e.jsx('label', {
-                      className: `block text-sm font-medium ${n.text} mb-1`,
+                      className: `block text-sm font-medium ${i.text} mb-1`,
                       children: 'Contenuto',
                     }),
                     e.jsx('textarea', {
-                      value: g.content,
-                      onChange: (s) => j((x) => ({ ...x, content: s.target.value })),
-                      className: `${n.input} w-full`,
+                      value: p.content,
+                      onChange: (s) => v((o) => ({ ...o, content: s.target.value })),
+                      className: `${i.input} w-full`,
                       rows: 4,
                       placeholder: 'Descrizione dettagliata...',
                     }),
@@ -1114,12 +1113,12 @@ function X({ player: a, onUpdate: t, T: n }) {
                 }),
                 e.jsx('div', {
                   children: e.jsxs('label', {
-                    className: `flex items-center gap-2 ${n.text}`,
+                    className: `flex items-center gap-2 ${i.text}`,
                     children: [
                       e.jsx('input', {
                         type: 'checkbox',
-                        checked: g.isPrivate,
-                        onChange: (s) => j((x) => ({ ...x, isPrivate: s.target.checked })),
+                        checked: p.isPrivate,
+                        onChange: (s) => v((o) => ({ ...o, isPrivate: s.target.checked })),
                         className: 'rounded',
                       }),
                       'Nota privata (visibile solo agli amministratori)',
@@ -1129,21 +1128,21 @@ function X({ player: a, onUpdate: t, T: n }) {
                 e.jsxs('div', {
                   children: [
                     e.jsx('label', {
-                      className: `block text-sm font-medium ${n.text} mb-1`,
+                      className: `block text-sm font-medium ${i.text} mb-1`,
                       children: 'Tag (separati da virgola)',
                     }),
                     e.jsx('input', {
                       type: 'text',
-                      value: g.tags?.join(', ') || '',
+                      value: p.tags?.join(', ') || '',
                       onChange: (s) =>
-                        j((x) => ({
-                          ...x,
+                        v((o) => ({
+                          ...o,
                           tags: s.target.value
                             .split(',')
-                            .map((f) => f.trim())
+                            .map((y) => y.trim())
                             .filter(Boolean),
                         })),
-                      className: `${n.input} w-full`,
+                      className: `${i.input} w-full`,
                       placeholder: 'urgente, follow-up, importante',
                     }),
                   ],
@@ -1153,15 +1152,15 @@ function X({ player: a, onUpdate: t, T: n }) {
                   children: [
                     e.jsx('button', {
                       onClick: () => {
-                        (r(!1), d(null), j(O()));
+                        (n(!1), d(null), v(F()));
                       },
-                      className: `${n.btnSecondary} px-4 py-2`,
+                      className: `${i.btnSecondary} px-4 py-2`,
                       children: 'Annulla',
                     }),
                     e.jsxs('button', {
-                      onClick: p,
-                      className: `${n.btnPrimary} px-4 py-2`,
-                      children: [m ? 'Aggiorna' : 'Salva', ' Nota'],
+                      onClick: b,
+                      className: `${i.btnPrimary} px-4 py-2`,
+                      children: [u ? 'Aggiorna' : 'Salva', ' Nota'],
                     }),
                   ],
                 }),
@@ -1172,31 +1171,31 @@ function X({ player: a, onUpdate: t, T: n }) {
       e.jsx('div', {
         className: 'space-y-4',
         children:
-          h.length === 0
+          g.length === 0
             ? e.jsxs('div', {
-                className: `text-center py-8 ${n.cardBg} ${n.border} rounded-xl`,
+                className: `text-center py-8 ${i.cardBg} ${i.border} rounded-xl`,
                 children: [
                   e.jsx('div', { className: 'text-4xl mb-2', children: '📝' }),
                   e.jsx('div', {
-                    className: `${n.subtext} mb-4`,
+                    className: `${i.subtext} mb-4`,
                     children: 'Nessuna nota presente',
                   }),
                   e.jsx('button', {
                     onClick: () => {
-                      (j(O()), d(null), r(!0));
+                      (v(F()), d(null), n(!0));
                     },
-                    className: `${n.btnPrimary} px-6 py-3`,
+                    className: `${i.btnPrimary} px-6 py-3`,
                     children: 'Aggiungi Prima Nota',
                   }),
                 ],
               })
-            : h
-                .sort((s, x) => new Date(x.createdAt) - new Date(s.createdAt))
+            : g
+                .sort((s, o) => new Date(o.createdAt) - new Date(s.createdAt))
                 .map((s) =>
                   e.jsxs(
                     'div',
                     {
-                      className: `${n.cardBg} ${n.border} rounded-xl p-4`,
+                      className: `${i.cardBg} ${i.border} rounded-xl p-4`,
                       children: [
                         e.jsxs('div', {
                           className: 'flex justify-between items-start mb-3',
@@ -1205,7 +1204,7 @@ function X({ player: a, onUpdate: t, T: n }) {
                               className: 'flex items-center gap-3',
                               children: [
                                 e.jsx('h4', {
-                                  className: `font-semibold ${n.text}`,
+                                  className: `font-semibold ${i.text}`,
                                   children: s.title,
                                 }),
                                 e.jsx('span', {
@@ -1224,13 +1223,13 @@ function X({ player: a, onUpdate: t, T: n }) {
                               className: 'flex gap-2',
                               children: [
                                 e.jsx('button', {
-                                  onClick: () => k(s),
+                                  onClick: () => w(s),
                                   className: 'text-blue-500 hover:text-blue-700 text-sm',
                                   title: 'Modifica',
                                   children: '✏️',
                                 }),
                                 e.jsx('button', {
-                                  onClick: () => $(s.id),
+                                  onClick: () => k(s.id),
                                   className: 'text-red-500 hover:text-red-700 text-sm',
                                   title: 'Elimina',
                                   children: '🗑️',
@@ -1240,7 +1239,7 @@ function X({ player: a, onUpdate: t, T: n }) {
                           ],
                         }),
                         e.jsx('div', {
-                          className: `${n.text} mb-3 whitespace-pre-wrap`,
+                          className: `${i.text} mb-3 whitespace-pre-wrap`,
                           children: s.content,
                         }),
                         e.jsxs('div', {
@@ -1263,15 +1262,15 @@ function X({ player: a, onUpdate: t, T: n }) {
                               s.tags.length > 0 &&
                               e.jsx('div', {
                                 className: 'flex flex-wrap gap-1',
-                                children: s.tags.map((x, f) =>
+                                children: s.tags.map((o, y) =>
                                   e.jsxs(
                                     'span',
                                     {
                                       className:
                                         'px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full',
-                                      children: ['#', x],
+                                      children: ['#', o],
                                     },
-                                    f
+                                    y
                                   )
                                 ),
                               }),
@@ -1286,33 +1285,33 @@ function X({ player: a, onUpdate: t, T: n }) {
     ],
   });
 }
-function T({ player: a, onUpdate: t, T: n }) {
-  const [l, r] = v.useState(!1),
-    [m, d] = v.useState(z()),
-    { addNotification: g } = U(),
-    j = a.wallet || { balance: 0, currency: 'EUR', transactions: [] },
-    h = j.transactions || [],
-    p = () => {
-      if (!m.description || !m.description.trim()) {
-        g({
+function le({ player: a, onUpdate: t, T: i }) {
+  const [l, n] = j.useState(!1),
+    [u, d] = j.useState(L()),
+    { addNotification: p } = Y(),
+    v = a.wallet || { balance: 0, currency: 'EUR', transactions: [] },
+    g = v.transactions || [],
+    b = () => {
+      if (!u.description || !u.description.trim()) {
+        p({
           type: 'warning',
           title: 'Descrizione mancante',
           message: 'Aggiungi una breve descrizione del movimento prima di continuare.',
         });
         return;
       }
-      if (!m.amount) return;
-      const s = { ...m, id: G(), createdAt: new Date().toISOString(), createdBy: 'current-user' },
-        x = m.type === 'credit' ? j.balance + Math.abs(m.amount) : j.balance - Math.abs(m.amount),
-        f = {
-          ...j,
-          balance: Math.max(0, x),
+      if (!u.amount) return;
+      const s = { ...u, id: _(), createdAt: new Date().toISOString(), createdBy: 'current-user' },
+        o = u.type === 'credit' ? v.balance + Math.abs(u.amount) : v.balance - Math.abs(u.amount),
+        y = {
+          ...v,
+          balance: Math.max(0, o),
           lastUpdate: new Date().toISOString(),
-          transactions: [s, ...h],
+          transactions: [s, ...g],
         };
-      (t({ wallet: f, updatedAt: new Date().toISOString() }), d(z()), r(!1));
+      (t({ wallet: y, updatedAt: new Date().toISOString() }), d(L()), n(!1));
     },
-    k = (s) => {
+    w = (s) => {
       switch (s) {
         case 'credit':
           return '💰';
@@ -1326,7 +1325,7 @@ function T({ player: a, onUpdate: t, T: n }) {
           return '💱';
       }
     },
-    $ = (s) => {
+    k = (s) => {
       switch (s) {
         case 'credit':
           return 'Ricarica';
@@ -1351,40 +1350,40 @@ function T({ player: a, onUpdate: t, T: n }) {
         case 'bonus':
           return 'text-purple-600 dark:text-purple-400';
         default:
-          return n.text;
+          return i.text;
       }
     },
-    c = (s, x) =>
-      `${x === 'credit' || x === 'refund' || x === 'bonus' ? '+' : '-'}€${Math.abs(s).toFixed(2)}`;
+    c = (s, o) =>
+      `${o === 'credit' || o === 'refund' || o === 'bonus' ? '+' : '-'}€${Math.abs(s).toFixed(2)}`;
   return e.jsxs('div', {
     className: 'space-y-6',
     children: [
       e.jsxs('div', {
-        className: `${n.cardBg} ${n.border} rounded-xl p-6 text-center`,
+        className: `${i.cardBg} ${i.border} rounded-xl p-6 text-center`,
         children: [
           e.jsxs('div', {
             className: 'text-4xl font-bold text-green-600 dark:text-green-400 mb-2',
-            children: ['€', j.balance.toFixed(2)],
+            children: ['€', v.balance.toFixed(2)],
           }),
           e.jsxs('div', {
-            className: `text-sm ${n.subtext} mb-4`,
-            children: ['Saldo Disponibile • ', j.currency],
+            className: `text-sm ${i.subtext} mb-4`,
+            children: ['Saldo Disponibile • ', v.currency],
           }),
           e.jsxs('div', {
             className: 'flex justify-center gap-3',
             children: [
               e.jsx('button', {
                 onClick: () => {
-                  (d({ ...z(), type: 'credit' }), r(!0));
+                  (d({ ...L(), type: 'credit' }), n(!0));
                 },
-                className: `${n.btnPrimary} px-4 py-2`,
+                className: `${i.btnPrimary} px-4 py-2`,
                 children: '💰 Ricarica',
               }),
               e.jsx('button', {
                 onClick: () => {
-                  (d({ ...z(), type: 'debit' }), r(!0));
+                  (d({ ...L(), type: 'debit' }), n(!0));
                 },
-                className: `${n.btnSecondary} px-4 py-2`,
+                className: `${i.btnSecondary} px-4 py-2`,
                 children: '💸 Addebito',
               }),
             ],
@@ -1393,9 +1392,9 @@ function T({ player: a, onUpdate: t, T: n }) {
       }),
       l &&
         e.jsxs('div', {
-          className: `${n.cardBg} ${n.border} rounded-xl p-4`,
+          className: `${i.cardBg} ${i.border} rounded-xl p-4`,
           children: [
-            e.jsx('h4', { className: `font-medium ${n.text} mb-4`, children: 'Nuova Transazione' }),
+            e.jsx('h4', { className: `font-medium ${i.text} mb-4`, children: 'Nuova Transazione' }),
             e.jsxs('div', {
               className: 'space-y-4',
               children: [
@@ -1405,13 +1404,13 @@ function T({ player: a, onUpdate: t, T: n }) {
                     e.jsxs('div', {
                       children: [
                         e.jsx('label', {
-                          className: `block text-sm font-medium ${n.text} mb-1`,
+                          className: `block text-sm font-medium ${i.text} mb-1`,
                           children: 'Tipo',
                         }),
                         e.jsxs('select', {
-                          value: m.type,
-                          onChange: (s) => d((x) => ({ ...x, type: s.target.value })),
-                          className: `${n.input} w-full`,
+                          value: u.type,
+                          onChange: (s) => d((o) => ({ ...o, type: s.target.value })),
+                          className: `${i.input} w-full`,
                           children: [
                             e.jsx('option', { value: 'credit', children: '💰 Ricarica' }),
                             e.jsx('option', { value: 'debit', children: '💸 Addebito' }),
@@ -1424,14 +1423,14 @@ function T({ player: a, onUpdate: t, T: n }) {
                     e.jsxs('div', {
                       children: [
                         e.jsx('label', {
-                          className: `block text-sm font-medium ${n.text} mb-1`,
+                          className: `block text-sm font-medium ${i.text} mb-1`,
                           children: 'Importo (€)',
                         }),
                         e.jsx('input', {
                           type: 'number',
-                          value: m.amount || '',
-                          onChange: (s) => d((x) => ({ ...x, amount: Number(s.target.value) })),
-                          className: `${n.input} w-full`,
+                          value: u.amount || '',
+                          onChange: (s) => d((o) => ({ ...o, amount: Number(s.target.value) })),
+                          className: `${i.input} w-full`,
                           min: '0',
                           step: '0.01',
                           placeholder: '0.00',
@@ -1443,14 +1442,14 @@ function T({ player: a, onUpdate: t, T: n }) {
                 e.jsxs('div', {
                   children: [
                     e.jsx('label', {
-                      className: `block text-sm font-medium ${n.text} mb-1`,
+                      className: `block text-sm font-medium ${i.text} mb-1`,
                       children: 'Descrizione',
                     }),
                     e.jsx('input', {
                       type: 'text',
-                      value: m.description,
-                      onChange: (s) => d((x) => ({ ...x, description: s.target.value })),
-                      className: `${n.input} w-full`,
+                      value: u.description,
+                      onChange: (s) => d((o) => ({ ...o, description: s.target.value })),
+                      className: `${i.input} w-full`,
                       placeholder: 'Descrizione della transazione...',
                     }),
                   ],
@@ -1458,14 +1457,14 @@ function T({ player: a, onUpdate: t, T: n }) {
                 e.jsxs('div', {
                   children: [
                     e.jsx('label', {
-                      className: `block text-sm font-medium ${n.text} mb-1`,
+                      className: `block text-sm font-medium ${i.text} mb-1`,
                       children: 'Riferimento (opzionale)',
                     }),
                     e.jsx('input', {
                       type: 'text',
-                      value: m.reference,
-                      onChange: (s) => d((x) => ({ ...x, reference: s.target.value })),
-                      className: `${n.input} w-full`,
+                      value: u.reference,
+                      onChange: (s) => d((o) => ({ ...o, reference: s.target.value })),
+                      className: `${i.input} w-full`,
                       placeholder: 'ID prenotazione, fattura, etc...',
                     }),
                   ],
@@ -1475,14 +1474,14 @@ function T({ player: a, onUpdate: t, T: n }) {
                   children: [
                     e.jsx('button', {
                       onClick: () => {
-                        (r(!1), d(z()));
+                        (n(!1), d(L()));
                       },
-                      className: `${n.btnSecondary} px-4 py-2`,
+                      className: `${i.btnSecondary} px-4 py-2`,
                       children: 'Annulla',
                     }),
                     e.jsx('button', {
-                      onClick: p,
-                      className: `${n.btnPrimary} px-4 py-2`,
+                      onClick: b,
+                      className: `${i.btnPrimary} px-4 py-2`,
                       children: 'Aggiungi Transazione',
                     }),
                   ],
@@ -1495,56 +1494,56 @@ function T({ player: a, onUpdate: t, T: n }) {
         className: 'grid grid-cols-2 lg:grid-cols-4 gap-4',
         children: [
           e.jsxs('div', {
-            className: `${n.cardBg} ${n.border} rounded-xl p-4 text-center`,
+            className: `${i.cardBg} ${i.border} rounded-xl p-4 text-center`,
             children: [
               e.jsx('div', {
                 className: 'text-2xl font-bold text-blue-600 dark:text-blue-400',
-                children: h.length,
+                children: g.length,
               }),
-              e.jsx('div', { className: `text-xs ${n.subtext}`, children: 'Transazioni' }),
+              e.jsx('div', { className: `text-xs ${i.subtext}`, children: 'Transazioni' }),
             ],
           }),
           e.jsxs('div', {
-            className: `${n.cardBg} ${n.border} rounded-xl p-4 text-center`,
+            className: `${i.cardBg} ${i.border} rounded-xl p-4 text-center`,
             children: [
               e.jsx('div', {
                 className: 'text-2xl font-bold text-green-600 dark:text-green-400',
-                children: h.filter(
+                children: g.filter(
                   (s) => s.type === 'credit' || s.type === 'refund' || s.type === 'bonus'
                 ).length,
               }),
-              e.jsx('div', { className: `text-xs ${n.subtext}`, children: 'Entrate' }),
+              e.jsx('div', { className: `text-xs ${i.subtext}`, children: 'Entrate' }),
             ],
           }),
           e.jsxs('div', {
-            className: `${n.cardBg} ${n.border} rounded-xl p-4 text-center`,
+            className: `${i.cardBg} ${i.border} rounded-xl p-4 text-center`,
             children: [
               e.jsx('div', {
                 className: 'text-2xl font-bold text-red-600 dark:text-red-400',
-                children: h.filter((s) => s.type === 'debit').length,
+                children: g.filter((s) => s.type === 'debit').length,
               }),
-              e.jsx('div', { className: `text-xs ${n.subtext}`, children: 'Uscite' }),
+              e.jsx('div', { className: `text-xs ${i.subtext}`, children: 'Uscite' }),
             ],
           }),
           e.jsxs('div', {
-            className: `${n.cardBg} ${n.border} rounded-xl p-4 text-center`,
+            className: `${i.cardBg} ${i.border} rounded-xl p-4 text-center`,
             children: [
               e.jsxs('div', {
-                className: `text-2xl font-bold ${n.text}`,
+                className: `text-2xl font-bold ${i.text}`,
                 children: [
                   '€',
-                  h
+                  g
                     .reduce(
-                      (s, x) =>
-                        x.type === 'credit' || x.type === 'refund' || x.type === 'bonus'
-                          ? s + x.amount
-                          : s - x.amount,
+                      (s, o) =>
+                        o.type === 'credit' || o.type === 'refund' || o.type === 'bonus'
+                          ? s + o.amount
+                          : s - o.amount,
                       0
                     )
                     .toFixed(2),
                 ],
               }),
-              e.jsx('div', { className: `text-xs ${n.subtext}`, children: 'Totale Movimenti' }),
+              e.jsx('div', { className: `text-xs ${i.subtext}`, children: 'Totale Movimenti' }),
             ],
           }),
         ],
@@ -1552,43 +1551,43 @@ function T({ player: a, onUpdate: t, T: n }) {
       e.jsxs('div', {
         children: [
           e.jsxs('h4', {
-            className: `font-semibold ${n.text} mb-4`,
-            children: ['Storico Transazioni (', h.length, ')'],
+            className: `font-semibold ${i.text} mb-4`,
+            children: ['Storico Transazioni (', g.length, ')'],
           }),
-          h.length === 0
+          g.length === 0
             ? e.jsxs('div', {
-                className: `text-center py-8 ${n.cardBg} ${n.border} rounded-xl`,
+                className: `text-center py-8 ${i.cardBg} ${i.border} rounded-xl`,
                 children: [
                   e.jsx('div', { className: 'text-4xl mb-2', children: '💳' }),
                   e.jsx('div', {
-                    className: `${n.subtext} mb-4`,
+                    className: `${i.subtext} mb-4`,
                     children: 'Nessuna transazione presente',
                   }),
                   e.jsx('button', {
                     onClick: () => {
-                      (d({ ...z(), type: 'credit' }), r(!0));
+                      (d({ ...L(), type: 'credit' }), n(!0));
                     },
-                    className: `${n.btnPrimary} px-6 py-3`,
+                    className: `${i.btnPrimary} px-6 py-3`,
                     children: 'Aggiungi Prima Transazione',
                   }),
                 ],
               })
             : e.jsx('div', {
                 className: 'space-y-3',
-                children: h
-                  .sort((s, x) => new Date(x.createdAt) - new Date(s.createdAt))
+                children: g
+                  .sort((s, o) => new Date(o.createdAt) - new Date(s.createdAt))
                   .map((s) =>
                     e.jsx(
                       'div',
                       {
-                        className: `${n.cardBg} ${n.border} rounded-xl p-4`,
+                        className: `${i.cardBg} ${i.border} rounded-xl p-4`,
                         children: e.jsxs('div', {
                           className: 'flex justify-between items-start',
                           children: [
                             e.jsxs('div', {
                               className: 'flex items-center gap-3 flex-1',
                               children: [
-                                e.jsx('div', { className: 'text-2xl', children: k(s.type) }),
+                                e.jsx('div', { className: 'text-2xl', children: w(s.type) }),
                                 e.jsxs('div', {
                                   className: 'min-w-0 flex-1',
                                   children: [
@@ -1596,12 +1595,12 @@ function T({ player: a, onUpdate: t, T: n }) {
                                       className: 'flex items-center gap-2 mb-1',
                                       children: [
                                         e.jsx('span', {
-                                          className: `font-medium ${n.text}`,
+                                          className: `font-medium ${i.text}`,
                                           children: s.description,
                                         }),
                                         e.jsx('span', {
-                                          className: `px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 ${n.subtext}`,
-                                          children: $(s.type),
+                                          className: `px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 ${i.subtext}`,
+                                          children: k(s.type),
                                         }),
                                       ],
                                     }),
@@ -1645,11 +1644,11 @@ function T({ player: a, onUpdate: t, T: n }) {
     ],
   });
 }
-function ee({ player: a, T: t }) {
-  const [n, l] = v.useState({ type: 'email', subject: '', message: '', priority: 'normal' }),
-    [r, m] = v.useState(''),
-    [d, g] = v.useState(!1),
-    j = [
+function ie({ player: a, T: t }) {
+  const [i, l] = j.useState({ type: 'email', subject: '', message: '', priority: 'normal' }),
+    [n, u] = j.useState(''),
+    [d, p] = j.useState(!1),
+    v = [
       {
         id: 'welcome',
         name: 'Messaggio di Benvenuto',
@@ -1734,7 +1733,7 @@ Play Sport Pro`,
         type: 'sms',
       },
     ],
-    h = [
+    g = [
       {
         id: 'comm1',
         type: 'email',
@@ -1761,17 +1760,17 @@ Play Sport Pro`,
         clickDate: '2025-09-07T09:15:00',
       },
     ],
-    p = () => {
-      (console.log('Invio messaggio:', n),
+    b = () => {
+      (console.log('Invio messaggio:', i),
         l({ type: 'email', subject: '', message: '', priority: 'normal' }),
-        alert(`Messaggio ${n.type} inviato a ${a.firstName}!`));
+        alert(`Messaggio ${i.type} inviato a ${a.firstName}!`));
     },
-    k = (s) => {
-      (l((x) => ({ ...x, type: s.type, subject: s.subject || '', message: s.content })), g(!1));
+    w = (s) => {
+      (l((o) => ({ ...o, type: s.type, subject: s.subject || '', message: s.content })), p(!1));
     },
-    $ = (s, x) => {
-      if (x === 'failed') return '❌';
-      if (x === 'pending') return '⏳';
+    k = (s, o) => {
+      if (o === 'failed') return '❌';
+      if (o === 'pending') return '⏳';
       switch (s) {
         case 'email':
           return '📧';
@@ -1796,11 +1795,11 @@ Play Sport Pro`,
       }
     },
     c = {
-      totalSent: h.length,
-      emails: h.filter((s) => s.type === 'email').length,
-      sms: h.filter((s) => s.type === 'sms').length,
-      push: h.filter((s) => s.type === 'push').length,
-      opened: h.filter((s) => s.openDate || s.clickDate).length,
+      totalSent: g.length,
+      emails: g.filter((s) => s.type === 'email').length,
+      sms: g.filter((s) => s.type === 'sms').length,
+      push: g.filter((s) => s.type === 'push').length,
+      opened: g.filter((s) => s.openDate || s.clickDate).length,
     };
   return e.jsxs('div', {
     className: 'space-y-6',
@@ -1877,8 +1876,8 @@ Play Sport Pro`,
                     children: 'Tipo di messaggio',
                   }),
                   e.jsxs('select', {
-                    value: n.type,
-                    onChange: (s) => l((x) => ({ ...x, type: s.target.value })),
+                    value: i.type,
+                    onChange: (s) => l((o) => ({ ...o, type: s.target.value })),
                     className: `${t.input} w-full`,
                     children: [
                       e.jsx('option', { value: 'email', children: '📧 Email' }),
@@ -1895,8 +1894,8 @@ Play Sport Pro`,
                     children: 'Priorità',
                   }),
                   e.jsxs('select', {
-                    value: n.priority,
-                    onChange: (s) => l((x) => ({ ...x, priority: s.target.value })),
+                    value: i.priority,
+                    onChange: (s) => l((o) => ({ ...o, priority: s.target.value })),
                     className: `${t.input} w-full`,
                     children: [
                       e.jsx('option', { value: 'low', children: '🟢 Bassa' }),
@@ -1909,7 +1908,7 @@ Play Sport Pro`,
               }),
             ],
           }),
-          n.type === 'email' &&
+          i.type === 'email' &&
             e.jsxs('div', {
               className: 'mb-4',
               children: [
@@ -1919,8 +1918,8 @@ Play Sport Pro`,
                 }),
                 e.jsx('input', {
                   type: 'text',
-                  value: n.subject,
-                  onChange: (s) => l((x) => ({ ...x, subject: s.target.value })),
+                  value: i.subject,
+                  onChange: (s) => l((o) => ({ ...o, subject: s.target.value })),
                   placeholder: "Inserisci l'oggetto dell'email",
                   className: `${t.input} w-full`,
                 }),
@@ -1937,24 +1936,24 @@ Play Sport Pro`,
                     children: 'Messaggio',
                   }),
                   e.jsx('button', {
-                    onClick: () => g(!0),
+                    onClick: () => p(!0),
                     className: `${t.btnSecondary} text-xs px-3 py-1`,
                     children: '📋 Template',
                   }),
                 ],
               }),
               e.jsx('textarea', {
-                value: n.message,
-                onChange: (s) => l((x) => ({ ...x, message: s.target.value })),
-                placeholder: `Scrivi il tuo messaggio ${n.type}...`,
-                rows: n.type === 'sms' ? 3 : 6,
-                maxLength: n.type === 'sms' ? 160 : void 0,
+                value: i.message,
+                onChange: (s) => l((o) => ({ ...o, message: s.target.value })),
+                placeholder: `Scrivi il tuo messaggio ${i.type}...`,
+                rows: i.type === 'sms' ? 3 : 6,
+                maxLength: i.type === 'sms' ? 160 : void 0,
                 className: `${t.input} w-full resize-none`,
               }),
-              n.type === 'sms' &&
+              i.type === 'sms' &&
                 e.jsxs('div', {
                   className: `text-right text-xs ${t.subtext} mt-1`,
-                  children: [n.message.length, '/160 caratteri'],
+                  children: [i.message.length, '/160 caratteri'],
                 }),
             ],
           }),
@@ -1982,9 +1981,9 @@ Play Sport Pro`,
                       e.jsxs('div', {
                         className: `text-xs ${t.subtext}`,
                         children: [
-                          n.type === 'email' && a.email,
-                          n.type === 'sms' && a.phone,
-                          n.type === 'push' && 'App mobile',
+                          i.type === 'email' && a.email,
+                          i.type === 'sms' && a.phone,
+                          i.type === 'push' && 'App mobile',
                         ],
                       }),
                     ],
@@ -1997,10 +1996,10 @@ Play Sport Pro`,
             className: 'flex gap-3',
             children: [
               e.jsxs('button', {
-                onClick: p,
-                disabled: !n.message.trim() || (n.type === 'email' && !n.subject.trim()),
+                onClick: b,
+                disabled: !i.message.trim() || (i.type === 'email' && !i.subject.trim()),
                 className: `${t.btnPrimary} flex-1 disabled:opacity-50 disabled:cursor-not-allowed`,
-                children: ['🚀 Invia ', n.type.toUpperCase()],
+                children: ['🚀 Invia ', i.type.toUpperCase()],
               }),
               e.jsx('button', {
                 onClick: () => l({ type: 'email', subject: '', message: '', priority: 'normal' }),
@@ -2015,9 +2014,9 @@ Play Sport Pro`,
         children: [
           e.jsxs('h4', {
             className: `font-semibold ${t.text} mb-4`,
-            children: ['📋 Storico Comunicazioni (', h.length, ')'],
+            children: ['📋 Storico Comunicazioni (', g.length, ')'],
           }),
-          h.length === 0
+          g.length === 0
             ? e.jsxs('div', {
                 className: `text-center py-8 ${t.cardBg} ${t.border} rounded-xl`,
                 children: [
@@ -2030,8 +2029,8 @@ Play Sport Pro`,
               })
             : e.jsx('div', {
                 className: 'space-y-3',
-                children: h
-                  .sort((s, x) => new Date(x.sentDate) - new Date(s.sentDate))
+                children: g
+                  .sort((s, o) => new Date(o.sentDate) - new Date(s.sentDate))
                   .map((s) =>
                     e.jsx(
                       'div',
@@ -2040,7 +2039,7 @@ Play Sport Pro`,
                         children: e.jsxs('div', {
                           className: 'flex items-start gap-3',
                           children: [
-                            e.jsx('div', { className: 'text-2xl', children: $(s.type, s.status) }),
+                            e.jsx('div', { className: 'text-2xl', children: k(s.type, s.status) }),
                             e.jsxs('div', {
                               className: 'flex-1 min-w-0',
                               children: [
@@ -2062,7 +2061,8 @@ Play Sport Pro`,
                                   children: [
                                     '📅 Inviato: ',
                                     new Date(s.sentDate).toLocaleDateString('it-IT'),
-                                    ' alle ',
+                                    ' alle',
+                                    ' ',
                                     new Date(s.sentDate).toLocaleTimeString('it-IT', {
                                       hour: '2-digit',
                                       minute: '2-digit',
@@ -2075,7 +2075,8 @@ Play Sport Pro`,
                                     children: [
                                       '👁️ Aperto: ',
                                       new Date(s.openDate).toLocaleDateString('it-IT'),
-                                      ' alle ',
+                                      ' alle',
+                                      ' ',
                                       new Date(s.openDate).toLocaleTimeString('it-IT', {
                                         hour: '2-digit',
                                         minute: '2-digit',
@@ -2088,7 +2089,8 @@ Play Sport Pro`,
                                     children: [
                                       '👆 Cliccato: ',
                                       new Date(s.clickDate).toLocaleDateString('it-IT'),
-                                      ' alle ',
+                                      ' alle',
+                                      ' ',
                                       new Date(s.clickDate).toLocaleTimeString('it-IT', {
                                         hour: '2-digit',
                                         minute: '2-digit',
@@ -2130,7 +2132,7 @@ Play Sport Pro`,
                       children: '📋 Template Messaggi',
                     }),
                     e.jsx('button', {
-                      onClick: () => g(!1),
+                      onClick: () => p(!1),
                       className: `${t.btnSecondary} px-4 py-2`,
                       children: '✖️',
                     }),
@@ -2141,12 +2143,12 @@ Play Sport Pro`,
                 className: 'p-6 overflow-y-auto',
                 children: e.jsx('div', {
                   className: 'grid grid-cols-1 lg:grid-cols-2 gap-4',
-                  children: j.map((s) =>
+                  children: v.map((s) =>
                     e.jsxs(
                       'div',
                       {
                         className: `${t.border} rounded-xl p-4 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors`,
-                        onClick: () => k(s),
+                        onClick: () => w(s),
                         children: [
                           e.jsxs('div', {
                             className: 'flex items-center gap-3 mb-3',
@@ -2191,76 +2193,76 @@ Play Sport Pro`,
     ],
   });
 }
-function te({ player: a, T: t }) {
-  const [n, l] = v.useState('all'),
-    [r, m] = v.useState('all'),
-    [d, g] = v.useState(!1),
-    [j, h] = v.useState(null),
-    [p, k] = v.useState([]);
-  v.useEffect(() => {
-    let i = !1;
-    async function o() {
-      (g(!0), h(null));
+function ne({ player: a, T: t }) {
+  const [i, l] = j.useState('all'),
+    [n, u] = j.useState('all'),
+    [d, p] = j.useState(!1),
+    [v, g] = j.useState(null),
+    [b, w] = j.useState([]);
+  j.useEffect(() => {
+    let r = !1;
+    async function x() {
+      (p(!0), g(null));
       try {
-        const u = a?.linkedAccountId || null,
-          b = a?.linkedAccountEmail || a?.email || null,
-          A = a?.name || `${a?.firstName || ''} ${a?.lastName || ''}`.trim(),
-          M = await Q({ userId: u, email: b, name: A });
-        if (i) return;
-        k(M || []);
-      } catch (u) {
-        if (i) return;
-        h(u);
+        const h = a?.linkedAccountId || null,
+          N = a?.linkedAccountEmail || a?.email || null,
+          P = a?.name || `${a?.firstName || ''} ${a?.lastName || ''}`.trim(),
+          B = await ee({ userId: h, email: N, name: P });
+        if (r) return;
+        w(B || []);
+      } catch (h) {
+        if (r) return;
+        g(h);
       } finally {
-        i || g(!1);
+        r || p(!1);
       }
     }
     return (
-      o(),
+      x(),
       () => {
-        i = !0;
+        r = !0;
       }
     );
   }, [a?.linkedAccountId, a?.linkedAccountEmail, a?.email, a?.name, a?.firstName, a?.lastName]);
-  const $ = v.useMemo(
+  const k = j.useMemo(
       () =>
-        (p || []).map((i) => {
-          const o = i.date,
-            u = i.time || '',
-            b = u.includes('-') ? u : `${u}`,
-            A = i.courtName || i.court || 'Campo',
-            M = i.sport || 'Padel',
-            I = i.status || 'confirmed',
+        (b || []).map((r) => {
+          const x = r.date,
+            h = r.time || '',
+            N = h.includes('-') ? h : `${h}`,
+            P = r.courtName || r.court || 'Campo',
+            B = r.sport || 'Padel',
+            z = r.status || 'confirmed',
             R =
-              Array.isArray(i.players) && i.players.length > 0
-                ? i.players
-                : [i.bookedBy || i.userEmail || ''],
-            N = typeof i.price == 'number' ? i.price : Number(i.price || 0) || 0,
-            S = !!i.paid || i.paymentStatus === 'paid',
-            y = i.paymentMethod || null;
+              Array.isArray(r.players) && r.players.length > 0
+                ? r.players
+                : [r.bookedBy || r.userEmail || ''],
+            f = typeof r.price == 'number' ? r.price : Number(r.price || 0) || 0,
+            A = !!r.paid || r.paymentStatus === 'paid',
+            $ = r.paymentMethod || null;
           return {
-            id: i.id,
-            date: o,
-            time: b,
-            court: A,
-            sport: M,
-            status: I,
+            id: r.id,
+            date: x,
+            time: N,
+            court: P,
+            sport: B,
+            status: z,
             players: R,
-            price: N,
-            paid: S,
-            paymentMethod: y,
+            price: f,
+            paid: A,
+            paymentMethod: $,
           };
         }),
-      [p]
+      [b]
     ),
-    C = (i) => {
-      const o = (i.time || '').split('-')[0].trim(),
-        u = o ? `${i.date}T${o}:00` : `${i.date}T00:00:00`,
-        b = new Date(u);
-      return isNaN(b.getTime()) ? new Date(i.date) : b;
+    C = (r) => {
+      const x = (r.time || '').split('-')[0].trim(),
+        h = x ? `${r.date}T${x}:00` : `${r.date}T00:00:00`,
+        N = new Date(h);
+      return isNaN(N.getTime()) ? new Date(r.date) : N;
     },
-    c = (i) => {
-      switch (i) {
+    c = (r) => {
+      switch (r) {
         case 'confirmed':
           return '✅ Confermata';
         case 'completed':
@@ -2273,8 +2275,8 @@ function te({ player: a, T: t }) {
           return '❓ Sconosciuto';
       }
     },
-    s = (i) => {
-      switch (i) {
+    s = (r) => {
+      switch (r) {
         case 'confirmed':
           return 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400';
         case 'completed':
@@ -2287,44 +2289,47 @@ function te({ player: a, T: t }) {
           return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400';
       }
     },
-    x = $.filter((i) => {
-      const o = new Date(),
-        u = C(i);
-      if (n !== 'all') {
-        if (n === 'completed') {
-          if (!(u < o && i.status !== 'cancelled')) return !1;
-        } else if (n === 'confirmed') {
-          if (i.status !== 'confirmed') return !1;
-        } else if (n === 'cancelled') {
-          if (i.status !== 'cancelled') return !1;
-        } else if (n === 'no_show') {
-          if (i.status !== 'no_show') return !1;
-        } else if (i.status !== n) return !1;
+    o = k.filter((r) => {
+      const x = new Date(),
+        h = C(r);
+      if (i !== 'all') {
+        if (i === 'completed') {
+          if (!(h < x && r.status !== 'cancelled')) return !1;
+        } else if (i === 'confirmed') {
+          if (r.status !== 'confirmed') return !1;
+        } else if (i === 'cancelled') {
+          if (r.status !== 'cancelled') return !1;
+        } else if (i === 'no_show') {
+          if (r.status !== 'no_show') return !1;
+        } else if (r.status !== i) return !1;
       }
-      if (r !== 'all') {
-        const b = new Date(i.date);
-        switch (r) {
-          case 'week':
-            const A = new Date(o.getTime() - 6048e5);
-            return b >= A;
-          case 'month':
-            const M = new Date(o.getTime() - 720 * 60 * 60 * 1e3);
-            return b >= M;
-          case 'year':
-            const I = new Date(o.getTime() - 365 * 24 * 60 * 60 * 1e3);
-            return b >= I;
+      if (n !== 'all') {
+        const N = new Date(r.date);
+        switch (n) {
+          case 'week': {
+            const P = new Date(x.getTime() - 6048e5);
+            return N >= P;
+          }
+          case 'month': {
+            const P = new Date(x.getTime() - 2592e6);
+            return N >= P;
+          }
+          case 'year': {
+            const P = new Date(x.getTime() - 31536e6);
+            return N >= P;
+          }
           default:
             return !0;
         }
       }
       return !0;
     }),
-    f = {
-      total: $.length,
-      completed: $.filter((i) => C(i) < new Date() && i.status !== 'cancelled').length,
-      upcoming: $.filter((i) => C(i) >= new Date() && i.status !== 'cancelled').length,
-      cancelled: $.filter((i) => i.status === 'cancelled').length,
-      totalSpent: $.filter((i) => i.paid).reduce((i, o) => i + o.price, 0),
+    y = {
+      total: k.length,
+      completed: k.filter((r) => C(r) < new Date() && r.status !== 'cancelled').length,
+      upcoming: k.filter((r) => C(r) >= new Date() && r.status !== 'cancelled').length,
+      cancelled: k.filter((r) => r.status === 'cancelled').length,
+      totalSpent: k.filter((r) => r.paid).reduce((r, x) => r + x.price, 0),
     };
   return e.jsxs('div', {
     className: 'space-y-6',
@@ -2337,7 +2342,7 @@ function te({ player: a, T: t }) {
             children: [
               e.jsx('div', {
                 className: 'text-2xl font-bold text-blue-600 dark:text-blue-400',
-                children: f.total,
+                children: y.total,
               }),
               e.jsx('div', { className: `text-xs ${t.subtext}`, children: 'Totale' }),
             ],
@@ -2347,7 +2352,7 @@ function te({ player: a, T: t }) {
             children: [
               e.jsx('div', {
                 className: 'text-2xl font-bold text-green-600 dark:text-green-400',
-                children: f.completed,
+                children: y.completed,
               }),
               e.jsx('div', { className: `text-xs ${t.subtext}`, children: 'Completate' }),
             ],
@@ -2357,7 +2362,7 @@ function te({ player: a, T: t }) {
             children: [
               e.jsx('div', {
                 className: 'text-2xl font-bold text-orange-600 dark:text-orange-400',
-                children: f.upcoming,
+                children: y.upcoming,
               }),
               e.jsx('div', { className: `text-xs ${t.subtext}`, children: 'Future' }),
             ],
@@ -2367,7 +2372,7 @@ function te({ player: a, T: t }) {
             children: [
               e.jsx('div', {
                 className: 'text-2xl font-bold text-red-600 dark:text-red-400',
-                children: f.cancelled,
+                children: y.cancelled,
               }),
               e.jsx('div', { className: `text-xs ${t.subtext}`, children: 'Cancellate' }),
             ],
@@ -2377,7 +2382,7 @@ function te({ player: a, T: t }) {
             children: [
               e.jsxs('div', {
                 className: 'text-2xl font-bold text-purple-600 dark:text-purple-400',
-                children: ['€', f.totalSpent.toFixed(2)],
+                children: ['€', y.totalSpent.toFixed(2)],
               }),
               e.jsx('div', { className: `text-xs ${t.subtext}`, children: 'Totale Speso' }),
             ],
@@ -2395,8 +2400,8 @@ function te({ player: a, T: t }) {
                 children: 'Filtra per stato',
               }),
               e.jsxs('select', {
-                value: n,
-                onChange: (i) => l(i.target.value),
+                value: i,
+                onChange: (r) => l(r.target.value),
                 className: `${t.input} w-full`,
                 children: [
                   e.jsx('option', { value: 'all', children: 'Tutti gli stati' }),
@@ -2416,8 +2421,8 @@ function te({ player: a, T: t }) {
                 children: 'Filtra per periodo',
               }),
               e.jsxs('select', {
-                value: r,
-                onChange: (i) => m(i.target.value),
+                value: n,
+                onChange: (r) => u(r.target.value),
                 className: `${t.input} w-full`,
                 children: [
                   e.jsx('option', { value: 'all', children: 'Tutti i periodi' }),
@@ -2434,7 +2439,7 @@ function te({ player: a, T: t }) {
         children: [
           e.jsxs('h4', {
             className: `font-semibold ${t.text} mb-4`,
-            children: ['Storico Prenotazioni (', x.length, ')'],
+            children: ['Storico Prenotazioni (', o.length, ')'],
           }),
           d
             ? e.jsxs('div', {
@@ -2447,7 +2452,7 @@ function te({ player: a, T: t }) {
                   }),
                 ],
               })
-            : j
+            : v
               ? e.jsxs('div', {
                   className: `text-center py-8 ${t.cardBg} ${t.border} rounded-xl`,
                   children: [
@@ -2458,7 +2463,7 @@ function te({ player: a, T: t }) {
                     }),
                   ],
                 })
-              : x.length === 0
+              : o.length === 0
                 ? e.jsxs('div', {
                     className: `text-center py-8 ${t.cardBg} ${t.border} rounded-xl`,
                     children: [
@@ -2466,14 +2471,14 @@ function te({ player: a, T: t }) {
                       e.jsx('div', {
                         className: `${t.subtext} mb-4`,
                         children:
-                          n !== 'all' || r !== 'all'
+                          i !== 'all' || n !== 'all'
                             ? 'Nessuna prenotazione corrispondente ai filtri'
                             : 'Nessuna prenotazione presente',
                       }),
-                      n !== 'all' || r !== 'all'
+                      i !== 'all' || n !== 'all'
                         ? e.jsx('button', {
                             onClick: () => {
-                              (l('all'), m('all'));
+                              (l('all'), u('all'));
                             },
                             className: `${t.btnSecondary} px-6 py-3`,
                             children: 'Rimuovi Filtri',
@@ -2483,9 +2488,9 @@ function te({ player: a, T: t }) {
                   })
                 : e.jsx('div', {
                     className: 'space-y-3',
-                    children: x
-                      .sort((i, o) => C(o) - C(i))
-                      .map((i) =>
+                    children: o
+                      .sort((r, x) => C(x) - C(r))
+                      .map((r) =>
                         e.jsxs(
                           'div',
                           {
@@ -2497,7 +2502,7 @@ function te({ player: a, T: t }) {
                                   e.jsx('div', {
                                     className:
                                       'w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold',
-                                    children: new Date(i.date).getDate(),
+                                    children: new Date(r.date).getDate(),
                                   }),
                                   e.jsxs('div', {
                                     className: 'flex-1 min-w-0',
@@ -2507,13 +2512,13 @@ function te({ player: a, T: t }) {
                                         children: [
                                           e.jsxs('span', {
                                             className: `font-medium ${t.text}`,
-                                            children: [i.court, ' - ', i.sport],
+                                            children: [r.court, ' - ', r.sport],
                                           }),
                                           e.jsx('span', {
-                                            className: `px-2 py-1 rounded-full text-xs font-medium ${s(i.status)}`,
-                                            children: c(i.status),
+                                            className: `px-2 py-1 rounded-full text-xs font-medium ${s(r.status)}`,
+                                            children: c(r.status),
                                           }),
-                                          i.paid &&
+                                          r.paid &&
                                             e.jsx('span', {
                                               className:
                                                 'px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400',
@@ -2528,12 +2533,12 @@ function te({ player: a, T: t }) {
                                           e.jsxs('span', {
                                             children: [
                                               '📅 ',
-                                              new Date(i.date).toLocaleDateString('it-IT'),
+                                              new Date(r.date).toLocaleDateString('it-IT'),
                                             ],
                                           }),
-                                          e.jsxs('span', { children: ['⏰ ', i.time] }),
+                                          e.jsxs('span', { children: ['⏰ ', r.time] }),
                                           e.jsxs('span', {
-                                            children: ['👥 ', i.players.join(', ')],
+                                            children: ['👥 ', r.players.join(', ')],
                                           }),
                                         ],
                                       }),
@@ -2545,11 +2550,11 @@ function te({ player: a, T: t }) {
                                       e.jsxs('div', {
                                         className:
                                           'text-lg font-bold text-green-600 dark:text-green-400',
-                                        children: ['€', i.price.toFixed(2)],
+                                        children: ['€', r.price.toFixed(2)],
                                       }),
                                       e.jsx('div', {
                                         className: `text-xs ${t.subtext}`,
-                                        children: i.paymentMethod ? i.paymentMethod : 'Non pagato',
+                                        children: r.paymentMethod ? r.paymentMethod : 'Non pagato',
                                       }),
                                     ],
                                   }),
@@ -2565,15 +2570,15 @@ function te({ player: a, T: t }) {
                                         children: [
                                           e.jsxs('div', {
                                             className: `font-medium ${t.text} mb-1`,
-                                            children: [i.court, ' - ', i.sport],
+                                            children: [r.court, ' - ', r.sport],
                                           }),
                                           e.jsxs('div', {
                                             className: 'text-sm text-gray-500 dark:text-gray-400',
                                             children: [
                                               '📅 ',
-                                              new Date(i.date).toLocaleDateString('it-IT'),
+                                              new Date(r.date).toLocaleDateString('it-IT'),
                                               ' ⏰ ',
-                                              i.time,
+                                              r.time,
                                             ],
                                           }),
                                         ],
@@ -2583,7 +2588,7 @@ function te({ player: a, T: t }) {
                                         children: e.jsxs('div', {
                                           className:
                                             'text-lg font-bold text-green-600 dark:text-green-400',
-                                          children: ['€', i.price.toFixed(2)],
+                                          children: ['€', r.price.toFixed(2)],
                                         }),
                                       }),
                                     ],
@@ -2592,10 +2597,10 @@ function te({ player: a, T: t }) {
                                     className: 'flex flex-wrap gap-2 mb-3',
                                     children: [
                                       e.jsx('span', {
-                                        className: `px-2 py-1 rounded-full text-xs font-medium ${s(i.status)}`,
-                                        children: c(i.status),
+                                        className: `px-2 py-1 rounded-full text-xs font-medium ${s(r.status)}`,
+                                        children: c(r.status),
                                       }),
-                                      i.paid &&
+                                      r.paid &&
                                         e.jsx('span', {
                                           className:
                                             'px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400',
@@ -2605,13 +2610,13 @@ function te({ player: a, T: t }) {
                                   }),
                                   e.jsxs('div', {
                                     className: 'text-sm text-gray-500 dark:text-gray-400',
-                                    children: ['👥 ', i.players.join(', ')],
+                                    children: ['👥 ', r.players.join(', ')],
                                   }),
                                 ],
                               }),
                             ],
                           },
-                          i.id
+                          r.id
                         )
                       ),
                   }),
@@ -2620,47 +2625,100 @@ function te({ player: a, T: t }) {
     ],
   });
 }
-function se({ player: a, onUpdate: t, onClose: n, T: l }) {
-  const [r, m] = v.useState('overview'),
-    [d, g] = v.useState(!1),
-    [j, h] = v.useState(''),
-    p = (i) => {
-      switch (i) {
-        case w.MEMBER:
+function re({ player: a, onUpdate: t, onClose: i, T: l }) {
+  const [n, u] = j.useState('overview'),
+    [d, p] = j.useState(!1),
+    [v, g] = j.useState(''),
+    [b, w] = j.useState(''),
+    [k, C] = j.useState([]),
+    [c, s] = j.useState(!1),
+    { state: o } = H(),
+    y = j.useMemo(
+      () =>
+        new Set(
+          (o?.players || [])
+            .filter((m) => m.id !== a.id && (m.isAccountLinked || m.linkedAccountEmail))
+            .map((m) => (m.linkedAccountEmail || '').toLowerCase())
+            .filter(Boolean)
+        ),
+      [o?.players, a.id]
+    ),
+    r = j.useMemo(
+      () =>
+        new Set(
+          (o?.players || [])
+            .filter((m) => m.id !== a.id && (m.isAccountLinked || m.linkedAccountId))
+            .map((m) => m.linkedAccountId)
+            .filter(Boolean)
+        ),
+      [o?.players, a.id]
+    ),
+    x = j.useMemo(
+      () =>
+        (k || []).filter((m) => {
+          const M = (m.email || '').toLowerCase(),
+            O = m.uid;
+          return !M || (O && r.has(O)) ? !1 : !y.has(M);
+        }),
+      [k, y, r]
+    ),
+    h = j.useMemo(() => {
+      const m = b.trim().toLowerCase();
+      return m
+        ? x.filter(
+            (M) =>
+              (M.email || '').toLowerCase().includes(m) ||
+              (M.firstName || '').toLowerCase().includes(m) ||
+              (M.lastName || '').toLowerCase().includes(m)
+          )
+        : x;
+    }, [x, b]),
+    N = async () => {
+      try {
+        s(!0);
+        const m = await q(500);
+        (C(m || []), w(''), p(!0));
+      } finally {
+        s(!1);
+      }
+    },
+    P = (m) => {
+      switch (m) {
+        case S.MEMBER:
           return 'Membro';
-        case w.VIP:
+        case S.VIP:
           return 'VIP';
-        case w.GUEST:
+        case S.GUEST:
           return 'Ospite';
-        case w.NON_MEMBER:
+        case S.NON_MEMBER:
           return 'Non Membro';
         default:
           return 'N/A';
       }
     },
-    k = (i) => {
-      switch (i) {
-        case w.MEMBER:
+    B = (m) => {
+      switch (m) {
+        case S.MEMBER:
           return 'text-green-600 dark:text-green-400';
-        case w.VIP:
+        case S.VIP:
           return 'text-purple-600 dark:text-purple-400';
-        case w.GUEST:
+        case S.GUEST:
           return 'text-blue-600 dark:text-blue-400';
         default:
           return 'text-gray-600 dark:text-gray-400';
       }
     },
-    $ = () => {
-      j.trim() &&
+    z = () => {
+      v.trim() &&
         (t({
-          linkedAccountEmail: j.trim(),
+          linkedAccountEmail: v.trim(),
           isAccountLinked: !0,
           updatedAt: new Date().toISOString(),
         }),
-        g(!1),
-        h(''));
+        p(!1),
+        g(''));
     },
-    C = () => {
+    R = () => {
       confirm("Sei sicuro di voler scollegare l'account da questo giocatore?") &&
         t({
           linkedAccountId: null,
@@ -2669,12 +2727,12 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
           updatedAt: new Date().toISOString(),
         });
     },
-    c = () => {
+    f = () => {
       t({ isActive: !a.isActive, updatedAt: new Date().toISOString() });
     },
-    s = (i) =>
-      i
-        ? new Date(i).toLocaleDateString('it-IT', {
+    A = (m) =>
+      m
+        ? new Date(m).toLocaleDateString('it-IT', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
@@ -2682,15 +2740,15 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
             minute: '2-digit',
           })
         : 'N/A',
-    x = (i) => {
-      if (!i) return null;
-      const o = new Date(),
-        u = new Date(i);
-      let b = o.getFullYear() - u.getFullYear();
-      const A = o.getMonth() - u.getMonth();
-      return ((A < 0 || (A === 0 && o.getDate() < u.getDate())) && b--, b);
+    $ = (m) => {
+      if (!m) return null;
+      const M = new Date(),
+        O = new Date(m);
+      let W = M.getFullYear() - O.getFullYear();
+      const V = M.getMonth() - O.getMonth();
+      return ((V < 0 || (V === 0 && M.getDate() < O.getDate())) && W--, W);
     },
-    f = [
+    D = [
       { id: 'overview', label: '👤 Panoramica', icon: '👤' },
       { id: 'notes', label: '📝 Note', icon: '📝' },
       { id: 'wallet', label: '💰 Wallet', icon: '💰' },
@@ -2727,8 +2785,8 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
                         className: 'flex items-center gap-3 mb-2',
                         children: [
                           e.jsx('span', {
-                            className: `px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 ${k(a.category)}`,
-                            children: p(a.category),
+                            className: `px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 ${B(a.category)}`,
+                            children: P(a.category),
                           }),
                           !a.isActive &&
                             e.jsx('span', {
@@ -2765,7 +2823,7 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
                                 e.jsxs('span', {
                                   children: [
                                     new Date(a.dateOfBirth).toLocaleDateString('it-IT'),
-                                    x(a.dateOfBirth) && ` (${x(a.dateOfBirth)} anni)`,
+                                    $(a.dateOfBirth) && ` (${$(a.dateOfBirth)} anni)`,
                                   ],
                                 }),
                               ],
@@ -2820,7 +2878,7 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
                   e.jsx('div', {
                     className: 'flex gap-2 justify-end',
                     children: e.jsx('button', {
-                      onClick: c,
+                      onClick: f,
                       className: `px-3 py-1 text-sm rounded ${a.isActive ? 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400' : 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400'}`,
                       children: a.isActive ? '⏸️ Disattiva' : '▶️ Attiva',
                     }),
@@ -2851,7 +2909,7 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
                               children: a.linkedAccountEmail,
                             }),
                             e.jsx('button', {
-                              onClick: C,
+                              onClick: R,
                               className: 'text-xs text-red-500 hover:text-red-700 ml-2',
                               children: 'Scollega',
                             }),
@@ -2865,39 +2923,137 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
                 }),
                 !a.isAccountLinked &&
                   e.jsx('div', {
-                    className: 'flex items-center gap-2',
+                    className: 'flex flex-col gap-2 w-full max-w-xl',
                     children: d
-                      ? e.jsxs('div', {
-                          className: 'flex items-center gap-2',
+                      ? e.jsx('div', {
+                          className: 'space-y-2',
+                          children:
+                            k.length > 0
+                              ? e.jsxs('div', {
+                                  className: 'space-y-2',
+                                  children: [
+                                    e.jsxs('div', {
+                                      className: 'flex items-center gap-2',
+                                      children: [
+                                        e.jsx('input', {
+                                          type: 'text',
+                                          value: b,
+                                          onChange: (m) => w(m.target.value),
+                                          placeholder: 'Cerca per nome o email…',
+                                          className: `${l.input} text-sm flex-1`,
+                                        }),
+                                        e.jsx('button', {
+                                          onClick: () => C([]),
+                                          className:
+                                            'px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded',
+                                          children: 'Chiudi elenco',
+                                        }),
+                                      ],
+                                    }),
+                                    e.jsx('div', {
+                                      className: `${l.cardBg} ${l.border} rounded-lg max-h-64 overflow-auto`,
+                                      children:
+                                        h.length === 0
+                                          ? e.jsx('div', {
+                                              className: `p-3 text-sm ${l.subtext}`,
+                                              children: 'Nessun account disponibile',
+                                            })
+                                          : e.jsx('ul', {
+                                              className:
+                                                'divide-y divide-gray-200 dark:divide-gray-700',
+                                              children: h.map((m) =>
+                                                e.jsxs(
+                                                  'li',
+                                                  {
+                                                    className:
+                                                      'p-3 flex items-center justify-between',
+                                                    children: [
+                                                      e.jsxs('div', {
+                                                        className: 'min-w-0',
+                                                        children: [
+                                                          e.jsx('div', {
+                                                            className: `${l.text} font-medium truncate`,
+                                                            children:
+                                                              m.firstName || m.lastName
+                                                                ? `${m.firstName || ''} ${m.lastName || ''}`.trim()
+                                                                : m.email || 'Senza nome',
+                                                          }),
+                                                          e.jsx('div', {
+                                                            className: `text-xs ${l.subtext} truncate`,
+                                                            children: m.email,
+                                                          }),
+                                                        ],
+                                                      }),
+                                                      e.jsx('button', {
+                                                        onClick: () => {
+                                                          const M = m.email || '';
+                                                          M &&
+                                                            (t({
+                                                              linkedAccountId: m.uid,
+                                                              linkedAccountEmail: M,
+                                                              isAccountLinked: !0,
+                                                              updatedAt: new Date().toISOString(),
+                                                            }),
+                                                            p(!1),
+                                                            C([]),
+                                                            w(''),
+                                                            g(''));
+                                                        },
+                                                        className:
+                                                          'px-3 py-1 text-sm bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded ml-3 flex-shrink-0',
+                                                        children: 'Collega',
+                                                      }),
+                                                    ],
+                                                  },
+                                                  m.uid
+                                                )
+                                              ),
+                                            }),
+                                    }),
+                                  ],
+                                })
+                              : e.jsxs('div', {
+                                  className: 'flex items-center gap-2',
+                                  children: [
+                                    e.jsx('input', {
+                                      type: 'email',
+                                      value: v,
+                                      onChange: (m) => g(m.target.value),
+                                      placeholder: 'email@esempio.com',
+                                      className: `${l.input} text-sm`,
+                                    }),
+                                    e.jsx('button', {
+                                      onClick: z,
+                                      className:
+                                        'px-3 py-1 text-sm bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded',
+                                      children: 'Collega',
+                                    }),
+                                    e.jsx('button', {
+                                      onClick: () => {
+                                        (p(!1), g(''));
+                                      },
+                                      className:
+                                        'px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded',
+                                      children: 'Annulla',
+                                    }),
+                                  ],
+                                }),
+                        })
+                      : e.jsxs('div', {
+                          className: 'flex items-center gap-2 justify-end',
                           children: [
-                            e.jsx('input', {
-                              type: 'email',
-                              value: j,
-                              onChange: (i) => h(i.target.value),
-                              placeholder: 'email@esempio.com',
-                              className: `${l.input} text-sm`,
-                              autoFocus: !0,
+                            e.jsx('button', {
+                              onClick: N,
+                              className: `${l.btnSecondary} px-4 py-2 text-sm`,
+                              disabled: c,
+                              children: c ? 'Carico…' : '🔎 Cerca account',
                             }),
                             e.jsx('button', {
-                              onClick: $,
-                              className:
-                                'px-3 py-1 text-sm bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded',
-                              children: 'Collega',
-                            }),
-                            e.jsx('button', {
-                              onClick: () => {
-                                (g(!1), h(''));
-                              },
-                              className:
-                                'px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded',
-                              children: 'Annulla',
+                              onClick: () => p(!0),
+                              className: `${l.btnSecondary} px-4 py-2 text-sm`,
+                              children: '🔗 Collega via email',
                             }),
                           ],
-                        })
-                      : e.jsx('button', {
-                          onClick: () => g(!0),
-                          className: `${l.btnSecondary} px-4 py-2 text-sm`,
-                          children: '🔗 Collega Account',
                         }),
                   }),
               ],
@@ -2909,18 +3065,18 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
         className: 'border-b border-gray-200 dark:border-gray-700',
         children: e.jsx('nav', {
           className: 'flex space-x-8 overflow-x-auto',
-          children: f.map((i) =>
+          children: D.map((m) =>
             e.jsxs(
               'button',
               {
-                onClick: () => m(i.id),
-                className: `py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${r === i.id ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`,
+                onClick: () => u(m.id),
+                className: `py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${n === m.id ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`,
                 children: [
-                  e.jsx('span', { className: 'hidden sm:inline', children: i.label }),
-                  e.jsx('span', { className: 'sm:hidden text-lg', children: i.icon }),
+                  e.jsx('span', { className: 'hidden sm:inline', children: m.label }),
+                  e.jsx('span', { className: 'sm:hidden text-lg', children: m.icon }),
                 ],
               },
-              i.id
+              m.id
             )
           ),
         }),
@@ -2928,7 +3084,7 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
       e.jsxs('div', {
         className: 'min-h-[400px]',
         children: [
-          r === 'overview' &&
+          n === 'overview' &&
             e.jsxs('div', {
               className: 'grid grid-cols-1 lg:grid-cols-2 gap-6',
               children: [
@@ -2985,7 +3141,7 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
                           className: 'flex justify-between',
                           children: [
                             e.jsx('span', { className: l.subtext, children: 'Registrato il:' }),
-                            e.jsx('span', { className: l.text, children: s(a.createdAt) }),
+                            e.jsx('span', { className: l.text, children: A(a.createdAt) }),
                           ],
                         }),
                         e.jsxs('div', {
@@ -2995,7 +3151,7 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
                               className: l.subtext,
                               children: 'Ultimo aggiornamento:',
                             }),
-                            e.jsx('span', { className: l.text, children: s(a.updatedAt) }),
+                            e.jsx('span', { className: l.text, children: A(a.updatedAt) }),
                           ],
                         }),
                       ],
@@ -3055,7 +3211,7 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
                           className: 'flex justify-between',
                           children: [
                             e.jsx('span', { className: l.subtext, children: 'Ultima attività:' }),
-                            e.jsx('span', { className: l.text, children: s(a.lastActivity) }),
+                            e.jsx('span', { className: l.text, children: A(a.lastActivity) }),
                           ],
                         }),
                       ],
@@ -3082,15 +3238,15 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
                               className: 'flex flex-wrap gap-2',
                               children:
                                 a.tags && a.tags.length > 0
-                                  ? a.tags.map((i, o) =>
+                                  ? a.tags.map((m, M) =>
                                       e.jsx(
                                         'span',
                                         {
                                           className:
                                             'px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs rounded-full',
-                                          children: i,
+                                          children: m,
                                         },
-                                        o
+                                        M
                                       )
                                     )
                                   : e.jsx('span', {
@@ -3140,17 +3296,17 @@ function se({ player: a, onUpdate: t, onClose: n, T: l }) {
                 }),
               ],
             }),
-          r === 'notes' && e.jsx(X, { player: a, onUpdate: t, T: l }),
-          r === 'wallet' && e.jsx(T, { player: a, onUpdate: t, T: l }),
-          r === 'bookings' && e.jsx(te, { player: a, T: l }),
-          r === 'communications' && e.jsx(ee, { player: a, onUpdate: t, T: l }),
+          n === 'notes' && e.jsx(ae, { player: a, onUpdate: t, T: l }),
+          n === 'wallet' && e.jsx(le, { player: a, onUpdate: t, T: l }),
+          n === 'bookings' && e.jsx(ne, { player: a, T: l }),
+          n === 'communications' && e.jsx(ie, { player: a, onUpdate: t, T: l }),
         ],
       }),
     ],
   });
 }
-function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
-  const [r, m] = v.useState({
+function ce({ players: a, T: t, onBulkOperation: i, onRefreshData: l }) {
+  const [n, u] = j.useState({
       format: 'csv',
       includePersonalData: !0,
       includeSportsData: !0,
@@ -3159,103 +3315,103 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
       includeNotes: !1,
       dateRange: 'all',
     }),
-    [d, g] = v.useState({ type: '', category: '', discount: 0, message: '', selectedPlayers: [] }),
-    [j, h] = v.useState(!1),
-    [p, k] = v.useState(!1),
-    [$, C] = v.useState(!1),
+    [d, p] = j.useState({ type: '', category: '', discount: 0, message: '', selectedPlayers: [] }),
+    [v, g] = j.useState(!1),
+    [b, w] = j.useState(!1),
+    [k, C] = j.useState(!1),
     s = (() => {
-      const o = new Date(),
-        u = o.getMonth(),
-        b = o.getFullYear(),
-        A = a.filter((y) => y.category === 'member').length,
-        M = a.reduce((y, P) => y + (P.wallet?.balance || 0), 0),
-        I = a.filter((y) => {
-          const P = new Date(y.createdAt || o);
-          return P.getMonth() === u && P.getFullYear() === b;
+      const x = new Date(),
+        h = x.getMonth(),
+        N = x.getFullYear(),
+        P = a.filter(($) => $.category === 'member').length,
+        B = a.reduce(($, D) => $ + (D.wallet?.balance || 0), 0),
+        z = a.filter(($) => {
+          const D = new Date($.createdAt || x);
+          return D.getMonth() === h && D.getFullYear() === N;
         }).length,
-        R = a.length > 0 ? M / a.length : 0,
-        N = a.reduce((y, P) => ((y[P.category] = (y[P.category] || 0) + 1), y), {}),
-        S = a.reduce(
-          (y, P) => (
-            (P.sports || []).forEach((D) => {
-              y[D] = (y[D] || 0) + 1;
+        R = a.length > 0 ? B / a.length : 0,
+        f = a.reduce(($, D) => (($[D.category] = ($[D.category] || 0) + 1), $), {}),
+        A = a.reduce(
+          ($, D) => (
+            (D.sports || []).forEach((m) => {
+              $[m] = ($[m] || 0) + 1;
             }),
-            y
+            $
           ),
           {}
         );
       return {
         totalPlayers: a.length,
-        activeMembers: A,
-        newPlayersThisMonth: I,
-        totalWalletBalance: M,
+        activeMembers: P,
+        newPlayersThisMonth: z,
+        totalWalletBalance: B,
         avgWalletBalance: R,
-        categoryDistribution: N,
-        sportsDistribution: S,
+        categoryDistribution: f,
+        sportsDistribution: A,
       };
     })(),
-    x = () => {
-      const o = [];
-      (r.includePersonalData &&
-        o.push('Nome', 'Cognome', 'Email', 'Telefono', 'Data Nascita', 'Categoria'),
-        r.includeSportsData &&
-          o.push('Sport', 'Livello Padel', 'Livello Tennis', 'Posizione Preferita'),
-        r.includeWalletData && o.push('Saldo Wallet', 'Totale Ricariche', 'Ultima Ricarica'));
-      let u =
-        o.join(',') +
+    o = () => {
+      const x = [];
+      (n.includePersonalData &&
+        x.push('Nome', 'Cognome', 'Email', 'Telefono', 'Data Nascita', 'Categoria'),
+        n.includeSportsData &&
+          x.push('Sport', 'Livello Padel', 'Livello Tennis', 'Posizione Preferita'),
+        n.includeWalletData && x.push('Saldo Wallet', 'Totale Ricariche', 'Ultima Ricarica'));
+      let h =
+        x.join(',') +
         `
 `;
       return (
-        a.forEach((b) => {
-          const A = [];
-          (r.includePersonalData &&
-            A.push(
-              `"${b.firstName || ''}"`,
-              `"${b.lastName || ''}"`,
-              `"${b.email || ''}"`,
-              `"${b.phone || ''}"`,
-              `"${b.dateOfBirth || ''}"`,
-              `"${b.category || ''}"`
+        a.forEach((N) => {
+          const P = [];
+          (n.includePersonalData &&
+            P.push(
+              `"${N.firstName || ''}"`,
+              `"${N.lastName || ''}"`,
+              `"${N.email || ''}"`,
+              `"${N.phone || ''}"`,
+              `"${N.dateOfBirth || ''}"`,
+              `"${N.category || ''}"`
             ),
-            r.includeSportsData &&
-              A.push(
-                `"${(b.sports || []).join(', ')}"`,
-                `"${b.ratings?.padel || ''}"`,
-                `"${b.ratings?.tennis || ''}"`,
-                `"${b.preferredPosition || ''}"`
+            n.includeSportsData &&
+              P.push(
+                `"${(N.sports || []).join(', ')}"`,
+                `"${N.ratings?.padel || ''}"`,
+                `"${N.ratings?.tennis || ''}"`,
+                `"${N.preferredPosition || ''}"`
               ),
-            r.includeWalletData &&
-              A.push(
-                `"${b.wallet?.balance || 0}"`,
-                `"${b.wallet?.totalTopups || 0}"`,
-                `"${b.wallet?.lastTopupDate || ''}"`
+            n.includeWalletData &&
+              P.push(
+                `"${N.wallet?.balance || 0}"`,
+                `"${N.wallet?.totalTopups || 0}"`,
+                `"${N.wallet?.lastTopupDate || ''}"`
               ),
-            (u +=
-              A.join(',') +
+            (h +=
+              P.join(',') +
               `
 `));
         }),
-        u
+        h
       );
     },
-    f = () => {
-      const o = x(),
-        u = new Blob([o], { type: 'text/csv;charset=utf-8;' }),
-        b = document.createElement('a'),
-        A = URL.createObjectURL(u);
-      (b.setAttribute('href', A),
-        b.setAttribute('download', `giocatori_${new Date().toISOString().split('T')[0]}.csv`),
-        (b.style.visibility = 'hidden'),
-        document.body.appendChild(b),
-        b.click(),
-        document.body.removeChild(b),
-        h(!1));
+    y = () => {
+      const x = o(),
+        h = new Blob([x], { type: 'text/csv;charset=utf-8;' }),
+        N = document.createElement('a'),
+        P = URL.createObjectURL(h);
+      (N.setAttribute('href', P),
+        N.setAttribute('download', `giocatori_${new Date().toISOString().split('T')[0]}.csv`),
+        (N.style.visibility = 'hidden'),
+        document.body.appendChild(N),
+        N.click(),
+        document.body.removeChild(N),
+        g(!1));
     },
-    i = () => {
+    r = () => {
       (console.log('Esecuzione bulk action:', d),
-        n && n(d),
-        g({ type: '', category: '', discount: 0, message: '', selectedPlayers: [] }),
-        k(!1),
+        i && i(d),
+        p({ type: '', category: '', discount: 0, message: '', selectedPlayers: [] }),
+        w(!1),
         alert(`Operazione bulk "${d.type}" eseguita su ${d.selectedPlayers.length} giocatori!`));
     };
   return e.jsxs('div', {
@@ -3265,19 +3421,19 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
         className: 'flex flex-col lg:flex-row gap-4',
         children: [
           e.jsx('button', {
-            onClick: () => h(!0),
+            onClick: () => g(!0),
             className: `${t.btnPrimary} flex items-center gap-2 px-6 py-3`,
             children: '📊 Esporta Dati',
           }),
           e.jsx('button', {
-            onClick: () => k(!0),
+            onClick: () => w(!0),
             className: `${t.btnSecondary} flex items-center gap-2 px-6 py-3`,
             children: '🔄 Operazioni Bulk',
           }),
           e.jsxs('button', {
-            onClick: () => C(!$),
+            onClick: () => C(!k),
             className: `${t.btnSecondary} flex items-center gap-2 px-6 py-3`,
-            children: ['📈 Analytics', $ ? ' (Nascondi)' : ' (Mostra)'],
+            children: ['📈 Analytics', k ? ' (Nascondi)' : ' (Mostra)'],
           }),
           e.jsx('button', {
             onClick: l,
@@ -3286,7 +3442,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
           }),
         ],
       }),
-      $ &&
+      k &&
         e.jsxs('div', {
           className: `${t.cardBg} ${t.border} rounded-xl p-6`,
           children: [
@@ -3362,7 +3518,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                     }),
                     e.jsx('div', {
                       className: 'space-y-2',
-                      children: Object.entries(s.categoryDistribution).map(([o, u]) =>
+                      children: Object.entries(s.categoryDistribution).map(([x, h]) =>
                         e.jsxs(
                           'div',
                           {
@@ -3372,19 +3528,19 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                               e.jsxs('span', {
                                 className: `capitalize ${t.text}`,
                                 children: [
-                                  o === 'member' && '👑 Membri',
-                                  o === 'non_member' && '👤 Non Membri',
-                                  o === 'guest' && '🏃 Ospiti',
-                                  o === 'vip' && '⭐ VIP',
+                                  x === 'member' && '👑 Membri',
+                                  x === 'non_member' && '👤 Non Membri',
+                                  x === 'guest' && '🏃 Ospiti',
+                                  x === 'vip' && '⭐ VIP',
                                 ],
                               }),
                               e.jsxs('span', {
                                 className: `font-medium ${t.text}`,
-                                children: [u, ' (', ((u / s.totalPlayers) * 100).toFixed(1), '%)'],
+                                children: [h, ' (', ((h / s.totalPlayers) * 100).toFixed(1), '%)'],
                               }),
                             ],
                           },
-                          o
+                          x
                         )
                       ),
                     }),
@@ -3399,9 +3555,9 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                     e.jsx('div', {
                       className: 'space-y-2',
                       children: Object.entries(s.sportsDistribution)
-                        .sort(([, o], [, u]) => u - o)
+                        .sort(([, x], [, h]) => h - x)
                         .slice(0, 5)
-                        .map(([o, u]) =>
+                        .map(([x, h]) =>
                           e.jsxs(
                             'div',
                             {
@@ -3411,20 +3567,20 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                                 e.jsxs('span', {
                                   className: `capitalize ${t.text}`,
                                   children: [
-                                    o === 'padel' && '🎾 Padel',
-                                    o === 'tennis' && '🎾 Tennis',
-                                    o === 'calcetto' && '⚽ Calcetto',
-                                    o === 'beach_volley' && '🏐 Beach Volley',
-                                    o || '❓ Altro',
+                                    x === 'padel' && '🎾 Padel',
+                                    x === 'tennis' && '🎾 Tennis',
+                                    x === 'calcetto' && '⚽ Calcetto',
+                                    x === 'beach_volley' && '🏐 Beach Volley',
+                                    x || '❓ Altro',
                                   ],
                                 }),
                                 e.jsxs('span', {
                                   className: `font-medium ${t.text}`,
-                                  children: [u, ' giocatori'],
+                                  children: [h, ' giocatori'],
                                 }),
                               ],
                             },
-                            o
+                            x
                           )
                         ),
                     }),
@@ -3469,7 +3625,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                   children: 'Scarica i dati dei giocatori in formato CSV o Excel',
                 }),
                 e.jsx('button', {
-                  onClick: () => h(!0),
+                  onClick: () => g(!0),
                   className: `${t.btnPrimary} w-full`,
                   children: 'Esporta Ora',
                 }),
@@ -3492,7 +3648,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                 }),
                 e.jsx('button', {
                   onClick: () => {
-                    (g((o) => ({ ...o, type: 'message' })), k(!0));
+                    (p((x) => ({ ...x, type: 'message' })), w(!0));
                   },
                   className: `${t.btnSecondary} w-full`,
                   children: 'Invia Messaggio',
@@ -3516,7 +3672,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                 }),
                 e.jsx('button', {
                   onClick: () => {
-                    (g((o) => ({ ...o, type: 'category' })), k(!0));
+                    (p((x) => ({ ...x, type: 'category' })), w(!0));
                   },
                   className: `${t.btnSecondary} w-full`,
                   children: 'Modifica Categorie',
@@ -3526,7 +3682,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
           }),
         ],
       }),
-      j &&
+      v &&
         e.jsx('div', {
           className:
             'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4',
@@ -3543,7 +3699,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                       children: '📊 Esporta Dati Giocatori',
                     }),
                     e.jsx('button', {
-                      onClick: () => h(!1),
+                      onClick: () => g(!1),
                       className: `${t.btnSecondary} px-4 py-2`,
                       children: '✖️',
                     }),
@@ -3571,8 +3727,8 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                                   type: 'radio',
                                   name: 'format',
                                   value: 'csv',
-                                  checked: r.format === 'csv',
-                                  onChange: (o) => m((u) => ({ ...u, format: o.target.value })),
+                                  checked: n.format === 'csv',
+                                  onChange: (x) => u((h) => ({ ...h, format: x.target.value })),
                                   className: 'text-blue-600',
                                 }),
                                 e.jsx('span', { className: t.text, children: '📋 CSV' }),
@@ -3585,8 +3741,8 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                                   type: 'radio',
                                   name: 'format',
                                   value: 'excel',
-                                  checked: r.format === 'excel',
-                                  onChange: (o) => m((u) => ({ ...u, format: o.target.value })),
+                                  checked: n.format === 'excel',
+                                  onChange: (x) => u((h) => ({ ...h, format: x.target.value })),
                                   className: 'text-blue-600',
                                 }),
                                 e.jsx('span', { className: t.text, children: '📊 Excel' }),
@@ -3610,9 +3766,9 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                               children: [
                                 e.jsx('input', {
                                   type: 'checkbox',
-                                  checked: r.includePersonalData,
-                                  onChange: (o) =>
-                                    m((u) => ({ ...u, includePersonalData: o.target.checked })),
+                                  checked: n.includePersonalData,
+                                  onChange: (x) =>
+                                    u((h) => ({ ...h, includePersonalData: x.target.checked })),
                                   className: 'text-blue-600',
                                 }),
                                 e.jsx('span', {
@@ -3626,9 +3782,9 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                               children: [
                                 e.jsx('input', {
                                   type: 'checkbox',
-                                  checked: r.includeSportsData,
-                                  onChange: (o) =>
-                                    m((u) => ({ ...u, includeSportsData: o.target.checked })),
+                                  checked: n.includeSportsData,
+                                  onChange: (x) =>
+                                    u((h) => ({ ...h, includeSportsData: x.target.checked })),
                                   className: 'text-blue-600',
                                 }),
                                 e.jsx('span', {
@@ -3642,9 +3798,9 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                               children: [
                                 e.jsx('input', {
                                   type: 'checkbox',
-                                  checked: r.includeWalletData,
-                                  onChange: (o) =>
-                                    m((u) => ({ ...u, includeWalletData: o.target.checked })),
+                                  checked: n.includeWalletData,
+                                  onChange: (x) =>
+                                    u((h) => ({ ...h, includeWalletData: x.target.checked })),
                                   className: 'text-blue-600',
                                 }),
                                 e.jsx('span', {
@@ -3658,9 +3814,9 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                               children: [
                                 e.jsx('input', {
                                   type: 'checkbox',
-                                  checked: r.includeBookingHistory,
-                                  onChange: (o) =>
-                                    m((u) => ({ ...u, includeBookingHistory: o.target.checked })),
+                                  checked: n.includeBookingHistory,
+                                  onChange: (x) =>
+                                    u((h) => ({ ...h, includeBookingHistory: x.target.checked })),
                                   className: 'text-blue-600',
                                 }),
                                 e.jsx('span', {
@@ -3674,9 +3830,9 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                               children: [
                                 e.jsx('input', {
                                   type: 'checkbox',
-                                  checked: r.includeNotes,
-                                  onChange: (o) =>
-                                    m((u) => ({ ...u, includeNotes: o.target.checked })),
+                                  checked: n.includeNotes,
+                                  onChange: (x) =>
+                                    u((h) => ({ ...h, includeNotes: x.target.checked })),
                                   className: 'text-blue-600',
                                 }),
                                 e.jsx('span', {
@@ -3693,12 +3849,12 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                       className: 'flex gap-3',
                       children: [
                         e.jsxs('button', {
-                          onClick: f,
+                          onClick: y,
                           className: `${t.btnPrimary} flex-1`,
-                          children: ['📊 Scarica (', r.format.toUpperCase(), ')'],
+                          children: ['📊 Scarica (', n.format.toUpperCase(), ')'],
                         }),
                         e.jsx('button', {
-                          onClick: () => h(!1),
+                          onClick: () => g(!1),
                           className: `${t.btnSecondary} px-6`,
                           children: 'Annulla',
                         }),
@@ -3710,7 +3866,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
             ],
           }),
         }),
-      p &&
+      b &&
         e.jsx('div', {
           className:
             'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4',
@@ -3727,7 +3883,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                       children: '🔄 Operazioni Bulk',
                     }),
                     e.jsx('button', {
-                      onClick: () => k(!1),
+                      onClick: () => w(!1),
                       className: `${t.btnSecondary} px-4 py-2`,
                       children: '✖️',
                     }),
@@ -3747,7 +3903,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                         }),
                         e.jsxs('select', {
                           value: d.type,
-                          onChange: (o) => g((u) => ({ ...u, type: o.target.value })),
+                          onChange: (x) => p((h) => ({ ...h, type: x.target.value })),
                           className: `${t.input} w-full`,
                           children: [
                             e.jsx('option', { value: '', children: 'Seleziona operazione' }),
@@ -3777,7 +3933,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                           }),
                           e.jsxs('select', {
                             value: d.category,
-                            onChange: (o) => g((u) => ({ ...u, category: o.target.value })),
+                            onChange: (x) => p((h) => ({ ...h, category: x.target.value })),
                             className: `${t.input} w-full`,
                             children: [
                               e.jsx('option', { value: '', children: 'Seleziona categoria' }),
@@ -3798,7 +3954,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                           }),
                           e.jsx('textarea', {
                             value: d.message,
-                            onChange: (o) => g((u) => ({ ...u, message: o.target.value })),
+                            onChange: (x) => p((h) => ({ ...h, message: x.target.value })),
                             placeholder:
                               'Scrivi il messaggio da inviare a tutti i giocatori selezionati...',
                             rows: 4,
@@ -3813,14 +3969,15 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                             className: `block text-sm font-medium ${t.text} mb-2`,
                             children: [
                               d.type === 'discount' ? 'Percentuale Sconto' : 'Importo Ricarica',
-                              ' (€)',
+                              ' ',
+                              '(€)',
                             ],
                           }),
                           e.jsx('input', {
                             type: 'number',
                             value: d.discount,
-                            onChange: (o) =>
-                              g((u) => ({ ...u, discount: parseFloat(o.target.value) || 0 })),
+                            onChange: (x) =>
+                              p((h) => ({ ...h, discount: parseFloat(x.target.value) || 0 })),
                             placeholder: d.type === 'discount' ? '10' : '20.00',
                             className: `${t.input} w-full`,
                           }),
@@ -3844,7 +4001,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                       className: 'flex gap-3',
                       children: [
                         e.jsx('button', {
-                          onClick: i,
+                          onClick: r,
                           disabled:
                             !d.type ||
                             (d.type === 'category' && !d.category) ||
@@ -3853,7 +4010,7 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
                           children: '🚀 Esegui Operazione',
                         }),
                         e.jsx('button', {
-                          onClick: () => k(!1),
+                          onClick: () => w(!1),
                           className: `${t.btnSecondary} px-6`,
                           children: 'Annulla',
                         }),
@@ -3868,95 +4025,95 @@ function ae({ players: a, T: t, onBulkOperation: n, onRefreshData: l }) {
     ],
   });
 }
-function le({ state: a, setState: t, onOpenStats: n, playersById: l, T: r }) {
-  const { user: m } = _(),
-    [d, g] = v.useState(null),
-    [j, h] = v.useState(!1),
-    [p, k] = v.useState(null),
-    [$, C] = v.useState('all'),
-    [c, s] = v.useState(''),
-    [x, f] = v.useState(!1),
-    i = Array.isArray(a?.players) ? a.players : [],
-    o = v.useMemo(() => (d && i.find((N) => N.id === d)) || null, [i, d]),
-    u = v.useMemo(() => {
-      let N = [...i];
-      if (($ !== 'all' && (N = N.filter((S) => S.category === $)), c.trim())) {
-        const S = c.toLowerCase();
-        N = N.filter(
-          (y) =>
-            y.name?.toLowerCase().includes(S) ||
-            y.email?.toLowerCase().includes(S) ||
-            y.phone?.includes(S) ||
-            y.firstName?.toLowerCase().includes(S) ||
-            y.lastName?.toLowerCase().includes(S)
+function de({ state: a, setState: t, onOpenStats: i, playersById: l, T: n }) {
+  const { user: u } = K(),
+    [d, p] = j.useState(null),
+    [v, g] = j.useState(!1),
+    [b, w] = j.useState(null),
+    [k, C] = j.useState('all'),
+    [c, s] = j.useState(''),
+    [o, y] = j.useState(!1),
+    r = Array.isArray(a?.players) ? a.players : [],
+    x = j.useMemo(() => (d && r.find((f) => f.id === d)) || null, [r, d]),
+    h = j.useMemo(() => {
+      let f = [...r];
+      if ((k !== 'all' && (f = f.filter((A) => A.category === k)), c.trim())) {
+        const A = c.toLowerCase();
+        f = f.filter(
+          ($) =>
+            $.name?.toLowerCase().includes(A) ||
+            $.email?.toLowerCase().includes(A) ||
+            $.phone?.includes(A) ||
+            $.firstName?.toLowerCase().includes(A) ||
+            $.lastName?.toLowerCase().includes(A)
         );
       }
-      return N.sort(K);
-    }, [i, $, c]),
-    b = v.useMemo(() => {
-      const N = i.length,
-        S = i.filter((D) => D.category === w.MEMBER).length,
-        y = i.filter((D) => D.isActive !== !1).length,
-        P = i.filter((D) => D.isAccountLinked).length;
-      return { total: N, members: S, active: y, withAccount: P };
-    }, [i]),
-    A = (N) => {
-      const S = {
-        ...F(),
-        ...N,
-        id: G(),
+      return f.sort(T);
+    }, [r, k, c]),
+    N = j.useMemo(() => {
+      const f = r.length,
+        A = r.filter((m) => m.category === S.MEMBER).length,
+        $ = r.filter((m) => m.isActive !== !1).length,
+        D = r.filter((m) => m.isAccountLinked).length;
+      return { total: f, members: A, active: $, withAccount: D };
+    }, [r]),
+    P = (f) => {
+      const A = {
+        ...U(),
+        ...f,
+        id: _(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      (t((y) => {
-        const P = Array.isArray(y?.players) ? y.players : [];
-        return { ...(y || { players: [], matches: [] }), players: [...P, S] };
+      (t(($) => {
+        const D = Array.isArray($?.players) ? $.players : [];
+        return { ...($ || { players: [], matches: [] }), players: [...D, A] };
       }),
-        h(!1));
+        g(!1));
     },
-    M = (N, S) => {
-      t((y) => {
-        const P = Array.isArray(y?.players) ? y.players : [];
+    B = (f, A) => {
+      t(($) => {
+        const D = Array.isArray($?.players) ? $.players : [];
         return {
-          ...(y || { players: [], matches: [] }),
-          players: P.map((D) =>
-            D.id === N ? { ...D, ...S, updatedAt: new Date().toISOString() } : D
+          ...($ || { players: [], matches: [] }),
+          players: D.map((m) =>
+            m.id === f ? { ...m, ...A, updatedAt: new Date().toISOString() } : m
           ),
         };
       });
     },
-    I = (N) => {
+    z = (f) => {
       confirm(
         'Sei sicuro di voler eliminare questo giocatore? Questa azione non può essere annullata.'
       ) &&
-        (t((S) => {
-          const y = Array.isArray(S?.players) ? S.players : [];
-          return { ...(S || { players: [], matches: [] }), players: y.filter((P) => P.id !== N) };
+        (t((A) => {
+          const $ = Array.isArray(A?.players) ? A.players : [];
+          return { ...(A || { players: [], matches: [] }), players: $.filter((D) => D.id !== f) };
         }),
-        g(null));
+        p(null));
     },
     R = () => {
-      if (!m) return;
-      const N = {
-        firstName: m.firstName || m.displayName?.split(' ')[0] || '',
-        lastName: m.lastName || m.displayName?.split(' ')[1] || '',
-        name: m.displayName || `${m.firstName} ${m.lastName}`.trim(),
-        email: m.email || '',
-        linkedAccountId: m.uid,
-        linkedAccountEmail: m.email,
+      if (!u) return;
+      const f = {
+        firstName: u.firstName || u.displayName?.split(' ')[0] || '',
+        lastName: u.lastName || u.displayName?.split(' ')[1] || '',
+        name: u.displayName || `${u.firstName} ${u.lastName}`.trim(),
+        email: u.email || '',
+        linkedAccountId: u.uid,
+        linkedAccountEmail: u.email,
         isAccountLinked: !0,
-        category: w.MEMBER,
+        category: S.MEMBER,
       };
-      A(N);
+      P(f);
     };
   return e.jsxs(e.Fragment, {
     children: [
-      e.jsxs(q, {
+      e.jsxs(X, {
         title: 'CRM Giocatori',
-        T: r,
+        T: n,
         children: [
           e.jsx('div', {
-            className: `${r.cardBg} ${r.border} rounded-xl p-4 xl:p-3 mb-6`,
+            className: `${n.cardBg} ${n.border} rounded-xl p-4 xl:p-3 mb-6`,
             children: e.jsxs('div', {
               className: 'flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4',
               children: [
@@ -3969,9 +4126,9 @@ function le({ state: a, setState: t, onOpenStats: n, playersById: l, T: r }) {
                         e.jsx('div', {
                           className:
                             'text-2xl xl:text-xl font-bold text-blue-600 dark:text-blue-400',
-                          children: b.total,
+                          children: N.total,
                         }),
-                        e.jsx('div', { className: `text-xs ${r.subtext}`, children: 'Totale' }),
+                        e.jsx('div', { className: `text-xs ${n.subtext}`, children: 'Totale' }),
                       ],
                     }),
                     e.jsxs('div', {
@@ -3980,9 +4137,9 @@ function le({ state: a, setState: t, onOpenStats: n, playersById: l, T: r }) {
                         e.jsx('div', {
                           className:
                             'text-2xl xl:text-xl font-bold text-green-600 dark:text-green-400',
-                          children: b.members,
+                          children: N.members,
                         }),
-                        e.jsx('div', { className: `text-xs ${r.subtext}`, children: 'Membri' }),
+                        e.jsx('div', { className: `text-xs ${n.subtext}`, children: 'Membri' }),
                       ],
                     }),
                     e.jsxs('div', {
@@ -3991,9 +4148,9 @@ function le({ state: a, setState: t, onOpenStats: n, playersById: l, T: r }) {
                         e.jsx('div', {
                           className:
                             'text-2xl xl:text-xl font-bold text-orange-600 dark:text-orange-400',
-                          children: b.active,
+                          children: N.active,
                         }),
-                        e.jsx('div', { className: `text-xs ${r.subtext}`, children: 'Attivi' }),
+                        e.jsx('div', { className: `text-xs ${n.subtext}`, children: 'Attivi' }),
                       ],
                     }),
                     e.jsxs('div', {
@@ -4002,10 +4159,10 @@ function le({ state: a, setState: t, onOpenStats: n, playersById: l, T: r }) {
                         e.jsx('div', {
                           className:
                             'text-2xl xl:text-xl font-bold text-purple-600 dark:text-purple-400',
-                          children: b.withAccount,
+                          children: N.withAccount,
                         }),
                         e.jsx('div', {
-                          className: `text-xs ${r.subtext}`,
+                          className: `text-xs ${n.subtext}`,
                           children: 'Con Account',
                         }),
                       ],
@@ -4016,19 +4173,19 @@ function le({ state: a, setState: t, onOpenStats: n, playersById: l, T: r }) {
                   className: 'flex gap-2 flex-wrap',
                   children: [
                     e.jsx('button', {
-                      onClick: () => h(!0),
-                      className: `${r.btnPrimary} px-4 py-2 text-sm`,
+                      onClick: () => g(!0),
+                      className: `${n.btnPrimary} px-4 py-2 text-sm`,
                       children: '➕ Nuovo Giocatore',
                     }),
                     e.jsx('button', {
                       onClick: R,
-                      disabled: !m,
-                      className: `${r.btnSecondary} px-4 py-2 text-sm`,
+                      disabled: !u,
+                      className: `${n.btnSecondary} px-4 py-2 text-sm`,
                       children: '👤 Crea da Account',
                     }),
                     e.jsx('button', {
-                      onClick: () => f(!0),
-                      className: `${r.btnSecondary} px-4 py-2 text-sm`,
+                      onClick: () => y(!0),
+                      className: `${n.btnSecondary} px-4 py-2 text-sm`,
                       children: '🛠️ Strumenti',
                     }),
                   ],
@@ -4045,22 +4202,22 @@ function le({ state: a, setState: t, onOpenStats: n, playersById: l, T: r }) {
                   type: 'text',
                   placeholder: 'Cerca per nome, email, telefono...',
                   value: c,
-                  onChange: (N) => s(N.target.value),
-                  className: `${r.input} w-full`,
+                  onChange: (f) => s(f.target.value),
+                  className: `${n.input} w-full`,
                 }),
               }),
               e.jsx('div', {
                 className: 'flex gap-2 shrink-0',
                 children: e.jsxs('select', {
-                  value: $,
-                  onChange: (N) => C(N.target.value),
-                  className: `${r.input} min-w-[150px]`,
+                  value: k,
+                  onChange: (f) => C(f.target.value),
+                  className: `${n.input} min-w-[150px]`,
                   children: [
                     e.jsx('option', { value: 'all', children: 'Tutte le categorie' }),
-                    e.jsx('option', { value: w.MEMBER, children: 'Membri' }),
-                    e.jsx('option', { value: w.NON_MEMBER, children: 'Non Membri' }),
-                    e.jsx('option', { value: w.GUEST, children: 'Ospiti' }),
-                    e.jsx('option', { value: w.VIP, children: 'VIP' }),
+                    e.jsx('option', { value: S.MEMBER, children: 'Membri' }),
+                    e.jsx('option', { value: S.NON_MEMBER, children: 'Non Membri' }),
+                    e.jsx('option', { value: S.GUEST, children: 'Ospiti' }),
+                    e.jsx('option', { value: S.VIP, children: 'VIP' }),
                   ],
                 }),
               }),
@@ -4069,25 +4226,25 @@ function le({ state: a, setState: t, onOpenStats: n, playersById: l, T: r }) {
           e.jsx('div', {
             className: 'space-y-4',
             children:
-              u.length === 0
+              h.length === 0
                 ? e.jsxs('div', {
-                    className: `text-center py-12 ${r.cardBg} ${r.border} rounded-xl`,
+                    className: `text-center py-12 ${n.cardBg} ${n.border} rounded-xl`,
                     children: [
                       e.jsx('div', { className: 'text-6xl mb-4', children: '👥' }),
                       e.jsx('h3', {
-                        className: `text-xl font-bold mb-2 ${r.text}`,
+                        className: `text-xl font-bold mb-2 ${n.text}`,
                         children: 'Nessun giocatore trovato',
                       }),
                       e.jsx('p', {
-                        className: `${r.subtext} mb-4`,
+                        className: `${n.subtext} mb-4`,
                         children:
-                          c || $ !== 'all'
+                          c || k !== 'all'
                             ? 'Prova a modificare i filtri di ricerca'
                             : 'Inizia aggiungendo il primo giocatore al tuo CRM',
                       }),
                       e.jsx('button', {
-                        onClick: () => h(!0),
-                        className: `${r.btnPrimary} px-6 py-3`,
+                        onClick: () => g(!0),
+                        className: `${n.btnPrimary} px-6 py-3`,
                         children: '➕ Aggiungi Primo Giocatore',
                       }),
                     ],
@@ -4095,111 +4252,111 @@ function le({ state: a, setState: t, onOpenStats: n, playersById: l, T: r }) {
                 : e.jsx('div', {
                     className:
                       'grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 [@media(min-width:2200px)]:grid-cols-5 items-stretch',
-                    children: u.map((N) =>
+                    children: h.map((f) =>
                       e.jsx(
-                        Z,
+                        te,
                         {
-                          player: N,
+                          player: f,
                           playersById: l,
                           onEdit: () => {
-                            (k(N), h(!0));
+                            (w(f), g(!0));
                           },
-                          onDelete: () => I(N.id),
-                          onView: () => g(N.id),
-                          onStats: () => n?.(N.id),
-                          T: r,
+                          onDelete: () => z(f.id),
+                          onView: () => p(f.id),
+                          onStats: () => i?.(f.id),
+                          T: n,
                         },
-                        N.id
+                        f.id
                       )
                     ),
                   }),
           }),
         ],
       }),
-      o &&
-        e.jsx(L, {
+      x &&
+        e.jsx(G, {
           isOpen: !0,
-          onClose: () => g(null),
-          title: `${o.name || 'Giocatore'} - Dettagli`,
+          onClose: () => p(null),
+          title: `${x.name || 'Giocatore'} - Dettagli`,
           size: 'large',
-          children: e.jsx(se, {
-            player: o,
-            onUpdate: (N) => M(o.id, N),
-            onClose: () => g(null),
-            T: r,
+          children: e.jsx(re, {
+            player: x,
+            onUpdate: (f) => B(x.id, f),
+            onClose: () => p(null),
+            T: n,
           }),
         }),
-      j &&
-        e.jsx(L, {
+      v &&
+        e.jsx(G, {
           isOpen: !0,
           onClose: () => {
-            (h(!1), k(null));
+            (g(!1), w(null));
           },
-          title: p ? 'Modifica Giocatore' : 'Nuovo Giocatore',
+          title: b ? 'Modifica Giocatore' : 'Nuovo Giocatore',
           size: 'large',
-          children: e.jsx(J, {
-            player: p,
-            onSave: p
-              ? (N) => {
-                  (M(p.id, N), h(!1), k(null));
+          children: e.jsx(se, {
+            player: b,
+            onSave: b
+              ? (f) => {
+                  (B(b.id, f), g(!1), w(null));
                 }
-              : A,
+              : P,
             onCancel: () => {
-              (h(!1), k(null));
+              (g(!1), w(null));
             },
-            T: r,
+            T: n,
           }),
         }),
-      x &&
-        e.jsx(L, {
+      o &&
+        e.jsx(G, {
           isOpen: !0,
-          onClose: () => f(!1),
+          onClose: () => y(!1),
           title: 'Strumenti CRM',
           size: 'large',
-          children: e.jsx(ae, {
-            players: i,
-            onClose: () => f(!1),
-            onBulkOperation: (N) => {
-              console.log('Bulk operation:', N);
+          children: e.jsx(ce, {
+            players: r,
+            onClose: () => y(!1),
+            onBulkOperation: (f) => {
+              console.log('Bulk operation:', f);
             },
             onRefreshData: () => {
               console.log('Refreshing data...');
             },
-            T: r,
+            T: n,
           }),
         }),
     ],
   });
 }
-function ue() {
-  const a = Y(),
-    { state: t, setState: n, playersById: l } = W(),
-    { clubMode: r } = U(),
-    m = H.useMemo(() => V(), []),
-    d = (g) => {
-      a(`/stats?player=${g}`);
+function je() {
+  const a = Z(),
+    { state: t, setState: i, playersById: l } = H(),
+    { clubMode: n } = Y(),
+    u = J.useMemo(() => Q(), []),
+    d = (p) => {
+      a(`/stats?player=${p}`);
     };
-  return r
-    ? e.jsx(le, { T: m, state: t, setState: n, onOpenStats: d, playersById: l })
+  return n
+    ? e.jsx(de, { T: u, state: t, setState: i, onOpenStats: d, playersById: l })
     : e.jsxs('div', {
-        className: `text-center py-12 ${m.cardBg} ${m.border} rounded-xl m-4`,
+        className: `text-center py-12 ${u.cardBg} ${u.border} rounded-xl m-4`,
         children: [
           e.jsx('div', { className: 'text-6xl mb-4', children: '🔒' }),
           e.jsx('h3', {
-            className: `text-xl font-bold mb-2 ${m.text}`,
+            className: `text-xl font-bold mb-2 ${u.text}`,
             children: 'Modalità Club Richiesta',
           }),
           e.jsx('p', {
-            className: `${m.subtext} mb-4`,
+            className: `${u.subtext} mb-4`,
             children:
               'Per accedere al CRM giocatori, devi prima sbloccare la modalità club nella sezione Extra.',
           }),
           e.jsx('button', {
             onClick: () => a('/extra'),
-            className: `${m.btnPrimary} px-6 py-3`,
+            className: `${u.btnPrimary} px-6 py-3`,
             children: 'Vai a Extra per sbloccare',
           }),
         ],
       });
 }
-export { ue as default };
+export { je as default };

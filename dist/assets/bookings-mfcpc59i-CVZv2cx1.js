@@ -3,23 +3,23 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/cloud-bookings-mfce5qh5-C7X43DHA.js',
-      'assets/firebase-mfce5qh5-jcIpuiEY.js',
-      'assets/index-mfce5qh5-Bjue6Tcf.js',
-      'assets/vendor-mfce5qh5-D3F3s8fL.js',
-      'assets/router-mfce5qh5-SMEpEpls.js',
-      'assets/index-mfce5vqz-D6BV2l8J.css',
+      'assets/cloud-bookings-mfcpc59i-cWaUvgoz.js',
+      'assets/firebase-mfcpc59i-BteSMG94.js',
+      'assets/index-mfcpc59i-PpofX80g.js',
+      'assets/vendor-mfcpc59i-D3F3s8fL.js',
+      'assets/router-mfcpc59i-D7zFZhMN.js',
+      'assets/index-mfcpcauj-BBYtpoEP.css',
     ])
 ) => i.map((i) => d[i]);
-import { j as m, _ as I } from './index-mfce5qh5-Bjue6Tcf.js';
-import './router-mfce5qh5-SMEpEpls.js';
+import { j as C, _ } from './index-mfcpc59i-PpofX80g.js';
+import './router-mfcpc59i-D7zFZhMN.js';
 import {
-  getPublicBookings as v,
-  createCloudBooking as T,
-  loadPublicBookings as L,
-  updateCloudBooking as M,
-} from './cloud-bookings-mfce5qh5-C7X43DHA.js';
-const y = {
+  createCloudBooking as P,
+  loadPublicBookings as R,
+  getPublicBookings as H,
+  updateCloudBooking as D,
+} from './cloud-bookings-mfcpc59i-cWaUvgoz.js';
+const $ = {
     default: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
     success: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',
     danger: 'bg-rose-100 text-rose-800 dark:bg-rose-900/20 dark:text-rose-400',
@@ -27,41 +27,41 @@ const y = {
     info: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
     primary: 'bg-emerald-500 text-black font-medium',
   },
-  B = {
+  I = {
     xs: 'px-1.5 py-0.5 text-xs',
     sm: 'px-2 py-1 text-xs',
     md: 'px-2.5 py-1 text-sm',
     lg: 'px-3 py-1.5 text-sm',
   };
-function G({
+function q({
   children: e,
   variant: t = 'default',
   size: a = 'sm',
   icon: r,
   removable: s = !1,
-  onRemove: i,
-  T: n,
+  onRemove: n,
+  T: o,
 }) {
-  const l = y[t] || y.default,
-    o = B[a] || B.sm,
-    c = n?.borderMd || 'rounded-md',
-    N = n?.transitionFast || 'transition-all duration-200';
-  return m.jsxs('span', {
+  const c = $[t] || $.default,
+    i = I[a] || I.sm,
+    d = o?.borderMd || 'rounded-md',
+    l = o?.transitionFast || 'transition-all duration-200';
+  return C.jsxs('span', {
     className: `
       inline-flex items-center gap-1 
+      ${d} 
       ${c} 
-      ${l} 
-      ${o}
+      ${i}
       font-medium
-      ${N}
+      ${l}
     `,
     children: [
-      r && m.jsx('span', { className: 'w-3 h-3', children: r }),
+      r && C.jsx('span', { className: 'w-3 h-3', children: r }),
       e,
       s &&
-        i &&
-        m.jsx('button', {
-          onClick: i,
+        n &&
+        C.jsx('button', {
+          onClick: n,
           className:
             'ml-1 hover:bg-black/10 rounded-full w-3 h-3 flex items-center justify-center text-xs',
           children: '×',
@@ -69,7 +69,7 @@ function G({
     ],
   });
 }
-const P = {
+const F = {
   courts: [
     {
       id: 'campo1',
@@ -157,72 +157,114 @@ const P = {
     },
   ],
 };
-function z(e, t, a, r, s, i = null) {
-  const n = a,
-    l = w(a, r);
-  return !s.some((o) => {
-    if (o.id === i || o.courtId !== e || o.date !== t || o.status === 'cancelled') return !1;
-    const c = w(o.time, o.duration);
-    return (n >= o.time && n < c) || (l > o.time && l <= c) || (n <= o.time && l >= c);
+function j(e, t, a, r, s, n = null) {
+  const o = a,
+    c = w(a, r),
+    i = f(o),
+    d = f(c);
+  return !s.some((l) => {
+    if (
+      l.id === n ||
+      l.courtId !== e ||
+      l.date !== t ||
+      String(l.status).toLowerCase() === 'cancelled' ||
+      (l.status && l.status !== 'confirmed' && l.status !== B.CONFIRMED && l.status !== 'booked')
+    )
+      return !1;
+    const m = w(l.time, l.duration),
+      u = f(l.time),
+      p = f(m),
+      g = i < p && d > u;
+    return (
+      g &&
+        console.log('Sovrapposizione rilevata:', {
+          existing: `${l.time}-${m} (${u}-${p} min)`,
+          new: `${o}-${c} (${i}-${d} min)`,
+          courtId: e,
+          date: t,
+        }),
+      g
+    );
   });
 }
 function w(e, t) {
   const [a, r] = e.split(':').map(Number),
     s = a * 60 + r + t,
-    i = Math.floor(s / 60),
-    n = s % 60;
-  return `${i.toString().padStart(2, '0')}:${n.toString().padStart(2, '0')}`;
+    n = Math.floor(s / 60),
+    o = s % 60;
+  return `${n.toString().padStart(2, '0')}:${o.toString().padStart(2, '0')}`;
 }
-function E() {
+function f(e) {
+  const [t, a] = e.split(':').map(Number);
+  return t * 60 + a;
+}
+function U(e, t, a, r, s, n = null) {
+  const o = f(a),
+    c = w(a, r),
+    i = f(c),
+    d = (s || []).filter((u) =>
+      (n && u.id === n) || u.courtId !== e || u.date !== t ? !1 : u.status !== B.CANCELLED
+    );
+  if (d.length === 0) return !1;
+  let l = null,
+    m = null;
+  for (const u of d) {
+    const p = f(u.time),
+      g = f(w(u.time, u.duration));
+    (g <= o && (l === null || g > l) && (l = g), p >= i && (m === null || p < m) && (m = p));
+  }
+  return (l !== null && o - l === 30) || (m !== null && m - i === 30);
+}
+function N() {
   return `booking-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
-const f = { CONFIRMED: 'confirmed' },
-  $ = 'ml-field-bookings';
-let d = !1,
-  O = null,
-  x = !1;
-function _(e, t = null) {
-  ((d = e), (O = t));
+const B = { CONFIRMED: 'confirmed', CANCELLED: 'cancelled' },
+  b = 'ml-field-bookings';
+let y = !1,
+  v = null,
+  k = !1;
+function L(e, t = null) {
+  ((y = e), (v = t));
 }
-async function A() {
-  if (d && O)
+async function T() {
+  if (y && v)
     try {
-      return await L();
+      return await R();
     } catch (e) {
-      return (console.warn('Errore caricamento da cloud, fallback a localStorage:', e), u());
+      return (console.warn('Errore caricamento da cloud, fallback a localStorage:', e), h());
     }
-  return u();
+  return h();
 }
-function u() {
+function h() {
   try {
-    const e = localStorage.getItem($);
+    const e = localStorage.getItem(b);
     return e ? JSON.parse(e) : [];
   } catch {
     return [];
   }
 }
-function g(e) {
+function S(e) {
   try {
-    return (localStorage.setItem($, JSON.stringify(e)), !0);
+    return (localStorage.setItem(b, JSON.stringify(e)), !0);
   } catch {
     return !1;
   }
 }
-async function R(e, t) {
-  if (d && t)
+async function G(e, t) {
+  if (y && t)
     try {
-      return { ...(await T(e, t)), _storage: 'cloud' };
+      return { ...(await P(e, t)), _storage: 'cloud' };
     } catch (r) {
       return (
         console.warn('Errore creazione nel cloud, fallback a localStorage:', r),
-        { ...S(e, t), _storage: 'local' }
+        { ...M(e, t), _storage: 'local' }
       );
     }
-  return { ...S(e, t), _storage: 'local' };
+  return { ...M(e, t), _storage: 'local' };
 }
-function S(e, t) {
+function M(e, t) {
   const a = {
-      id: E(),
+      id: N(),
       courtId: e.courtId,
       courtName: e.courtName,
       date: e.date,
@@ -236,52 +278,52 @@ function S(e, t) {
       userPhone: e.userPhone || '',
       players: e.players || [],
       notes: e.notes || '',
-      status: f.CONFIRMED,
+      status: B.CONFIRMED,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       createdBy: t?.uid || null,
     },
-    r = u();
-  return (r.push(a), g(r), a);
+    r = h();
+  return (r.push(a), S(r), a);
 }
-async function j(e, t, a) {
-  if (d && a)
+async function K(e, t, a) {
+  if (y && a)
     try {
-      return await M(e, t, a);
+      return await D(e, t, a);
     } catch (r) {
       return (
         console.warn('Errore aggiornamento nel cloud, fallback a localStorage:', r),
-        k(e, t, a)
+        A(e, t, a)
       );
     }
-  return k(e, t, a);
+  return A(e, t, a);
 }
-function k(e, t, a) {
-  const r = u(),
-    s = r.findIndex((n) => n.id === e);
+function A(e, t, a) {
+  const r = h(),
+    s = r.findIndex((o) => o.id === e);
   if (s === -1) return null;
-  const i = { ...r[s], ...t, updatedAt: new Date().toISOString(), updatedBy: a?.uid || null };
-  return ((r[s] = i), g(r), i);
+  const n = { ...r[s], ...t, updatedAt: new Date().toISOString(), updatedBy: a?.uid || null };
+  return ((r[s] = n), S(r), n);
 }
-async function p() {
-  if (d)
+async function E() {
+  if (y)
     try {
-      return await v();
+      return await H();
     } catch (e) {
       return (
         e?.code === 'failed-precondition'
-          ? x ||
+          ? k ||
             (console.warn('Cloud bookings richiedono un indice: uso dati locali (fallback).'),
-            (x = !0))
+            (k = !0))
           : console.warn('Errore caricamento pubbliche da cloud, fallback a localStorage:', e),
-        C()
+        O()
       );
     }
-  return C();
+  return O();
 }
-function C() {
-  return u()
-    .filter((t) => t.status === f.CONFIRMED)
+function O() {
+  return h()
+    .filter((t) => t.status === B.CONFIRMED)
     .map((t) => ({
       id: t.id,
       courtId: t.courtId,
@@ -292,16 +334,16 @@ function C() {
       status: t.status,
     }));
 }
-async function b(e) {
+async function z(e) {
   try {
-    _(!!e?.uid, e);
-    const t = await p();
+    L(!!e?.uid, e);
+    const t = await E();
     if (e && e.uid)
       try {
-        const { loadActiveUserBookings: a } = await I(
+        const { loadActiveUserBookings: a } = await _(
             async () => {
               const { loadActiveUserBookings: s } = await import(
-                './cloud-bookings-mfce5qh5-C7X43DHA.js'
+                './cloud-bookings-mfcpc59i-cWaUvgoz.js'
               );
               return { loadActiveUserBookings: s };
             },
@@ -311,21 +353,21 @@ async function b(e) {
       } catch (a) {
         console.warn('initializeBookingSystem: Cloud user data failed:', a);
       }
-    return (await h(), !0);
+    return (await x(), !0);
   } catch (t) {
     return (console.error('initializeBookingSystem: Failed:', t), !1);
   }
 }
-async function h() {
+async function x() {
   try {
     let e = [];
     try {
-      e = [...(await p())];
+      e = [...(await E())];
     } catch (t) {
       console.warn('syncAllBookings: Failed to load public bookings:', t);
     }
     try {
-      const t = await u(),
+      const t = await h(),
         a = new Map();
       (e.forEach((r) => {
         const s = r.id || `${r.date}-${r.time}-${r.courtId}`;
@@ -336,7 +378,7 @@ async function h() {
           a.has(s) || a.set(s, r);
         }),
         (e = Array.from(a.values())),
-        await g(e));
+        await S(e));
     } catch (t) {
       console.warn('syncAllBookings: Failed to sync local storage:', t);
     }
@@ -345,52 +387,52 @@ async function h() {
     return (console.error('syncAllBookings: Complete failure:', e), []);
   }
 }
-async function F(e, t = !1) {
+async function V(e, t = !1) {
   if (!e) return [];
   try {
-    t ? await b(e) : await h();
+    t ? await z(e) : await x();
     let a = [];
-    if (d && e.uid)
+    if (y && e.uid)
       try {
-        const { loadActiveUserBookings: i } = await I(
+        const { loadActiveUserBookings: n } = await _(
             async () => {
-              const { loadActiveUserBookings: l } = await import(
-                './cloud-bookings-mfce5qh5-C7X43DHA.js'
+              const { loadActiveUserBookings: c } = await import(
+                './cloud-bookings-mfcpc59i-cWaUvgoz.js'
               );
-              return { loadActiveUserBookings: l };
+              return { loadActiveUserBookings: c };
             },
             __vite__mapDeps([0, 1, 2, 3, 4, 5])
           ),
-          n = await i(e.uid);
-        n && n.length > 0 && (a = n);
-      } catch (i) {
-        console.warn('Cloud user bookings not available:', i);
+          o = await n(e.uid);
+        o && o.length > 0 && (a = o);
+      } catch (n) {
+        console.warn('Cloud user bookings not available:', n);
       }
     try {
-      const n = (await A()).filter(
-        (l) => l.userEmail === e.email || l.email === e.email || l.userId === e.uid
+      const o = (await T()).filter(
+        (c) => c.userEmail === e.email || c.email === e.email || c.userId === e.uid
       );
-      if (a.length > 0 && n.length > 0) {
-        const l = new Map();
-        (a.forEach((o) => {
-          l.set(o.id || `${o.date}-${o.time}-${o.courtId}`, o);
+      if (a.length > 0 && o.length > 0) {
+        const c = new Map();
+        (a.forEach((i) => {
+          c.set(i.id || `${i.date}-${i.time}-${i.courtId}`, i);
         }),
-          n.forEach((o) => {
-            const c = o.id || `${o.date}-${o.time}-${o.courtId}`;
-            l.has(c) || l.set(c, o);
+          o.forEach((i) => {
+            const d = i.id || `${i.date}-${i.time}-${i.courtId}`;
+            c.has(d) || c.set(d, i);
           }),
-          (a = Array.from(l.values())));
-      } else n.length > 0 && (a = n);
-    } catch (i) {
-      console.warn('localStorage user bookings not available:', i);
+          (a = Array.from(c.values())));
+      } else o.length > 0 && (a = o);
+    } catch (n) {
+      console.warn('localStorage user bookings not available:', n);
     }
     const r = new Date(),
-      s = a.filter((i) => new Date(`${i.date}T${i.time}:00`) > r);
+      s = a.filter((n) => new Date(`${n.date}T${n.time}:00`) > r);
     return (
-      s.sort((i, n) => {
-        const l = new Date(`${i.date}T${i.time}:00`),
-          o = new Date(`${n.date}T${n.time}:00`);
-        return l - o;
+      s.sort((n, o) => {
+        const c = new Date(`${n.date}T${n.time}:00`),
+          i = new Date(`${o.date}T${o.time}:00`);
+        return c - i;
       }),
       s
     );
@@ -398,25 +440,26 @@ async function F(e, t = !1) {
     return (console.error('Error loading user bookings:', a), []);
   }
 }
-const K = Object.freeze(
+const Q = Object.freeze(
   Object.defineProperty(
     {
       __proto__: null,
-      BOOKING_CONFIG: P,
-      BOOKING_STATUS: f,
-      createBooking: R,
-      generateBookingId: E,
-      getPublicBookings: p,
-      getUserBookings: F,
-      initializeBookingSystem: b,
-      isSlotAvailable: z,
-      loadBookings: A,
-      setCloudMode: _,
-      syncAllBookings: h,
-      updateBooking: j,
+      BOOKING_CONFIG: F,
+      BOOKING_STATUS: B,
+      createBooking: G,
+      generateBookingId: N,
+      getPublicBookings: E,
+      getUserBookings: V,
+      initializeBookingSystem: z,
+      isSlotAvailable: j,
+      loadBookings: T,
+      setCloudMode: L,
+      syncAllBookings: x,
+      updateBooking: K,
+      wouldCreateHalfHourHole: U,
     },
     Symbol.toStringTag,
     { value: 'Module' }
   )
 );
-export { G as B, P as a, K as b, R as c, p as g, z as i, _ as s, j as u };
+export { q as B, F as a, Q as b, G as c, j as i, L as s, K as u, U as w };

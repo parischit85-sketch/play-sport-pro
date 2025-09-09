@@ -68,6 +68,31 @@
       "label": "Build (vite) to validate changes",
       "type": "shell",
       "command": "npm run build"
+    },
+    {
+      "label": "vite build to validate admin bookings refactor",
+      "type": "shell",
+      "command": "npm run build",
+      "args": [],
+      "isBackground": false,
+      "problemMatcher": ["$tsc"],
+      "group": "build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build",
+      "args": [],
+      "isBackground": false,
+      "group": "build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build",
+      "args": [],
+      "isBackground": false,
+      "group": "build"
     }
   ]
 }

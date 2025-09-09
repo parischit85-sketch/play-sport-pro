@@ -1,7 +1,7 @@
 // src/cloud.js
 
 import { getApps, initializeApp } from 'firebase/app';
-import { getFirestore, doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { initializeFirestore, doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 
 // Config from Vite env (so we can switch projects without code changes)
 const firebaseConfig = {
@@ -16,7 +16,12 @@ const firebaseConfig = {
 
 // Inizializza una sola volta
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Firestore with long-polling fallback to avoid QUIC errors
+const db = initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true,
+  experimentalForceLongPolling: import.meta.env.VITE_FIRESTORE_FORCE_LONG_POLLING === 'true',
+  useFetchStreams: false,
+});
 
 // ---------- API usate da App.jsx ----------
 export async function loadLeague(leagueId) {
@@ -27,7 +32,9 @@ export async function loadLeague(leagueId) {
   } catch (e) {
     // Gestisci errori specifici di Firebase
     if (e?.code === 'permission-denied') {
-      console.warn('Firebase: Permessi insufficienti per leggere la lega. Verifica autenticazione e regole Firestore.');
+      console.warn(
+        'Firebase: Permessi insufficienti per leggere la lega. Verifica autenticazione e regole Firestore.'
+      );
     } else if (e?.code === 'unavailable') {
       console.warn('Firebase: Servizio non disponibile.');
     } else {
@@ -54,7 +61,9 @@ export function subscribeLeague(leagueId, callback) {
     (snap) => callback(snap.exists() ? snap.data() : null),
     (err) => {
       if (err?.code === 'permission-denied') {
-        console.warn('Firebase: Permessi insufficienti per sottoscrivere la lega. Fallback a modalità offline.');
+        console.warn(
+          'Firebase: Permessi insufficienti per sottoscrivere la lega. Fallback a modalità offline.'
+        );
       } else {
         console.warn('subscribeLeague error:', err);
       }

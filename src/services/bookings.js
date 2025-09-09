@@ -15,7 +15,7 @@ export const BOOKING_CONFIG = {
       hasLighting: true,
       hasHeating: true,
       isOutdoor: false,
-      premium: true
+      premium: true,
     },
     {
       id: 'campo2',
@@ -27,7 +27,7 @@ export const BOOKING_CONFIG = {
       hasLighting: true,
       hasHeating: true,
       isOutdoor: false,
-      premium: false
+      premium: false,
     },
     {
       id: 'campo3',
@@ -39,7 +39,7 @@ export const BOOKING_CONFIG = {
       hasLighting: true,
       hasHeating: true,
       isOutdoor: false,
-      premium: false
+      premium: false,
     },
     {
       id: 'campo4',
@@ -51,7 +51,7 @@ export const BOOKING_CONFIG = {
       hasLighting: false,
       hasHeating: false,
       isOutdoor: true,
-      premium: false
+      premium: false,
     },
     {
       id: 'campo5',
@@ -63,7 +63,7 @@ export const BOOKING_CONFIG = {
       hasLighting: true,
       hasHeating: false,
       isOutdoor: false,
-      premium: false
+      premium: false,
     },
     {
       id: 'campo6',
@@ -75,7 +75,7 @@ export const BOOKING_CONFIG = {
       hasLighting: true,
       hasHeating: true,
       isOutdoor: false,
-      premium: false
+      premium: false,
     },
     {
       id: 'campo7',
@@ -87,27 +87,27 @@ export const BOOKING_CONFIG = {
       hasLighting: true,
       hasHeating: true,
       isOutdoor: false,
-      premium: false
-    }
+      premium: false,
+    },
   ],
-  
+
   timeSlots: {
     start: 11, // 11:00
-    end: 23,   // 23:30 (ultimo slot)
-    interval: 30 // 30 minuti
+    end: 23, // 23:30 (ultimo slot)
+    interval: 30, // 30 minuti
   },
-  
+
   pricing: {
     lighting: 5,
-    heating: 8
+    heating: 8,
   },
-  
+
   rules: {
     maxAdvanceDays: 7,
     minDuration: 60,
     maxDuration: 90,
-    allowedDurations: [60, 90]
-  }
+    allowedDurations: [60, 90],
+  },
 };
 
 // Genera slot temporali disponibili
@@ -130,8 +130,16 @@ export function getAvailableDays() {
     date.setDate(date.getDate() + i);
     days.push({
       date: date.toISOString().split('T')[0],
-      label: i === 0 ? 'Oggi' : i === 1 ? 'Domani' : 
-             date.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })
+      label:
+        i === 0
+          ? 'Oggi'
+          : i === 1
+            ? 'Domani'
+            : date.toLocaleDateString('it-IT', {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'short',
+              }),
     });
   }
   return days;
@@ -141,20 +149,43 @@ export function getAvailableDays() {
 export function isSlotAvailable(courtId, date, time, duration, bookings, excludeBookingId = null) {
   const startTime = time;
   const endTime = calculateEndTime(time, duration);
-  
-  return !bookings.some(booking => {
+
+  // Converte gli orari in minuti per un confronto più preciso
+  const startMinutes = timeToMinutes(startTime);
+  const endMinutes = timeToMinutes(endTime);
+
+  return !bookings.some((booking) => {
     if (booking.id === excludeBookingId) return false;
     if (booking.courtId !== courtId || booking.date !== date) return false;
-    if (booking.status === 'cancelled') return false;
-    
+    if (String(booking.status).toLowerCase() === 'cancelled') return false;
+    if (
+      booking.status &&
+      booking.status !== 'confirmed' &&
+      booking.status !== BOOKING_STATUS.CONFIRMED &&
+      booking.status !== 'booked'
+    )
+      return false;
+
     const bookingEnd = calculateEndTime(booking.time, booking.duration);
-    
-    // Controlla sovrapposizioni
-    return (
-      (startTime >= booking.time && startTime < bookingEnd) ||
-      (endTime > booking.time && endTime <= bookingEnd) ||
-      (startTime <= booking.time && endTime >= bookingEnd)
-    );
+    const bookingStartMinutes = timeToMinutes(booking.time);
+    const bookingEndMinutes = timeToMinutes(bookingEnd);
+
+    // Controlla sovrapposizioni usando confronto in minuti per maggiore precisione
+    // Due slot si sovrappongono se:
+    // - L'inizio del nuovo slot è prima della fine dell'esistente E
+    // - La fine del nuovo slot è dopo l'inizio dell'esistente
+    const overlaps = startMinutes < bookingEndMinutes && endMinutes > bookingStartMinutes;
+
+    if (overlaps) {
+      console.log(`Sovrapposizione rilevata:`, {
+        existing: `${booking.time}-${bookingEnd} (${bookingStartMinutes}-${bookingEndMinutes} min)`,
+        new: `${startTime}-${endTime} (${startMinutes}-${endMinutes} min)`,
+        courtId,
+        date,
+      });
+    }
+
+    return overlaps;
   });
 }
 
@@ -167,47 +198,112 @@ function calculateEndTime(startTime, duration) {
   return `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`;
 }
 
+// Converte HH:MM in minuti dalla mezzanotte
+function timeToMinutes(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+// Verifica se una prenotazione proposta creerebbe un buco esatto di 30 minuti
+// tra la prenotazione precedente o successiva sullo stesso campo e stessa data.
+// Nota: questa regola va applicata solo nel flusso pubblico (prenota un campo),
+// non nella gestione admin.
+export function wouldCreateHalfHourHole(
+  courtId,
+  date,
+  time,
+  duration,
+  bookings,
+  excludeBookingId = null
+) {
+  const startMin = timeToMinutes(time);
+  const endTime = calculateEndTime(time, duration);
+  const endMin = timeToMinutes(endTime);
+
+  // Filtra prenotazioni rilevanti sullo stesso campo/data
+  const sameCourt = (bookings || []).filter((b) => {
+    if (excludeBookingId && b.id === excludeBookingId) return false;
+    if (b.courtId !== courtId || b.date !== date) return false;
+    return b.status !== BOOKING_STATUS.CANCELLED;
+  });
+
+  if (sameCourt.length === 0) return false;
+
+  // Trova la prenotazione precedente (quella con end <= start) e la successiva (start >= end)
+  let prevEndMin = null;
+  let nextStartMin = null;
+
+  for (const b of sameCourt) {
+    const bStartMin = timeToMinutes(b.time);
+    const bEndMin = timeToMinutes(calculateEndTime(b.time, b.duration));
+
+    if (bEndMin <= startMin) {
+      // Candidata come precedente
+      if (prevEndMin === null || bEndMin > prevEndMin) prevEndMin = bEndMin;
+    }
+    if (bStartMin >= endMin) {
+      // Candidata come successiva
+      if (nextStartMin === null || bStartMin < nextStartMin) nextStartMin = bStartMin;
+    }
+  }
+
+  // Se lascia esattamente 30 minuti prima o dopo, non consentire
+  if (prevEndMin !== null && startMin - prevEndMin === 30) return true;
+  if (nextStartMin !== null && nextStartMin - endMin === 30) return true;
+
+  return false;
+}
+
 // Calcola prezzo totale
 export function calculatePrice(court, duration, lighting = false, heating = false) {
   if (!court) return 0;
-  
+
   const basePrice = duration === 60 ? court.price60 : court.price90;
-  const lightingCost = (lighting && court.hasLighting) ? BOOKING_CONFIG.pricing.lighting : 0;
-  const heatingCost = (heating && court.hasHeating) ? BOOKING_CONFIG.pricing.heating : 0;
-  
+  const lightingCost = lighting && court.hasLighting ? BOOKING_CONFIG.pricing.lighting : 0;
+  const heatingCost = heating && court.hasHeating ? BOOKING_CONFIG.pricing.heating : 0;
+
   return basePrice + lightingCost + heatingCost;
 }
 
 // Valida una prenotazione
 export function validateBooking(booking, bookings, courts) {
   const errors = [];
-  
+
   // Controlla campo esistente
-  const court = courts.find(c => c.id === booking.courtId);
+  const court = courts.find((c) => c.id === booking.courtId);
   if (!court) {
     errors.push('Campo non valido');
     return errors;
   }
-  
+
   // Controlla durata
   if (!BOOKING_CONFIG.rules.allowedDurations.includes(booking.duration)) {
     errors.push('Durata non valida');
   }
-  
+
   // Controlla disponibilità
-  if (!isSlotAvailable(booking.courtId, booking.date, booking.time, booking.duration, bookings, booking.id)) {
+  if (
+    !isSlotAvailable(
+      booking.courtId,
+      booking.date,
+      booking.time,
+      booking.duration,
+      bookings,
+      booking.id
+    )
+  ) {
     errors.push('Slot non disponibile');
   }
-  
+
   // Controlla opzioni vs capacità campo
   if (booking.lighting && !court.hasLighting) {
     errors.push('Illuminazione non disponibile per questo campo');
   }
-  
+
   if (booking.heating && !court.hasHeating) {
     errors.push('Riscaldamento non disponibile per questo campo');
   }
-  
+
   return errors;
 }
 
@@ -220,19 +316,19 @@ export function generateBookingId() {
 export const BOOKING_STATUS = {
   CONFIRMED: 'confirmed',
   CANCELLED: 'cancelled',
-  PENDING: 'pending'
+  PENDING: 'pending',
 };
 
 // Storage centralizzato - ora con supporto cloud
 const STORAGE_KEY = 'ml-field-bookings';
 
 // Importa servizi cloud
-import { 
-  loadPublicBookings, 
-  createCloudBooking, 
-  updateCloudBooking, 
+import {
+  loadPublicBookings,
+  createCloudBooking,
+  updateCloudBooking,
   cancelCloudBooking,
-  getPublicBookings as getCloudPublicBookings 
+  getPublicBookings as getCloudPublicBookings,
 } from './cloud-bookings.js';
 
 // Flag per determinare se usare il cloud o localStorage
@@ -288,12 +384,12 @@ function saveBookingsLocal(bookings) {
 export async function createBooking(bookingData, user) {
   if (useCloudStorage && user) {
     try {
-    const created = await createCloudBooking(bookingData, user);
-    return { ...created, _storage: 'cloud' };
+      const created = await createCloudBooking(bookingData, user);
+      return { ...created, _storage: 'cloud' };
     } catch (error) {
       console.warn('Errore creazione nel cloud, fallback a localStorage:', error);
-    const localCreated = createBookingLocal(bookingData, user);
-    return { ...localCreated, _storage: 'local' };
+      const localCreated = createBookingLocal(bookingData, user);
+      return { ...localCreated, _storage: 'local' };
     }
   }
   const created = createBookingLocal(bookingData, user);
@@ -311,19 +407,19 @@ function createBookingLocal(bookingData, user) {
     lighting: bookingData.lighting || false,
     heating: bookingData.heating || false,
     price: bookingData.price,
-    
+
     // Dati utente (nascosti nella vista pubblica)
     bookedBy: user?.displayName || user?.email || 'Anonimo',
     userEmail: user?.email,
     userPhone: bookingData.userPhone || '',
     players: bookingData.players || [],
     notes: bookingData.notes || '',
-    
+
     // Metadata
     status: BOOKING_STATUS.CONFIRMED,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    createdBy: user?.uid || null
+    createdBy: user?.uid || null,
   };
   // Persisti subito nel localStorage
   const current = loadBookingsLocal();
@@ -347,20 +443,20 @@ export async function updateBooking(bookingId, updates, user) {
 
 function updateBookingLocal(bookingId, updates, user) {
   const bookings = loadBookingsLocal();
-  const index = bookings.findIndex(b => b.id === bookingId);
-  
+  const index = bookings.findIndex((b) => b.id === bookingId);
+
   if (index === -1) return null;
-  
+
   const updatedBooking = {
     ...bookings[index],
     ...updates,
     updatedAt: new Date().toISOString(),
-    updatedBy: user?.uid || null
+    updatedBy: user?.uid || null,
   };
-  
+
   bookings[index] = updatedBooking;
   saveBookingsLocal(bookings);
-  
+
   return updatedBooking;
 }
 
@@ -372,16 +468,24 @@ export async function cancelBooking(bookingId, user) {
       return { status: BOOKING_STATUS.CANCELLED };
     } catch (error) {
       console.warn('Errore cancellazione nel cloud, fallback a localStorage:', error);
-      return updateBookingLocal(bookingId, { 
-        status: BOOKING_STATUS.CANCELLED,
-        cancelledAt: new Date().toISOString()
-      }, user);
+      return updateBookingLocal(
+        bookingId,
+        {
+          status: BOOKING_STATUS.CANCELLED,
+          cancelledAt: new Date().toISOString(),
+        },
+        user
+      );
     }
   }
-  return updateBookingLocal(bookingId, { 
-    status: BOOKING_STATUS.CANCELLED,
-    cancelledAt: new Date().toISOString()
-  }, user);
+  return updateBookingLocal(
+    bookingId,
+    {
+      status: BOOKING_STATUS.CANCELLED,
+      cancelledAt: new Date().toISOString(),
+    },
+    user
+  );
 }
 
 // Ottieni prenotazioni filtrate per vista pubblica (senza dati sensibili)
@@ -407,15 +511,15 @@ export async function getPublicBookings() {
 function getPublicBookingsLocal() {
   const bookings = loadBookingsLocal();
   return bookings
-    .filter(b => b.status === BOOKING_STATUS.CONFIRMED)
-    .map(booking => ({
+    .filter((b) => b.status === BOOKING_STATUS.CONFIRMED)
+    .map((booking) => ({
       id: booking.id,
       courtId: booking.courtId,
       courtName: booking.courtName,
       date: booking.date,
       time: booking.time,
       duration: booking.duration,
-      status: booking.status
+      status: booking.status,
     }));
 }
 
@@ -437,15 +541,15 @@ export async function ensureBookingsAvailable() {
   try {
     // Forza il caricamento di tutti i dati pubblici
     const publicBookings = await getPublicBookings();
-    
+
     // Prova a caricare i dati locali e confronta
     const localBookings = await loadBookings();
-    
+
     // Se non ci sono dati locali ma ci sono dati pubblici, aggiorna localStorage
     if (localBookings.length === 0 && publicBookings.length > 0) {
       await saveBookingsLocal(publicBookings);
     }
-    
+
     // Restituisce il massimo tra i due
     return publicBookings.length > localBookings.length ? publicBookings : localBookings;
   } catch (error) {
@@ -459,10 +563,10 @@ export async function initializeBookingSystem(user) {
   try {
     // 1. Configura modalità cloud come fa ModernBookingInterface
     setCloudMode(Boolean(user?.uid), user);
-    
+
     // 2. Carica tutti i dati pubblici
     const publicBookings = await getPublicBookings();
-    
+
     // 3. Se c'è un utente, carica i suoi dati specifici dal cloud
     if (user && user.uid) {
       try {
@@ -472,10 +576,10 @@ export async function initializeBookingSystem(user) {
         console.warn('initializeBookingSystem: Cloud user data failed:', cloudError);
       }
     }
-    
+
     // 4. Sincronizza tutto il sistema
     await syncAllBookings();
-    
+
     return true;
   } catch (error) {
     console.error('initializeBookingSystem: Failed:', error);
@@ -487,7 +591,7 @@ export async function initializeBookingSystem(user) {
 export async function syncAllBookings() {
   try {
     let allBookings = [];
-    
+
     // Carica dati pubblici (cloud + local merged)
     try {
       const publicBookings = await getPublicBookings();
@@ -495,37 +599,36 @@ export async function syncAllBookings() {
     } catch (error) {
       console.warn('syncAllBookings: Failed to load public bookings:', error);
     }
-    
+
     // Carica anche localStorage separatamente
     try {
       const localBookings = await loadBookingsLocal();
-      
+
       // Merge senza duplicati
       const bookingMap = new Map();
-      
+
       // Prima aggiungi quelli esistenti
-      allBookings.forEach(booking => {
+      allBookings.forEach((booking) => {
         const key = booking.id || `${booking.date}-${booking.time}-${booking.courtId}`;
         bookingMap.set(key, booking);
       });
-      
+
       // Poi aggiungi quelli locali che non esistono già
-      localBookings.forEach(booking => {
+      localBookings.forEach((booking) => {
         const key = booking.id || `${booking.date}-${booking.time}-${booking.courtId}`;
         if (!bookingMap.has(key)) {
           bookingMap.set(key, booking);
         }
       });
-      
+
       allBookings = Array.from(bookingMap.values());
-      
+
       // Aggiorna localStorage con tutti i dati
       await saveBookingsLocal(allBookings);
-      
     } catch (error) {
       console.warn('syncAllBookings: Failed to sync local storage:', error);
     }
-    
+
     return allBookings;
   } catch (error) {
     console.error('syncAllBookings: Complete failure:', error);
@@ -536,7 +639,7 @@ export async function syncAllBookings() {
 // Funzione per ottenere le prenotazioni dell'utente specifico in modo robusto
 export async function getUserBookings(user, forceFullInit = false) {
   if (!user) return [];
-  
+
   try {
     // Se richiesto, esegui l'inizializzazione completa
     if (forceFullInit) {
@@ -545,9 +648,9 @@ export async function getUserBookings(user, forceFullInit = false) {
       // Altrimenti solo sincronizzazione
       await syncAllBookings();
     }
-    
+
     let userBookings = [];
-    
+
     // Prova con il servizio cloud se disponibile
     if (useCloudStorage && user.uid) {
       try {
@@ -560,33 +663,37 @@ export async function getUserBookings(user, forceFullInit = false) {
         console.warn('Cloud user bookings not available:', cloudError);
       }
     }
-    
+
     // Carica sempre anche da localStorage (ora sincronizzato) e unisci i risultati
     try {
       const allBookings = await loadBookings();
-      const localUserBookings = allBookings.filter(booking => 
-        booking.userEmail === user.email || 
-        booking.email === user.email ||
-        booking.userId === user.uid
+      const localUserBookings = allBookings.filter(
+        (booking) =>
+          booking.userEmail === user.email ||
+          booking.email === user.email ||
+          booking.userId === user.uid
       );
-      
+
       // Se abbiamo sia cloud che local, unisci eliminando duplicati
       if (userBookings.length > 0 && localUserBookings.length > 0) {
         const bookingMap = new Map();
-        
+
         // Prima aggiungi i cloud bookings
-        userBookings.forEach(booking => {
-          bookingMap.set(booking.id || `${booking.date}-${booking.time}-${booking.courtId}`, booking);
+        userBookings.forEach((booking) => {
+          bookingMap.set(
+            booking.id || `${booking.date}-${booking.time}-${booking.courtId}`,
+            booking
+          );
         });
-        
+
         // Poi aggiungi i local bookings (senza sovrascrivere)
-        localUserBookings.forEach(booking => {
+        localUserBookings.forEach((booking) => {
           const key = booking.id || `${booking.date}-${booking.time}-${booking.courtId}`;
           if (!bookingMap.has(key)) {
             bookingMap.set(key, booking);
           }
         });
-        
+
         userBookings = Array.from(bookingMap.values());
       } else if (localUserBookings.length > 0) {
         userBookings = localUserBookings;
@@ -594,10 +701,10 @@ export async function getUserBookings(user, forceFullInit = false) {
     } catch (localError) {
       console.warn('localStorage user bookings not available:', localError);
     }
-    
+
     // Filtra solo prenotazioni future
     const now = new Date();
-    const activeBookings = userBookings.filter(booking => {
+    const activeBookings = userBookings.filter((booking) => {
       const bookingDateTime = new Date(`${booking.date}T${booking.time}:00`);
       return bookingDateTime > now;
     });
@@ -629,14 +736,14 @@ export function addTestBookingsWithParticipants(user) {
       price: 32,
       players: [
         { name: 'Marco Rossi', phone: '333-1234567' },
-        { name: 'Luca Bianchi', phone: '333-7654321' }
+        { name: 'Luca Bianchi', phone: '333-7654321' },
       ],
-      notes: 'Partita settimanale del mercoledì'
+      notes: 'Partita settimanale del mercoledì',
     },
     {
-      courtId: 'court-2', 
+      courtId: 'court-2',
       courtName: 'Campo 2 (Outdoor)',
-      date: new Date(Date.now() + 2*86400000).toISOString().split('T')[0], // Dopodomani
+      date: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0], // Dopodomani
       time: '18:30',
       duration: 60,
       lighting: false,
@@ -644,27 +751,25 @@ export function addTestBookingsWithParticipants(user) {
       players: [
         { name: 'Andrea Verdi', phone: '333-1111111' },
         { name: 'Paolo Neri', phone: '333-2222222' },
-        { name: 'Giuseppe Conti', phone: '333-3333333' }
+        { name: 'Giuseppe Conti', phone: '333-3333333' },
       ],
-      notes: 'Torneo amichevole'
+      notes: 'Torneo amichevole',
     },
     {
       courtId: 'court-1',
-      courtName: 'Campo 1 (Outdoor)', 
+      courtName: 'Campo 1 (Outdoor)',
       date: new Date().toISOString().split('T')[0], // Oggi
       time: '21:00',
       duration: 120,
       lighting: true,
       price: 48,
-      players: [
-        { name: 'Marco Rossi', phone: '333-1234567' }
-      ],
-      notes: 'Allenamento lungo - cerco altri giocatori!'
-    }
+      players: [{ name: 'Marco Rossi', phone: '333-1234567' }],
+      notes: 'Allenamento lungo - cerco altri giocatori!',
+    },
   ];
 
   // Aggiungi le prenotazioni di test al localStorage
-  testBookings.forEach(bookingData => {
+  testBookings.forEach((bookingData) => {
     const booking = createBookingLocal(bookingData, user);
     console.log('Added test booking:', booking);
   });
