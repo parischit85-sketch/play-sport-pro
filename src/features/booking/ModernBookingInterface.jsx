@@ -645,7 +645,17 @@ function ModernBookingInterface({ user, T, state, setState }) {
         dur,
         bookings
       );
-      if (hole) return false;
+      // Applica deroga per slot intrappolati: se crea buco ma è intrappolato, è comunque prenotabile
+      if (hole) {
+        const isTrapped = isTimeSlotTrapped(
+          selectedCourt.id,
+          selectedDate,
+          selectedTime,
+          dur,
+          bookings
+        );
+        if (!isTrapped) return false; // Se crea buco e NON è intrappolato, non prenotabile
+      }
       return true;
     },
     [selectedCourt, selectedDate, selectedTime, bookings, isDurationWithinSchedule]
