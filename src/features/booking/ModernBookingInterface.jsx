@@ -835,11 +835,6 @@ function ModernBookingInterface({ user, T, state, setState }) {
                               Premium
                             </Badge>
                           )}
-                          {isAvailable && isTrapped && createsHole && (
-                            <Badge variant="info" size="xs" T={T}>
-                              ⚠️ Intrappolato
-                            </Badge>
-                          )}
                           {isAvailable &&
                             selectedDate &&
                             selectedTime &&

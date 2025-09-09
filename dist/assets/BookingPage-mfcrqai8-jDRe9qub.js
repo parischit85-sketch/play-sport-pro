@@ -1,14 +1,14 @@
-import { j as e, u as Ie, f as Re, t as _e } from './index-mfcrdn03-CQREZ_17.js';
-import { r as o, b as Le } from './router-mfcrdn03-BlkFKb6t.js';
-import { s as Fe, i as K, w as A, a as J, B as Z, c as Ge } from './bookings-mfcrdn03-kvCa5IxN.js';
-import { i as ee, c as E, g as Ue } from './pricing-mfcrdn03-DMaWA4wL.js';
+import { j as e, u as Ie, f as Re, t as _e } from './index-mfcrqai8-SK5xfcQr.js';
+import { r as o, b as Le } from './router-mfcrqai8-B0glbTOM.js';
+import { s as Fe, i as K, w as A, a as J, B as xe, c as Ge } from './bookings-mfcrqai8-Kr_Xz312.js';
+import { i as Z, c as E, g as Ue } from './pricing-mfcrqai8-DMaWA4wL.js';
 import {
   subscribeToPublicBookings as We,
   getPublicBookings as O,
   loadActiveUserBookings as Qe,
-} from './cloud-bookings-mfcrdn03-ExLV7BU8.js';
-import './vendor-mfcrdn03-D3F3s8fL.js';
-import './firebase-mfcrdn03-BteSMG94.js';
+} from './cloud-bookings-mfcrqai8-d3aOF8gM.js';
+import './vendor-mfcrqai8-D3F3s8fL.js';
+import './firebase-mfcrqai8-BteSMG94.js';
 const I = { xs: 'p-1', sm: 'p-2', md: 'p-4', elementMb: 'mb-3' },
   v = {
     h1: 'text-3xl font-bold',
@@ -26,7 +26,7 @@ const I = { xs: 'p-1', sm: 'p-2', md: 'p-4', elementMb: 'mb-3' },
     grid3: 'grid grid-cols-1 md:grid-cols-3',
     grid4: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
   },
-  te = {
+  ee = {
     success: 'text-emerald-500',
     error: 'text-rose-500',
     warning: 'text-amber-500',
@@ -36,11 +36,11 @@ const I = { xs: 'p-1', sm: 'p-2', md: 'p-4', elementMb: 'mb-3' },
     card: 'shadow-[0_0_0_1px_rgba(0,0,0,0.02)] shadow-sm',
     cardHover: 'shadow-[0_0_0_1px_rgba(0,0,0,0.04)] shadow-md',
   },
-  se = { md: 'rounded-md', xl: 'rounded-xl', xxl: 'rounded-2xl' },
+  te = { md: 'rounded-md', xl: 'rounded-xl', xxl: 'rounded-2xl' },
   Ye = { normal: 'transition-all duration-200 ease-in-out' },
   R = {
-    card: (s) => `${se.xxl} ${s.cardBg} ${s.border} ${I.md} ${Ce.card}`,
-    cardHover: (s) => `${se.xxl} ${s.cardBg} ${s.border} ${I.md} ${Ce.cardHover} ${Ye.normal}`,
+    card: (s) => `${te.xxl} ${s.cardBg} ${s.border} ${I.md} ${Ce.card}`,
+    cardHover: (s) => `${te.xxl} ${s.cardBg} ${s.border} ${I.md} ${Ce.cardHover} ${Ye.normal}`,
     sectionHeader: (s) => `${B.flexBetween} ${I.elementMb}`,
     sectionTitle: (s) => `${v.h3} ${s.neonText}`,
     btnVariants: {
@@ -50,8 +50,8 @@ const I = { xs: 'p-1', sm: 'p-2', md: 'p-4', elementMb: 'mb-3' },
     },
     input: (s) => s.input,
     statCard: (s) => `${R.card(s)} text-center`,
-    listItem: (s) => `${se.xl} ${s.cardBg} ${s.border} ${I.sm} ${B.flexBetween}`,
-    badge: (s) => `inline-flex items-center ${I.xs} ${se.md} ${v.bodyXs} ${v.medium}`,
+    listItem: (s) => `${te.xl} ${s.cardBg} ${s.border} ${I.sm} ${B.flexBetween}`,
+    badge: (s) => `inline-flex items-center ${I.xs} ${te.md} ${v.bodyXs} ${v.medium}`,
     skeleton: 'animate-pulse bg-gray-200 rounded',
   };
 function qe(s) {
@@ -74,14 +74,14 @@ function qe(s) {
     btnGhost: s.btnGhost,
     btnGhostSm: s.btnGhostSm,
     input: s.input,
-    success: te.success,
-    error: te.error,
-    warning: te.warning,
-    info: te.info,
+    success: ee.success,
+    error: ee.error,
+    warning: ee.warning,
+    info: ee.info,
   };
 }
-function Ve({ user: s, T: w, state: S, setState: _ }) {
-  qe(w);
+function Ve({ user: s, T: k, state: S, setState: _ }) {
+  qe(k);
   const h = S?.bookingConfig || {
       slotMinutes: 30,
       dayStartHour: 8,
@@ -109,28 +109,28 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
       return n.length ? n : [60, 90, 120];
     }, [h?.defaultDurations]),
     ue = o.useRef(null),
-    ae = o.useRef(null),
+    se = o.useRef(null),
     [i, he] = o.useState(''),
-    [d, ie] = o.useState(''),
+    [l, ae] = o.useState(''),
     [m, L] = o.useState(null),
-    [x, ne] = o.useState(60),
+    [x, ie] = o.useState(60),
     [F, Ae] = o.useState(!0),
     [P, be] = o.useState(!1),
-    [k, re] = o.useState(!1),
+    [w, ne] = o.useState(!1),
     [Xe, Be] = o.useState(''),
     [Ke, Pe] = o.useState(''),
-    [j, oe] = o.useState([]),
-    [G, le] = o.useState(''),
+    [j, re] = o.useState([]),
+    [G, oe] = o.useState(''),
     [ge, D] = o.useState(!1),
     [Te, fe] = o.useState(!1),
     [He, pe] = o.useState(!1),
     [f, C] = o.useState([]),
     [Je, U] = o.useState([]),
     [Ze, W] = o.useState([]),
-    [Q, de] = o.useState(!1),
-    [ce, N] = o.useState(null);
+    [Q, le] = o.useState(!1),
+    [de, N] = o.useState(null);
   (o.useEffect(() => {
-    $.includes(x) || ne($[0] || 60);
+    $.includes(x) || ie($[0] || 60);
   }, [$.join(',')]),
     o.useEffect(() => {
       (Fe(!!s?.uid, s),
@@ -194,15 +194,15 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
     }
   }, [i]),
     o.useEffect(() => {
-      m && !m.hasHeating && k && re(!1);
-    }, [m, k]),
+      m && !m.hasHeating && w && ne(!1);
+    }, [m, w]),
     o.useEffect(() => {
-      d &&
-        ae.current &&
+      l &&
+        se.current &&
         setTimeout(() => {
-          je(ae, 50);
+          je(se, 50);
         }, 100);
-    }, [d]));
+    }, [l]));
   const Y = o.useCallback((t, n, a) => K(t, n, a, x, f), [x, f]),
     Me = o.useMemo(() => {
       const t = [],
@@ -210,10 +210,10 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
       for (let a = 0; a < 7; a++) {
         const r = new Date();
         r.setDate(r.getDate() + a);
-        const l = r.getFullYear(),
+        const d = r.getFullYear(),
           g = String(r.getMonth() + 1).padStart(2, '0'),
           c = String(r.getDate()).padStart(2, '0'),
-          u = `${l}-${g}-${c}`;
+          u = `${d}-${g}-${c}`;
         t.push({
           date: u,
           dayName: n[r.getDay()],
@@ -229,30 +229,30 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
         n = h.dayStartHour || 8,
         a = h.dayEndHour || 23,
         r = h.slotMinutes || 30,
-        l = new Date(),
+        d = new Date(),
         g = new Date().toISOString().split('T')[0];
       for (let c = n; c < a; c++)
         for (let u = 0; u < 60; u += r) {
           const y = `${String(c).padStart(2, '0')}:${String(u).padStart(2, '0')}`;
-          if (i === g && new Date(`${i}T${y}:00`) <= l) continue;
+          if (i === g && new Date(`${i}T${y}:00`) <= d) continue;
           const p = new Date(`${i}T${y}:00`);
           let H = !1,
             M = !1,
             V = !1,
-            me = 0,
+            ce = 0,
             $e = 0;
           for (const X of b) {
-            if (!ee(p, X.id, b)) continue;
+            if (!Z(p, X.id, b)) continue;
             if (((H = !0), !Y(X.id, i, y))) {
               V = !0;
               continue;
             }
-            ((M = !0), me++, A(X.id, i, y, x, f) && $e++);
+            ((M = !0), ce++, A(X.id, i, y, x, f) && $e++);
           }
-          const De = me > 0 && $e === me,
-            xe = H && M && !De;
+          const De = ce > 0 && $e === ce,
+            me = H && M && !De;
           let z = null;
-          (xe ||
+          (me ||
             (H
               ? V && !M
                 ? (z = 'occupied')
@@ -260,10 +260,10 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                   ? (z = 'hole')
                   : (z = 'occupied')
               : (z = 'out-of-schedule')),
-            (!F || xe) &&
+            (!F || me) &&
               t.push({
                 time: y,
-                isAvailable: xe,
+                isAvailable: me,
                 availableCourts: 0,
                 totalCourts: b.length,
                 reason: z,
@@ -277,11 +277,11 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
         N({ type: 'error', text: 'Devi effettuare il login per prenotare un campo' });
         return;
       }
-      if (!i || !d || !m) {
+      if (!i || !l || !m) {
         N({ type: 'error', text: 'Seleziona data, orario e campo' });
         return;
       }
-      if (!K(m.id, i, d, x, f)) {
+      if (!K(m.id, i, l, x, f)) {
         (pe(!0),
           setTimeout(() => {
             pe(!1);
@@ -290,8 +290,8 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
         C(r);
         return;
       }
-      const n = A(m.id, i, d, x, f),
-        a = J(m.id, i, d, x, f);
+      const n = A(m.id, i, l, x, f),
+        a = J(m.id, i, l, x, f);
       if (n && !a) {
         N({
           type: 'error',
@@ -305,29 +305,29 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
           type: 'info',
           text: 'Deroga applicata: Orario intrappolato tra prenotazioni - permessa creazione buco.',
         }),
-        de(!0),
+        le(!0),
         N(null));
       try {
         const r = {
             courtId: m.id,
             courtName: m.name,
             date: i,
-            time: d,
+            time: l,
             duration: x,
             lighting: !!P,
-            heating: !!k,
-            price: E(new Date(`${i}T${d}:00`), x, h, { lighting: !!P, heating: !!k }, m.id, b),
+            heating: !!w,
+            price: E(new Date(`${i}T${l}:00`), x, h, { lighting: !!P, heating: !!w }, m.id, b),
             userPhone: '',
             notes: '',
             players: [s.displayName || s.email, ...j.map((c) => c.name)],
           },
-          l = await Ge(r, s);
-        if (!l) {
+          d = await Ge(r, s);
+        if (!d) {
           (N({
             type: 'error',
             text: 'Errore nel salvare la prenotazione. Potrebbe essere già stata prenotata da qualcun altro.',
           }),
-            de(!1));
+            le(!1));
           const c = await O();
           C(c);
           return;
@@ -335,17 +335,17 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
         const g = await O();
         if ((C(g), await ye(), S && _)) {
           const c = {
-            id: l.id,
-            courtId: l.courtId,
-            start: new Date(`${l.date}T${l.time}:00`).toISOString(),
-            duration: l.duration,
+            id: d.id,
+            courtId: d.courtId,
+            start: new Date(`${d.date}T${d.time}:00`).toISOString(),
+            duration: d.duration,
             players: [],
             playerNames: j.map((u) => u.name),
             guestNames: j.map((u) => u.name),
-            price: l.price,
-            note: l.notes || '',
-            bookedByName: l.bookedBy || '',
-            addons: { lighting: !!l.lighting, heating: !!l.heating },
+            price: d.price,
+            note: d.notes || '',
+            bookedByName: d.bookedBy || '',
+            addons: { lighting: !!d.lighting, heating: !!d.heating },
             status: 'booked',
             createdAt: Date.now(),
           };
@@ -355,23 +355,23 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
           setTimeout(() => {
             fe(!1);
           }, 3e3),
-          ie(''),
+          ae(''),
           L(null),
           be(!1),
-          re(!1),
+          ne(!1),
           Be(''),
           Pe(''),
-          oe([]),
-          le(''),
+          re([]),
+          oe(''),
           D(!1),
           N({
             type: 'success',
-            text: `Prenotazione confermata! Campo ${m?.name} il ${new Date(i).toLocaleDateString('it-IT')} alle ${d}`,
+            text: `Prenotazione confermata! Campo ${m?.name} il ${new Date(i).toLocaleDateString('it-IT')} alle ${l}`,
           }));
       } catch {
         N({ type: 'error', text: 'Errore durante la prenotazione. Riprova.' });
       } finally {
-        de(!1);
+        le(!1);
       }
     },
     Ee = async (t) => {
@@ -380,12 +380,12 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
         const a = await O();
         if (
           (C(a),
-          !b.some((l) => {
+          !b.some((d) => {
             const g = new Date(`${i}T${t.time}:00`),
-              c = ee(g, l.id, b),
-              u = K(l.id, i, t.time, x, a),
-              y = A(l.id, i, t.time, x, a),
-              p = J(l.id, i, t.time, x, a);
+              c = Z(g, d.id, b),
+              u = K(d.id, i, t.time, x, a),
+              y = A(d.id, i, t.time, x, a),
+              p = J(d.id, i, t.time, x, a);
             return c && u && (!y || p);
           }))
         ) {
@@ -398,30 +398,30 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
       } catch (a) {
         console.warn("Errore nell'aggiornamento delle prenotazioni:", a);
       }
-      ie(t.time);
+      ae(t.time);
       const n = b.filter((a) => {
         const r = new Date(`${i}T${t.time}:00`),
-          l = ee(r, a.id, b),
+          d = Z(r, a.id, b),
           g = Y(a.id, i, t.time),
           c = A(a.id, i, t.time, x, f),
           u = J(a.id, i, t.time, x, f);
-        return l && g && (!c || u);
+        return d && g && (!c || u);
       });
       n.length === 1 && (L(n[0]), D(!0));
     },
     we = () => {
-      G.trim() && j.length < 3 && (oe([...j, { id: Date.now(), name: G.trim() }]), le(''));
+      G.trim() && j.length < 3 && (re([...j, { id: Date.now(), name: G.trim() }]), oe(''));
     },
     Oe = (t) => {
-      oe(j.filter((n) => n.id !== t));
+      re(j.filter((n) => n.id !== t));
     },
-    q = m && i && d ? E(new Date(`${i}T${d}:00`), x, h, { lighting: P, heating: k }, m.id, b) : 0,
+    q = m && i && l ? E(new Date(`${i}T${l}:00`), x, h, { lighting: P, heating: w }, m.id, b) : 0,
     ke = o.useCallback(
       (t, n, a) => {
         if (!t || !a) return !1;
         const r = b.find((p) => p.id === a);
         if (!r?.timeSlots?.length) return !1;
-        const l = t.getDay(),
+        const d = t.getDay(),
           g = t.getHours() * 60 + t.getMinutes(),
           c = (p = '00:00') => {
             const [H, M] = String(p)
@@ -430,7 +430,7 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
             return H * 60 + M;
           },
           u = r.timeSlots.find(
-            (p) => Array.isArray(p.days) && p.days.includes(l) && g >= c(p.from) && g < c(p.to)
+            (p) => Array.isArray(p.days) && p.days.includes(d) && g >= c(p.from) && g < c(p.to)
           );
         return u ? g + Number(n || 0) <= c(u.to) : !1;
       },
@@ -438,19 +438,19 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
     ),
     Se = o.useCallback(
       (t) => {
-        if (!m || !i || !d) return !1;
-        const n = new Date(`${i}T${d}:00`);
-        return !(!ke(n, t, m.id) || !K(m.id, i, d, t, f) || A(m.id, i, d, t, f));
+        if (!m || !i || !l) return !1;
+        const n = new Date(`${i}T${l}:00`);
+        return !(!ke(n, t, m.id) || !K(m.id, i, l, t, f) || A(m.id, i, l, t, f));
       },
-      [m, i, d, f, ke]
+      [m, i, l, f, ke]
     ),
     T = o.useMemo(() => {
       const t = [60, 90, 120].filter((n) => $.includes(n));
-      return !m || !i || !d ? t : t.filter((n) => Se(n));
-    }, [$, m, i, d, Se]);
+      return !m || !i || !l ? t : t.filter((n) => Se(n));
+    }, [$, m, i, l, Se]);
   return (
     o.useEffect(() => {
-      T.includes(x) || (T.length && ne(T[0]));
+      T.includes(x) || (T.length && ie(T[0]));
     }, [T.join(',')]),
     e.jsxs('div', {
       className: 'min-h-screen bg-gray-50',
@@ -465,10 +465,10 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
         e.jsxs('div', {
           className: 'max-w-6xl mx-auto px-4 py-6',
           children: [
-            ce &&
+            de &&
               e.jsx('div', {
-                className: `mb-6 p-3 sm:p-4 rounded-lg text-sm ${ce.type === 'error' ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'}`,
-                children: ce.text,
+                className: `mb-6 p-3 sm:p-4 rounded-lg text-sm ${de.type === 'error' ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-emerald-100 text-emerald-800 border border-emerald-200'}`,
+                children: de.text,
               }),
             e.jsxs('div', {
               className: 'bg-white rounded-lg shadow-sm border p-3 sm:p-6 mb-4 sm:mb-6',
@@ -487,7 +487,7 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                         'button',
                         {
                           onClick: () => {
-                            (he(t.date), ie(''), L(null), je(ue, 200));
+                            (he(t.date), ae(''), L(null), je(ue, 200));
                           },
                           className: `flex-shrink-0 p-2 sm:p-3 rounded-lg border text-center transition-all min-w-[60px] sm:min-w-[80px] ${i === t.date ? 'bg-blue-500 text-white border-blue-500 shadow-md' : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100'}`,
                           children: [
@@ -550,7 +550,7 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                         {
                           onClick: () => Ee(t),
                           disabled: !t.isAvailable,
-                          className: `p-3 sm:p-3 rounded-lg border text-center transition-all relative min-h-[56px] touch-manipulation ${d === t.time ? 'bg-blue-500 text-white border-blue-500 shadow-md' : t.isAvailable ? 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer active:bg-blue-100' : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'}`,
+                          className: `p-3 sm:p-3 rounded-lg border text-center transition-all relative min-h-[56px] touch-manipulation ${l === t.time ? 'bg-blue-500 text-white border-blue-500 shadow-md' : t.isAvailable ? 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer active:bg-blue-100' : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'}`,
                           children: [
                             e.jsx('div', {
                               className: 'font-medium text-sm sm:text-base',
@@ -581,9 +581,9 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                     }),
                 ],
               }),
-            d &&
+            l &&
               e.jsxs('div', {
-                ref: ae,
+                ref: se,
                 className: 'bg-white rounded-lg shadow-sm border p-3 sm:p-6 mb-4 sm:mb-6',
                 children: [
                   e.jsx('h2', {
@@ -593,12 +593,12 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                   e.jsx('div', {
                     className: 'space-y-3 sm:space-y-4',
                     children: b.map((t) => {
-                      const n = new Date(`${i}T${d}:00`),
-                        a = ee(n, t.id, b),
-                        r = Y(t.id, i, d),
-                        l = a && r && A(t.id, i, d, x, f),
-                        g = J(t.id, i, d, x, f),
-                        c = a && r && (!l || g);
+                      const n = new Date(`${i}T${l}:00`),
+                        a = Z(n, t.id, b),
+                        r = Y(t.id, i, l),
+                        d = a && r && A(t.id, i, l, x, f),
+                        g = J(t.id, i, l, x, f),
+                        c = a && r && (!d || g);
                       return e.jsx(
                         'div',
                         {
@@ -621,29 +621,20 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                                       }),
                                       c &&
                                         t.premium &&
-                                        e.jsx(Z, {
+                                        e.jsx(xe, {
                                           variant: 'warning',
                                           size: 'xs',
-                                          T: w,
+                                          T: k,
                                           children: 'Premium',
                                         }),
                                       c &&
-                                        g &&
-                                        l &&
-                                        e.jsx(Z, {
-                                          variant: 'info',
-                                          size: 'xs',
-                                          T: w,
-                                          children: '⚠️ Intrappolato',
-                                        }),
-                                      c &&
                                         i &&
-                                        d &&
-                                        ze(t.id, new Date(`${i}T${d}:00`)) &&
-                                        e.jsx(Z, {
+                                        l &&
+                                        ze(t.id, new Date(`${i}T${l}:00`)) &&
+                                        e.jsx(xe, {
                                           variant: 'success',
                                           size: 'xs',
-                                          T: w,
+                                          T: k,
                                           children: '🏷️ Promo',
                                         }),
                                     ],
@@ -655,8 +646,8 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                                       className: 'flex flex-wrap gap-1 mb-2',
                                       children: t.features.map((u, y) =>
                                         e.jsx(
-                                          Z,
-                                          { variant: 'default', size: 'xs', T: w, children: u },
+                                          xe,
+                                          { variant: 'default', size: 'xs', T: k, children: u },
                                           y
                                         )
                                       ),
@@ -671,7 +662,7 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                                         e.jsxs('div', {
                                           className: 'text-xl sm:text-2xl font-bold text-blue-600',
                                           children: [
-                                            E(new Date(`${i}T${d}:00`), 90, h, {}, t.id, b),
+                                            E(new Date(`${i}T${l}:00`), 90, h, {}, t.id, b),
                                             '€',
                                           ],
                                         }),
@@ -683,7 +674,7 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                                           className: 'text-xs text-gray-400 mt-1',
                                           children: [
                                             (
-                                              E(new Date(`${i}T${d}:00`), 90, h, {}, t.id, b) / 4
+                                              E(new Date(`${i}T${l}:00`), 90, h, {}, t.id, b) / 4
                                             ).toFixed(1),
                                             '€ a persona',
                                           ],
@@ -797,7 +788,7 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                               className: 'flex items-center gap-2',
                               children: [
                                 e.jsx('span', { className: 'text-blue-500', children: '🕐' }),
-                                e.jsx('span', { children: d }),
+                                e.jsx('span', { children: l }),
                               ],
                             }),
                             e.jsxs('div', {
@@ -822,21 +813,21 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                           className: 'grid grid-cols-3 gap-3',
                           children: [60, 90, 120].map((t) => {
                             const n = E(
-                                new Date(`${i}T${d}:00`),
+                                new Date(`${i}T${l}:00`),
                                 t,
                                 h,
-                                { lighting: P, heating: k },
+                                { lighting: P, heating: w },
                                 m.id,
                                 b
                               ),
                               a = (n / 4).toFixed(1),
-                              l = $.includes(t) && T.includes(t);
+                              d = $.includes(t) && T.includes(t);
                             return e.jsxs(
                               'button',
                               {
-                                onClick: () => l && ne(t),
-                                disabled: !l,
-                                className: `p-4 rounded-xl border-2 text-center transition-all touch-manipulation ${l ? (x === t ? 'bg-blue-500 text-white border-blue-500 shadow-lg scale-105' : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 active:bg-blue-100') : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'}`,
+                                onClick: () => d && ie(t),
+                                disabled: !d,
+                                className: `p-4 rounded-xl border-2 text-center transition-all touch-manipulation ${d ? (x === t ? 'bg-blue-500 text-white border-blue-500 shadow-lg scale-105' : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 active:bg-blue-100') : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'}`,
                                 children: [
                                   e.jsxs('div', {
                                     className: 'font-bold text-lg',
@@ -904,8 +895,8 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                                   children: [
                                     e.jsx('input', {
                                       type: 'checkbox',
-                                      checked: k,
-                                      onChange: (t) => re(t.target.checked),
+                                      checked: w,
+                                      onChange: (t) => ne(t.target.checked),
                                       className: 'rounded w-5 h-5 text-blue-500',
                                     }),
                                     e.jsxs('div', {
@@ -1015,7 +1006,7 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
                               e.jsx('input', {
                                 type: 'text',
                                 value: G,
-                                onChange: (t) => le(t.target.value),
+                                onChange: (t) => oe(t.target.value),
                                 onKeyDown: (t) => t.key === 'Enter' && we(),
                                 placeholder: 'Nome nuovo giocatore',
                                 className:
@@ -1115,7 +1106,7 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
         ge &&
           m &&
           i &&
-          d &&
+          l &&
           e.jsx('div', {
             className: 'lg:hidden fixed bottom-24 left-4 right-4 z-[99999]',
             children: e.jsxs('div', {
@@ -1237,8 +1228,8 @@ function Ve({ user: s, T: w, state: S, setState: _ }) {
 }
 function ct() {
   const { user: s } = Ie(),
-    { state: w, setState: S } = Re(),
+    { state: k, setState: S } = Re(),
     _ = Le.useMemo(() => _e(), []);
-  return e.jsx(Ve, { T: _, user: s, state: w, setState: S });
+  return e.jsx(Ve, { T: _, user: s, state: k, setState: S });
 }
 export { ct as default };
