@@ -1,16 +1,73 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "Build (vite) to validate changes",
-			"type": "shell",
-			"command": "npm run build",
-			"args": [],
-			"isBackground": false,
-			"problemMatcher": [
-				"$tsc"
-			],
-			"group": "build"
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build",
+      "args": [],
+      "isBackground": false,
+      "problemMatcher": ["$tsc"],
+      "group": "build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build",
+      "args": [],
+      "isBackground": false,
+      "problemMatcher": ["$eslint-stylish"],
+      "group": "build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build"
+    },
+    {
+      "label": "Build (vite) to validate changes",
+      "type": "shell",
+      "command": "npm run build"
+    }
+  ]
 }

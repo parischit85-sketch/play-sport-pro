@@ -8,11 +8,13 @@ export function LoadingSpinner({ size = 'md', className = '' }) {
     sm: 'h-4 w-4',
     md: 'h-8 w-8',
     lg: 'h-12 w-12',
-    xl: 'h-16 w-16'
+    xl: 'h-16 w-16',
   };
 
   return (
-    <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 ${sizeClasses[size]} ${className}`} />
+    <div
+      className={`animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 ${sizeClasses[size]} ${className}`}
+    />
   );
 }
 
@@ -31,7 +33,10 @@ export function LoadingOverlay({ message = 'Caricamento...', visible = true }) {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+      style={{ zIndex: 100000 }}
+    >
       <div className="bg-white rounded-lg p-6 flex items-center space-x-3">
         <LoadingSpinner size="md" />
         <span className="text-gray-700">{message}</span>

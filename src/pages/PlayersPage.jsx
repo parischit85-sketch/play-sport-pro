@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { themeTokens } from '@lib/theme.js';
 import { useLeague } from '@contexts/LeagueContext.jsx';
 import { useUI } from '@contexts/UIContext.jsx';
-import Giocatori from '@features/players/Giocatori.jsx';
+import PlayersCRM from '@features/players/PlayersCRM.jsx';
 
 export default function PlayersPage() {
   const navigate = useNavigate();
@@ -24,12 +24,9 @@ export default function PlayersPage() {
         <div className="text-6xl mb-4">🔒</div>
         <h3 className={`text-xl font-bold mb-2 ${T.text}`}>Modalità Club Richiesta</h3>
         <p className={`${T.subtext} mb-4`}>
-          Per accedere alla gestione giocatori, devi prima sbloccare la modalità club nella sezione Extra.
+          Per accedere al CRM giocatori, devi prima sbloccare la modalità club nella sezione Extra.
         </p>
-        <button 
-          onClick={() => navigate('/extra')} 
-          className={`${T.btnPrimary} px-6 py-3`}
-        >
+        <button onClick={() => navigate('/extra')} className={`${T.btnPrimary} px-6 py-3`}>
           Vai a Extra per sbloccare
         </button>
       </div>
@@ -37,7 +34,7 @@ export default function PlayersPage() {
   }
 
   return (
-    <Giocatori
+    <PlayersCRM
       T={T}
       state={state}
       setState={setState}

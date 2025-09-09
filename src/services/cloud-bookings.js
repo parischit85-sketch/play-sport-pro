@@ -1,18 +1,18 @@
 // =============================================
 // FILE: src/services/cloud-bookings.js
 // =============================================
-import { 
-  collection, 
-  doc, 
-  getDocs, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  collection,
+  doc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
   onSnapshot,
-  serverTimestamp 
+  serverTimestamp,
 } from 'firebase/firestore';
 import { db } from './firebase.js';
 
@@ -34,16 +34,18 @@ export async function loadPublicBookings() {
       orderBy('date', 'asc'),
       orderBy('time', 'asc')
     );
-    
+
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    return snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
   } catch (error) {
     // Gestisci errori comuni di configurazione Firebase
     if (error?.code === 'permission-denied') {
-      console.warn('Firebase: Permessi insufficienti per leggere le prenotazioni. Verifica le regole Firestore e l\'autenticazione.');
+      console.warn(
+        "Firebase: Permessi insufficienti per leggere le prenotazioni. Verifica le regole Firestore e l'autenticazione."
+      );
     } else if (error?.code === 'failed-precondition') {
       console.warn('Firebase: Indici mancanti o configurazione incompleta.');
     } else if (error?.code === 'unavailable') {
@@ -65,14 +67,14 @@ export async function loadUserBookings(userId) {
       where('createdBy', '==', userId),
       orderBy('createdAt', 'desc')
     );
-    
+
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    return snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
   } catch (error) {
-  if (error?.code !== 'permission-denied' && error?.code !== 'failed-precondition') {
+    if (error?.code !== 'permission-denied' && error?.code !== 'failed-precondition') {
       console.warn('Errore caricamento prenotazioni utente:', error);
     }
     return [];
@@ -85,7 +87,7 @@ export async function loadUserBookings(userId) {
 export async function loadActiveUserBookings(userId) {
   try {
     const today = new Date().toISOString().split('T')[0];
-    
+
     const q = query(
       collection(db, BOOKINGS_COLLECTION),
       where('createdBy', '==', userId),
@@ -94,14 +96,14 @@ export async function loadActiveUserBookings(userId) {
       orderBy('date', 'asc'),
       orderBy('time', 'asc')
     );
-    
+
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    return snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
   } catch (error) {
-  if (error?.code !== 'permission-denied' && error?.code !== 'failed-precondition') {
+    if (error?.code !== 'permission-denied' && error?.code !== 'failed-precondition') {
       console.warn('Errore caricamento prenotazioni attive:', error);
     }
     return [];
@@ -114,7 +116,7 @@ export async function loadActiveUserBookings(userId) {
 export async function loadBookingHistory(userId) {
   try {
     const today = new Date().toISOString().split('T')[0];
-    
+
     const q = query(
       collection(db, BOOKINGS_COLLECTION),
       where('createdBy', '==', userId),
@@ -122,14 +124,14 @@ export async function loadBookingHistory(userId) {
       orderBy('date', 'desc'),
       orderBy('time', 'desc')
     );
-    
+
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({
+    return snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
   } catch (error) {
-  if (error?.code !== 'permission-denied' && error?.code !== 'failed-precondition') {
+    if (error?.code !== 'permission-denied' && error?.code !== 'failed-precondition') {
       console.warn('Errore caricamento storico prenotazioni:', error);
     }
     return [];
@@ -151,28 +153,28 @@ export async function createCloudBooking(bookingData, user) {
       lighting: bookingData.lighting || false,
       heating: bookingData.heating || false,
       price: bookingData.price,
-      
+
       // Dati utente
       bookedBy: user?.displayName || user?.email || 'Anonimo',
       userEmail: user?.email,
       userPhone: bookingData.userPhone || '',
       players: bookingData.players || [],
       notes: bookingData.notes || '',
-      
+
       // Metadata
       status: 'confirmed',
       createdBy: user?.uid || null,
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
-    
+
     const docRef = await addDoc(collection(db, BOOKINGS_COLLECTION), booking);
-    
+
     return {
       id: docRef.id,
       ...booking,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
   } catch (error) {
     console.error('Errore creazione prenotazione:', error);
@@ -188,15 +190,15 @@ export async function updateCloudBooking(bookingId, updates, user) {
     const updateData = {
       ...updates,
       updatedAt: serverTimestamp(),
-      updatedBy: user?.uid || null
+      updatedBy: user?.uid || null,
     };
-    
+
     await updateDoc(doc(db, BOOKINGS_COLLECTION, bookingId), updateData);
-    
+
     return {
       id: bookingId,
       ...updates,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
   } catch (error) {
     console.error('Errore aggiornamento prenotazione:', error);
@@ -213,9 +215,9 @@ export async function cancelCloudBooking(bookingId, user) {
       status: 'cancelled',
       cancelledAt: serverTimestamp(),
       cancelledBy: user?.uid || null,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
-    
+
     return true;
   } catch (error) {
     console.error('Errore cancellazione prenotazione:', error);
@@ -246,16 +248,20 @@ export function subscribeToPublicBookings(callback) {
     orderBy('date', 'asc'),
     orderBy('time', 'asc')
   );
-  
-  return onSnapshot(q, (snapshot) => {
-    const bookings = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    callback(bookings);
-  }, (error) => {
-    console.error('Errore sottoscrizione prenotazioni:', error);
-  });
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const bookings = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      callback(bookings);
+    },
+    (error) => {
+      console.error('Errore sottoscrizione prenotazioni:', error);
+    }
+  );
 }
 
 /**
@@ -267,16 +273,87 @@ export function subscribeToUserBookings(userId, callback) {
     where('createdBy', '==', userId),
     orderBy('createdAt', 'desc')
   );
-  
-  return onSnapshot(q, (snapshot) => {
-    const bookings = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    callback(bookings);
-  }, (error) => {
-    console.error('Errore sottoscrizione prenotazioni utente:', error);
-  });
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const bookings = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      callback(bookings);
+    },
+    (error) => {
+      console.error('Errore sottoscrizione prenotazioni utente:', error);
+    }
+  );
+}
+
+// =============================================
+// CARICAMENTO PRENOTAZIONI PER GIOCATORE (CRM)
+// =============================================
+/**
+ * Carica tutte le prenotazioni associate a un giocatore CRM, usando più identificatori.
+ * - userId: createdBy
+ * - email: userEmail
+ * - name: bookedBy o players array-contains
+ * Restituisce un array unificato senza duplicati.
+ */
+export async function loadBookingsForPlayer({ userId, email, name }) {
+  try {
+    const queries = [];
+    if (userId) {
+      queries.push(
+        getDocs(query(collection(db, BOOKINGS_COLLECTION), where('createdBy', '==', userId)))
+      );
+    }
+    if (email) {
+      queries.push(
+        getDocs(query(collection(db, BOOKINGS_COLLECTION), where('userEmail', '==', email)))
+      );
+    }
+    if (name) {
+      queries.push(
+        getDocs(query(collection(db, BOOKINGS_COLLECTION), where('bookedBy', '==', name)))
+      );
+      // array-contains richiede che 'players' sia un array di stringhe (nomi)
+      queries.push(
+        getDocs(
+          query(collection(db, BOOKINGS_COLLECTION), where('players', 'array-contains', name))
+        )
+      );
+    }
+
+    if (queries.length === 0) return [];
+
+    const results = await Promise.allSettled(queries);
+    const merged = new Map();
+    for (const r of results) {
+      if (r.status === 'fulfilled') {
+        r.value.docs.forEach((d) => {
+          const data = { id: d.id, ...d.data() };
+          merged.set(d.id, data);
+        });
+      }
+    }
+
+    // Ordina per data/ora crescente
+    const toDate = (b) => {
+      const dateStr = b.date || '';
+      // time può essere 'HH:MM' o 'HH:MM-HH:MM'
+      const t = (b.time || '').split('-')[0].trim();
+      // fallback sicuro
+      const iso = t ? `${dateStr}T${t}:00` : `${dateStr}T00:00:00`;
+      const d = new Date(iso);
+      return isNaN(d.getTime()) ? new Date(dateStr) : d;
+    };
+
+    const all = Array.from(merged.values()).sort((a, b) => toDate(a) - toDate(b));
+    return all;
+  } catch (error) {
+    console.warn('Errore caricamento prenotazioni per giocatore:', error);
+    return [];
+  }
 }
 
 // =============================================
@@ -289,14 +366,14 @@ export function subscribeToUserBookings(userId, callback) {
 export async function getPublicBookings() {
   const bookings = await loadPublicBookings();
   // Filtra solo i campi necessari per compatibilità
-  return bookings.map(booking => ({
+  return bookings.map((booking) => ({
     id: booking.id,
     courtId: booking.courtId,
     courtName: booking.courtName,
     date: booking.date,
     time: booking.time,
     duration: booking.duration,
-    status: booking.status
+    status: booking.status,
   }));
 }
 
@@ -306,7 +383,7 @@ export async function getPublicBookings() {
 export async function checkSlotAvailability(courtId, date, time, duration) {
   try {
     const bookings = await getPublicBookings();
-    
+
     // Importa la logica di verifica dal servizio locale
     const { isSlotAvailable } = await import('./bookings.js');
     return isSlotAvailable(courtId, date, time, duration, bookings);

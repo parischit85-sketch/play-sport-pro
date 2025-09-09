@@ -1,0 +1,456 @@
+// =============================================
+// FILE: src/features/players/components/PlayerDetails.jsx
+// Vista dettagliata del giocatore con tab multiple
+// =============================================
+
+import React, { useState } from 'react';
+import { DEFAULT_RATING } from '@lib/ids.js';
+import { PLAYER_CATEGORIES } from '../types/playerTypes.js';
+import PlayerNotes from './PlayerNotes';
+import PlayerWallet from './PlayerWallet';
+import PlayerCommunications from './PlayerCommunications';
+import PlayerBookingHistory from './PlayerBookingHistory';
+
+export default function PlayerDetails({ player, onUpdate, onClose, T }) {
+  const [activeTab, setActiveTab] = useState('overview');
+  const [linking, setLinking] = useState(false);
+  const [linkEmail, setLinkEmail] = useState('');
+
+  const getCategoryLabel = (category) => {
+    switch (category) {
+      case PLAYER_CATEGORIES.MEMBER:
+        return 'Membro';
+      case PLAYER_CATEGORIES.VIP:
+        return 'VIP';
+      case PLAYER_CATEGORIES.GUEST:
+        return 'Ospite';
+      case PLAYER_CATEGORIES.NON_MEMBER:
+        return 'Non Membro';
+      default:
+        return 'N/A';
+    }
+  };
+
+  const getCategoryColor = (category) => {
+    switch (category) {
+      case PLAYER_CATEGORIES.MEMBER:
+        return 'text-green-600 dark:text-green-400';
+      case PLAYER_CATEGORIES.VIP:
+        return 'text-purple-600 dark:text-purple-400';
+      case PLAYER_CATEGORIES.GUEST:
+        return 'text-blue-600 dark:text-blue-400';
+      default:
+        return 'text-gray-600 dark:text-gray-400';
+    }
+  };
+
+  const handleLinkAccount = () => {
+    if (!linkEmail.trim()) return;
+
+    onUpdate({
+      linkedAccountEmail: linkEmail.trim(),
+      isAccountLinked: true,
+      updatedAt: new Date().toISOString(),
+    });
+
+    setLinking(false);
+    setLinkEmail('');
+  };
+
+  const handleUnlinkAccount = () => {
+    if (!confirm("Sei sicuro di voler scollegare l'account da questo giocatore?")) {
+      return;
+    }
+
+    onUpdate({
+      linkedAccountId: null,
+      linkedAccountEmail: null,
+      isAccountLinked: false,
+      updatedAt: new Date().toISOString(),
+    });
+  };
+
+  const toggleActiveStatus = () => {
+    onUpdate({
+      isActive: !player.isActive,
+      updatedAt: new Date().toISOString(),
+    });
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('it-IT', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const calculateAge = (birthDate) => {
+    if (!birthDate) return null;
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const tabs = [
+    { id: 'overview', label: '👤 Panoramica', icon: '👤' },
+    { id: 'notes', label: '📝 Note', icon: '📝' },
+    { id: 'wallet', label: '💰 Wallet', icon: '💰' },
+    { id: 'bookings', label: '📅 Prenotazioni', icon: '📅' },
+    { id: 'communications', label: '✉️ Comunicazioni', icon: '✉️' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Header con info principali */}
+      <div className={`${T.cardBg} ${T.border} rounded-xl p-6`}>
+        <div className="flex flex-col xl:flex-row xl:items-start gap-8">
+          {/* Avatar e info base */}
+          <div className="flex items-start gap-4">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
+              {player.name ? player.name.charAt(0).toUpperCase() : '?'}
+            </div>
+
+            <div>
+              <h2 className={`text-2xl font-bold ${T.text} mb-2`}>
+                {player.name ||
+                  `${player.firstName || ''} ${player.lastName || ''}`.trim() ||
+                  'Nome non disponibile'}
+              </h2>
+
+              <div className="flex items-center gap-3 mb-2">
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 ${getCategoryColor(player.category)}`}
+                >
+                  {getCategoryLabel(player.category)}
+                </span>
+
+                {!player.isActive && (
+                  <span className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400">
+                    Inattivo
+                  </span>
+                )}
+              </div>
+
+              <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                {player.email && (
+                  <div className="flex items-center gap-2">
+                    <span>📧</span>
+                    <span>{player.email}</span>
+                  </div>
+                )}
+                {player.phone && (
+                  <div className="flex items-center gap-2">
+                    <span>📱</span>
+                    <span>{player.phone}</span>
+                  </div>
+                )}
+                {player.dateOfBirth && (
+                  <div className="flex items-center gap-2">
+                    <span>🎂</span>
+                    <span>
+                      {new Date(player.dateOfBirth).toLocaleDateString('it-IT')}
+                      {calculateAge(player.dateOfBirth) &&
+                        ` (${calculateAge(player.dateOfBirth)} anni)`}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Stats e azioni */}
+          <div className="flex-1 xl:text-right">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {Number(player.rating || DEFAULT_RATING).toFixed(0)}
+                </div>
+                <div className={`text-xs ${T.subtext}`}>Rating</div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  €{(player.wallet?.balance || 0).toFixed(2)}
+                </div>
+                <div className={`text-xs ${T.subtext}`}>Credito</div>
+              </div>
+
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                  {player.bookingHistory?.length || 0}
+                </div>
+                <div className={`text-xs ${T.subtext}`}>Prenotazioni</div>
+              </div>
+            </div>
+
+            {/* Azioni rapide */}
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={toggleActiveStatus}
+                className={`px-3 py-1 text-sm rounded ${
+                  player.isActive
+                    ? 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
+                    : 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400'
+                }`}
+              >
+                {player.isActive ? '⏸️ Disattiva' : '▶️ Attiva'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Account linking */}
+        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className={`text-sm font-medium ${T.text}`}>Account Collegato:</span>
+              {player.isAccountLinked ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-green-500">🔗</span>
+                  <span className="text-sm text-green-600 dark:text-green-400">
+                    {player.linkedAccountEmail}
+                  </span>
+                  <button
+                    onClick={handleUnlinkAccount}
+                    className="text-xs text-red-500 hover:text-red-700 ml-2"
+                  >
+                    Scollega
+                  </button>
+                </div>
+              ) : (
+                <span className="text-sm text-gray-500">Nessun account collegato</span>
+              )}
+            </div>
+
+            {!player.isAccountLinked && (
+              <div className="flex items-center gap-2">
+                {linking ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="email"
+                      value={linkEmail}
+                      onChange={(e) => setLinkEmail(e.target.value)}
+                      placeholder="email@esempio.com"
+                      className={`${T.input} text-sm`}
+                    />
+                    <button
+                      onClick={handleLinkAccount}
+                      className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded"
+                    >
+                      Collega
+                    </button>
+                    <button
+                      onClick={() => {
+                        setLinking(false);
+                        setLinkEmail('');
+                      }}
+                      className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded"
+                    >
+                      Annulla
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setLinking(true)}
+                    className={`${T.btnSecondary} px-4 py-2 text-sm`}
+                  >
+                    🔗 Collega Account
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="border-b border-gray-200 dark:border-gray-700">
+        <nav className="flex space-x-8 overflow-x-auto">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                activeTab === tab.id
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
+            >
+              <span className="hidden sm:inline">{tab.label}</span>
+              <span className="sm:hidden text-lg">{tab.icon}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Tab Content */}
+      <div className="min-h-[400px]">
+        {activeTab === 'overview' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Dati anagrafici */}
+            <div className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
+              <h3 className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}>
+                📋 Dati Anagrafici
+              </h3>
+
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className={T.subtext}>Nome completo:</span>
+                  <span className={T.text}>
+                    {player.firstName && player.lastName
+                      ? `${player.firstName} ${player.lastName}`
+                      : player.name || 'N/A'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className={T.subtext}>Codice fiscale:</span>
+                  <span className={T.text}>{player.fiscalCode || 'N/A'}</span>
+                </div>
+
+                {player.address && (
+                  <div className="flex justify-between">
+                    <span className={T.subtext}>Indirizzo:</span>
+                    <span className={`${T.text} text-right`}>
+                      {[
+                        player.address.street,
+                        player.address.city,
+                        player.address.province,
+                        player.address.postalCode,
+                      ]
+                        .filter(Boolean)
+                        .join(', ') || 'N/A'}
+                    </span>
+                  </div>
+                )}
+
+                <div className="flex justify-between">
+                  <span className={T.subtext}>Registrato il:</span>
+                  <span className={T.text}>{formatDate(player.createdAt)}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className={T.subtext}>Ultimo aggiornamento:</span>
+                  <span className={T.text}>{formatDate(player.updatedAt)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Dati sportivi */}
+            <div className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
+              <h3 className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}>
+                🏃 Dati Sportivi
+              </h3>
+
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className={T.subtext}>Rating base:</span>
+                  <span className={T.text}>{player.baseRating || DEFAULT_RATING}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className={T.subtext}>Rating corrente:</span>
+                  <span className="text-blue-600 dark:text-blue-400 font-semibold">
+                    {Number(player.rating || DEFAULT_RATING).toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className={T.subtext}>Stato:</span>
+                  <span
+                    className={
+                      player.isActive
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-red-600 dark:text-red-400'
+                    }
+                  >
+                    {player.isActive ? 'Attivo' : 'Inattivo'}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className={T.subtext}>Partite giocate:</span>
+                  <span className={T.text}>{player.matchHistory?.length || 0}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className={T.subtext}>Ultima attività:</span>
+                  <span className={T.text}>{formatDate(player.lastActivity)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Tag e note rapide */}
+            <div className={`${T.cardBg} ${T.border} rounded-xl p-4 lg:col-span-2`}>
+              <h3 className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}>
+                🏷️ Tag e Informazioni Rapide
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <span className={`text-sm ${T.subtext} block mb-2`}>Tag:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {player.tags && player.tags.length > 0 ? (
+                      player.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs rounded-full"
+                        >
+                          {tag}
+                        </span>
+                      ))
+                    ) : (
+                      <span className={`text-sm ${T.subtext}`}>Nessun tag assegnato</span>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <span className={`text-sm ${T.subtext} block mb-2`}>
+                    Preferenze comunicazione:
+                  </span>
+                  <div className="flex flex-wrap gap-4 text-sm">
+                    <span
+                      className={`flex items-center gap-1 ${player.communicationPreferences?.email ? 'text-green-600 dark:text-green-400' : T.subtext}`}
+                    >
+                      📧 Email: {player.communicationPreferences?.email ? 'Sì' : 'No'}
+                    </span>
+                    <span
+                      className={`flex items-center gap-1 ${player.communicationPreferences?.sms ? 'text-green-600 dark:text-green-400' : T.subtext}`}
+                    >
+                      📱 SMS: {player.communicationPreferences?.sms ? 'Sì' : 'No'}
+                    </span>
+                    <span
+                      className={`flex items-center gap-1 ${player.communicationPreferences?.whatsapp ? 'text-green-600 dark:text-green-400' : T.subtext}`}
+                    >
+                      📞 WhatsApp: {player.communicationPreferences?.whatsapp ? 'Sì' : 'No'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'notes' && <PlayerNotes player={player} onUpdate={onUpdate} T={T} />}
+
+        {activeTab === 'wallet' && <PlayerWallet player={player} onUpdate={onUpdate} T={T} />}
+
+        {activeTab === 'bookings' && <PlayerBookingHistory player={player} T={T} />}
+
+        {activeTab === 'communications' && (
+          <PlayerCommunications player={player} onUpdate={onUpdate} T={T} />
+        )}
+      </div>
+    </div>
+  );
+}

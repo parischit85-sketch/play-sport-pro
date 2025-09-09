@@ -3,14 +3,16 @@
 // =============================================
 import React from 'react';
 
-export default function Modal({ open, onClose, title, children, T, size = 'md' }) {
-  if (!open) return null;
+export default function Modal({ open, isOpen, onClose, title, children, T, size = 'md' }) {
+  // Backward-compat: support both `open` and `isOpen`
+  const opened = typeof isOpen === 'boolean' ? isOpen : open;
+  if (!opened) return null;
 
   const sizeClasses = {
     sm: 'w-[min(480px,92vw)]',
     md: 'w-[min(820px,92vw)]',
     lg: 'w-[min(1024px,92vw)]',
-    xl: 'w-[min(1200px,92vw)]'
+    xl: 'w-[min(1200px,92vw)]',
   };
 
   return (
@@ -35,7 +37,7 @@ export default function Modal({ open, onClose, title, children, T, size = 'md' }
       <div
         className={`relative z-10 rounded-2xl bg-white ring-1 ring-black/10 p-4 lg:p-6 ${sizeClasses[size]} shadow-2xl max-h-[85vh] md:max-h-[90vh] overflow-y-auto mb-16 md:mb-0`}
         style={{
-          paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)'
+          paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)',
         }}
       >
         <div className="flex items-center justify-between mb-4">
