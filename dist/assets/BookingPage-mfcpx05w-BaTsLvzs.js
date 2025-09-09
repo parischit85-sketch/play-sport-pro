@@ -1,15 +1,15 @@
-import { j as e, u as Te, f as ze, t as Oe } from './index-mfcpo09n-Drnu4aiH.js';
-import { r as o, b as Ie } from './router-mfcpo09n-HwcQM0Ja.js';
-import { s as Re, i as K, w as C, B as ce, c as _e } from './bookings-mfcpo09n-vDqXalGW.js';
-import { i as J, c as O, g as Le } from './pricing-mfcpo09n-DMaWA4wL.js';
+import { j as e, u as Oe, f as Ie, t as Re } from './index-mfcpx05w-A0-6VM8D.js';
+import { r as o, b as _e } from './router-mfcpx05w-B6EAHESI.js';
+import { s as Le, i as K, w as A, B as me, c as Fe } from './bookings-mfcpx05w-CKrSQ_LE.js';
+import { i as J, c as z, g as Ge } from './pricing-mfcpx05w-DMaWA4wL.js';
 import {
-  subscribeToPublicBookings as Fe,
-  getPublicBookings as I,
-  loadActiveUserBookings as Ge,
-} from './cloud-bookings-mfcpo09n-XKyj7U0-.js';
-import './vendor-mfcpo09n-D3F3s8fL.js';
-import './firebase-mfcpo09n-BteSMG94.js';
-const R = { xs: 'p-1', sm: 'p-2', md: 'p-4', elementMb: 'mb-3' },
+  subscribeToPublicBookings as Ue,
+  getPublicBookings as O,
+  loadActiveUserBookings as We,
+} from './cloud-bookings-mfcpx05w-BNqF8YtB.js';
+import './vendor-mfcpx05w-D3F3s8fL.js';
+import './firebase-mfcpx05w-BteSMG94.js';
+const I = { xs: 'p-1', sm: 'p-2', md: 'p-4', elementMb: 'mb-3' },
   j = {
     h1: 'text-3xl font-bold',
     h2: 'text-2xl font-bold',
@@ -32,16 +32,16 @@ const R = { xs: 'p-1', sm: 'p-2', md: 'p-4', elementMb: 'mb-3' },
     warning: 'text-amber-500',
     info: 'text-blue-500',
   },
-  Se = {
+  De = {
     card: 'shadow-[0_0_0_1px_rgba(0,0,0,0.02)] shadow-sm',
     cardHover: 'shadow-[0_0_0_1px_rgba(0,0,0,0.04)] shadow-md',
   },
   ee = { md: 'rounded-md', xl: 'rounded-xl', xxl: 'rounded-2xl' },
-  Ue = { normal: 'transition-all duration-200 ease-in-out' },
-  _ = {
-    card: (s) => `${ee.xxl} ${s.cardBg} ${s.border} ${R.md} ${Se.card}`,
-    cardHover: (s) => `${ee.xxl} ${s.cardBg} ${s.border} ${R.md} ${Se.cardHover} ${Ue.normal}`,
-    sectionHeader: (s) => `${B.flexBetween} ${R.elementMb}`,
+  Qe = { normal: 'transition-all duration-200 ease-in-out' },
+  R = {
+    card: (s) => `${ee.xxl} ${s.cardBg} ${s.border} ${I.md} ${De.card}`,
+    cardHover: (s) => `${ee.xxl} ${s.cardBg} ${s.border} ${I.md} ${De.cardHover} ${Qe.normal}`,
+    sectionHeader: (s) => `${B.flexBetween} ${I.elementMb}`,
     sectionTitle: (s) => `${j.h3} ${s.neonText}`,
     btnVariants: {
       primary: (s) => s.btnPrimary,
@@ -49,17 +49,17 @@ const R = { xs: 'p-1', sm: 'p-2', md: 'p-4', elementMb: 'mb-3' },
       ghostSm: (s) => s.btnGhostSm,
     },
     input: (s) => s.input,
-    statCard: (s) => `${_.card(s)} text-center`,
-    listItem: (s) => `${ee.xl} ${s.cardBg} ${s.border} ${R.sm} ${B.flexBetween}`,
-    badge: (s) => `inline-flex items-center ${R.xs} ${ee.md} ${j.bodyXs} ${j.medium}`,
+    statCard: (s) => `${R.card(s)} text-center`,
+    listItem: (s) => `${ee.xl} ${s.cardBg} ${s.border} ${I.sm} ${B.flexBetween}`,
+    badge: (s) => `inline-flex items-center ${I.xs} ${ee.md} ${j.bodyXs} ${j.medium}`,
     skeleton: 'animate-pulse bg-gray-200 rounded',
   };
-function We(s) {
+function Ye(s) {
   return {
-    card: _.card(s),
-    cardHover: _.cardHover(s),
-    sectionHeader: _.sectionHeader(s),
-    sectionTitle: _.sectionTitle(s),
+    card: R.card(s),
+    cardHover: R.cardHover(s),
+    sectionHeader: R.sectionHeader(s),
+    sectionTitle: R.sectionTitle(s),
     flexBetween: B.flexBetween,
     flexCenter: B.flexCenter,
     grid3: B.grid3,
@@ -80,8 +80,8 @@ function We(s) {
     info: Z.info,
   };
 }
-function Qe({ user: s, T: k, state: S, setState: L }) {
-  We(k);
+function qe({ user: s, T: k, state: S, setState: _ }) {
+  Ye(k);
   const x = S?.bookingConfig || {
       slotMinutes: 30,
       dayStartHour: 8,
@@ -108,43 +108,43 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
         .sort((a, r) => a - r);
       return n.length ? n : [60, 90, 120];
     }, [x?.defaultDurations]),
-    me = o.useRef(null),
+    xe = o.useRef(null),
     te = o.useRef(null),
-    [i, xe] = o.useState(''),
+    [i, ue] = o.useState(''),
     [l, se] = o.useState(''),
-    [c, F] = o.useState(null),
+    [c, L] = o.useState(null),
     [h, ae] = o.useState(60),
-    [G, $e] = o.useState(!0),
-    [P, ue] = o.useState(!1),
+    [F, Ce] = o.useState(!0),
+    [P, he] = o.useState(!1),
     [w, ne] = o.useState(!1),
-    [Ye, De] = o.useState(''),
-    [qe, Ae] = o.useState(''),
+    [Ve, Ae] = o.useState(''),
+    [Xe, Be] = o.useState(''),
     [y, ie] = o.useState([]),
-    [U, re] = o.useState(''),
-    [he, D] = o.useState(!1),
-    [Ce, be] = o.useState(!1),
-    [Be, ge] = o.useState(!1),
-    [f, A] = o.useState([]),
-    [Ve, W] = o.useState([]),
-    [Xe, Q] = o.useState([]),
-    [Y, oe] = o.useState(!1),
+    [G, re] = o.useState(''),
+    [be, D] = o.useState(!1),
+    [Pe, ge] = o.useState(!1),
+    [Me, fe] = o.useState(!1),
+    [f, C] = o.useState([]),
+    [Ke, U] = o.useState([]),
+    [Je, W] = o.useState([]),
+    [Q, oe] = o.useState(!1),
     [le, N] = o.useState(null);
   (o.useEffect(() => {
     $.includes(h) || ae($[0] || 60);
   }, [$.join(',')]),
     o.useEffect(() => {
-      (Re(!!s?.uid, s),
+      (Le(!!s?.uid, s),
         (async () => {
           try {
-            const n = await I();
-            (A(n), s ? await fe() : (W([]), Q([])));
+            const n = await O();
+            (C(n), s ? await pe() : (U([]), W([])));
           } catch {}
         })());
     }, [s]),
     o.useEffect(() => {
       let t;
       try {
-        t = Fe((n) => {
+        t = Ue((n) => {
           const a = (n || []).map((r) => ({
             id: r.id,
             courtId: r.courtId,
@@ -154,7 +154,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
             duration: r.duration,
             status: r.status,
           }));
-          A(a);
+          C(a);
         });
       } catch (n) {
         console.warn('subscribeToPublicBookings non disponibile o fallita:', n);
@@ -163,21 +163,21 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
         typeof t == 'function' && t();
       };
     }, []));
-  const fe = async () => {
+  const pe = async () => {
       if (!s) {
-        (W([]), Q([]));
+        (U([]), W([]));
         return;
       }
       try {
         if (s.uid) {
-          const t = await Ge(s.uid);
-          (Q(t), W(t));
+          const t = await We(s.uid);
+          (W(t), U(t));
         }
       } catch {
-        (W([]), Q([]));
+        (U([]), W([]));
       }
     },
-    pe = (t, n = 100) => {
+    ye = (t, n = 100) => {
       t?.current &&
         setTimeout(() => {
           t.current &&
@@ -190,7 +190,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
         n = t.getFullYear(),
         a = String(t.getMonth() + 1).padStart(2, '0'),
         r = String(t.getDate()).padStart(2, '0');
-      xe(`${n}-${a}-${r}`);
+      ue(`${n}-${a}-${r}`);
     }
   }, [i]),
     o.useEffect(() => {
@@ -200,11 +200,11 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
       l &&
         te.current &&
         setTimeout(() => {
-          pe(te, 50);
+          ye(te, 50);
         }, 100);
     }, [l]));
-  const q = o.useCallback((t, n, a) => K(t, n, a, h, f), [h, f]),
-    Pe = o.useMemo(() => {
+  const Y = o.useCallback((t, n, a) => K(t, n, a, h, f), [h, f]),
+    He = o.useMemo(() => {
       const t = [],
         n = ['DOM', 'LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB'];
       for (let a = 0; a < 7; a++) {
@@ -224,7 +224,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
       }
       return t;
     }, []),
-    ye = o.useMemo(() => {
+    je = o.useMemo(() => {
       const t = [],
         n = x.dayStartHour || 8,
         a = x.dayEndHour || 23,
@@ -236,41 +236,43 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
           const v = `${String(b).padStart(2, '0')}:${String(g).padStart(2, '0')}`;
           if (i === d && new Date(`${i}T${v}:00`) <= m) continue;
           const p = new Date(`${i}T${v}:00`);
-          let E = !1,
-            H = !1,
-            T = !1,
-            ke = !1;
+          let H = !1,
+            E = !1,
+            V = !1,
+            de = 0,
+            Se = 0;
           for (const X of u) {
             if (!J(p, X.id, u)) continue;
-            if (((E = !0), !q(X.id, i, v))) {
-              ke = !0;
+            if (((H = !0), !Y(X.id, i, v))) {
+              V = !0;
               continue;
             }
-            ((H = !0), C(X.id, i, v, h, f) && (T = !0));
+            ((E = !0), de++, A(X.id, i, v, h, f) && Se++);
           }
-          const de = E && H && !T;
-          let z = null;
-          (de ||
-            (E
-              ? ke && !H
-                ? (z = 'occupied')
-                : T
-                  ? (z = 'hole')
-                  : (z = 'occupied')
-              : (z = 'out-of-schedule')),
-            (!G || de) &&
+          const $e = de > 0 && Se === de,
+            ce = H && E && !$e;
+          let T = null;
+          (ce ||
+            (H
+              ? V && !E
+                ? (T = 'occupied')
+                : $e
+                  ? (T = 'hole')
+                  : (T = 'occupied')
+              : (T = 'out-of-schedule')),
+            (!F || ce) &&
               t.push({
                 time: v,
-                isAvailable: de,
+                isAvailable: ce,
                 availableCourts: 0,
                 totalCourts: u.length,
-                reason: z,
+                reason: T,
               }));
         }
       return t;
-    }, [i, h, f, u, q, G, x]),
-    Me = (t, n) => (n && Le(n, x, t, u).isPromo) || !1,
-    je = async () => {
+    }, [i, h, f, u, Y, F, x]),
+    Ee = (t, n) => (n && Ge(n, x, t, u).isPromo) || !1,
+    Ne = async () => {
       if (!s) {
         N({ type: 'error', text: 'Devi effettuare il login per prenotare un campo' });
         return;
@@ -280,15 +282,15 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
         return;
       }
       if (!K(c.id, i, l, h, f)) {
-        (ge(!0),
+        (fe(!0),
           setTimeout(() => {
-            ge(!1);
+            fe(!1);
           }, 3e3));
-        const n = await I();
-        A(n);
+        const n = await O();
+        C(n);
         return;
       }
-      if (C(c.id, i, l, h, f)) {
+      if (A(c.id, i, l, h, f)) {
         N({
           type: 'error',
           text: 'Questa scelta crea un buco di 30 minuti. Seleziona alle :00 o :30 adiacente, oppure sposta di 30 minuti.',
@@ -305,24 +307,24 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
             duration: h,
             lighting: !!P,
             heating: !!w,
-            price: O(new Date(`${i}T${l}:00`), h, x, { lighting: !!P, heating: !!w }, c.id, u),
+            price: z(new Date(`${i}T${l}:00`), h, x, { lighting: !!P, heating: !!w }, c.id, u),
             userPhone: '',
             notes: '',
             players: [s.displayName || s.email, ...y.map((m) => m.name)],
           },
-          a = await _e(n, s);
+          a = await Fe(n, s);
         if (!a) {
           (N({
             type: 'error',
             text: 'Errore nel salvare la prenotazione. Potrebbe essere già stata prenotata da qualcun altro.',
           }),
             oe(!1));
-          const m = await I();
-          A(m);
+          const m = await O();
+          C(m);
           return;
         }
-        const r = await I();
-        if ((A(r), await fe(), S && L)) {
+        const r = await O();
+        if ((C(r), await pe(), S && _)) {
           const m = {
             id: a.id,
             courtId: a.courtId,
@@ -338,18 +340,18 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
             status: 'booked',
             createdAt: Date.now(),
           };
-          L((d) => ({ ...d, bookings: [...(d.bookings || []), m] }));
+          _((d) => ({ ...d, bookings: [...(d.bookings || []), m] }));
         }
-        (be(!0),
+        (ge(!0),
           setTimeout(() => {
-            be(!1);
+            ge(!1);
           }, 3e3),
           se(''),
-          F(null),
-          ue(!1),
+          L(null),
+          he(!1),
           ne(!1),
-          De(''),
           Ae(''),
+          Be(''),
           ie([]),
           re(''),
           D(!1),
@@ -363,17 +365,17 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
         oe(!1);
       }
     },
-    Ee = async (t) => {
+    Te = async (t) => {
       if (!t.isAvailable) return;
       try {
-        const a = await I();
+        const a = await O();
         if (
-          (A(a),
+          (C(a),
           !u.some((m) => {
             const d = new Date(`${i}T${t.time}:00`),
               b = J(d, m.id, u),
               g = K(m.id, i, t.time, h, a),
-              v = C(m.id, i, t.time, h, a);
+              v = A(m.id, i, t.time, h, a);
             return b && g && !v;
           }))
         ) {
@@ -390,20 +392,20 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
       const n = u.filter((a) => {
         const r = new Date(`${i}T${t.time}:00`),
           m = J(r, a.id, u),
-          d = q(a.id, i, t.time),
-          b = C(a.id, i, t.time, h, f);
+          d = Y(a.id, i, t.time),
+          b = A(a.id, i, t.time, h, f);
         return m && d && !b;
       });
-      n.length === 1 && (F(n[0]), D(!0));
+      n.length === 1 && (L(n[0]), D(!0));
     },
-    Ne = () => {
-      U.trim() && y.length < 3 && (ie([...y, { id: Date.now(), name: U.trim() }]), re(''));
+    ve = () => {
+      G.trim() && y.length < 3 && (ie([...y, { id: Date.now(), name: G.trim() }]), re(''));
     },
-    He = (t) => {
+    ze = (t) => {
       ie(y.filter((n) => n.id !== t));
     },
-    V = c && i && l ? O(new Date(`${i}T${l}:00`), h, x, { lighting: P, heating: w }, c.id, u) : 0,
-    ve = o.useCallback(
+    q = c && i && l ? z(new Date(`${i}T${l}:00`), h, x, { lighting: P, heating: w }, c.id, u) : 0,
+    we = o.useCallback(
       (t, n, a) => {
         if (!t || !a) return !1;
         const r = u.find((p) => p.id === a);
@@ -411,10 +413,10 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
         const m = t.getDay(),
           d = t.getHours() * 60 + t.getMinutes(),
           b = (p = '00:00') => {
-            const [E, H] = String(p)
+            const [H, E] = String(p)
               .split(':')
-              .map((T) => +T || 0);
-            return E * 60 + H;
+              .map((V) => +V || 0);
+            return H * 60 + E;
           },
           g = r.timeSlots.find(
             (p) => Array.isArray(p.days) && p.days.includes(m) && d >= b(p.from) && d < b(p.to)
@@ -423,18 +425,18 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
       },
       [u]
     ),
-    we = o.useCallback(
+    ke = o.useCallback(
       (t) => {
         if (!c || !i || !l) return !1;
         const n = new Date(`${i}T${l}:00`);
-        return !(!ve(n, t, c.id) || !K(c.id, i, l, t, f) || C(c.id, i, l, t, f));
+        return !(!we(n, t, c.id) || !K(c.id, i, l, t, f) || A(c.id, i, l, t, f));
       },
-      [c, i, l, f, ve]
+      [c, i, l, f, we]
     ),
     M = o.useMemo(() => {
       const t = [60, 90, 120].filter((n) => $.includes(n));
-      return !c || !i || !l ? t : t.filter((n) => we(n));
-    }, [$, c, i, l, we]);
+      return !c || !i || !l ? t : t.filter((n) => ke(n));
+    }, [$, c, i, l, ke]);
   return (
     o.useEffect(() => {
       M.includes(h) || (M.length && ae(M[0]));
@@ -469,12 +471,12 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                   children: e.jsx('div', {
                     className: 'flex gap-2 pb-2',
                     style: { minWidth: 'max-content' },
-                    children: Pe.slice(0, 10).map((t) =>
+                    children: He.slice(0, 10).map((t) =>
                       e.jsxs(
                         'button',
                         {
                           onClick: () => {
-                            (xe(t.date), se(''), F(null), pe(me, 200));
+                            (ue(t.date), se(''), L(null), ye(xe, 200));
                           },
                           className: `flex-shrink-0 p-2 sm:p-3 rounded-lg border text-center transition-all min-w-[60px] sm:min-w-[80px] ${i === t.date ? 'bg-blue-500 text-white border-blue-500 shadow-md' : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100'}`,
                           children: [
@@ -501,7 +503,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
             }),
             i &&
               e.jsxs('div', {
-                ref: me,
+                ref: xe,
                 className: 'bg-white rounded-lg shadow-sm border p-3 sm:p-6 mb-4 sm:mb-6',
                 children: [
                   e.jsxs('div', {
@@ -517,8 +519,8 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                         children: [
                           e.jsx('input', {
                             type: 'checkbox',
-                            checked: G,
-                            onChange: (t) => $e(t.target.checked),
+                            checked: F,
+                            onChange: (t) => Ce(t.target.checked),
                             className: 'rounded text-blue-500',
                           }),
                           e.jsx('span', {
@@ -531,11 +533,11 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                   }),
                   e.jsx('div', {
                     className: 'grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-8 gap-2',
-                    children: ye.map((t) =>
+                    children: je.map((t) =>
                       e.jsxs(
                         'button',
                         {
-                          onClick: () => Ee(t),
+                          onClick: () => Te(t),
                           disabled: !t.isAvailable,
                           className: `p-3 sm:p-3 rounded-lg border text-center transition-all relative min-h-[56px] touch-manipulation ${l === t.time ? 'bg-blue-500 text-white border-blue-500 shadow-md' : t.isAvailable ? 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer active:bg-blue-100' : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'}`,
                           children: [
@@ -559,10 +561,10 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                       )
                     ),
                   }),
-                  ye.length === 0 &&
+                  je.length === 0 &&
                     e.jsx('div', {
                       className: 'text-center py-8 text-gray-500',
-                      children: G
+                      children: F
                         ? 'Nessun orario disponibile per questo giorno'
                         : 'Nessun orario configurato',
                     }),
@@ -582,14 +584,14 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                     children: u.map((t) => {
                       const n = new Date(`${i}T${l}:00`),
                         a = J(n, t.id, u),
-                        r = q(t.id, i, l),
-                        m = a && r && C(t.id, i, l, h, f),
+                        r = Y(t.id, i, l),
+                        m = a && r && A(t.id, i, l, h, f),
                         d = a && r && !m;
                       return e.jsx(
                         'div',
                         {
                           onClick: () => {
-                            d && (F(t), D(!0));
+                            d && (L(t), D(!0));
                           },
                           className: `border rounded-lg p-3 sm:p-4 transition-all touch-manipulation ${d ? 'hover:shadow-md cursor-pointer hover:border-blue-300 active:bg-gray-50' : 'bg-gray-50 border-gray-200 cursor-not-allowed opacity-75'}`,
                           children: e.jsxs('div', {
@@ -607,7 +609,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                                       }),
                                       d &&
                                         t.premium &&
-                                        e.jsx(ce, {
+                                        e.jsx(me, {
                                           variant: 'warning',
                                           size: 'xs',
                                           T: k,
@@ -616,8 +618,8 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                                       d &&
                                         i &&
                                         l &&
-                                        Me(t.id, new Date(`${i}T${l}:00`)) &&
-                                        e.jsx(ce, {
+                                        Ee(t.id, new Date(`${i}T${l}:00`)) &&
+                                        e.jsx(me, {
                                           variant: 'success',
                                           size: 'xs',
                                           T: k,
@@ -632,7 +634,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                                       className: 'flex flex-wrap gap-1 mb-2',
                                       children: t.features.map((b, g) =>
                                         e.jsx(
-                                          ce,
+                                          me,
                                           { variant: 'default', size: 'xs', T: k, children: b },
                                           g
                                         )
@@ -648,7 +650,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                                         e.jsxs('div', {
                                           className: 'text-xl sm:text-2xl font-bold text-blue-600',
                                           children: [
-                                            O(new Date(`${i}T${l}:00`), 90, x, {}, t.id, u),
+                                            z(new Date(`${i}T${l}:00`), 90, x, {}, t.id, u),
                                             '€',
                                           ],
                                         }),
@@ -660,7 +662,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                                           className: 'text-xs text-gray-400 mt-1',
                                           children: [
                                             (
-                                              O(new Date(`${i}T${l}:00`), 90, x, {}, t.id, u) / 4
+                                              z(new Date(`${i}T${l}:00`), 90, x, {}, t.id, u) / 4
                                             ).toFixed(1),
                                             '€ a persona',
                                           ],
@@ -696,7 +698,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
               }),
           ],
         }),
-        he &&
+        be &&
           c &&
           e.jsx('div', {
             className:
@@ -798,7 +800,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                         e.jsx('div', {
                           className: 'grid grid-cols-3 gap-3',
                           children: [60, 90, 120].map((t) => {
-                            const n = O(
+                            const n = z(
                                 new Date(`${i}T${l}:00`),
                                 t,
                                 x,
@@ -854,7 +856,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                                     e.jsx('input', {
                                       type: 'checkbox',
                                       checked: P,
-                                      onChange: (t) => ue(t.target.checked),
+                                      onChange: (t) => he(t.target.checked),
                                       className: 'rounded w-5 h-5 text-blue-500',
                                     }),
                                     e.jsxs('div', {
@@ -971,7 +973,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                                     ],
                                   }),
                                   e.jsx('button', {
-                                    onClick: () => He(t.id),
+                                    onClick: () => ze(t.id),
                                     className:
                                       'w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center touch-manipulation transition-colors',
                                     children: e.jsx('span', {
@@ -991,16 +993,16 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                             children: [
                               e.jsx('input', {
                                 type: 'text',
-                                value: U,
+                                value: G,
                                 onChange: (t) => re(t.target.value),
-                                onKeyDown: (t) => t.key === 'Enter' && Ne(),
+                                onKeyDown: (t) => t.key === 'Enter' && ve(),
                                 placeholder: 'Nome nuovo giocatore',
                                 className:
                                   'flex-1 p-3 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:outline-none',
                               }),
                               e.jsx('button', {
-                                onClick: Ne,
-                                disabled: !U.trim(),
+                                onClick: ve,
+                                disabled: !G.trim(),
                                 className:
                                   'px-6 py-3 bg-blue-500 text-white rounded-xl text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation hover:bg-blue-600 transition-colors',
                                 children: 'Aggiungi',
@@ -1022,7 +1024,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                             }),
                             e.jsxs('span', {
                               className: 'text-2xl font-bold text-green-600',
-                              children: [V, '€'],
+                              children: [q, '€'],
                             }),
                           ],
                         }),
@@ -1035,7 +1037,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                             }),
                             e.jsxs('span', {
                               className: 'text-lg font-semibold text-green-600',
-                              children: [(V / 4).toFixed(1), '€'],
+                              children: [(q / 4).toFixed(1), '€'],
                             }),
                           ],
                         }),
@@ -1066,11 +1068,11 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                         children: 'Annulla',
                       }),
                       e.jsx('button', {
-                        onClick: je,
-                        disabled: Y || !s,
+                        onClick: Ne,
+                        disabled: Q || !s,
                         className:
                           'flex-2 py-4 px-6 bg-blue-500 text-white rounded-xl text-sm font-semibold hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation transition-colors shadow-lg',
-                        children: Y
+                        children: Q
                           ? e.jsxs('div', {
                               className: 'flex items-center justify-center gap-2',
                               children: [
@@ -1081,7 +1083,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                                 'Prenotando...',
                               ],
                             })
-                          : `Conferma - ${V}€`,
+                          : `Conferma - ${q}€`,
                       }),
                     ],
                   }),
@@ -1089,7 +1091,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
               ],
             }),
           }),
-        he &&
+        be &&
           c &&
           i &&
           l &&
@@ -1105,11 +1107,11 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                   children: 'Annulla',
                 }),
                 e.jsx('button', {
-                  onClick: je,
-                  disabled: Y || !s,
+                  onClick: Ne,
+                  disabled: Q || !s,
                   className:
                     'flex-1 backdrop-blur-md bg-blue-600/90 text-white py-3 px-4 rounded-xl font-medium text-sm transition-all shadow-lg hover:bg-blue-600/95 disabled:opacity-50 disabled:cursor-not-allowed',
-                  children: Y
+                  children: Q
                     ? e.jsxs('div', {
                         className: 'flex items-center justify-center gap-1',
                         children: [
@@ -1120,12 +1122,12 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
                           e.jsx('span', { children: 'Prenotando...' }),
                         ],
                       })
-                    : `Conferma ${V}€`,
+                    : `Conferma ${q}€`,
                 }),
               ],
             }),
           }),
-        Ce &&
+        Pe &&
           e.jsx('div', {
             className:
               'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]',
@@ -1166,7 +1168,7 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
               ],
             }),
           }),
-        Be &&
+        Me &&
           e.jsx('div', {
             className:
               'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]',
@@ -1212,10 +1214,10 @@ function Qe({ user: s, T: k, state: S, setState: L }) {
     })
   );
 }
-function ot() {
-  const { user: s } = Te(),
-    { state: k, setState: S } = ze(),
-    L = Ie.useMemo(() => Oe(), []);
-  return e.jsx(Qe, { T: L, user: s, state: k, setState: S });
+function dt() {
+  const { user: s } = Oe(),
+    { state: k, setState: S } = Ie(),
+    _ = _e.useMemo(() => Re(), []);
+  return e.jsx(qe, { T: _, user: s, state: k, setState: S });
 }
-export { ot as default };
+export { dt as default };

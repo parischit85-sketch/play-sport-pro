@@ -258,6 +258,8 @@ function ModernBookingInterface({ user, T, state, setState }) {
         let anyFreeIgnoringHole = false;
         let anyCreatesHole = false;
         let anyOccupied = false;
+        let availableCourtsCount = 0;
+        let courtsWithHoleCount = 0;
 
         for (const court of courtsFromState) {
           const scheduleOk = isCourtBookableAt(slotDate, court.id, courtsFromState);
@@ -269,6 +271,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
             continue;
           }
           anyFreeIgnoringHole = true;
+          availableCourtsCount++;
           const createsHole = wouldCreateHalfHourHole(
             court.id,
             selectedDate,
@@ -276,15 +279,24 @@ function ModernBookingInterface({ user, T, state, setState }) {
             duration,
             bookings
           );
-          if (createsHole) anyCreatesHole = true;
+          if (createsHole) {
+            anyCreatesHole = true;
+            courtsWithHoleCount++;
+          }
         }
 
-        const isAvailable = anyScheduleOk && anyFreeIgnoringHole && !anyCreatesHole;
+        // Un orario è disponibile se:
+        // - Almeno un campo è nel programma operativo E
+        // - Almeno un campo è libero E
+        // - NON tutti i campi liberi creano un buco (almeno uno non crea buco)
+        const allAvailableCourtsCreateHole =
+          availableCourtsCount > 0 && courtsWithHoleCount === availableCourtsCount;
+        const isAvailable = anyScheduleOk && anyFreeIgnoringHole && !allAvailableCourtsCreateHole;
         let reason = null;
         if (!isAvailable) {
           if (!anyScheduleOk) reason = 'out-of-schedule';
           else if (anyOccupied && !anyFreeIgnoringHole) reason = 'occupied';
-          else if (anyCreatesHole) reason = 'hole';
+          else if (allAvailableCourtsCreateHole) reason = 'hole';
           else reason = 'occupied';
         }
 
