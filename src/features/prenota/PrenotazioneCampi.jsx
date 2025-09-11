@@ -438,12 +438,39 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     const blockStart = new Date(start);
     const blockEnd = addMinutes(start, duration);
     const list = bookingsByCourt.get(courtId) || [];
-    return list.find((b) => {
-      if (ignoreId && b.id === ignoreId) return false;
+    
+    console.log('🔍 Checking overlap for:', {
+      courtId,
+      blockStart: blockStart.toISOString(),
+      blockEnd: blockEnd.toISOString(),
+      duration,
+      ignoreId,
+      existingBookings: list.length
+    });
+    
+    const conflict = list.find((b) => {
+      if (ignoreId && b.id === ignoreId) {
+        console.log('⏭️ Ignoring booking:', b.id);
+        return false;
+      }
+      
       const bStart = new Date(b.start);
       const bEnd = addMinutes(new Date(b.start), b.duration);
-      return overlaps(blockStart, blockEnd, bStart, bEnd);
+      const hasOverlap = overlaps(blockStart, blockEnd, bStart, bEnd);
+      
+      if (hasOverlap) {
+        console.log('🚫 Overlap detected with booking:', {
+          bookingId: b.id,
+          bookingStart: bStart.toISOString(),
+          bookingEnd: bEnd.toISOString(),
+          bookingDuration: b.duration
+        });
+      }
+      
+      return hasOverlap;
     });
+    
+    return conflict;
   }
 
   const prevP1Ref = useRef('');
@@ -662,31 +689,50 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     const duration = draggedBooking.duration || 60;
     const endTime = addMinutes(startTime, duration);
 
-    // Reduced logging to avoid console spam
-    if (window.dragOverLogCount === undefined) window.dragOverLogCount = 0;
-    if (window.dragOverLogCount++ % 50 === 0) {
-      console.log('🎯 DRAG OVER (every 50th):', {
-        originalTime: time.toISOString(),
-        calculatedStartTime: startTime.toISOString(),
-        duration: duration,
-        endTime: endTime.toISOString(),
-      });
-    }
-
-    // Generate all time slots that would be occupied
-    const occupiedSlots = [];
+    // Check if ALL required slots are available
+    const slotsToOccupy = [];
+    let hasConflict = false;
+    
     for (
       let currentTime = new Date(startTime);
       currentTime < endTime;
       currentTime = addMinutes(currentTime, cfg.slotMinutes)
     ) {
-      occupiedSlots.push({
+      // Check if this slot is within court schedule
+      if (!isCourtBookableAt(currentTime, courtId, courts)) {
+        hasConflict = true;
+        break;
+      }
+      
+      // Check for conflicts with other bookings
+      const slotEnd = addMinutes(currentTime, cfg.slotMinutes);
+      const slotConflict = bookings.find((b) => {
+        if (b.id === draggedBooking.id) return false;
+        if (b.courtId !== courtId) return false;
+        
+        const bStart = new Date(b.start);
+        const bEnd = addMinutes(bStart, b.duration);
+        
+        return overlaps(currentTime, slotEnd, bStart, bEnd);
+      });
+      
+      if (slotConflict) {
+        hasConflict = true;
+        break;
+      }
+      
+      slotsToOccupy.push({
         courtId,
         time: currentTime.getTime(),
       });
     }
 
-    setDragOverSlot({ courtId, slots: occupiedSlots });
+    // Only set drag over state if no conflicts
+    if (!hasConflict) {
+      setDragOverSlot({ courtId, slots: slotsToOccupy });
+    } else {
+      setDragOverSlot(null);
+    }
   };
 
   const handleDragLeave = (e) => {
@@ -703,71 +749,52 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     e.preventDefault();
     setDragOverSlot(null);
 
-    console.log('🎯 DROP EVENT (DRAG&DROP TIMEZONE FIX):', {
-      mousePosition: { x: e.clientX, y: e.clientY },
-      slotTimeUTC: time.toISOString(),
-      slotTimeLocal: time.toLocaleString('it-IT', { timeZone: 'Europe/Rome' }),
+    console.log('🎯 DROP EVENT:', {
       courtId: courtId,
-      draggedBookingStart: new Date(draggedBooking.start).toISOString(),
+      slotTime: time.toISOString(),
+      draggedBookingId: draggedBooking.id,
       draggedBookingDuration: draggedBooking.duration,
-      timezoneOffset: time.getTimezoneOffset(),
-    });
-
-    // FIX: When user drops on a slot showing 14:00, they want 14:00 regardless of timezone
-    // Create a new time that represents the hours/minutes they see, but in UTC
-    const userIntendedTime = new Date(time);
-    const localHours = userIntendedTime.getHours();
-    const localMinutes = userIntendedTime.getMinutes();
-
-    // Create UTC time with the same hours/minutes the user sees
-    const correctedDropTime = new Date(
-      Date.UTC(
-        userIntendedTime.getFullYear(),
-        userIntendedTime.getMonth(),
-        userIntendedTime.getDate(),
-        localHours,
-        localMinutes,
-        0,
-        0
-      )
-    );
-
-    console.log('🎯 TIMEZONE CORRECTION FOR DROP:', {
-      originalTime: time.toISOString(),
-      originalLocalDisplay: time.toLocaleString('it-IT'),
-      userSeesHours: localHours,
-      userSeesMinutes: localMinutes,
-      correctedTime: correctedDropTime.toISOString(),
-      correctedLocalDisplay: correctedDropTime.toLocaleString('it-IT'),
     });
 
     try {
-      // Use the timezone-corrected time for all operations
-      const finalDropTime = correctedDropTime;
-
       // Check if the target slot is available and on the same day
       const draggedDate = new Date(draggedBooking.start).toDateString();
-      const targetDate = finalDropTime.toDateString();
+      const targetDate = time.toDateString();
 
       if (draggedDate !== targetDate) {
         alert("Puoi spostare le prenotazioni solo all'interno dello stesso giorno.");
         return;
       }
 
-      // Use the corrected time for slot calculation
-      let targetTime = floorToSlot(finalDropTime, cfg.slotMinutes);
-      console.log(
-        '🎯 Using timezone-corrected drop time:',
-        targetTime.toISOString(),
-        'should display as:',
-        targetTime.toLocaleString('it-IT')
-      );
-
-      console.log('🎯 Original booking time:', new Date(draggedBooking.start).toISOString());
-      console.log('🎯 Target time calculated:', targetTime.toISOString());
-
+      // Calculate target time slot properly
+      const targetTime = floorToSlot(time, cfg.slotMinutes);
       const targetEnd = addMinutes(targetTime, draggedBooking.duration);
 
+      console.log('🎯 Drop validation:', {
+        targetTime: targetTime.toISOString(),
+        targetEnd: targetEnd.toISOString(),
+        duration: draggedBooking.duration,
+      });
+
+      // Check if target court is in schedule for ALL slots that will be occupied
+      const slotsToOccupy = [];
+      for (
+        let checkTime = new Date(targetTime);
+        checkTime < targetEnd;
+        checkTime = addMinutes(checkTime, cfg.slotMinutes)
+      ) {
+        slotsToOccupy.push(new Date(checkTime));
+      }
+
+      // Verify all slots are within court schedule
+      for (const slotTime of slotsToOccupy) {
+        if (!isCourtBookableAt(slotTime, courtId, courts)) {
+          alert('Uno o più slot di destinazione sono fuori dalle fasce prenotabili per questo campo.');
+          return;
+        }
+      }
+
+      // Check for conflicts with OTHER bookings (exclude the one being moved)
       const conflictingBooking = bookings.find((b) => {
         if (b.id === draggedBooking.id) return false; // Ignore the booking we're moving
         if (b.courtId !== courtId) return false;
@@ -775,20 +802,37 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         const bookingStart = new Date(b.start);
         const bookingEnd = addMinutes(bookingStart, b.duration);
 
+        // Check if any part of the target time range overlaps with this booking
         return overlaps(targetTime, targetEnd, bookingStart, bookingEnd);
       });
 
       if (conflictingBooking) {
+        console.log('🚫 Conflict detected with booking:', conflictingBooking.id);
         alert("Lo slot di destinazione è già occupato da un'altra prenotazione.");
         return;
       }
 
-      // Check if target court is in schedule
-      const inSchedule = isCourtBookableAt(targetTime, courtId, courts);
-      if (!inSchedule) {
-        alert('Il campo selezionato non è disponibile in questo orario.');
-        return;
+      // Additional validation: check each individual slot for conflicts
+      for (const slotTime of slotsToOccupy) {
+        const slotEnd = addMinutes(slotTime, cfg.slotMinutes);
+        const slotConflict = bookings.find((b) => {
+          if (b.id === draggedBooking.id) return false;
+          if (b.courtId !== courtId) return false;
+          
+          const bStart = new Date(b.start);
+          const bEnd = addMinutes(bStart, b.duration);
+          
+          return overlaps(slotTime, slotEnd, bStart, bEnd);
+        });
+        
+        if (slotConflict) {
+          console.log('🚫 Slot conflict detected at:', slotTime.toISOString());
+          alert("Lo slot di destinazione è già occupato da un'altra prenotazione.");
+          return;
+        }
       }
+
+      console.log('✅ Drop validation passed, updating booking...');
 
       // Update the booking
       const newStartIso = targetTime.toISOString();
@@ -797,9 +841,11 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         courtName: courtName(courtId),
         date: targetTime.toISOString().split('T')[0],
         time: targetTime.toISOString().split('T')[1].substring(0, 5),
-        start: newStartIso, // Keep legacy format for compatibility
+        start: newStartIso,
         updatedAt: new Date().toISOString(),
       });
+
+      console.log('✅ Booking moved successfully');
     } catch (error) {
       console.error('❌ Error moving booking:', error);
       alert('Errore durante lo spostamento della prenotazione.');
@@ -845,19 +891,44 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         dragOverSlot.courtId === courtId &&
         dragOverSlot.slots?.some((slot) => slot.time === t.getTime());
 
+      const isDragIncompatible = draggedBooking && 
+        draggedBooking.start && 
+        new Date(draggedBooking.start).toDateString() === t.toDateString() &&
+        courtId !== draggedBooking.courtId;
+
       return (
         <button
           type="button"
           onClick={() => openCreate(courtId, t)}
           className={`relative w-full h-9 rounded-lg ring-1 text-[11px] font-medium transition-all duration-200 ${
-            isDragTarget ? 'ring-2 ring-blue-500 ring-offset-1 scale-105' : ''
+            isDragTarget 
+              ? 'ring-2 ring-blue-500 ring-offset-1 scale-105' 
+              : isDragIncompatible
+                ? 'ring-2 ring-red-300 ring-offset-1 opacity-75'
+                : ''
           }`}
           style={{
-            background: isDragTarget ? 'rgba(59, 130, 246, 0.2)' : `rgba(16,185,129,${alpha})`,
-            borderColor: isDragTarget ? 'rgba(59, 130, 246, 0.6)' : `rgba(16,185,129,0.35)`,
+            background: isDragTarget 
+              ? 'rgba(59, 130, 246, 0.2)' 
+              : isDragIncompatible
+                ? 'rgba(239, 68, 68, 0.1)'
+                : `rgba(16,185,129,${alpha})`,
+            borderColor: isDragTarget 
+              ? 'rgba(59, 130, 246, 0.6)' 
+              : isDragIncompatible
+                ? 'rgba(239, 68, 68, 0.3)'
+                : `rgba(16,185,129,0.35)`,
           }}
           title={
-            info.isPromo ? 'Fascia Promo' : isDiscounted ? 'Fascia scontata' : 'Tariffa standard'
+            isDragTarget 
+              ? 'Rilascia qui per spostare la prenotazione'
+              : isDragIncompatible
+                ? 'Disponibile per nuove prenotazioni (non compatibile con lo spostamento)'
+                : info.isPromo 
+                  ? 'Fascia Promo' 
+                  : isDiscounted 
+                    ? 'Fascia scontata' 
+                    : 'Tariffa standard'
           }
           // Drag & Drop props (desktop only)
           onDragOver={isDesktop ? (e) => handleDragOver(e, courtId, t) : undefined}
