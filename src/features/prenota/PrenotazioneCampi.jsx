@@ -834,26 +834,6 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       );
     }
 
-    // --- SLOT NON PRENOTABILE SE PRECEDE UNA PRENOTAZIONE ---
-    const hasNextBooking = list.some((b) => {
-      const bStart = new Date(b.start);
-      return bStart.getTime() === addMinutes(t, cfg.slotMinutes).getTime();
-    });
-    if (!hit && hasNextBooking) {
-      // Slot non prenotabile, precede una prenotazione
-      const startLabel = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      return (
-        <div
-          className="relative w-full h-9 rounded-lg ring-1 text-[11px] font-medium bg-gray-300 dark:bg-gray-700 opacity-60 cursor-not-allowed border-dashed border-2 border-gray-400 flex items-center justify-center"
-          title="Slot non prenotabile: precede una prenotazione"
-        >
-          <span className="absolute inset-0 grid place-items-center text-[11px] opacity-90">
-            {startLabel}
-          </span>
-        </div>
-      );
-    }
-
     // --- SLOT LIBERO ---
     if (!hit) {
       const info = getRateInfo(t, cfg, courtId, courts);

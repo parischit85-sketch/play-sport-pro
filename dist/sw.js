@@ -131,7 +131,15 @@ self.addEventListener('beforeinstallprompt', (event) => {
 // Gestione degli aggiornamenti dell'app
 self.addEventListener('controllerchange', () => {
   console.log('[SW] New service worker activated');
-  window.location.reload();
+  // Fix: usare clients API invece di window nel service worker context
+  self.clients
+    .matchAll({ includeUncontrolled: true, type: 'window' })
+    .then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage({ type: 'RELOAD_PAGE' });
+      });
+    })
+    .catch((err) => console.log('[SW] reload error:', err));
 });
 
 // ============================================
