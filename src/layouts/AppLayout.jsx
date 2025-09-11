@@ -29,6 +29,7 @@ export default function AppLayout() {
     { id: 'classifica', label: 'Classifica', path: '/classifica', public: true },
     { id: 'stats', label: 'Statistiche', path: '/stats', public: true },
     { id: 'prenota-campo', label: 'Prenota Campo', path: '/booking', public: true },
+    { id: 'prenota-lezione', label: 'Prenota Lezione', path: '/lessons', public: true },
     ...(clubMode
       ? [
           { id: 'giocatori', label: 'Giocatori', path: '/players', club: true },

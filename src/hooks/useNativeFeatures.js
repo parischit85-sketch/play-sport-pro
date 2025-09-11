@@ -1,13 +1,42 @@
-import { useState, useEffect } from 'react';
-import { Geolocation } from '@capacitor/geolocation';
-import { PushNotifications } from '@capacitor/push-notifications';
-import { LocalNotifications } from '@capacitor/local-notifications';
-import { Share } from '@capacitor/share';
+/* eslint-disable import/no-unresolved */
+import { useState, useEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
 
 export const useNativeFeatures = () => {
   const [location, setLocation] = useState(null);
   const [isNative] = useState(Capacitor.isNativePlatform());
+  // Lazy refs for Capacitor plugins to avoid unresolved imports in web context
+  const pluginsRef = useRef({
+    Geolocation: null,
+    PushNotifications: null,
+    LocalNotifications: null,
+    Share: null,
+  });
+
+  // Lazy-load plugins only on native
+  useEffect(() => {
+    if (!isNative) return;
+    (async () => {
+      try {
+        const [{ Geolocation }, { PushNotifications }, { LocalNotifications }, { Share }] =
+          await Promise.all([
+            import('@capacitor/geolocation'),
+            import('@capacitor/push-notifications'),
+            import('@capacitor/local-notifications'),
+            import('@capacitor/share'),
+          ]);
+        pluginsRef.current = { Geolocation, PushNotifications, LocalNotifications, Share };
+      } catch (e) {
+        // Silently ignore if plugins are not available in current runtime
+        pluginsRef.current = {
+          Geolocation: null,
+          PushNotifications: null,
+          LocalNotifications: null,
+          Share: null,
+        };
+      }
+    })();
+  }, [isNative]);
 
   // GPS Location
   const getCurrentLocation = async () => {
@@ -18,7 +47,7 @@ export const useNativeFeatures = () => {
           (position) => {
             setLocation({
               latitude: position.coords.latitude,
-              longitude: position.coords.longitude
+              longitude: position.coords.longitude,
             });
           },
           (error) => console.error('GPS Error:', error)
@@ -28,10 +57,12 @@ export const useNativeFeatures = () => {
     }
 
     try {
+      const { Geolocation } = pluginsRef.current;
+      if (!Geolocation) return;
       const coordinates = await Geolocation.getCurrentPosition();
       setLocation({
         latitude: coordinates.coords.latitude,
-        longitude: coordinates.coords.longitude
+        longitude: coordinates.coords.longitude,
       });
     } catch (error) {
       console.error('Native GPS Error:', error);
@@ -43,10 +74,12 @@ export const useNativeFeatures = () => {
     if (!isNative) return;
 
     try {
+      const { PushNotifications } = pluginsRef.current;
+      if (!PushNotifications) return;
       const permission = await PushNotifications.requestPermissions();
       if (permission.receive === 'granted') {
         await PushNotifications.register();
-        
+
         PushNotifications.addListener('registration', (token) => {
           console.log('Push registration success, token: ' + token.value);
           // Salva il token per invii futuri
@@ -80,6 +113,8 @@ export const useNativeFeatures = () => {
     }
 
     try {
+      const { LocalNotifications } = pluginsRef.current;
+      if (!LocalNotifications) return;
       await LocalNotifications.schedule({
         notifications: [
           {
@@ -89,10 +124,10 @@ export const useNativeFeatures = () => {
             schedule: { at: new Date(scheduleAt) },
             sound: null,
             attachments: null,
-            actionTypeId: "",
-            extra: null
-          }
-        ]
+            actionTypeId: '',
+            extra: null,
+          },
+        ],
       });
     } catch (error) {
       console.error('Local notification error:', error);
@@ -113,6 +148,8 @@ export const useNativeFeatures = () => {
     }
 
     try {
+      const { Share } = pluginsRef.current;
+      if (!Share) return;
       await Share.share({ title, text, url });
     } catch (error) {
       console.error('Native share error:', error);
@@ -130,6 +167,6 @@ export const useNativeFeatures = () => {
     isNative,
     getCurrentLocation,
     scheduleLocalNotification,
-    shareContent
+    shareContent,
   };
 };

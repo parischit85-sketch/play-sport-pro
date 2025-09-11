@@ -204,108 +204,17 @@ function timeToMinutes(t) {
   return h * 60 + m;
 }
 
-// Verifica se una prenotazione proposta creerebbe un buco esatto di 30 minuti
-// tra la prenotazione precedente o successiva sullo stesso campo e stessa data.
-// Nota: questa regola va applicata solo nel flusso pubblico (prenota un campo),
-// non nella gestione admin.
-export function wouldCreateHalfHourHole(
-  courtId,
-  date,
-  time,
-  duration,
-  bookings,
-  excludeBookingId = null
-) {
-  const startMin = timeToMinutes(time);
-  const endTime = calculateEndTime(time, duration);
-  const endMin = timeToMinutes(endTime);
-
-  // Filtra prenotazioni rilevanti sullo stesso campo/data
-  const sameCourt = (bookings || []).filter((b) => {
-    if (excludeBookingId && b.id === excludeBookingId) return false;
-    if (b.courtId !== courtId || b.date !== date) return false;
-    return b.status !== BOOKING_STATUS.CANCELLED;
-  });
-
-  if (sameCourt.length === 0) return false;
-
-  // Trova la prenotazione precedente (quella con end <= start) e la successiva (start >= end)
-  let prevEndMin = null;
-  let nextStartMin = null;
-
-  for (const b of sameCourt) {
-    const bStartMin = timeToMinutes(b.time);
-    const bEndMin = timeToMinutes(calculateEndTime(b.time, b.duration));
-
-    if (bEndMin <= startMin) {
-      // Candidata come precedente
-      if (prevEndMin === null || bEndMin > prevEndMin) prevEndMin = bEndMin;
-    }
-    if (bStartMin >= endMin) {
-      // Candidata come successiva
-      if (nextStartMin === null || bStartMin < nextStartMin) nextStartMin = bStartMin;
-    }
-  }
-
-  // Se lascia esattamente 30 minuti prima o dopo, non consentire
-  if (prevEndMin !== null && startMin - prevEndMin === 30) return true;
-  if (nextStartMin !== null && nextStartMin - endMin === 30) return true;
-
+// DEPRECATED - hole prevention rule disabled
+// DEPRECATO: usare UnifiedBookingService.wouldCreateHalfHourHole
+export function wouldCreateHalfHourHole(courtId, date, time, duration, bookings) {
+  // Always return false - hole prevention rule disabled
   return false;
 }
 
 // Verifica se un orario è "intrappolato" tra due prenotazioni (deroga automatica)
-export function isTimeSlotTrapped(
-  courtId,
-  date,
-  time,
-  duration,
-  bookings,
-  excludeBookingId = null
-) {
-  const startMin = timeToMinutes(time);
-  const endTime = calculateEndTime(time, duration);
-  const endMin = timeToMinutes(endTime);
-
-  // Filtra prenotazioni rilevanti sullo stesso campo/data
-  const sameCourt = (bookings || []).filter((b) => {
-    if (excludeBookingId && b.id === excludeBookingId) return false;
-    if (b.courtId !== courtId || b.date !== date) return false;
-    return b.status !== BOOKING_STATUS.CANCELLED;
-  });
-
-  if (sameCourt.length < 2) return false; // Serve almeno una prenotazione prima e una dopo
-
-  // Trova la prenotazione più vicina prima e dopo
-  let prevEndMin = null;
-  let nextStartMin = null;
-
-  for (const b of sameCourt) {
-    const bStartMin = timeToMinutes(b.time);
-    const bEndMin = timeToMinutes(calculateEndTime(b.time, b.duration));
-
-    if (bEndMin <= startMin) {
-      // Candidata come precedente
-      if (prevEndMin === null || bEndMin > prevEndMin) prevEndMin = bEndMin;
-    }
-    if (bStartMin >= endMin) {
-      // Candidata come successiva
-      if (nextStartMin === null || bStartMin < nextStartMin) nextStartMin = bStartMin;
-    }
-  }
-
-  // È intrappolato se:
-  // 1. Esistono sia una prenotazione precedente che una successiva
-  // 2. Lo spazio disponibile è esattamente quello che occorre alla prenotazione + 30 minuti prima o dopo
-  // 3. Non c'è altro spazio disponibile per evitare il buco
-  if (prevEndMin !== null && nextStartMin !== null) {
-    const totalSpaceBefore = startMin - prevEndMin;
-    const totalSpaceAfter = nextStartMin - endMin;
-
-    // Se c'è esattamente 30 minuti di gap prima o dopo, è intrappolato
-    return totalSpaceBefore === 30 || totalSpaceAfter === 30;
-  }
-
+// DEPRECATO: usare UnifiedBookingService.isTimeSlotTrapped
+export function isTimeSlotTrapped(courtId, date, time, duration, bookings) {
+  // Always return false - hole prevention rule disabled
   return false;
 }
 
@@ -575,6 +484,17 @@ function getPublicBookingsLocal() {
       time: booking.time,
       duration: booking.duration,
       status: booking.status,
+      // Include lesson-specific fields
+      notes: booking.notes,
+      instructorId: booking.instructorId,
+      isLessonBooking: booking.isLessonBooking,
+      // Include other fields that might be needed
+      players: booking.players,
+      bookedBy: booking.bookedBy,
+      lighting: booking.lighting,
+      heating: booking.heating,
+      price: booking.price,
+      userPhone: booking.userPhone,
     }));
 }
 

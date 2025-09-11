@@ -4,7 +4,7 @@
 // =============================================
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { loadBookingsForPlayer } from '@services/cloud-bookings.js';
+import { searchBookingsForPlayer } from '@services/unified-booking-service.js';
 
 export default function PlayerBookingHistory({ player, T }) {
   const [filterStatus, setFilterStatus] = useState('all');
@@ -23,7 +23,7 @@ export default function PlayerBookingHistory({ player, T }) {
         const userId = player?.linkedAccountId || null;
         const email = player?.linkedAccountEmail || player?.email || null;
         const name = player?.name || `${player?.firstName || ''} ${player?.lastName || ''}`.trim();
-        const bookings = await loadBookingsForPlayer({ userId, email, name });
+  const bookings = await searchBookingsForPlayer({ userId, email, name });
         if (ignore) return;
         setAllBookings(bookings || []);
       } catch (e) {

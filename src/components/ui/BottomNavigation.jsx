@@ -1,19 +1,32 @@
 // =============================================
 // FILE: src/components/ui/BottomNavigation.jsx
 // =============================================
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 export default function BottomNavigation({ active, setActive, navigation = [], clubMode = false }) {
   const [showClubMenu, setShowClubMenu] = useState(false);
+  // Handle navigation clicks
+  const handleNavClick = (item) => {
+    setActive(item.id);
+    if (showClubMenu) {
+      setShowClubMenu(false); // Chiudi il menu se è aperto
+    }
+  };
 
-  // Ensure the club menu overlay is closed whenever the active tab changes
-  // or club mode toggles, to avoid leaving an overlay capturing clicks.
-  useEffect(() => {
-    if (showClubMenu) setShowClubMenu(false);
-  }, [active, clubMode]);
+  const toggleClubMenu = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    setShowClubMenu(!showClubMenu);
+  };
 
-  // Non chiudere automaticamente il menu - rimane aperto fino a selezione
-  // Mobile navigation items - always 4 base items
+  const handleClubItemClick = (item, event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    setActive(item.id);
+    setShowClubMenu(false); // Chiudi solo quando si seleziona un'opzione
+  };
+
+  // Mobile navigation items - always 5 base items
   const baseNavItems = [
     {
       id: 'dashboard',
@@ -32,7 +45,7 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
     },
     {
       id: 'prenota-campo',
-      label: 'Prenota',
+      label: 'Campo',
       path: '/booking',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -41,6 +54,21 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
             strokeLinejoin="round"
             strokeWidth={2}
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+          />
+        </svg>
+      ),
+    },
+    {
+      id: 'prenota-lezione',
+      label: 'Lezione',
+      path: '/lessons',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
           />
         </svg>
       ),
@@ -62,7 +90,7 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
     },
     {
       id: 'stats',
-      label: 'Statistiche',
+      label: 'Stats',
       path: '/stats',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,27 +200,48 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
   ];
 
   // Main navigation items for bottom nav
-  const mobileNavItems = baseNavItems;
-
-  const handleNavClick = (item) => {
-    setActive(item.id);
-    if (showClubMenu) {
-      setShowClubMenu(false); // Chiudi il menu se è aperto
-    }
-  };
-
-  const toggleClubMenu = (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-    setShowClubMenu(!showClubMenu);
-  };
-
-  const handleClubItemClick = (item, event) => {
-    event.stopPropagation();
-    event.preventDefault();
-    setActive(item.id);
-    setShowClubMenu(false); // Chiudi solo quando si seleziona un'opzione
-  };
+  // Combine base and club items for mobile navigation
+  const mobileNavItems = clubMode
+    ? [
+        ...baseNavItems.slice(0, 3), // Home, Campo, Lezione
+        {
+          id: 'giocatori',
+          label: 'Players',
+          path: '/players',
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+              />
+            </svg>
+          ),
+        },
+        {
+          id: 'prenota',
+          label: 'Admin',
+          path: '/admin/bookings',
+          icon: (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          ),
+        },
+      ]
+    : baseNavItems;
 
   return (
     <div
@@ -251,7 +300,7 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
         </div>
       )}
 
-      <div className={`grid h-16 ${clubMode ? 'grid-cols-5' : 'grid-cols-4'}`}>
+      <div className="grid grid-cols-5 h-16">
         {mobileNavItems.map((item) => (
           <div
             key={item.id}

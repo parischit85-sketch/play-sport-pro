@@ -205,6 +205,7 @@ export function LeagueProvider({ children }) {
           migrated.bookingConfig.pricing = getDefaultBookingConfig().pricing;
         if (!migrated.bookingConfig.addons)
           migrated.bookingConfig.addons = getDefaultBookingConfig().addons;
+        if (!migrated.lessonConfig) migrated.lessonConfig = {};
 
         setUpdatingFromCloud(true);
         setState((prev) => {
@@ -215,7 +216,7 @@ export function LeagueProvider({ children }) {
           const cloudIsNewer = cloudRev > localRev || (cloudRev === localRev && cloudTs > localTs);
 
           if (cloudIsNewer) {
-            const relevantFields = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
+            const relevantFields = ['players', 'matches', 'courts', 'bookings', 'bookingConfig', 'lessonConfig'];
             lastSavedStateRef.current = relevantFields.reduce((acc, field) => {
               acc[field] = migrated[field];
               return acc;
@@ -236,7 +237,7 @@ export function LeagueProvider({ children }) {
   useEffect(() => {
     if (!state || updatingFromCloud || !user) return;
 
-    const relevantFields = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
+    const relevantFields = ['players', 'matches', 'courts', 'bookings', 'bookingConfig', 'lessonConfig'];
     const currentDataSignature = relevantFields.reduce((acc, field) => {
       acc[field] = state[field];
       return acc;
@@ -254,8 +255,13 @@ export function LeagueProvider({ children }) {
       try {
         localStorage.setItem(LS_KEY, JSON.stringify(state));
 
+        // Clean undefined values to prevent Firebase errors
+        const cleanState = Object.fromEntries(
+          Object.entries(state).filter(([key, value]) => value !== undefined)
+        );
+
         const toSave = {
-          ...state,
+          ...cleanState,
           _updatedAt: Date.now(),
           _lastWriter: clientIdRef.current,
           _rev: (state._rev || 0) + 1,

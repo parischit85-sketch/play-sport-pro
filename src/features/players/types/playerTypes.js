@@ -8,6 +8,7 @@ export const PLAYER_CATEGORIES = {
   NON_MEMBER: 'non-member',
   GUEST: 'guest',
   VIP: 'vip',
+  INSTRUCTOR: 'instructor',
 };
 
 export const SUBSCRIPTION_TYPES = {
@@ -66,6 +67,17 @@ export const createPlayerSchema = () => ({
   baseRating: 1000,
   rating: 1000,
   category: PLAYER_CATEGORIES.NON_MEMBER,
+
+  // Instructor data (only for INSTRUCTOR category)
+  instructorData: {
+    isInstructor: false,
+    color: '#3B82F6', // Default blue color
+    specialties: [], // ['padel', 'tennis', 'fitness']
+    hourlyRate: 0,
+    availability: {}, // Time slots availability
+    bio: '',
+    certifications: [],
+  },
 
   // Account collegato
   linkedAccountId: null,
@@ -168,4 +180,52 @@ export const createCommunicationSchema = () => ({
   deliveredAt: null,
   createdAt: null,
   createdBy: null,
+});
+
+/**
+ * Struttura lesson booking
+ */
+export const createLessonBookingSchema = () => ({
+  id: '',
+  studentId: '', // Player ID who booked the lesson
+  instructorId: '', // Instructor ID
+  courtId: '', // Court where the lesson takes place
+  date: '', // YYYY-MM-DD
+  timeSlot: '', // HH:MM-HH:MM (e.g., "09:00-10:00")
+  duration: 60, // Duration in minutes
+  type: 'individual', // 'individual', 'group'
+  status: 'confirmed', // 'pending', 'confirmed', 'completed', 'cancelled'
+  price: 0,
+  notes: '',
+  createdAt: null,
+  updatedAt: null,
+  bookedBy: '', // User who made the booking
+});
+
+/**
+ * Struttura time slot per lezioni
+ */
+export const createLessonTimeSlotSchema = () => ({
+  id: '',
+  startTime: '', // HH:MM
+  endTime: '', // HH:MM
+  dayOfWeek: 0, // 0=Sunday, 1=Monday, etc.
+  instructorIds: [], // Array of instructor IDs available in this slot
+  courtIds: [], // Array of court IDs available for this slot
+  maxBookings: 1, // How many lessons can be booked in this slot
+  isActive: true,
+  createdAt: null,
+  updatedAt: null,
+});
+
+/**
+ * Struttura configurazione lezioni
+ */
+export const createLessonConfigSchema = () => ({
+  timeSlots: [], // Array of lesson time slots
+  defaultDuration: 60,
+  allowedDurations: [60, 90],
+  bookingAdvanceDays: 14, // How many days in advance can book
+  cancellationHours: 24, // Hours before lesson to allow cancellation
+  isEnabled: false, // Enable/disable lesson booking system
 });

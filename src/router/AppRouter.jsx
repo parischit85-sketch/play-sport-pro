@@ -17,6 +17,7 @@ const DashboardPage = React.lazy(() => import('@pages/DashboardPage.jsx'));
 const ClassificaPage = React.lazy(() => import('@pages/ClassificaPage.jsx'));
 const StatsPage = React.lazy(() => import('@pages/StatsPage.jsx'));
 const BookingPage = React.lazy(() => import('@pages/BookingPage.jsx'));
+const LessonBookingPage = React.lazy(() => import('@pages/LessonBookingPage.jsx'));
 const PlayersPage = React.lazy(() => import('@pages/PlayersPage.jsx'));
 const MatchesPage = React.lazy(() => import('@pages/MatchesPage.jsx'));
 const TournamentsPage = React.lazy(() => import('@pages/TournamentsPage.jsx'));
@@ -62,6 +63,7 @@ export default function AppRouter() {
                     <Route path="classifica" element={<ClassificaPage />} />
                     <Route path="stats" element={<StatsPage />} />
                     <Route path="booking" element={<BookingPage />} />
+                    <Route path="lessons" element={<LessonBookingPage />} />
                     <Route path="extra" element={<ExtraPage />} />
 
                     {/* Club Mode Routes */}

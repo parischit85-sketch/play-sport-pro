@@ -94,7 +94,22 @@ export function makeSeed() {
     } 
   ]; 
 
-  const bookings = []; 
+  const bookings = [
+    // Test booking to verify hole prevention rule
+    {
+      id: 'test-booking-1',
+      courtId: courts[0].id,
+      courtName: courts[0].name,
+      date: new Date().toISOString().split('T')[0], // Today
+      time: '14:00',
+      duration: 60,
+      bookedBy: 'Test User',
+      players: ['Test User'],
+      status: 'confirmed',
+      createdAt: new Date().toISOString(),
+      type: 'court'
+    }
+  ]; 
   const bookingConfig = getDefaultBookingConfig(); 
   
   return { 

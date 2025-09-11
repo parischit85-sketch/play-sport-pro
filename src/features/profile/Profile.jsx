@@ -7,10 +7,10 @@ import Extra from '@features/extra/Extra';
 import NotificationSettings from '@components/NotificationSettings';
 import PWAInstallButton from '@components/PWAInstallButton';
 import {
-  loadActiveUserBookings,
-  loadBookingHistory,
-  cancelCloudBooking,
-} from '@services/cloud-bookings.js';
+  getActiveUserBookings,
+  getUserBookingHistory,
+  cancelBooking,
+} from '@services/unified-booking-service.js';
 
 function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode, setClubMode }) {
   const [user, setUser] = useState(null);
@@ -48,8 +48,8 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
     setLoadingBookings(true);
     try {
       const [active, history] = await Promise.all([
-        loadActiveUserBookings(user.uid),
-        loadBookingHistory(user.uid),
+        getActiveUserBookings(user.uid),
+        getUserBookingHistory(user.uid),
       ]);
 
       setActiveBookings(active);
@@ -66,7 +66,7 @@ function Profile({ T, state, setState, derived, leagueId, setLeagueId, clubMode,
     if (!confirm('Sei sicuro di voler cancellare questa prenotazione?')) return;
 
     try {
-      await cancelCloudBooking(bookingId, user);
+  await cancelBooking(bookingId, user);
       // Ricarica le prenotazioni
       await loadUserBookings(user);
       alert('Prenotazione cancellata con successo!');

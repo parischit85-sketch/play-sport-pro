@@ -43,6 +43,13 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
         console.log('❌ SW registration failed: ', registrationError);
       });
   });
+
+  // Handler per messaggi dal SW (reload page)
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'RELOAD_PAGE') {
+      window.location.reload();
+    }
+  });
 }
 
 const container = document.getElementById('root');

@@ -5,18 +5,17 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BOOKING_CONFIG, updateBooking } from '@services/bookings.js';
 import { useUserBookingsFast } from '@hooks/useBookingPerformance.js';
-import Badge from '@ui/Badge.jsx';
 import BookingDetailModal from '@ui/BookingDetailModal.jsx';
 
 // Memoized booking card component
-const BookingCard = React.memo(({ booking, onBookingClick, courts, user, T }) => {
-  const court = courts?.find(c => c.id === booking.courtId);
+const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
+  const court = courts?.find((c) => c.id === booking.courtId);
   const bookingDate = new Date(booking.date);
   const isToday = bookingDate.toDateString() === new Date().toDateString();
   const isTomorrow = bookingDate.toDateString() === new Date(Date.now() + 86400000).toDateString();
-  
+
   const dayName = bookingDate.toLocaleDateString('it-IT', { weekday: 'short' });
-  
+
   let dateLabel;
   if (isToday) {
     dateLabel = 'Oggi';
@@ -46,9 +45,7 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user, T }) =>
             {court?.name || 'Padel 1'} • {booking.duration || 60}min
           </div>
         </div>
-        {isToday && (
-          <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-        )}
+        {isToday && <div className="w-2 h-2 bg-orange-400 rounded-full"></div>}
       </div>
 
       {/* Footer con players e prezzo */}
@@ -56,9 +53,7 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user, T }) =>
         <div className="flex-1 min-w-0">
           {/* Nomi partecipanti */}
           <div className="text-[10px] text-gray-600 dark:text-gray-400 truncate mb-1">
-            {booking.bookedBy && (
-              <span className="font-medium">{booking.bookedBy}</span>
-            )}
+            {booking.bookedBy && <span className="font-medium">{booking.bookedBy}</span>}
             {booking.players && booking.players.length > 0 && (
               <span>
                 {booking.bookedBy ? ' + ' : ''}
@@ -68,33 +63,33 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user, T }) =>
                     {idx < booking.players.slice(0, 2).length - 1 ? ', ' : ''}
                   </span>
                 ))}
-                {booking.players.length > 2 && (
-                  <span> +{booking.players.length - 2} altri</span>
-                )}
+                {booking.players.length > 2 && <span> +{booking.players.length - 2} altri</span>}
               </span>
             )}
           </div>
-          
+
           {/* Avatar mini */}
           <div className="flex -space-x-0.5">
             <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold text-white border border-white">
-              <span className="text-[9px]">{user?.displayName?.charAt(0).toUpperCase() || 'U'}</span>
+              <span className="text-[9px]">
+                {user?.displayName?.charAt(0).toUpperCase() || 'U'}
+              </span>
             </div>
-            
+
             {(booking.players?.length || 0) > 0 && (
               <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white border border-white">
                 <span className="text-[8px]">+{booking.players.length}</span>
               </div>
             )}
-            
-            {((booking.players?.length || 0) + 1) < 4 && (
+
+            {(booking.players?.length || 0) + 1 < 4 && (
               <div className="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-600 border border-white flex items-center justify-center">
                 <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
               </div>
             )}
           </div>
         </div>
-        
+
         {/* Prezzo e status */}
         <div className="text-right">
           {booking.price && (
@@ -103,7 +98,7 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user, T }) =>
             </div>
           )}
           <div className="text-[9px] text-gray-500">
-            {((booking.players?.length || 0) + 1) < 4 ? 'Aperta' : 'Completa'}
+            {(booking.players?.length || 0) + 1 < 4 ? 'Aperta' : 'Completa'}
           </div>
         </div>
       </div>
@@ -111,22 +106,24 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user, T }) =>
   );
 });
 
-export default function UserBookingsCard({ user, state, T, compact = false }) {
+// Provide an explicit display name for better debugging and to satisfy lint rules
+BookingCard.displayName = 'BookingCard';
+
+export default function UserBookingsCard({ user, state, T, compact }) {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const navigate = useNavigate();
 
   // Use high-performance booking hook
-  const { 
-    bookings: userBookings, 
-    loading: isLoading, 
-    error, 
+  const {
+    bookings: userBookings,
+    loading: isLoading,
     refresh,
     hasBookings,
-    lastUpdate 
+    lastUpdate,
   } = useUserBookingsFast({
     refreshInterval: 30000, // 30 seconds
-    enableBackground: true
+    enableBackground: true,
   });
 
   // Memoize courts lookup for performance
@@ -143,64 +140,71 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
     setSelectedBooking(null);
   }, []);
 
-  // Funzioni per gestire le azioni del modal
-  const handleShare = useCallback(async (booking) => {
-    const shareText = `Prenotazione Padel 🎾\n${booking.date} alle ${booking.time}\nCampo: ${courts.find(c => c.id === booking.courtId)?.name || 'Padel 1'}\nGiocatori: ${booking.players?.join(', ') || 'Da definire'}`;
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Prenotazione Padel',
-          text: shareText
-        });
-      } catch (err) {
-        console.log('Condivisione annullata');
-      }
-    } else {
-      // Fallback per browser che non supportano Web Share API
-      navigator.clipboard.writeText(shareText);
-      alert('Dettagli prenotazione copiati negli appunti!');
-    }
-  }, [courts]);
+  const handleShare = useCallback(
+    async (booking) => {
+      const shareText = `Prenotazione Padel 🎾\n${booking.date} alle ${booking.time}\nCampo: ${courts.find((c) => c.id === booking.courtId)?.name || 'Padel 1'}\nGiocatori: ${booking.players?.join(', ') || 'Da definire'}`;
 
-  const handleCancel = useCallback((booking) => {
-    if (confirm('Sei sicuro di voler cancellare questa prenotazione?')) {
-      // TODO: Implementare logica di cancellazione
-      console.log('Cancellazione prenotazione:', booking);
-      handleCloseModal();
-      refresh(); // Use new refresh method
-    }
-  }, [handleCloseModal, refresh]);
-
-  const handleEdit = useCallback(async (booking) => {
-    // Se il booking ha solo cambiamenti ai giocatori, aggiorna direttamente
-    if (booking.players && booking.id) {
-      try {
-        // Aggiorna solo i giocatori della prenotazione
-        const updatedBooking = {
-          ...selectedBooking,
-          players: booking.players
-        };
-        
-        await updateBooking(booking.id, { players: booking.players });
-        
-        // Aggiorna lo stato locale
-        setSelectedBooking(updatedBooking);
-        
-        // Ricarica i dati
-        refresh();
-        
-        console.log('Prenotazione aggiornata con successo');
-      } catch (error) {
-        console.error('Errore durante l\'aggiornamento:', error);
-        alert('Errore durante il salvataggio delle modifiche');
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Prenotazione Padel',
+            text: shareText,
+          });
+        } catch (err) {
+          console.log('Condivisione annullata');
+        }
+      } else {
+        // Fallback per browser che non supportano Web Share API
+        navigator.clipboard.writeText(shareText);
+        alert('Dettagli prenotazione copiati negli appunti!');
       }
-    } else {
-      // Naviga alla pagina di gestione campi per modifiche più complesse
-      navigate(`/admin-bookings?edit=${booking.id}`);
-      handleCloseModal();
-    }
-  }, [navigate, handleCloseModal, selectedBooking, refresh]);
+    },
+    [courts]
+  );
+
+  const handleCancel = useCallback(
+    (booking) => {
+      if (confirm('Sei sicuro di voler cancellare questa prenotazione?')) {
+        // TODO: Implementare logica di cancellazione
+        console.log('Cancellazione prenotazione:', booking);
+        handleCloseModal();
+        refresh(); // Use new refresh method
+      }
+    },
+    [handleCloseModal, refresh]
+  );
+
+  const handleEdit = useCallback(
+    async (booking) => {
+      // Se il booking ha solo cambiamenti ai giocatori, aggiorna direttamente
+      if (booking.players && booking.id) {
+        try {
+          // Aggiorna solo i giocatori della prenotazione
+          const updatedBooking = {
+            ...selectedBooking,
+            players: booking.players,
+          };
+
+          await updateBooking(booking.id, { players: booking.players });
+
+          // Aggiorna lo stato locale
+          setSelectedBooking(updatedBooking);
+
+          // Ricarica i dati
+          refresh();
+          console.log('Prenotazione aggiornata con successo');
+        } catch (error) {
+          console.error("Errore durante l'aggiornamento:", error);
+          alert('Errore durante il salvataggio delle modifiche');
+        }
+      } else {
+        // Naviga alla pagina di gestione campi per modifiche più complesse
+        navigate(`/admin-bookings?edit=${booking.id}`);
+        handleCloseModal();
+      }
+    },
+    [navigate, handleCloseModal, selectedBooking, refresh]
+  );
 
   const handleReview = useCallback((booking) => {
     // TODO: Implementare sistema di recensioni
@@ -218,7 +222,9 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
         <div className="text-center">
           <div className="text-4xl mb-3">📅</div>
           <h3 className={`font-semibold mb-2 ${T.text}`}>Accedi per vedere le prenotazioni</h3>
-          <p className={`text-sm ${T.subtext} mb-4`}>Effettua il login per gestire le tue prenotazioni</p>
+          <p className={`text-sm ${T.subtext} mb-4`}>
+            Effettua il login per gestire le tue prenotazioni
+          </p>
           <button
             onClick={() => navigate('/login')}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
@@ -244,9 +250,9 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
           </div>
           <div className="h-6 w-8 bg-gray-200 rounded animate-pulse"></div>
         </div>
-        
+
         <div className="space-y-3">
-          {[1, 2, 3].map(i => (
+          {[1, 2, 3].map((i) => (
             <div key={i} className="bg-gray-50 p-4 rounded-lg border animate-pulse">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
@@ -261,7 +267,7 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
             </div>
           ))}
         </div>
-        
+
         <div className="mt-4 pt-3 border-t border-gray-200">
           <div className="h-10 bg-gray-200 rounded-lg animate-pulse"></div>
         </div>
@@ -311,10 +317,9 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
               onBookingClick={handleBookingClick}
               courts={courts}
               user={user}
-              T={T}
             />
           ))}
-          
+
           {/* Card "Prenota nuovo" ultra-compatta */}
           <div
             onClick={() => navigate('/booking')}
@@ -326,7 +331,11 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
           >
             <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
               <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                <path
+                  fillRule="evenodd"
+                  d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <span className="text-xs font-medium text-blue-700 dark:text-blue-300 text-center">
@@ -335,7 +344,7 @@ export default function UserBookingsCard({ user, state, T, compact = false }) {
           </div>
         </div>
       </div>
-      
+
       {/* Indicatori scroll minimalisti */}
       {displayBookings.length > 0 && (
         <div className="flex justify-center mt-2 sm:hidden">

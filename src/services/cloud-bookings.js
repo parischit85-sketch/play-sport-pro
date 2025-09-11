@@ -365,7 +365,7 @@ export async function loadBookingsForPlayer({ userId, email, name }) {
  */
 export async function getPublicBookings() {
   const bookings = await loadPublicBookings();
-  // Filtra solo i campi necessari per compatibilità
+  // Include all necessary fields for lesson bookings and color coding
   return bookings
     .filter((b) => b.status === 'confirmed')
     .map((booking) => ({
@@ -376,6 +376,17 @@ export async function getPublicBookings() {
       time: booking.time,
       duration: booking.duration,
       status: booking.status,
+      // Include lesson-specific fields
+      notes: booking.notes,
+      instructorId: booking.instructorId,
+      isLessonBooking: booking.isLessonBooking,
+      // Include other fields that might be needed
+      players: booking.players,
+      bookedBy: booking.bookedBy,
+      lighting: booking.lighting,
+      heating: booking.heating,
+      price: booking.price,
+      userPhone: booking.userPhone,
     }));
 }
 

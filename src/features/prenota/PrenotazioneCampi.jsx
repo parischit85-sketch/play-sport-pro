@@ -8,14 +8,7 @@ import Modal from '@ui/Modal.jsx';
 import { euro, euro2 } from '@lib/format.js';
 import { sameDay, floorToSlot, addMinutes, overlaps } from '@lib/date.js';
 import { computePrice, getRateInfo, isCourtBookableAt } from '@lib/pricing.js';
-import {
-  loadPublicBookings as loadCloudBookings,
-  subscribeToPublicBookings,
-  createCloudBooking,
-  updateCloudBooking,
-  cancelCloudBooking,
-  deleteCloudBooking,
-} from '@services/cloud-bookings.js';
+import { useUnifiedBookings } from '@hooks/useUnifiedBookings.js';
 
 // Componente calendario personalizzato
 function CalendarGrid({ currentDay, onSelectDay, T }) {
@@ -147,6 +140,21 @@ function CalendarGrid({ currentDay, onSelectDay, T }) {
 
 export default function PrenotazioneCampi({ state, setState, players, playersById, T }) {
   const { user } = useAuth();
+  
+  // Use unified booking service
+  const { 
+    bookings: allBookings, 
+    loading: bookingsLoading, 
+    refresh: refreshBookings,
+    createBooking: createUnifiedBooking,
+    updateBooking: updateUnifiedBooking,
+    deleteBooking: deleteUnifiedBooking
+  } = useUnifiedBookings({
+    autoLoadUser: false,
+    autoLoadLessons: true,
+    enableRealtime: true,
+  });
+  
   // Safe access to bookingConfig with fallback
   const cfg = state?.bookingConfig || {
     slotMinutes: 30,
@@ -159,63 +167,55 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   const [day, setDay] = useState(() => floorToSlot(new Date(), cfg.slotMinutes));
   const [showDatePicker, setShowDatePicker] = useState(false);
   const courts = Array.isArray(state?.courts) ? state.courts : [];
-  const [bookings, setBookings] = useState([]);
+  const [instructors, setInstructors] = useState([]);
 
-  // Mappa una prenotazione cloud (date/time) al formato locale (start ISO)
-  const mapCloudToLocal = (b) => {
-    try {
-      const startIso = new Date(`${b.date}T${String(b.time).padStart(5, '0')}:00`).toISOString();
-      return {
-        id: b.id,
-        courtId: b.courtId,
-        start: startIso,
-        duration: Number(b.duration) || 60,
-        players: [],
-        playerNames: Array.isArray(b.players) ? b.players : [],
-        guestNames: [],
-        price: b.price ?? null,
-        note: b.notes || '',
-        bookedByName: b.bookedBy || '',
-        addons: { lighting: !!b.lighting, heating: !!b.heating },
-        status: b.status === 'confirmed' ? 'booked' : b.status || 'cancelled',
-      };
-    } catch {
-      return null;
-    }
-  };
-
-  // Carica inizialmente e sottoscrive in realtime le prenotazioni confermate
+  // Load instructors from localStorage for lesson color coding
   useEffect(() => {
-    let unsub;
-    const boot = async () => {
-      try {
-        const initial = await loadCloudBookings();
-        const mapped = (initial || [])
-          .filter((b) => b.status === 'confirmed')
-          .map(mapCloudToLocal)
-          .filter(Boolean);
-        setBookings(mapped);
-      } catch (e) {
-        // fallback: nessuna prenotazione caricata
+    try {
+      const storedInstructors = localStorage.getItem('lesson-instructors');
+      if (storedInstructors) {
+        setInstructors(JSON.parse(storedInstructors));
       }
-
-      try {
-        unsub = subscribeToPublicBookings((list) => {
-          const mapped = (list || [])
-            .filter((b) => b.status === 'confirmed')
-            .map(mapCloudToLocal)
-            .filter(Boolean);
-          setBookings(mapped);
-        });
-      } catch (e) {
-        // nessuna subscribe disponibile
-      }
-    };
-    boot();
-    return () => {
-      if (typeof unsub === 'function') unsub();
-    };
+    } catch (error) {
+      console.error('Error loading instructors:', error);
+    }
   }, []);
+
+  // Convert unified bookings to local format
+  const bookings = useMemo(() => {
+    return (allBookings || [])
+      .filter(b => b.status === 'confirmed')
+      .map(b => {
+        try {
+          const startIso = new Date(`${b.date}T${String(b.time).padStart(5, '0')}:00`).toISOString();
+          return {
+            id: b.id,
+            courtId: b.courtId,
+            start: startIso,
+            duration: Number(b.duration) || 60,
+            players: [],
+            playerNames: Array.isArray(b.players) ? b.players : [],
+            guestNames: [],
+            price: b.price ?? null,
+            note: b.notes || '',
+            notes: b.notes || '',
+            bookedByName: b.bookedBy || '',
+            addons: { lighting: !!b.lighting, heating: !!b.heating },
+            status: 'booked',
+            instructorId: b.instructorId,
+            isLessonBooking: b.isLessonBooking || false,
+          };
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean);
+  }, [allBookings]);
+
+  // Log when bookings change
+  useEffect(() => {
+    console.log('🎾 PrenotazioneCampi: Bookings updated:', bookings.length);
+  }, [bookings]);
 
   // Default duration for new bookings: prefer 90' if available, otherwise first configured or 90'
   const defaultDuration = useMemo(() => {
@@ -487,31 +487,30 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
     try {
       if (!editingId) {
-        // Crea su Firestore
-        const created = await createCloudBooking(
-          {
-            courtId: form.courtId,
-            courtName: courtNameFull,
-            date: dateStr,
-            time: timeStr,
-            duration: form.duration,
-            lighting: !!form.useLighting,
-            heating: !!form.useHeating,
-            price,
-            players: pNames,
-            notes: form.note?.trim() || '',
-          },
-          user
-        );
-        // Se l'admin ha specificato un nome diverso, aggiorna il campo bookedBy
+        // Create booking using unified service
+        const bookingData = {
+          courtId: form.courtId,
+          courtName: courtNameFull,
+          date: dateStr,
+          time: timeStr,
+          duration: form.duration,
+          lighting: !!form.useLighting,
+          heating: !!form.useHeating,
+          price,
+          players: pNames,
+          notes: form.note?.trim() || '',
+          type: 'court',
+        };
+        
+        const created = await createUnifiedBooking(bookingData);
+        
+        // If admin specified a different name, update the bookedBy field
         if (bookedByName) {
-          await updateCloudBooking(created.id, { bookedBy: bookedByName }, user);
+          await updateUnifiedBooking(created.id, { bookedBy: bookedByName });
         }
       } else {
-        // Aggiorna su Firestore
-        await updateCloudBooking(
-          editingId,
-          {
+        // Update existing booking using unified service
+        await updateUnifiedBooking(editingId, {
             courtId: form.courtId,
             courtName: courtNameFull,
             date: dateStr,
@@ -537,7 +536,10 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   async function cancelBooking(id) {
     if (!confirm('Cancellare la prenotazione?')) return;
     try {
-      await cancelCloudBooking(id, user);
+      await updateUnifiedBooking(id, {
+        status: 'cancelled',
+        cancelledAt: new Date().toISOString(),
+      });
     } catch (e) {
       alert('Errore durante la cancellazione.');
     }
@@ -546,7 +548,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   async function hardDeleteBooking(id) {
     if (!confirm('Eliminare definitivamente la prenotazione?')) return;
     try {
-      await deleteCloudBooking(id);
+      await deleteUnifiedBooking(id);
       setModalOpen(false);
     } catch (e) {
       alert("Errore durante l'eliminazione.");
@@ -666,6 +668,36 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     const lampIcon = <span className="text-2xl">💡</span>;
     const fireIcon = <span className="text-2xl">🔥</span>;
 
+    // Check if this is a lesson booking and get instructor color
+    const isLessonBooking = hit.isLessonBooking || (hit.notes && hit.notes.includes('Lezione con'));
+    let slotBgColor = 'rgba(220, 38, 127, 0.35)'; // Default booking color
+    let slotBorderColor = 'rgba(220, 38, 127, 0.6)';
+    
+    if (isLessonBooking) {
+      let instructor = null;
+      
+      if (hit.instructorId) {
+        instructor = instructors.find(i => i.id === hit.instructorId);
+      } else {
+        // Extract instructor name from notes like "Lezione con Marco Rossi"
+        const match = hit.notes.match(/Lezione con (.+)/);
+        if (match) {
+          const instructorName = match[1];
+          instructor = instructors.find(i => i.name === instructorName);
+        }
+      }
+      
+      if (instructor && instructor.color) {
+        // Convert hex color to rgba for background and border
+        const hex = instructor.color.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        slotBgColor = `rgba(${r}, ${g}, ${b}, 0.35)`;
+        slotBorderColor = `rgba(${r}, ${g}, ${b}, 0.6)`;
+      }
+    }
+
     return (
       <div className="w-full h-9 relative">
         <button
@@ -675,8 +707,8 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           style={{
             top: 0,
             height: `${totalHeight}px`,
-            background: 'rgba(220, 38, 127, 0.35)',
-            borderColor: 'rgba(220, 38, 127, 0.6)',
+            background: slotBgColor,
+            borderColor: slotBorderColor,
             borderRadius: '8px',
             overflow: 'hidden',
           }}
@@ -689,6 +721,14 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           <div className="absolute left-2 top-2 flex flex-row items-center gap-2 z-20">
             {hit.addons?.lighting && lampIcon}
             {hit.addons?.heating && fireIcon}
+            {isLessonBooking && (
+              <span 
+                className="text-[12px] px-1.5 py-0.5 bg-white/20 rounded-full font-semibold"
+                title="Lezione"
+              >
+                🎾
+              </span>
+            )}
           </div>
           <div className="flex items-center justify-between gap-2 mb-1 mt-2">
             <div className="min-w-0 flex flex-col">
@@ -1033,7 +1073,28 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                               return overlaps(slotStart, slotEnd, bStart, bEnd);
                             });
 
-                            const isAvailable = !existingBooking && inSchedule;
+                            // Check basic availability (no overlap, in schedule)
+                            const basicAvailable = !existingBooking && inSchedule;
+                            
+                            // 30-minute hole prevention rule disabled
+                            if (basicAvailable) {
+                              const dateStr = time.toISOString().split('T')[0]; // YYYY-MM-DD
+                              const timeStr = time.toISOString().split('T')[1].substring(0, 5); // HH:MM
+                              const duration = cfg.slotMinutes || 30; // Use slot duration as booking duration
+                              
+                              // Convert bookings format for unified service - bookings already have ISO start format
+                              const allCourtBookings = Array.from(bookingsByCourt.get(court.id) || []).map(b => ({
+                                courtId: court.id,
+                                date: b.start.split('T')[0], // Already ISO format
+                                time: b.start.split('T')[1].substring(0, 5), // Already ISO format
+                                duration: b.duration,
+                                status: 'booked'
+                              }));
+                              
+                              // 30-minute hole prevention rule disabled
+                            }
+                            
+                            const isAvailable = basicAvailable; // No hole checking
                             const hasPromo = hasPromoSlot(court.id, time);
 
                             return (

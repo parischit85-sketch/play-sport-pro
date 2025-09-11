@@ -4,24 +4,27 @@ import Badge from '@ui/Badge.jsx';
 import { createDSClasses } from '@lib/design-system.js';
 import { floorToSlot, addMinutes, sameDay, overlaps } from '@lib/date.js';
 import { computePrice, getRateInfo, isCourtBookableAt } from '@lib/pricing.js';
-import {
-  isSlotAvailable,
-  wouldCreateHalfHourHole,
-  isTimeSlotTrapped,
-  createBooking,
-  loadBookings,
-  setCloudMode,
-  cancelBooking as cancelBookingService,
-} from '@services/bookings.js';
-import {
-  loadActiveUserBookings,
-  loadBookingHistory,
-  subscribeToPublicBookings,
-  getPublicBookings as getCloudPublicBookings,
-} from '@services/cloud-bookings.js';
+import { useUnifiedBookings, useUserBookings, BOOKING_STATUS } from '@hooks/useUnifiedBookings.js';
+import UnifiedBookingService, { wouldCreateHalfHourHole as checkHoleCreation, isTimeSlotTrapped as checkSlotTrapped } from '@services/unified-booking-service.js';
 
 function ModernBookingInterface({ user, T, state, setState }) {
   const ds = createDSClasses(T);
+  
+  // Use unified booking service with ALL bookings (court + lesson) for availability checks
+  const { 
+    bookings: allBookings, 
+    loading: bookingsLoading, 
+    createBooking: createUnifiedBooking 
+  } = useUnifiedBookings({
+    autoLoadUser: false,
+    autoLoadLessons: true
+  });
+  
+  const { 
+    userBookings, 
+    activeUserBookings 
+  } = useUserBookings();
+  
   const cfg = state?.bookingConfig || {
     slotMinutes: 30,
     dayStartHour: 8,
@@ -70,9 +73,6 @@ function ModernBookingInterface({ user, T, state, setState }) {
   const [showErrorAnimation, setShowErrorAnimation] = useState(false);
 
   // Stato dati prenotazioni
-  const [bookings, setBookings] = useState([]);
-  const [userBookings, setUserBookings] = useState([]);
-  const [activeUserBookings, setActiveUserBookings] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
 
@@ -84,82 +84,79 @@ function ModernBookingInterface({ user, T, state, setState }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allowedDurations.join(',')]);
 
-  // Configura modalità cloud quando l'utente si autentica
-  useEffect(() => {
-    setCloudMode(Boolean(user?.uid), user);
-    const loadInitialBookings = async () => {
-      try {
-        const publicBookings = await getCloudPublicBookings();
-        setBookings(publicBookings);
+  // Helper function to check slot availability using unified service data
+  const isSlotAvailable = useCallback((courtId, date, time, checkDuration = 60) => {
+    if (!courtId || !date || !time) return false;
+    
+    const startDateTime = new Date(`${date}T${time}:00`);
+    const endDateTime = new Date(startDateTime.getTime() + checkDuration * 60000);
+    
+    return !allBookings.some((booking) => {
+      if (booking.courtId !== courtId) return false;
+      
+      // Check if booking is active (confirmed or pending)
+      const status = booking.status || BOOKING_STATUS.CONFIRMED; // Default to confirmed
+      if (status === BOOKING_STATUS.CANCELLED) return false; // Skip cancelled bookings
+      
+      const bookingStart = new Date(booking.start || `${booking.date}T${booking.time}:00`);
+      const bookingEnd = new Date(bookingStart.getTime() + (booking.duration || 60) * 60000);
+      
+      return (
+        (startDateTime >= bookingStart && startDateTime < bookingEnd) ||
+        (endDateTime > bookingStart && endDateTime <= bookingEnd) ||
+        (startDateTime <= bookingStart && endDateTime >= bookingEnd)
+      );
+    });
+  }, [allBookings]);
 
-        if (user) {
-          await loadUserBookingsData();
-        } else {
-          setUserBookings([]);
-          setActiveUserBookings([]);
-        }
-      } catch (error) {
-        // Errore nel caricamento delle prenotazioni iniziali
-      }
-    };
-    loadInitialBookings();
-  }, [user]);
-
-  // Sottoscrizione realtime alle prenotazioni pubbliche (cancellazioni/nuove prenotazioni)
-  useEffect(() => {
-    let unsubscribe;
-    try {
-      unsubscribe = subscribeToPublicBookings((cloudBookings) => {
-        // Normalizza ai campi usati dalla UI pubblica
-        const mapped = (cloudBookings || []).map((b) => ({
-          id: b.id,
-          courtId: b.courtId,
-          courtName: b.courtName,
-          date: b.date,
-          time: b.time,
-          duration: b.duration,
-          status: b.status,
-        }));
-        setBookings(mapped);
-      });
-    } catch (err) {
-      // fallback: rimane il polling manuale via getPublicBookings
-      console.warn('subscribeToPublicBookings non disponibile o fallita:', err);
+  // Hole prevention rule
+  const wouldCreateHalfHourHole = useCallback((courtId, date, time, checkDuration) => {
+    if (!courtId || !date || !time || !checkDuration) return false;
+    
+    // Convert allBookings to the format expected by unified service
+    const existingBookings = allBookings.map(booking => ({
+      courtId: booking.courtId,
+      date: booking.date || (booking.start ? booking.start.split('T')[0] : ''),
+      time: booking.time || (booking.start ? booking.start.split('T')[1].substring(0, 5) : ''),
+      duration: booking.duration || 60,
+      status: booking.status || 'confirmed'
+    }));
+    
+    // Use the imported hole prevention function
+    const result = checkHoleCreation(courtId, date, time, checkDuration, existingBookings);
+    
+    // Log only when hole is detected
+    if (result) {
+      console.log(`🚫 [HOLE BLOCKED] ${courtId} at ${time} (${checkDuration}min) would create 30min unusable slot`);
     }
-    return () => {
-      if (typeof unsubscribe === 'function') unsubscribe();
-    };
-  }, []);
+    
+    return result;
+  }, [allBookings]);
 
-  // Funzione per caricare le prenotazioni dell'utente
-  const loadUserBookingsData = async () => {
-    if (!user) {
-      setUserBookings([]);
-      setActiveUserBookings([]);
-      return;
-    }
+  // Wrapper for trapped logic - check if slot is in a trapped state
+  const isTimeSlotTrapped = useCallback((courtId, date, time, checkDuration) => {
+    if (!courtId || !date || !time || !checkDuration) return false;
+    
+    // Convert allBookings to the format expected by unified service  
+    const existingBookings = allBookings.map(booking => ({
+      courtId: booking.courtId,
+      date: booking.date || (booking.start ? booking.start.split('T')[0] : ''),
+      time: booking.time || (booking.start ? booking.start.split('T')[1].substring(0, 5) : ''),
+      duration: booking.duration || 60,
+      status: booking.status || 'confirmed'
+    }));
+    
+    // Use the imported trapped slot logic from unified service
+    const result = checkSlotTrapped(courtId, date, time, checkDuration, existingBookings);
+    
+    return result;
+  }, [allBookings]);
 
-    try {
-      if (user.uid) {
-        const activeBookings = await loadActiveUserBookings(user.uid);
-        setActiveUserBookings(activeBookings);
-        setUserBookings(activeBookings);
-      }
-    } catch (error) {
-      setUserBookings([]);
-      setActiveUserBookings([]);
-    }
-  };
-
-  // Rimuoviamo il merge con lo stato locale dell'app per evitare prenotazioni stale che sovrascrivono il cloud.
-
-  // Funzione per scroll automatico verso sezioni specifiche - ottimizzata per reattività
+  // Scroll function for better UX
   const scrollToSection = (ref, delay = 100) => {
-    // Rimuovo la limitazione mobile - scroll sempre per migliore UX
     if (ref?.current) {
       setTimeout(() => {
         if (ref.current) {
-          // Doppio controllo per sicurezza
           ref.current.scrollIntoView({
             behavior: 'smooth',
             block: 'start',
@@ -201,9 +198,9 @@ function ModernBookingInterface({ user, T, state, setState }) {
   // Controlla la disponibilità degli slot temporali
   const checkSlotAvailability = useCallback(
     (courtId, date, time) => {
-      return isSlotAvailable(courtId, date, time, duration, bookings);
+      return isSlotAvailable(courtId, date, time, duration);
     },
-    [duration, bookings]
+    [duration, isSlotAvailable]
   );
 
   // Genera i giorni disponibili per la prenotazione
@@ -257,10 +254,8 @@ function ModernBookingInterface({ user, T, state, setState }) {
         const slotDate = new Date(`${selectedDate}T${timeStr}:00`);
         let anyScheduleOk = false;
         let anyFreeIgnoringHole = false;
-        let anyCreatesHole = false;
         let anyOccupied = false;
         let availableCourtsCount = 0;
-        let courtsWithHoleCount = 0;
 
         for (const court of courtsFromState) {
           const scheduleOk = isCourtBookableAt(slotDate, court.id, courtsFromState);
@@ -273,32 +268,17 @@ function ModernBookingInterface({ user, T, state, setState }) {
           }
           anyFreeIgnoringHole = true;
           availableCourtsCount++;
-          const createsHole = wouldCreateHalfHourHole(
-            court.id,
-            selectedDate,
-            timeStr,
-            duration,
-            bookings
-          );
-          if (createsHole) {
-            anyCreatesHole = true;
-            courtsWithHoleCount++;
-          }
+          // 30-minute hole prevention rule disabled - no hole checking
         }
 
         // Un orario è disponibile se:
         // - Almeno un campo è nel programma operativo E
-        // - Almeno un campo è libero E
-        // - NON tutti i campi liberi creano un buco (almeno uno non crea buco)
-        const allAvailableCourtsCreateHole =
-          availableCourtsCount > 0 && courtsWithHoleCount === availableCourtsCount;
-        const isAvailable = anyScheduleOk && anyFreeIgnoringHole && !allAvailableCourtsCreateHole;
+        // - Almeno un campo è libero
+        const isAvailable = anyScheduleOk && anyFreeIgnoringHole;
         let reason = null;
         if (!isAvailable) {
           if (!anyScheduleOk) reason = 'out-of-schedule';
           else if (anyOccupied && !anyFreeIgnoringHole) reason = 'occupied';
-          else if (allAvailableCourtsCreateHole) reason = 'hole';
-          else reason = 'occupied';
         }
 
         // Mostra lo slot se non si filtra o se è disponibile
@@ -317,7 +297,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
   }, [
     selectedDate,
     duration,
-    bookings,
+    allBookings,
     courtsFromState,
     checkSlotAvailability,
     showOnlyAvailable,
@@ -343,14 +323,8 @@ function ModernBookingInterface({ user, T, state, setState }) {
       return;
     }
 
-    // Controlla la sovrapposizione prima di procedere
-    const isAvailable = isSlotAvailable(
-      selectedCourt.id,
-      selectedDate,
-      selectedTime,
-      duration,
-      bookings
-    );
+    // Controlla la disponibilità usando unified service
+    const isAvailable = isSlotAvailable(selectedCourt.id, selectedDate, selectedTime, duration);
     if (!isAvailable) {
       // Mostra animazione di errore
       setShowErrorAnimation(true);
@@ -358,43 +332,22 @@ function ModernBookingInterface({ user, T, state, setState }) {
         setShowErrorAnimation(false);
       }, 3000);
 
-      // Aggiorna i dati per riflettere lo stato attuale
-      const freshBookings = await getCloudPublicBookings();
-      setBookings(freshBookings);
       return;
     }
 
-    // Evita creare buchi di 30 minuti (con deroga per situazioni intrappolate)
-    const wouldCreateHole = wouldCreateHalfHourHole(
-      selectedCourt.id,
-      selectedDate,
-      selectedTime,
-      duration,
-      bookings
-    );
-
-    const isTrapped = isTimeSlotTrapped(
-      selectedCourt.id,
-      selectedDate,
-      selectedTime,
-      duration,
-      bookings
-    );
-
-    if (wouldCreateHole && !isTrapped) {
+    // Hole prevention check before creating booking
+    const wouldCreateHole = wouldCreateHalfHourHole(selectedCourt.id, selectedDate, selectedTime, duration);
+    if (wouldCreateHole) {
       setMessage({
         type: 'error',
-        text: 'Questa scelta crea un buco di 30 minuti. Seleziona alle :00 o :30 adiacente, oppure sposta di 30 minuti.',
+        text: `❌ Prenotazione non consentita: creerebbe uno slot di 30 minuti non utilizzabile. Scegli un orario diverso.`
       });
+      // Mostra animazione di errore
+      setShowErrorAnimation(true);
+      setTimeout(() => {
+        setShowErrorAnimation(false);
+      }, 3000);
       return;
-    }
-
-    // Messaggio informativo quando si applica la deroga per slot intrappolato
-    if (wouldCreateHole && isTrapped) {
-      setMessage({
-        type: 'info',
-        text: 'Deroga applicata: Orario intrappolato tra prenotazioni - permessa creazione buco.',
-      });
     }
 
     setIsSubmitting(true);
@@ -420,45 +373,31 @@ function ModernBookingInterface({ user, T, state, setState }) {
         userPhone: '',
         notes: '',
         players: [user.displayName || user.email, ...additionalPlayers.map((p) => p.name)],
+        type: 'court'
       };
 
-      const newBooking = await createBooking(bookingData, user);
+      await createUnifiedBooking(bookingData);
 
-      if (!newBooking) {
-        setMessage({
-          type: 'error',
-          text: 'Errore nel salvare la prenotazione. Potrebbe essere già stata prenotata da qualcun altro.',
-        });
-        setIsSubmitting(false);
-        // Aggiorna i dati per riflettere lo stato attuale
-        const freshBookings = await getCloudPublicBookings();
-        setBookings(freshBookings);
-        return;
-      }
-
-      // Aggiorna lo stato delle prenotazioni
-      const freshBookings = await getCloudPublicBookings();
-      setBookings(freshBookings);
-      await loadUserBookingsData();
-
-      // Aggiorna lo stato dell'App
+      // Update App state for immediate reflection
       if (state && setState) {
         const toAppBooking = {
-          id: newBooking.id,
-          courtId: newBooking.courtId,
-          start: new Date(`${newBooking.date}T${newBooking.time}:00`).toISOString(),
-          duration: newBooking.duration,
+          id: `booking-${Date.now()}`,
+          courtId: bookingData.courtId,
+          start: new Date(`${bookingData.date}T${bookingData.time}:00`).toISOString(),
+          duration: bookingData.duration,
           players: [],
           playerNames: additionalPlayers.map((p) => p.name),
           guestNames: additionalPlayers.map((p) => p.name),
-          price: newBooking.price,
-          note: newBooking.notes || '',
-          bookedByName: newBooking.bookedBy || '',
-          addons: { lighting: !!newBooking.lighting, heating: !!newBooking.heating },
+          price: bookingData.price,
+          note: bookingData.notes || '',
+          bookedByName: user.displayName || user.email || '',
+          addons: { lighting: !!bookingData.lighting, heating: !!bookingData.heating },
           status: 'booked',
           createdAt: Date.now(),
         };
-        setState((s) => ({ ...s, bookings: [...(s.bookings || []), toAppBooking] }));
+        
+        // Il servizio unificato gestisce automaticamente lo stato
+        // setState((s) => ({ ...s, bookings: [...(s.bookings || []), toAppBooking] }));
       }
 
       // Mostra animazione di successo
@@ -493,50 +432,44 @@ function ModernBookingInterface({ user, T, state, setState }) {
   const handleTimeSlotClick = async (timeSlot) => {
     if (!timeSlot.isAvailable) return;
 
-    // Aggiorna le prenotazioni prima di selezionare l'orario
-    try {
-      const freshBookings = await getCloudPublicBookings();
-      setBookings(freshBookings);
+    // Il servizio unificato gestisce automaticamente l'aggiornamento dei dati
+    // Non è più necessario aggiornare manualmente le prenotazioni
+    
+    // Ricontrolla la disponibilità
+    const stillAvailable = courtsFromState.some((court) => {
+      const dt = new Date(`${selectedDate}T${timeSlot.time}:00`);
+      const scheduleOk = isCourtBookableAt(dt, court.id, courtsFromState);
+      const free = isSlotAvailable(
+        court.id,
+        selectedDate,
+        timeSlot.time,
+        duration,
+        allBookings
+      );
+      const hole = wouldCreateHalfHourHole(
+        court.id,
+        selectedDate,
+        timeSlot.time,
+        duration,
+        allBookings
+      );
+      const isTrapped = isTimeSlotTrapped(
+        court.id,
+        selectedDate,
+        timeSlot.time,
+        duration,
+        allBookings
+      );
+      // Deroga per slot intrappolati: è disponibile anche se crea buco
+      return scheduleOk && free && (!hole || isTrapped);
+    });
 
-      // Ricontrolla la disponibilità con i dati aggiornati
-      const stillAvailable = courtsFromState.some((court) => {
-        const dt = new Date(`${selectedDate}T${timeSlot.time}:00`);
-        const scheduleOk = isCourtBookableAt(dt, court.id, courtsFromState);
-        const free = isSlotAvailable(
-          court.id,
-          selectedDate,
-          timeSlot.time,
-          duration,
-          freshBookings
-        );
-        const hole = wouldCreateHalfHourHole(
-          court.id,
-          selectedDate,
-          timeSlot.time,
-          duration,
-          freshBookings
-        );
-        const isTrapped = isTimeSlotTrapped(
-          court.id,
-          selectedDate,
-          timeSlot.time,
-          duration,
-          freshBookings
-        );
-        // Deroga per slot intrappolati: è disponibile anche se crea buco
-        return scheduleOk && free && (!hole || isTrapped);
-      });
-
-      if (!stillAvailable) {
+    if (!stillAvailable) {
         setMessage({
           type: 'error',
           text: 'Questo orario è appena stato prenotato. Seleziona un altro slot.',
         });
         return;
-      }
-    } catch (error) {
-      // In caso di errore, procedi comunque ma informa l'utente
-      console.warn("Errore nell'aggiornamento delle prenotazioni:", error);
     }
 
     // Imposta l'orario selezionato - lo scroll avverrà nel useEffect
@@ -552,14 +485,14 @@ function ModernBookingInterface({ user, T, state, setState }) {
         selectedDate,
         timeSlot.time,
         duration,
-        bookings
+        allBookings
       );
       const isTrapped = isTimeSlotTrapped(
         court.id,
         selectedDate,
         timeSlot.time,
         duration,
-        bookings
+        allBookings
       );
       // Deroga per slot intrappolati: è disponibile anche se crea buco
       return scheduleOk && free && (!hole || isTrapped);
@@ -636,19 +569,27 @@ function ModernBookingInterface({ user, T, state, setState }) {
       const dt = new Date(`${selectedDate}T${selectedTime}:00`);
       const scheduleOk = isDurationWithinSchedule(dt, dur, selectedCourt.id);
       if (!scheduleOk) return false;
-      const free = isSlotAvailable(selectedCourt.id, selectedDate, selectedTime, dur, bookings);
+      const free = isSlotAvailable(selectedCourt.id, selectedDate, selectedTime, dur);
       if (!free) return false;
       const hole = wouldCreateHalfHourHole(
         selectedCourt.id,
         selectedDate,
         selectedTime,
-        dur,
-        bookings
+        dur
       );
-      if (hole) return false;
+      // Applica deroga per slot intrappolati: se crea buco ma è intrappolato, è comunque prenotabile
+      if (hole) {
+        const isTrapped = isTimeSlotTrapped(
+          selectedCourt.id,
+          selectedDate,
+          selectedTime,
+          dur
+        );
+        if (!isTrapped) return false; // Se crea buco e NON è intrappolato, non prenotabile
+      }
       return true;
     },
-    [selectedCourt, selectedDate, selectedTime, bookings, isDurationWithinSchedule]
+    [selectedCourt, selectedDate, selectedTime, allBookings, isDurationWithinSchedule]
   );
 
   // Elenco durate effettivamente disponibili in base a regole e fascia
@@ -684,6 +625,13 @@ function ModernBookingInterface({ user, T, state, setState }) {
             }`}
           >
             {message.text}
+          </div>
+        )}
+
+        {/* Debug Mode Indicator (minimal) */}
+        {import.meta.env.DEV && (
+          <div className="mb-2 px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs text-center">
+            � Development Mode
           </div>
         )}
 
@@ -759,9 +707,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
                     <div className="text-xs mt-1">
                       {slot.reason === 'out-of-schedule'
                         ? 'Fuori orario disponibile'
-                        : slot.reason === 'hole'
-                          ? 'Crea buco di 30 minuti'
-                          : 'Occupato'}
+                        : 'Occupato'}
                     </div>
                   )}
                 </button>
@@ -795,16 +741,10 @@ function ModernBookingInterface({ user, T, state, setState }) {
                 const createsHole =
                   isWithinSchedule &&
                   free &&
-                  wouldCreateHalfHourHole(court.id, selectedDate, selectedTime, duration, bookings);
-                const isTrapped = isTimeSlotTrapped(
-                  court.id,
-                  selectedDate,
-                  selectedTime,
-                  duration,
-                  bookings
-                );
-                // Deroga per slot intrappolati: è disponibile anche se crea buco
-                const isAvailable = isWithinSchedule && free && (!createsHole || isTrapped);
+                  wouldCreateHalfHourHole(court.id, selectedDate, selectedTime, duration);
+                
+                // Simplified logic: wouldCreateHalfHourHole already handles 120min exemption internally
+                const isAvailable = isWithinSchedule && free && !createsHole;
                 return (
                   <div
                     key={court.id}
@@ -896,9 +836,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
                             <div className="text-xs text-red-400">
                               {!isWithinSchedule
                                 ? 'Fuori orario disponibile'
-                                : !free
-                                  ? 'Già prenotato'
-                                  : 'Crea buco di 30 minuti'}
+                                : 'Già prenotato'}
                             </div>
                           </div>
                         )}
@@ -986,8 +924,14 @@ function ModernBookingInterface({ user, T, state, setState }) {
                     );
                     const pricePerPerson = (price / 4).toFixed(1);
                     const isAllowedDuration = allowedDurations.includes(dur);
-                    const isBookableDuration =
-                      isAllowedDuration && effectiveAvailableDurations.includes(dur);
+                    
+                    // Check if this duration would create a hole for the current context
+                    const wouldCreateHoleForDuration = selectedCourt && selectedDate && selectedTime 
+                      ? wouldCreateHalfHourHole(selectedCourt.id, selectedDate, selectedTime, dur)
+                      : false;
+                    
+                    const isBookableDuration = isAllowedDuration && !wouldCreateHoleForDuration;
+                    
                     return (
                       <button
                         key={dur}
@@ -995,15 +939,25 @@ function ModernBookingInterface({ user, T, state, setState }) {
                         disabled={!isBookableDuration}
                         className={`p-4 rounded-xl border-2 text-center transition-all touch-manipulation ${
                           !isBookableDuration
-                            ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
+                            ? 'bg-red-50 border-red-300 text-red-600 cursor-not-allowed'
                             : duration === dur
                               ? 'bg-blue-500 text-white border-blue-500 shadow-lg scale-105'
                               : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 active:bg-blue-100'
                         }`}
+                        title={!isBookableDuration ? "Questa durata creerebbe un buco di 30 minuti non utilizzabile" : ""}
                       >
-                        <div className="font-bold text-lg">{dur}min</div>
-                        <div className="text-lg font-bold mt-1">{price}€</div>
-                        <div className="text-xs opacity-75 mt-1">{pricePerPerson}€/persona</div>
+                        {!isBookableDuration ? (
+                          <>
+                            <div className="font-bold text-lg">{dur}min</div>
+                            <div className="text-sm font-bold mt-1 text-red-700">Non Disponibile</div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="font-bold text-lg">{dur}min</div>
+                            <div className="text-lg font-bold mt-1">{price}€</div>
+                            <div className="text-xs opacity-75 mt-1">{pricePerPerson}€/persona</div>
+                          </>
+                        )}
                       </button>
                     );
                   })}

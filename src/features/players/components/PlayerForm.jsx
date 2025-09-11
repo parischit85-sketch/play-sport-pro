@@ -20,17 +20,51 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
 
   const handleChange = (field, value) => {
     setFormData((prev) => {
+      let newData;
+
       if (field.includes('.')) {
         const [parent, child] = field.split('.');
-        return {
+        newData = {
           ...prev,
           [parent]: {
             ...prev[parent],
             [child]: value,
           },
         };
+      } else {
+        newData = { ...prev, [field]: value };
       }
-      return { ...prev, [field]: value };
+
+      // Initialize instructor data when category is set to INSTRUCTOR
+      if (
+        field === 'category' &&
+        value === PLAYER_CATEGORIES.INSTRUCTOR &&
+        !newData.instructorData?.isInstructor
+      ) {
+        newData.instructorData = {
+          isInstructor: true,
+          color: '#3B82F6',
+          specialties: [],
+          hourlyRate: 0,
+          bio: '',
+          certifications: [],
+          ...newData.instructorData,
+        };
+      }
+
+      // Clear instructor data when category is changed from INSTRUCTOR
+      if (
+        field === 'category' &&
+        value !== PLAYER_CATEGORIES.INSTRUCTOR &&
+        prev.category === PLAYER_CATEGORIES.INSTRUCTOR
+      ) {
+        newData.instructorData = {
+          ...newData.instructorData,
+          isInstructor: false,
+        };
+      }
+
+      return newData;
     });
 
     // Clear error when user starts typing
@@ -77,6 +111,9 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
     { id: 'basic', label: '📝 Dati Base', icon: '📝' },
     { id: 'contact', label: '📞 Contatti', icon: '📞' },
     { id: 'sports', label: '🏃 Sport', icon: '🏃' },
+    ...(formData.category === PLAYER_CATEGORIES.INSTRUCTOR
+      ? [{ id: 'instructor', label: '👨‍🏫 Istruttore', icon: '👨‍🏫' }]
+      : []),
     { id: 'wallet', label: '💰 Wallet', icon: '💰' },
     { id: 'preferences', label: '⚙️ Preferenze', icon: '⚙️' },
   ];
@@ -170,6 +207,7 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                 <option value={PLAYER_CATEGORIES.MEMBER}>Membro</option>
                 <option value={PLAYER_CATEGORIES.GUEST}>Ospite</option>
                 <option value={PLAYER_CATEGORIES.VIP}>VIP</option>
+                <option value={PLAYER_CATEGORIES.INSTRUCTOR}>Istruttore</option>
               </select>
             </div>
           </div>
@@ -301,6 +339,134 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
               </label>
               <p className={`text-xs ${T.subtext} mt-1`}>
                 I giocatori inattivi non appaiono nelle selezioni per i match
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Configurazione Istruttore */}
+        {activeTab === 'instructor' && formData.category === PLAYER_CATEGORIES.INSTRUCTOR && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={`block text-sm font-medium ${T.text} mb-1`}>
+                  Tariffa Oraria (€)
+                </label>
+                <input
+                  type="number"
+                  value={formData.instructorData?.hourlyRate || 0}
+                  onChange={(e) =>
+                    handleChange('instructorData.hourlyRate', Number(e.target.value))
+                  }
+                  className={`${T.input} w-full`}
+                  min="0"
+                  step="5"
+                  placeholder="es. 50"
+                />
+                <p className={`text-xs ${T.subtext} mt-1`}>Tariffa oraria per le lezioni</p>
+              </div>
+
+              <div>
+                <label className={`block text-sm font-medium ${T.text} mb-1`}>
+                  Colore Identificativo
+                </label>
+                <input
+                  type="color"
+                  value={formData.instructorData?.color || '#3B82F6'}
+                  onChange={(e) => handleChange('instructorData.color', e.target.value)}
+                  className="w-full h-10 rounded border"
+                />
+                <p className={`text-xs ${T.subtext} mt-1`}>
+                  Colore per identificare l'istruttore nel calendario
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium ${T.text} mb-1`}>Biografia</label>
+              <textarea
+                value={formData.instructorData?.bio || ''}
+                onChange={(e) => handleChange('instructorData.bio', e.target.value)}
+                className={`${T.input} w-full`}
+                rows={3}
+                placeholder="Descrizione dell'esperienza e qualifiche dell'istruttore..."
+              />
+              <p className={`text-xs ${T.subtext} mt-1`}>
+                Breve descrizione che i clienti vedranno
+              </p>
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium ${T.text} mb-1`}>Specialità</label>
+              <div className="space-y-2">
+                {/* Quick Add Common Specialties */}
+                <div className="flex flex-wrap gap-2">
+                  {['Padel', 'Tennis', 'Fitness', 'Calcio', 'Basket'].map((specialty) => (
+                    <button
+                      key={specialty}
+                      type="button"
+                      onClick={() => {
+                        const currentSpecialties = formData.instructorData?.specialties || [];
+                        if (!currentSpecialties.includes(specialty)) {
+                          handleChange('instructorData.specialties', [
+                            ...currentSpecialties,
+                            specialty,
+                          ]);
+                        }
+                      }}
+                      className={`px-3 py-1 text-sm rounded border ${
+                        (formData.instructorData?.specialties || []).includes(specialty)
+                          ? 'bg-blue-100 text-blue-800 border-blue-300'
+                          : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                      }`}
+                    >
+                      {specialty}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Current Specialties */}
+                {(formData.instructorData?.specialties || []).length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {(formData.instructorData?.specialties || []).map((specialty, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                      >
+                        <span>{specialty}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const currentSpecialties = formData.instructorData?.specialties || [];
+                            handleChange(
+                              'instructorData.specialties',
+                              currentSpecialties.filter((s) => s !== specialty)
+                            );
+                          }}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <p className={`text-xs ${T.subtext} mt-1`}>Specialità sportive dell'istruttore</p>
+            </div>
+
+            <div>
+              <label className={`flex items-center gap-2 ${T.text}`}>
+                <input
+                  type="checkbox"
+                  checked={formData.instructorData?.isInstructor !== false}
+                  onChange={(e) => handleChange('instructorData.isInstructor', e.target.checked)}
+                  className="rounded"
+                />
+                Istruttore Attivo
+              </label>
+              <p className={`text-xs ${T.subtext} mt-1`}>
+                L'istruttore può ricevere prenotazioni lezioni
               </p>
             </div>
           </div>
