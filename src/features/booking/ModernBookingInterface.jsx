@@ -583,7 +583,8 @@ function ModernBookingInterface({ user, T, state, setState }) {
           selectedCourt.id,
           selectedDate,
           selectedTime,
-          dur
+          dur,
+          bookings
         );
         if (!isTrapped) return false; // Se crea buco e NON è intrappolato, non prenotabile
       }
