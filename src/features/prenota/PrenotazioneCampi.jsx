@@ -834,18 +834,37 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
       console.log('✅ Drop validation passed, updating booking...');
 
-      // Update the booking
-      const newStartIso = targetTime.toISOString();
+      // Calculate proper date/time strings for cloud format
+      const localDate = new Date(targetTime.getTime() - targetTime.getTimezoneOffset() * 60000);
+      const dateStr = localDate.toISOString().split('T')[0]; // YYYY-MM-DD
+      const timeStr = localDate.toISOString().split('T')[1].substring(0, 5); // HH:MM
+
+      console.log('🔄 Updating booking with:', {
+        bookingId: draggedBooking.id,
+        newCourtId: courtId,
+        newDateStr: dateStr,
+        newTimeStr: timeStr,
+        targetTimeLocal: targetTime.toLocaleString('it-IT')
+      });
+
+      // Update the booking - use only cloud format (date/time), not legacy start
       await updateUnifiedBooking(draggedBooking.id, {
         courtId: courtId,
         courtName: courtName(courtId),
-        date: targetTime.toISOString().split('T')[0],
-        time: targetTime.toISOString().split('T')[1].substring(0, 5),
-        start: newStartIso,
+        date: dateStr,
+        time: timeStr,
         updatedAt: new Date().toISOString(),
       });
 
       console.log('✅ Booking moved successfully');
+      
+      // Force refresh of bookings to ensure UI is updated
+      if (refreshBookings) {
+        setTimeout(() => {
+          console.log('🔄 Refreshing bookings after drag & drop...');
+          refreshBookings();
+        }, 500);
+      }
     } catch (error) {
       console.error('❌ Error moving booking:', error);
       alert('Errore durante lo spostamento della prenotazione.');
