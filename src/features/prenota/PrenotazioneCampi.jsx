@@ -438,38 +438,38 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     const blockStart = new Date(start);
     const blockEnd = addMinutes(start, duration);
     const list = bookingsByCourt.get(courtId) || [];
-    
+
     console.log('🔍 Checking overlap for:', {
       courtId,
       blockStart: blockStart.toISOString(),
       blockEnd: blockEnd.toISOString(),
       duration,
       ignoreId,
-      existingBookings: list.length
+      existingBookings: list.length,
     });
-    
+
     const conflict = list.find((b) => {
       if (ignoreId && b.id === ignoreId) {
         console.log('⏭️ Ignoring booking:', b.id);
         return false;
       }
-      
+
       const bStart = new Date(b.start);
       const bEnd = addMinutes(new Date(b.start), b.duration);
       const hasOverlap = overlaps(blockStart, blockEnd, bStart, bEnd);
-      
+
       if (hasOverlap) {
         console.log('🚫 Overlap detected with booking:', {
           bookingId: b.id,
           bookingStart: bStart.toISOString(),
           bookingEnd: bEnd.toISOString(),
-          bookingDuration: b.duration
+          bookingDuration: b.duration,
         });
       }
-      
+
       return hasOverlap;
     });
-    
+
     return conflict;
   }
 
@@ -692,7 +692,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     // Check if ALL required slots are available
     const slotsToOccupy = [];
     let hasConflict = false;
-    
+
     for (
       let currentTime = new Date(startTime);
       currentTime < endTime;
@@ -703,24 +703,24 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         hasConflict = true;
         break;
       }
-      
+
       // Check for conflicts with other bookings
       const slotEnd = addMinutes(currentTime, cfg.slotMinutes);
       const slotConflict = bookings.find((b) => {
         if (b.id === draggedBooking.id) return false;
         if (b.courtId !== courtId) return false;
-        
+
         const bStart = new Date(b.start);
         const bEnd = addMinutes(bStart, b.duration);
-        
+
         return overlaps(currentTime, slotEnd, bStart, bEnd);
       });
-      
+
       if (slotConflict) {
         hasConflict = true;
         break;
       }
-      
+
       slotsToOccupy.push({
         courtId,
         time: currentTime.getTime(),
@@ -789,7 +789,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       // Verify all slots are within court schedule
       for (const slotTime of slotsToOccupy) {
         if (!isCourtBookableAt(slotTime, courtId, courts)) {
-          alert('Uno o più slot di destinazione sono fuori dalle fasce prenotabili per questo campo.');
+          alert(
+            'Uno o più slot di destinazione sono fuori dalle fasce prenotabili per questo campo.'
+          );
           return;
         }
       }
@@ -818,13 +820,13 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         const slotConflict = bookings.find((b) => {
           if (b.id === draggedBooking.id) return false;
           if (b.courtId !== courtId) return false;
-          
+
           const bStart = new Date(b.start);
           const bEnd = addMinutes(bStart, b.duration);
-          
+
           return overlaps(slotTime, slotEnd, bStart, bEnd);
         });
-        
+
         if (slotConflict) {
           console.log('🚫 Slot conflict detected at:', slotTime.toISOString());
           alert("Lo slot di destinazione è già occupato da un'altra prenotazione.");
@@ -844,7 +846,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         newCourtId: courtId,
         newDateStr: dateStr,
         newTimeStr: timeStr,
-        targetTimeLocal: targetTime.toLocaleString('it-IT')
+        targetTimeLocal: targetTime.toLocaleString('it-IT'),
       });
 
       // Update the booking - use only cloud format (date/time), not legacy start
@@ -857,7 +859,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       });
 
       console.log('✅ Booking moved successfully');
-      
+
       // Force refresh of bookings to ensure UI is updated
       if (refreshBookings) {
         setTimeout(() => {
@@ -910,8 +912,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         dragOverSlot.courtId === courtId &&
         dragOverSlot.slots?.some((slot) => slot.time === t.getTime());
 
-      const isDragIncompatible = draggedBooking && 
-        draggedBooking.start && 
+      const isDragIncompatible =
+        draggedBooking &&
+        draggedBooking.start &&
         new Date(draggedBooking.start).toDateString() === t.toDateString() &&
         courtId !== draggedBooking.courtId;
 
@@ -920,33 +923,33 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           type="button"
           onClick={() => openCreate(courtId, t)}
           className={`relative w-full h-9 rounded-lg ring-1 text-[11px] font-medium transition-all duration-200 ${
-            isDragTarget 
-              ? 'ring-2 ring-blue-500 ring-offset-1 scale-105' 
+            isDragTarget
+              ? 'ring-2 ring-blue-500 ring-offset-1 scale-105'
               : isDragIncompatible
                 ? 'ring-2 ring-red-300 ring-offset-1 opacity-75'
                 : ''
           }`}
           style={{
-            background: isDragTarget 
-              ? 'rgba(59, 130, 246, 0.2)' 
+            background: isDragTarget
+              ? 'rgba(59, 130, 246, 0.2)'
               : isDragIncompatible
                 ? 'rgba(239, 68, 68, 0.1)'
                 : `rgba(16,185,129,${alpha})`,
-            borderColor: isDragTarget 
-              ? 'rgba(59, 130, 246, 0.6)' 
+            borderColor: isDragTarget
+              ? 'rgba(59, 130, 246, 0.6)'
               : isDragIncompatible
                 ? 'rgba(239, 68, 68, 0.3)'
                 : `rgba(16,185,129,0.35)`,
           }}
           title={
-            isDragTarget 
+            isDragTarget
               ? 'Rilascia qui per spostare la prenotazione'
               : isDragIncompatible
                 ? 'Disponibile per nuove prenotazioni (non compatibile con lo spostamento)'
-                : info.isPromo 
-                  ? 'Fascia Promo' 
-                  : isDiscounted 
-                    ? 'Fascia scontata' 
+                : info.isPromo
+                  ? 'Fascia Promo'
+                  : isDiscounted
+                    ? 'Fascia scontata'
                     : 'Tariffa standard'
           }
           // Drag & Drop props (desktop only)
@@ -1140,7 +1143,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="text-4xl mb-4">⏳</div>
-            <h3 className="text-lg font-medium mb-2 text-gray-900">Caricamento...</h3>
+            <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
+              Caricamento...
+            </h3>
             <p className="text-gray-500">Caricamento configurazione campi in corso...</p>
           </div>
         </div>
@@ -1567,359 +1572,404 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
             </div>
           </div>
 
-          {/* Modal glassmorphism per prenotazione */}
+          {/* Modal glassmorphism per prenotazione - FUTURISTIC DESIGN */}
           <Modal
             open={modalOpen}
             onClose={() => setModalOpen(false)}
             title={editingId ? 'Modifica prenotazione' : 'Nuova prenotazione'}
             T={T}
+            size="xl"
           >
             {!form.start ? (
-              <div className={`text-center py-8 text-lg ${T.subtext}`}>
-                Seleziona uno slot libero nella griglia.
+              <div className="text-center py-12">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <span className="text-3xl text-white">📅</span>
+                </div>
+                <div className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-2">
+                  Seleziona uno slot
+                </div>
+                <div className="text-gray-600 dark:text-gray-400">
+                  Clicca su uno slot libero nella griglia per iniziare
+                </div>
               </div>
             ) : (
-              <div className="rounded-2xl p-6 shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-600">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {/* Tipo prenotazione */}
-                  <div className="sm:col-span-2 flex flex-col gap-1">
-                    <label className={`text-xs font-semibold ${T.subtext}`}>
-                      Tipo prenotazione
-                    </label>
-                    <select
-                      value={form.bookingType}
-                      onChange={(e) => {
-                        const newType = e.target.value;
-                        setForm((f) => ({
-                          ...f,
-                          bookingType: newType,
-                          instructorId: newType === 'partita' ? '' : f.instructorId,
-                        }));
-                      }}
-                      className={T.input}
-                    >
-                      <option value="partita">🏓 Partita</option>
-                      <option value="lezione">👨‍🏫 Lezione</option>
-                    </select>
-                  </div>
-
-                  {/* Selettore istruttore - mostrato solo per lezioni */}
-                  {form.bookingType === 'lezione' && (
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-3xl blur-xl"></div>
+                <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/30 p-4 shadow-2xl">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {/* Tipo prenotazione */}
                     <div className="sm:col-span-2 flex flex-col gap-1">
-                      <label className={`text-xs font-semibold ${T.subtext}`}>Maestro</label>
+                      <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                        🎯 Tipo prenotazione
+                      </label>
                       <select
-                        value={form.instructorId}
-                        onChange={(e) => setForm((f) => ({ ...f, instructorId: e.target.value }))}
-                        className={T.input}
-                        required={form.bookingType === 'lezione'}
+                        value={form.bookingType}
+                        onChange={(e) => {
+                          const newType = e.target.value;
+                          setForm((f) => ({
+                            ...f,
+                            bookingType: newType,
+                            instructorId: newType === 'partita' ? '' : f.instructorId,
+                          }));
+                        }}
+                        className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
                       >
-                        <option value="">-- Seleziona un maestro --</option>
-                        {instructors.map((instructor) => (
-                          <option key={instructor.id} value={instructor.id}>
-                            {instructor.name}
-                            {instructor.instructorData?.specialties?.length > 0 &&
-                              ` (${instructor.instructorData.specialties.join(', ')})`}
+                        <option value="partita">🏓 Partita</option>
+                        <option value="lezione">👨‍🏫 Lezione</option>
+                      </select>
+                    </div>
+
+                    {/* Selettore istruttore - mostrato solo per lezioni */}
+                    {form.bookingType === 'lezione' && (
+                      <div className="sm:col-span-2 flex flex-col gap-1">
+                        <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                          👨‍🏫 Maestro
+                        </label>
+                        <select
+                          value={form.instructorId}
+                          onChange={(e) => setForm((f) => ({ ...f, instructorId: e.target.value }))}
+                          className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
+                          required={form.bookingType === 'lezione'}
+                        >
+                          <option value="">-- Seleziona un maestro --</option>
+                          {instructors.map((instructor) => (
+                            <option key={instructor.id} value={instructor.id}>
+                              {instructor.name}
+                              {instructor.instructorData?.specialties?.length > 0 &&
+                                ` (${instructor.instructorData.specialties.join(', ')})`}
+                            </option>
+                          ))}
+                        </select>
+                        {form.bookingType === 'lezione' && !form.instructorId && (
+                          <div className="text-sm text-red-600 dark:text-red-400 bg-red-50/50 dark:bg-red-900/20 backdrop-blur-sm px-3 py-2 rounded-lg border border-red-200/50 dark:border-red-800/30">
+                            ⚠️ Seleziona un maestro per le lezioni
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="flex flex-col gap-1">
+                      <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                        🏟️ Campo
+                      </label>
+                      <select
+                        value={form.courtId}
+                        onChange={(e) => setForm((f) => ({ ...f, courtId: e.target.value }))}
+                        className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
+                      >
+                        {state.courts.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
                           </option>
                         ))}
                       </select>
-                      {form.bookingType === 'lezione' && !form.instructorId && (
-                        <div className="text-xs text-red-600">
-                          ⚠️ Seleziona un maestro per le lezioni
+                      {form.courtId && hasPromoSlot(form.courtId, form.start) && (
+                        <div className="text-sm bg-gradient-to-r from-yellow-400/80 to-orange-400/80 text-yellow-900 dark:text-yellow-100 px-2 py-1 rounded-lg font-semibold inline-flex items-center gap-1 w-fit backdrop-blur-sm border border-yellow-300/50">
+                          🏷️ Fascia Promo
                         </div>
                       )}
                     </div>
-                  )}
-
-                  <div className="flex flex-col gap-1">
-                    <label className={`text-xs font-semibold ${T.subtext}`}>Campo</label>
-                    <select
-                      value={form.courtId}
-                      onChange={(e) => setForm((f) => ({ ...f, courtId: e.target.value }))}
-                      className={T.input}
-                    >
-                      {state.courts.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
-                    {form.courtId && hasPromoSlot(form.courtId, form.start) && (
-                      <div className="text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-black px-2 py-1 rounded-lg font-medium inline-flex items-center gap-1 w-fit">
-                        🏷️ Fascia Promo attiva
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className={`text-xs font-semibold ${T.subtext}`}>Inizio</label>
-                    <input
-                      type="time"
-                      value={`${String(new Date(form.start).getHours()).padStart(2, '0')}:${String(new Date(form.start).getMinutes()).padStart(2, '0')}`}
-                      onChange={(e) => {
-                        const [hh, mm] = e.target.value.split(':').map(Number);
-                        const d = new Date(form.start);
-                        d.setHours(hh, mm, 0, 0);
-                        setForm((f) => ({ ...f, start: floorToSlot(d, cfg.slotMinutes) }));
-                      }}
-                      className={T.input}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <label className={`text-xs font-semibold ${T.subtext}`}>Durata</label>
-                    <select
-                      value={form.duration}
-                      onChange={(e) => setForm((f) => ({ ...f, duration: Number(e.target.value) }))}
-                      className={T.input}
-                    >
-                      {(cfg.defaultDurations || [60, 90, 120]).map((m) => (
-                        <option key={m} value={m}>
-                          {m} minuti
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    {/* Addon in layout verticale per mobile, orizzontale per desktop */}
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3">
-                      {cfg.addons?.lightingEnabled && (
-                        <label className="inline-flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={form.useLighting}
-                            onChange={(e) =>
-                              setForm((f) => ({ ...f, useLighting: e.target.checked }))
-                            }
-                          />
-                          <span className="text-sm font-medium text-blue-600 dark:text-emerald-400">
-                            Illuminazione
-                          </span>
-                          <span className={`text-xs ${T.subtext}`}>
-                            +{euro(cfg.addons.lightingFee || 0)}
-                          </span>
-                        </label>
-                      )}
-                      {cfg.addons?.heatingEnabled &&
-                        (() => {
-                          const selectedCourt = courts.find((c) => c.id === form.courtId);
-                          return (
-                            selectedCourt?.hasHeating && (
-                              <label className="inline-flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={form.useHeating}
-                                  onChange={(e) =>
-                                    setForm((f) => ({ ...f, useHeating: e.target.checked }))
-                                  }
-                                />
-                                <span className="text-sm font-medium text-purple-600 dark:text-lime-400">
-                                  Riscaldamento
-                                </span>
-                                <span className={`text-xs ${T.subtext}`}>
-                                  +{euro(cfg.addons.heatingFee || 0)}
-                                </span>
-                              </label>
-                            )
-                          );
-                        })()}
+                    <div className="flex flex-col gap-1">
+                      <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                        ⏰ Inizio
+                      </label>
+                      <input
+                        type="time"
+                        value={`${String(new Date(form.start).getHours()).padStart(2, '0')}:${String(new Date(form.start).getMinutes()).padStart(2, '0')}`}
+                        onChange={(e) => {
+                          const [hh, mm] = e.target.value.split(':').map(Number);
+                          const d = new Date(form.start);
+                          d.setHours(hh, mm, 0, 0);
+                          setForm((f) => ({ ...f, start: floorToSlot(d, cfg.slotMinutes) }));
+                        }}
+                        className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                        ⏱️ Durata
+                      </label>
+                      <select
+                        value={form.duration}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, duration: Number(e.target.value) }))
+                        }
+                        className="px-4 py-3 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
+                      >
+                        {(cfg.defaultDurations || [60, 90, 120]).map((m) => (
+                          <option key={m} value={m}>
+                            {m} minuti
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
-                    {/* Totale separato */}
-                    <div
-                      className={`font-bold text-lg text-blue-700 dark:text-emerald-400 text-center sm:text-left`}
-                    >
-                      Totale: {previewPrice == null ? '—' : euro(previewPrice)}
-                      {previewPrice != null && (
-                        <span className={`ml-3 text-xs ${T.subtext}`}>
-                          / giocatore: {euro2(previewPrice / 4)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Giocatori in grid compatta */}
-                  <div>
-                    <div className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      👥 Giocatori
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        ['p1Name', 'Giocatore 1'],
-                        ['p2Name', 'Giocatore 2'],
-                        ['p3Name', 'Giocatore 3'],
-                        ['p4Name', 'Giocatore 4'],
-                      ].map(([key, label]) => (
-                        <div key={key}>
-                          <label className={`text-xs font-medium ${T.subtext} mb-1 block`}>
-                            {label}
-                          </label>
-                          <input
-                            list="players-list"
-                            value={form[key]}
-                            onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
-                            className={`${T.input} text-sm py-2`}
-                            placeholder="Nome giocatore"
-                          />
+                    <div className="sm:col-span-1">
+                      {/* Addon in layout futuristico - compatto */}
+                      <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-2 border border-white/20 dark:border-gray-600/20">
+                        <div className="flex items-center gap-1 mb-1">
+                          <h3 className="text-xs font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                            ⚡ Servizi
+                          </h3>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                        <div className="flex flex-col gap-2">
+                          {cfg.addons?.lightingEnabled && (
+                            <label className="inline-flex items-center gap-2 cursor-pointer bg-blue-50/50 dark:bg-blue-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-blue-200/50 dark:border-blue-800/30 hover:bg-blue-100/50 dark:hover:bg-blue-800/30 transition-all duration-200">
+                              <input
+                                type="checkbox"
+                                checked={form.useLighting}
+                                onChange={(e) =>
+                                  setForm((f) => ({ ...f, useLighting: e.target.checked }))
+                                }
+                                className="w-4 h-4 text-blue-600 bg-white/50 border-blue-300 rounded focus:ring-blue-500 focus:ring-2"
+                              />
+                              <div className="flex flex-col">
+                                <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                                  💡 Illuminazione
+                                </span>
+                                <span className="text-xs text-blue-600 dark:text-blue-400">
+                                  +{euro(cfg.addons.lightingFee || 0)}
+                                </span>
+                              </div>
+                            </label>
+                          )}
+                          {cfg.addons?.heatingEnabled &&
+                            (() => {
+                              const selectedCourt = courts.find((c) => c.id === form.courtId);
+                              return (
+                                selectedCourt?.hasHeating && (
+                                  <label className="inline-flex items-center gap-2 cursor-pointer bg-purple-50/50 dark:bg-purple-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-purple-200/50 dark:border-purple-800/30 hover:bg-purple-100/50 dark:hover:bg-purple-800/30 transition-all duration-200">
+                                    <input
+                                      type="checkbox"
+                                      checked={form.useHeating}
+                                      onChange={(e) =>
+                                        setForm((f) => ({ ...f, useHeating: e.target.checked }))
+                                      }
+                                      className="w-4 h-4 text-purple-600 bg-white/50 border-purple-300 rounded focus:ring-purple-500 focus:ring-2"
+                                    />
+                                    <div className="flex flex-col">
+                                      <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
+                                        🔥 Riscaldamento
+                                      </span>
+                                      <span className="text-xs text-purple-600 dark:text-purple-400">
+                                        +{euro(cfg.addons.heatingFee || 0)}
+                                      </span>
+                                    </div>
+                                  </label>
+                                )
+                              );
+                            })()}
+                        </div>
 
-                  {/* Prenotato da e note */}
-                  <div className="space-y-3">
-                    <div>
-                      <label className={`text-xs font-semibold ${T.subtext} mb-1 block`}>
-                        Prenotazione a nome di
-                      </label>
-                      <input
-                        value={form.bookedBy}
-                        onChange={(e) => setForm((f) => ({ ...f, bookedBy: e.target.value }))}
-                        className={`${T.input} text-sm py-2`}
-                        placeholder="Es. Andrea Paris"
-                      />
-                    </div>
-
-                    <div>
-                      <label className={`text-xs font-semibold ${T.subtext} mb-1 block`}>
-                        Note
-                      </label>
-                      <input
-                        value={form.note}
-                        onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
-                        className={`${T.input} text-sm py-2`}
-                        placeholder="Es. Lezioni, torneo, ecc."
-                      />
-                    </div>
-
-                    <div>
-                      <label className={`text-xs font-semibold ${T.subtext} mb-1 block`}>
-                        Colore prenotazione
-                        {form.bookingType === 'lezione' && form.instructorId && (
-                          <span className="ml-2 text-xs text-blue-600 font-normal">
-                            (Colore del maestro)
-                          </span>
-                        )}
-                        {form.bookingType === 'partita' && (
-                          <span className="ml-2 text-xs text-pink-600 font-normal">
-                            (Colore standard partita)
-                          </span>
-                        )}
-                      </label>
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="color"
-                            value={form.color}
-                            onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
-                            className="w-12 h-10 rounded border-2 border-gray-300 cursor-pointer"
-                            title="Seleziona il colore della prenotazione"
-                          />
-                          <div className="flex-1">
-                            <div
-                              className="h-8 rounded border-2 flex items-center px-3 text-sm font-medium"
-                              style={{
-                                backgroundColor: form.color + '33', // Add transparency
-                                borderColor: form.color,
-                                color: form.color,
-                              }}
-                            >
-                              Anteprima colore
+                        {/* Totale separato */}
+                        <div className="mt-4 flex justify-end">
+                          <div className="bg-gradient-to-r from-emerald-500/90 to-blue-500/90 backdrop-blur-xl rounded-xl border border-white/20 px-4 py-3 shadow-xl">
+                            <div className="text-right">
+                              <div className="text-lg font-bold text-white">
+                                Totale: {previewPrice == null ? '—' : euro(previewPrice)}
+                              </div>
+                              {previewPrice != null && (
+                                <div className="text-sm text-emerald-100 mt-1">
+                                  / giocatore: {euro2(previewPrice / 4)}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
+                      </div>
+                    </div>
 
-                        {/* Preset colors */}
-                        <div className="flex gap-2 flex-wrap">
-                          <span className="text-xs text-gray-600 w-full mb-1">
-                            Colori predefiniti:
-                          </span>
-                          {[
-                            { color: '#e91e63', name: 'Rosa (default)' },
-                            { color: '#f44336', name: 'Rosso' },
-                            { color: '#00bcd4', name: 'Turchese' },
-                            { color: '#2196f3', name: 'Blu' },
-                            { color: '#4caf50', name: 'Verde' },
-                            { color: '#ff9800', name: 'Arancione' },
-                            { color: '#9c27b0', name: 'Viola' },
-                            { color: '#607d8b', name: 'Grigio' },
-                          ].map((preset) => (
-                            <button
-                              key={preset.color}
-                              type="button"
-                              onClick={() => setForm((f) => ({ ...f, color: preset.color }))}
-                              className={`w-8 h-8 rounded border-2 cursor-pointer transition-transform hover:scale-110 ${
-                                form.color === preset.color
-                                  ? 'border-gray-800 scale-110'
-                                  : 'border-gray-300'
-                              }`}
-                              style={{ backgroundColor: preset.color }}
-                              title={preset.name}
+                    {/* Giocatori in grid futuristica */}
+                    <div>
+                      <div className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-2">
+                        👥 Giocatori
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {[
+                          ['p1Name', 'Giocatore 1'],
+                          ['p2Name', 'Giocatore 2'],
+                          ['p3Name', 'Giocatore 3'],
+                          ['p4Name', 'Giocatore 4'],
+                        ].map(([key, label]) => (
+                          <div key={key}>
+                            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2 block">
+                              {label}
+                            </label>
+                            <input
+                              list="players-list"
+                              value={form[key]}
+                              onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+                              className="w-full px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200"
+                              placeholder="Nome giocatore"
                             />
-                          ))}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Prenotato da e note */}
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-1 block">
+                          📝 Prenotazione a nome di
+                        </label>
+                        <input
+                          value={form.bookedBy}
+                          onChange={(e) => setForm((f) => ({ ...f, bookedBy: e.target.value }))}
+                          className="w-full px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200"
+                          placeholder="Es. Andrea Paris"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-1 block">
+                          💬 Note
+                        </label>
+                        <input
+                          value={form.note}
+                          onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
+                          className="w-full px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200"
+                          placeholder="Es. Lezioni, torneo, ecc."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-1 block">
+                          🎨 Colore prenotazione
+                          {form.bookingType === 'lezione' && form.instructorId && (
+                            <span className="ml-2 text-xs text-blue-600 dark:text-blue-400 font-normal">
+                              (Colore del maestro)
+                            </span>
+                          )}
+                          {form.bookingType === 'partita' && (
+                            <span className="ml-2 text-xs text-pink-600 dark:text-pink-400 font-normal">
+                              (Colore standard partita)
+                            </span>
+                          )}
+                        </label>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="color"
+                              value={form.color}
+                              onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
+                              className="w-12 h-12 rounded-xl border-2 border-white/30 dark:border-gray-600/30 cursor-pointer shadow-lg"
+                              title="Seleziona il colore della prenotazione"
+                            />
+                            <div className="flex-1">
+                              <div
+                                className="h-12 rounded-xl border-2 flex items-center px-4 text-sm font-semibold shadow-lg backdrop-blur-sm"
+                                style={{
+                                  backgroundColor: form.color + '33', // Add transparency
+                                  borderColor: form.color,
+                                  color: form.color,
+                                }}
+                              >
+                                Anteprima colore
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Preset colors */}
+                          <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-600/20">
+                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 block mb-2">
+                              Colori predefiniti:
+                            </span>
+                            <div className="flex gap-2 flex-wrap">
+                              {[
+                                { color: '#e91e63', name: 'Rosa (default)' },
+                                { color: '#f44336', name: 'Rosso' },
+                                { color: '#00bcd4', name: 'Turchese' },
+                                { color: '#2196f3', name: 'Blu' },
+                                { color: '#4caf50', name: 'Verde' },
+                                { color: '#ff9800', name: 'Arancione' },
+                                { color: '#9c27b0', name: 'Viola' },
+                                { color: '#607d8b', name: 'Grigio' },
+                              ].map((preset) => (
+                                <button
+                                  key={preset.color}
+                                  type="button"
+                                  onClick={() => setForm((f) => ({ ...f, color: preset.color }))}
+                                  className={`w-10 h-10 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-110 shadow-lg ${
+                                    form.color === preset.color
+                                      ? 'border-gray-800 dark:border-white scale-110 shadow-xl'
+                                      : 'border-white/50 dark:border-gray-600/50'
+                                  }`}
+                                  style={{ backgroundColor: preset.color }}
+                                  title={preset.name}
+                                />
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Datalist per autocompletamento */}
-                  <datalist id="players-list">
-                    {playersAlpha.map((p) => (
-                      <option key={p.id} value={p.name} />
-                    ))}
-                  </datalist>
+                    {/* Datalist per autocompletamento */}
+                    <datalist id="players-list">
+                      {playersAlpha.map((p) => (
+                        <option key={p.id} value={p.name} />
+                      ))}
+                    </datalist>
 
-                  {/* Azioni desktop */}
-                  <div className="hidden md:flex gap-2 pt-2">
-                    <button type="button" onClick={saveBooking} className={`${T.btnPrimary} py-2`}>
-                      {editingId ? 'Aggiorna prenotazione' : 'Conferma prenotazione'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setModalOpen(false)}
-                      className={`${T.btnGhost} py-2`}
-                    >
-                      Annulla
-                    </button>
-                    {editingId && (
+                    {/* Azioni desktop */}
+                    <div className="hidden md:flex gap-3 pt-6">
                       <button
                         type="button"
-                        onClick={() => hardDeleteBooking(editingId)}
-                        className="bg-gradient-to-r from-rose-500 to-rose-600 text-white font-bold px-4 py-2 rounded-lg shadow-lg hover:scale-105 transition"
+                        onClick={saveBooking}
+                        className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-3 px-6 rounded-xl shadow-2xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
                       >
-                        Elimina prenotazione
+                        {editingId ? '✓ Aggiorna prenotazione' : '✓ Conferma prenotazione'}
                       </button>
-                    )}
-                  </div>
-
-                  {/* Spazio per pulsanti mobili */}
-                  <div className="h-16 md:hidden"></div>
-                </div>
-
-                {/* Pulsanti mobili fluttuanti */}
-                <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 p-4 z-50">
-                  <div className="flex gap-2 max-w-md mx-auto">
-                    <button
-                      type="button"
-                      onClick={saveBooking}
-                      className={`flex-1 ${T.btnPrimary} py-3 text-sm font-semibold`}
-                    >
-                      {editingId ? '✓ Aggiorna' : '✓ Conferma'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setModalOpen(false)}
-                      className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold px-4 py-3 rounded-lg text-sm"
-                    >
-                      Annulla
-                    </button>
-                    {editingId && (
                       <button
                         type="button"
-                        onClick={() => hardDeleteBooking(editingId)}
-                        className="bg-red-500 text-white font-semibold px-4 py-3 rounded-lg text-sm shadow-lg"
+                        onClick={() => setModalOpen(false)}
+                        className="px-6 py-3 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm border border-white/30 dark:border-gray-600/30 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-white/70 dark:hover:bg-gray-600/70 transition-all duration-200"
                       >
-                        🗑️
+                        Annulla
                       </button>
-                    )}
+                      {editingId && (
+                        <button
+                          type="button"
+                          onClick={() => hardDeleteBooking(editingId)}
+                          className="bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold px-6 py-3 rounded-xl shadow-2xl hover:from-red-600 hover:to-rose-700 transition-all duration-300 transform hover:scale-105"
+                        >
+                          🗑️ Elimina
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Spazio per pulsanti mobili */}
+                    <div className="h-16 md:hidden"></div>
+                  </div>
+
+                  {/* Pulsanti mobili fluttuanti */}
+                  <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-t border-white/20 dark:border-gray-700/30 p-4 z-50 shadow-2xl">
+                    <div className="flex gap-3 max-w-md mx-auto">
+                      <button
+                        type="button"
+                        onClick={saveBooking}
+                        className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-4 rounded-xl shadow-2xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
+                      >
+                        {editingId ? '✓ Aggiorna' : '✓ Conferma'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setModalOpen(false)}
+                        className="flex-1 bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm text-gray-700 dark:text-gray-300 font-semibold py-4 rounded-xl border border-white/30 dark:border-gray-600/30 hover:bg-white/90 dark:hover:bg-gray-600/90 transition-all duration-200"
+                      >
+                        Annulla
+                      </button>
+                      {editingId && (
+                        <button
+                          type="button"
+                          onClick={() => hardDeleteBooking(editingId)}
+                          className="bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold px-6 py-4 rounded-xl shadow-2xl hover:from-red-600 hover:to-rose-700 transition-all duration-300"
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1929,11 +1979,11 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           {/* Pulsanti fluttuanti FUORI dal modal - sempre sopra tutto su mobile */}
           {modalOpen && form.start && (
             <>
-              <div className="fixed bottom-24 left-4 right-4 z-[99999] flex gap-3 md:hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-md p-3 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700">
+              <div className="fixed bottom-24 left-4 right-4 z-[99999] flex gap-3 md:hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-white/20 dark:border-gray-700/30">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-4 rounded-xl shadow-lg transition-all duration-200 hover:scale-105"
+                  className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all duration-200 hover:scale-105"
                 >
                   ❌ Annulla
                 </button>
@@ -1941,7 +1991,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                   <button
                     type="button"
                     onClick={() => hardDeleteBooking(editingId)}
-                    className="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-bold px-8 py-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-105 border border-rose-300"
+                    className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold px-8 py-4 rounded-xl shadow-2xl transition-all duration-200 hover:scale-105 border border-red-300/50"
                   >
                     🗑️ Elimina
                   </button>
@@ -1954,7 +2004,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                   <button
                     type="button"
                     onClick={() => cancelBooking(editingId)}
-                    className="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-bold px-8 py-3 rounded-full shadow-2xl transition-all duration-200 hover:scale-105 border border-rose-300"
+                    className="bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold px-8 py-4 rounded-full shadow-2xl transition-all duration-200 hover:scale-105 border border-red-300/50"
                   >
                     🗑️ Elimina
                   </button>

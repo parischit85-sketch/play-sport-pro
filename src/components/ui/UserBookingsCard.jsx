@@ -28,14 +28,18 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
   return (
     <div
       onClick={() => onBookingClick(booking)}
-      className={`bg-white dark:bg-gray-800 hover:shadow-md p-3 rounded-lg border cursor-pointer transition-all group
-        min-w-[220px] h-28 sm:min-w-0 sm:h-auto flex-shrink-0 sm:flex-shrink
-        hover:border-blue-300 dark:hover:border-blue-600 transform hover:scale-102 flex flex-col justify-between`}
+      className={`bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30
+        hover:bg-white/90 dark:hover:bg-gray-800/90 hover:border-blue-300/60 dark:hover:border-blue-400/60 
+        hover:shadow-xl hover:shadow-blue-100/30 dark:hover:shadow-blue-900/20 
+        p-4 rounded-2xl cursor-pointer transition-all duration-300 group
+        min-w-[240px] h-32 sm:min-w-0 sm:h-auto flex-shrink-0 sm:flex-shrink
+        transform hover:scale-[1.02] flex flex-col justify-between
+        shadow-lg shadow-gray-100/50 dark:shadow-gray-900/20`}
     >
       {/* Header con data/ora e campo */}
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="text-xs font-medium text-gray-500 uppercase tracking-tight mb-1">
+          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-tight mb-1">
             {dateLabel}
           </div>
           <div className="text-lg font-bold text-gray-900 dark:text-white leading-none mb-1">
@@ -83,8 +87,8 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
             )}
 
             {(booking.players?.length || 0) + 1 < 4 && (
-              <div className="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-600 border border-white flex items-center justify-center">
-                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full"></div>
+              <div className="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-600 border border-white dark:border-gray-700 flex items-center justify-center">
+                <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-300 rounded-full"></div>
               </div>
             )}
           </div>
@@ -97,7 +101,7 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
               €{booking.price}
             </div>
           )}
-          <div className="text-[9px] text-gray-500">
+          <div className="text-[9px] text-gray-500 dark:text-gray-400">
             {(booking.players?.length || 0) + 1 < 4 ? 'Aperta' : 'Completa'}
           </div>
         </div>
@@ -218,16 +222,18 @@ export default function UserBookingsCard({ user, state, T, compact }) {
   // Early return per performance - no loading skeleton if we have cached data
   if (!user) {
     return (
-      <div className={`${T.cardBg} ${T.border} p-6 rounded-xl`}>
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 p-6 rounded-2xl shadow-lg shadow-gray-100/50 dark:shadow-gray-900/20">
         <div className="text-center">
           <div className="text-4xl mb-3">📅</div>
-          <h3 className={`font-semibold mb-2 ${T.text}`}>Accedi per vedere le prenotazioni</h3>
-          <p className={`text-sm ${T.subtext} mb-4`}>
+          <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">
+            Accedi per vedere le prenotazioni
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Effettua il login per gestire le tue prenotazioni
           </p>
           <button
             onClick={() => navigate('/login')}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             Accedi
           </button>
@@ -239,37 +245,40 @@ export default function UserBookingsCard({ user, state, T, compact }) {
   // Show loading only on initial load
   if (isLoading && (!displayBookings.length || lastUpdate === 0)) {
     return (
-      <div className={`${T.cardBg} ${T.border} p-6 rounded-xl`}>
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 p-6 rounded-2xl shadow-lg shadow-gray-100/50 dark:shadow-gray-900/20">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="text-2xl">📅</div>
             <div>
-              <div className="h-5 bg-gray-200 rounded w-32 mb-2 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+              <div className="h-5 bg-gray-200/60 dark:bg-gray-600/60 rounded-lg w-32 mb-2 animate-pulse"></div>
+              <div className="h-4 bg-gray-200/60 dark:bg-gray-600/60 rounded-lg w-24 animate-pulse"></div>
             </div>
           </div>
-          <div className="h-6 w-8 bg-gray-200 rounded animate-pulse"></div>
+          <div className="h-6 w-8 bg-gray-200/60 dark:bg-gray-600/60 rounded-lg animate-pulse"></div>
         </div>
 
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-gray-50 p-4 rounded-lg border animate-pulse">
+            <div
+              key={i}
+              className="bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm p-4 rounded-xl border border-white/20 dark:border-gray-600/20 animate-pulse"
+            >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded w-20 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-32"></div>
+                  <div className="h-4 bg-gray-200/60 dark:bg-gray-600/60 rounded-lg w-20 mb-2"></div>
+                  <div className="h-3 bg-gray-200/60 dark:bg-gray-600/60 rounded-lg w-32"></div>
                 </div>
                 <div className="text-right">
-                  <div className="h-3 bg-gray-200 rounded w-8 mb-1"></div>
-                  <div className="h-3 bg-gray-200 rounded w-12"></div>
+                  <div className="h-3 bg-gray-200/60 dark:bg-gray-600/60 rounded-lg w-8 mb-1"></div>
+                  <div className="h-3 bg-gray-200/60 dark:bg-gray-600/60 rounded-lg w-12"></div>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-4 pt-3 border-t border-gray-200">
-          <div className="h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+        <div className="mt-4 pt-3 border-t border-white/20 dark:border-gray-700/20">
+          <div className="h-10 bg-gray-200/60 dark:bg-gray-600/60 rounded-xl animate-pulse"></div>
         </div>
       </div>
     );
@@ -277,14 +286,16 @@ export default function UserBookingsCard({ user, state, T, compact }) {
 
   if (!hasBookings && !isLoading) {
     return (
-      <div className={`${T.cardBg} ${T.border} p-6 rounded-xl`}>
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 p-6 rounded-2xl shadow-lg shadow-gray-100/50 dark:shadow-gray-900/20">
         <div className="text-center">
           <div className="text-4xl mb-3">📅</div>
-          <h3 className={`font-semibold mb-2 ${T.text}`}>Nessuna Prenotazione</h3>
-          <p className={`text-sm ${T.subtext} mb-4`}>Non hai prenotazioni attive</p>
+          <h3 className="font-semibold mb-2 text-gray-900 dark:text-white">Nessuna Prenotazione</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            Non hai prenotazioni attive
+          </p>
           <button
             onClick={() => navigate('/booking')}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             Prenota Ora
           </button>
@@ -294,15 +305,15 @@ export default function UserBookingsCard({ user, state, T, compact }) {
   }
 
   return (
-    <div className={`${T.cardBg} ${T.border} p-6 rounded-xl`}>
+    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 p-6 rounded-2xl shadow-lg shadow-gray-100/50 dark:shadow-gray-900/20">
       {/* Header con indicatore di aggiornamento */}
-      <div className="flex items-center justify-between mb-2">
-        <h3 className={`font-semibold text-sm ${T.text}`}>Le Tue Prenotazioni</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Le Tue Prenotazioni</h3>
         {isLoading && (
           <div className="flex items-center gap-1">
-            <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse"></div>
-            <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse delay-100"></div>
-            <div className="w-1 h-1 bg-blue-500 rounded-full animate-pulse delay-200"></div>
+            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
+            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse delay-100"></div>
+            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse delay-200"></div>
           </div>
         )}
       </div>
@@ -323,14 +334,15 @@ export default function UserBookingsCard({ user, state, T, compact }) {
           {/* Card "Prenota nuovo" ultra-compatta */}
           <div
             onClick={() => navigate('/booking')}
-            className={`bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 
-              hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-800/30 dark:hover:to-blue-700/30
-              border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-lg cursor-pointer
-              min-w-[220px] h-28 flex-shrink-0 flex flex-col items-center justify-center
-              transition-all hover:border-blue-400 dark:hover:border-blue-500 group`}
+            className="bg-gradient-to-br from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 
+              hover:from-blue-100/90 hover:to-blue-200/90 dark:hover:from-blue-800/40 dark:hover:to-blue-700/40
+              backdrop-blur-sm border-2 border-dashed border-blue-300/60 dark:border-blue-500/40 rounded-2xl cursor-pointer
+              min-w-[240px] h-32 flex-shrink-0 flex flex-col items-center justify-center
+              transition-all duration-300 hover:border-blue-400/80 dark:hover:border-blue-400/60 group
+              hover:shadow-lg hover:shadow-blue-100/30 dark:hover:shadow-blue-900/20 transform hover:scale-[1.02]"
           >
-            <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-lg">
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
@@ -338,7 +350,7 @@ export default function UserBookingsCard({ user, state, T, compact }) {
                 />
               </svg>
             </div>
-            <span className="text-xs font-medium text-blue-700 dark:text-blue-300 text-center">
+            <span className="text-sm font-medium text-blue-700 dark:text-blue-300 text-center">
               Prenota Campo
             </span>
           </div>
@@ -347,23 +359,24 @@ export default function UserBookingsCard({ user, state, T, compact }) {
 
       {/* Indicatori scroll minimalisti */}
       {displayBookings.length > 0 && (
-        <div className="flex justify-center mt-2 sm:hidden">
-          <div className="flex gap-0.5">
+        <div className="flex justify-center mt-3 sm:hidden">
+          <div className="flex gap-1">
             {displayBookings.slice(0, Math.min(6, displayBookings.length)).map((_, index) => (
-              <div key={index} className="w-0.5 h-0.5 rounded-full bg-gray-300"></div>
+              <div
+                key={index}
+                className="w-1 h-1 rounded-full bg-gray-300/60 dark:bg-gray-600/60"
+              ></div>
             ))}
-            {displayBookings.length > 6 && (
-              <div className="w-0.5 h-0.5 rounded-full bg-blue-500"></div>
-            )}
+            {displayBookings.length > 6 && <div className="w-1 h-1 rounded-full bg-blue-500"></div>}
           </div>
         </div>
       )}
 
       {/* Tasto Nuova Prenotazione solo su desktop */}
-      <div className="hidden sm:block mt-4 pt-3 border-t border-gray-200">
+      <div className="hidden sm:block mt-4 pt-4 border-t border-white/20 dark:border-gray-700/20">
         <button
           onClick={() => navigate('/booking')}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors text-sm font-medium"
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-xl transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
         >
           Nuova Prenotazione
         </button>

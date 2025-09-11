@@ -5,26 +5,26 @@ import { createDSClasses } from '@lib/design-system.js';
 import { floorToSlot, addMinutes, sameDay, overlaps } from '@lib/date.js';
 import { computePrice, getRateInfo, isCourtBookableAt } from '@lib/pricing.js';
 import { useUnifiedBookings, useUserBookings, BOOKING_STATUS } from '@hooks/useUnifiedBookings.js';
-import UnifiedBookingService, { wouldCreateHalfHourHole as checkHoleCreation, isTimeSlotTrapped as checkSlotTrapped } from '@services/unified-booking-service.js';
+import UnifiedBookingService, {
+  wouldCreateHalfHourHole as checkHoleCreation,
+  isTimeSlotTrapped as checkSlotTrapped,
+} from '@services/unified-booking-service.js';
 
 function ModernBookingInterface({ user, T, state, setState }) {
   const ds = createDSClasses(T);
-  
+
   // Use unified booking service with ALL bookings (court + lesson) for availability checks
-  const { 
-    bookings: allBookings, 
-    loading: bookingsLoading, 
-    createBooking: createUnifiedBooking 
+  const {
+    bookings: allBookings,
+    loading: bookingsLoading,
+    createBooking: createUnifiedBooking,
   } = useUnifiedBookings({
     autoLoadUser: false,
-    autoLoadLessons: true
+    autoLoadLessons: true,
   });
-  
-  const { 
-    userBookings, 
-    activeUserBookings 
-  } = useUserBookings();
-  
+
+  const { userBookings, activeUserBookings } = useUserBookings();
+
   const cfg = state?.bookingConfig || {
     slotMinutes: 30,
     dayStartHour: 8,
@@ -85,72 +85,83 @@ function ModernBookingInterface({ user, T, state, setState }) {
   }, [allowedDurations.join(',')]);
 
   // Helper function to check slot availability using unified service data
-  const isSlotAvailable = useCallback((courtId, date, time, checkDuration = 60) => {
-    if (!courtId || !date || !time) return false;
-    
-    const startDateTime = new Date(`${date}T${time}:00`);
-    const endDateTime = new Date(startDateTime.getTime() + checkDuration * 60000);
-    
-    return !allBookings.some((booking) => {
-      if (booking.courtId !== courtId) return false;
-      
-      // Check if booking is active (confirmed or pending)
-      const status = booking.status || BOOKING_STATUS.CONFIRMED; // Default to confirmed
-      if (status === BOOKING_STATUS.CANCELLED) return false; // Skip cancelled bookings
-      
-      const bookingStart = new Date(booking.start || `${booking.date}T${booking.time}:00`);
-      const bookingEnd = new Date(bookingStart.getTime() + (booking.duration || 60) * 60000);
-      
-      return (
-        (startDateTime >= bookingStart && startDateTime < bookingEnd) ||
-        (endDateTime > bookingStart && endDateTime <= bookingEnd) ||
-        (startDateTime <= bookingStart && endDateTime >= bookingEnd)
-      );
-    });
-  }, [allBookings]);
+  const isSlotAvailable = useCallback(
+    (courtId, date, time, checkDuration = 60) => {
+      if (!courtId || !date || !time) return false;
+
+      const startDateTime = new Date(`${date}T${time}:00`);
+      const endDateTime = new Date(startDateTime.getTime() + checkDuration * 60000);
+
+      return !allBookings.some((booking) => {
+        if (booking.courtId !== courtId) return false;
+
+        // Check if booking is active (confirmed or pending)
+        const status = booking.status || BOOKING_STATUS.CONFIRMED; // Default to confirmed
+        if (status === BOOKING_STATUS.CANCELLED) return false; // Skip cancelled bookings
+
+        const bookingStart = new Date(booking.start || `${booking.date}T${booking.time}:00`);
+        const bookingEnd = new Date(bookingStart.getTime() + (booking.duration || 60) * 60000);
+
+        return (
+          (startDateTime >= bookingStart && startDateTime < bookingEnd) ||
+          (endDateTime > bookingStart && endDateTime <= bookingEnd) ||
+          (startDateTime <= bookingStart && endDateTime >= bookingEnd)
+        );
+      });
+    },
+    [allBookings]
+  );
 
   // Hole prevention rule
-  const wouldCreateHalfHourHole = useCallback((courtId, date, time, checkDuration) => {
-    if (!courtId || !date || !time || !checkDuration) return false;
-    
-    // Convert allBookings to the format expected by unified service
-    const existingBookings = allBookings.map(booking => ({
-      courtId: booking.courtId,
-      date: booking.date || (booking.start ? booking.start.split('T')[0] : ''),
-      time: booking.time || (booking.start ? booking.start.split('T')[1].substring(0, 5) : ''),
-      duration: booking.duration || 60,
-      status: booking.status || 'confirmed'
-    }));
-    
-    // Use the imported hole prevention function
-    const result = checkHoleCreation(courtId, date, time, checkDuration, existingBookings);
-    
-    // Log only when hole is detected
-    if (result) {
-      console.log(`🚫 [HOLE BLOCKED] ${courtId} at ${time} (${checkDuration}min) would create 30min unusable slot`);
-    }
-    
-    return result;
-  }, [allBookings]);
+  const wouldCreateHalfHourHole = useCallback(
+    (courtId, date, time, checkDuration) => {
+      if (!courtId || !date || !time || !checkDuration) return false;
+
+      // Convert allBookings to the format expected by unified service
+      const existingBookings = allBookings.map((booking) => ({
+        courtId: booking.courtId,
+        date: booking.date || (booking.start ? booking.start.split('T')[0] : ''),
+        time: booking.time || (booking.start ? booking.start.split('T')[1].substring(0, 5) : ''),
+        duration: booking.duration || 60,
+        status: booking.status || 'confirmed',
+      }));
+
+      // Use the imported hole prevention function
+      const result = checkHoleCreation(courtId, date, time, checkDuration, existingBookings);
+
+      // Log only when hole is detected
+      if (result) {
+        console.log(
+          `🚫 [HOLE BLOCKED] ${courtId} at ${time} (${checkDuration}min) would create 30min unusable slot`
+        );
+      }
+
+      return result;
+    },
+    [allBookings]
+  );
 
   // Wrapper for trapped logic - check if slot is in a trapped state
-  const isTimeSlotTrapped = useCallback((courtId, date, time, checkDuration) => {
-    if (!courtId || !date || !time || !checkDuration) return false;
-    
-    // Convert allBookings to the format expected by unified service  
-    const existingBookings = allBookings.map(booking => ({
-      courtId: booking.courtId,
-      date: booking.date || (booking.start ? booking.start.split('T')[0] : ''),
-      time: booking.time || (booking.start ? booking.start.split('T')[1].substring(0, 5) : ''),
-      duration: booking.duration || 60,
-      status: booking.status || 'confirmed'
-    }));
-    
-    // Use the imported trapped slot logic from unified service
-    const result = checkSlotTrapped(courtId, date, time, checkDuration, existingBookings);
-    
-    return result;
-  }, [allBookings]);
+  const isTimeSlotTrapped = useCallback(
+    (courtId, date, time, checkDuration) => {
+      if (!courtId || !date || !time || !checkDuration) return false;
+
+      // Convert allBookings to the format expected by unified service
+      const existingBookings = allBookings.map((booking) => ({
+        courtId: booking.courtId,
+        date: booking.date || (booking.start ? booking.start.split('T')[0] : ''),
+        time: booking.time || (booking.start ? booking.start.split('T')[1].substring(0, 5) : ''),
+        duration: booking.duration || 60,
+        status: booking.status || 'confirmed',
+      }));
+
+      // Use the imported trapped slot logic from unified service
+      const result = checkSlotTrapped(courtId, date, time, checkDuration, existingBookings);
+
+      return result;
+    },
+    [allBookings]
+  );
 
   // Scroll function for better UX
   const scrollToSection = (ref, delay = 100) => {
@@ -336,11 +347,16 @@ function ModernBookingInterface({ user, T, state, setState }) {
     }
 
     // Hole prevention check before creating booking
-    const wouldCreateHole = wouldCreateHalfHourHole(selectedCourt.id, selectedDate, selectedTime, duration);
+    const wouldCreateHole = wouldCreateHalfHourHole(
+      selectedCourt.id,
+      selectedDate,
+      selectedTime,
+      duration
+    );
     if (wouldCreateHole) {
       setMessage({
         type: 'error',
-        text: `❌ Prenotazione non consentita: creerebbe uno slot di 30 minuti non utilizzabile. Scegli un orario diverso.`
+        text: `❌ Prenotazione non consentita: creerebbe uno slot di 30 minuti non utilizzabile. Scegli un orario diverso.`,
       });
       // Mostra animazione di errore
       setShowErrorAnimation(true);
@@ -373,7 +389,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
         userPhone: '',
         notes: '',
         players: [user.displayName || user.email, ...additionalPlayers.map((p) => p.name)],
-        type: 'court'
+        type: 'court',
       };
 
       await createUnifiedBooking(bookingData);
@@ -395,7 +411,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
           status: 'booked',
           createdAt: Date.now(),
         };
-        
+
         // Il servizio unificato gestisce automaticamente lo stato
         // setState((s) => ({ ...s, bookings: [...(s.bookings || []), toAppBooking] }));
       }
@@ -434,18 +450,12 @@ function ModernBookingInterface({ user, T, state, setState }) {
 
     // Il servizio unificato gestisce automaticamente l'aggiornamento dei dati
     // Non è più necessario aggiornare manualmente le prenotazioni
-    
+
     // Ricontrolla la disponibilità
     const stillAvailable = courtsFromState.some((court) => {
       const dt = new Date(`${selectedDate}T${timeSlot.time}:00`);
       const scheduleOk = isCourtBookableAt(dt, court.id, courtsFromState);
-      const free = isSlotAvailable(
-        court.id,
-        selectedDate,
-        timeSlot.time,
-        duration,
-        allBookings
-      );
+      const free = isSlotAvailable(court.id, selectedDate, timeSlot.time, duration, allBookings);
       const hole = wouldCreateHalfHourHole(
         court.id,
         selectedDate,
@@ -465,11 +475,11 @@ function ModernBookingInterface({ user, T, state, setState }) {
     });
 
     if (!stillAvailable) {
-        setMessage({
-          type: 'error',
-          text: 'Questo orario è appena stato prenotato. Seleziona un altro slot.',
-        });
-        return;
+      setMessage({
+        type: 'error',
+        text: 'Questo orario è appena stato prenotato. Seleziona un altro slot.',
+      });
+      return;
     }
 
     // Imposta l'orario selezionato - lo scroll avverrà nel useEffect
@@ -571,12 +581,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
       if (!scheduleOk) return false;
       const free = isSlotAvailable(selectedCourt.id, selectedDate, selectedTime, dur);
       if (!free) return false;
-      const hole = wouldCreateHalfHourHole(
-        selectedCourt.id,
-        selectedDate,
-        selectedTime,
-        dur
-      );
+      const hole = wouldCreateHalfHourHole(selectedCourt.id, selectedDate, selectedTime, dur);
       // Applica deroga per slot intrappolati: se crea buco ma è intrappolato, è comunque prenotabile
       if (hole) {
         const isTrapped = isTimeSlotTrapped(
@@ -609,10 +614,10 @@ function ModernBookingInterface({ user, T, state, setState }) {
   }, [effectiveAvailableDurations.join(',')]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header mobile-friendly */}
-      <div className="bg-white border-b px-4 py-3 sm:hidden">
-        <h1 className="text-lg font-semibold text-gray-900">Prenota Campo</h1>
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-600 px-4 py-3 sm:hidden">
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Prenota Campo</h1>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-6">
@@ -621,8 +626,8 @@ function ModernBookingInterface({ user, T, state, setState }) {
           <div
             className={`mb-6 p-3 sm:p-4 rounded-lg text-sm ${
               message.type === 'error'
-                ? 'bg-red-100 text-red-800 border border-red-200'
-                : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'
+                : 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
             }`}
           >
             {message.text}
@@ -631,14 +636,14 @@ function ModernBookingInterface({ user, T, state, setState }) {
 
         {/* Debug Mode Indicator (minimal) */}
         {import.meta.env.DEV && (
-          <div className="mb-2 px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs text-center">
+          <div className="mb-2 px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded text-xs text-center">
             � Development Mode
           </div>
         )}
 
         {/* Selezione Giorno - Migliorata per mobile */}
-        <div className="bg-white rounded-lg shadow-sm border p-3 sm:p-6 mb-4 sm:mb-6">
-          <h2 className="font-semibold text-gray-900 mb-3 sm:mb-4 text-sm sm:text-base">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-600 p-3 sm:p-6 mb-4 sm:mb-6">
+          <h2 className="font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 text-sm sm:text-base">
             Seleziona il giorno
           </h2>
           <div className="overflow-x-auto scrollbar-hide">
@@ -656,7 +661,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
                   className={`flex-shrink-0 p-2 sm:p-3 rounded-lg border text-center transition-all min-w-[60px] sm:min-w-[80px] ${
                     selectedDate === day.date
                       ? 'bg-blue-500 text-white border-blue-500 shadow-md'
-                      : 'bg-white border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100'
+                      : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600 active:bg-gray-100 dark:active:bg-gray-500 text-gray-900 dark:text-gray-100'
                   }`}
                 >
                   <div className="text-xs font-medium mb-1">{day.dayName}</div>
@@ -672,10 +677,10 @@ function ModernBookingInterface({ user, T, state, setState }) {
         {selectedDate && (
           <div
             ref={timeSectionRef}
-            className="bg-white rounded-lg shadow-sm border p-3 sm:p-6 mb-4 sm:mb-6"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-600 p-3 sm:p-6 mb-4 sm:mb-6"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-3">
-              <h2 className="font-semibold text-gray-900 text-sm sm:text-base">
+              <h2 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
                 Seleziona l'orario
               </h2>
               <label className="flex items-center gap-2 text-xs sm:text-sm">
@@ -685,7 +690,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
                   onChange={(e) => setShowOnlyAvailable(e.target.checked)}
                   className="rounded text-blue-500"
                 />
-                <span className="text-gray-600">Solo orari disponibili</span>
+                <span className="text-gray-600 dark:text-gray-300">Solo orari disponibili</span>
               </label>
             </div>
 
@@ -699,16 +704,14 @@ function ModernBookingInterface({ user, T, state, setState }) {
                     selectedTime === slot.time
                       ? 'bg-blue-500 text-white border-blue-500 shadow-md'
                       : slot.isAvailable
-                        ? 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer active:bg-blue-100'
-                        : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
+                        ? 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100'
+                        : 'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                   }`}
                 >
                   <div className="font-medium text-sm sm:text-base">{slot.time}</div>
                   {!slot.isAvailable && (
                     <div className="text-xs mt-1">
-                      {slot.reason === 'out-of-schedule'
-                        ? 'Fuori orario disponibile'
-                        : 'Occupato'}
+                      {slot.reason === 'out-of-schedule' ? 'Fuori orario disponibile' : 'Occupato'}
                     </div>
                   )}
                 </button>
@@ -729,9 +732,9 @@ function ModernBookingInterface({ user, T, state, setState }) {
         {selectedTime && (
           <div
             ref={courtSectionRef}
-            className="bg-white rounded-lg shadow-sm border p-3 sm:p-6 mb-4 sm:mb-6"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-600 p-3 sm:p-6 mb-4 sm:mb-6"
           >
-            <h2 className="font-semibold text-gray-900 mb-3 sm:mb-4 text-sm sm:text-base">
+            <h2 className="font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 text-sm sm:text-base">
               Prenota un campo
             </h2>
             <div className="space-y-3 sm:space-y-4">
@@ -743,7 +746,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
                   isWithinSchedule &&
                   free &&
                   wouldCreateHalfHourHole(court.id, selectedDate, selectedTime, duration);
-                
+
                 // Simplified logic: wouldCreateHalfHourHole already handles 120min exemption internally
                 const isAvailable = isWithinSchedule && free && !createsHole;
                 return (
@@ -766,7 +769,9 @@ function ModernBookingInterface({ user, T, state, setState }) {
                         <div className="flex items-center gap-2 mb-2">
                           <h3
                             className={`font-semibold text-sm sm:text-base ${
-                              isAvailable ? 'text-gray-900' : 'text-gray-500'
+                              isAvailable
+                                ? 'text-gray-900 dark:text-gray-100'
+                                : 'text-gray-500 dark:text-gray-400'
                             }`}
                           >
                             {court.name}
@@ -835,9 +840,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
                               Non disponibile
                             </div>
                             <div className="text-xs text-red-400">
-                              {!isWithinSchedule
-                                ? 'Fuori orario disponibile'
-                                : 'Già prenotato'}
+                              {!isWithinSchedule ? 'Fuori orario disponibile' : 'Già prenotato'}
                             </div>
                           </div>
                         )}
@@ -853,23 +856,23 @@ function ModernBookingInterface({ user, T, state, setState }) {
 
       {/* Booking Modal - Completamente ridisegnato per mobile */}
       {showBookingModal && selectedCourt && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 backdrop-fade">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 backdrop-fade">
           {/* Mobile: Full screen bottom sheet */}
-          <div className="bg-white w-full h-auto max-h-[95vh] sm:max-w-md sm:max-h-[90vh] sm:rounded-lg rounded-t-2xl sm:rounded-t-lg flex flex-col slide-up-mobile sm:animate-none shadow-2xl">
+          <div className="bg-white dark:bg-gray-800 w-full h-auto max-h-[95vh] sm:max-w-md sm:max-h-[90vh] sm:rounded-lg rounded-t-2xl sm:rounded-t-lg flex flex-col slide-up-mobile sm:animate-none shadow-2xl border-t dark:border-gray-600">
             {/* Mobile handle bar */}
             <div className="flex justify-center pt-2 pb-1 sm:hidden">
-              <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
+              <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
             </div>
 
             {/* Header fisso */}
-            <div className="px-4 py-3 sm:p-6 border-b flex-shrink-0 touch-select-none">
+            <div className="px-4 py-3 sm:p-6 border-b dark:border-gray-600 flex-shrink-0 touch-select-none">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                   Conferma Prenotazione
                 </h3>
                 <button
                   onClick={() => setShowBookingModal(false)}
-                  className="w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 touch-manipulation tap-highlight-transparent text-gray-500 hover:text-gray-700"
+                  className="w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 touch-manipulation tap-highlight-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                 >
                   <span className="text-lg sm:text-base">✕</span>
                 </button>
@@ -879,14 +882,16 @@ function ModernBookingInterface({ user, T, state, setState }) {
             {/* Contenuto scrollabile */}
             <div className="flex-1 overflow-y-auto px-4 py-4 sm:p-6">
               {/* Riepilogo con design più accattivante */}
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl mb-6 border border-blue-200">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 p-4 rounded-xl mb-6 border border-blue-200 dark:border-blue-700">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm">🎾</span>
                   </div>
-                  <h4 className="font-semibold text-gray-900 text-lg">{selectedCourt.name}</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white text-lg">
+                    {selectedCourt.name}
+                  </h4>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-gray-700">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-gray-700 dark:text-gray-300">
                   <div className="flex items-center gap-2">
                     <span className="text-blue-500">📅</span>
                     <span>
@@ -910,7 +915,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
 
               {/* Durata - Design più moderno e touch-friendly */}
               <div className="mb-6">
-                <label className="block text-sm font-semibold mb-3 text-gray-900">
+                <label className="block text-sm font-semibold mb-3 text-gray-900 dark:text-white">
                   Durata partita
                 </label>
                 <div className="grid grid-cols-3 gap-3">
@@ -925,14 +930,15 @@ function ModernBookingInterface({ user, T, state, setState }) {
                     );
                     const pricePerPerson = (price / 4).toFixed(1);
                     const isAllowedDuration = allowedDurations.includes(dur);
-                    
+
                     // Check if this duration would create a hole for the current context
-                    const wouldCreateHoleForDuration = selectedCourt && selectedDate && selectedTime 
-                      ? wouldCreateHalfHourHole(selectedCourt.id, selectedDate, selectedTime, dur)
-                      : false;
-                    
+                    const wouldCreateHoleForDuration =
+                      selectedCourt && selectedDate && selectedTime
+                        ? wouldCreateHalfHourHole(selectedCourt.id, selectedDate, selectedTime, dur)
+                        : false;
+
                     const isBookableDuration = isAllowedDuration && !wouldCreateHoleForDuration;
-                    
+
                     return (
                       <button
                         key={dur}
@@ -940,17 +946,23 @@ function ModernBookingInterface({ user, T, state, setState }) {
                         disabled={!isBookableDuration}
                         className={`p-4 rounded-xl border-2 text-center transition-all touch-manipulation ${
                           !isBookableDuration
-                            ? 'bg-red-50 border-red-300 text-red-600 cursor-not-allowed'
+                            ? 'bg-red-50 dark:bg-red-900/30 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed'
                             : duration === dur
                               ? 'bg-blue-500 text-white border-blue-500 shadow-lg scale-105'
-                              : 'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50 active:bg-blue-100'
+                              : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100'
                         }`}
-                        title={!isBookableDuration ? "Questa durata creerebbe un buco di 30 minuti non utilizzabile" : ""}
+                        title={
+                          !isBookableDuration
+                            ? 'Questa durata creerebbe un buco di 30 minuti non utilizzabile'
+                            : ''
+                        }
                       >
                         {!isBookableDuration ? (
                           <>
                             <div className="font-bold text-lg">{dur}min</div>
-                            <div className="text-sm font-bold mt-1 text-red-700">Non Disponibile</div>
+                            <div className="text-sm font-bold mt-1 text-red-700 dark:text-red-400">
+                              Non Disponibile
+                            </div>
                           </>
                         ) : (
                           <>
@@ -968,12 +980,12 @@ function ModernBookingInterface({ user, T, state, setState }) {
               {/* Servizi Extra - Design migliorato */}
               {(cfg.addons?.lightingEnabled || cfg.addons?.heatingEnabled) && (
                 <div className="mb-6">
-                  <label className="block text-sm font-semibold mb-3 text-gray-900">
+                  <label className="block text-sm font-semibold mb-3 text-gray-900 dark:text-white">
                     Servizi Extra
                   </label>
                   <div className="space-y-3">
                     {cfg.addons?.lightingEnabled && (
-                      <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 touch-manipulation">
+                      <label className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 touch-manipulation">
                         <input
                           type="checkbox"
                           checked={lighting}
@@ -981,8 +993,10 @@ function ModernBookingInterface({ user, T, state, setState }) {
                           className="rounded w-5 h-5 text-blue-500"
                         />
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900">Illuminazione</div>
-                          <div className="text-xs text-gray-600">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            Illuminazione
+                          </div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
                             +{cfg.addons?.lightingFee || 0}€
                           </div>
                         </div>
@@ -990,7 +1004,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
                       </label>
                     )}
                     {cfg.addons?.heatingEnabled && selectedCourt?.hasHeating && (
-                      <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 touch-manipulation">
+                      <label className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 touch-manipulation">
                         <input
                           type="checkbox"
                           checked={heating}
@@ -998,8 +1012,10 @@ function ModernBookingInterface({ user, T, state, setState }) {
                           className="rounded w-5 h-5 text-blue-500"
                         />
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900">Riscaldamento</div>
-                          <div className="text-xs text-gray-600">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            Riscaldamento
+                          </div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
                             +{cfg.addons?.heatingFee || 0}€
                           </div>
                         </div>
@@ -1012,21 +1028,23 @@ function ModernBookingInterface({ user, T, state, setState }) {
 
               {/* Giocatori - Design completamente rinnovato */}
               <div className="mb-6">
-                <label className="block text-sm font-semibold mb-3 text-gray-900">
+                <label className="block text-sm font-semibold mb-3 text-gray-900 dark:text-white">
                   Giocatori ({1 + additionalPlayers.length}/4)
                 </label>
 
                 {/* Organizzatore */}
-                <div className="mb-3 p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500">
+                <div className="mb-3 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl border-l-4 border-blue-500">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                       <span className="text-white text-sm">👑</span>
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm font-semibold text-gray-900">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-white">
                         {user?.displayName || user?.email}
                       </div>
-                      <div className="text-xs text-blue-600 font-medium">Organizzatore</div>
+                      <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                        Organizzatore
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1036,18 +1054,22 @@ function ModernBookingInterface({ user, T, state, setState }) {
                   {additionalPlayers.map((player, index) => (
                     <div
                       key={player.id}
-                      className="p-3 bg-gray-50 rounded-xl flex items-center gap-3"
+                      className="p-3 bg-gray-50 dark:bg-gray-700 rounded-xl flex items-center gap-3"
                     >
                       <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
                         <span className="text-white text-sm">👤</span>
                       </div>
                       <div className="flex-1">
-                        <div className="text-sm font-medium text-gray-900">{player.name}</div>
-                        <div className="text-xs text-gray-500">Giocatore {index + 2}</div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {player.name}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          Giocatore {index + 2}
+                        </div>
                       </div>
                       <button
                         onClick={() => removePlayer(player.id)}
-                        className="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center touch-manipulation transition-colors"
+                        className="w-8 h-8 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center touch-manipulation transition-colors"
                       >
                         <span className="text-sm">✕</span>
                       </button>
@@ -1064,7 +1086,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
                       onChange={(e) => setNewPlayerName(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
                       placeholder="Nome nuovo giocatore"
-                      className="flex-1 p-3 border-2 border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:outline-none"
+                      className="flex-1 p-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:border-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                     />
                     <button
                       onClick={addPlayer}
@@ -1078,30 +1100,38 @@ function ModernBookingInterface({ user, T, state, setState }) {
               </div>
 
               {/* Prezzo finale - Design premium */}
-              <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-xl border border-green-200 mb-6">
+              <div className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 p-4 rounded-xl border border-green-200 dark:border-green-700 mb-6">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold text-gray-900">Totale partita</span>
-                  <span className="text-2xl font-bold text-green-600">{totalPrice}€</span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    Totale partita
+                  </span>
+                  <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    {totalPrice}€
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Costo per persona</span>
-                  <span className="text-lg font-semibold text-green-600">
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                    Costo per persona
+                  </span>
+                  <span className="text-lg font-semibold text-green-600 dark:text-green-400">
                     {(totalPrice / 4).toFixed(1)}€
                   </span>
                 </div>
-                <div className="mt-2 pt-2 border-t border-green-200">
-                  <div className="text-xs text-green-700 font-medium">💰 Pagamento in loco</div>
+                <div className="mt-2 pt-2 border-t border-green-200 dark:border-green-700">
+                  <div className="text-xs text-green-700 dark:text-green-300 font-medium">
+                    💰 Pagamento in loco
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Spazio per evitare overlap con bottoni fluttuanti su mobile */}
-            <div className="p-4 sm:p-6 border-t bg-white flex-shrink-0 lg:hidden">
+            <div className="p-4 sm:p-6 border-t dark:border-gray-600 bg-white dark:bg-gray-800 flex-shrink-0 lg:hidden">
               <div className="h-24"></div>
             </div>
 
             {/* Footer per desktop - nascosto su mobile */}
-            <div className="p-4 sm:p-6 border-t bg-white flex-shrink-0 hidden lg:block">
+            <div className="p-4 sm:p-6 border-t dark:border-gray-600 bg-white dark:bg-gray-800 flex-shrink-0 hidden lg:block">
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowBookingModal(false)}
@@ -1135,7 +1165,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
           <div className="flex gap-3">
             <button
               onClick={() => setShowBookingModal(false)}
-              className="flex-1 backdrop-blur-md bg-white/90 border border-gray-200/50 text-gray-700 py-3 px-4 rounded-xl font-medium text-sm transition-all shadow-lg hover:bg-white/95"
+              className="flex-1 backdrop-blur-md bg-white/90 dark:bg-gray-800/90 border border-gray-200/50 dark:border-gray-600/50 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-medium text-sm transition-all shadow-lg hover:bg-white/95 dark:hover:bg-gray-800/95"
             >
               Annulla
             </button>
@@ -1159,10 +1189,10 @@ function ModernBookingInterface({ user, T, state, setState }) {
 
       {/* Success Animation */}
       {showSuccessAnimation && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]">
-          <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center animate-bounce">
+        <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-center justify-center p-4 z-[60]">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-sm w-full text-center animate-bounce border dark:border-gray-600">
             <div className="mb-4">
-              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+              <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
                 <svg
                   className="w-8 h-8 text-green-500 animate-pulse"
                   fill="none"
@@ -1178,11 +1208,13 @@ function ModernBookingInterface({ user, T, state, setState }) {
                 </svg>
               </div>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Prenotazione Confermata! 🎾</h3>
-            <p className="text-gray-600 text-sm">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              Prenotazione Confermata! 🎾
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
               La tua prenotazione è stata registrata con successo
             </p>
-            <div className="mt-4 text-xs text-gray-400">
+            <div className="mt-4 text-xs text-gray-400 dark:text-gray-500">
               Questa finestra si chiuderà automaticamente
             </div>
           </div>
@@ -1192,11 +1224,11 @@ function ModernBookingInterface({ user, T, state, setState }) {
       {/* Error Animation */}
       {showErrorAnimation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[60]">
-          <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center animate-bounce">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-sm w-full text-center animate-bounce border dark:border-gray-600">
             <div className="mb-4">
-              <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+              <div className="mx-auto w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
                 <svg
-                  className="w-8 h-8 text-red-500 animate-pulse"
+                  className="w-8 h-8 text-red-500 dark:text-red-400 animate-pulse"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -1210,11 +1242,13 @@ function ModernBookingInterface({ user, T, state, setState }) {
                 </svg>
               </div>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Slot già prenotato! ⚠️</h3>
-            <p className="text-gray-600 text-sm">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              Slot già prenotato! ⚠️
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
               Questo orario è già stato prenotato da qualcun altro. Seleziona un altro orario.
             </p>
-            <div className="mt-4 text-xs text-gray-400">
+            <div className="mt-4 text-xs text-gray-400 dark:text-gray-500">
               Questa finestra si chiuderà automaticamente
             </div>
           </div>

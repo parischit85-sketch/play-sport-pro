@@ -1,10 +1,12 @@
 // =============================================
 // FILE: src/components/ui/BottomNavigation.jsx
+// FUTURISTIC REDESIGN - Modern glassmorphism UI
 // =============================================
 import React, { useState } from 'react';
 
 export default function BottomNavigation({ active, setActive, navigation = [], clubMode = false }) {
   const [showClubMenu, setShowClubMenu] = useState(false);
+
   // Handle navigation clicks
   const handleNavClick = (item) => {
     setActive(item.id);
@@ -245,11 +247,11 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
 
   return (
     <div
-      className="md:hidden bottom-nav-container bg-white border-t border-gray-200"
+      className="md:hidden bottom-nav-container bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border-t border-white/20 dark:border-gray-700/30 shadow-2xl shadow-gray-900/10 dark:shadow-black/20"
       style={{
         zIndex: 999999,
         paddingBottom: 'env(safe-area-inset-bottom)',
-        height: `calc(64px + env(safe-area-inset-bottom))`,
+        height: `calc(68px + env(safe-area-inset-bottom))`,
       }}
       onClick={(e) => e.stopPropagation()}
       onTouchEnd={(e) => e.stopPropagation()}
@@ -257,13 +259,18 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
       {/* Club Menu Overlay */}
       {showClubMenu && (
         <div
-          className="club-menu-container absolute bottom-full left-0 right-0 bg-white border-t border-gray-200 shadow-lg"
+          className="club-menu-container absolute bottom-full left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border-t border-white/20 dark:border-gray-700/30 shadow-2xl shadow-gray-900/20 dark:shadow-black/40"
           style={{ zIndex: 1000000 }}
         >
-          <div className="p-4">
-            <div className="flex justify-between items-center mb-3">
-              <div className="text-sm font-medium text-gray-500">Menu Circolo</div>
-              <button onClick={toggleClubMenu} className="text-gray-400 hover:text-gray-600 p-1">
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Menu Circolo
+              </div>
+              <button
+                onClick={toggleClubMenu}
+                className="w-8 h-8 rounded-full bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm border border-white/30 dark:border-gray-600/30 hover:bg-white/80 dark:hover:bg-gray-600/80 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-white transition-all duration-300 flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -274,14 +281,14 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
                 </svg>
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {clubNavItems.map((item) => (
                 <div
                   key={item.id}
-                  className={`flex items-center space-x-2 p-2.5 rounded-lg cursor-pointer transition-colors ${
+                  className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
                     active === item.id
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 text-blue-600 dark:text-blue-400 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 border border-blue-200/30 dark:border-blue-600/30'
+                      : 'bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-600/80 border border-white/30 dark:border-gray-600/30 shadow-lg hover:shadow-xl'
                   }`}
                   onClick={(e) => handleClubItemClick(item, e)}
                   style={{
@@ -291,8 +298,16 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
                     userSelect: 'none',
                   }}
                 >
-                  {item.icon}
-                  <span className="text-xs font-medium">{item.label}</span>
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                      active === item.id
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
+                        : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-md'
+                    }`}
+                  >
+                    {item.icon}
+                  </div>
+                  <span className="text-sm font-medium">{item.label}</span>
                 </div>
               ))}
             </div>
@@ -300,12 +315,14 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
         </div>
       )}
 
-      <div className="grid grid-cols-5 h-16">
-        {mobileNavItems.map((item) => (
+      <div className="grid grid-cols-5 h-16 px-2">
+        {mobileNavItems.map((item, index) => (
           <div
             key={item.id}
-            className={`bottom-nav-item flex flex-col items-center justify-center space-y-1 ${
-              active === item.id ? 'text-blue-600 bg-blue-50' : 'text-gray-600'
+            className={`bottom-nav-item flex flex-col items-center justify-center space-y-1 cursor-pointer transition-all duration-300 ${
+              active === item.id
+                ? 'text-blue-500 dark:text-blue-400'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
             }`}
             onClick={() => handleNavClick(item)}
             onTouchEnd={() => handleNavClick(item)}
@@ -319,16 +336,37 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
               zIndex: 1000000,
             }}
           >
-            {item.icon}
-            <span className={`font-medium ${clubMode ? 'text-xs' : 'text-xs'}`}>{item.label}</span>
+            {/* Icon Container with glassmorphism effect for active state */}
+            <div
+              className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 ${
+                active === item.id
+                  ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 backdrop-blur-sm border border-blue-200/30 dark:border-blue-600/30 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 transform scale-110'
+                  : 'hover:bg-white/60 dark:hover:bg-gray-700/60 hover:backdrop-blur-sm hover:border hover:border-white/20 dark:hover:border-gray-600/20 hover:shadow-lg hover:transform hover:scale-105'
+              }`}
+            >
+              {/* Active indicator dot */}
+              {active === item.id && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg"></div>
+              )}
+              {item.icon}
+            </div>
+            <span
+              className={`font-medium text-xs leading-tight ${
+                active === item.id ? 'font-semibold' : ''
+              }`}
+            >
+              {item.label}
+            </span>
           </div>
         ))}
 
         {/* Hamburger Menu Button (only when club mode is active) */}
         {clubMode && (
           <div
-            className={`bottom-nav-item flex flex-col items-center justify-center space-y-1 cursor-pointer ${
-              showClubMenu ? 'text-blue-600 bg-blue-50' : 'text-gray-600'
+            className={`bottom-nav-item flex flex-col items-center justify-center space-y-1 cursor-pointer transition-all duration-300 ${
+              showClubMenu
+                ? 'text-blue-500 dark:text-blue-400'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
             }`}
             onClick={toggleClubMenu}
             style={{
@@ -341,15 +379,30 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
               zIndex: 1000000,
             }}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-            <span className="text-xs font-medium">Menu</span>
+            <div
+              className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 ${
+                showClubMenu
+                  ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 dark:from-purple-400/20 dark:to-pink-400/20 backdrop-blur-sm border border-purple-200/30 dark:border-purple-600/30 shadow-lg shadow-purple-100/30 dark:shadow-purple-900/20 transform scale-110'
+                  : 'hover:bg-white/60 dark:hover:bg-gray-700/60 hover:backdrop-blur-sm hover:border hover:border-white/20 dark:hover:border-gray-600/20 hover:shadow-lg hover:transform hover:scale-105'
+              }`}
+            >
+              {showClubMenu && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full shadow-lg"></div>
+              )}
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d={showClubMenu ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+                />
+              </svg>
+            </div>
+            <span
+              className={`font-medium text-xs leading-tight ${showClubMenu ? 'font-semibold' : ''}`}
+            >
+              Menu
+            </span>
           </div>
         )}
       </div>

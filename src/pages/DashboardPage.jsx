@@ -17,17 +17,24 @@ const UserBookingsCard = React.lazy(() => import('@ui/UserBookingsCard.jsx'));
 const QuickAction = React.memo(({ action, T }) => (
   <button
     onClick={action.action}
-    className={`bg-white ring-1 ring-black/10 hover:ring-black/20 p-5 rounded-2xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group text-center`}
+    className={`relative bg-white/60 dark:bg-gray-700/60 backdrop-blur-xl border border-white/30 dark:border-gray-600/30 hover:border-white/50 dark:hover:border-gray-500/50 p-6 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group text-center overflow-hidden`}
   >
-    <div
-      className={`${action.iconWrap} w-11 h-11 ${T.borderLg} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform mx-auto`}
-    >
-      {action.icon}
+    {/* Subtle gradient overlay */}
+    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
+
+    <div className="relative">
+      <div
+        className={`${action.iconWrap} w-12 h-12 backdrop-blur-sm border border-white/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform mx-auto rounded-xl shadow-lg`}
+      >
+        {action.icon}
+      </div>
+      <h3 className="font-bold text-base mb-2 text-gray-900 dark:text-white text-center">
+        {action.title}
+      </h3>
+      <p className="text-xs text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+        {action.description}
+      </p>
     </div>
-    <h3 className="font-bold text-base mb-1 text-gray-900 dark:text-white text-center">
-      {action.title}
-    </h3>
-    <p className="text-xs text-gray-600 dark:text-gray-300 text-center">{action.description}</p>
   </button>
 ));
 
@@ -53,7 +60,8 @@ export default function DashboardPage() {
           </svg>
         ),
         action: () => navigate('/booking'),
-        iconWrap: 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200',
+        iconWrap:
+          'bg-gradient-to-r from-emerald-50/80 to-green-50/60 dark:from-emerald-900/40 dark:to-green-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-500/30',
       },
       {
         title: 'Classifica',
@@ -67,7 +75,8 @@ export default function DashboardPage() {
           </svg>
         ),
         action: () => navigate('/classifica'),
-        iconWrap: 'bg-amber-50 text-amber-600 ring-1 ring-amber-200',
+        iconWrap:
+          'bg-gradient-to-r from-amber-50/80 to-orange-50/60 dark:from-amber-900/40 dark:to-orange-900/30 text-amber-600 dark:text-amber-400 border-amber-200/50 dark:border-amber-500/30',
       },
       {
         title: 'Statistiche',
@@ -82,7 +91,8 @@ export default function DashboardPage() {
           </svg>
         ),
         action: () => navigate('/stats'),
-        iconWrap: 'bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200',
+        iconWrap:
+          'bg-gradient-to-r from-indigo-50/80 to-purple-50/60 dark:from-indigo-900/40 dark:to-purple-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-200/50 dark:border-indigo-500/30',
       },
     ],
     [navigate]
@@ -91,13 +101,16 @@ export default function DashboardPage() {
   // Quick loading fallback for immediate UI
   if (leagueLoading) {
     return (
-      <div className="space-y-1">
+      <div className="space-y-6 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 p-4">
         <PWABanner />
-        <div className="animate-pulse space-y-4">
-          <div className="bg-gray-200 rounded-xl h-32"></div>
+        <div className="animate-pulse space-y-6">
+          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-3xl h-32 border border-white/20 dark:border-gray-700/20 shadow-xl"></div>
           <div className="grid grid-cols-2 gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-gray-200 rounded-2xl h-24"></div>
+              <div
+                key={i}
+                className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl h-24 border border-white/20 dark:border-gray-700/20 shadow-xl"
+              ></div>
             ))}
           </div>
         </div>
@@ -106,21 +119,24 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-6 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800">
       {/* PWA Install Banner */}
       <PWABanner />
 
       {/* Desktop: Layout fianco a fianco */}
-      <div className="hidden lg:grid lg:grid-cols-2 lg:gap-4 lg:items-start">
+      <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start lg:p-6">
         {/* Le tue prenotazioni - Desktop (Lazy loaded) */}
-        <div>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl">
           <React.Suspense
             fallback={
-              <div className="bg-gray-100 rounded-xl p-6 animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-32 mb-4"></div>
+              <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-6 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
+                <div className="h-4 bg-gray-200/80 dark:bg-gray-600/60 rounded w-32 mb-4"></div>
                 <div className="space-y-3">
                   {[1, 2].map((i) => (
-                    <div key={i} className="h-20 bg-gray-200 rounded-lg"></div>
+                    <div
+                      key={i}
+                      className="h-20 bg-gray-200/60 dark:bg-gray-600/40 rounded-lg"
+                    ></div>
                   ))}
                 </div>
               </div>
@@ -131,8 +147,23 @@ export default function DashboardPage() {
         </div>
 
         {/* Azioni Rapide - Desktop (griglia 2x2) */}
-        <div>
-          <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl">
+          <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
             Azioni Rapide
           </h3>
           <div className="grid grid-cols-2 gap-4">
@@ -149,18 +180,18 @@ export default function DashboardPage() {
       </div>
 
       {/* Mobile/Tablet: Layout verticale */}
-      <div className="lg:hidden space-y-2">
+      <div className="lg:hidden space-y-6 p-4">
         {/* Le tue prenotazioni - Mobile (Lazy loaded) */}
-        <div>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl">
           <React.Suspense
             fallback={
-              <div className="bg-gray-100 rounded-xl p-4 animate-pulse">
-                <div className="h-3 bg-gray-200 rounded w-24 mb-3"></div>
+              <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-4 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
+                <div className="h-3 bg-gray-200/80 dark:bg-gray-600/60 rounded w-24 mb-3"></div>
                 <div className="flex gap-2 overflow-x-auto pb-2">
                   {[1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="min-w-[200px] h-24 bg-gray-200 rounded-lg flex-shrink-0"
+                      className="min-w-[200px] h-24 bg-gray-200/60 dark:bg-gray-600/40 rounded-lg flex-shrink-0"
                     ></div>
                   ))}
                 </div>
@@ -172,8 +203,23 @@ export default function DashboardPage() {
         </div>
 
         {/* Azioni Rapide - Mobile (griglia 2x2) */}
-        <div>
-          <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl">
+          <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
             Azioni Rapide
           </h3>
           <div className="grid grid-cols-2 gap-4">

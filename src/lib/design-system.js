@@ -96,11 +96,28 @@ export const DS_COLORS = {
     900: '#14532d',
   },
 
-  // Status colors
-  success: 'text-emerald-500',
-  error: 'text-rose-500',
-  warning: 'text-amber-500',
-  info: 'text-blue-500',
+  // Status colors - Dark mode compatible
+  success: 'text-emerald-500 dark:text-emerald-400',
+  error: 'text-rose-500 dark:text-rose-400',
+  warning: 'text-amber-500 dark:text-amber-400',
+  info: 'text-blue-500 dark:text-blue-400',
+
+  // Background variants for dark mode
+  bg: {
+    primary: 'bg-emerald-500',
+    secondary: 'bg-gray-100 dark:bg-gray-800',
+    tertiary: 'bg-white dark:bg-gray-900',
+    muted: 'bg-gray-50 dark:bg-gray-800/50',
+  },
+
+  // Text variants for dark mode
+  text: {
+    primary: 'text-gray-900 dark:text-white',
+    secondary: 'text-gray-600 dark:text-gray-300',
+    muted: 'text-gray-500 dark:text-gray-400',
+    inverse: 'text-white dark:text-gray-900',
+    accent: 'text-emerald-600 dark:text-emerald-400',
+  },
 
   // Chart colors (consistenti)
   chart: [
@@ -219,13 +236,13 @@ export function createDSClasses(T) {
     grid3: DS_LAYOUT.grid3,
     grid4: DS_LAYOUT.grid4,
 
-    // Typography
-    h1: `${DS_TYPOGRAPHY.h1} ${T.text}`,
-    h2: `${DS_TYPOGRAPHY.h2} ${T.text}`,
-    h3: `${DS_TYPOGRAPHY.h3} ${T.text}`,
-    body: `${DS_TYPOGRAPHY.body} ${T.text}`,
-    bodySm: `${DS_TYPOGRAPHY.bodySm} ${T.subtext}`,
-    label: `${DS_TYPOGRAPHY.label} ${T.subtext}`,
+    // Typography with dark mode
+    h1: `${DS_TYPOGRAPHY.h1} ${DS_COLORS.text.primary}`,
+    h2: `${DS_TYPOGRAPHY.h2} ${DS_COLORS.text.primary}`,
+    h3: `${DS_TYPOGRAPHY.h3} ${DS_COLORS.text.primary}`,
+    body: `${DS_TYPOGRAPHY.body} ${DS_COLORS.text.primary}`,
+    bodySm: `${DS_TYPOGRAPHY.bodySm} ${DS_COLORS.text.secondary}`,
+    label: `${DS_TYPOGRAPHY.label} ${DS_COLORS.text.secondary}`,
 
     // Buttons
     btnPrimary: T.btnPrimary,
@@ -235,11 +252,24 @@ export function createDSClasses(T) {
     // Form elements
     input: T.input,
 
-    // Status colors
+    // Status colors with dark mode
     success: DS_COLORS.success,
     error: DS_COLORS.error,
     warning: DS_COLORS.warning,
     info: DS_COLORS.info,
+
+    // Background utilities
+    bgPrimary: DS_COLORS.bg.primary,
+    bgSecondary: DS_COLORS.bg.secondary,
+    bgTertiary: DS_COLORS.bg.tertiary,
+    bgMuted: DS_COLORS.bg.muted,
+
+    // Text utilities
+    textPrimary: DS_COLORS.text.primary,
+    textSecondary: DS_COLORS.text.secondary,
+    textMuted: DS_COLORS.text.muted,
+    textInverse: DS_COLORS.text.inverse,
+    textAccent: DS_COLORS.text.accent,
   };
 }
 

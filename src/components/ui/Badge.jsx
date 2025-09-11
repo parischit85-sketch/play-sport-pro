@@ -9,7 +9,7 @@ const BADGE_VARIANTS = {
   danger: 'bg-rose-100 text-rose-800 dark:bg-rose-900/20 dark:text-rose-400',
   warning: 'bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-400',
   info: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-  primary: 'bg-emerald-500 text-black font-medium',
+  primary: 'bg-emerald-500 text-white font-medium',
 };
 
 const BADGE_SIZES = {

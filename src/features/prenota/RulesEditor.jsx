@@ -14,10 +14,10 @@ const toTime = (s = '09:00') => {
 };
 
 function DayToggles({ value = [], onChange, T }) {
-  const days = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+  const days = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
   const toggle = (idx) => {
     const has = value.includes(idx);
-    onChange(has ? value.filter(d => d !== idx) : [...value, idx].sort((a,b)=>a-b));
+    onChange(has ? value.filter((d) => d !== idx) : [...value, idx].sort((a, b) => a - b));
   };
   return (
     <div className="flex flex-wrap gap-1">
@@ -28,7 +28,7 @@ function DayToggles({ value = [], onChange, T }) {
           onClick={() => toggle(i)}
           className={`px-2 h-6 rounded-md text-xs ring-1 ${
             value.includes(i)
-              ? 'bg-emerald-500 text-black ring-emerald-500/60'
+              ? 'bg-emerald-500 text-black dark:text-white ring-emerald-500/60'
               : `${T.ghostRing} ${T.cardBg}`
           }`}
         >
@@ -46,14 +46,19 @@ function CourtsPicker({ courts = [], value = [], onChange, T }) {
   };
   return (
     <div className="mt-2">
-      <div className={`text-xs ${T.subtext}`}>Campi <span className="opacity-70">(vuoto = tutti)</span></div>
+      <div className={`text-xs ${T.subtext}`}>
+        Campi <span className="opacity-70">(vuoto = tutti)</span>
+      </div>
       <div className="mt-1 max-h-40 overflow-auto pr-1 rounded-md">
         {courts.length === 0 ? (
           <div className={`text-xs ${T.subtext}`}>Nessun campo configurato.</div>
         ) : (
           <div className="space-y-1">
             {courts.map((c) => (
-              <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer select-none">
+              <label
+                key={c.id}
+                className="flex items-center gap-2 text-sm cursor-pointer select-none"
+              >
                 <input
                   type="checkbox"
                   className="accent-emerald-500"
@@ -68,8 +73,16 @@ function CourtsPicker({ courts = [], value = [], onChange, T }) {
       </div>
       <div className="mt-2 flex gap-2">
         {/* RIMOSSO: pulsante "Tutti i campi" */}
-        <button type="button" className={T.btnGhost} onClick={() => onChange(courts.map(c => c.id))}>Seleziona tutti</button>
-        <button type="button" className={T.btnGhost} onClick={() => onChange([])}>Pulisci</button>
+        <button
+          type="button"
+          className={T.btnGhost}
+          onClick={() => onChange(courts.map((c) => c.id))}
+        >
+          Seleziona tutti
+        </button>
+        <button type="button" className={T.btnGhost} onClick={() => onChange([])}>
+          Pulisci
+        </button>
       </div>
     </div>
   );
@@ -89,8 +102,8 @@ export default function RulesEditor({ title, list = [], onChange, courts = [], T
         eurPerHour: 20,
         from: '08:00',
         to: '11:00',
-        days: [1,2,3,4,5],  // Lun–Ven
-        courts: [],         // vuoto = tutti i campi
+        days: [1, 2, 3, 4, 5], // Lun–Ven
+        courts: [], // vuoto = tutti i campi
       },
     ]);
 
@@ -104,7 +117,9 @@ export default function RulesEditor({ title, list = [], onChange, courts = [], T
     <div className={`rounded-2xl ${T.cardBg} ${T.border} p-3`}>
       <div className="flex items-center justify-between mb-2">
         <div className="font-medium">{title}</div>
-        <button type="button" className={T.btnGhost} onClick={add}>+ Aggiungi fascia</button>
+        <button type="button" className={T.btnGhost} onClick={add}>
+          + Aggiungi fascia
+        </button>
       </div>
 
       <div className="grid gap-3">

@@ -55,58 +55,61 @@ export function themeTokens() {
     spacingLg: THEME_CONSTANTS.spacing.lg,
     spacingXl: THEME_CONSTANTS.spacing.xl,
 
-    // Shadows unificati
-    shadowCard: THEME_CONSTANTS.shadows.card,
-    shadowSm: THEME_CONSTANTS.shadows.sm,
-    shadowMd: THEME_CONSTANTS.shadows.md,
-    shadowLg: THEME_CONSTANTS.shadows.lg,
+    // Shadows unificati con supporto dark mode
+    shadowCard: THEME_CONSTANTS.shadows.card + ' dark:shadow-dark-sm',
+    shadowSm: THEME_CONSTANTS.shadows.sm + ' dark:shadow-dark-sm',
+    shadowMd: THEME_CONSTANTS.shadows.md + ' dark:shadow-dark-md',
+    shadowLg: THEME_CONSTANTS.shadows.lg + ' dark:shadow-dark-lg',
 
     // Transizioni
     transitionFast: THEME_CONSTANTS.transitions.fast,
     transitionNormal: THEME_CONSTANTS.transitions.normal,
     transitionSlow: THEME_CONSTANTS.transitions.slow,
 
-    // Focus ring unificato
-    focusRing: 'focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2',
+    // Focus ring unificato per dark mode
+    focusRing:
+      'focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800',
+    primaryRing: 'ring-emerald-400 dark:ring-emerald-500',
   };
 
-  // Tema unico moderno/chiaro (solido, leggibile, senza trasparenze)
+  // Tema universale con supporto automatico dark mode
   return {
-    name: 'modern',
+    name: 'universal',
     ...shared,
-    // Layout
-    pageBg: 'bg-neutral-50',
-    text: 'text-neutral-900',
-    subtext: 'text-neutral-600',
-    cardBg: 'bg-white',
-    border: 'ring-1 ring-black/10',
-    headerBg: 'bg-white border-b border-black/10',
 
-    // Brand colors
-    neonText: 'text-emerald-600',
-    link: 'underline underline-offset-4 decoration-emerald-600 hover:text-emerald-700',
-    ghostRing: 'ring-black/10 hover:bg-black/5',
-    tableHeadText: 'text-neutral-500',
+    // Layout - Adaptive light/dark
+    pageBg: 'bg-neutral-50 dark:bg-gray-900',
+    text: 'text-neutral-900 dark:text-white',
+    subtext: 'text-neutral-600 dark:text-gray-300',
+    cardBg: 'bg-white dark:bg-gray-800',
+    border: 'ring-1 ring-black/10 dark:ring-white/10',
+    headerBg: 'bg-white dark:bg-gray-800 border-b border-black/10 dark:border-white/10',
+
+    // Brand colors - Ottimizzati per entrambi i temi
+    neonText: 'text-emerald-600 dark:text-emerald-400',
+    link: 'underline underline-offset-4 decoration-emerald-600 dark:decoration-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300',
+    ghostRing: 'ring-black/10 dark:ring-white/10 hover:bg-black/5 dark:hover:bg-white/5',
+    tableHeadText: 'text-neutral-500 dark:text-gray-400',
 
     // Form elements
-    input: `${THEME_CONSTANTS.borderRadius.md} px-3 py-2 bg-white border border-black/10 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 outline-none ${THEME_CONSTANTS.transitions.normal}`,
+    input: `${THEME_CONSTANTS.borderRadius.md} px-3 py-2 bg-white dark:bg-gray-700 border border-black/10 dark:border-white/20 text-neutral-900 dark:text-white placeholder-neutral-500 dark:placeholder-gray-400 focus:border-emerald-400 dark:focus:border-emerald-500 focus:ring-1 focus:ring-emerald-400 dark:focus:ring-emerald-500 outline-none ${THEME_CONSTANTS.transitions.normal}`,
 
-    // Buttons
+    // Buttons - Funzionano in entrambi i temi
     btnPrimary: `inline-flex items-center justify-center ${THEME_CONSTANTS.borderRadius.md} px-4 py-2 font-medium text-black bg-gradient-to-r from-emerald-400 to-lime-400 hover:brightness-110 active:brightness-95 ${THEME_CONSTANTS.transitions.normal} ${THEME_CONSTANTS.shadows.sm}`,
-    btnGhost: `inline-flex items-center justify-center ${THEME_CONSTANTS.borderRadius.md} px-4 py-2 font-medium ring-1 ring-black/10 hover:bg-black/5 ${THEME_CONSTANTS.transitions.normal}`,
-    btnGhostSm: `inline-flex items-center justify-center ${THEME_CONSTANTS.borderRadius.sm} px-2 py-1 text-xs font-medium ring-1 ring-black/10 hover:bg-black/5 ${THEME_CONSTANTS.transitions.normal}`,
+    btnGhost: `inline-flex items-center justify-center ${THEME_CONSTANTS.borderRadius.md} px-4 py-2 font-medium ring-1 ring-black/10 dark:ring-white/10 hover:bg-black/5 dark:hover:bg-white/5 text-neutral-900 dark:text-white ${THEME_CONSTANTS.transitions.normal}`,
+    btnGhostSm: `inline-flex items-center justify-center ${THEME_CONSTANTS.borderRadius.sm} px-2 py-1 text-xs font-medium ring-1 ring-black/10 dark:ring-white/10 hover:bg-black/5 dark:hover:bg-white/5 text-neutral-900 dark:text-white ${THEME_CONSTANTS.transitions.normal}`,
 
-    // Status colors
-    accentGood: 'text-emerald-600',
-    accentBad: 'text-rose-600',
-    accentWarning: 'text-amber-600',
-    accentInfo: 'text-blue-600',
+    // Status colors - Adattati per dark mode
+    accentGood: 'text-emerald-600 dark:text-emerald-400',
+    accentBad: 'text-rose-600 dark:text-rose-400',
+    accentWarning: 'text-amber-600 dark:text-amber-400',
+    accentInfo: 'text-blue-600 dark:text-blue-400',
 
     // Components
     chip: 'bg-emerald-500 text-black',
 
-    // Cards unificati
-    card: `${THEME_CONSTANTS.borderRadius.lg} bg-white ring-1 ring-black/10 ${THEME_CONSTANTS.spacing.md} ${THEME_CONSTANTS.shadows.card}`,
-    cardHover: `${THEME_CONSTANTS.borderRadius.lg} bg-white ring-1 ring-black/10 ${THEME_CONSTANTS.spacing.md} ${THEME_CONSTANTS.shadows.md} hover:shadow-lg ${THEME_CONSTANTS.transitions.normal}`,
+    // Cards unificati con dark mode
+    card: `${THEME_CONSTANTS.borderRadius.lg} bg-white dark:bg-gray-800 ring-1 ring-black/10 dark:ring-white/10 ${THEME_CONSTANTS.spacing.md} ${THEME_CONSTANTS.shadows.card} dark:shadow-dark-sm`,
+    cardHover: `${THEME_CONSTANTS.borderRadius.lg} bg-white dark:bg-gray-800 ring-1 ring-black/10 dark:ring-white/10 ${THEME_CONSTANTS.spacing.md} ${THEME_CONSTANTS.shadows.md} dark:shadow-dark-md hover:shadow-lg dark:hover:shadow-dark-lg ${THEME_CONSTANTS.transitions.normal}`,
   };
 }

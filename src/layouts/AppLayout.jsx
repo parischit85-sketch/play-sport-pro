@@ -59,7 +59,7 @@ export default function AppLayout() {
   const isDashboard = currentPath === '/dashboard' || currentPath === '/';
   return (
     <div
-      className={`min-h-screen safe-area-top safe-area-bottom ${T.text} ${isDashboard ? 'bg-gradient-to-b from-neutral-50 via-white to-neutral-100' : T.pageBg}`}
+      className={`min-h-screen safe-area-top safe-area-bottom ${T.text} ${isDashboard ? 'bg-gradient-to-b from-neutral-50 via-white to-neutral-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900' : T.pageBg}`}
     >
       {/* Header */}
       <header className={`sticky top-0 z-20 ${T.headerBg} safe-area-left safe-area-right`}>
@@ -70,7 +70,7 @@ export default function AppLayout() {
               alt="Sporting Cat"
               className="h-8 w-auto rounded-md shadow shrink-0"
             />
-            <div className="text-lg sm:text-2xl font-bold tracking-wide truncate text-black">
+            <div className="text-lg sm:text-2xl font-bold tracking-wide truncate text-neutral-900 dark:text-white">
               Sporting Cat
             </div>
           </div>

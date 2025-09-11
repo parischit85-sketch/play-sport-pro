@@ -24,6 +24,7 @@ const TournamentsPage = React.lazy(() => import('@pages/TournamentsPage.jsx'));
 const ProfilePage = React.lazy(() => import('@pages/ProfilePage.jsx'));
 const ExtraPage = React.lazy(() => import('@pages/ExtraPage.jsx'));
 const AdminBookingsPage = React.lazy(() => import('@pages/AdminBookingsPage.jsx'));
+const DarkModeTestPage = React.lazy(() => import('@pages/DarkModeTestPage.jsx'));
 
 export default function AppRouter() {
   return (
@@ -74,6 +75,9 @@ export default function AppRouter() {
 
                     {/* User Routes */}
                     <Route path="profile" element={<ProfilePage />} />
+
+                    {/* Development/Test Routes */}
+                    <Route path="test/dark-mode" element={<DarkModeTestPage />} />
                   </Route>
 
                   {/* Fallback */}

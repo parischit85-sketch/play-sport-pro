@@ -20,7 +20,7 @@ export default function LoginPage() {
               alt="Sporting Cat"
               className="h-8 w-auto rounded-md shadow shrink-0"
             />
-            <div className="text-lg sm:text-2xl font-bold tracking-wide truncate text-black">
+            <div className="text-lg sm:text-2xl font-bold tracking-wide truncate text-neutral-900 dark:text-white">
               Sporting Cat
             </div>
           </div>

@@ -6,10 +6,10 @@ import { euro2 } from '@lib/format.js';
 
 // Componente per i toggle dei giorni
 function DayToggles({ value = [], onChange, T }) {
-  const days = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+  const days = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
   const toggle = (idx) => {
     const has = value.includes(idx);
-    onChange(has ? value.filter(d => d !== idx) : [...value, idx].sort((a,b)=>a-b));
+    onChange(has ? value.filter((d) => d !== idx) : [...value, idx].sort((a, b) => a - b));
   };
   return (
     <div className="flex flex-wrap gap-1">
@@ -20,7 +20,7 @@ function DayToggles({ value = [], onChange, T }) {
           onClick={() => toggle(i)}
           className={`px-2 h-6 rounded-md text-xs ring-1 transition-all ${
             value.includes(i)
-              ? 'bg-emerald-500 text-black ring-emerald-500/60'
+              ? 'bg-emerald-500 text-black dark:text-white ring-emerald-500/60'
               : `${T.ghostRing} ${T.cardBg}`
           }`}
         >
@@ -48,11 +48,13 @@ function TimeSlotEditor({ slot, onUpdate, onRemove, T }) {
   };
 
   return (
-    <div className={`relative rounded-lg p-3 ${
-      T.name === 'dark'
-        ? `${T.cardBg} ${T.border}`
-        : 'bg-emerald-50/50 ring-1 ring-emerald-200'
-    }`}>
+    <div
+      className={`relative rounded-lg p-3 ${
+        T.name === 'dark'
+          ? `${T.cardBg} ${T.border}`
+          : 'bg-emerald-50/50 dark:bg-emerald-900/20 ring-1 ring-emerald-200 dark:ring-emerald-700'
+      }`}
+    >
       {/* Pulsante rimuovi */}
       <button
         type="button"
@@ -128,25 +130,32 @@ function TimeSlotEditor({ slot, onUpdate, onRemove, T }) {
               onChange={(e) => onUpdate({ isPromo: e.target.checked })}
               className="w-4 h-4 text-yellow-600 rounded focus:ring-yellow-500"
             />
-            <label htmlFor={`promo-${slot.id || 'new'}`} className="text-sm flex items-center gap-1">
+            <label
+              htmlFor={`promo-${slot.id || 'new'}`}
+              className="text-sm flex items-center gap-1"
+            >
               🏷️ Fascia Promo
-              {slot.isPromo && <span className="ml-1 text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded">PROMO</span>}
+              {slot.isPromo && (
+                <span className="ml-1 text-xs bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 px-1.5 py-0.5 rounded">
+                  PROMO
+                </span>
+              )}
             </label>
           </div>
         </div>
 
         {/* Preview prezzo */}
         <div className="flex lg:justify-end">
-          <div className={`flex-shrink-0 p-3 rounded-lg ring-1 bg-emerald-100/50 ${T.border} text-center`}>
+          <div
+            className={`flex-shrink-0 p-3 rounded-lg ring-1 bg-emerald-100/50 dark:bg-emerald-900/30 ${T.border} text-center`}
+          >
             <div className="text-xs font-medium text-emerald-700 dark:text-emerald-300 mb-1">
               90min/4 persone
             </div>
             <div className="text-lg font-bold text-emerald-800 dark:text-emerald-200">
               {perPlayer90(slot.eurPerHour)}€
             </div>
-            <div className="text-xs text-emerald-600 dark:text-emerald-400">
-              per persona
-            </div>
+            <div className="text-xs text-emerald-600 dark:text-emerald-400">per persona</div>
           </div>
         </div>
       </div>
@@ -165,11 +174,11 @@ function ExpandableCourtCard({ court, onUpdate, onRemove, T }) {
       eurPerHour: 25,
       from: '08:00',
       to: '12:00',
-      days: [1,2,3,4,5] // Lun-Ven
+      days: [1, 2, 3, 4, 5], // Lun-Ven
     };
-    
+
     onUpdate({
-      timeSlots: [...(court.timeSlots || []), newSlot]
+      timeSlots: [...(court.timeSlots || []), newSlot],
     });
   };
 
@@ -192,7 +201,7 @@ function ExpandableCourtCard({ court, onUpdate, onRemove, T }) {
   return (
     <div className={`rounded-xl ${T.border} ${T.cardBg} overflow-hidden transition-all`}>
       {/* Header della card - sempre visibile */}
-      <div 
+      <div
         className="p-4 cursor-pointer hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -203,18 +212,22 @@ function ExpandableCourtCard({ court, onUpdate, onRemove, T }) {
               <div className="font-semibold text-lg">{court.name}</div>
               <div className={`text-sm ${T.subtext}`}>
                 {(court.timeSlots || []).length} fasce orarie configurate
-                {court.hasHeating && <span className="ml-1 text-xs bg-orange-100 text-orange-800 px-2 py-0.5 rounded">🔥 Riscaldamento</span>}
+                {court.hasHeating && (
+                  <span className="ml-1 text-xs bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 px-2 py-0.5 rounded">
+                    🔥 Riscaldamento
+                  </span>
+                )}
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <button
               type="button"
               className={`text-sm px-3 py-1 rounded transition-all ${
-                isExpanded 
-                  ? 'bg-emerald-100 text-emerald-800' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                isExpanded
+                  ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
               onClick={(e) => {
                 e.stopPropagation();
@@ -246,7 +259,7 @@ function ExpandableCourtCard({ court, onUpdate, onRemove, T }) {
               <span>⚙️</span>
               Configurazioni Campo
             </h4>
-            
+
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label className={`text-xs ${T.subtext} mb-1 block`}>Nome Campo</label>
@@ -257,7 +270,7 @@ function ExpandableCourtCard({ court, onUpdate, onRemove, T }) {
                   placeholder="Es. Campo 1 - Centrale"
                 />
               </div>
-              
+
               <div className="flex items-center gap-3">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -279,11 +292,7 @@ function ExpandableCourtCard({ court, onUpdate, onRemove, T }) {
                 <span>🕐</span>
                 Fasce Orarie e Prezzi
               </h4>
-              <button
-                type="button"
-                className={`${T.btnGhost} text-sm`}
-                onClick={addTimeSlot}
-              >
+              <button type="button" className={`${T.btnGhost} text-sm`} onClick={addTimeSlot}>
                 + Aggiungi Fascia
               </button>
             </div>
@@ -291,10 +300,14 @@ function ExpandableCourtCard({ court, onUpdate, onRemove, T }) {
             {/* Lista fasce orarie */}
             <div className="space-y-3">
               {(court.timeSlots || []).length === 0 ? (
-                <div className={`text-center py-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg ${T.subtext}`}>
+                <div
+                  className={`text-center py-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg ${T.subtext}`}
+                >
                   <div className="text-2xl mb-2">🕐</div>
                   <div className="text-sm">Nessuna fascia oraria configurata</div>
-                  <div className="text-xs mt-1">Aggiungi almeno una fascia per attivare il campo</div>
+                  <div className="text-xs mt-1">
+                    Aggiungi almeno una fascia per attivare il campo
+                  </div>
                 </div>
               ) : (
                 (court.timeSlots || []).map((slot, index) => (
@@ -321,14 +334,14 @@ export default function AdvancedCourtsManager({ courts = [], onChange, T }) {
 
   const addCourt = () => {
     if (!newCourtName.trim()) return;
-    
+
     const newCourt = {
       id: Date.now().toString(),
       name: newCourtName.trim(),
       hasHeating: false,
-      timeSlots: []
+      timeSlots: [],
     };
-    
+
     onChange([...courts, newCourt]);
     setNewCourtName('');
   };
@@ -341,7 +354,12 @@ export default function AdvancedCourtsManager({ courts = [], onChange, T }) {
   };
 
   const removeCourt = (courtIndex) => {
-    if (!confirm('Rimuovere il campo? Tutte le configurazioni e prenotazioni collegate saranno perse.')) return;
+    if (
+      !confirm(
+        'Rimuovere il campo? Tutte le configurazioni e prenotazioni collegate saranno perse.'
+      )
+    )
+      return;
     onChange(courts.filter((_, index) => index !== courtIndex));
   };
 
@@ -352,7 +370,7 @@ export default function AdvancedCourtsManager({ courts = [], onChange, T }) {
         <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
           🏟️ Gestione Campi Avanzata
         </h3>
-        
+
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1">
             <input
@@ -363,16 +381,16 @@ export default function AdvancedCourtsManager({ courts = [], onChange, T }) {
               placeholder="Es. Campo 4 - Centrale (Coperto)"
             />
           </div>
-          <button 
-            type="button" 
-            className={`${T.btnPrimary} w-full sm:w-auto px-6`} 
+          <button
+            type="button"
+            className={`${T.btnPrimary} w-full sm:w-auto px-6`}
             onClick={addCourt}
             disabled={!newCourtName.trim()}
           >
             ➕ Aggiungi Campo
           </button>
         </div>
-        
+
         <div className={`text-xs ${T.subtext} mt-2`}>
           I campi saranno espandibili per configurare fasce orarie, prezzi e opzioni specifiche
         </div>
@@ -381,11 +399,14 @@ export default function AdvancedCourtsManager({ courts = [], onChange, T }) {
       {/* Lista campi espandibili */}
       <div className="space-y-4">
         {courts.length === 0 ? (
-          <div className={`text-center py-12 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl ${T.cardBg}`}>
+          <div
+            className={`text-center py-12 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl ${T.cardBg}`}
+          >
             <div className="text-4xl mb-4">🏟️</div>
             <h4 className="font-medium text-lg mb-2">Nessun campo configurato</h4>
             <p className={`text-sm ${T.subtext} mb-4`}>
-              Aggiungi il primo campo per iniziare a configurare fasce orarie e prezzi personalizzati
+              Aggiungi il primo campo per iniziare a configurare fasce orarie e prezzi
+              personalizzati
             </p>
           </div>
         ) : (
@@ -404,28 +425,28 @@ export default function AdvancedCourtsManager({ courts = [], onChange, T }) {
       {/* Statistiche riassuntive */}
       {courts.length > 0 && (
         <div className={`rounded-xl ${T.border} ${T.cardBg} p-4`}>
-          <h4 className="font-medium mb-3 flex items-center gap-2">
-            📊 Riepilogo Configurazioni
-          </h4>
-          
+          <h4 className="font-medium mb-3 flex items-center gap-2">📊 Riepilogo Configurazioni</h4>
+
           <div className="grid sm:grid-cols-3 gap-4 text-sm">
             <div className="text-center">
-              <div className="text-2xl font-bold text-emerald-600">
-                {courts.length}
-              </div>
+              <div className="text-2xl font-bold text-emerald-600">{courts.length}</div>
               <div className={T.subtext}>Campi Totali</div>
             </div>
-            
+
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600">
                 {courts.reduce((sum, court) => sum + (court.timeSlots || []).length, 0)}
               </div>
               <div className={T.subtext}>Fasce Configurate</div>
             </div>
-            
+
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">
-                {courts.reduce((sum, court) => sum + (court.timeSlots || []).filter(slot => slot.isPromo).length, 0)}
+                {courts.reduce(
+                  (sum, court) =>
+                    sum + (court.timeSlots || []).filter((slot) => slot.isPromo).length,
+                  0
+                )}
               </div>
               <div className={T.subtext}>Fasce Promo</div>
             </div>
