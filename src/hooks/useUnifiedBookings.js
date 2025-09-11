@@ -19,11 +19,7 @@ export function useUnifiedBookings(options = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const {
-    autoLoadUser = true,
-    autoLoadLessons = true,
-    enableRealtime = true,
-  } = options;
+  const { autoLoadUser = true, autoLoadLessons = true, enableRealtime = true } = options;
 
   // Initialize service
   useEffect(() => {
@@ -31,41 +27,43 @@ export function useUnifiedBookings(options = {}) {
       cloudEnabled: true,
       user: user,
     });
-    
+
     // Migrate old data on first load
     UnifiedBookingService.migrateOldData();
   }, [user]);
 
   // Load all bookings
-  const loadBookings = useCallback(async (forceRefresh = false) => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const allBookings = await UnifiedBookingService.getPublicBookings({ 
-        forceRefresh 
-      });
-      setBookings(allBookings);
-      
-      // Load user-specific bookings if user is available
-      if (user && autoLoadUser) {
-        const userBookingData = await UnifiedBookingService.getUserBookings(user);
-        setUserBookings(userBookingData);
+  const loadBookings = useCallback(
+    async (forceRefresh = false) => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const allBookings = await UnifiedBookingService.getPublicBookings({
+          forceRefresh,
+        });
+        setBookings(allBookings);
+
+        // Load user-specific bookings if user is available
+        if (user && autoLoadUser) {
+          const userBookingData = await UnifiedBookingService.getUserBookings(user);
+          setUserBookings(userBookingData);
+        }
+
+        // Load lesson bookings if requested
+        if (autoLoadLessons) {
+          const lessonData = await UnifiedBookingService.getLessonBookings();
+          setLessonBookings(lessonData);
+        }
+      } catch (err) {
+        console.error('Error loading bookings:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-      
-      // Load lesson bookings if requested
-      if (autoLoadLessons) {
-        const lessonData = await UnifiedBookingService.getLessonBookings();
-        setLessonBookings(lessonData);
-      }
-      
-    } catch (err) {
-      console.error('Error loading bookings:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, autoLoadUser, autoLoadLessons]);
+    },
+    [user, autoLoadUser, autoLoadLessons]
+  );
 
   // Load bookings on mount and user change
   useEffect(() => {
@@ -77,21 +75,24 @@ export function useUnifiedBookings(options = {}) {
     if (!enableRealtime) return;
 
     const unsubscribeUpdated = UnifiedBookingService.addEventListener('bookingsUpdated', (data) => {
-      console.log('📡 Real-time booking update:', data);
       setBookings(data.bookings);
     });
 
-    const unsubscribeCreated = UnifiedBookingService.addEventListener('bookingCreated', (booking) => {
-      console.log('📡 New booking created:', booking);
-      loadBookings(true); // Refresh all data
-    });
+    const unsubscribeCreated = UnifiedBookingService.addEventListener(
+      'bookingCreated',
+      (booking) => {
+        loadBookings(true); // Refresh all data
+      }
+    );
 
-    const unsubscribeDeleted = UnifiedBookingService.addEventListener('bookingDeleted', ({ id }) => {
-      console.log('📡 Booking deleted:', id);
-      setBookings(prev => prev.filter(b => b.id !== id));
-      setUserBookings(prev => prev.filter(b => b.id !== id));
-      setLessonBookings(prev => prev.filter(b => b.id !== id));
-    });
+    const unsubscribeDeleted = UnifiedBookingService.addEventListener(
+      'bookingDeleted',
+      ({ id }) => {
+        setBookings((prev) => prev.filter((b) => b.id !== id));
+        setUserBookings((prev) => prev.filter((b) => b.id !== id));
+        setLessonBookings((prev) => prev.filter((b) => b.id !== id));
+      }
+    );
 
     return () => {
       unsubscribeUpdated();
@@ -101,91 +102,107 @@ export function useUnifiedBookings(options = {}) {
   }, [enableRealtime, loadBookings]);
 
   // Booking operations
-  const createBooking = useCallback(async (bookingData) => {
-    try {
-      setLoading(true);
-      const result = await UnifiedBookingService.createBooking(bookingData, user);
-      
-      // Refresh data
-      await loadBookings(true);
-      
-      return result;
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [user, loadBookings]);
+  const createBooking = useCallback(
+    async (bookingData) => {
+      try {
+        setLoading(true);
+        const result = await UnifiedBookingService.createBooking(bookingData, user);
 
-  const updateBooking = useCallback(async (bookingId, updates) => {
-    try {
-      const result = await UnifiedBookingService.updateBooking(bookingId, updates, user);
-      
-      // Update local state optimistically
-      setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, ...updates } : b));
-      setUserBookings(prev => prev.map(b => b.id === bookingId ? { ...b, ...updates } : b));
-      setLessonBookings(prev => prev.map(b => b.id === bookingId ? { ...b, ...updates } : b));
-      
-      return result;
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    }
-  }, [user]);
+        // Refresh data
+        await loadBookings(true);
 
-  const cancelBooking = useCallback(async (bookingId) => {
-    try {
-      const result = await UnifiedBookingService.cancelBooking(bookingId, user);
-      
-      // Update local state
-      const updatedBooking = { status: 'cancelled', cancelledAt: new Date().toISOString() };
-      setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, ...updatedBooking } : b));
-      setUserBookings(prev => prev.map(b => b.id === bookingId ? { ...b, ...updatedBooking } : b));
-      setLessonBookings(prev => prev.map(b => b.id === bookingId ? { ...b, ...updatedBooking } : b));
-      
-      return result;
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    }
-  }, [user]);
+        return result;
+      } catch (err) {
+        setError(err.message);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user, loadBookings]
+  );
 
-  const deleteBooking = useCallback(async (bookingId) => {
-    try {
-      await UnifiedBookingService.deleteBooking(bookingId, user);
-      
-      // Remove from local state
-      setBookings(prev => prev.filter(b => b.id !== bookingId));
-      setUserBookings(prev => prev.filter(b => b.id !== bookingId));
-      setLessonBookings(prev => prev.filter(b => b.id !== bookingId));
-      
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    }
-  }, [user]);
+  const updateBooking = useCallback(
+    async (bookingId, updates) => {
+      try {
+        const result = await UnifiedBookingService.updateBooking(bookingId, updates, user);
+
+        // Update local state optimistically
+        setBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, ...updates } : b)));
+        setUserBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, ...updates } : b)));
+        setLessonBookings((prev) =>
+          prev.map((b) => (b.id === bookingId ? { ...b, ...updates } : b))
+        );
+
+        return result;
+      } catch (err) {
+        setError(err.message);
+        throw err;
+      }
+    },
+    [user]
+  );
+
+  const cancelBooking = useCallback(
+    async (bookingId) => {
+      try {
+        const result = await UnifiedBookingService.cancelBooking(bookingId, user);
+
+        // Update local state
+        const updatedBooking = { status: 'cancelled', cancelledAt: new Date().toISOString() };
+        setBookings((prev) =>
+          prev.map((b) => (b.id === bookingId ? { ...b, ...updatedBooking } : b))
+        );
+        setUserBookings((prev) =>
+          prev.map((b) => (b.id === bookingId ? { ...b, ...updatedBooking } : b))
+        );
+        setLessonBookings((prev) =>
+          prev.map((b) => (b.id === bookingId ? { ...b, ...updatedBooking } : b))
+        );
+
+        return result;
+      } catch (err) {
+        setError(err.message);
+        throw err;
+      }
+    },
+    [user]
+  );
+
+  const deleteBooking = useCallback(
+    async (bookingId) => {
+      try {
+        await UnifiedBookingService.deleteBooking(bookingId, user);
+
+        // Remove from local state
+        setBookings((prev) => prev.filter((b) => b.id !== bookingId));
+        setUserBookings((prev) => prev.filter((b) => b.id !== bookingId));
+        setLessonBookings((prev) => prev.filter((b) => b.id !== bookingId));
+      } catch (err) {
+        setError(err.message);
+        throw err;
+      }
+    },
+    [user]
+  );
 
   // Computed values
-  const activeBookings = useMemo(() => 
-    bookings.filter(b => b.status === 'confirmed'), 
+  const activeBookings = useMemo(
+    () => bookings.filter((b) => b.status === 'confirmed'),
     [bookings]
   );
 
-  const activeUserBookings = useMemo(() => 
-    userBookings.filter(b => b.status === 'confirmed'), 
+  const activeUserBookings = useMemo(
+    () => userBookings.filter((b) => b.status === 'confirmed'),
     [userBookings]
   );
 
-  const activeLessonBookings = useMemo(() => 
-    lessonBookings.filter(b => b.status === 'confirmed'), 
+  const activeLessonBookings = useMemo(
+    () => lessonBookings.filter((b) => b.status === 'confirmed'),
     [lessonBookings]
   );
 
-  const courtBookings = useMemo(() => 
-    bookings.filter(b => !b.isLessonBooking), 
-    [bookings]
-  );
+  const courtBookings = useMemo(() => bookings.filter((b) => !b.isLessonBooking), [bookings]);
 
   return {
     // Data
@@ -196,18 +213,18 @@ export function useUnifiedBookings(options = {}) {
     activeUserBookings,
     activeLessonBookings,
     courtBookings,
-    
+
     // State
     loading,
     error,
-    
+
     // Operations
     createBooking,
     updateBooking,
     cancelBooking,
     deleteBooking,
     refresh: loadBookings,
-    
+
     // Utils
     clearError: () => setError(null),
   };
@@ -221,15 +238,18 @@ export function useCourtBookings() {
     autoLoadUser: false,
     autoLoadLessons: false,
   });
-  
-  const createCourtBooking = useCallback(async (bookingData) => {
-    return createBooking({
-      ...bookingData,
-      type: 'court',
-      isLessonBooking: false,
-    });
-  }, [createBooking]);
-  
+
+  const createCourtBooking = useCallback(
+    async (bookingData) => {
+      return createBooking({
+        ...bookingData,
+        type: 'court',
+        isLessonBooking: false,
+      });
+    },
+    [createBooking]
+  );
+
   return {
     bookings: courtBookings,
     loading,
@@ -244,51 +264,48 @@ export function useCourtBookings() {
  */
 export function useLessonBookings() {
   const { user } = useAuth(); // Aggiungi il context dell'utente
-  const { 
-    lessonBookings, 
-    loading, 
-    error, 
-    createBooking, 
-    cancelBooking, 
-    refresh 
-  } = useUnifiedBookings({
-    autoLoadUser: true,
-    autoLoadLessons: true,
-  });
-  
-  const createLessonBooking = useCallback(async (lessonData) => {
-    // First create the lesson booking
-    const lessonBooking = await createBooking({
-      ...lessonData,
-      type: 'lesson',
-      isLessonBooking: true,
+  const { lessonBookings, loading, error, createBooking, cancelBooking, refresh } =
+    useUnifiedBookings({
+      autoLoadUser: true,
+      autoLoadLessons: true,
     });
-    
-    // Then create the associated court booking if needed
-    if (lessonData.createCourtBooking !== false) {
-      const courtBooking = await createBooking({
+
+  const createLessonBooking = useCallback(
+    async (lessonData) => {
+      // First create the lesson booking
+      const lessonBooking = await createBooking({
         ...lessonData,
-        type: 'court',
+        type: 'lesson',
         isLessonBooking: true,
-        notes: `Lezione con ${lessonData.instructorName || 'istruttore'}`,
-        courtBookingId: lessonBooking.id, // Link them
       });
-      
-      // Update lesson booking with court reference
-      lessonBooking.courtBookingId = courtBooking.id;
-    }
-    
-    return lessonBooking;
-  }, [createBooking]);
-  
+
+      // Then create the associated court booking if needed
+      if (lessonData.createCourtBooking !== false) {
+        const courtBooking = await createBooking({
+          ...lessonData,
+          type: 'court',
+          isLessonBooking: true,
+          notes: `Lezione con ${lessonData.instructorName || 'istruttore'}`,
+          courtBookingId: lessonBooking.id, // Link them
+        });
+
+        // Update lesson booking with court reference
+        lessonBooking.courtBookingId = courtBooking.id;
+      }
+
+      return lessonBooking;
+    },
+    [createBooking]
+  );
+
   const clearAllLessons = useCallback(async () => {
     const allLessons = await UnifiedBookingService.getLessonBookings();
-    
+
     for (const lesson of allLessons) {
       try {
         // Delete the lesson booking permanently (pass the user from context)
         await UnifiedBookingService.deleteBooking(lesson.id, user);
-        
+
         // Delete associated court booking if exists
         if (lesson.courtBookingId) {
           await UnifiedBookingService.deleteBooking(lesson.courtBookingId, user);
@@ -297,13 +314,13 @@ export function useLessonBookings() {
         console.warn('Error deleting lesson:', lesson.id, error);
       }
     }
-    
+
     // Refresh data
     await refresh(true);
-    
+
     return allLessons.length;
   }, [user, refresh]);
-  
+
   return {
     lessonBookings,
     loading,
@@ -319,17 +336,11 @@ export function useLessonBookings() {
  * Hook for user bookings (both court and lesson)
  */
 export function useUserBookings() {
-  const { 
-    userBookings, 
-    activeUserBookings, 
-    loading, 
-    error, 
-    refresh 
-  } = useUnifiedBookings({
+  const { userBookings, activeUserBookings, loading, error, refresh } = useUnifiedBookings({
     autoLoadUser: true,
     autoLoadLessons: false,
   });
-  
+
   return {
     userBookings,
     activeUserBookings,

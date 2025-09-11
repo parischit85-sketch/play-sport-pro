@@ -9,6 +9,7 @@ import { euro, euro2 } from '@lib/format.js';
 import { sameDay, floorToSlot, addMinutes, overlaps } from '@lib/date.js';
 import { computePrice, getRateInfo, isCourtBookableAt } from '@lib/pricing.js';
 import { useUnifiedBookings } from '@hooks/useUnifiedBookings.js';
+import { PLAYER_CATEGORIES } from '@features/players/types/playerTypes.js';
 
 // Componente calendario personalizzato
 function CalendarGrid({ currentDay, onSelectDay, T }) {
@@ -140,21 +141,21 @@ function CalendarGrid({ currentDay, onSelectDay, T }) {
 
 export default function PrenotazioneCampi({ state, setState, players, playersById, T }) {
   const { user } = useAuth();
-  
+
   // Use unified booking service
-  const { 
-    bookings: allBookings, 
-    loading: bookingsLoading, 
+  const {
+    bookings: allBookings,
+    loading: bookingsLoading,
     refresh: refreshBookings,
     createBooking: createUnifiedBooking,
     updateBooking: updateUnifiedBooking,
-    deleteBooking: deleteUnifiedBooking
+    deleteBooking: deleteUnifiedBooking,
   } = useUnifiedBookings({
     autoLoadUser: false,
     autoLoadLessons: true,
     enableRealtime: true,
   });
-  
+
   // Safe access to bookingConfig with fallback
   const cfg = state?.bookingConfig || {
     slotMinutes: 30,
@@ -167,27 +168,24 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   const [day, setDay] = useState(() => floorToSlot(new Date(), cfg.slotMinutes));
   const [showDatePicker, setShowDatePicker] = useState(false);
   const courts = Array.isArray(state?.courts) ? state.courts : [];
-  const [instructors, setInstructors] = useState([]);
-
-  // Load instructors from localStorage for lesson color coding
-  useEffect(() => {
-    try {
-      const storedInstructors = localStorage.getItem('lesson-instructors');
-      if (storedInstructors) {
-        setInstructors(JSON.parse(storedInstructors));
-      }
-    } catch (error) {
-      console.error('Error loading instructors:', error);
-    }
-  }, []);
+  // Get instructors from players (instead of localStorage)
+  const instructors = useMemo(() => {
+    const availableInstructors = (state.players || []).filter(
+      (player) =>
+        player.category === PLAYER_CATEGORIES.INSTRUCTOR && player.instructorData?.isInstructor
+    );
+    return availableInstructors;
+  }, [state.players]);
 
   // Convert unified bookings to local format
   const bookings = useMemo(() => {
     return (allBookings || [])
-      .filter(b => b.status === 'confirmed')
-      .map(b => {
+      .filter((b) => b.status === 'confirmed')
+      .map((b) => {
         try {
-          const startIso = new Date(`${b.date}T${String(b.time).padStart(5, '0')}:00`).toISOString();
+          const startIso = new Date(
+            `${b.date}T${String(b.time).padStart(5, '0')}:00`
+          ).toISOString();
           return {
             id: b.id,
             courtId: b.courtId,
@@ -204,6 +202,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
             status: 'booked',
             instructorId: b.instructorId,
             isLessonBooking: b.isLessonBooking || false,
+            color: b.color, // 🎨 FIX: Include color field from original booking
           };
         } catch {
           return null;
@@ -211,11 +210,6 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       })
       .filter(Boolean);
   }, [allBookings]);
-
-  // Log when bookings change
-  useEffect(() => {
-    console.log('🎾 PrenotazioneCampi: Bookings updated:', bookings.length);
-  }, [bookings]);
 
   // Default duration for new bookings: prefer 90' if available, otherwise first configured or 90'
   const defaultDuration = useMemo(() => {
@@ -354,6 +348,21 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   const [editingId, setEditingId] = useState(null);
   const [mobileView, setMobileView] = useState('overview'); // 'overview' o 'detail'
   const [selectedCourtFilter, setSelectedCourtFilter] = useState('all'); // per vista dettaglio
+
+  // Drag & Drop state (desktop only)
+  const [draggedBooking, setDraggedBooking] = useState(null);
+  const [dragOverSlot, setDragOverSlot] = useState(null);
+  const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
+
+  // Update isDesktop on resize
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const [form, setForm] = useState({
     courtId: '',
     start: null,
@@ -366,6 +375,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     bookedBy: '',
     useLighting: false,
     useHeating: false,
+    color: '#e91e63', // Default color for bookings
+    bookingType: 'partita', // 'partita' or 'lezione'
+    instructorId: '', // For lesson bookings
   });
 
   function openCreate(courtId, start) {
@@ -383,6 +395,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       bookedBy: '',
       useLighting: false,
       useHeating: false,
+      color: '#e91e63', // Default color for new bookings
+      bookingType: 'partita', // Default to 'partita'
+      instructorId: '', // Empty by default
     });
     setModalOpen(true);
   }
@@ -412,6 +427,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       bookedBy: organizerName,
       useLighting: !!booking.addons?.lighting,
       useHeating: !!booking.addons?.heating,
+      color: booking.color || '#e91e63', // Use existing color or default
+      bookingType: booking.instructorId ? 'lezione' : 'partita', // Detect if it's a lesson
+      instructorId: booking.instructorId || '', // Use existing instructor or empty
     });
     setModalOpen(true);
   }
@@ -439,11 +457,30 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.p1Name]);
 
+  // Handle color change when booking type or instructor changes
+  useEffect(() => {
+    if (form.bookingType === 'lezione' && form.instructorId && instructors.length > 0) {
+      const selectedInstructor = instructors.find((inst) => inst.id === form.instructorId);
+      if (selectedInstructor?.instructorData?.color) {
+        setForm((f) => ({ ...f, color: selectedInstructor.instructorData.color }));
+      }
+    } else if (form.bookingType === 'partita') {
+      setForm((f) => ({ ...f, color: '#e91e63' })); // Default pink color for matches
+    }
+  }, [form.bookingType, form.instructorId, instructors]);
+
   async function saveBooking() {
     if (!form.courtId || !form.start) {
       alert('Seleziona campo e orario.');
       return;
     }
+
+    // Validate instructor selection for lessons
+    if (form.bookingType === 'lezione' && !form.instructorId) {
+      alert('Seleziona un maestro per le lezioni.');
+      return;
+    }
+
     const start = floorToSlot(form.start, cfg.slotMinutes);
     // Verifica fascia per-campo: gli slot fuori fascia non sono prenotabili anche in admin
     if (!isCourtBookableAt(start, form.courtId, courts)) {
@@ -500,31 +537,53 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           players: pNames,
           notes: form.note?.trim() || '',
           type: 'court',
+          color: form.color, // Add custom color
+          ...(form.bookingType === 'lezione' && form.instructorId
+            ? {
+                instructorId: form.instructorId,
+                instructorName:
+                  instructors.find((inst) => inst.id === form.instructorId)?.name || '',
+                lessonType: 'individual',
+              }
+            : {}),
         };
-        
+
         const created = await createUnifiedBooking(bookingData);
-        
+
         // If admin specified a different name, update the bookedBy field
         if (bookedByName) {
           await updateUnifiedBooking(created.id, { bookedBy: bookedByName });
         }
       } else {
         // Update existing booking using unified service
-        await updateUnifiedBooking(editingId, {
-            courtId: form.courtId,
-            courtName: courtNameFull,
-            date: dateStr,
-            time: timeStr,
-            duration: form.duration,
-            lighting: !!form.useLighting,
-            heating: !!form.useHeating,
-            price,
-            players: pNames,
-            notes: form.note?.trim() || '',
-            ...(bookedByName ? { bookedBy: bookedByName } : {}),
-          },
-          user
-        );
+        const updateData = {
+          courtId: form.courtId,
+          courtName: courtNameFull,
+          date: dateStr,
+          time: timeStr,
+          duration: form.duration,
+          lighting: !!form.useLighting,
+          heating: !!form.useHeating,
+          price,
+          players: pNames,
+          notes: form.note?.trim() || '',
+          color: form.color, // Add custom color
+          ...(bookedByName ? { bookedBy: bookedByName } : {}),
+          ...(form.bookingType === 'lezione' && form.instructorId
+            ? {
+                instructorId: form.instructorId,
+                instructorName:
+                  instructors.find((inst) => inst.id === form.instructorId)?.name || '',
+                lessonType: 'individual',
+              }
+            : {
+                instructorId: null,
+                instructorName: null,
+                lessonType: null,
+              }),
+        };
+
+        await updateUnifiedBooking(editingId, updateData, user);
       }
       // La sottoscrizione realtime aggiornerà la griglia
       setModalOpen(false);
@@ -564,6 +623,190 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       .join('')
       .slice(0, 3)
       .toUpperCase();
+
+  // =============================================
+  // DRAG & DROP FUNCTIONS (Desktop Only)
+  // =============================================
+
+  const handleDragStart = (e, booking) => {
+    if (!isDesktop) return;
+    setDraggedBooking(booking);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', booking.id);
+
+    // Add visual feedback
+    e.target.style.opacity = '0.6';
+  };
+
+  const handleDragEnd = (e) => {
+    if (!isDesktop) return;
+    setDraggedBooking(null);
+    setDragOverSlot(null);
+    e.target.style.opacity = '1';
+  };
+
+  const handleDragOver = (e, courtId, time) => {
+    if (!isDesktop || !draggedBooking) return;
+
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+
+    // Only allow drop on same day
+    const draggedDate = new Date(draggedBooking.start).toDateString();
+    const targetDate = time.toDateString();
+
+    if (draggedDate !== targetDate) return;
+
+    // Calculate all slots that would be occupied by the booking
+    const startTime = floorToSlot(time, cfg.slotMinutes);
+    const duration = draggedBooking.duration || 60;
+    const endTime = addMinutes(startTime, duration);
+
+    // Reduced logging to avoid console spam
+    if (window.dragOverLogCount === undefined) window.dragOverLogCount = 0;
+    if (window.dragOverLogCount++ % 50 === 0) {
+      console.log('🎯 DRAG OVER (every 50th):', {
+        originalTime: time.toISOString(),
+        calculatedStartTime: startTime.toISOString(),
+        duration: duration,
+        endTime: endTime.toISOString(),
+      });
+    }
+
+    // Generate all time slots that would be occupied
+    const occupiedSlots = [];
+    for (
+      let currentTime = new Date(startTime);
+      currentTime < endTime;
+      currentTime = addMinutes(currentTime, cfg.slotMinutes)
+    ) {
+      occupiedSlots.push({
+        courtId,
+        time: currentTime.getTime(),
+      });
+    }
+
+    setDragOverSlot({ courtId, slots: occupiedSlots });
+  };
+
+  const handleDragLeave = (e) => {
+    if (!isDesktop) return;
+    // Only clear if really leaving (not moving to child element)
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setDragOverSlot(null);
+    }
+  };
+
+  const handleDrop = async (e, courtId, time) => {
+    if (!isDesktop || !draggedBooking) return;
+
+    e.preventDefault();
+    setDragOverSlot(null);
+
+    console.log('🎯 DROP EVENT (DRAG&DROP TIMEZONE FIX):', {
+      mousePosition: { x: e.clientX, y: e.clientY },
+      slotTimeUTC: time.toISOString(),
+      slotTimeLocal: time.toLocaleString('it-IT', { timeZone: 'Europe/Rome' }),
+      courtId: courtId,
+      draggedBookingStart: new Date(draggedBooking.start).toISOString(),
+      draggedBookingDuration: draggedBooking.duration,
+      timezoneOffset: time.getTimezoneOffset(),
+    });
+
+    // FIX: When user drops on a slot showing 14:00, they want 14:00 regardless of timezone
+    // Create a new time that represents the hours/minutes they see, but in UTC
+    const userIntendedTime = new Date(time);
+    const localHours = userIntendedTime.getHours();
+    const localMinutes = userIntendedTime.getMinutes();
+
+    // Create UTC time with the same hours/minutes the user sees
+    const correctedDropTime = new Date(
+      Date.UTC(
+        userIntendedTime.getFullYear(),
+        userIntendedTime.getMonth(),
+        userIntendedTime.getDate(),
+        localHours,
+        localMinutes,
+        0,
+        0
+      )
+    );
+
+    console.log('🎯 TIMEZONE CORRECTION FOR DROP:', {
+      originalTime: time.toISOString(),
+      originalLocalDisplay: time.toLocaleString('it-IT'),
+      userSeesHours: localHours,
+      userSeesMinutes: localMinutes,
+      correctedTime: correctedDropTime.toISOString(),
+      correctedLocalDisplay: correctedDropTime.toLocaleString('it-IT'),
+    });
+
+    try {
+      // Use the timezone-corrected time for all operations
+      const finalDropTime = correctedDropTime;
+
+      // Check if the target slot is available and on the same day
+      const draggedDate = new Date(draggedBooking.start).toDateString();
+      const targetDate = finalDropTime.toDateString();
+
+      if (draggedDate !== targetDate) {
+        alert("Puoi spostare le prenotazioni solo all'interno dello stesso giorno.");
+        return;
+      }
+
+      // Use the corrected time for slot calculation
+      let targetTime = floorToSlot(finalDropTime, cfg.slotMinutes);
+      console.log(
+        '🎯 Using timezone-corrected drop time:',
+        targetTime.toISOString(),
+        'should display as:',
+        targetTime.toLocaleString('it-IT')
+      );
+
+      console.log('🎯 Original booking time:', new Date(draggedBooking.start).toISOString());
+      console.log('🎯 Target time calculated:', targetTime.toISOString());
+
+      const targetEnd = addMinutes(targetTime, draggedBooking.duration);
+
+      const conflictingBooking = bookings.find((b) => {
+        if (b.id === draggedBooking.id) return false; // Ignore the booking we're moving
+        if (b.courtId !== courtId) return false;
+
+        const bookingStart = new Date(b.start);
+        const bookingEnd = addMinutes(bookingStart, b.duration);
+
+        return overlaps(targetTime, targetEnd, bookingStart, bookingEnd);
+      });
+
+      if (conflictingBooking) {
+        alert("Lo slot di destinazione è già occupato da un'altra prenotazione.");
+        return;
+      }
+
+      // Check if target court is in schedule
+      const inSchedule = isCourtBookableAt(targetTime, courtId, courts);
+      if (!inSchedule) {
+        alert('Il campo selezionato non è disponibile in questo orario.');
+        return;
+      }
+
+      // Update the booking
+      const newStartIso = targetTime.toISOString();
+      await updateUnifiedBooking(draggedBooking.id, {
+        courtId: courtId,
+        courtName: courtName(courtId),
+        date: targetTime.toISOString().split('T')[0],
+        time: targetTime.toISOString().split('T')[1].substring(0, 5),
+        start: newStartIso, // Keep legacy format for compatibility
+        updatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('❌ Error moving booking:', error);
+      alert('Errore durante lo spostamento della prenotazione.');
+    }
+
+    setDraggedBooking(null);
+  };
 
   const SLOT_H = 52; // px
 
@@ -617,16 +860,29 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       const alpha = greenAlphaForRate(info.rate);
       const isDiscounted = info.source === 'discounted' || info.isPromo;
       const startLabel = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const isDragTarget =
+        dragOverSlot &&
+        dragOverSlot.courtId === courtId &&
+        dragOverSlot.slots?.some((slot) => slot.time === t.getTime());
 
       return (
         <button
           type="button"
           onClick={() => openCreate(courtId, t)}
-          className="relative w-full h-9 rounded-lg ring-1 text-[11px] font-medium"
-          style={{ background: `rgba(16,185,129,${alpha})`, borderColor: `rgba(16,185,129,0.35)` }}
+          className={`relative w-full h-9 rounded-lg ring-1 text-[11px] font-medium transition-all duration-200 ${
+            isDragTarget ? 'ring-2 ring-blue-500 ring-offset-1 scale-105' : ''
+          }`}
+          style={{
+            background: isDragTarget ? 'rgba(59, 130, 246, 0.2)' : `rgba(16,185,129,${alpha})`,
+            borderColor: isDragTarget ? 'rgba(59, 130, 246, 0.6)' : `rgba(16,185,129,0.35)`,
+          }}
           title={
             info.isPromo ? 'Fascia Promo' : isDiscounted ? 'Fascia scontata' : 'Tariffa standard'
           }
+          // Drag & Drop props (desktop only)
+          onDragOver={isDesktop ? (e) => handleDragOver(e, courtId, t) : undefined}
+          onDragLeave={isDesktop ? handleDragLeave : undefined}
+          onDrop={isDesktop ? (e) => handleDrop(e, courtId, t) : undefined}
         >
           {isDiscounted && (
             <span
@@ -668,28 +924,39 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     const lampIcon = <span className="text-2xl">💡</span>;
     const fireIcon = <span className="text-2xl">🔥</span>;
 
-    // Check if this is a lesson booking and get instructor color
-    const isLessonBooking = hit.isLessonBooking || (hit.notes && hit.notes.includes('Lezione con'));
+    // Determine booking color - priority: custom color > instructor color > default
     let slotBgColor = 'rgba(220, 38, 127, 0.35)'; // Default booking color
     let slotBorderColor = 'rgba(220, 38, 127, 0.6)';
-    
-    if (isLessonBooking) {
+
+    // Check if this is a lesson booking (needed for UI elements later)
+    const isLessonBooking = hit.isLessonBooking || (hit.notes && hit.notes.includes('Lezione con'));
+
+    // First check if booking has custom color
+    if (hit.color) {
+      const hex = hit.color.replace('#', '');
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+      slotBgColor = `rgba(${r}, ${g}, ${b}, 0.35)`;
+      slotBorderColor = `rgba(${r}, ${g}, ${b}, 0.6)`;
+    } else if (isLessonBooking) {
+      // Get instructor color for lesson bookings
       let instructor = null;
-      
+
       if (hit.instructorId) {
-        instructor = instructors.find(i => i.id === hit.instructorId);
+        instructor = instructors.find((i) => i.id === hit.instructorId);
       } else {
         // Extract instructor name from notes like "Lezione con Marco Rossi"
         const match = hit.notes.match(/Lezione con (.+)/);
         if (match) {
           const instructorName = match[1];
-          instructor = instructors.find(i => i.name === instructorName);
+          instructor = instructors.find((i) => i.name === instructorName);
         }
       }
-      
-      if (instructor && instructor.color) {
+
+      if (instructor && instructor.instructorData?.color) {
         // Convert hex color to rgba for background and border
-        const hex = instructor.color.replace('#', '');
+        const hex = instructor.instructorData.color.replace('#', '');
         const r = parseInt(hex.substr(0, 2), 16);
         const g = parseInt(hex.substr(2, 2), 16);
         const b = parseInt(hex.substr(4, 2), 16);
@@ -703,7 +970,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         <button
           type="button"
           onClick={() => openEdit(hit)}
-          className="absolute left-0 right-0 px-2 py-2 ring-1 text-left text-[13px] font-semibold flex flex-col justify-center"
+          className={`absolute left-0 right-0 px-2 py-2 ring-1 text-left text-[13px] font-semibold flex flex-col justify-center transition-all duration-200 ${
+            isDesktop ? 'cursor-grab hover:shadow-lg' : ''
+          }`}
           style={{
             top: 0,
             height: `${totalHeight}px`,
@@ -715,14 +984,20 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           title={`${courtName(hit.courtId)} — ${start.toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
-          })} (${hit.duration}′) • clicca per modificare`}
+          })} (${hit.duration}′) • ${isDesktop ? 'Trascina per spostare o clicca per modificare' : 'Clicca per modificare'}`}
+          // Drag & Drop props (desktop only)
+          draggable={isDesktop}
+          onDragStart={isDesktop ? (e) => handleDragStart(e, hit) : undefined}
+          onDragEnd={isDesktop ? handleDragEnd : undefined}
+          onMouseDown={isDesktop ? (e) => (e.target.style.cursor = 'grabbing') : undefined}
+          onMouseUp={isDesktop ? (e) => (e.target.style.cursor = 'grab') : undefined}
         >
           {/* Icone in alto a sinistra, affiancate */}
           <div className="absolute left-2 top-2 flex flex-row items-center gap-2 z-20">
             {hit.addons?.lighting && lampIcon}
             {hit.addons?.heating && fireIcon}
             {isLessonBooking && (
-              <span 
+              <span
                 className="text-[12px] px-1.5 py-0.5 bg-white/20 rounded-full font-semibold"
                 title="Lezione"
               >
@@ -779,6 +1054,17 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
   return (
     <Section title="Gestione Campi" T={T}>
+      {/* Drag & Drop Info Banner (Desktop Only) */}
+      {isDesktop && (
+        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+          <div className="flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
+            <span className="text-lg">🖱️</span>
+            <span className="font-medium">Drag & Drop attivo:</span>
+            <span>Trascina le prenotazioni per spostarle su slot liberi dello stesso giorno</span>
+          </div>
+        </div>
+      )}
+
       {/* Show loading state if state is null */}
       {!state ? (
         <div className="flex items-center justify-center py-12">
@@ -1075,25 +1361,27 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
                             // Check basic availability (no overlap, in schedule)
                             const basicAvailable = !existingBooking && inSchedule;
-                            
+
                             // 30-minute hole prevention rule disabled
                             if (basicAvailable) {
                               const dateStr = time.toISOString().split('T')[0]; // YYYY-MM-DD
                               const timeStr = time.toISOString().split('T')[1].substring(0, 5); // HH:MM
                               const duration = cfg.slotMinutes || 30; // Use slot duration as booking duration
-                              
+
                               // Convert bookings format for unified service - bookings already have ISO start format
-                              const allCourtBookings = Array.from(bookingsByCourt.get(court.id) || []).map(b => ({
+                              const allCourtBookings = Array.from(
+                                bookingsByCourt.get(court.id) || []
+                              ).map((b) => ({
                                 courtId: court.id,
                                 date: b.start.split('T')[0], // Already ISO format
                                 time: b.start.split('T')[1].substring(0, 5), // Already ISO format
                                 duration: b.duration,
-                                status: 'booked'
+                                status: 'booked',
                               }));
-                              
+
                               // 30-minute hole prevention rule disabled
                             }
-                            
+
                             const isAvailable = basicAvailable; // No hole checking
                             const hasPromo = hasPromoSlot(court.id, time);
 
@@ -1223,6 +1511,55 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
             ) : (
               <div className="rounded-2xl p-6 shadow-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-600">
                 <div className="grid sm:grid-cols-2 gap-4">
+                  {/* Tipo prenotazione */}
+                  <div className="sm:col-span-2 flex flex-col gap-1">
+                    <label className={`text-xs font-semibold ${T.subtext}`}>
+                      Tipo prenotazione
+                    </label>
+                    <select
+                      value={form.bookingType}
+                      onChange={(e) => {
+                        const newType = e.target.value;
+                        setForm((f) => ({
+                          ...f,
+                          bookingType: newType,
+                          instructorId: newType === 'partita' ? '' : f.instructorId,
+                        }));
+                      }}
+                      className={T.input}
+                    >
+                      <option value="partita">🏓 Partita</option>
+                      <option value="lezione">👨‍🏫 Lezione</option>
+                    </select>
+                  </div>
+
+                  {/* Selettore istruttore - mostrato solo per lezioni */}
+                  {form.bookingType === 'lezione' && (
+                    <div className="sm:col-span-2 flex flex-col gap-1">
+                      <label className={`text-xs font-semibold ${T.subtext}`}>Maestro</label>
+                      <select
+                        value={form.instructorId}
+                        onChange={(e) => setForm((f) => ({ ...f, instructorId: e.target.value }))}
+                        className={T.input}
+                        required={form.bookingType === 'lezione'}
+                      >
+                        <option value="">-- Seleziona un maestro --</option>
+                        {instructors.map((instructor) => (
+                          <option key={instructor.id} value={instructor.id}>
+                            {instructor.name}
+                            {instructor.instructorData?.specialties?.length > 0 &&
+                              ` (${instructor.instructorData.specialties.join(', ')})`}
+                          </option>
+                        ))}
+                      </select>
+                      {form.bookingType === 'lezione' && !form.instructorId && (
+                        <div className="text-xs text-red-600">
+                          ⚠️ Seleziona un maestro per le lezioni
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="flex flex-col gap-1">
                     <label className={`text-xs font-semibold ${T.subtext}`}>Campo</label>
                     <select
@@ -1381,6 +1718,75 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                         className={`${T.input} text-sm py-2`}
                         placeholder="Es. Lezioni, torneo, ecc."
                       />
+                    </div>
+
+                    <div>
+                      <label className={`text-xs font-semibold ${T.subtext} mb-1 block`}>
+                        Colore prenotazione
+                        {form.bookingType === 'lezione' && form.instructorId && (
+                          <span className="ml-2 text-xs text-blue-600 font-normal">
+                            (Colore del maestro)
+                          </span>
+                        )}
+                        {form.bookingType === 'partita' && (
+                          <span className="ml-2 text-xs text-pink-600 font-normal">
+                            (Colore standard partita)
+                          </span>
+                        )}
+                      </label>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="color"
+                            value={form.color}
+                            onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
+                            className="w-12 h-10 rounded border-2 border-gray-300 cursor-pointer"
+                            title="Seleziona il colore della prenotazione"
+                          />
+                          <div className="flex-1">
+                            <div
+                              className="h-8 rounded border-2 flex items-center px-3 text-sm font-medium"
+                              style={{
+                                backgroundColor: form.color + '33', // Add transparency
+                                borderColor: form.color,
+                                color: form.color,
+                              }}
+                            >
+                              Anteprima colore
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Preset colors */}
+                        <div className="flex gap-2 flex-wrap">
+                          <span className="text-xs text-gray-600 w-full mb-1">
+                            Colori predefiniti:
+                          </span>
+                          {[
+                            { color: '#e91e63', name: 'Rosa (default)' },
+                            { color: '#f44336', name: 'Rosso' },
+                            { color: '#00bcd4', name: 'Turchese' },
+                            { color: '#2196f3', name: 'Blu' },
+                            { color: '#4caf50', name: 'Verde' },
+                            { color: '#ff9800', name: 'Arancione' },
+                            { color: '#9c27b0', name: 'Viola' },
+                            { color: '#607d8b', name: 'Grigio' },
+                          ].map((preset) => (
+                            <button
+                              key={preset.color}
+                              type="button"
+                              onClick={() => setForm((f) => ({ ...f, color: preset.color }))}
+                              className={`w-8 h-8 rounded border-2 cursor-pointer transition-transform hover:scale-110 ${
+                                form.color === preset.color
+                                  ? 'border-gray-800 scale-110'
+                                  : 'border-gray-300'
+                              }`}
+                              style={{ backgroundColor: preset.color }}
+                              title={preset.name}
+                            />
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
