@@ -1,7 +1,7 @@
-import { j as e, D as q, h as le, f as de, t as ie } from './index-mffptcom-DDEOMtjD.js';
-import { r as f, f as oe, b as ce } from './router-mffptcom-C1Xlp-63.js';
-import { S as xe } from './Section-mffptcom-Bl9N1Fxg.js';
-import { S as me } from './ShareButtons-mffptcom-F85d8KGa.js';
+import { j as e, D as q, h as le, f as de, t as ie } from './index-mfgod96n-DwV9PbJ5.js';
+import { r as f, f as oe, b as ce } from './router-mfgod96n-jGu93CuW.js';
+import { S as xe } from './Section-mfgod96n-Bh2iDtmF.js';
+import { S as me } from './ShareButtons-mfgod96n-DZHYjgsV.js';
 import {
   R as ge,
   A as he,
@@ -10,11 +10,11 @@ import {
   Y as pe,
   T as fe,
   c as je,
-} from './charts-mffptcom-Den-okBL.js';
-import { M as ve } from './Modal-mffptcom-BdCISDND.js';
-import { b as ke, s as J, I as ye } from './names-mffptcom-BW9lV2zG.js';
-import './vendor-mffptcom-D3F3s8fL.js';
-import './firebase-mffptcom-X_I_guKF.js';
+} from './charts-mfgod96n-BCQkBXGn.js';
+import { M as ve } from './Modal-mfgod96n-OGd_G-gU.js';
+import { b as ke, s as J, I as ye } from './names-mfgod96n-BW9lV2zG.js';
+import './vendor-mfgod96n-D3F3s8fL.js';
+import './firebase-mfgod96n-X_I_guKF.js';
 const Q = {
   primary: '#3b82f6',
   success: '#10b981',
@@ -579,7 +579,8 @@ function we({
                     e.jsxs('div', {
                       className: 'text-xs text-gray-500 dark:text-gray-400 mt-2 text-center',
                       children: [
-                        '📅 ',
+                        '📅',
+                        ' ',
                         new Date(t.date).toLocaleDateString('it-IT', {
                           weekday: 'long',
                           year: 'numeric',
@@ -1601,7 +1602,8 @@ function we({
                       (C || []).filter(
                         (t) => (t.teamA || []).includes(l) || (t.teamB || []).includes(l)
                       ).length,
-                      ' partite',
+                      ' ',
+                      'partite',
                     ],
                   }),
                 ],
@@ -1881,7 +1883,8 @@ function we({
                                                 className: 'text-blue-700 dark:text-blue-300',
                                                 children: 'Rating:',
                                               }),
-                                              ' A=',
+                                              ' ',
+                                              'A=',
                                               Math.round(t.sumA || 0),
                                               ' vs B=',
                                               Math.round(t.sumB || 0),
@@ -1898,12 +1901,13 @@ function we({
                                                 className: 'text-purple-700 dark:text-purple-300',
                                                 children: 'Calcolo:',
                                               }),
-                                              ' Base: ',
-                                              (t.base || 0).toFixed(1),
-                                              ' • DG:',
                                               ' ',
+                                              'Base: ',
+                                              (t.base || 0).toFixed(1),
+                                              ' • DG: ',
                                               t.gd || 0,
-                                              ' • Factor: ',
+                                              ' • Factor:',
+                                              ' ',
                                               (t.factor || 1).toFixed(2),
                                             ],
                                           }),

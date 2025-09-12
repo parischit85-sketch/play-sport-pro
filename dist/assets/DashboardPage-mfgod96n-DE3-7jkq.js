@@ -3,20 +3,20 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/UserBookingsCard-mffptcom-CEf4mQn-.js',
-      'assets/index-mffptcom-DDEOMtjD.js',
-      'assets/vendor-mffptcom-D3F3s8fL.js',
-      'assets/router-mffptcom-C1Xlp-63.js',
-      'assets/firebase-mffptcom-X_I_guKF.js',
-      'assets/index-mffpthu4-6HKrEAcp.css',
-      'assets/Modal-mffptcom-BdCISDND.js',
-      'assets/Badge-mffptcom-BQw6PQwf.js',
+      'assets/UserBookingsCard-mfgod96n-BTxk5gI4.js',
+      'assets/index-mfgod96n-DwV9PbJ5.js',
+      'assets/vendor-mfgod96n-D3F3s8fL.js',
+      'assets/router-mfgod96n-jGu93CuW.js',
+      'assets/firebase-mfgod96n-X_I_guKF.js',
+      'assets/index-mfgodeh7-DR4RQojv.css',
+      'assets/Modal-mfgod96n-OGd_G-gU.js',
+      'assets/Badge-mfgod96n-_eIJ8-3b.js',
     ])
 ) => i.map((i) => d[i]);
-import { j as e, e as w, u as y, f as N, t as M, _ as C } from './index-mffptcom-DDEOMtjD.js';
-import { r as h, c as I, b as l } from './router-mffptcom-C1Xlp-63.js';
-import './vendor-mffptcom-D3F3s8fL.js';
-import './firebase-mffptcom-X_I_guKF.js';
+import { j as e, e as w, u as y, f as N, t as M, _ as C } from './index-mfgod96n-DwV9PbJ5.js';
+import { r as g, c as I, b as o } from './router-mfgod96n-jGu93CuW.js';
+import './vendor-mfgod96n-D3F3s8fL.js';
+import './firebase-mfgod96n-X_I_guKF.js';
 const b = ({ onProfileClick: s, onBackupClick: i }) =>
   e.jsxs('button', {
     onClick: s,
@@ -55,10 +55,10 @@ function u({ className: s = '' }) {
       browserInfo: r,
       installInstructions: t,
     } = w(),
-    [a, x] = h.useState(!1),
-    [k, c] = h.useState(!1);
+    [a, x] = g.useState(!1),
+    [k, c] = g.useState(!1);
   if (
-    (h.useEffect(() => {
+    (g.useEffect(() => {
       localStorage.getItem('pwa-banner-dismissed') && x(!0);
     }, []),
     d || a || !i)
@@ -71,8 +71,8 @@ function u({ className: s = '' }) {
       }
       try {
         (await n()) && x(!0);
-      } catch (o) {
-        (console.error('Install failed:', o), t?.show && c(!0));
+      } catch (l) {
+        (console.error('Install failed:', l), t?.show && c(!0));
       }
     },
     j = () => {
@@ -213,7 +213,7 @@ function u({ className: s = '' }) {
                 t.instructions &&
                   e.jsx('div', {
                     className: 'text-left space-y-4 mb-8',
-                    children: t.instructions.map((o, m) =>
+                    children: t.instructions.map((l, m) =>
                       e.jsxs(
                         'div',
                         {
@@ -226,7 +226,7 @@ function u({ className: s = '' }) {
                             }),
                             e.jsx('p', {
                               className: 'text-sm text-gray-700 dark:text-gray-300 pt-1',
-                              children: o,
+                              children: l,
                             }),
                           ],
                         },
@@ -240,7 +240,8 @@ function u({ className: s = '' }) {
                     children: e.jsxs('p', {
                       className: 'text-xs text-gray-600 text-center',
                       children: [
-                        'Browser: ',
+                        'Browser:',
+                        ' ',
                         r.isChrome
                           ? 'Chrome'
                           : r.isFirefox
@@ -287,13 +288,13 @@ function u({ className: s = '' }) {
     ],
   });
 }
-const p = l.lazy(() =>
+const p = o.lazy(() =>
     C(
-      () => import('./UserBookingsCard-mffptcom-CEf4mQn-.js'),
+      () => import('./UserBookingsCard-mfgod96n-BTxk5gI4.js'),
       __vite__mapDeps([0, 1, 2, 3, 4, 5, 6, 7])
     )
   ),
-  g = l.memo(({ action: s, T: i }) =>
+  h = o.memo(({ action: s, T: i }) =>
     e.jsxs('button', {
       onClick: s.action,
       className:
@@ -323,13 +324,13 @@ const p = l.lazy(() =>
       ],
     })
   );
-g.displayName = 'QuickAction';
+h.displayName = 'QuickAction';
 function B() {
   const s = I(),
     { user: i } = y(),
     { state: d, loading: n } = N(),
-    r = l.useMemo(() => M(), []),
-    t = l.useMemo(
+    r = o.useMemo(() => M(), []),
+    t = o.useMemo(
       () => [
         {
           title: 'Prenota Campo',
@@ -438,8 +439,8 @@ function B() {
             children: [
               e.jsx('div', {
                 className:
-                  'bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl',
-                children: e.jsx(l.Suspense, {
+                  'bg-gradient-to-br from-slate-50/95 via-blue-50/90 to-indigo-50/95 dark:from-gray-900/95 dark:via-gray-800/95 dark:to-gray-700/95 backdrop-blur-xl rounded-3xl border-2 border-blue-200/50 dark:border-blue-700/50 p-6 shadow-2xl shadow-blue-100/40 dark:shadow-blue-900/40',
+                children: e.jsx(o.Suspense, {
                   fallback: e.jsxs('div', {
                     className:
                       'bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-6 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30',
@@ -492,7 +493,7 @@ function B() {
                   e.jsxs('div', {
                     className: 'grid grid-cols-2 gap-4',
                     children: [
-                      t.map((a) => e.jsx(g, { action: a, T: r }, a.title)),
+                      t.map((a) => e.jsx(h, { action: a, T: r }, a.title)),
                       e.jsx(b, {
                         onProfileClick: () => s('/profile'),
                         onBackupClick: () => s('/extra'),
@@ -508,8 +509,8 @@ function B() {
             children: [
               e.jsx('div', {
                 className:
-                  'bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl',
-                children: e.jsx(l.Suspense, {
+                  'bg-gradient-to-br from-slate-50/95 via-blue-50/90 to-indigo-50/95 dark:from-gray-900/95 dark:via-gray-800/95 dark:to-gray-700/95 backdrop-blur-xl rounded-3xl border-2 border-blue-200/50 dark:border-blue-700/50 p-6 shadow-2xl shadow-blue-100/40 dark:shadow-blue-900/40',
+                children: e.jsx(o.Suspense, {
                   fallback: e.jsxs('div', {
                     className:
                       'bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-4 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30',
@@ -565,7 +566,7 @@ function B() {
                   e.jsxs('div', {
                     className: 'grid grid-cols-2 gap-4',
                     children: [
-                      t.map((a) => e.jsx(g, { action: a, T: r }, a.title)),
+                      t.map((a) => e.jsx(h, { action: a, T: r }, a.title)),
                       e.jsx(b, {
                         onProfileClick: () => s('/profile'),
                         onBackupClick: () => s('/extra'),

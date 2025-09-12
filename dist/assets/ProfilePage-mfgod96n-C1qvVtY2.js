@@ -8,11 +8,11 @@ import {
   l as C,
   t as M,
   f as z,
-} from './index-mffptcom-DDEOMtjD.js';
-import { r as i, b as D } from './router-mffptcom-C1Xlp-63.js';
-import { S as m } from './Section-mffptcom-Bl9N1Fxg.js';
-import './vendor-mffptcom-D3F3s8fL.js';
-import './firebase-mffptcom-X_I_guKF.js';
+} from './index-mfgod96n-DwV9PbJ5.js';
+import { r as i, b as D } from './router-mfgod96n-jGu93CuW.js';
+import { S as m } from './Section-mfgod96n-Bh2iDtmF.js';
+import './vendor-mfgod96n-D3F3s8fL.js';
+import './firebase-mfgod96n-X_I_guKF.js';
 function S({ T: o }) {
   const a = j.currentUser,
     { darkMode: d, toggleTheme: n } = b(),
@@ -170,7 +170,8 @@ function S({ T: o }) {
                             e.jsxs('span', {
                               className: 'text-sm font-medium text-gray-600 dark:text-gray-300',
                               children: [
-                                'Accesso tramite ',
+                                'Accesso tramite',
+                                ' ',
                                 a.providerData[0] ? v(a.providerData[0].providerId) : 'Email',
                               ],
                             }),

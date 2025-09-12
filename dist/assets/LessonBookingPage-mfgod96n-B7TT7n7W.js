@@ -1,14 +1,14 @@
-import { j as e, i as fe, u as ge, f as je, k as Ne, t as ke } from './index-mffptcom-DDEOMtjD.js';
-import { r as u, b as Se } from './router-mffptcom-C1Xlp-63.js';
-import { S as K } from './Section-mffptcom-Bl9N1Fxg.js';
-import { B as be } from './Badge-mffptcom-BQw6PQwf.js';
-import { c as we } from './design-system-mffptcom-B5fzZ68S.js';
-import { P as se, c as $e, a as Ce } from './playerTypes-mffptcom-CIm-hM8a.js';
-import { b as Ie, u as ze } from './useUnifiedBookings-mffptcom-BFTueksB.js';
-import { M as he } from './Modal-mffptcom-BdCISDND.js';
-import './vendor-mffptcom-D3F3s8fL.js';
-import './firebase-mffptcom-X_I_guKF.js';
-import './unified-booking-service-mffptcom-DHLqEDw9.js';
+import { j as e, i as fe, u as ge, f as je, k as Ne, t as ke } from './index-mfgod96n-DwV9PbJ5.js';
+import { r as u, b as Se } from './router-mfgod96n-jGu93CuW.js';
+import { S as K } from './Section-mfgod96n-Bh2iDtmF.js';
+import { B as be } from './Badge-mfgod96n-_eIJ8-3b.js';
+import { c as we } from './design-system-mfgod96n-B5fzZ68S.js';
+import { P as se, c as $e, a as Ce } from './playerTypes-mfgod96n-CIm-hM8a.js';
+import { b as Ie, u as ze } from './useUnifiedBookings-mfgod96n-BVpE0Y5l.js';
+import { M as he } from './Modal-mfgod96n-OGd_G-gU.js';
+import './vendor-mfgod96n-D3F3s8fL.js';
+import './firebase-mfgod96n-X_I_guKF.js';
+import './unified-booking-service-mfgod96n-DTtpuuMW.js';
 function De({
   T: s,
   ds: x,
@@ -1340,7 +1340,8 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                 onClick: () => D('bookings'),
                 className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${r === 'bookings' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
                 children: [
-                  'Le Mie Lezioni ',
+                  'Le Mie Lezioni',
+                  ' ',
                   d.length > 0 &&
                     e.jsx(be, {
                       variant: 'primary',
@@ -1481,7 +1482,8 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                       e.jsxs('div', {
                         className: 'text-sm text-gray-600 dark:text-gray-300 mb-4',
                         children: [
-                          'Data selezionata: ',
+                          'Data selezionata:',
+                          ' ',
                           e.jsx('span', {
                             className: 'font-medium',
                             children: new Date(S).toLocaleDateString('it-IT', {
@@ -1791,7 +1793,8 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                                       e.jsxs('div', {
                                         className: 'font-medium text-gray-900 dark:text-white',
                                         children: [
-                                          'Lezione con ',
+                                          'Lezione con',
+                                          ' ',
                                           U.find((b) => b.id === t.instructorId)?.name ||
                                             t.instructorName,
                                         ],
@@ -1799,7 +1802,8 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                                       e.jsxs('div', {
                                         className: 'text-sm text-gray-600 dark:text-gray-300',
                                         children: [
-                                          '📅 ',
+                                          '📅',
+                                          ' ',
                                           new Date(t.date).toLocaleDateString('it-IT', {
                                             weekday: 'long',
                                             year: 'numeric',

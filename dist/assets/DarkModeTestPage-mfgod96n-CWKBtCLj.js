@@ -1,8 +1,8 @@
-import { t as r, j as e } from './index-mffptcom-DDEOMtjD.js';
-import { b as d } from './router-mffptcom-C1Xlp-63.js';
-import { c as l } from './design-system-mffptcom-B5fzZ68S.js';
-import './vendor-mffptcom-D3F3s8fL.js';
-import './firebase-mffptcom-X_I_guKF.js';
+import { t as r, j as e } from './index-mfgod96n-DwV9PbJ5.js';
+import { b as d } from './router-mfgod96n-jGu93CuW.js';
+import { c as l } from './design-system-mfgod96n-B5fzZ68S.js';
+import './vendor-mfgod96n-D3F3s8fL.js';
+import './firebase-mfgod96n-X_I_guKF.js';
 function c() {
   const a = d.useMemo(() => r(), []),
     s = d.useMemo(() => l(a), [a]);
@@ -183,7 +183,8 @@ function c() {
             e.jsxs('p', {
               className: s.bodySm,
               children: [
-                'Modalità Preferita: ',
+                'Modalità Preferita:',
+                ' ',
                 e.jsx('span', {
                   className: 'font-mono dark:text-yellow-400',
                   children:
