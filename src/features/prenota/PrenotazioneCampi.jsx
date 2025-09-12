@@ -1001,8 +1001,12 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     let slotBgColor = 'rgba(220, 38, 127, 0.35)'; // Default booking color
     let slotBorderColor = 'rgba(220, 38, 127, 0.6)';
 
-    // Check if this is a lesson booking (needed for UI elements later)
-    const isLessonBooking = hit.isLessonBooking || (hit.notes && hit.notes.includes('Lezione con'));
+    // Check if this is a lesson booking (expanded detection)
+    const isLessonBooking =
+      hit.isLessonBooking ||
+      (hit.notes && hit.notes.includes('Lezione con')) ||
+      hit.instructorId ||
+      hit.instructorName;
 
     // First check if booking has custom color
     if (hit.color) {
@@ -1065,19 +1069,50 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           onMouseDown={isDesktop ? (e) => (e.target.style.cursor = 'grabbing') : undefined}
           onMouseUp={isDesktop ? (e) => (e.target.style.cursor = 'grab') : undefined}
         >
-          {/* Icone in alto a sinistra, affiancate */}
+          {/* Icone in alto a sinistra */}
           <div className="absolute left-2 top-2 flex flex-row items-center gap-2 z-20">
             {hit.addons?.lighting && lampIcon}
             {hit.addons?.heating && fireIcon}
-            {isLessonBooking && (
-              <span
-                className="text-[12px] px-1.5 py-0.5 bg-white/20 rounded-full font-semibold"
-                title="Lezione"
-              >
-                🎾
-              </span>
-            )}
           </div>
+
+          {/* Badge lezione in alto a destra */}
+          {isLessonBooking &&
+            (() => {
+              // Get instructor info for lesson badge
+              let instructor = null;
+              let instructorName = '';
+
+              if (hit.instructorId) {
+                instructor = instructors.find((i) => i.id === hit.instructorId);
+              } else {
+                // Extract instructor name from notes like "Lezione con Marco Rossi"
+                const match = hit.notes.match(/Lezione con (.+)/);
+                if (match) {
+                  const instructorName = match[1];
+                  instructor = instructors.find((i) => i.name === instructorName);
+                }
+              }
+
+              if (instructor?.name) {
+                // Extract first name (first word of the name)
+                const nameParts = instructor.name.trim().split(/\s+/);
+                instructorName = nameParts[0];
+              }
+
+              return (
+                <div className="absolute right-2 top-2 z-30">
+                  <span
+                    className="text-[13px] px-2 py-1 bg-orange-500 text-white rounded-lg font-bold flex items-center gap-1 shadow-lg border-2 border-white"
+                    title={`Lezione${instructor?.name ? ` con ${instructor.name}` : ''}`}
+                  >
+                    🎾
+                    {instructorName && (
+                      <span className="text-[11px] font-bold uppercase">{instructorName}</span>
+                    )}
+                  </span>
+                </div>
+              );
+            })()}
           <div className="flex items-center justify-between gap-2 mb-1 mt-2">
             <div className="min-w-0 flex flex-col">
               <span className="font-bold text-[15px] leading-tight">
@@ -1098,15 +1133,19 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                 </div>
               </span>
             </div>
-            <div className="shrink-0 text-[13px] opacity-80 font-bold">
-              {Math.round(hit.duration)}′
-            </div>
           </div>
           <div className="text-[12px] opacity-80 truncate">
             Prenotato da:{' '}
             <span className="font-semibold">{hit.bookedByName || labelPlayers[0] || '—'}</span>
           </div>
           {hit.note && <div className="text-[11px] opacity-70 mt-1 truncate">{hit.note}</div>}
+
+          {/* Durata spostata in basso a destra */}
+          <div className="absolute bottom-2 right-2 z-20">
+            <span className="text-[13px] opacity-80 font-bold bg-black/20 px-2 py-1 rounded">
+              {Math.round(hit.duration)}′
+            </span>
+          </div>
         </button>
       </div>
     );

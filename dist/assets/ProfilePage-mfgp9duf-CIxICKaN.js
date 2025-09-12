@@ -1,21 +1,22 @@
 import {
-  o as j,
+  o as k,
   k as b,
-  p as k,
+  p as N,
   j as e,
-  s as N,
-  d as w,
-  l as C,
-  t as M,
-  f as z,
-} from './index-mfgod96n-DwV9PbJ5.js';
-import { r as i, b as D } from './router-mfgod96n-jGu93CuW.js';
-import { S as m } from './Section-mfgod96n-Bh2iDtmF.js';
-import './vendor-mfgod96n-D3F3s8fL.js';
-import './firebase-mfgod96n-X_I_guKF.js';
-function S({ T: o }) {
-  const a = j.currentUser,
-    { darkMode: d, toggleTheme: n } = b(),
+  s as w,
+  d as C,
+  l as M,
+  t as z,
+  f as D,
+} from './index-mfgp9duf-gdVB5EnT.js';
+import { c as S, r as i, b as H } from './router-mfgp9duf-1fFxCiHK.js';
+import { S as m } from './Section-mfgp9duf-BzEjYta0.js';
+import './vendor-mfgp9duf-D3F3s8fL.js';
+import './firebase-mfgp9duf-X_I_guKF.js';
+function L({ T: o }) {
+  const a = k.currentUser,
+    n = S(),
+    { darkMode: d, toggleTheme: c } = b(),
     [l, s] = i.useState({
       firstName: '',
       lastName: '',
@@ -24,17 +25,17 @@ function S({ T: o }) {
       birthDate: '',
       address: '',
     }),
-    [c, x] = i.useState(!0),
+    [x, h] = i.useState(!0),
     [u, g] = i.useState(!1);
   i.useEffect(() => {
     let r = !0;
     return (
       (async () => {
         if (a) {
-          const t = await k(a.uid);
+          const t = await N(a.uid);
           r &&
-            s((y) => ({
-              ...y,
+            s((j) => ({
+              ...j,
               firstName: t.firstName || '',
               lastName: t.lastName || '',
               phone: t.phone || '',
@@ -43,7 +44,7 @@ function S({ T: o }) {
               address: t.address || '',
             }));
         }
-        x(!1);
+        h(!1);
       })(),
       () => {
         r = !1;
@@ -52,24 +53,24 @@ function S({ T: o }) {
   }, [a]);
   const f = async () => {
       try {
-        (g(!0), await N(a.uid, l));
+        (g(!0), await w(a.uid, l));
         const r = [l.firstName, l.lastName].filter(Boolean).join(' ');
-        (r && (await w(a, r)), alert('Profilo salvato!'));
+        (r && (await C(a, r)), alert('Profilo salvato!'));
       } catch (r) {
         alert('Errore salvataggio: ' + (r?.message || r));
       } finally {
         g(!1);
       }
     },
-    h = async () => {
+    p = async () => {
       if (window.confirm('Sei sicuro di voler uscire?'))
         try {
-          await C();
+          await M();
         } catch (r) {
           alert('Errore durante il logout: ' + (r?.message || r));
         }
     },
-    p = (r) => {
+    v = (r) => {
       switch (r) {
         case 'google.com':
           return e.jsxs('svg', {
@@ -114,7 +115,7 @@ function S({ T: o }) {
           });
       }
     },
-    v = (r) => {
+    y = (r) => {
       switch (r) {
         case 'google.com':
           return 'Google';
@@ -166,13 +167,13 @@ function S({ T: o }) {
                         e.jsxs('div', {
                           className: 'flex items-center gap-3',
                           children: [
-                            a.providerData[0] && p(a.providerData[0].providerId),
+                            a.providerData[0] && v(a.providerData[0].providerId),
                             e.jsxs('span', {
                               className: 'text-sm font-medium text-gray-600 dark:text-gray-300',
                               children: [
                                 'Accesso tramite',
                                 ' ',
-                                a.providerData[0] ? v(a.providerData[0].providerId) : 'Email',
+                                a.providerData[0] ? y(a.providerData[0].providerId) : 'Email',
                               ],
                             }),
                             e.jsxs('div', {
@@ -318,7 +319,7 @@ function S({ T: o }) {
                         ],
                       }),
                       e.jsx('button', {
-                        onClick: n,
+                        onClick: c,
                         className: `relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-800 ${d ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gray-200 dark:bg-gray-600'}`,
                         role: 'switch',
                         'aria-checked': d,
@@ -334,7 +335,31 @@ function S({ T: o }) {
                   className: 'pt-6 border-t border-white/20 dark:border-gray-600/20',
                   children: e.jsxs('button', {
                     type: 'button',
-                    onClick: h,
+                    onClick: () => n('/extra'),
+                    className:
+                      'w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 backdrop-blur-xl',
+                    children: [
+                      e.jsx('svg', {
+                        className: 'w-5 h-5',
+                        fill: 'none',
+                        stroke: 'currentColor',
+                        viewBox: '0 0 24 24',
+                        children: e.jsx('path', {
+                          strokeLinecap: 'round',
+                          strokeLinejoin: 'round',
+                          strokeWidth: 2,
+                          d: 'M12 6v6m0 0v6m0-6h6m-6 0H6',
+                        }),
+                      }),
+                      'Funzioni Extra',
+                    ],
+                  }),
+                }),
+                e.jsx('div', {
+                  className: 'pt-6 border-t border-white/20 dark:border-gray-600/20',
+                  children: e.jsxs('button', {
+                    type: 'button',
+                    onClick: p,
                     className:
                       'w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-medium text-white bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 backdrop-blur-xl',
                     children: [
@@ -363,7 +388,7 @@ function S({ T: o }) {
             children: e.jsx('div', {
               className:
                 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl',
-              children: c
+              children: x
                 ? e.jsx('div', {
                     className: 'flex items-center justify-center py-8',
                     children: e.jsx('div', {
@@ -536,19 +561,19 @@ function S({ T: o }) {
         }),
       });
 }
-function U() {
-  const o = D.useMemo(() => M(), []),
-    { state: a, setState: d, derived: n, leagueId: l, setLeagueId: s } = z(),
-    { clubMode: c, setClubMode: x } = b();
-  return e.jsx(S, {
+function E() {
+  const o = H.useMemo(() => z(), []),
+    { state: a, setState: n, derived: d, leagueId: c, setLeagueId: l } = D(),
+    { clubMode: s, setClubMode: x } = b();
+  return e.jsx(L, {
     T: o,
     state: a,
-    setState: d,
-    derived: n,
-    leagueId: l,
-    setLeagueId: s,
-    clubMode: c,
+    setState: n,
+    derived: d,
+    leagueId: c,
+    setLeagueId: l,
+    clubMode: s,
     setClubMode: x,
   });
 }
-export { U as default };
+export { E as default };

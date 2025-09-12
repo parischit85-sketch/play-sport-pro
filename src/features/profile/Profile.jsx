@@ -3,12 +3,14 @@
 // FUTURISTIC REDESIGN - Modern glassmorphism UI
 // =============================================
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Section from '@ui/Section.jsx';
 import { auth, getUserProfile, saveUserProfile, setDisplayName, logout } from '@services/auth';
 import { useUI } from '@contexts/UIContext.jsx';
 
 export default function Profile({ T }) {
   const user = auth.currentUser;
+  const navigate = useNavigate();
   const { darkMode, toggleTheme } = useUI();
 
   const [form, setForm] = useState({
@@ -267,6 +269,25 @@ export default function Profile({ T }) {
                 />
               </button>
             </div>
+          </div>
+
+          {/* Pulsante Extra (Mobile) */}
+          <div className="pt-6 border-t border-white/20 dark:border-gray-600/20">
+            <button
+              type="button"
+              onClick={() => navigate('/extra')}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 backdrop-blur-xl"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+              Funzioni Extra
+            </button>
           </div>
 
           {/* Pulsante Logout */}
