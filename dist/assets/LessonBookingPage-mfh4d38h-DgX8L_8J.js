@@ -1,32 +1,32 @@
-import { j as e, i as fe, u as ge, f as je, k as Ne, t as ke } from './index-mfh3qkuh-BuI3yHrG.js';
-import { r as u, b as Se } from './router-mfh3qkuh-7WMG9iCE.js';
-import { S as K } from './Section-mfh3qkuh-DofZmbDr.js';
-import { B as be } from './Badge-mfh3qkuh-DbXmBg1C.js';
-import { c as we } from './design-system-mfh3qkuh-B5fzZ68S.js';
-import { P as se, c as $e, a as Ce } from './playerTypes-mfh3qkuh-CIm-hM8a.js';
-import { b as Ie, u as ze } from './useUnifiedBookings-mfh3qkuh-DA63SB-8.js';
-import { M as he } from './Modal-mfh3qkuh-p65zKN9F.js';
-import './vendor-mfh3qkuh-D3F3s8fL.js';
-import './firebase-mfh3qkuh-X_I_guKF.js';
-import './unified-booking-service-mfh3qkuh-CB00Ce3w.js';
+import { j as e, i as fe, u as ge, f as je, k as Ne, t as ke } from './index-mfh4d38h-CPKWh84w.js';
+import { r as u, b as Se } from './router-mfh4d38h-D14HHbEI.js';
+import { S as K } from './Section-mfh4d38h-Df1Gzqw4.js';
+import { B as be } from './Badge-mfh4d38h-B0617-OG.js';
+import { c as $e } from './design-system-mfh4d38h-B5fzZ68S.js';
+import { P as se, c as we, a as Ce } from './playerTypes-mfh4d38h-CIm-hM8a.js';
+import { b as ze, u as Ie } from './useUnifiedBookings-mfh4d38h-CC_USPZv.js';
+import { M as he } from './Modal-mfh4d38h-xCnxAVWo.js';
+import './vendor-mfh4d38h-D3F3s8fL.js';
+import './firebase-mfh4d38h-X_I_guKF.js';
+import './unified-booking-service-mfh4d38h-1xV4n-cy.js';
 function De({
-  T: s,
+  T: i,
   ds: x,
-  lessonConfig: l,
+  lessonConfig: c,
   updateLessonConfig: N,
-  instructors: c,
-  players: z,
-  setState: m,
-  state: d,
+  instructors: r,
+  players: I,
+  setState: n,
+  state: o,
   courts: j,
-  onClearAllLessons: n,
+  onClearAllLessons: d,
   lessonBookingsCount: y,
 }) {
-  const [O, i] = u.useState('config'),
-    [k, A] = u.useState(!1),
-    [p, R] = u.useState(null),
-    [r, D] = u.useState(!1),
-    [B, W] = u.useState(null),
+  const [A, l] = u.useState('config'),
+    [k, L] = u.useState(!1),
+    [p, F] = u.useState(null),
+    [s, D] = u.useState(!1),
+    [B, H] = u.useState(null),
     S = [
       { value: 0, label: 'Domenica' },
       { value: 1, label: 'Lunedì' },
@@ -36,44 +36,44 @@ function De({
       { value: 5, label: 'Venerdì' },
       { value: 6, label: 'Sabato' },
     ],
-    Q = u.useMemo(() => (z || []).filter((a) => a.category !== se.INSTRUCTOR), [z]),
-    H = () => {
-      N({ ...l, isEnabled: !l.isEnabled });
+    Q = u.useMemo(() => (I || []).filter((a) => a.category !== se.INSTRUCTOR), [I]),
+    T = () => {
+      N({ ...c, isEnabled: !c.isEnabled });
     },
     Y = (a) => {
-      const I = p
-        ? (l.timeSlots || []).map((o) => (o.id === p.id ? { ...o, ...a } : o))
-        : [...(l.timeSlots || []), { ...$e(), ...a, id: fe() }];
-      (N({ ...l, timeSlots: I }), A(!1), R(null));
+      const z = p
+        ? (c.timeSlots || []).map((m) => (m.id === p.id ? { ...m, ...a } : m))
+        : [...(c.timeSlots || []), { ...we(), ...a, id: fe() }];
+      (N({ ...c, timeSlots: z }), L(!1), F(null));
     },
     E = (a) => {
       confirm('Sei sicuro di voler eliminare questa fascia oraria?') &&
-        N({ ...l, timeSlots: (l.timeSlots || []).filter((I) => I.id !== a) });
+        N({ ...c, timeSlots: (c.timeSlots || []).filter((z) => z.id !== a) });
     },
     V = (a) => {
-      const I = (z || []).map((o) =>
-        o.id === B.id
+      const z = (I || []).map((m) =>
+        m.id === B.id
           ? {
-              ...o,
+              ...m,
               category: se.INSTRUCTOR,
-              instructorData: { ...o.instructorData, isInstructor: !0, ...a },
+              instructorData: { ...m.instructorData, isInstructor: !0, ...a },
             }
-          : o
+          : m
       );
-      (m((o) => ({ ...o, players: I })), D(!1), W(null));
+      (n((m) => ({ ...m, players: z })), D(!1), H(null));
     },
     C = (a) => {
       if (confirm('Sei sicuro di voler rimuovere questo giocatore come istruttore?')) {
-        const I = (z || []).map((o) =>
-          o.id === a
+        const z = (I || []).map((m) =>
+          m.id === a
             ? {
-                ...o,
+                ...m,
                 category: se.MEMBER,
-                instructorData: { ...o.instructorData, isInstructor: !1 },
+                instructorData: { ...m.instructorData, isInstructor: !1 },
               }
-            : o
+            : m
         );
-        m((o) => ({ ...o, players: I }));
+        n((m) => ({ ...m, players: z }));
       }
     };
   return e.jsxs('div', {
@@ -92,8 +92,8 @@ function De({
             e.jsxs(
               'button',
               {
-                onClick: () => i(a.id),
-                className: `py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${O === a.id ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500'}`,
+                onClick: () => l(a.id),
+                className: `py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${A === a.id ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500'}`,
                 children: [
                   e.jsx('span', { className: 'text-base mr-1', children: a.icon }),
                   a.label,
@@ -104,13 +104,13 @@ function De({
           ),
         }),
       }),
-      O === 'config' &&
+      A === 'config' &&
         e.jsx('div', {
           className: 'space-y-6',
           children: e.jsx(K, {
             title: 'Configurazione Sistema Lezioni',
             variant: 'minimal',
-            T: s,
+            T: i,
             children: e.jsxs('div', {
               className: 'space-y-4',
               children: [
@@ -125,17 +125,17 @@ function De({
                           children: 'Sistema Lezioni',
                         }),
                         e.jsx('p', {
-                          className: `text-sm ${s.subtext}`,
-                          children: l.isEnabled
+                          className: `text-sm ${i.subtext}`,
+                          children: c.isEnabled
                             ? 'Il sistema di prenotazione lezioni è attivo'
                             : 'Il sistema di prenotazione lezioni è disattivato',
                         }),
                       ],
                     }),
                     e.jsx('button', {
-                      onClick: H,
-                      className: `px-4 py-2 rounded-lg font-medium ${l.isEnabled ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50' : 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50'}`,
-                      children: l.isEnabled ? 'Disattiva' : 'Attiva',
+                      onClick: T,
+                      className: `px-4 py-2 rounded-lg font-medium ${c.isEnabled ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50' : 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50'}`,
+                      children: c.isEnabled ? 'Disattiva' : 'Attiva',
                     }),
                   ],
                 }),
@@ -152,10 +152,10 @@ function De({
                           type: 'number',
                           min: '1',
                           max: '30',
-                          value: l.bookingAdvanceDays,
+                          value: c.bookingAdvanceDays,
                           onChange: (a) =>
-                            N({ ...l, bookingAdvanceDays: parseInt(a.target.value) || 14 }),
-                          className: `w-full p-2 ${s.cardBg} ${s.border} ${s.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                            N({ ...c, bookingAdvanceDays: parseInt(a.target.value) || 14 }),
+                          className: `w-full p-2 ${i.cardBg} ${i.border} ${i.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
                         }),
                       ],
                     }),
@@ -169,10 +169,10 @@ function De({
                           type: 'number',
                           min: '1',
                           max: '72',
-                          value: l.cancellationHours,
+                          value: c.cancellationHours,
                           onChange: (a) =>
-                            N({ ...l, cancellationHours: parseInt(a.target.value) || 24 }),
-                          className: `w-full p-2 ${s.cardBg} ${s.border} ${s.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                            N({ ...c, cancellationHours: parseInt(a.target.value) || 24 }),
+                          className: `w-full p-2 ${i.cardBg} ${i.border} ${i.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
                         }),
                       ],
                     }),
@@ -182,22 +182,22 @@ function De({
             }),
           }),
         }),
-      O === 'timeslots' &&
+      A === 'timeslots' &&
         e.jsx('div', {
           className: 'space-y-6',
           children: e.jsx(K, {
             title: 'Gestione Fasce Orarie',
             variant: 'minimal',
-            T: s,
+            T: i,
             children: e.jsxs('div', {
               className: 'space-y-4',
               children: [
                 e.jsx('button', {
-                  onClick: () => A(!0),
+                  onClick: () => L(!0),
                   className: 'px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700',
                   children: '+ Aggiungi Fascia Oraria',
                 }),
-                (l.timeSlots || []).length === 0
+                (c.timeSlots || []).length === 0
                   ? e.jsx('div', {
                       className: 'text-center py-8 text-gray-500',
                       children:
@@ -205,13 +205,13 @@ function De({
                     })
                   : e.jsx('div', {
                       className: 'space-y-3',
-                      children: (l.timeSlots || []).map((a) => {
-                        const I = S.find((F) => F.value === a.dayOfWeek)?.label || 'Sconosciuto',
-                          o = (c || []).filter((F) => a.instructorIds.includes(F.id));
+                      children: (c.timeSlots || []).map((a) => {
+                        const z = S.find((R) => R.value === a.dayOfWeek)?.label || 'Sconosciuto',
+                          m = (r || []).filter((R) => a.instructorIds.includes(R.id));
                         return e.jsx(
                           'div',
                           {
-                            className: `${s.cardBg} ${s.border} ${s.borderMd} p-4`,
+                            className: `${i.cardBg} ${i.border} ${i.borderMd} p-4`,
                             children: e.jsxs('div', {
                               className: 'flex items-start justify-between',
                               children: [
@@ -223,12 +223,12 @@ function De({
                                       children: [
                                         e.jsxs('h4', {
                                           className: `${x.h6} font-medium`,
-                                          children: [I, ' • ', a.startTime, ' - ', a.endTime],
+                                          children: [z, ' • ', a.startTime, ' - ', a.endTime],
                                         }),
                                         e.jsx(be, {
                                           variant: a.isActive ? 'success' : 'default',
                                           size: 'sm',
-                                          T: s,
+                                          T: i,
                                           children: a.isActive ? 'Attiva' : 'Inattiva',
                                         }),
                                       ],
@@ -239,15 +239,15 @@ function De({
                                         e.jsxs('span', {
                                           children: ['Max prenotazioni: ', a.maxBookings],
                                         }),
-                                        e.jsxs('span', { children: ['Istruttori: ', o.length] }),
+                                        e.jsxs('span', { children: ['Istruttori: ', m.length] }),
                                       ],
                                     }),
-                                    o.length > 0 &&
+                                    m.length > 0 &&
                                       e.jsx('div', {
                                         className: 'mt-2',
                                         children: e.jsx('div', {
                                           className: 'flex flex-wrap gap-1',
-                                          children: o.map((F) =>
+                                          children: m.map((R) =>
                                             e.jsxs(
                                               'div',
                                               {
@@ -257,13 +257,13 @@ function De({
                                                   e.jsx('div', {
                                                     className: 'w-3 h-3 rounded-full',
                                                     style: {
-                                                      backgroundColor: F.instructorData?.color,
+                                                      backgroundColor: R.instructorData?.color,
                                                     },
                                                   }),
-                                                  F.name,
+                                                  R.name,
                                                 ],
                                               },
-                                              F.id
+                                              R.id
                                             )
                                           ),
                                         }),
@@ -275,7 +275,7 @@ function De({
                                   children: [
                                     e.jsx('button', {
                                       onClick: () => {
-                                        (R(a), A(!0));
+                                        (F(a), L(!0));
                                       },
                                       className: 'text-blue-600 hover:text-blue-700',
                                       children: 'Modifica',
@@ -298,13 +298,13 @@ function De({
             }),
           }),
         }),
-      O === 'instructors' &&
+      A === 'instructors' &&
         e.jsx('div', {
           className: 'space-y-6',
           children: e.jsx(K, {
             title: 'Gestione Istruttori',
             variant: 'minimal',
-            T: s,
+            T: i,
             children: e.jsxs('div', {
               className: 'space-y-6',
               children: [
@@ -312,20 +312,20 @@ function De({
                   children: [
                     e.jsxs('h3', {
                       className: `${x.h6} font-medium mb-3`,
-                      children: ['Istruttori Attivi (', c.length, ')'],
+                      children: ['Istruttori Attivi (', r.length, ')'],
                     }),
-                    c.length === 0
+                    r.length === 0
                       ? e.jsx('div', {
                           className: 'text-center py-6 text-gray-500',
                           children: 'Nessun istruttore configurato',
                         })
                       : e.jsx('div', {
                           className: 'space-y-3',
-                          children: c.map((a) =>
+                          children: r.map((a) =>
                             e.jsx(
                               'div',
                               {
-                                className: `${s.cardBg} ${s.border} ${s.borderMd} p-4`,
+                                className: `${i.cardBg} ${i.border} ${i.borderMd} p-4`,
                                 children: e.jsxs('div', {
                                   className: 'flex items-center justify-between',
                                   children: [
@@ -346,16 +346,63 @@ function De({
                                             }),
                                             e.jsxs('div', {
                                               className:
-                                                'flex items-center gap-3 text-sm text-gray-600',
+                                                'flex flex-col gap-1 text-sm text-gray-600',
                                               children: [
-                                                a.instructorData?.hourlyRate > 0 &&
-                                                  e.jsxs('span', {
-                                                    children: [
-                                                      '€',
-                                                      a.instructorData.hourlyRate,
-                                                      '/ora',
-                                                    ],
-                                                  }),
+                                                e.jsxs('div', {
+                                                  className: 'flex flex-wrap gap-2',
+                                                  children: [
+                                                    a.instructorData?.priceSingle > 0 &&
+                                                      e.jsxs('span', {
+                                                        className:
+                                                          'px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded text-xs',
+                                                        children: [
+                                                          'Singola: €',
+                                                          a.instructorData.priceSingle,
+                                                        ],
+                                                      }),
+                                                    a.instructorData?.priceCouple > 0 &&
+                                                      e.jsxs('span', {
+                                                        className:
+                                                          'px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded text-xs',
+                                                        children: [
+                                                          'Coppia: €',
+                                                          a.instructorData.priceCouple,
+                                                        ],
+                                                      }),
+                                                    a.instructorData?.priceThree > 0 &&
+                                                      e.jsxs('span', {
+                                                        className:
+                                                          'px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded text-xs',
+                                                        children: [
+                                                          'Tre: €',
+                                                          a.instructorData.priceThree,
+                                                        ],
+                                                      }),
+                                                    a.instructorData?.priceMatchLesson > 0 &&
+                                                      e.jsxs('span', {
+                                                        className:
+                                                          'px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 rounded text-xs',
+                                                        children: [
+                                                          'Partita: €',
+                                                          a.instructorData.priceMatchLesson,
+                                                        ],
+                                                      }),
+                                                    !a.instructorData?.priceSingle &&
+                                                      !a.instructorData?.priceCouple &&
+                                                      !a.instructorData?.priceThree &&
+                                                      !a.instructorData?.priceMatchLesson &&
+                                                      a.instructorData?.hourlyRate > 0 &&
+                                                      e.jsxs('span', {
+                                                        className:
+                                                          'px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded text-xs',
+                                                        children: [
+                                                          '€',
+                                                          a.instructorData.hourlyRate,
+                                                          '/ora',
+                                                        ],
+                                                      }),
+                                                  ],
+                                                }),
                                                 a.instructorData?.specialties?.length > 0 &&
                                                   e.jsx('span', {
                                                     children:
@@ -372,7 +419,7 @@ function De({
                                       children: [
                                         e.jsx('button', {
                                           onClick: () => {
-                                            (W(a), D(!0));
+                                            (H(a), D(!0));
                                           },
                                           className: 'text-blue-600 hover:text-blue-700',
                                           children: 'Modifica',
@@ -412,7 +459,7 @@ function De({
                               e.jsx(
                                 'div',
                                 {
-                                  className: `${s.cardBg} ${s.border} ${s.borderMd} p-4`,
+                                  className: `${i.cardBg} ${i.border} ${i.borderMd} p-4`,
                                   children: e.jsxs('div', {
                                     className: 'flex items-center justify-between',
                                     children: [
@@ -423,14 +470,14 @@ function De({
                                             children: a.name,
                                           }),
                                           e.jsxs('p', {
-                                            className: `text-sm ${s.subtext}`,
+                                            className: `text-sm ${i.subtext}`,
                                             children: [a.email, ' • ', a.category],
                                           }),
                                         ],
                                       }),
                                       e.jsx('button', {
                                         onClick: () => {
-                                          (W(a), D(!0));
+                                          (H(a), D(!0));
                                         },
                                         className:
                                           'px-3 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200',
@@ -444,7 +491,7 @@ function De({
                             ),
                             Q.length > 5 &&
                               e.jsxs('p', {
-                                className: `text-sm ${s.subtext} text-center`,
+                                className: `text-sm ${i.subtext} text-center`,
                                 children: ['... e altri ', Q.length - 5, ' giocatori'],
                               }),
                           ],
@@ -455,13 +502,13 @@ function De({
             }),
           }),
         }),
-      O === 'cleanup' &&
+      A === 'cleanup' &&
         e.jsx('div', {
           className: 'space-y-6',
           children: e.jsx(K, {
             title: 'Pulizia Dati di Test',
             variant: 'minimal',
-            T: s,
+            T: i,
             children: e.jsxs('div', {
               className: 'space-y-4',
               children: [
@@ -483,7 +530,7 @@ function De({
                   ],
                 }),
                 e.jsxs('div', {
-                  className: `${s.cardBg} ${s.border} ${s.borderMd} p-6 rounded-lg`,
+                  className: `${i.cardBg} ${i.border} ${i.borderMd} p-6 rounded-lg`,
                   children: [
                     e.jsxs('div', {
                       className: 'flex items-center justify-between mb-4',
@@ -495,7 +542,7 @@ function De({
                               children: 'Prenotazioni Lezioni Presenti',
                             }),
                             e.jsx('p', {
-                              className: `text-sm ${s.subtext}`,
+                              className: `text-sm ${i.subtext}`,
                               children:
                                 y === 0
                                   ? 'Nessuna prenotazione di lezione presente'
@@ -530,7 +577,7 @@ function De({
                               }),
                             }),
                             e.jsx('button', {
-                              onClick: n,
+                              onClick: d,
                               className:
                                 'w-full px-4 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors',
                               children: '🗑️ Cancella Tutte le Prenotazioni di Lezione',
@@ -549,7 +596,7 @@ function De({
                   ],
                 }),
                 e.jsxs('div', {
-                  className: `${s.cardBg} ${s.border} ${s.borderMd} p-4 rounded-lg`,
+                  className: `${i.cardBg} ${i.border} ${i.borderMd} p-4 rounded-lg`,
                   children: [
                     e.jsx('h4', {
                       className: `${x.h6} font-medium mb-2`,
@@ -583,43 +630,43 @@ function De({
         e.jsx(Me, {
           isOpen: k,
           onClose: () => {
-            (A(!1), R(null));
+            (L(!1), F(null));
           },
           timeSlot: p,
-          instructors: c,
+          instructors: r,
           courts: j,
           weekDays: S,
           onSave: Y,
-          T: s,
+          T: i,
           ds: x,
         }),
-      r &&
+      s &&
         B &&
-        e.jsx(Ae, {
-          isOpen: r,
+        e.jsx(Le, {
+          isOpen: s,
           onClose: () => {
-            (D(!1), W(null));
+            (D(!1), H(null));
           },
           player: B,
           onSave: V,
-          T: s,
+          T: i,
           ds: x,
         }),
     ],
   });
 }
 function Me({
-  isOpen: s,
+  isOpen: i,
   onClose: x,
-  timeSlot: l,
+  timeSlot: c,
   instructors: N,
-  courts: c,
-  weekDays: z,
-  onSave: m,
-  T: d,
+  courts: r,
+  weekDays: I,
+  onSave: n,
+  T: o,
   ds: j,
 }) {
-  const [n, y] = u.useState(() => ({
+  const [d, y] = u.useState(() => ({
       dayOfWeek: 1,
       startTime: '09:00',
       endTime: '10:00',
@@ -627,35 +674,35 @@ function Me({
       courtIds: [],
       maxBookings: 1,
       isActive: !0,
-      ...l,
+      ...c,
     })),
-    O = (i) => {
-      if ((i.preventDefault(), !n.startTime || !n.endTime)) {
+    A = (l) => {
+      if ((l.preventDefault(), !d.startTime || !d.endTime)) {
         alert('Inserisci orario di inizio e fine');
         return;
       }
-      if (n.startTime >= n.endTime) {
+      if (d.startTime >= d.endTime) {
         alert("L'orario di fine deve essere dopo quello di inizio");
         return;
       }
-      if (n.instructorIds.length === 0) {
+      if (d.instructorIds.length === 0) {
         alert('Seleziona almeno un istruttore');
         return;
       }
-      if (n.courtIds.length === 0) {
+      if (d.courtIds.length === 0) {
         alert('Seleziona almeno un campo');
         return;
       }
-      m(n);
+      n(d);
     };
   return e.jsx(he, {
-    isOpen: s,
+    isOpen: i,
     onClose: x,
-    title: l ? 'Modifica Fascia Oraria' : 'Aggiungi Fascia Oraria',
+    title: c ? 'Modifica Fascia Oraria' : 'Aggiungi Fascia Oraria',
     size: 'medium',
-    T: d,
+    T: o,
     children: e.jsxs('form', {
-      onSubmit: O,
+      onSubmit: A,
       className: 'space-y-4',
       children: [
         e.jsxs('div', {
@@ -665,11 +712,11 @@ function Me({
               children: 'Giorno della Settimana *',
             }),
             e.jsx('select', {
-              value: n.dayOfWeek,
-              onChange: (i) => y({ ...n, dayOfWeek: parseInt(i.target.value) }),
-              className: `w-full p-2 ${d.cardBg} ${d.border} ${d.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
-              children: z.map((i) =>
-                e.jsx('option', { value: i.value, children: i.label }, i.value)
+              value: d.dayOfWeek,
+              onChange: (l) => y({ ...d, dayOfWeek: parseInt(l.target.value) }),
+              className: `w-full p-2 ${o.cardBg} ${o.border} ${o.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+              children: I.map((l) =>
+                e.jsx('option', { value: l.value, children: l.label }, l.value)
               ),
             }),
           ],
@@ -682,9 +729,9 @@ function Me({
                 e.jsx('label', { className: `block ${j.label} mb-2`, children: 'Ora Inizio *' }),
                 e.jsx('input', {
                   type: 'time',
-                  value: n.startTime,
-                  onChange: (i) => y({ ...n, startTime: i.target.value }),
-                  className: `w-full p-2 ${d.cardBg} ${d.border} ${d.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                  value: d.startTime,
+                  onChange: (l) => y({ ...d, startTime: l.target.value }),
+                  className: `w-full p-2 ${o.cardBg} ${o.border} ${o.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
                 }),
               ],
             }),
@@ -693,9 +740,9 @@ function Me({
                 e.jsx('label', { className: `block ${j.label} mb-2`, children: 'Ora Fine *' }),
                 e.jsx('input', {
                   type: 'time',
-                  value: n.endTime,
-                  onChange: (i) => y({ ...n, endTime: i.target.value }),
-                  className: `w-full p-2 ${d.cardBg} ${d.border} ${d.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                  value: d.endTime,
+                  onChange: (l) => y({ ...d, endTime: l.target.value }),
+                  className: `w-full p-2 ${o.cardBg} ${o.border} ${o.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
                 }),
               ],
             }),
@@ -711,9 +758,9 @@ function Me({
               type: 'number',
               min: '1',
               max: '10',
-              value: n.maxBookings,
-              onChange: (i) => y({ ...n, maxBookings: parseInt(i.target.value) || 1 }),
-              className: `w-full p-2 ${d.cardBg} ${d.border} ${d.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+              value: d.maxBookings,
+              onChange: (l) => y({ ...d, maxBookings: parseInt(l.target.value) || 1 }),
+              className: `w-full p-2 ${o.cardBg} ${o.border} ${o.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
             }),
           ],
         }),
@@ -725,7 +772,7 @@ function Me({
             }),
             e.jsx('div', {
               className: 'space-y-2 max-h-40 overflow-y-auto border rounded p-2',
-              children: N.map((i) =>
+              children: N.map((l) =>
                 e.jsxs(
                   'label',
                   {
@@ -733,14 +780,14 @@ function Me({
                     children: [
                       e.jsx('input', {
                         type: 'checkbox',
-                        checked: n.instructorIds.includes(i.id),
+                        checked: d.instructorIds.includes(l.id),
                         onChange: (k) => {
-                          const { checked: A } = k.target;
+                          const { checked: L } = k.target;
                           y({
-                            ...n,
-                            instructorIds: A
-                              ? [...n.instructorIds, i.id]
-                              : n.instructorIds.filter((p) => p !== i.id),
+                            ...d,
+                            instructorIds: L
+                              ? [...d.instructorIds, l.id]
+                              : d.instructorIds.filter((p) => p !== l.id),
                           });
                         },
                         className: 'rounded',
@@ -750,14 +797,14 @@ function Me({
                         children: [
                           e.jsx('div', {
                             className: 'w-4 h-4 rounded-full',
-                            style: { backgroundColor: i.instructorData?.color },
+                            style: { backgroundColor: l.instructorData?.color },
                           }),
-                          e.jsx('span', { children: i.name }),
+                          e.jsx('span', { children: l.name }),
                         ],
                       }),
                     ],
                   },
-                  i.id
+                  l.id
                 )
               ),
             }),
@@ -769,8 +816,8 @@ function Me({
             e.jsx('div', {
               className: 'space-y-2 max-h-40 overflow-y-auto border rounded p-2',
               children:
-                c &&
-                c.map((i) =>
+                r &&
+                r.map((l) =>
                   e.jsxs(
                     'label',
                     {
@@ -778,14 +825,14 @@ function Me({
                       children: [
                         e.jsx('input', {
                           type: 'checkbox',
-                          checked: n.courtIds.includes(i.id),
+                          checked: d.courtIds.includes(l.id),
                           onChange: (k) => {
-                            const { checked: A } = k.target;
+                            const { checked: L } = k.target;
                             y({
-                              ...n,
-                              courtIds: A
-                                ? [...n.courtIds, i.id]
-                                : n.courtIds.filter((p) => p !== i.id),
+                              ...d,
+                              courtIds: L
+                                ? [...d.courtIds, l.id]
+                                : d.courtIds.filter((p) => p !== l.id),
                             });
                           },
                           className: 'rounded',
@@ -795,23 +842,23 @@ function Me({
                           children: [
                             e.jsx('div', {
                               className: 'w-4 h-4 rounded border',
-                              style: { backgroundColor: i.surface?.color || '#e5e7eb' },
+                              style: { backgroundColor: l.surface?.color || '#e5e7eb' },
                             }),
-                            e.jsx('span', { children: i.name || `Campo ${i.id}` }),
-                            i.surface?.type &&
+                            e.jsx('span', { children: l.name || `Campo ${l.id}` }),
+                            l.surface?.type &&
                               e.jsx('span', {
-                                className: `text-xs px-2 py-1 ${d.cardBg} rounded`,
-                                children: i.surface.type,
+                                className: `text-xs px-2 py-1 ${o.cardBg} rounded`,
+                                children: l.surface.type,
                               }),
                           ],
                         }),
                       ],
                     },
-                    i.id
+                    l.id
                   )
                 ),
             }),
-            (!c || c.length === 0) &&
+            (!r || r.length === 0) &&
               e.jsx('p', {
                 className: 'text-sm text-gray-500 mt-1',
                 children: 'Nessun campo configurato. Vai alla sezione Campi per aggiungerne.',
@@ -824,8 +871,8 @@ function Me({
             e.jsx('input', {
               type: 'checkbox',
               id: 'isActive',
-              checked: n.isActive,
-              onChange: (i) => y({ ...n, isActive: i.target.checked }),
+              checked: d.isActive,
+              onChange: (l) => y({ ...d, isActive: l.target.checked }),
               className: 'rounded',
             }),
             e.jsx('label', {
@@ -841,14 +888,14 @@ function Me({
             e.jsx('button', {
               type: 'button',
               onClick: x,
-              className: `flex-1 py-2 px-4 ${d.cardBg} ${d.border} ${d.borderMd} hover:bg-gray-50 dark:hover:bg-gray-700`,
+              className: `flex-1 py-2 px-4 ${o.cardBg} ${o.border} ${o.borderMd} hover:bg-gray-50 dark:hover:bg-gray-700`,
               children: 'Annulla',
             }),
             e.jsxs('button', {
               type: 'submit',
               className:
                 'flex-1 py-2 px-4 bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-600',
-              children: [l ? 'Aggiorna' : 'Crea', ' Fascia Oraria'],
+              children: [c ? 'Aggiorna' : 'Crea', ' Fascia Oraria'],
             }),
           ],
         }),
@@ -856,18 +903,22 @@ function Me({
     }),
   });
 }
-function Ae({ isOpen: s, onClose: x, player: l, onSave: N, T: c, ds: z }) {
-  const [m, d] = u.useState(() => ({
+function Le({ isOpen: i, onClose: x, player: c, onSave: N, T: r, ds: I }) {
+  const [n, o] = u.useState(() => ({
       color: '#3B82F6',
       hourlyRate: 0,
+      priceSingle: 0,
+      priceCouple: 0,
+      priceThree: 0,
+      priceMatchLesson: 0,
       specialties: [],
       bio: '',
       certifications: [],
-      ...l.instructorData,
+      ...c.instructorData,
     })),
-    [j, n] = u.useState(''),
-    [y, O] = u.useState(''),
-    i = ['Padel', 'Tennis', 'Fitness', 'Calcio', 'Basket'],
+    [j, d] = u.useState(''),
+    [y, A] = u.useState(''),
+    l = ['Padel', 'Tennis', 'Fitness', 'Calcio', 'Basket'],
     k = [
       '#3B82F6',
       '#EF4444',
@@ -880,84 +931,153 @@ function Ae({ isOpen: s, onClose: x, player: l, onSave: N, T: c, ds: z }) {
       '#F97316',
       '#6366F1',
     ],
-    A = (r) => {
-      (r.preventDefault(), N(m));
+    L = (s) => {
+      (s.preventDefault(), N(n));
     },
     p = () => {
       j.trim() &&
-        !m.specialties.includes(j.trim()) &&
-        (d({ ...m, specialties: [...m.specialties, j.trim()] }), n(''));
+        !n.specialties.includes(j.trim()) &&
+        (o({ ...n, specialties: [...n.specialties, j.trim()] }), d(''));
     },
-    R = (r) => {
-      d({ ...m, specialties: m.specialties.filter((D) => D !== r) });
+    F = (s) => {
+      o({ ...n, specialties: n.specialties.filter((D) => D !== s) });
     };
   return e.jsx(he, {
-    isOpen: s,
+    isOpen: i,
     onClose: x,
-    title: `Configura Istruttore: ${l.name}`,
+    title: `Configura Istruttore: ${c.name}`,
     size: 'large',
-    T: c,
+    T: r,
     children: e.jsxs('form', {
-      onSubmit: A,
+      onSubmit: L,
       className: 'space-y-4',
       children: [
         e.jsxs('div', {
           children: [
-            e.jsx('label', { className: `block ${z.label} mb-2`, children: 'Colore Istruttore' }),
+            e.jsx('label', { className: `block ${I.label} mb-2`, children: 'Colore Istruttore' }),
             e.jsx('div', {
               className: 'flex gap-2 mb-2',
-              children: k.map((r) =>
+              children: k.map((s) =>
                 e.jsx(
                   'button',
                   {
                     type: 'button',
-                    onClick: () => d({ ...m, color: r }),
-                    className: `w-8 h-8 rounded-full border-2 ${m.color === r ? 'border-gray-800' : 'border-gray-300'}`,
-                    style: { backgroundColor: r },
+                    onClick: () => o({ ...n, color: s }),
+                    className: `w-8 h-8 rounded-full border-2 ${n.color === s ? 'border-gray-800' : 'border-gray-300'}`,
+                    style: { backgroundColor: s },
                   },
-                  r
+                  s
                 )
               ),
             }),
             e.jsx('input', {
               type: 'color',
-              value: m.color,
-              onChange: (r) => d({ ...m, color: r.target.value }),
+              value: n.color,
+              onChange: (s) => o({ ...n, color: s.target.value }),
               className: 'w-full h-10 rounded border',
             }),
           ],
         }),
         e.jsxs('div', {
           children: [
-            e.jsx('label', { className: `block ${z.label} mb-2`, children: 'Tariffa Oraria (€)' }),
-            e.jsx('input', {
-              type: 'number',
-              min: '0',
-              step: '5',
-              value: m.hourlyRate,
-              onChange: (r) => d({ ...m, hourlyRate: parseFloat(r.target.value) || 0 }),
-              className: `w-full p-2 ${c.cardBg} ${c.border} ${c.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
-              placeholder: 'es. 50',
+            e.jsx('label', { className: `block ${I.label} mb-3`, children: 'Tariffe Lezioni (€)' }),
+            e.jsxs('div', {
+              className: 'grid grid-cols-1 sm:grid-cols-2 gap-4',
+              children: [
+                e.jsxs('div', {
+                  children: [
+                    e.jsx('label', {
+                      className: `block text-sm ${r.subtext} mb-1`,
+                      children: 'Lezione Singola',
+                    }),
+                    e.jsx('input', {
+                      type: 'number',
+                      min: '0',
+                      step: '5',
+                      value: n.priceSingle || 0,
+                      onChange: (s) => o({ ...n, priceSingle: parseFloat(s.target.value) || 0 }),
+                      className: `w-full p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                      placeholder: 'es. 50',
+                    }),
+                  ],
+                }),
+                e.jsxs('div', {
+                  children: [
+                    e.jsx('label', {
+                      className: `block text-sm ${r.subtext} mb-1`,
+                      children: 'Lezione di Coppia',
+                    }),
+                    e.jsx('input', {
+                      type: 'number',
+                      min: '0',
+                      step: '5',
+                      value: n.priceCouple || 0,
+                      onChange: (s) => o({ ...n, priceCouple: parseFloat(s.target.value) || 0 }),
+                      className: `w-full p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                      placeholder: 'es. 70',
+                    }),
+                  ],
+                }),
+                e.jsxs('div', {
+                  children: [
+                    e.jsx('label', {
+                      className: `block text-sm ${r.subtext} mb-1`,
+                      children: 'Lezione a 3 Persone',
+                    }),
+                    e.jsx('input', {
+                      type: 'number',
+                      min: '0',
+                      step: '5',
+                      value: n.priceThree || 0,
+                      onChange: (s) => o({ ...n, priceThree: parseFloat(s.target.value) || 0 }),
+                      className: `w-full p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                      placeholder: 'es. 90',
+                    }),
+                  ],
+                }),
+                e.jsxs('div', {
+                  children: [
+                    e.jsx('label', {
+                      className: `block text-sm ${r.subtext} mb-1`,
+                      children: 'Partita Lezione',
+                    }),
+                    e.jsx('input', {
+                      type: 'number',
+                      min: '0',
+                      step: '5',
+                      value: n.priceMatchLesson || 0,
+                      onChange: (s) =>
+                        o({ ...n, priceMatchLesson: parseFloat(s.target.value) || 0 }),
+                      className: `w-full p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                      placeholder: 'es. 80',
+                    }),
+                  ],
+                }),
+              ],
+            }),
+            e.jsx('p', {
+              className: `text-xs ${r.subtext} mt-2`,
+              children: 'Prezzi per ora di lezione. Lasciare a 0 per disabilitare una tipologia.',
             }),
           ],
         }),
         e.jsxs('div', {
           children: [
-            e.jsx('label', { className: `block ${z.label} mb-2`, children: 'Specialità' }),
+            e.jsx('label', { className: `block ${I.label} mb-2`, children: 'Specialità' }),
             e.jsx('div', {
               className: 'flex flex-wrap gap-2 mb-2',
-              children: i.map((r) =>
+              children: l.map((s) =>
                 e.jsx(
                   'button',
                   {
                     type: 'button',
                     onClick: () => {
-                      m.specialties.includes(r) || d({ ...m, specialties: [...m.specialties, r] });
+                      n.specialties.includes(s) || o({ ...n, specialties: [...n.specialties, s] });
                     },
-                    className: `px-3 py-1 text-sm rounded border ${m.specialties.includes(r) ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-600' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'}`,
-                    children: r,
+                    className: `px-3 py-1 text-sm rounded border ${n.specialties.includes(s) ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-600' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'}`,
+                    children: s,
                   },
-                  r
+                  s
                 )
               ),
             }),
@@ -967,10 +1087,10 @@ function Ae({ isOpen: s, onClose: x, player: l, onSave: N, T: c, ds: z }) {
                 e.jsx('input', {
                   type: 'text',
                   value: j,
-                  onChange: (r) => n(r.target.value),
-                  className: `flex-1 p-2 ${c.cardBg} ${c.border} ${c.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                  onChange: (s) => d(s.target.value),
+                  className: `flex-1 p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
                   placeholder: 'Aggiungi specialità personalizzata',
-                  onKeyPress: (r) => r.key === 'Enter' && (r.preventDefault(), p()),
+                  onKeyPress: (s) => s.key === 'Enter' && (s.preventDefault(), p()),
                 }),
                 e.jsx('button', {
                   type: 'button',
@@ -981,20 +1101,20 @@ function Ae({ isOpen: s, onClose: x, player: l, onSave: N, T: c, ds: z }) {
                 }),
               ],
             }),
-            m.specialties.length > 0 &&
+            n.specialties.length > 0 &&
               e.jsx('div', {
                 className: 'flex flex-wrap gap-1',
-                children: m.specialties.map((r, D) =>
+                children: n.specialties.map((s, D) =>
                   e.jsxs(
                     'div',
                     {
                       className:
                         'flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm',
                       children: [
-                        e.jsx('span', { children: r }),
+                        e.jsx('span', { children: s }),
                         e.jsx('button', {
                           type: 'button',
-                          onClick: () => R(r),
+                          onClick: () => F(s),
                           className: 'text-blue-600 hover:text-blue-800',
                           children: '×',
                         }),
@@ -1008,12 +1128,12 @@ function Ae({ isOpen: s, onClose: x, player: l, onSave: N, T: c, ds: z }) {
         }),
         e.jsxs('div', {
           children: [
-            e.jsx('label', { className: `block ${z.label} mb-2`, children: 'Biografia' }),
+            e.jsx('label', { className: `block ${I.label} mb-2`, children: 'Biografia' }),
             e.jsx('textarea', {
-              value: m.bio,
-              onChange: (r) => d({ ...m, bio: r.target.value }),
+              value: n.bio,
+              onChange: (s) => o({ ...n, bio: s.target.value }),
               rows: 3,
-              className: `w-full p-2 ${c.cardBg} ${c.border} ${c.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+              className: `w-full p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
               placeholder: "Descrizione dell'istruttore, esperienza, etc...",
             }),
           ],
@@ -1024,7 +1144,7 @@ function Ae({ isOpen: s, onClose: x, player: l, onSave: N, T: c, ds: z }) {
             e.jsx('button', {
               type: 'button',
               onClick: x,
-              className: `flex-1 py-2 px-4 ${c.cardBg} ${c.border} ${c.borderMd} hover:bg-gray-50 dark:hover:bg-gray-700`,
+              className: `flex-1 py-2 px-4 ${r.cardBg} ${r.border} ${r.borderMd} hover:bg-gray-50 dark:hover:bg-gray-700`,
               children: 'Annulla',
             }),
             e.jsx('button', {
@@ -1039,29 +1159,29 @@ function Ae({ isOpen: s, onClose: x, player: l, onSave: N, T: c, ds: z }) {
     }),
   });
 }
-function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
-  const { user: z } = ge(),
-    m = z || x,
+function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
+  const { user: I } = ge(),
+    n = I || x,
     {
-      lessonBookings: d,
+      lessonBookings: o,
       loading: j,
-      createLessonBooking: n,
+      createLessonBooking: d,
       cancelBooking: y,
-      clearAllLessons: O,
-      refresh: i,
-    } = Ie(),
-    { bookings: k } = ze(),
-    A = we(s),
-    p = l?.lessonConfig || Ce(),
-    R = l?.players || [],
-    [r, D] = u.useState('book'),
-    [B, W] = u.useState(1),
+      clearAllLessons: A,
+      refresh: l,
+    } = ze(),
+    { bookings: k } = Ie(),
+    L = $e(i),
+    p = c?.lessonConfig || Ce(),
+    F = c?.players || [],
+    [s, D] = u.useState('book'),
+    [B, H] = u.useState(1),
     [S, Q] = u.useState(''),
-    [H, Y] = u.useState(null),
+    [T, Y] = u.useState(null),
     [E, V] = u.useState(''),
     [C, a] = u.useState([]),
-    [I, o] = u.useState({ type: '', text: '' }),
-    F = u.useCallback(async () => {
+    [z, m] = u.useState({ type: '', text: '' }),
+    R = u.useCallback(async () => {
       if (
         window.confirm(
           '⚠️ ATTENZIONE: Questa azione cancellerà TUTTE le prenotazioni di lezione e i relativi slot nei campi. Continuare?'
@@ -1069,16 +1189,16 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
       ) {
         console.log('🗑️ Clearing all lesson bookings...');
         try {
-          const t = await O();
+          const t = await A();
           (console.log(`✅ Cleared ${t} lesson bookings successfully`),
-            o({ type: 'success', text: `Cancellate ${t} prenotazioni di lezione con successo!` }),
-            setTimeout(() => o({ type: '', text: '' }), 3e3));
+            m({ type: 'success', text: `Cancellate ${t} prenotazioni di lezione con successo!` }),
+            setTimeout(() => m({ type: '', text: '' }), 3e3));
         } catch (t) {
           (console.error('❌ Error clearing lesson bookings:', t),
-            o({ type: 'error', text: 'Errore durante la cancellazione delle prenotazioni.' }));
+            m({ type: 'error', text: 'Errore durante la cancellazione delle prenotazioni.' }));
         }
       }
-    }, [O]),
+    }, [A]),
     pe = u.useCallback(
       (t) => {
         N((b) => ({ ...b, lessonConfig: t }));
@@ -1086,13 +1206,13 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
       [N]
     );
   u.useEffect(() => {
-    r === 'admin' && !c && D('book');
-  }, [r, c]);
+    s === 'admin' && !r && D('book');
+  }, [s, r]);
   const U = u.useMemo(
-      () => R.filter((t) => t.category === se.INSTRUCTOR && t.instructorData?.isInstructor),
-      [R]
+      () => F.filter((t) => t.category === se.INSTRUCTOR && t.instructorData?.isInstructor),
+      [F]
     ),
-    de = u.useCallback(
+    ce = u.useCallback(
       (t) => {
         const P = new Date(t).getDay(),
           v = (p.timeSlots || []).filter((h) => h.dayOfWeek === P && h.isActive);
@@ -1106,35 +1226,35 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                 le = f * 60 + q,
                 ae = re * 60 + ie;
               let Z = !1;
-              for (let L = le; L < ae; L += 60) {
-                if (L + 60 > ae) continue;
-                const _ = Math.floor(L / 60),
-                  J = L % 60,
+              for (let O = le; O < ae; O += 60) {
+                if (O + 60 > ae) continue;
+                const _ = Math.floor(O / 60),
+                  J = O % 60,
                   M = `${_.toString().padStart(2, '0')}:${J.toString().padStart(2, '0')}`,
                   X = U.filter(
-                    (w) =>
-                      h.instructorIds.includes(w.id) &&
-                      !k.some(($) => {
-                        const g = $.status || 'confirmed';
+                    ($) =>
+                      h.instructorIds.includes($.id) &&
+                      !k.some((w) => {
+                        const g = w.status || 'confirmed';
                         return (
-                          $.date === t &&
-                          $.time === M &&
-                          $.instructorId === w.id &&
+                          w.date === t &&
+                          w.time === M &&
+                          w.instructorId === $.id &&
                           g === 'confirmed'
                         );
                       })
                   ),
-                  ee = (l?.courts || []).filter((w) =>
-                    h.courtIds.includes(w.id)
+                  ee = (c?.courts || []).filter(($) =>
+                    h.courtIds.includes($.id)
                       ? !k.some((g) => {
                           const G = g.status || 'confirmed';
-                          if (g.courtId !== w.id || g.date !== t || G !== 'confirmed') return !1;
-                          const T = parseInt(M.split(':')[0]) * 60 + parseInt(M.split(':')[1]),
-                            ne = T + 60,
+                          if (g.courtId !== $.id || g.date !== t || G !== 'confirmed') return !1;
+                          const W = parseInt(M.split(':')[0]) * 60 + parseInt(M.split(':')[1]),
+                            ne = W + 60,
                             te =
                               parseInt(g.time.split(':')[0]) * 60 + parseInt(g.time.split(':')[1]),
                             oe = te + (g.duration || 90);
-                          return T < oe && te < ne;
+                          return W < oe && te < ne;
                         })
                       : !1
                   );
@@ -1143,9 +1263,9 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
               return Z;
             });
       },
-      [p.timeSlots, U, k, l?.courts]
+      [p.timeSlots, U, k, c?.courts]
     ),
-    ce = u.useMemo(() => {
+    de = u.useMemo(() => {
       const t = [],
         b = new Date(),
         P = new Set();
@@ -1158,7 +1278,7 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
         const f = h.getDay(),
           q = h.toISOString().split('T')[0];
         P.has(f) &&
-          de(q) &&
+          ce(q) &&
           t.push({
             date: q,
             dayOfWeek: f,
@@ -1170,7 +1290,7 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
           });
       }
       return t;
-    }, [p.timeSlots, de]),
+    }, [p.timeSlots, ce]),
     me = u.useMemo(() => {
       if (!S) return [];
       const b = new Date(S).getDay(),
@@ -1183,45 +1303,45 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
           le = parseInt(f.endTime.split(':')[1]),
           ae = q * 60 + re,
           Z = ie * 60 + le;
-        for (let L = ae; L < Z && !(L + 60 > Z); L += 60) {
-          const _ = Math.floor(L / 60),
-            J = L % 60,
+        for (let O = ae; O < Z && !(O + 60 > Z); O += 60) {
+          const _ = Math.floor(O / 60),
+            J = O % 60,
             M = `${_.toString().padStart(2, '0')}:${J.toString().padStart(2, '0')}`,
             X = U.filter(
-              (w) =>
-                f.instructorIds.includes(w.id) &&
-                !k.some(($) => {
-                  const g = $.status || 'confirmed';
+              ($) =>
+                f.instructorIds.includes($.id) &&
+                !k.some((w) => {
+                  const g = w.status || 'confirmed';
                   return (
-                    $.date === S && $.time === M && $.instructorId === w.id && g === 'confirmed'
+                    w.date === S && w.time === M && w.instructorId === $.id && g === 'confirmed'
                   );
                 })
             ),
-            ee = (l?.courts || []).filter((w) =>
-              f.courtIds.includes(w.id)
+            ee = (c?.courts || []).filter(($) =>
+              f.courtIds.includes($.id)
                 ? !k.some((g) => {
                     const G = g.status || 'confirmed';
-                    if (g.courtId !== w.id || g.date !== S || G !== 'confirmed') return !1;
-                    const T = parseInt(M.split(':')[0]) * 60 + parseInt(M.split(':')[1]),
-                      ne = T + 60,
+                    if (g.courtId !== $.id || g.date !== S || G !== 'confirmed') return !1;
+                    const W = parseInt(M.split(':')[0]) * 60 + parseInt(M.split(':')[1]),
+                      ne = W + 60,
                       te = parseInt(g.time.split(':')[0]) * 60 + parseInt(g.time.split(':')[1]),
                       oe = te + (g.duration || 90);
-                    return T < oe && te < ne;
+                    return W < oe && te < ne;
                   })
                 : !1
             );
           if (X.length > 0 && ee.length > 0)
             if (v.has(M)) {
-              const w = v.get(M),
-                $ = [...w.availableInstructors];
+              const $ = v.get(M),
+                w = [...$.availableInstructors];
               X.forEach((G) => {
-                $.some((T) => T.id === G.id) || $.push(G);
+                w.some((W) => W.id === G.id) || w.push(G);
               });
-              const g = [...w.availableCourts];
+              const g = [...$.availableCourts];
               (ee.forEach((G) => {
-                g.some((T) => T.id === G.id) || g.push(G);
+                g.some((W) => W.id === G.id) || g.push(G);
               }),
-                v.set(M, { ...w, availableInstructors: $, availableCourts: g }));
+                v.set(M, { ...$, availableInstructors: w, availableCourts: g }));
             } else
               v.set(M, {
                 id: `${S}-${M}`,
@@ -1242,15 +1362,15 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
           ),
         h.sort((f, q) => f.time.localeCompare(q.time))
       );
-    }, [S, p.timeSlots, U, k, l?.courts]),
+    }, [S, p.timeSlots, U, k, c?.courts]),
     ye = u.useCallback(async () => {
-      if (!S || !H || !E) {
-        o({ type: 'error', text: 'Seleziona data, orario e maestro per continuare.' });
+      if (!S || !T || !E) {
+        m({ type: 'error', text: 'Seleziona data, orario e maestro per continuare.' });
         return;
       }
       try {
-        o({ type: '', text: '' });
-        const t = H.availableCourts[0],
+        m({ type: '', text: '' });
+        const t = T.availableCourts[0],
           b = U.find((h) => h.id === E),
           P = {
             instructorId: E,
@@ -1259,50 +1379,50 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
             courtId: t.id,
             courtName: t.name,
             date: S,
-            time: H.time,
+            time: T.time,
             duration: 60,
             price: 0,
             notes: `Lezione con ${b?.name}`,
-            players: [m?.displayName || m?.email],
+            players: [n?.displayName || n?.email],
             userPhone: '',
-            bookedBy: m?.displayName || m?.email,
+            bookedBy: n?.displayName || n?.email,
             createCourtBooking: !1,
           };
         console.log('Creating unified lesson booking:', P);
-        const v = await n(P);
+        const v = await d(P);
         (console.log('✅ Created unified lesson booking:', v),
-          o({ type: 'success', text: 'Lezione prenotata con successo!' }),
-          W(1),
+          m({ type: 'success', text: 'Lezione prenotata con successo!' }),
+          H(1),
           Q(''),
           Y(null),
           V(''),
           a([]),
-          await i(),
-          setTimeout(() => o({ type: '', text: '' }), 3e3));
+          await l(),
+          setTimeout(() => m({ type: '', text: '' }), 3e3));
       } catch (t) {
         (console.error('Error booking lesson:', t),
-          o({ type: 'error', text: 'Errore durante la prenotazione della lezione.' }));
+          m({ type: 'error', text: 'Errore durante la prenotazione della lezione.' }));
       }
-    }, [S, H, E, U, n, m, i]),
+    }, [S, T, E, U, d, n, l]),
     ve = u.useCallback(
       async (t) => {
         if (window.confirm('Sei sicuro di voler cancellare questa lezione?'))
           try {
             (await y(t),
-              o({ type: 'success', text: 'Lezione cancellata con successo!' }),
-              setTimeout(() => o({ type: '', text: '' }), 3e3));
+              m({ type: 'success', text: 'Lezione cancellata con successo!' }),
+              setTimeout(() => m({ type: '', text: '' }), 3e3));
           } catch (b) {
             (console.error('Error cancelling lesson:', b),
-              o({ type: 'error', text: 'Errore durante la cancellazione della lezione.' }));
+              m({ type: 'error', text: 'Errore durante la cancellazione della lezione.' }));
           }
       },
       [y]
     ),
-    ue = () => W((t) => Math.min(t + 1, 3)),
-    xe = () => W((t) => Math.max(t - 1, 1));
+    ue = () => H((t) => Math.min(t + 1, 3)),
+    xe = () => H((t) => Math.max(t - 1, 1));
   return j
     ? e.jsx(K, {
-        T: s,
+        T: i,
         title: 'Prenota Lezione',
         className: 'space-y-6',
         children: e.jsxs('div', {
@@ -1319,47 +1439,47 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
         }),
       })
     : e.jsxs(K, {
-        T: s,
+        T: i,
         title: 'Prenota Lezione',
         className: 'space-y-6',
         children: [
-          I.text &&
+          z.text &&
             e.jsx('div', {
-              className: `p-4 rounded-lg ${I.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : I.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}`,
-              children: I.text,
+              className: `p-4 rounded-lg ${z.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : z.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}`,
+              children: z.text,
             }),
           e.jsxs('div', {
             className: 'flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1',
             children: [
               e.jsx('button', {
                 onClick: () => D('book'),
-                className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${r === 'book' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
+                className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${s === 'book' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
                 children: 'Prenota Lezione',
               }),
               e.jsxs('button', {
                 onClick: () => D('bookings'),
-                className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${r === 'bookings' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
+                className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${s === 'bookings' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
                 children: [
                   'Le Mie Lezioni',
                   ' ',
-                  d.length > 0 &&
+                  o.length > 0 &&
                     e.jsx(be, {
                       variant: 'primary',
                       size: 'sm',
                       className: 'ml-2',
-                      children: d.filter((t) => t.status === 'confirmed').length,
+                      children: o.filter((t) => t.status === 'confirmed').length,
                     }),
                 ],
               }),
-              c &&
+              r &&
                 e.jsx('button', {
                   onClick: () => D('admin'),
-                  className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${r === 'admin' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
+                  className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${s === 'admin' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
                   children: 'Gestione',
                 }),
             ],
           }),
-          r === 'book' &&
+          s === 'book' &&
             e.jsxs('div', {
               className: 'bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-600 p-6',
               children: [
@@ -1410,7 +1530,7 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                         className: 'text-sm text-gray-600 dark:text-gray-300',
                         children: 'Prossimi 7 giorni disponibili per le lezioni',
                       }),
-                      ce.length === 0
+                      de.length === 0
                         ? e.jsxs('div', {
                             className: 'text-center py-8 text-gray-500',
                             children: [
@@ -1434,7 +1554,7 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                         : e.jsx('div', {
                             className:
                               'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3',
-                            children: ce.map((t) => {
+                            children: de.map((t) => {
                               const b = t.date === new Date().toISOString().split('T')[0];
                               return e.jsxs(
                                 'button',
@@ -1536,7 +1656,7 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                                             : V(''),
                                           ue());
                                       },
-                                      className: `p-4 rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${H?.id === t.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg' : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md'}`,
+                                      className: `p-4 rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${T?.id === t.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg' : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md'}`,
                                       children: [
                                         e.jsx('div', {
                                           className:
@@ -1617,7 +1737,7 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                               }),
                               e.jsx('span', {
                                 className: 'font-medium text-gray-900 dark:text-white',
-                                children: H?.displayTime,
+                                children: T?.displayTime,
                               }),
                             ],
                           }),
@@ -1757,7 +1877,7 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                   }),
               ],
             }),
-          r === 'bookings' &&
+          s === 'bookings' &&
             e.jsxs('div', {
               className: 'bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-600 p-6',
               children: [
@@ -1765,14 +1885,14 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                   className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
                   children: 'Le Mie Lezioni',
                 }),
-                d.length === 0
+                o.length === 0
                   ? e.jsx('div', {
                       className: 'text-center py-8 text-gray-500 dark:text-gray-400',
                       children: 'Non hai ancora prenotato nessuna lezione.',
                     })
                   : e.jsx('div', {
                       className: 'space-y-4',
-                      children: d
+                      children: o
                         .filter((t) => t.status === 'confirmed')
                         .sort(
                           (t, b) =>
@@ -1838,29 +1958,29 @@ function Be({ T: s, user: x, state: l, setState: N, clubMode: c }) {
                     }),
               ],
             }),
-          r === 'admin' &&
-            c &&
+          s === 'admin' &&
+            r &&
             e.jsx(De, {
-              T: s,
-              ds: A,
+              T: i,
+              ds: L,
               lessonConfig: p,
               updateLessonConfig: pe,
               instructors: U,
-              players: R,
+              players: F,
               setState: N,
-              state: l,
-              courts: l?.courts || [],
-              onClearAllLessons: F,
-              lessonBookingsCount: d?.length || 0,
+              state: c,
+              courts: c?.courts || [],
+              onClearAllLessons: R,
+              lessonBookingsCount: o?.length || 0,
             }),
         ],
       });
 }
 function qe() {
-  const { user: s } = ge(),
-    { state: x, setState: l } = je(),
+  const { user: i } = ge(),
+    { state: x, setState: c } = je(),
     { clubMode: N } = Ne(),
-    c = Se.useMemo(() => ke(), []);
-  return e.jsx(Be, { T: c, user: s, state: x, setState: l, clubMode: N });
+    r = Se.useMemo(() => ke(), []);
+  return e.jsx(Be, { T: r, user: i, state: x, setState: c, clubMode: N });
 }
 export { qe as default };

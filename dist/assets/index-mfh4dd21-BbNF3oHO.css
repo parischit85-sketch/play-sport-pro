@@ -4215,6 +4215,9 @@ a,
 .dark\:bg-purple-900\/20:is(.dark *) {
   background-color: #581c8733;
 }
+.dark\:bg-purple-900\/30:is(.dark *) {
+  background-color: #581c874d;
+}
 .dark\:bg-red-900:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(127 29 29 / var(--tw-bg-opacity, 1));

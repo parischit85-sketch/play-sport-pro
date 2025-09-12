@@ -360,10 +360,41 @@ export default function LessonAdminPanel({
                             </div>
                             <div>
                               <h4 className={`${ds.h6} font-medium`}>{instructor.name}</h4>
-                              <div className="flex items-center gap-3 text-sm text-gray-600">
-                                {instructor.instructorData?.hourlyRate > 0 && (
-                                  <span>€{instructor.instructorData.hourlyRate}/ora</span>
-                                )}
+                              <div className="flex flex-col gap-1 text-sm text-gray-600">
+                                {/* Prezzi lezioni */}
+                                <div className="flex flex-wrap gap-2">
+                                  {instructor.instructorData?.priceSingle > 0 && (
+                                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded text-xs">
+                                      Singola: €{instructor.instructorData.priceSingle}
+                                    </span>
+                                  )}
+                                  {instructor.instructorData?.priceCouple > 0 && (
+                                    <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded text-xs">
+                                      Coppia: €{instructor.instructorData.priceCouple}
+                                    </span>
+                                  )}
+                                  {instructor.instructorData?.priceThree > 0 && (
+                                    <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded text-xs">
+                                      Tre: €{instructor.instructorData.priceThree}
+                                    </span>
+                                  )}
+                                  {instructor.instructorData?.priceMatchLesson > 0 && (
+                                    <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 rounded text-xs">
+                                      Partita: €{instructor.instructorData.priceMatchLesson}
+                                    </span>
+                                  )}
+                                  {/* Fallback alla tariffa oraria se non ci sono prezzi specifici */}
+                                  {!instructor.instructorData?.priceSingle &&
+                                    !instructor.instructorData?.priceCouple &&
+                                    !instructor.instructorData?.priceThree &&
+                                    !instructor.instructorData?.priceMatchLesson &&
+                                    instructor.instructorData?.hourlyRate > 0 && (
+                                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded text-xs">
+                                        €{instructor.instructorData.hourlyRate}/ora
+                                      </span>
+                                    )}
+                                </div>
+                                {/* Specialità */}
                                 {instructor.instructorData?.specialties?.length > 0 && (
                                   <span>{instructor.instructorData.specialties.join(', ')}</span>
                                 )}
@@ -773,7 +804,11 @@ function TimeSlotModal({
 function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
   const [formData, setFormData] = useState(() => ({
     color: '#3B82F6',
-    hourlyRate: 0,
+    hourlyRate: 0, // Mantengo per retrocompatibilità
+    priceSingle: 0,
+    priceCouple: 0,
+    priceThree: 0,
+    priceMatchLesson: 0,
     specialties: [],
     bio: '',
     certifications: [],
@@ -869,20 +904,73 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
           />
         </div>
 
-        {/* Hourly Rate */}
+        {/* Pricing Section */}
         <div>
-          <label className={`block ${ds.label} mb-2`}>Tariffa Oraria (€)</label>
-          <input
-            type="number"
-            min="0"
-            step="5"
-            value={formData.hourlyRate}
-            onChange={(e) =>
-              setFormData({ ...formData, hourlyRate: parseFloat(e.target.value) || 0 })
-            }
-            className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            placeholder="es. 50"
-          />
+          <label className={`block ${ds.label} mb-3`}>Tariffe Lezioni (€)</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={`block text-sm ${T.subtext} mb-1`}>Lezione Singola</label>
+              <input
+                type="number"
+                min="0"
+                step="5"
+                value={formData.priceSingle || 0}
+                onChange={(e) =>
+                  setFormData({ ...formData, priceSingle: parseFloat(e.target.value) || 0 })
+                }
+                className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                placeholder="es. 50"
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm ${T.subtext} mb-1`}>Lezione di Coppia</label>
+              <input
+                type="number"
+                min="0"
+                step="5"
+                value={formData.priceCouple || 0}
+                onChange={(e) =>
+                  setFormData({ ...formData, priceCouple: parseFloat(e.target.value) || 0 })
+                }
+                className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                placeholder="es. 70"
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm ${T.subtext} mb-1`}>Lezione a 3 Persone</label>
+              <input
+                type="number"
+                min="0"
+                step="5"
+                value={formData.priceThree || 0}
+                onChange={(e) =>
+                  setFormData({ ...formData, priceThree: parseFloat(e.target.value) || 0 })
+                }
+                className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                placeholder="es. 90"
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm ${T.subtext} mb-1`}>Partita Lezione</label>
+              <input
+                type="number"
+                min="0"
+                step="5"
+                value={formData.priceMatchLesson || 0}
+                onChange={(e) =>
+                  setFormData({ ...formData, priceMatchLesson: parseFloat(e.target.value) || 0 })
+                }
+                className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                placeholder="es. 80"
+              />
+            </div>
+          </div>
+          <p className={`text-xs ${T.subtext} mt-2`}>
+            Prezzi per ora di lezione. Lasciare a 0 per disabilitare una tipologia.
+          </p>
         </div>
 
         {/* Specialties */}
