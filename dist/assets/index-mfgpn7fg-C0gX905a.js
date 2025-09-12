@@ -3,78 +3,78 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/LoginPage-mfgp9duf-DfUbAcfN.js',
-      'assets/router-mfgp9duf-1fFxCiHK.js',
-      'assets/vendor-mfgp9duf-D3F3s8fL.js',
-      'assets/Section-mfgp9duf-BzEjYta0.js',
-      'assets/firebase-mfgp9duf-X_I_guKF.js',
-      'assets/DashboardPage-mfgp9duf-6rSEnbNG.js',
-      'assets/ClassificaPage-mfgp9duf-Do2rp-41.js',
-      'assets/charts-mfgp9duf-D_Ymw6kL.js',
-      'assets/ShareButtons-mfgp9duf-Bb2ChGKb.js',
-      'assets/StatsPage-mfgp9duf-CfPvBF6C.js',
-      'assets/Modal-mfgp9duf-C4u1B86Q.js',
-      'assets/names-mfgp9duf-BW9lV2zG.js',
-      'assets/BookingPage-mfgp9duf-qpQos1kS.js',
-      'assets/Badge-mfgp9duf-By2BTp7T.js',
-      'assets/design-system-mfgp9duf-B5fzZ68S.js',
-      'assets/pricing-mfgp9duf-DMaWA4wL.js',
-      'assets/useUnifiedBookings-mfgp9duf-CgieqzNu.js',
-      'assets/unified-booking-service-mfgp9duf-C7TnzCvm.js',
-      'assets/LessonBookingPage-mfgp9duf-TWhU6dkt.js',
-      'assets/playerTypes-mfgp9duf-CIm-hM8a.js',
-      'assets/PlayersPage-mfgp9duf-DRKKaX5a.js',
-      'assets/MatchesPage-mfgp9duf-BMdSA3nk.js',
-      'assets/TournamentsPage-mfgp9duf-BBFuB1FE.js',
-      'assets/ProfilePage-mfgp9duf-CIxICKaN.js',
-      'assets/ExtraPage-mfgp9duf-CLpAWw3T.js',
-      'assets/format-mfgp9duf-DAEZv7Mi.js',
-      'assets/AdminBookingsPage-mfgp9duf-ij3JIMmq.js',
-      'assets/DarkModeTestPage-mfgp9duf-BBj6wvSP.js',
+      'assets/LoginPage-mfgpn7fg-BxCcwJ4C.js',
+      'assets/router-mfgpn7fg-7pyUyyy2.js',
+      'assets/vendor-mfgpn7fg-D3F3s8fL.js',
+      'assets/Section-mfgpn7fg-CicA69zi.js',
+      'assets/firebase-mfgpn7fg-X_I_guKF.js',
+      'assets/DashboardPage-mfgpn7fg-D0cABFrI.js',
+      'assets/ClassificaPage-mfgpn7fg-w3fjikoJ.js',
+      'assets/charts-mfgpn7fg-sMP0oySw.js',
+      'assets/ShareButtons-mfgpn7fg-DJFHdsQH.js',
+      'assets/StatsPage-mfgpn7fg-Bs1uumHP.js',
+      'assets/Modal-mfgpn7fg-DVggMcVY.js',
+      'assets/names-mfgpn7fg-BW9lV2zG.js',
+      'assets/BookingPage-mfgpn7fg-Bvu9Ngez.js',
+      'assets/Badge-mfgpn7fg-Cd92P3W8.js',
+      'assets/design-system-mfgpn7fg-B5fzZ68S.js',
+      'assets/pricing-mfgpn7fg-DMaWA4wL.js',
+      'assets/useUnifiedBookings-mfgpn7fg-DcCM2TkG.js',
+      'assets/unified-booking-service-mfgpn7fg-Cg0HLEUn.js',
+      'assets/LessonBookingPage-mfgpn7fg-Bl90ua_n.js',
+      'assets/playerTypes-mfgpn7fg-CIm-hM8a.js',
+      'assets/PlayersPage-mfgpn7fg-DjnuOx0q.js',
+      'assets/MatchesPage-mfgpn7fg-CwbG1-Q_.js',
+      'assets/TournamentsPage-mfgpn7fg-CmpiAkw7.js',
+      'assets/ProfilePage-mfgpn7fg-CBpO71Yq.js',
+      'assets/ExtraPage-mfgpn7fg-CxMCOK0X.js',
+      'assets/format-mfgpn7fg-DAEZv7Mi.js',
+      'assets/AdminBookingsPage-mfgpn7fg-CQkZpxBC.js',
+      'assets/DarkModeTestPage-mfgpn7fg-Br-0C2Hy.js',
     ])
 ) => i.map((i) => d[i]);
-import { r as De, a as Te } from './vendor-mfgp9duf-D3F3s8fL.js';
+import { r as Te, a as We } from './vendor-mfgpn7fg-D3F3s8fL.js';
 import {
   r as p,
   b as C,
-  u as ee,
+  u as te,
   N as $,
   c as Oe,
-  O as We,
-  B as $e,
+  O as $e,
+  B as Ue,
   d as Fe,
   e as _,
-} from './router-mfgp9duf-1fFxCiHK.js';
+} from './router-mfgpn7fg-7pyUyyy2.js';
 import {
-  g as he,
-  a as ge,
-  i as fe,
-  b as pe,
-  c as xe,
-  d as Ue,
-  s as Ve,
-  e as He,
-  f as F,
-  h as be,
-  G as qe,
-  j as we,
-  k as Ge,
-  F as Je,
-  l as Ke,
-  m as Ye,
-  n as Xe,
-  o as ve,
-  u as Ze,
-  p as ye,
-  q as ke,
-  r as Qe,
-  t as et,
-  v as tt,
-  w as rt,
-} from './firebase-mfgp9duf-X_I_guKF.js';
+  g as ge,
+  a as fe,
+  i as pe,
+  b as xe,
+  c as be,
+  d as Ve,
+  s as He,
+  e as qe,
+  f as U,
+  h as we,
+  G as Ge,
+  j as ve,
+  k as Je,
+  F as Ke,
+  l as Ye,
+  m as Xe,
+  n as Ze,
+  o as ye,
+  u as Qe,
+  p as ke,
+  q as je,
+  r as et,
+  t as tt,
+  v as rt,
+  w as at,
+} from './firebase-mfgpn7fg-X_I_guKF.js';
 (function () {
-  const r = document.createElement('link').relList;
-  if (r && r.supports && r.supports('modulepreload')) return;
+  const t = document.createElement('link').relList;
+  if (t && t.supports && t.supports('modulepreload')) return;
   for (const s of document.querySelectorAll('link[rel="modulepreload"]')) o(s);
   new MutationObserver((s) => {
     for (const h of s)
@@ -111,15 +111,15 @@ var K = { exports: {} },
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- */ var ie;
-function at() {
-  if (ie) return T;
-  ie = 1;
-  var t = De(),
-    r = Symbol.for('react.element'),
+ */ var le;
+function st() {
+  if (le) return T;
+  le = 1;
+  var r = Te(),
+    t = Symbol.for('react.element'),
     a = Symbol.for('react.fragment'),
     o = Object.prototype.hasOwnProperty,
-    s = t.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner,
+    s = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner,
     h = { key: !0, ref: !0, __self: !0, __source: !0 };
   function n(l, d, u) {
     var m,
@@ -131,30 +131,30 @@ function at() {
       d.ref !== void 0 && (c = d.ref));
     for (m in d) o.call(d, m) && !h.hasOwnProperty(m) && (g[m] = d[m]);
     if (l && l.defaultProps) for (m in ((d = l.defaultProps), d)) g[m] === void 0 && (g[m] = d[m]);
-    return { $$typeof: r, type: l, key: i, ref: c, props: g, _owner: s.current };
+    return { $$typeof: t, type: l, key: i, ref: c, props: g, _owner: s.current };
   }
   return ((T.Fragment = a), (T.jsx = n), (T.jsxs = n), T);
 }
-var le;
-function st() {
-  return (le || ((le = 1), (K.exports = at())), K.exports);
-}
-var e = st(),
-  H = {},
-  ce;
+var ce;
 function ot() {
-  if (ce) return H;
-  ce = 1;
-  var t = Te();
-  return ((H.createRoot = t.createRoot), (H.hydrateRoot = t.hydrateRoot), H);
+  return (ce || ((ce = 1), (K.exports = st())), K.exports);
 }
-var nt = ot();
-const it = 'modulepreload',
-  lt = function (t) {
-    return '/' + t;
+var e = ot(),
+  H = {},
+  de;
+function nt() {
+  if (de) return H;
+  de = 1;
+  var r = We();
+  return ((H.createRoot = r.createRoot), (H.hydrateRoot = r.hydrateRoot), H);
+}
+var it = nt();
+const lt = 'modulepreload',
+  ct = function (r) {
+    return '/' + r;
   },
-  de = {},
-  M = function (r, a, o) {
+  ue = {},
+  M = function (t, a, o) {
     let s = Promise.resolve();
     if (a && a.length > 0) {
       let d = function (u) {
@@ -172,14 +172,14 @@ const it = 'modulepreload',
         l = n?.nonce || n?.getAttribute('nonce');
       s = d(
         a.map((u) => {
-          if (((u = lt(u)), u in de)) return;
-          de[u] = !0;
+          if (((u = ct(u)), u in ue)) return;
+          ue[u] = !0;
           const m = u.endsWith('.css'),
             g = m ? '[rel="stylesheet"]' : '';
           if (document.querySelector(`link[href="${u}"]${g}`)) return;
           const i = document.createElement('link');
           if (
-            ((i.rel = m ? 'stylesheet' : it),
+            ((i.rel = m ? 'stylesheet' : lt),
             m || (i.as = 'script'),
             (i.crossOrigin = ''),
             (i.href = u),
@@ -200,10 +200,10 @@ const it = 'modulepreload',
     }
     return s.then((n) => {
       for (const l of n || []) l.status === 'rejected' && h(l.reason);
-      return r().catch(h);
+      return t().catch(h);
     });
   },
-  W = {
+  O = {
     apiKey: 'AIzaSyDMP7772cyEY1oLzo8f9hMW7Leu4lWc6OU',
     authDomain: 'm-padelweb.firebaseapp.com',
     projectId: 'm-padelweb',
@@ -212,55 +212,55 @@ const it = 'modulepreload',
     messagingSenderId: '1004722051733',
     measurementId: 'G-0XZCHGMWVR',
   },
-  ct = ['apiKey', 'authDomain', 'projectId', 'appId'],
-  ue = ct.filter((t) => !W[t]);
-if (ue.length > 0) throw new Error(`Missing Firebase configuration: ${ue.join(', ')}`);
-const je = he().length ? ge() : fe(W),
-  te = pe(je, {
+  dt = ['apiKey', 'authDomain', 'projectId', 'appId'],
+  me = dt.filter((r) => !O[r]);
+if (me.length > 0) throw new Error(`Missing Firebase configuration: ${me.join(', ')}`);
+const Se = ge().length ? fe() : pe(O),
+  re = xe(Se, {
     experimentalAutoDetectLongPolling: !0,
     experimentalForceLongPolling: !1,
     useFetchStreams: !1,
   }),
-  E = xe(je);
+  E = be(Se);
 E.useDeviceLanguage && E.useDeviceLanguage();
 try {
   if (typeof window < 'u' && new URLSearchParams(window.location.search || '').has('authdebug')) {
-    const r = {
-      projectId: W.projectId,
-      authDomain: W.authDomain,
-      appId: W.appId,
+    const t = {
+      projectId: O.projectId,
+      authDomain: O.authDomain,
+      appId: O.appId,
       emulator: !1,
       isDev: !1,
       user: E?.currentUser ? { uid: E.currentUser.uid } : null,
     };
-    console.log('[Firebase][authdebug]', r);
+    console.log('[Firebase][authdebug]', t);
   }
 } catch {}
-function Ne(t) {
-  return tt(
+function Ae(r) {
+  return rt(
     E,
-    (r) => {
+    (t) => {
       try {
-        t(r);
+        r(t);
       } catch (a) {
-        (console.error('onAuth callback error:', a), t(null));
+        (console.error('onAuth callback error:', a), r(null));
       }
     },
-    (r) => {
-      (console.error('Firebase Auth error:', r), t(null));
+    (t) => {
+      (console.error('Firebase Auth error:', t), r(null));
     }
   );
 }
-async function dt() {
-  const t = new qe();
-  (t.addScope('email'), t.addScope('profile'), t.setCustomParameters({ prompt: 'select_account' }));
-  let r = null;
+async function ut() {
+  const r = new Ge();
+  (r.addScope('email'), r.addScope('profile'), r.setCustomParameters({ prompt: 'select_account' }));
+  let t = null;
   try {
-    r = await we(E, t);
+    t = await ve(E, r);
   } catch (a) {
     const o = String(a?.message || '').toLowerCase(),
       s = String(a?.code || '').toLowerCase();
-    if (o.includes('cross-origin-opener-policy') || o.includes('window.closed')) return r;
+    if (o.includes('cross-origin-opener-policy') || o.includes('window.closed')) return t;
     if (
       s.includes('auth/unauthorized-domain') ||
       s.includes('auth/operation-not-supported') ||
@@ -270,42 +270,42 @@ async function dt() {
       o.includes('cross-origin') ||
       o.includes('popup')
     )
-      return (await Ge(E, t), null);
+      return (await Je(E, r), null);
     throw a;
   }
-  return (r && r.user && (await Ae(r.user)), r);
+  return (t && t.user && (await Ne(t.user)), t);
 }
-async function Ae(t) {
+async function Ne(r) {
   try {
-    const r = await U(t.uid);
-    if (!r.email || !r.firstName) {
-      const a = (t.displayName || '').split(' '),
+    const t = await F(r.uid);
+    if (!t.email || !t.firstName) {
+      const a = (r.displayName || '').split(' '),
         o = {
-          email: t.email,
-          firstName: r.firstName || a[0] || '',
-          lastName: r.lastName || a.slice(1).join(' ') || '',
-          phone: r.phone || '',
-          avatar: t.photoURL || '',
+          email: r.email,
+          firstName: t.firstName || a[0] || '',
+          lastName: t.lastName || a.slice(1).join(' ') || '',
+          phone: t.phone || '',
+          avatar: r.photoURL || '',
           provider: 'google',
-          ...r,
+          ...t,
         };
-      await q(t.uid, o);
+      await q(r.uid, o);
     }
-  } catch (r) {
-    console.warn('Errore creazione/aggiornamento profilo:', r);
+  } catch (t) {
+    console.warn('Errore creazione/aggiornamento profilo:', t);
   }
 }
-async function ut() {
-  const t = new Je();
-  (t.addScope('email'), t.addScope('public_profile'));
-  const r = await we(E, t);
-  return (r && r.user && (await Ae(r.user)), r);
+async function mt() {
+  const r = new Ke();
+  (r.addScope('email'), r.addScope('public_profile'));
+  const t = await ve(E, r);
+  return (t && t.user && (await Ne(t.user)), t);
 }
-async function mt(t, r) {
-  if (!t || !r) throw new Error('Email e password sono obbligatorie');
-  const a = await Ke(E, t, r);
+async function ht(r, t) {
+  if (!r || !t) throw new Error('Email e password sono obbligatorie');
+  const a = await Ye(E, r, t);
   if (a.user) {
-    const o = await U(a.user.uid);
+    const o = await F(a.user.uid);
     o.email ||
       (await q(a.user.uid, {
         email: a.user.email,
@@ -318,29 +318,29 @@ async function mt(t, r) {
   }
   return a;
 }
-async function ht(t, r) {
-  if (!t || !r) throw new Error('Email e password sono obbligatorie');
-  return Ye(E, t, r);
+async function gt(r, t) {
+  if (!r || !t) throw new Error('Email e password sono obbligatorie');
+  return Xe(E, r, t);
 }
-async function gt(t) {
-  if (!t) throw new Error('Email obbligatoria');
-  return Xe(E, t);
+async function ft(r) {
+  if (!r) throw new Error('Email obbligatoria');
+  return Ze(E, r);
 }
-async function ft() {
+async function pt() {
   try {
-    const t = window.location.href;
-    if (!Ue(E, t)) return null;
-    let r = null;
+    const r = window.location.href;
+    if (!Ve(E, r)) return null;
+    let t = null;
     try {
-      r = localStorage.getItem('ml-magic-email');
+      t = localStorage.getItem('ml-magic-email');
     } catch {}
-    r || (r = window.prompt('Per completare l’accesso, inserisci la tua email:') || '');
-    const a = await Ve(E, r, t);
+    t || (t = window.prompt('Per completare l’accesso, inserisci la tua email:') || '');
+    const a = await He(E, t, r);
     try {
       localStorage.removeItem('ml-magic-email');
     } catch {}
     if ((window.history.replaceState({}, document.title, window.location.pathname), a.user)) {
-      const o = await U(a.user.uid);
+      const o = await F(a.user.uid);
       if (!o.email) {
         const s = {
           email: a.user.email,
@@ -354,28 +354,28 @@ async function ft() {
       }
     }
     return a;
-  } catch (t) {
-    throw (console.warn('completeMagicLinkIfPresent error:', t), t);
+  } catch (r) {
+    throw (console.warn('completeMagicLinkIfPresent error:', r), r);
   }
 }
-async function pt() {
-  await He(E);
+async function xt() {
+  await qe(E);
 }
-async function U(t) {
-  const r = F(te, 'profiles', t),
-    a = await be(r);
+async function F(r) {
+  const t = U(re, 'profiles', r),
+    a = await we(t);
   return a.exists() ? a.data() : {};
 }
-async function q(t, r) {
-  const a = F(te, 'profiles', t);
-  await ve(a, { ...r, _updatedAt: Date.now() }, { merge: !0 });
+async function q(r, t) {
+  const a = U(re, 'profiles', r);
+  await ye(a, { ...t, _updatedAt: Date.now() }, { merge: !0 });
 }
-async function xt(t, r) {
-  await Ze(t, { displayName: r });
+async function bt(r, t) {
+  await Qe(r, { displayName: t });
 }
-async function bt(t = 500) {
-  const r = ye(te, 'profiles'),
-    a = await ke(Qe(r, et(t))),
+async function wt(r = 500) {
+  const t = ke(re, 'profiles'),
+    a = await je(et(t, tt(r))),
     o = [];
   return (
     a.forEach((s) => {
@@ -385,45 +385,45 @@ async function bt(t = 500) {
     o
   );
 }
-const nr = Object.freeze(
+const lr = Object.freeze(
     Object.defineProperty(
       {
         __proto__: null,
         auth: E,
-        completeMagicLinkIfPresent: ft,
-        getUserProfile: U,
-        listAllUserProfiles: bt,
-        loginWithEmailPassword: ht,
-        loginWithFacebook: ut,
-        loginWithGoogle: dt,
-        logout: pt,
-        onAuth: Ne,
-        registerWithEmailPassword: mt,
+        completeMagicLinkIfPresent: pt,
+        getUserProfile: F,
+        listAllUserProfiles: wt,
+        loginWithEmailPassword: gt,
+        loginWithFacebook: mt,
+        loginWithGoogle: ut,
+        logout: xt,
+        onAuth: Ae,
+        registerWithEmailPassword: ht,
         saveUserProfile: q,
-        sendResetPassword: gt,
-        setDisplayName: xt,
+        sendResetPassword: ft,
+        setDisplayName: bt,
       },
       Symbol.toStringTag,
       { value: 'Module' }
     )
   ),
-  Se = p.createContext(null),
+  Ce = p.createContext(null),
   G = () => {
-    const t = p.useContext(Se);
-    if (!t) throw new Error('useAuth must be used within an AuthProvider');
-    return t;
+    const r = p.useContext(Ce);
+    if (!r) throw new Error('useAuth must be used within an AuthProvider');
+    return r;
   };
-function wt({ children: t }) {
-  const [r, a] = p.useState(null),
+function vt({ children: r }) {
+  const [t, a] = p.useState(null),
     [o, s] = p.useState(null),
     [h, n] = p.useState(!0),
     [l, d] = p.useState(null);
   p.useEffect(
     () =>
-      Ne(async (c) => {
+      Ae(async (c) => {
         try {
           if ((a(c), c)) {
-            const w = await U(c.uid);
+            const w = await F(c.uid);
             s(w);
           } else s(null);
           d(null);
@@ -435,10 +435,10 @@ function wt({ children: t }) {
       }),
     []
   );
-  const u = !!r,
+  const u = !!t,
     m = o?.firstName && o?.phone,
     g = {
-      user: r,
+      user: t,
       userProfile: o,
       setUserProfile: s,
       loading: h,
@@ -446,32 +446,32 @@ function wt({ children: t }) {
       isAuthenticated: u,
       isProfileComplete: m,
     };
-  return e.jsx(Se.Provider, { value: g, children: t });
+  return e.jsx(Ce.Provider, { value: g, children: r });
 }
-const vt = {
+const yt = {
     apiKey: 'AIzaSyDMP7772cyEY1oLzo8f9hMW7Leu4lWc6OU',
     authDomain: 'm-padelweb.firebaseapp.com',
     projectId: 'm-padelweb',
   },
-  Ce = he().length ? ge() : fe(vt);
-xe(Ce);
-const V = pe(Ce, {
+  Ie = ge().length ? fe() : pe(yt);
+be(Ie);
+const V = xe(Ie, {
   experimentalAutoDetectLongPolling: !0,
   experimentalForceLongPolling: !1,
   useFetchStreams: !1,
 });
-async function re(t) {
-  const r = await be(F(V, 'leagues', t));
-  return r.exists() ? r.data() : null;
+async function ae(r) {
+  const t = await we(U(V, 'leagues', r));
+  return t.exists() ? t.data() : null;
 }
-async function yt() {
+async function kt() {
   try {
-    const t = await ke(ye(V, 'leagues')),
-      r = [];
+    const r = await je(ke(V, 'leagues')),
+      t = [];
     return (
-      t.forEach((a) => {
+      r.forEach((a) => {
         const o = a.data();
-        r.push({
+        t.push({
           id: a.id,
           name: o.name || a.id,
           players: o.players?.length || 0,
@@ -480,27 +480,27 @@ async function yt() {
           courts: o.courts?.length || 0,
         });
       }),
-      r.sort((a, o) => (o._updatedAt || 0) - (a._updatedAt || 0))
+      t.sort((a, o) => (o._updatedAt || 0) - (a._updatedAt || 0))
     );
-  } catch (t) {
-    return (console.error('Errore nel recupero della lista backup:', t), []);
+  } catch (r) {
+    return (console.error('Errore nel recupero della lista backup:', r), []);
   }
 }
-async function Ie(t, r) {
-  if (r._restored) console.log('🔥 Ripristino manuale autorizzato - bypassando protezioni');
-  else if (r.players && r.players.length < 5) {
+async function Pe(r, t) {
+  if (t._restored) console.log('🔥 Ripristino manuale autorizzato - bypassando protezioni');
+  else if (t.players && t.players.length < 5) {
     (console.warn(
       '🚨 PROTEZIONE ATTIVA: Rifiutato salvataggio di dati con pochi giocatori (possibili seed data)'
     ),
       console.warn('Dati non salvati:', {
-        players: r.players?.length,
-        matches: r.matches?.length,
+        players: t.players?.length,
+        matches: t.matches?.length,
       }));
     return;
   }
   try {
-    const a = await re(t);
-    if (a && a.players && a.players.length > (r.players?.length || 0)) {
+    const a = await ae(r);
+    if (a && a.players && a.players.length > (t.players?.length || 0)) {
       const o = `firebase-backup-${Date.now()}`;
       (localStorage.setItem(
         o,
@@ -515,96 +515,96 @@ async function Ie(t, r) {
   } catch (a) {
     console.warn('Impossibile creare backup automatico:', a);
   }
-  (await ve(F(V, 'leagues', t), r, { merge: !0 }),
+  (await ye(U(V, 'leagues', r), t, { merge: !0 }),
     console.log('✅ Dati salvati nel cloud:', {
-      players: r.players?.length,
-      matches: r.matches?.length,
+      players: t.players?.length,
+      matches: t.matches?.length,
     }));
 }
-function Pe(t, r) {
-  return rt(F(V, 'leagues', t), (a) => {
-    a.exists() && r(a.data());
+function Le(r, t) {
+  return at(U(V, 'leagues', r), (a) => {
+    a.exists() && t(a.data());
   });
 }
-const ir = Object.freeze(
+const cr = Object.freeze(
     Object.defineProperty(
       {
         __proto__: null,
         db: V,
-        listLeagues: yt,
-        loadLeague: re,
-        saveLeague: Ie,
-        subscribeLeague: Pe,
+        listLeagues: kt,
+        loadLeague: ae,
+        saveLeague: Pe,
+        subscribeLeague: Le,
       },
       Symbol.toStringTag,
       { value: 'Module' }
     )
   ),
-  O = (t) => Math.round(Number(t || 0)),
-  Y = (t) => Number(t || 0).toFixed(2);
-function kt(t) {
-  return (t || [])
-    .filter((r) => String(r?.a ?? '') !== '' || String(r?.b ?? '') !== '')
-    .map((r) => `${Number(r.a || 0)}-${Number(r.b || 0)}`)
+  W = (r) => Math.round(Number(r || 0)),
+  Y = (r) => Number(r || 0).toFixed(2);
+function jt(r) {
+  return (r || [])
+    .filter((t) => String(t?.a ?? '') !== '' || String(t?.b ?? '') !== '')
+    .map((t) => `${Number(t.a || 0)}-${Number(t.b || 0)}`)
     .join(', ');
 }
-function X(t) {
-  let r = 0,
+function X(r) {
+  let t = 0,
     a = 0,
     o = 0,
     s = 0;
-  for (const n of t || []) {
+  for (const n of r || []) {
     const l = Number(n?.a || 0),
       d = Number(n?.b || 0);
-    (String(l) === '' && String(d) === '') || ((o += l), (s += d), l > d ? r++ : d > l && a++);
+    (String(l) === '' && String(d) === '') || ((o += l), (s += d), l > d ? t++ : d > l && a++);
   }
   let h = null;
   return (
-    r > a ? (h = 'A') : a > r && (h = 'B'),
-    { setsA: r, setsB: a, gamesA: o, gamesB: s, winner: h }
+    t > a ? (h = 'A') : a > t && (h = 'B'),
+    { setsA: t, setsB: a, gamesA: o, gamesB: s, winner: h }
   );
 }
-function jt(t) {
-  return t <= -2e3
+function St(r) {
+  return r <= -2e3
     ? 0.4
-    : t <= -1500
+    : r <= -1500
       ? 0.6
-      : t <= -900
+      : r <= -900
         ? 0.75
-        : t <= -300
+        : r <= -300
           ? 0.9
-          : t < 300 && t > -300
+          : r < 300 && r > -300
             ? 1
-            : t <= 900
+            : r <= 900
               ? 1.1
-              : t <= 1500
+              : r <= 1500
                 ? 1.25
-                : t <= 2e3
+                : r <= 2e3
                   ? 1.4
                   : 1.6;
 }
-function Nt(t) {
-  return t <= -2e3
+function At(r) {
+  return r <= -2e3
     ? 'gap ≤ −2000 ⇒ 0.40'
-    : t <= -1500
+    : r <= -1500
       ? '−2000 < gap ≤ −1500 ⇒ 0.60'
-      : t <= -900
+      : r <= -900
         ? '−1500 < gap ≤ −900 ⇒ 0.75'
-        : t <= -300
+        : r <= -300
           ? '−900 < gap ≤ −300 ⇒ 0.90'
-          : t < 300 && t > -300
+          : r < 300 && r > -300
             ? '−300 < gap < +300 ⇒ 1.00'
-            : t <= 900
+            : r <= 900
               ? '+300 ≤ gap ≤ +900 ⇒ 1.10'
-              : t <= 1500
+              : r <= 1500
                 ? '+900 < gap ≤ +1500 ⇒ 1.25'
-                : t <= 2e3
+                : r <= 2e3
                   ? '+1500 < gap ≤ +2000 ⇒ 1.40'
                   : 'gap ≥ +2000 ⇒ 1.60';
 }
 function Z({
-  ratingA1: t,
-  ratingA2: r,
+  ratingA1: r,
+  ratingA2: t,
   ratingB1: a,
   ratingB2: o,
   gamesA: s,
@@ -612,28 +612,28 @@ function Z({
   winner: n,
   sets: l,
 }) {
-  const d = Number(t || 0),
-    u = Number(r || 0),
+  const d = Number(r || 0),
+    u = Number(t || 0),
     m = Number(a || 0),
     g = Number(o || 0),
     i = d + u,
     c = m + g,
     w = n === 'A' ? i : c,
-    N = n === 'A' ? c : i,
+    S = n === 'A' ? c : i,
     f = (i + c) / 100,
-    x = N - w,
-    A = jt(x),
+    x = S - w,
+    A = St(x),
     L = n === 'A' ? s - h : h - s,
     v = (f + L) * A,
     y = Math.round(v),
-    S = n === 'A' ? y : -y,
+    N = n === 'A' ? y : -y,
     k = n === 'B' ? y : -y,
-    b = `Risultato set: ${kt(l)}`,
+    b = `Risultato set: ${jt(l)}`,
     P =
-      `Team A=${O(i)}, Team B=${O(c)}, Gap=${O(x)}
-Fascia: ${Nt(x)}
+      `Team A=${W(i)}, Team B=${W(c)}, Gap=${W(x)}
+Fascia: ${At(x)}
 
-Base = (${O(i)} + ${O(c)})/100 = ${Y(f)}
+Base = (${W(i)} + ${W(c)})/100 = ${Y(f)}
 DG (Differenza Game) = ${L}
 
 Punti = (Base + DG) × factor = (${Y(f)} + ${L}) × ${A.toFixed(2)} = ${Y(v)}
@@ -643,7 +643,7 @@ Punti (arrotondato) = ${y}
       `
 ${b}`;
   return {
-    deltaA: S,
+    deltaA: N,
     deltaB: k,
     pts: y,
     base: f,
@@ -655,12 +655,12 @@ ${b}`;
     formula: P,
   };
 }
-const lr = () => Math.random().toString(36).slice(2, 10),
+const dr = () => Math.random().toString(36).slice(2, 10),
   I = 1e3,
   D = 'paris-league-v1';
-function At(t, r) {
+function Nt(r, t) {
   const a = new Map(
-      t.map((n) => {
+      r.map((n) => {
         const l = Number(n.baseRating ?? n.startRating ?? n.rating ?? I);
         return [
           n.id,
@@ -677,9 +677,9 @@ function At(t, r) {
         ];
       })
     ),
-    o = new Map(t.map((n) => [n.id, []])),
+    o = new Map(r.map((n) => [n.id, []])),
     s = [],
-    h = [...(r || [])].sort((n, l) => new Date(n.date) - new Date(l.date));
+    h = [...(t || [])].sort((n, l) => new Date(n.date) - new Date(l.date));
   for (const n of h) {
     const l = a.get(n.teamA[0]),
       d = a.get(n.teamA[1]),
@@ -698,10 +698,10 @@ function At(t, r) {
       }),
       c = { ...n, ...g, ...i };
     s.push(c);
-    const w = (N, f) => {
-      if (!N) return;
-      const x = o.get(N) || [];
-      (x.push(f), o.set(N, x));
+    const w = (S, f) => {
+      if (!S) return;
+      const x = o.get(S) || [];
+      (x.push(f), o.set(S, x));
     };
     (w(l?.id, i.deltaA),
       w(d?.id, i.deltaA),
@@ -740,15 +740,15 @@ function At(t, r) {
   }
   return { players: Array.from(a.values()), matches: s };
 }
-function cr(t, r, a) {
-  const o = new Map(t.map((c) => [c.id, c.name])),
-    h = [...(r || [])].sort((c, w) => new Date(c.date) - new Date(w.date)).slice(-15),
-    n = new Map(t.map((c) => [c.id, Number(c.rating ?? I)])),
+function ur(r, t, a) {
+  const o = new Map(r.map((c) => [c.id, c.name])),
+    h = [...(t || [])].sort((c, w) => new Date(c.date) - new Date(w.date)).slice(-15),
+    n = new Map(r.map((c) => [c.id, Number(c.rating ?? I)])),
     l = new Map(n),
     d = [...h].reverse();
   for (const c of d) {
     const w = X(c.sets),
-      N = Z({
+      S = Z({
         ratingA1: l.get(c.teamA[0]) ?? I,
         ratingA2: l.get(c.teamA[1]) ?? I,
         ratingB1: l.get(c.teamB[0]) ?? I,
@@ -759,10 +759,10 @@ function cr(t, r, a) {
         sets: c.sets,
       }),
       f = (x, A) => l.set(x, (l.get(x) ?? I) - A);
-    (f(c.teamA[0], N.deltaA),
-      f(c.teamA[1], N.deltaA),
-      f(c.teamB[0], N.deltaB),
-      f(c.teamB[1], N.deltaB));
+    (f(c.teamA[0], S.deltaA),
+      f(c.teamA[1], S.deltaA),
+      f(c.teamB[0], S.deltaB),
+      f(c.teamB[1], S.deltaB));
   }
   const u = new Map(l),
     m = [],
@@ -771,7 +771,7 @@ function cr(t, r, a) {
   m.push(g);
   for (const c of h) {
     const w = X(c.sets),
-      N = Z({
+      S = Z({
         ratingA1: u.get(c.teamA[0]) ?? I,
         ratingA2: u.get(c.teamA[1]) ?? I,
         ratingB1: u.get(c.teamB[0]) ?? I,
@@ -782,10 +782,10 @@ function cr(t, r, a) {
         sets: c.sets,
       }),
       f = (A, L) => u.set(A, (u.get(A) ?? I) + L);
-    (f(c.teamA[0], N.deltaA),
-      f(c.teamA[1], N.deltaA),
-      f(c.teamB[0], N.deltaB),
-      f(c.teamB[1], N.deltaB));
+    (f(c.teamA[0], S.deltaA),
+      f(c.teamA[1], S.deltaA),
+      f(c.teamB[0], S.deltaB),
+      f(c.teamB[1], S.deltaB));
     const x = {
       label: new Date(c.date).toLocaleString('it-IT', {
         day: '2-digit',
@@ -816,17 +816,17 @@ function z() {
     peakEndHour: 22,
   };
 }
-function me() {
+function he() {
   return { players: [], matches: [], courts: [], bookings: [], bookingConfig: z() };
 }
-const Le = p.createContext(null),
-  St = () => {
-    const t = p.useContext(Le);
-    if (!t) throw new Error('useLeague must be used within a LeagueProvider');
-    return t;
+const _e = p.createContext(null),
+  Ct = () => {
+    const r = p.useContext(_e);
+    if (!r) throw new Error('useLeague must be used within a LeagueProvider');
+    return r;
   };
-function Ct({ children: t }) {
-  const { user: r, loading: a } = G(),
+function It({ children: r }) {
+  const { user: t, loading: a } = G(),
     [o, s] = p.useState(null),
     [h, n] = p.useState(!0),
     [l, d] = p.useState(null),
@@ -851,26 +851,26 @@ function Ct({ children: t }) {
     }
   }
   const w = p.useRef(0),
-    N = p.useRef(null);
+    S = p.useRef(null);
   p.useEffect(() => {
     localStorage.setItem(D + '-leagueId', g);
   }, [g]);
   const f = (v) => {
     s((y) => {
-      const S = typeof v == 'function' ? v(y) : v,
+      const N = typeof v == 'function' ? v(y) : v,
         k = Date.now(),
         b = (y?._rev || 0) + 1;
-      return ((w.current = k + 2e3), { ...S, _updatedAt: k, _rev: b, _lastWriter: c.current });
+      return ((w.current = k + 2e3), { ...N, _updatedAt: k, _rev: b, _lastWriter: c.current });
     });
   };
   (p.useEffect(() => {
     a ||
       (async () => {
         try {
-          if ((n(!0), d(null), r)) {
-            const S = await re(g);
-            if (S && typeof S == 'object' && Array.isArray(S.players) && Array.isArray(S.matches)) {
-              const b = { ...S };
+          if ((n(!0), d(null), t)) {
+            const N = await ae(g);
+            if (N && typeof N == 'object' && Array.isArray(N.players) && Array.isArray(N.matches)) {
+              const b = { ...N };
               (Array.isArray(b.courts) || (b.courts = []),
                 Array.isArray(b.bookings) || (b.bookings = []),
                 b.bookingConfig || (b.bookingConfig = z()),
@@ -878,7 +878,7 @@ function Ct({ children: t }) {
                 b.bookingConfig.addons || (b.bookingConfig.addons = z().addons),
                 s(b));
               const P = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
-              N.current = P.reduce((B, R) => ((B[R] = b[R]), B), {});
+              S.current = P.reduce((R, B) => ((R[B] = b[B]), R), {});
               try {
                 localStorage.setItem(D, JSON.stringify(b));
               } catch {}
@@ -886,39 +886,39 @@ function Ct({ children: t }) {
             }
           }
           try {
-            const S = localStorage.getItem(D);
-            if (S) {
-              const k = JSON.parse(S);
+            const N = localStorage.getItem(D);
+            if (N) {
+              const k = JSON.parse(N);
               if (k && Array.isArray(k.players) && Array.isArray(k.matches)) {
                 s(k);
                 const b = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
-                N.current = b.reduce((P, B) => ((P[B] = k[B] || []), P), {});
+                S.current = b.reduce((P, R) => ((P[R] = k[R] || []), P), {});
                 return;
               }
             }
           } catch {}
-          const v = me();
+          const v = he();
           s(v);
           const y = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
-          ((N.current = y.reduce((S, k) => ((S[k] = v[k] || []), S), {})),
+          ((S.current = y.reduce((N, k) => ((N[k] = v[k] || []), N), {})),
             console.log('� App inizializzata con stato vuoto - aggiungi i tuoi dati!'));
           try {
             localStorage.setItem(D, JSON.stringify(v));
           } catch {}
         } catch (v) {
           (console.error('League load error:', v), d(v));
-          const y = me();
+          const y = he();
           s(y);
         } finally {
           n(!1);
         }
       })();
-  }, [g, r, a]),
+  }, [g, t, a]),
     p.useEffect(() => {
-      if (!g || !r || a) return;
+      if (!g || !t || a) return;
       let v = null;
       try {
-        v = Pe(g, (y) => {
+        v = Le(g, (y) => {
           if (
             !(y && typeof y == 'object' && Array.isArray(y.players) && Array.isArray(y.matches)) ||
             Date.now() < w.current
@@ -934,12 +934,12 @@ function Ct({ children: t }) {
             m(!0),
             s((b) => {
               const P = b?._rev ?? 0,
-                B = k?._rev ?? 0,
-                R = b?._updatedAt ?? 0,
+                R = k?._rev ?? 0,
+                B = b?._updatedAt ?? 0,
                 J = k?._updatedAt ?? 0,
-                se = B > P || (B === P && J > R);
-              if (se) {
-                const ze = [
+                oe = R > P || (R === P && J > B);
+              if (oe) {
+                const De = [
                   'players',
                   'matches',
                   'courts',
@@ -947,9 +947,9 @@ function Ct({ children: t }) {
                   'bookingConfig',
                   'lessonConfig',
                 ];
-                N.current = ze.reduce((oe, ne) => ((oe[ne] = k[ne]), oe), {});
+                S.current = De.reduce((ne, ie) => ((ne[ie] = k[ie]), ne), {});
               }
-              return se ? k : b;
+              return oe ? k : b;
             }),
             m(!1));
         });
@@ -957,35 +957,35 @@ function Ct({ children: t }) {
         console.error('Subscribe error:', y);
       }
       return () => v && v();
-    }, [g, r, a]),
+    }, [g, t, a]),
     p.useEffect(() => {
-      if (!o || u || !r) return;
+      if (!o || u || !t) return;
       const v = ['players', 'matches', 'courts', 'bookings', 'bookingConfig', 'lessonConfig'],
         y = v.reduce((b, P) => ((b[P] = o[P]), b), {}),
-        S = N.current;
-      if (!S || v.some((b) => JSON.stringify(y[b]) !== JSON.stringify(S[b])))
+        N = S.current;
+      if (!N || v.some((b) => JSON.stringify(y[b]) !== JSON.stringify(N[b])))
         try {
           localStorage.setItem(D, JSON.stringify(o));
           const P = {
-              ...Object.fromEntries(Object.entries(o).filter(([R, J]) => J !== void 0)),
+              ...Object.fromEntries(Object.entries(o).filter(([B, J]) => J !== void 0)),
               _updatedAt: Date.now(),
               _lastWriter: c.current,
               _rev: (o._rev || 0) + 1,
             },
-            B = setTimeout(async () => {
+            R = setTimeout(async () => {
               try {
-                (await Ie(g, P), (N.current = y));
-              } catch (R) {
-                console.error('Cloud save error:', R);
+                (await Pe(g, P), (S.current = y));
+              } catch (B) {
+                console.error('Cloud save error:', B);
               }
             }, 800);
-          return () => clearTimeout(B);
+          return () => clearTimeout(R);
         } catch (b) {
           console.error('LocalStorage save error:', b);
         }
-    }, [o, g, u, r]));
+    }, [o, g, u, t]));
   const x = C.useMemo(
-      () => (o ? At(o.players || [], o.matches || []) : { players: [], matches: [] }),
+      () => (o ? Nt(o.players || [], o.matches || []) : { players: [], matches: [] }),
       [o]
     ),
     A = C.useMemo(() => Object.fromEntries((x.players || []).map((v) => [v.id, v])), [x]),
@@ -1000,16 +1000,16 @@ function Ct({ children: t }) {
       error: l,
       updatingFromCloud: u,
     };
-  return e.jsx(Le.Provider, { value: L, children: t });
+  return e.jsx(_e.Provider, { value: L, children: r });
 }
-const _e = p.createContext(null),
-  Ee = () => {
-    const t = p.useContext(_e);
-    if (!t) throw new Error('useUI must be used within a UIProvider');
-    return t;
+const Ee = p.createContext(null),
+  Me = () => {
+    const r = p.useContext(Ee);
+    if (!r) throw new Error('useUI must be used within a UIProvider');
+    return r;
   };
-function It({ children: t }) {
-  const [r, a] = p.useState(() => {
+function Pt({ children: r }) {
+  const [t, a] = p.useState(() => {
       try {
         const x = localStorage.getItem('play-sport-pro-theme');
         return x ? x === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -1031,13 +1031,13 @@ function It({ children: t }) {
     [u, m] = p.useState(null);
   (p.useEffect(() => {
     try {
-      r
+      t
         ? (document.documentElement.classList.add('dark'),
           localStorage.setItem('play-sport-pro-theme', 'dark'))
         : (document.documentElement.classList.remove('dark'),
           localStorage.setItem('play-sport-pro-theme', 'light'));
     } catch {}
-  }, [r]),
+  }, [t]),
     C.useEffect(() => {
       try {
         o ? sessionStorage.setItem('ml-club-mode', '1') : sessionStorage.removeItem('ml-club-mode');
@@ -1061,7 +1061,7 @@ function It({ children: t }) {
       n((A) => A.filter((L) => L.id !== x));
     },
     f = {
-      darkMode: r,
+      darkMode: t,
       setDarkMode: a,
       toggleTheme: g,
       clubMode: o,
@@ -1079,23 +1079,23 @@ function It({ children: t }) {
         m(null);
       },
     };
-  return e.jsx(_e.Provider, { value: f, children: t });
+  return e.jsx(Ee.Provider, { value: f, children: r });
 }
-class Pt extends C.Component {
-  constructor(r) {
-    (super(r), (this.state = { hasError: !1, error: null, errorInfo: null }));
+class Lt extends C.Component {
+  constructor(t) {
+    (super(t), (this.state = { hasError: !1, error: null, errorInfo: null }));
   }
-  static getDerivedStateFromError(r) {
+  static getDerivedStateFromError(t) {
     return { hasError: !0 };
   }
-  componentDidCatch(r, a) {
-    this.setState({ error: r, errorInfo: a });
+  componentDidCatch(t, a) {
+    this.setState({ error: t, errorInfo: a });
   }
   render() {
     if (this.state.hasError) {
-      const { fallback: r } = this.props;
-      return r
-        ? e.jsx(r, {
+      const { fallback: t } = this.props;
+      return t
+        ? e.jsx(t, {
             error: this.state.error,
             resetError: () => this.setState({ hasError: !1, error: null, errorInfo: null }),
           })
@@ -1166,73 +1166,73 @@ class Pt extends C.Component {
     return this.props.children;
   }
 }
-function Me({ size: t = 'md', className: r = '' }) {
+function Re({ size: r = 'md', className: t = '' }) {
   const a = { sm: 'h-4 w-4', md: 'h-8 w-8', lg: 'h-12 w-12', xl: 'h-16 w-16' };
   return e.jsx('div', {
-    className: `animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 ${a[t]} ${r}`,
+    className: `animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 ${a[r]} ${t}`,
   });
 }
-function ae({ message: t = 'Caricamento...' }) {
+function se({ message: r = 'Caricamento...' }) {
   return e.jsx('div', {
     className: 'min-h-screen bg-gray-50 flex items-center justify-center',
     children: e.jsxs('div', {
       className: 'text-center',
       children: [
-        e.jsx(Me, { size: 'xl', className: 'mx-auto mb-4' }),
-        e.jsx('p', { className: 'text-gray-600 text-lg', children: t }),
+        e.jsx(Re, { size: 'xl', className: 'mx-auto mb-4' }),
+        e.jsx('p', { className: 'text-gray-600 text-lg', children: r }),
       ],
     }),
   });
 }
-function Lt({ message: t = 'Caricamento...', visible: r = !0 }) {
-  return r
+function _t({ message: r = 'Caricamento...', visible: t = !0 }) {
+  return t
     ? e.jsx('div', {
         className: 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center',
         style: { zIndex: 1e5 },
         children: e.jsxs('div', {
           className: 'bg-white rounded-lg p-6 flex items-center space-x-3',
           children: [
-            e.jsx(Me, { size: 'md' }),
-            e.jsx('span', { className: 'text-gray-700', children: t }),
+            e.jsx(Re, { size: 'md' }),
+            e.jsx('span', { className: 'text-gray-700', children: r }),
           ],
         }),
       })
     : null;
 }
-function Q(t, r, a) {
-  return t !== r;
+function Q(r, t, a) {
+  return r !== t;
 }
-function _t(t, r) {
-  const a = t.pathname;
+function Et(r, t) {
+  const a = r.pathname;
   if (a === '/login') {
-    const o = t.state?.from?.pathname;
+    const o = r.state?.from?.pathname;
     return o && o !== '/login' ? o : '/dashboard';
   }
   return a === '/' ? '/dashboard' : null;
 }
-function Et({ children: t, requireProfile: r = !0 }) {
+function Mt({ children: r, requireProfile: t = !0 }) {
   const { user: a, userProfile: o, isAuthenticated: s, isProfileComplete: h, loading: n } = G(),
-    l = ee();
-  if (n) return e.jsx(ae, { message: 'Verifica autenticazione...' });
+    l = te();
+  if (n) return e.jsx(se, { message: 'Verifica autenticazione...' });
   if (!s) {
     const d = '/login';
     if (Q(l.pathname, d)) return e.jsx($, { to: d, state: { from: l }, replace: !0 });
   }
-  if (s && r && o !== null && !h) {
+  if (s && t && o !== null && !h) {
     const d = '/profile';
     if (Q(l.pathname, d)) return e.jsx($, { to: d, state: { from: l }, replace: !0 });
   }
-  return t;
+  return r;
 }
-function Mt({ children: t }) {
-  const { isAuthenticated: r, loading: a } = G(),
-    o = ee();
-  if (a) return e.jsx(ae, { message: 'Verifica autenticazione...' });
-  if (r) {
-    const s = _t(o);
+function Rt({ children: r }) {
+  const { isAuthenticated: t, loading: a } = G(),
+    o = te();
+  if (a) return e.jsx(se, { message: 'Verifica autenticazione...' });
+  if (t) {
+    const s = Et(o);
     if (s && Q(o.pathname, s)) return e.jsx($, { to: s, replace: !0 });
   }
-  return t;
+  return r;
 }
 const Bt = '/play-sport-pro_horizontal.svg',
   j = {
@@ -1250,7 +1250,7 @@ const Bt = '/play-sport-pro_horizontal.svg',
       slow: 'transition-all duration-300 ease-in-out',
     },
   };
-function Rt() {
+function zt() {
   return {
     name: 'universal',
     ...{
@@ -1297,18 +1297,18 @@ function Rt() {
     cardHover: `${j.borderRadius.lg} bg-white dark:bg-gray-800 ring-1 ring-black/10 dark:ring-white/10 ${j.spacing.md} ${j.shadows.md} dark:shadow-dark-md hover:shadow-lg dark:hover:shadow-dark-lg ${j.transitions.normal}`,
   };
 }
-function zt() {
-  const { notifications: t, removeNotification: r } = Ee();
-  return t.length === 0
+function Dt() {
+  const { notifications: r, removeNotification: t } = Me();
+  return r.length === 0
     ? null
     : e.jsx('div', {
         className: 'fixed top-4 right-4 space-y-2',
         style: { zIndex: 100001 },
-        children: t.map((a) => e.jsx(Dt, { notification: a, onRemove: r }, a.id)),
+        children: r.map((a) => e.jsx(Tt, { notification: a, onRemove: t }, a.id)),
       });
 }
-function Dt({ notification: t, onRemove: r }) {
-  const { id: a, type: o = 'info', title: s, message: h, autoClose: n = !0 } = t,
+function Tt({ notification: r, onRemove: t }) {
+  const { id: a, type: o = 'info', title: s, message: h, autoClose: n = !0 } = r,
     l = {
       success: 'bg-green-500 text-white',
       error: 'bg-red-500 text-white',
@@ -1320,11 +1320,11 @@ function Dt({ notification: t, onRemove: r }) {
     C.useEffect(() => {
       if (n) {
         const u = setTimeout(() => {
-          r(a);
+          t(a);
         }, 5e3);
         return () => clearTimeout(u);
       }
-    }, [a, n, r]),
+    }, [a, n, t]),
     e.jsx('div', {
       className: `${l[o]} px-4 py-3 rounded-lg shadow-lg max-w-sm animate-slide-in-right`,
       role: 'alert',
@@ -1340,7 +1340,7 @@ function Dt({ notification: t, onRemove: r }) {
             ],
           }),
           e.jsx('button', {
-            onClick: () => r(a),
+            onClick: () => t(a),
             className: 'ml-2 text-lg leading-none opacity-70 hover:opacity-100',
             'aria-label': 'Chiudi notifica',
             children: '×',
@@ -1350,7 +1350,7 @@ function Dt({ notification: t, onRemove: r }) {
     })
   );
 }
-function Tt({ active: t, setActive: r, clubMode: a, T: o, user: s, navigation: h }) {
+function Wt({ active: r, setActive: t, clubMode: a, T: o, user: s, navigation: h }) {
   const n = h || [
     { id: 'classifica', label: 'Classifica' },
     { id: 'stats', label: 'Statistiche' },
@@ -1373,9 +1373,9 @@ function Tt({ active: t, setActive: r, clubMode: a, T: o, user: s, navigation: h
         'button',
         {
           type: 'button',
-          onClick: () => r(l.id),
-          className: `px-3 py-1.5 rounded-xl text-sm transition ring-1 ${t === l.id ? o.btnPrimary : o.ghostRing}`,
-          'aria-current': t === l.id ? 'page' : void 0,
+          onClick: () => t(l.id),
+          className: `px-3 py-1.5 rounded-xl text-sm transition ring-1 ${r === l.id ? o.btnPrimary : o.ghostRing}`,
+          'aria-current': r === l.id ? 'page' : void 0,
           children: l.label,
         },
         l.id
@@ -1383,16 +1383,16 @@ function Tt({ active: t, setActive: r, clubMode: a, T: o, user: s, navigation: h
     ),
   });
 }
-function Ot({ active: t, setActive: r, navigation: a = [], clubMode: o = !1 }) {
+function Ot({ active: r, setActive: t, navigation: a = [], clubMode: o = !1 }) {
   const [s, h] = p.useState(!1),
     n = (i) => {
-      (r(i.id), s && h(!1));
+      (t(i.id), s && h(!1));
     },
     l = (i) => {
       (i.stopPropagation(), i.preventDefault(), h(!s));
     },
     d = (i, c) => {
-      (c.stopPropagation(), c.preventDefault(), r(i.id), h(!1));
+      (c.stopPropagation(), c.preventDefault(), t(i.id), h(!1));
     },
     u = [
       {
@@ -1683,7 +1683,7 @@ function Ot({ active: t, setActive: r, navigation: a = [], clubMode: o = !1 }) {
                   e.jsxs(
                     'div',
                     {
-                      className: `flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${t === i.id ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 text-blue-600 dark:text-blue-400 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 border border-blue-200/30 dark:border-blue-600/30' : 'bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-600/80 border border-white/30 dark:border-gray-600/30 shadow-lg hover:shadow-xl'}`,
+                      className: `flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${r === i.id ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 text-blue-600 dark:text-blue-400 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 border border-blue-200/30 dark:border-blue-600/30' : 'bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-600/80 border border-white/30 dark:border-gray-600/30 shadow-lg hover:shadow-xl'}`,
                       onClick: (c) => d(i, c),
                       style: {
                         WebkitTapHighlightColor: 'rgba(0,0,0,0)',
@@ -1693,7 +1693,7 @@ function Ot({ active: t, setActive: r, navigation: a = [], clubMode: o = !1 }) {
                       },
                       children: [
                         e.jsx('div', {
-                          className: `w-8 h-8 rounded-lg flex items-center justify-center ${t === i.id ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-md'}`,
+                          className: `w-8 h-8 rounded-lg flex items-center justify-center ${r === i.id ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-md'}`,
                           children: i.icon,
                         }),
                         e.jsx('span', { className: 'text-sm font-medium', children: i.label }),
@@ -1713,7 +1713,7 @@ function Ot({ active: t, setActive: r, navigation: a = [], clubMode: o = !1 }) {
             e.jsxs(
               'div',
               {
-                className: `bottom-nav-item flex flex-col items-center justify-center space-y-1 cursor-pointer transition-all duration-300 ${t === i.id ? 'text-blue-500 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}`,
+                className: `bottom-nav-item flex flex-col items-center justify-center space-y-1 cursor-pointer transition-all duration-300 ${r === i.id ? 'text-blue-500 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}`,
                 onClick: () => n(i),
                 onTouchEnd: () => n(i),
                 style: {
@@ -1727,9 +1727,9 @@ function Ot({ active: t, setActive: r, navigation: a = [], clubMode: o = !1 }) {
                 },
                 children: [
                   e.jsxs('div', {
-                    className: `relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 ${t === i.id ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 backdrop-blur-sm border border-blue-200/30 dark:border-blue-600/30 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 transform scale-110' : 'hover:bg-white/60 dark:hover:bg-gray-700/60 hover:backdrop-blur-sm hover:border hover:border-white/20 dark:hover:border-gray-600/20 hover:shadow-lg hover:transform hover:scale-105'}`,
+                    className: `relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 ${r === i.id ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 backdrop-blur-sm border border-blue-200/30 dark:border-blue-600/30 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 transform scale-110' : 'hover:bg-white/60 dark:hover:bg-gray-700/60 hover:backdrop-blur-sm hover:border hover:border-white/20 dark:hover:border-gray-600/20 hover:shadow-lg hover:transform hover:scale-105'}`,
                     children: [
-                      t === i.id &&
+                      r === i.id &&
                         e.jsx('div', {
                           className:
                             'absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg',
@@ -1738,7 +1738,7 @@ function Ot({ active: t, setActive: r, navigation: a = [], clubMode: o = !1 }) {
                     ],
                   }),
                   e.jsx('span', {
-                    className: `font-medium text-xs leading-tight ${t === i.id ? 'font-semibold' : ''}`,
+                    className: `font-medium text-xs leading-tight ${r === i.id ? 'font-semibold' : ''}`,
                     children: i.label,
                   }),
                 ],
@@ -1794,7 +1794,7 @@ function Ot({ active: t, setActive: r, navigation: a = [], clubMode: o = !1 }) {
   });
 }
 function Be() {
-  const [t, r] = p.useState(null),
+  const [r, t] = p.useState(null),
     [a, o] = p.useState(!1),
     [s, h] = p.useState(!1),
     [n, l] = p.useState({});
@@ -1806,7 +1806,7 @@ function Be() {
         L = x || A || /Mobile|Tablet/.test(f),
         v = /Chrome/.test(f) && !/Edge|Edg/.test(f),
         y = /Edge|Edg/.test(f),
-        S = /Firefox/.test(f),
+        N = /Firefox/.test(f),
         k = /Safari/.test(f) && !/Chrome|CriOS|FxiOS/.test(f),
         b = /OPR|Opera/.test(f),
         P = /SamsungBrowser/.test(f);
@@ -1816,7 +1816,7 @@ function Be() {
         isMobile: L,
         isChrome: v,
         isEdge: y,
-        isFirefox: S,
+        isFirefox: N,
         isSafari: k,
         isOpera: b,
         isSamsung: P,
@@ -1832,39 +1832,39 @@ function Be() {
         (h(v), v && console.log('✅ PWA is already installed'));
       })());
     const w = (f) => {
-        (console.log('🚀 PWA installation prompt ready'), f.preventDefault(), r(f), o(!0));
+        (console.log('🚀 PWA installation prompt ready'), f.preventDefault(), t(f), o(!0));
       },
-      N = () => {
+      S = () => {
         (console.log('✅ PWA installed successfully'),
           h(!0),
           o(!1),
-          r(null),
+          t(null),
           localStorage.setItem('pwa_installed', 'true'));
       };
     return (
       n.supportsInstallPrompt &&
         (window.addEventListener('beforeinstallprompt', w),
-        window.addEventListener('appinstalled', N)),
+        window.addEventListener('appinstalled', S)),
       () => {
         (window.removeEventListener('beforeinstallprompt', w),
-          window.removeEventListener('appinstalled', N));
+          window.removeEventListener('appinstalled', S));
       }
     );
   }, [n.supportsInstallPrompt]);
   const d = async () => {
-      if (!t) return (console.warn('⚠️ No deferred prompt available'), !1);
+      if (!r) return (console.warn('⚠️ No deferred prompt available'), !1);
       try {
-        t.prompt();
-        const { outcome: i } = await t.userChoice;
+        r.prompt();
+        const { outcome: i } = await r.userChoice;
         return i === 'accepted'
-          ? (console.log('✅ User accepted PWA installation'), o(!1), r(null), !0)
+          ? (console.log('✅ User accepted PWA installation'), o(!1), t(null), !0)
           : (console.log('❌ User declined PWA installation'), !1);
       } catch (i) {
         return (console.error('❌ PWA installation failed:', i), !1);
       }
     },
     u = () => {
-      const { isIOS: i, isAndroid: c, isSafari: w, isFirefox: N, isChrome: f, isEdge: x } = n;
+      const { isIOS: i, isAndroid: c, isSafari: w, isFirefox: S, isChrome: f, isEdge: x } = n;
       return i && w
         ? {
             show: !0,
@@ -1877,7 +1877,7 @@ function Be() {
               "L'app apparirà nella tua home screen",
             ],
           }
-        : N
+        : S
           ? {
               show: !0,
               title: 'Installa con Firefox',
@@ -1926,7 +1926,7 @@ function Be() {
       'caches' in window &&
       'PushManager' in window;
   return {
-    isInstallable: s ? !1 : !!((n.isIOS && n.isSafari) || (a && t) || n.isFirefox),
+    isInstallable: s ? !1 : !!((n.isIOS && n.isSafari) || (a && r) || n.isFirefox),
     isInstalled: s,
     installApp: d,
     browserInfo: n,
@@ -1934,9 +1934,9 @@ function Be() {
     installInstructions: u(),
   };
 }
-function Wt({ className: t = '' }) {
+function $t({ className: r = '' }) {
   const {
-      isInstallable: r,
+      isInstallable: t,
       isInstalled: a,
       installApp: o,
       browserInfo: s,
@@ -1946,7 +1946,7 @@ function Wt({ className: t = '' }) {
     [l, d] = p.useState(!1);
   if (a)
     return e.jsxs('div', {
-      className: `flex items-center gap-2 text-green-600 text-sm ${t}`,
+      className: `flex items-center gap-2 text-green-600 text-sm ${r}`,
       children: [
         e.jsx('svg', {
           className: 'w-4 h-4',
@@ -1959,10 +1959,10 @@ function Wt({ className: t = '' }) {
     });
   if (!h)
     return e.jsx('div', {
-      className: `text-gray-500 text-sm ${t}`,
+      className: `text-gray-500 text-sm ${r}`,
       children: 'Browser non supportato per PWA',
     });
-  if (!r) return null;
+  if (!t) return null;
   const u = async () => {
       if (n.show) {
         d(!0);
@@ -1986,7 +1986,7 @@ function Wt({ className: t = '' }) {
     children: [
       e.jsxs('button', {
         onClick: u,
-        className: `flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${t}`,
+        className: `flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${r}`,
         children: [
           e.jsx('svg', {
             className: 'w-5 h-5',
@@ -2102,17 +2102,17 @@ function Wt({ className: t = '' }) {
     ],
   });
 }
-function $t() {
+function Ut() {
   const {
-      isInstallable: t,
-      isInstalled: r,
+      isInstallable: r,
+      isInstalled: t,
       installApp: a,
       browserInfo: o,
       installInstructions: s,
     } = Be(),
     [h, n] = p.useState(!1),
     [l, d] = p.useState(!1);
-  if (r || !t) return null;
+  if (t || !r) return null;
   const u = async () => {
       if (s && s.show) {
         n(!0);
@@ -2263,19 +2263,19 @@ function $t() {
   });
 }
 function Ft() {
-  const { user: t } = G(),
-    { clubMode: r, loading: a } = Ee(),
-    { updatingFromCloud: o } = St(),
-    s = ee(),
+  const { user: r } = G(),
+    { clubMode: t, loading: a } = Me(),
+    { updatingFromCloud: o } = Ct(),
+    s = te(),
     h = Oe(),
-    n = C.useMemo(() => Rt(), []),
+    n = C.useMemo(() => zt(), []),
     l = [
       { id: 'dashboard', label: 'Dashboard', path: '/dashboard', public: !0 },
       { id: 'classifica', label: 'Classifica', path: '/classifica', public: !0 },
       { id: 'stats', label: 'Statistiche', path: '/stats', public: !0 },
       { id: 'prenota-campo', label: 'Prenota Campo', path: '/booking', public: !0 },
       { id: 'prenota-lezione', label: 'Prenota Lezione', path: '/lessons', public: !0 },
-      ...(r
+      ...(t
         ? [
             { id: 'giocatori', label: 'Giocatori', path: '/players', club: !0 },
             { id: 'crea', label: 'Crea Partita', path: '/matches/create', club: !0 },
@@ -2284,9 +2284,9 @@ function Ft() {
           ]
         : []),
       {
-        id: t ? 'profile' : 'auth',
-        label: t ? 'Profilo' : 'Accedi',
-        path: t ? '/profile' : '/login',
+        id: r ? 'profile' : 'auth',
+        label: r ? 'Profilo' : 'Accedi',
+        path: r ? '/profile' : '/login',
       },
       { id: 'extra', label: 'Extra', path: '/extra', public: !0 },
     ],
@@ -2326,9 +2326,9 @@ function Ft() {
               children: [
                 e.jsx('div', {
                   className: 'hidden sm:block',
-                  children: e.jsx(Wt, { className: 'text-xs px-3 py-1.5' }),
+                  children: e.jsx($t, { className: 'text-xs px-3 py-1.5' }),
                 }),
-                e.jsx(Tt, { active: u, setActive: m, clubMode: r, T: n, user: t, navigation: l }),
+                e.jsx(Wt, { active: u, setActive: m, clubMode: t, T: n, user: r, navigation: l }),
               ],
             }),
           ],
@@ -2337,97 +2337,97 @@ function Ft() {
       e.jsx('main', {
         className:
           'max-w-[1800px] mx-auto px-3 sm:px-4 py-5 sm:py-6 safe-area-left safe-area-right pb-20 md:pb-5',
-        children: e.jsx(We, {}),
+        children: e.jsx($e, {}),
       }),
-      e.jsx(Ot, { active: u, setActive: m, navigation: l, clubMode: r }),
-      e.jsx($t, {}),
-      e.jsx(zt, {}),
-      e.jsx(Lt, { visible: a || o, message: o ? 'Sincronizzazione...' : 'Caricamento...' }),
+      e.jsx(Ot, { active: u, setActive: m, navigation: l, clubMode: t }),
+      e.jsx(Ut, {}),
+      e.jsx(Dt, {}),
+      e.jsx(_t, { visible: a || o, message: o ? 'Sincronizzazione...' : 'Caricamento...' }),
     ],
   });
 }
-const Ut = C.lazy(() =>
-    M(() => import('./LoginPage-mfgp9duf-DfUbAcfN.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
-  ),
-  Vt = C.lazy(() =>
-    M(() => import('./DashboardPage-mfgp9duf-6rSEnbNG.js'), __vite__mapDeps([5, 1, 2, 4]))
+const Vt = C.lazy(() =>
+    M(() => import('./LoginPage-mfgpn7fg-BxCcwJ4C.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
   ),
   Ht = C.lazy(() =>
-    M(() => import('./ClassificaPage-mfgp9duf-Do2rp-41.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
+    M(() => import('./DashboardPage-mfgpn7fg-D0cABFrI.js'), __vite__mapDeps([5, 1, 2, 4]))
   ),
   qt = C.lazy(() =>
-    M(
-      () => import('./StatsPage-mfgp9duf-CfPvBF6C.js'),
-      __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4])
-    )
+    M(() => import('./ClassificaPage-mfgpn7fg-w3fjikoJ.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
   ),
   Gt = C.lazy(() =>
     M(
-      () => import('./BookingPage-mfgp9duf-qpQos1kS.js'),
-      __vite__mapDeps([12, 1, 2, 13, 14, 15, 16, 17, 4])
+      () => import('./StatsPage-mfgpn7fg-Bs1uumHP.js'),
+      __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4])
     )
   ),
   Jt = C.lazy(() =>
     M(
-      () => import('./LessonBookingPage-mfgp9duf-TWhU6dkt.js'),
-      __vite__mapDeps([18, 1, 2, 3, 13, 14, 19, 16, 17, 4, 10])
+      () => import('./BookingPage-mfgpn7fg-Bvu9Ngez.js'),
+      __vite__mapDeps([12, 1, 2, 13, 14, 15, 16, 17, 4])
     )
   ),
   Kt = C.lazy(() =>
     M(
-      () => import('./PlayersPage-mfgp9duf-DRKKaX5a.js'),
-      __vite__mapDeps([20, 1, 2, 3, 10, 11, 19, 17, 4])
+      () => import('./LessonBookingPage-mfgpn7fg-Bl90ua_n.js'),
+      __vite__mapDeps([18, 1, 2, 3, 13, 14, 19, 16, 17, 4, 10])
     )
   ),
   Yt = C.lazy(() =>
-    M(() => import('./MatchesPage-mfgp9duf-BMdSA3nk.js'), __vite__mapDeps([21, 1, 2, 3, 11, 4]))
+    M(
+      () => import('./PlayersPage-mfgpn7fg-DjnuOx0q.js'),
+      __vite__mapDeps([20, 1, 2, 3, 10, 11, 19, 17, 4])
+    )
   ),
   Xt = C.lazy(() =>
-    M(() => import('./TournamentsPage-mfgp9duf-BBFuB1FE.js'), __vite__mapDeps([22, 1, 2, 3, 4]))
+    M(() => import('./MatchesPage-mfgpn7fg-CwbG1-Q_.js'), __vite__mapDeps([21, 1, 2, 3, 11, 4]))
   ),
   Zt = C.lazy(() =>
-    M(() => import('./ProfilePage-mfgp9duf-CIxICKaN.js'), __vite__mapDeps([23, 1, 2, 3, 4]))
+    M(() => import('./TournamentsPage-mfgpn7fg-CmpiAkw7.js'), __vite__mapDeps([22, 1, 2, 3, 4]))
   ),
   Qt = C.lazy(() =>
-    M(() => import('./ExtraPage-mfgp9duf-CLpAWw3T.js'), __vite__mapDeps([24, 1, 2, 3, 25, 4]))
+    M(() => import('./ProfilePage-mfgpn7fg-CBpO71Yq.js'), __vite__mapDeps([23, 1, 2, 3, 4]))
   ),
   er = C.lazy(() =>
+    M(() => import('./ExtraPage-mfgpn7fg-CxMCOK0X.js'), __vite__mapDeps([24, 1, 2, 3, 25, 4]))
+  ),
+  tr = C.lazy(() =>
     M(
-      () => import('./AdminBookingsPage-mfgp9duf-ij3JIMmq.js'),
+      () => import('./AdminBookingsPage-mfgpn7fg-CQkZpxBC.js'),
       __vite__mapDeps([26, 1, 2, 3, 10, 25, 15, 16, 17, 4, 19])
     )
   ),
-  tr = C.lazy(() =>
-    M(() => import('./DarkModeTestPage-mfgp9duf-BBj6wvSP.js'), __vite__mapDeps([27, 1, 2, 14, 4]))
+  rr = C.lazy(() =>
+    M(() => import('./DarkModeTestPage-mfgpn7fg-Br-0C2Hy.js'), __vite__mapDeps([27, 1, 2, 14, 4]))
   );
-function rr() {
-  return e.jsx(Pt, {
-    children: e.jsx($e, {
-      children: e.jsx(wt, {
-        children: e.jsx(Ct, {
-          children: e.jsx(It, {
+function ar() {
+  return e.jsx(Lt, {
+    children: e.jsx(Ue, {
+      children: e.jsx(vt, {
+        children: e.jsx(It, {
+          children: e.jsx(Pt, {
             children: e.jsx(p.Suspense, {
-              fallback: e.jsx(ae, {}),
+              fallback: e.jsx(se, {}),
               children: e.jsxs(Fe, {
                 children: [
-                  e.jsx(_, { path: '/login', element: e.jsx(Mt, { children: e.jsx(Ut, {}) }) }),
+                  e.jsx(_, { path: '/login', element: e.jsx(Rt, { children: e.jsx(Vt, {}) }) }),
                   e.jsxs(_, {
                     path: '/',
-                    element: e.jsx(Et, { children: e.jsx(Ft, {}) }),
+                    element: e.jsx(Mt, { children: e.jsx(Ft, {}) }),
                     children: [
                       e.jsx(_, { index: !0, element: e.jsx($, { to: 'dashboard', replace: !0 }) }),
-                      e.jsx(_, { path: 'dashboard', element: e.jsx(Vt, {}) }),
-                      e.jsx(_, { path: 'classifica', element: e.jsx(Ht, {}) }),
-                      e.jsx(_, { path: 'stats', element: e.jsx(qt, {}) }),
-                      e.jsx(_, { path: 'booking', element: e.jsx(Gt, {}) }),
-                      e.jsx(_, { path: 'lessons', element: e.jsx(Jt, {}) }),
-                      e.jsx(_, { path: 'extra', element: e.jsx(Qt, {}) }),
-                      e.jsx(_, { path: 'players', element: e.jsx(Kt, {}) }),
-                      e.jsx(_, { path: 'matches/create', element: e.jsx(Yt, {}) }),
-                      e.jsx(_, { path: 'tournaments', element: e.jsx(Xt, {}) }),
-                      e.jsx(_, { path: 'admin/bookings', element: e.jsx(er, {}) }),
-                      e.jsx(_, { path: 'profile', element: e.jsx(Zt, {}) }),
-                      e.jsx(_, { path: 'test/dark-mode', element: e.jsx(tr, {}) }),
+                      e.jsx(_, { path: 'dashboard', element: e.jsx(Ht, {}) }),
+                      e.jsx(_, { path: 'classifica', element: e.jsx(qt, {}) }),
+                      e.jsx(_, { path: 'stats', element: e.jsx(Gt, {}) }),
+                      e.jsx(_, { path: 'booking', element: e.jsx(Jt, {}) }),
+                      e.jsx(_, { path: 'lessons', element: e.jsx(Kt, {}) }),
+                      e.jsx(_, { path: 'extra', element: e.jsx(er, {}) }),
+                      e.jsx(_, { path: 'players', element: e.jsx(Yt, {}) }),
+                      e.jsx(_, { path: 'matches/create', element: e.jsx(Xt, {}) }),
+                      e.jsx(_, { path: 'tournaments', element: e.jsx(Zt, {}) }),
+                      e.jsx(_, { path: 'admin/bookings', element: e.jsx(tr, {}) }),
+                      e.jsx(_, { path: 'profile', element: e.jsx(Qt, {}) }),
+                      e.jsx(_, { path: 'test/dark-mode', element: e.jsx(rr, {}) }),
                     ],
                   }),
                   e.jsx(_, { path: '*', element: e.jsx($, { to: '/dashboard', replace: !0 }) }),
@@ -2440,57 +2440,183 @@ function rr() {
     }),
   });
 }
-'serviceWorker' in navigator &&
-  (window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/sw.js')
-      .then((t) => {
-        (console.log('✅ SW registered: ', t),
-          t.addEventListener('updatefound', () => {
-            const r = t.installing;
-            r.addEventListener('statechange', () => {
-              r.state === 'installed' &&
-                navigator.serviceWorker.controller &&
-                console.log('🔄 New content available! Please refresh.');
-            });
+class sr {
+  constructor() {
+    ((this.currentVersion = '1.7.0'),
+      (this.swRegistration = null),
+      (this.updateCheckInterval = null));
+  }
+  async init() {
+    if ('serviceWorker' in navigator)
+      try {
+        ((this.swRegistration = await navigator.serviceWorker.register('/sw.js', {
+          scope: '/',
+          updateViaCache: 'none',
+        })),
+          console.log('[UpdateService] Service Worker registrato:', this.swRegistration.scope),
+          this.startUpdateCheck(),
+          navigator.serviceWorker.addEventListener('message', this.handleSWMessage.bind(this)),
+          this.swRegistration.waiting && this.showUpdateAvailable(),
+          this.swRegistration.addEventListener('updatefound', () => {
+            const t = this.swRegistration.installing;
+            t &&
+              t.addEventListener('statechange', () => {
+                t.state === 'installed' &&
+                  navigator.serviceWorker.controller &&
+                  this.showUpdateAvailable();
+              });
           }));
-      })
-      .catch((t) => {
-        console.log('❌ SW registration failed: ', t);
-      });
-  }),
-  navigator.serviceWorker.addEventListener('message', (t) => {
-    t.data && t.data.type === 'RELOAD_PAGE' && window.location.reload();
-  }));
-const Re = document.getElementById('root');
-if (!Re) throw new Error('Elemento #root non trovato in index.html');
-nt.createRoot(Re).render(e.jsx(C.StrictMode, { children: e.jsx(rr, {}) }));
+      } catch (t) {
+        console.error('[UpdateService] Errore registrazione SW:', t);
+      }
+  }
+  startUpdateCheck() {
+    (this.checkForUpdates(),
+      (this.updateCheckInterval = setInterval(() => {
+        this.checkForUpdates();
+      }, 3e4)));
+  }
+  async checkForUpdates() {
+    if (this.swRegistration)
+      try {
+        await this.swRegistration.update();
+      } catch (t) {
+        console.log('[UpdateService] Update check failed:', t);
+      }
+  }
+  handleSWMessage(t) {
+    const { data: a } = t;
+    a.type === 'RELOAD_PAGE' && this.reloadPage();
+  }
+  showUpdateAvailable() {
+    const t = this.createUpdateBanner();
+    document.body.appendChild(t);
+  }
+  createUpdateBanner() {
+    const t = document.createElement('div');
+    return (
+      (t.id = 'update-banner'),
+      (t.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 16px;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    `),
+      (t.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        <span>Nuova versione disponibile!</span>
+      </div>
+      <button id="update-btn" style="
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+      ">Aggiorna</button>
+    `),
+      t.querySelector('#update-btn').addEventListener('click', () => {
+        (this.applyUpdate(), t.remove());
+      }),
+      t
+    );
+  }
+  async applyUpdate() {
+    (this.swRegistration &&
+      this.swRegistration.waiting &&
+      this.swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' }),
+      await this.clearCache(),
+      setTimeout(() => {
+        this.reloadPage();
+      }, 100));
+  }
+  async clearCache() {
+    if ('caches' in window)
+      try {
+        const t = await caches.keys();
+        (await Promise.all(t.map((a) => caches.delete(a))),
+          console.log('[UpdateService] Cache cleared'));
+      } catch (t) {
+        console.error('[UpdateService] Cache clear failed:', t);
+      }
+    if (this.swRegistration && this.swRegistration.active) {
+      const t = new MessageChannel();
+      this.swRegistration.active.postMessage({ type: 'CLEAR_CACHE' }, [t.port2]);
+    }
+  }
+  reloadPage() {
+    if (window.location.reload) window.location.reload(!0);
+    else {
+      const t = new URL(window.location);
+      (t.searchParams.set('_cb', Date.now()), (window.location.href = t.toString()));
+    }
+  }
+  async forceUpdate() {
+    (await this.clearCache(), this.reloadPage());
+  }
+  destroy() {
+    this.updateCheckInterval && clearInterval(this.updateCheckInterval);
+  }
+}
+const ee = new sr(),
+  mr = Object.freeze(
+    Object.defineProperty({ __proto__: null, default: ee, updateService: ee }, Symbol.toStringTag, {
+      value: 'Module',
+    })
+  );
+'serviceWorker' in navigator &&
+  window.addEventListener('load', async () => {
+    try {
+      (await ee.init(), console.log('✅ Update Service initialized'));
+    } catch (r) {
+      console.error('❌ Update Service failed:', r);
+    }
+  });
+const ze = document.getElementById('root');
+if (!ze) throw new Error('Elemento #root non trovato in index.html');
+it.createRoot(ze).render(e.jsx(C.StrictMode, { children: e.jsx(ar, {}) }));
 export {
   I as D,
   Bt as L,
   M as _,
-  dt as a,
-  ut as b,
-  ft as c,
-  xt as d,
+  ut as a,
+  mt as b,
+  pt as c,
+  bt as d,
   Be as e,
-  St as f,
-  cr as g,
+  Ct as f,
+  ur as g,
   X as h,
-  lr as i,
+  dr as i,
   e as j,
-  Ee as k,
-  pt as l,
-  bt as m,
-  Nt as n,
+  Me as k,
+  xt as l,
+  wt as m,
+  At as n,
   E as o,
-  U as p,
+  F as p,
   z as q,
-  jt as r,
+  St as r,
   q as s,
-  Rt as t,
+  zt as t,
   G as u,
-  te as v,
-  nr as w,
-  ir as x,
+  re as v,
+  lr as w,
+  cr as x,
+  mr as y,
 };

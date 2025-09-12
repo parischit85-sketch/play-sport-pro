@@ -3,24 +3,24 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/index-mfgp9duf-gdVB5EnT.js',
-      'assets/vendor-mfgp9duf-D3F3s8fL.js',
-      'assets/router-mfgp9duf-1fFxCiHK.js',
-      'assets/firebase-mfgp9duf-X_I_guKF.js',
-      'assets/index-mfgp9izl-Ca4cmXhp.css',
+      'assets/index-mfgpn7fg-C0gX905a.js',
+      'assets/vendor-mfgpn7fg-D3F3s8fL.js',
+      'assets/router-mfgpn7fg-7pyUyyy2.js',
+      'assets/firebase-mfgpn7fg-X_I_guKF.js',
+      'assets/index-mfgpnd5c-Ca4cmXhp.css',
     ])
 ) => i.map((i) => d[i]);
-import { j as e, q as z, _ as A, f as D, k as F, t as I } from './index-mfgp9duf-gdVB5EnT.js';
-import { r as $, b as w, c as _ } from './router-mfgp9duf-1fFxCiHK.js';
-import { S as L } from './Section-mfgp9duf-BzEjYta0.js';
-import { e as H } from './format-mfgp9duf-DAEZv7Mi.js';
-import './vendor-mfgp9duf-D3F3s8fL.js';
-import './firebase-mfgp9duf-X_I_guKF.js';
-function M({ value: a = [], onChange: i, T: o }) {
+import { j as e, q as z, _ as A, f as D, k as I, t as _ } from './index-mfgpn7fg-C0gX905a.js';
+import { r as $, b as w, c as F } from './router-mfgpn7fg-7pyUyyy2.js';
+import { S as L } from './Section-mfgpn7fg-CicA69zi.js';
+import { e as R } from './format-mfgpn7fg-DAEZv7Mi.js';
+import './vendor-mfgpn7fg-D3F3s8fL.js';
+import './firebase-mfgpn7fg-X_I_guKF.js';
+function H({ value: a = [], onChange: i, T: o }) {
   const t = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
     m = (d) => {
       const h = a.includes(d);
-      i(h ? a.filter((s) => s !== d) : [...a, d].sort((s, r) => s - r));
+      i(h ? a.filter((s) => s !== d) : [...a, d].sort((s, n) => s - n));
     };
   return e.jsx('div', {
     className: 'flex flex-wrap gap-1',
@@ -38,18 +38,18 @@ function M({ value: a = [], onChange: i, T: o }) {
     ),
   });
 }
-function R({ slot: a, onUpdate: i, onRemove: o, T: t }) {
+function M({ slot: a, onUpdate: i, onRemove: o, T: t }) {
   const m = (s) => String(s).padStart(2, '0'),
     d = (s = '09:00') => {
-      const r = /^(\d{1,2}):(\d{2})$/.exec(String(s).trim());
-      if (!r) return '09:00';
-      const u = Math.min(23, Math.max(0, Number(r[1] || 0))),
-        n = Math.min(59, Math.max(0, Number(r[2] || 0)));
-      return `${m(u)}:${m(n)}`;
+      const n = /^(\d{1,2}):(\d{2})$/.exec(String(s).trim());
+      if (!n) return '09:00';
+      const u = Math.min(23, Math.max(0, Number(n[1] || 0))),
+        c = Math.min(59, Math.max(0, Number(n[2] || 0)));
+      return `${m(u)}:${m(c)}`;
     },
     h = (s) => {
-      const r = (Number(s) || 0) * 1.5;
-      return H(r / 4);
+      const n = (Number(s) || 0) * 1.5;
+      return R(n / 4);
     };
   return e.jsxs('div', {
     className: `relative rounded-lg p-3 ${t.name === 'dark' ? `${t.cardBg} ${t.border}` : 'bg-emerald-50/50 dark:bg-emerald-900/20 ring-1 ring-emerald-200 dark:ring-emerald-700'}`,
@@ -142,7 +142,7 @@ function R({ slot: a, onUpdate: i, onRemove: o, T: t }) {
                     className: `text-xs ${t.subtext} mb-2 block`,
                     children: 'Giorni attivi',
                   }),
-                  e.jsx(M, {
+                  e.jsx(H, {
                     value: Array.isArray(a.days) ? a.days : [],
                     onChange: (s) => i({ days: s }),
                     T: t,
@@ -201,10 +201,10 @@ function R({ slot: a, onUpdate: i, onRemove: o, T: t }) {
     ],
   });
 }
-function G({ court: a, onUpdate: i, onRemove: o, T: t }) {
+function O({ court: a, onUpdate: i, onRemove: o, T: t }) {
   const [m, d] = $.useState(!1),
     h = () => {
-      const n = {
+      const c = {
         id: Date.now().toString(),
         label: 'Nuova fascia',
         eurPerHour: 25,
@@ -212,14 +212,14 @@ function G({ court: a, onUpdate: i, onRemove: o, T: t }) {
         to: '12:00',
         days: [1, 2, 3, 4, 5],
       };
-      i({ timeSlots: [...(a.timeSlots || []), n] });
+      i({ timeSlots: [...(a.timeSlots || []), c] });
     },
-    s = (n, g) => {
-      const p = (a.timeSlots || []).map((f, P) => (P === n ? { ...f, ...g } : f));
-      i({ timeSlots: p });
+    s = (c, g) => {
+      const b = (a.timeSlots || []).map((v, P) => (P === c ? { ...v, ...g } : v));
+      i({ timeSlots: b });
     },
-    r = (n) => {
-      const g = (a.timeSlots || []).filter((p, f) => f !== n);
+    n = (c) => {
+      const g = (a.timeSlots || []).filter((b, v) => v !== c);
       i({ timeSlots: g });
     },
     u = () => {
@@ -265,8 +265,8 @@ function G({ court: a, onUpdate: i, onRemove: o, T: t }) {
                 e.jsx('button', {
                   type: 'button',
                   className: `text-sm px-3 py-1 rounded transition-all ${m ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`,
-                  onClick: (n) => {
-                    (n.stopPropagation(), d(!m));
+                  onClick: (c) => {
+                    (c.stopPropagation(), d(!m));
                   },
                   children: m ? '📝 Chiudi' : '⚙️ Configura',
                 }),
@@ -274,8 +274,8 @@ function G({ court: a, onUpdate: i, onRemove: o, T: t }) {
                   type: 'button',
                   className:
                     'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-2 py-1 rounded text-sm transition-colors',
-                  onClick: (n) => {
-                    (n.stopPropagation(), o());
+                  onClick: (c) => {
+                    (c.stopPropagation(), o());
                   },
                   children: '🗑️',
                 }),
@@ -307,7 +307,7 @@ function G({ court: a, onUpdate: i, onRemove: o, T: t }) {
                         }),
                         e.jsx('input', {
                           value: a.name || '',
-                          onChange: (n) => i({ name: n.target.value }),
+                          onChange: (c) => i({ name: c.target.value }),
                           className: t.input,
                           placeholder: 'Es. Campo 1 - Centrale',
                         }),
@@ -367,11 +367,11 @@ function G({ court: a, onUpdate: i, onRemove: o, T: t }) {
                             }),
                           ],
                         })
-                      : (a.timeSlots || []).map((n, g) =>
+                      : (a.timeSlots || []).map((c, g) =>
                           e.jsx(
-                            R,
-                            { slot: n, onUpdate: (p) => s(g, p), onRemove: () => r(g), T: t },
-                            n.id || g
+                            M,
+                            { slot: c, onUpdate: (b) => s(g, b), onRemove: () => n(g), T: t },
+                            c.id || g
                           )
                         ),
                 }),
@@ -382,21 +382,21 @@ function G({ court: a, onUpdate: i, onRemove: o, T: t }) {
     ],
   });
 }
-function O({ courts: a = [], onChange: i, T: o }) {
+function G({ courts: a = [], onChange: i, T: o }) {
   const [t, m] = $.useState(''),
     d = () => {
       if (!t.trim()) return;
-      const r = { id: Date.now().toString(), name: t.trim(), hasHeating: !1, timeSlots: [] };
-      (i([...a, r]), m(''));
+      const n = { id: Date.now().toString(), name: t.trim(), hasHeating: !1, timeSlots: [] };
+      (i([...a, n]), m(''));
     },
-    h = (r, u) => {
-      const n = a.map((g, p) => (p === r ? { ...g, ...u } : g));
-      i(n);
+    h = (n, u) => {
+      const c = a.map((g, b) => (b === n ? { ...g, ...u } : g));
+      i(c);
     },
-    s = (r) => {
+    s = (n) => {
       confirm(
         'Rimuovere il campo? Tutte le configurazioni e prenotazioni collegate saranno perse.'
-      ) && i(a.filter((u, n) => n !== r));
+      ) && i(a.filter((u, c) => c !== n));
     };
   return e.jsxs('div', {
     className: 'space-y-6',
@@ -415,8 +415,8 @@ function O({ courts: a = [], onChange: i, T: o }) {
                 className: 'flex-1',
                 children: e.jsx('input', {
                   value: t,
-                  onChange: (r) => m(r.target.value),
-                  onKeyDown: (r) => r.key === 'Enter' && d(),
+                  onChange: (n) => m(n.target.value),
+                  onKeyDown: (n) => n.key === 'Enter' && d(),
                   className: `${o.input} w-full`,
                   placeholder: 'Es. Campo 4 - Centrale (Coperto)',
                 }),
@@ -456,11 +456,11 @@ function O({ courts: a = [], onChange: i, T: o }) {
                   }),
                 ],
               })
-            : a.map((r, u) =>
+            : a.map((n, u) =>
                 e.jsx(
-                  G,
-                  { court: r, onUpdate: (n) => h(u, n), onRemove: () => s(u), T: o },
-                  r.id || u
+                  O,
+                  { court: n, onUpdate: (c) => h(u, c), onRemove: () => s(u), T: o },
+                  n.id || u
                 )
               ),
       }),
@@ -490,7 +490,7 @@ function O({ courts: a = [], onChange: i, T: o }) {
                   children: [
                     e.jsx('div', {
                       className: 'text-2xl font-bold text-blue-600',
-                      children: a.reduce((r, u) => r + (u.timeSlots || []).length, 0),
+                      children: a.reduce((n, u) => n + (u.timeSlots || []).length, 0),
                     }),
                     e.jsx('div', { className: o.subtext, children: 'Fasce Configurate' }),
                   ],
@@ -501,7 +501,7 @@ function O({ courts: a = [], onChange: i, T: o }) {
                     e.jsx('div', {
                       className: 'text-2xl font-bold text-yellow-600',
                       children: a.reduce(
-                        (r, u) => r + (u.timeSlots || []).filter((n) => n.isPromo).length,
+                        (n, u) => n + (u.timeSlots || []).filter((c) => c.isPromo).length,
                         0
                       ),
                     }),
@@ -515,7 +515,7 @@ function O({ courts: a = [], onChange: i, T: o }) {
     ],
   });
 }
-function J({
+function W({
   state: a,
   setState: i,
   derived: o,
@@ -525,10 +525,10 @@ function J({
   setClubMode: h,
   T: s,
 }) {
-  const [r, u] = w.useState('');
-  _();
-  const [n, g] = $.useState(''),
-    [p, f] = $.useState(() => {
+  const [n, u] = w.useState('');
+  F();
+  const [c, g] = $.useState(''),
+    [b, v] = $.useState(() => {
       try {
         return sessionStorage.getItem('ml-extra-unlocked') === '1';
       } catch {
@@ -536,20 +536,20 @@ function J({
       }
     }),
     [P, B] = $.useState(''),
-    E = (l) => {
-      i((x) => ({ ...x, courts: l }));
+    E = (r) => {
+      i((x) => ({ ...x, courts: r }));
     },
     k = a?.bookingConfig || z(),
-    [b, j] = $.useState(() => ({ ...k }));
+    [j, f] = $.useState(() => ({ ...k }));
   if (
     ($.useEffect(() => {
-      j((l) => {
+      f((r) => {
         try {
-          const x = JSON.stringify(l),
+          const x = JSON.stringify(r),
             y = JSON.stringify(k);
-          return x === y ? { ...k } : l;
+          return x === y ? { ...k } : r;
         } catch {
-          return l;
+          return r;
         }
       });
     }, [a?.bookingConfig]),
@@ -566,44 +566,44 @@ function J({
         ],
       }),
     });
-  const c = (l) => {
-      if ((l?.preventDefault?.(), n === 'Paris2025')) {
-        f(!0);
+  const l = (r) => {
+      if ((r?.preventDefault?.(), c === 'Paris2025')) {
+        v(!0);
         try {
           sessionStorage.setItem('ml-extra-unlocked', '1');
         } catch {}
       } else alert('Password errata');
     },
-    N = () => {
-      (f(!1), g(''));
+    p = () => {
+      (v(!1), g(''));
       try {
         sessionStorage.removeItem('ml-extra-unlocked');
       } catch {}
     },
-    v = () => {
-      let l = b.defaultDurations;
-      typeof l == 'string' &&
-        (l = l
+    N = () => {
+      let r = j.defaultDurations;
+      typeof r == 'string' &&
+        (r = r
           .split(',')
           .map((y) => Number(y.trim()))
           .filter((y) => !Number.isNaN(y) && y > 0));
       const x = {
-        ...b,
-        slotMinutes: Math.max(5, Number(b.slotMinutes) || 30),
-        dayStartHour: Math.min(23, Math.max(0, Number(b.dayStartHour) || 8)),
-        dayEndHour: Math.min(24, Math.max(1, Number(b.dayEndHour) || 23)),
-        defaultDurations: l && l.length ? l : [60, 90, 120],
+        ...j,
+        slotMinutes: Math.max(5, Number(j.slotMinutes) || 30),
+        dayStartHour: Math.min(23, Math.max(0, Number(j.dayStartHour) || 8)),
+        dayEndHour: Math.min(24, Math.max(1, Number(j.dayEndHour) || 23)),
+        defaultDurations: r && r.length ? r : [60, 90, 120],
       };
       (i((y) => ({ ...y, bookingConfig: x })), alert('Parametri salvati!'));
     },
-    C = () => j(z());
-  b.pricing || z().pricing;
-  const S = b.addons || z().addons;
+    C = () => f(z());
+  j.pricing || z().pricing;
+  const S = j.addons || z().addons;
   return e.jsxs(L, {
     title: 'Extra – Impostazioni',
     T: s,
     children: [
-      p
+      b
         ? e.jsx('div', {
             className: `rounded-2xl ${s.cardBg} ${s.border} p-4 mb-6`,
             children: e.jsxs('div', {
@@ -663,7 +663,7 @@ function J({
               ],
             }),
           }),
-      p
+      b
         ? e.jsxs(e.Fragment, {
             children: [
               e.jsx('div', {
@@ -692,17 +692,17 @@ function J({
                     e.jsx('button', {
                       type: 'button',
                       className: `${s.btnGhost} w-full sm:w-auto`,
-                      onClick: N,
+                      onClick: p,
                       children: '🔒 Blocca Pannello',
                     }),
                   ],
                 }),
               }),
-              e.jsx(O, { courts: a?.courts || [], onChange: E, T: s }),
+              e.jsx(G, { courts: a?.courts || [], onChange: E, T: s }),
               e.jsxs('div', {
                 className: `rounded-2xl ${s.cardBg} ${s.border} p-3`,
-                onKeyDown: (l) => {
-                  l.key === 'Enter' && l.preventDefault();
+                onKeyDown: (r) => {
+                  r.key === 'Enter' && r.preventDefault();
                 },
                 children: [
                   e.jsx('div', {
@@ -721,9 +721,9 @@ function J({
                           }),
                           e.jsx('input', {
                             type: 'number',
-                            value: b.slotMinutes,
-                            onChange: (l) =>
-                              j((x) => ({ ...x, slotMinutes: Number(l.target.value) })),
+                            value: j.slotMinutes,
+                            onChange: (r) =>
+                              f((x) => ({ ...x, slotMinutes: Number(r.target.value) })),
                             className: s.input,
                           }),
                         ],
@@ -737,9 +737,9 @@ function J({
                           }),
                           e.jsx('input', {
                             type: 'number',
-                            value: b.dayStartHour,
-                            onChange: (l) =>
-                              j((x) => ({ ...x, dayStartHour: Number(l.target.value) })),
+                            value: j.dayStartHour,
+                            onChange: (r) =>
+                              f((x) => ({ ...x, dayStartHour: Number(r.target.value) })),
                             className: s.input,
                           }),
                         ],
@@ -753,9 +753,9 @@ function J({
                           }),
                           e.jsx('input', {
                             type: 'number',
-                            value: b.dayEndHour,
-                            onChange: (l) =>
-                              j((x) => ({ ...x, dayEndHour: Number(l.target.value) })),
+                            value: j.dayEndHour,
+                            onChange: (r) =>
+                              f((x) => ({ ...x, dayEndHour: Number(r.target.value) })),
                             className: s.input,
                           }),
                         ],
@@ -779,10 +779,10 @@ function J({
                                 id: 'cfg-lighting-enabled',
                                 type: 'checkbox',
                                 checked: !!S.lightingEnabled,
-                                onChange: (l) =>
-                                  j((x) => ({
+                                onChange: (r) =>
+                                  f((x) => ({
                                     ...x,
-                                    addons: { ...x.addons, lightingEnabled: l.target.checked },
+                                    addons: { ...x.addons, lightingEnabled: r.target.checked },
                                   })),
                               }),
                               e.jsx('label', {
@@ -803,12 +803,12 @@ function J({
                                 type: 'number',
                                 className: `${s.input} w-28`,
                                 value: S.lightingFee || 0,
-                                onChange: (l) =>
-                                  j((x) => ({
+                                onChange: (r) =>
+                                  f((x) => ({
                                     ...x,
                                     addons: {
                                       ...x.addons,
-                                      lightingFee: Number(l.target.value) || 0,
+                                      lightingFee: Number(r.target.value) || 0,
                                     },
                                   })),
                               }),
@@ -821,10 +821,10 @@ function J({
                                 id: 'cfg-heating-enabled',
                                 type: 'checkbox',
                                 checked: !!S.heatingEnabled,
-                                onChange: (l) =>
-                                  j((x) => ({
+                                onChange: (r) =>
+                                  f((x) => ({
                                     ...x,
-                                    addons: { ...x.addons, heatingEnabled: l.target.checked },
+                                    addons: { ...x.addons, heatingEnabled: r.target.checked },
                                   })),
                               }),
                               e.jsx('label', {
@@ -845,12 +845,12 @@ function J({
                                 type: 'number',
                                 className: `${s.input} w-28`,
                                 value: S.heatingFee || 0,
-                                onChange: (l) =>
-                                  j((x) => ({
+                                onChange: (r) =>
+                                  f((x) => ({
                                     ...x,
                                     addons: {
                                       ...x.addons,
-                                      heatingFee: Number(l.target.value) || 0,
+                                      heatingFee: Number(r.target.value) || 0,
                                     },
                                   })),
                               }),
@@ -876,7 +876,7 @@ function J({
                       e.jsx('button', {
                         type: 'button',
                         className: s.btnPrimary,
-                        onClick: v,
+                        onClick: N,
                         children: 'Salva parametri',
                       }),
                       e.jsx('button', {
@@ -889,7 +889,7 @@ function J({
                   }),
                 ],
               }),
-              e.jsx(V, { T: s, leagueId: t, setState: i, cloudMsg: r, setCloudMsg: u }),
+              e.jsx(V, { T: s, leagueId: t, setState: i, cloudMsg: n, setCloudMsg: u }),
               e.jsxs('div', {
                 className: `text-xs ${s.subtext} mt-3`,
                 children: [
@@ -908,7 +908,7 @@ function J({
         : e.jsx('div', {
             className: `rounded-2xl ${s.cardBg} ${s.border} p-4 mb-6`,
             children: e.jsxs('form', {
-              onSubmit: c,
+              onSubmit: l,
               className: 'space-y-4',
               children: [
                 e.jsxs('div', {
@@ -919,8 +919,8 @@ function J({
                     }),
                     e.jsx('input', {
                       type: 'password',
-                      value: n,
-                      onChange: (l) => g(l.target.value),
+                      value: c,
+                      onChange: (r) => g(r.target.value),
                       placeholder: 'Inserisci password',
                       className: `${s.input} w-full`,
                     }),
@@ -946,18 +946,18 @@ function J({
 }
 function V({ T: a, leagueId: i, setState: o, cloudMsg: t, setCloudMsg: m }) {
   const [d, h] = w.useState([]),
-    [s, r] = w.useState(''),
-    [u, n] = w.useState(!1),
-    [g, p] = w.useState(''),
-    [f, P] = w.useState(() => {
+    [s, n] = w.useState(''),
+    [u, c] = w.useState(!1),
+    [g, b] = w.useState(''),
+    [v, P] = w.useState(() => {
       try {
         return sessionStorage.getItem('ml-cloud-unlocked') === '1';
       } catch {
         return !1;
       }
     }),
-    B = (c) => {
-      if ((c?.preventDefault?.(), g === 'ParisAdmin85')) {
+    B = (l) => {
+      if ((l?.preventDefault?.(), g === 'ParisAdmin85')) {
         P(!0);
         try {
           sessionStorage.setItem('ml-cloud-unlocked', '1');
@@ -965,69 +965,69 @@ function V({ T: a, leagueId: i, setState: o, cloudMsg: t, setCloudMsg: m }) {
       } else alert('Password cloud errata');
     },
     E = () => {
-      (P(!1), p(''));
+      (P(!1), b(''));
       try {
         sessionStorage.removeItem('ml-cloud-unlocked');
       } catch {}
     };
   async function k() {
-    n(!0);
+    c(!0);
     try {
-      const { listLeagues: c } = await A(
+      const { listLeagues: l } = await A(
           async () => {
-            const { listLeagues: v } = await import('./index-mfgp9duf-gdVB5EnT.js').then(
+            const { listLeagues: N } = await import('./index-mfgpn7fg-C0gX905a.js').then(
               (C) => C.x
             );
-            return { listLeagues: v };
+            return { listLeagues: N };
           },
           __vite__mapDeps([0, 1, 2, 3, 4])
         ),
-        N = await c();
-      (h(N), m(`✅ Trovati ${N.length} backup su Firebase`));
-    } catch (c) {
-      m(`❌ Errore caricamento lista backup: ${c?.message || c}`);
+        p = await l();
+      (h(p), m(`✅ Trovati ${p.length} backup su Firebase`));
+    } catch (l) {
+      m(`❌ Errore caricamento lista backup: ${l?.message || l}`);
     } finally {
-      n(!1);
-    }
-  }
-  async function b() {
-    try {
-      const { saveLeague: c } = await A(
-          async () => {
-            const { saveLeague: v } = await import('./index-mfgp9duf-gdVB5EnT.js').then((C) => C.x);
-            return { saveLeague: v };
-          },
-          __vite__mapDeps([0, 1, 2, 3, 4])
-        ),
-        N = JSON.parse(localStorage.getItem('ml-persist') || '{}');
-      (await c(i, { ...N, _updatedAt: Date.now() }),
-        m(`✅ Salvato su cloud: leagues/${i}`),
-        d.length > 0 && k());
-    } catch (c) {
-      m(`❌ Errore salvataggio: ${c?.message || c}`);
+      c(!1);
     }
   }
   async function j() {
-    const c = s || i;
     try {
-      const { loadLeague: N } = await A(
+      const { saveLeague: l } = await A(
           async () => {
-            const { loadLeague: C } = await import('./index-mfgp9duf-gdVB5EnT.js').then((S) => S.x);
+            const { saveLeague: N } = await import('./index-mfgpn7fg-C0gX905a.js').then((C) => C.x);
+            return { saveLeague: N };
+          },
+          __vite__mapDeps([0, 1, 2, 3, 4])
+        ),
+        p = JSON.parse(localStorage.getItem('ml-persist') || '{}');
+      (await l(i, { ...p, _updatedAt: Date.now() }),
+        m(`✅ Salvato su cloud: leagues/${i}`),
+        d.length > 0 && k());
+    } catch (l) {
+      m(`❌ Errore salvataggio: ${l?.message || l}`);
+    }
+  }
+  async function f() {
+    const l = s || i;
+    try {
+      const { loadLeague: p } = await A(
+          async () => {
+            const { loadLeague: C } = await import('./index-mfgpn7fg-C0gX905a.js').then((S) => S.x);
             return { loadLeague: C };
           },
           __vite__mapDeps([0, 1, 2, 3, 4])
         ),
-        v = await N(c);
-      v && typeof v == 'object'
-        ? (o(v), m(`✅ Caricato dal cloud: leagues/${c}`))
+        N = await p(l);
+      N && typeof N == 'object'
+        ? (o(N), m(`✅ Caricato dal cloud: leagues/${l}`))
         : m('⚠️ Documento non trovato sul cloud');
-    } catch (N) {
-      m(`❌ Errore caricamento: ${N?.message || N}`);
+    } catch (p) {
+      m(`❌ Errore caricamento: ${p?.message || p}`);
     }
   }
   return e.jsx('div', {
     className: `rounded-2xl ${a.cardBg} ${a.border} p-4 mb-6`,
-    children: f
+    children: v
       ? e.jsxs(e.Fragment, {
           children: [
             e.jsxs('div', {
@@ -1075,30 +1075,30 @@ function V({ T: a, leagueId: i, setState: o, cloudMsg: t, setCloudMsg: m }) {
                       }),
                       e.jsxs('select', {
                         value: s,
-                        onChange: (c) => r(c.target.value),
+                        onChange: (l) => n(l.target.value),
                         className: `${a.input} w-full`,
                         children: [
                           e.jsxs('option', {
                             value: '',
                             children: ['🔄 Usa League ID corrente (', i, ')'],
                           }),
-                          d.map((c) =>
+                          d.map((l) =>
                             e.jsxs(
                               'option',
                               {
-                                value: c.id,
+                                value: l.id,
                                 children: [
                                   '📁 ',
-                                  c.id,
+                                  l.id,
                                   ' - ',
-                                  c.players,
+                                  l.players,
                                   ' giocatori, ',
-                                  c.matches,
+                                  l.matches,
                                   ' partite',
-                                  c.lastUpdated !== 'N/A' && ` (${c.lastUpdated})`,
+                                  l.lastUpdated !== 'N/A' && ` (${l.lastUpdated})`,
                                 ],
                               },
-                              c.id
+                              l.id
                             )
                           ),
                         ],
@@ -1118,13 +1118,13 @@ function V({ T: a, leagueId: i, setState: o, cloudMsg: t, setCloudMsg: m }) {
                     e.jsx('button', {
                       type: 'button',
                       className: `${a.btnPrimary} flex items-center justify-center gap-2`,
-                      onClick: b,
+                      onClick: j,
                       children: '⬆️ Salva su Cloud',
                     }),
                     e.jsxs('button', {
                       type: 'button',
                       className: `${a.btnGhost} flex items-center justify-center gap-2`,
-                      onClick: j,
+                      onClick: f,
                       children: ['⬇️ Carica ', s ? 'Selezionato' : 'Corrente'],
                     }),
                   ],
@@ -1219,6 +1219,105 @@ function V({ T: a, leagueId: i, setState: o, cloudMsg: t, setCloudMsg: m }) {
                 }),
               ],
             }),
+            e.jsxs('div', {
+              className: `${a.card} ${a.space} space-y-4`,
+              children: [
+                e.jsx('h3', {
+                  className: `text-lg font-bold ${a.text} flex items-center gap-2`,
+                  children: '🔄 Controllo Aggiornamenti',
+                }),
+                e.jsx('div', {
+                  className: 'p-4 rounded-lg bg-green-50 dark:bg-green-900/20',
+                  children: e.jsxs('div', {
+                    className: 'text-sm text-gray-600 dark:text-gray-300 space-y-2',
+                    children: [
+                      e.jsxs('p', {
+                        children: [
+                          e.jsx('b', { children: 'Versione App:' }),
+                          ' v1.7.0 (2025-09-12)',
+                        ],
+                      }),
+                      e.jsxs('p', {
+                        children: [
+                          e.jsx('b', { children: 'Cache Status:' }),
+                          ' Gestione automatica attiva',
+                        ],
+                      }),
+                      e.jsxs('p', {
+                        children: [
+                          e.jsx('b', { children: 'Service Worker:' }),
+                          ' Cache busting abilitato',
+                        ],
+                      }),
+                    ],
+                  }),
+                }),
+                e.jsxs('div', {
+                  className: 'space-y-3',
+                  children: [
+                    e.jsx('button', {
+                      onClick: async () => {
+                        try {
+                          const { default: l } = await A(
+                            async () => {
+                              const { default: p } = await import(
+                                './index-mfgpn7fg-C0gX905a.js'
+                              ).then((N) => N.y);
+                              return { default: p };
+                            },
+                            __vite__mapDeps([0, 1, 2, 3, 4])
+                          );
+                          await l.forceUpdate();
+                        } catch (l) {
+                          alert("Errore durante l'aggiornamento: " + l.message);
+                        }
+                      },
+                      className: `${a.btnSecondary} w-full flex items-center justify-center gap-2`,
+                      children: '🔄 Forza Aggiornamento App',
+                    }),
+                    e.jsx('button', {
+                      onClick: async () => {
+                        try {
+                          if ('caches' in window) {
+                            const l = await caches.keys();
+                            (await Promise.all(l.map((p) => caches.delete(p))),
+                              alert(
+                                '✅ Cache PWA cancellata! Ricarica per scaricare la versione più recente.'
+                              ));
+                          } else alert('Cache API non supportata in questo browser');
+                        } catch (l) {
+                          alert('Errore durante la cancellazione cache: ' + l.message);
+                        }
+                      },
+                      className: `${a.btnDanger} w-full flex items-center justify-center gap-2`,
+                      children: '🗑️ Cancella Cache PWA',
+                    }),
+                    e.jsxs('div', {
+                      className:
+                        'text-xs text-gray-500 dark:text-gray-400 p-3 bg-gray-50 dark:bg-gray-800 rounded',
+                      children: [
+                        e.jsx('p', {
+                          children: e.jsx('b', { children: 'Per problemi di cache mobile:' }),
+                        }),
+                        e.jsx('p', {
+                          children: '1. Usa "Forza Aggiornamento App" per aggiornamento automatico',
+                        }),
+                        e.jsx('p', {
+                          children: '2. Se non funziona, usa "Cancella Cache PWA" e ricarica',
+                        }),
+                        e.jsx('p', {
+                          children: '3. Su iOS: Impostazioni → Safari → Cancella Cronologia',
+                        }),
+                        e.jsx('p', {
+                          children:
+                            '4. Su Android: Browser → Impostazioni → Storage → Cancella Dati',
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
           ],
         })
       : e.jsxs(e.Fragment, {
@@ -1254,7 +1353,7 @@ function V({ T: a, leagueId: i, setState: o, cloudMsg: t, setCloudMsg: m }) {
                     e.jsx('input', {
                       type: 'password',
                       value: g,
-                      onChange: (c) => p(c.target.value),
+                      onChange: (l) => b(l.target.value),
                       placeholder: 'Password amministratore cloud',
                       className: `${a.input} w-full`,
                     }),
@@ -1276,9 +1375,9 @@ function V({ T: a, leagueId: i, setState: o, cloudMsg: t, setCloudMsg: m }) {
 }
 function Y() {
   const { state: a, setState: i, derived: o, leagueId: t, setLeagueId: m } = D(),
-    { clubMode: d, setClubMode: h } = F(),
-    s = w.useMemo(() => I(), []);
-  return e.jsx(J, {
+    { clubMode: d, setClubMode: h } = I(),
+    s = w.useMemo(() => _(), []);
+  return e.jsx(W, {
     T: s,
     state: a,
     setState: i,

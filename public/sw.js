@@ -1,5 +1,6 @@
 // Service Worker per Paris League PWA
-const CACHE_NAME = 'paris-league-v1.6.0';
+const CACHE_NAME = 'paris-league-v1.7.0';
+const APP_VERSION = '1.7.0';
 const urlsToCache = [
   '/',
   '/logo.png',
@@ -57,7 +58,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network first per asset JS/CSS per evitare stale code, cache first per altri asset
   const url = new URL(event.request.url);
   const isAsset =
     url.pathname.startsWith('/assets/') ||
@@ -71,10 +71,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // JS/CSS assets: network first per evitare codice obsoleto
+  // JS/CSS assets: SEMPRE network first con cache busting per forzare aggiornamenti
   if (isAsset) {
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: 'no-cache' })
         .then((response) => {
           if (response && response.status === 200) {
             const responseToCache = response.clone();
@@ -82,7 +82,15 @@ self.addEventListener('fetch', (event) => {
           }
           return response;
         })
-        .catch(() => caches.match(event.request))
+        .catch(() =>
+          caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+              console.log('[SW] Using cached asset (offline):', event.request.url);
+              return cachedResponse;
+            }
+            throw new Error('Asset not available offline');
+          })
+        )
     );
     return;
   }
@@ -119,6 +127,23 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+
+  // Controllo versione app
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.ports[0].postMessage({ version: APP_VERSION });
+  }
+
+  // Forza clear cache
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    caches
+      .keys()
+      .then((cacheNames) => {
+        return Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+      })
+      .then(() => {
+        event.ports[0].postMessage({ success: true });
+      });
   }
 });
 

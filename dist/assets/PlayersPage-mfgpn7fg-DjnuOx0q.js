@@ -7,15 +7,15 @@ import {
   m as q,
   u as K,
   t as Q,
-} from './index-mfgp9duf-gdVB5EnT.js';
-import { r as N, c as Z, b as J } from './router-mfgp9duf-1fFxCiHK.js';
-import { S as X } from './Section-mfgp9duf-BzEjYta0.js';
-import { M as U } from './Modal-mfgp9duf-C4u1B86Q.js';
-import { b as T } from './names-mfgp9duf-BW9lV2zG.js';
-import { P as w, b as G, d as F, N as B, e as L } from './playerTypes-mfgp9duf-CIm-hM8a.js';
-import { s as ee } from './unified-booking-service-mfgp9duf-C7TnzCvm.js';
-import './vendor-mfgp9duf-D3F3s8fL.js';
-import './firebase-mfgp9duf-X_I_guKF.js';
+} from './index-mfgpn7fg-C0gX905a.js';
+import { r as N, c as Z, b as J } from './router-mfgpn7fg-7pyUyyy2.js';
+import { S as X } from './Section-mfgpn7fg-CicA69zi.js';
+import { M as U } from './Modal-mfgpn7fg-DVggMcVY.js';
+import { b as T } from './names-mfgpn7fg-BW9lV2zG.js';
+import { P as w, b as G, d as F, N as B, e as L } from './playerTypes-mfgpn7fg-CIm-hM8a.js';
+import { s as ee } from './unified-booking-service-mfgpn7fg-Cg0HLEUn.js';
+import './vendor-mfgpn7fg-D3F3s8fL.js';
+import './firebase-mfgpn7fg-X_I_guKF.js';
 function te({ player: a, playersById: s, onEdit: r, onDelete: l, onView: i, onStats: u, T: d }) {
   const j = s?.[a.id]?.rating ?? a.rating ?? z,
     f = (t) => {

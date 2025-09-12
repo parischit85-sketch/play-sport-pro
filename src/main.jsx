@@ -5,6 +5,7 @@ import React from 'react';
 import './index.css';
 import { createRoot } from 'react-dom/client';
 import AppRouter from './router/AppRouter.jsx';
+import updateService from './services/updateService.js';
 
 // PWA web application initialization
 
@@ -19,35 +20,15 @@ if (import.meta.env.PROD) {
   // Example: Web Vitals reporting
 }
 
-// PWA Service Worker Registration
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/sw.js')
-      .then((registration) => {
-        console.log('✅ SW registered: ', registration);
-
-        // Gestione degli aggiornamenti del SW
-        registration.addEventListener('updatefound', () => {
-          const newWorker = registration.installing;
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // Nuovo contenuto disponibile
-              console.log('🔄 New content available! Please refresh.');
-              // Qui puoi mostrare una notifica all'utente
-            }
-          });
-        });
-      })
-      .catch((registrationError) => {
-        console.log('❌ SW registration failed: ', registrationError);
-      });
-  });
-
-  // Handler per messaggi dal SW (reload page)
-  navigator.serviceWorker.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'RELOAD_PAGE') {
-      window.location.reload();
+// PWA Service Worker e Update Service
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      // Inizializza il servizio di aggiornamenti
+      await updateService.init();
+      console.log('✅ Update Service initialized');
+    } catch (error) {
+      console.error('❌ Update Service failed:', error);
     }
   });
 }

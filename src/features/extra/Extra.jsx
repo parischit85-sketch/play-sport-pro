@@ -712,6 +712,74 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
               </div>
             </div>
           </div>
+
+          {/* App Update Control Section */}
+          <div className={`${T.card} ${T.space} space-y-4`}>
+            <h3 className={`text-lg font-bold ${T.text} flex items-center gap-2`}>
+              🔄 Controllo Aggiornamenti
+            </h3>
+
+            <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20">
+              <div className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
+                <p>
+                  <b>Versione App:</b> v1.7.0 (2025-09-12)
+                </p>
+                <p>
+                  <b>Cache Status:</b> Gestione automatica attiva
+                </p>
+                <p>
+                  <b>Service Worker:</b> Cache busting abilitato
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                onClick={async () => {
+                  try {
+                    const { default: updateService } = await import('@services/updateService.js');
+                    await updateService.forceUpdate();
+                  } catch (error) {
+                    alert("Errore durante l'aggiornamento: " + error.message);
+                  }
+                }}
+                className={`${T.btnSecondary} w-full flex items-center justify-center gap-2`}
+              >
+                🔄 Forza Aggiornamento App
+              </button>
+
+              <button
+                onClick={async () => {
+                  try {
+                    if ('caches' in window) {
+                      const cacheNames = await caches.keys();
+                      await Promise.all(cacheNames.map((name) => caches.delete(name)));
+                      alert(
+                        '✅ Cache PWA cancellata! Ricarica per scaricare la versione più recente.'
+                      );
+                    } else {
+                      alert('Cache API non supportata in questo browser');
+                    }
+                  } catch (error) {
+                    alert('Errore durante la cancellazione cache: ' + error.message);
+                  }
+                }}
+                className={`${T.btnDanger} w-full flex items-center justify-center gap-2`}
+              >
+                🗑️ Cancella Cache PWA
+              </button>
+
+              <div className="text-xs text-gray-500 dark:text-gray-400 p-3 bg-gray-50 dark:bg-gray-800 rounded">
+                <p>
+                  <b>Per problemi di cache mobile:</b>
+                </p>
+                <p>1. Usa "Forza Aggiornamento App" per aggiornamento automatico</p>
+                <p>2. Se non funziona, usa "Cancella Cache PWA" e ricarica</p>
+                <p>3. Su iOS: Impostazioni → Safari → Cancella Cronologia</p>
+                <p>4. Su Android: Browser → Impostazioni → Storage → Cancella Dati</p>
+              </div>
+            </div>
+          </div>
         </>
       )}
     </div>
