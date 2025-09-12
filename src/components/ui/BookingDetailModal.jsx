@@ -142,41 +142,6 @@ export default function BookingDetailModal({
           </div>
         </div>
 
-        {/* Informazioni essenziali in grid compatta */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Data e tempo */}
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-xl p-4 shadow-lg shadow-gray-100/50 dark:shadow-gray-900/20">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">
-              📅 DATA E ORARIO
-            </div>
-            <div className="font-semibold text-sm text-gray-900 dark:text-white">{dateLabel}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">
-              {booking.time} ({booking.duration || 60}min)
-            </div>
-            {!isPast && timeUntilBooking > 0 && (
-              <div className="text-xs text-blue-600 dark:text-blue-400 mt-2 font-medium">
-                {hoursUntil > 0 && `${hoursUntil}h `}
-                {minutesUntil}min rimanenti
-              </div>
-            )}
-          </div>
-
-          {/* Campo */}
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-xl p-4 shadow-lg shadow-gray-100/50 dark:shadow-gray-900/20">
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">
-              🏟️ CAMPO
-            </div>
-            <div className="font-semibold text-sm text-gray-900 dark:text-white">
-              {court?.name || `Campo ${booking.courtId}`}
-            </div>
-            {court?.features && (
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {court.features.join(' • ')}
-              </div>
-            )}
-          </div>
-        </div>
-
         {/* Giocatori - Con stile della conferma prenotazione quando in editing */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-xl p-5 shadow-lg shadow-gray-100/50 dark:shadow-gray-900/20">
           <div className="text-xs text-gray-500 dark:text-gray-400 mb-4 font-medium">
@@ -373,29 +338,6 @@ export default function BookingDetailModal({
           </div>
         </div>
 
-        {/* Prezzo */}
-        <div className="bg-gradient-to-r from-green-50/80 to-emerald-50/80 dark:from-green-900/30 dark:to-emerald-900/30 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-xl p-4 shadow-lg shadow-green-100/50 dark:shadow-green-900/20">
-          <div className="text-xs text-green-700 dark:text-green-300 mb-2 font-medium">
-            💰 PREZZO
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="font-bold text-lg text-green-900 dark:text-green-100">
-              €{booking.price || 'N/A'}
-            </div>
-            {booking.confirmed ? (
-              <span className="text-green-600 dark:text-green-400 flex items-center gap-1">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                Pagato
-              </span>
-            ) : (
-              <span className="text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
-                Da confermare
-              </span>
-            )}
-          </div>
-        </div>
-
         {/* Note compatte (solo se presenti) */}
         {booking.notes && (
           <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 dark:from-blue-900/30 dark:to-indigo-900/30 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-xl p-4 shadow-lg shadow-blue-100/50 dark:shadow-blue-900/20">
@@ -403,22 +345,6 @@ export default function BookingDetailModal({
             <p className="text-sm text-gray-700 dark:text-gray-300">{booking.notes}</p>
           </div>
         )}
-
-        {/* Informazioni essenziali compatte */}
-        <div className="bg-gradient-to-r from-yellow-50/80 to-amber-50/80 dark:from-yellow-900/30 dark:to-amber-900/30 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-xl p-4 shadow-lg shadow-yellow-100/50 dark:shadow-yellow-900/20">
-          <div className="text-xs text-yellow-800 dark:text-yellow-200 font-medium mb-2">
-            ℹ️ PROMEMORIA
-          </div>
-          <div className="text-xs text-gray-700 dark:text-gray-300 space-y-1">
-            <div>• Arriva 10 min prima</div>
-            <div>• Porta racchette e palline</div>
-            {court?.phone && (
-              <div>
-                • Tel: <span className="font-medium">{court.phone}</span>
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* Azioni compatte */}
         <div className="space-y-3 pb-4 md:pb-0">

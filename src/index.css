@@ -171,6 +171,26 @@ html {
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: scale(0.9) translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
 @keyframes pulse-subtle {
   0%,
   100% {
@@ -251,5 +271,34 @@ a,
   backface-visibility: hidden;
 }
 
+/* Modal override for maximum z-index */
+.modal-overlay {
+  z-index: 2147483647 !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+.modal-content {
+  z-index: 2147483647 !important;
+  position: relative !important;
+}
+
+/* Ensure modal is above everything */
+.modal-overlay * {
+  z-index: inherit !important;
+}
+
 /* Ensure no interference from other elements */
 /* Rimosso pointer-events: none globale sui figli per evitare blocchi imprevisti */
+
+/* ===== CUSTOM TAILWIND OVERRIDES ===== */
+.p-6 {
+  padding: 1rem; /* 16px */
+}
+
+.border-2 {
+  border-width: 0px;
+}
