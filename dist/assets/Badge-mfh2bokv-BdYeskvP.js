@@ -1,5 +1,5 @@
-import { j as e } from './index-mfgpn7fg-C0gX905a.js';
-import './router-mfgpn7fg-7pyUyyy2.js';
+import { j as e } from './index-mfh2bokv-DsiFzhNE.js';
+import './router-mfh2bokv-CQdDuJ2E.js';
 const s = {
     default: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
     success: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400',

@@ -65,11 +65,14 @@ export default function AppLayout() {
       <header className={`sticky top-0 z-20 ${T.headerBg} safe-area-left safe-area-right`}>
         <div className="max-w-[1800px] mx-auto px-3 sm:px-4 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <img
-              src={LOGO_URL}
-              alt="Sporting Cat"
-              className="h-8 w-auto rounded-md shadow shrink-0"
-            />
+            <div className="h-10 w-auto rounded-md shadow shrink-0 flex items-center">
+              <img
+                src={LOGO_URL}
+                alt="Play-Sport.pro"
+                className="h-10 w-auto select-none dark:bg-white dark:rounded-md dark:p-1"
+                draggable={false}
+              />
+            </div>
             <div className="text-lg sm:text-2xl font-bold tracking-wide truncate text-neutral-900 dark:text-white">
               Sporting Cat
             </div>

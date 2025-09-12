@@ -3,75 +3,75 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/LoginPage-mfgpn7fg-BxCcwJ4C.js',
-      'assets/router-mfgpn7fg-7pyUyyy2.js',
-      'assets/vendor-mfgpn7fg-D3F3s8fL.js',
-      'assets/Section-mfgpn7fg-CicA69zi.js',
-      'assets/firebase-mfgpn7fg-X_I_guKF.js',
-      'assets/DashboardPage-mfgpn7fg-D0cABFrI.js',
-      'assets/ClassificaPage-mfgpn7fg-w3fjikoJ.js',
-      'assets/charts-mfgpn7fg-sMP0oySw.js',
-      'assets/ShareButtons-mfgpn7fg-DJFHdsQH.js',
-      'assets/StatsPage-mfgpn7fg-Bs1uumHP.js',
-      'assets/Modal-mfgpn7fg-DVggMcVY.js',
-      'assets/names-mfgpn7fg-BW9lV2zG.js',
-      'assets/BookingPage-mfgpn7fg-Bvu9Ngez.js',
-      'assets/Badge-mfgpn7fg-Cd92P3W8.js',
-      'assets/design-system-mfgpn7fg-B5fzZ68S.js',
-      'assets/pricing-mfgpn7fg-DMaWA4wL.js',
-      'assets/useUnifiedBookings-mfgpn7fg-DcCM2TkG.js',
-      'assets/unified-booking-service-mfgpn7fg-Cg0HLEUn.js',
-      'assets/LessonBookingPage-mfgpn7fg-Bl90ua_n.js',
-      'assets/playerTypes-mfgpn7fg-CIm-hM8a.js',
-      'assets/PlayersPage-mfgpn7fg-DjnuOx0q.js',
-      'assets/MatchesPage-mfgpn7fg-CwbG1-Q_.js',
-      'assets/TournamentsPage-mfgpn7fg-CmpiAkw7.js',
-      'assets/ProfilePage-mfgpn7fg-CBpO71Yq.js',
-      'assets/ExtraPage-mfgpn7fg-CxMCOK0X.js',
-      'assets/format-mfgpn7fg-DAEZv7Mi.js',
-      'assets/AdminBookingsPage-mfgpn7fg-CQkZpxBC.js',
-      'assets/DarkModeTestPage-mfgpn7fg-Br-0C2Hy.js',
+      'assets/LoginPage-mfh2bokv-Cv-v6mCO.js',
+      'assets/router-mfh2bokv-CQdDuJ2E.js',
+      'assets/vendor-mfh2bokv-D3F3s8fL.js',
+      'assets/Section-mfh2bokv-CaYeeEit.js',
+      'assets/firebase-mfh2bokv-X_I_guKF.js',
+      'assets/DashboardPage-mfh2bokv-DTPNiGAm.js',
+      'assets/ClassificaPage-mfh2bokv-k6B8WdRQ.js',
+      'assets/charts-mfh2bokv-CRuyWRT6.js',
+      'assets/ShareButtons-mfh2bokv-Bz7AAQPV.js',
+      'assets/StatsPage-mfh2bokv-CXRxy1gL.js',
+      'assets/Modal-mfh2bokv-DZWtRxlN.js',
+      'assets/names-mfh2bokv-BW9lV2zG.js',
+      'assets/BookingPage-mfh2bokv-CP2SbZ-R.js',
+      'assets/Badge-mfh2bokv-BdYeskvP.js',
+      'assets/design-system-mfh2bokv-B5fzZ68S.js',
+      'assets/pricing-mfh2bokv-DMaWA4wL.js',
+      'assets/useUnifiedBookings-mfh2bokv-BvNOXy9O.js',
+      'assets/unified-booking-service-mfh2bokv-C4-lsFtH.js',
+      'assets/LessonBookingPage-mfh2bokv-DSNB_Q3K.js',
+      'assets/playerTypes-mfh2bokv-CIm-hM8a.js',
+      'assets/PlayersPage-mfh2bokv-DZprrxn2.js',
+      'assets/MatchesPage-mfh2bokv-BadgOvwg.js',
+      'assets/TournamentsPage-mfh2bokv-DPPJMjBo.js',
+      'assets/ProfilePage-mfh2bokv-CbteSz3f.js',
+      'assets/ExtraPage-mfh2bokv-UAt12cmz.js',
+      'assets/format-mfh2bokv-DAEZv7Mi.js',
+      'assets/AdminBookingsPage-mfh2bokv-Bxn3w5N4.js',
+      'assets/DarkModeTestPage-mfh2bokv-DPP0gu4v.js',
     ])
 ) => i.map((i) => d[i]);
-import { r as Te, a as We } from './vendor-mfgpn7fg-D3F3s8fL.js';
+import { r as Oe, a as We } from './vendor-mfh2bokv-D3F3s8fL.js';
 import {
   r as p,
   b as C,
   u as te,
   N as $,
-  c as Oe,
-  O as $e,
-  B as Ue,
-  d as Fe,
+  c as $e,
+  O as Ue,
+  B as Fe,
+  d as Ve,
   e as _,
-} from './router-mfgpn7fg-7pyUyyy2.js';
+} from './router-mfh2bokv-CQdDuJ2E.js';
 import {
   g as ge,
   a as fe,
   i as pe,
   b as xe,
   c as be,
-  d as Ve,
-  s as He,
+  d as He,
+  s as Ge,
   e as qe,
   f as U,
   h as we,
-  G as Ge,
+  G as Je,
   j as ve,
-  k as Je,
-  F as Ke,
-  l as Ye,
-  m as Xe,
-  n as Ze,
+  k as Ke,
+  F as Ye,
+  l as Xe,
+  m as Ze,
+  n as Qe,
   o as ye,
-  u as Qe,
+  u as et,
   p as ke,
   q as je,
-  r as et,
-  t as tt,
-  v as rt,
-  w as at,
-} from './firebase-mfgpn7fg-X_I_guKF.js';
+  r as tt,
+  t as rt,
+  v as at,
+  w as st,
+} from './firebase-mfh2bokv-X_I_guKF.js';
 (function () {
   const t = document.createElement('link').relList;
   if (t && t.supports && t.supports('modulepreload')) return;
@@ -112,10 +112,10 @@ var K = { exports: {} },
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */ var le;
-function st() {
+function ot() {
   if (le) return T;
   le = 1;
-  var r = Te(),
+  var r = Oe(),
     t = Symbol.for('react.element'),
     a = Symbol.for('react.fragment'),
     o = Object.prototype.hasOwnProperty,
@@ -136,21 +136,21 @@ function st() {
   return ((T.Fragment = a), (T.jsx = n), (T.jsxs = n), T);
 }
 var ce;
-function ot() {
-  return (ce || ((ce = 1), (K.exports = st())), K.exports);
+function nt() {
+  return (ce || ((ce = 1), (K.exports = ot())), K.exports);
 }
-var e = ot(),
+var e = nt(),
   H = {},
   de;
-function nt() {
+function it() {
   if (de) return H;
   de = 1;
   var r = We();
   return ((H.createRoot = r.createRoot), (H.hydrateRoot = r.hydrateRoot), H);
 }
-var it = nt();
-const lt = 'modulepreload',
-  ct = function (r) {
+var lt = it();
+const ct = 'modulepreload',
+  dt = function (r) {
     return '/' + r;
   },
   ue = {},
@@ -172,14 +172,14 @@ const lt = 'modulepreload',
         l = n?.nonce || n?.getAttribute('nonce');
       s = d(
         a.map((u) => {
-          if (((u = ct(u)), u in ue)) return;
+          if (((u = dt(u)), u in ue)) return;
           ue[u] = !0;
           const m = u.endsWith('.css'),
             g = m ? '[rel="stylesheet"]' : '';
           if (document.querySelector(`link[href="${u}"]${g}`)) return;
           const i = document.createElement('link');
           if (
-            ((i.rel = m ? 'stylesheet' : lt),
+            ((i.rel = m ? 'stylesheet' : ct),
             m || (i.as = 'script'),
             (i.crossOrigin = ''),
             (i.href = u),
@@ -203,7 +203,7 @@ const lt = 'modulepreload',
       return t().catch(h);
     });
   },
-  O = {
+  W = {
     apiKey: 'AIzaSyDMP7772cyEY1oLzo8f9hMW7Leu4lWc6OU',
     authDomain: 'm-padelweb.firebaseapp.com',
     projectId: 'm-padelweb',
@@ -212,10 +212,10 @@ const lt = 'modulepreload',
     messagingSenderId: '1004722051733',
     measurementId: 'G-0XZCHGMWVR',
   },
-  dt = ['apiKey', 'authDomain', 'projectId', 'appId'],
-  me = dt.filter((r) => !O[r]);
+  ut = ['apiKey', 'authDomain', 'projectId', 'appId'],
+  me = ut.filter((r) => !W[r]);
 if (me.length > 0) throw new Error(`Missing Firebase configuration: ${me.join(', ')}`);
-const Se = ge().length ? fe() : pe(O),
+const Se = ge().length ? fe() : pe(W),
   re = xe(Se, {
     experimentalAutoDetectLongPolling: !0,
     experimentalForceLongPolling: !1,
@@ -226,9 +226,9 @@ E.useDeviceLanguage && E.useDeviceLanguage();
 try {
   if (typeof window < 'u' && new URLSearchParams(window.location.search || '').has('authdebug')) {
     const t = {
-      projectId: O.projectId,
-      authDomain: O.authDomain,
-      appId: O.appId,
+      projectId: W.projectId,
+      authDomain: W.authDomain,
+      appId: W.appId,
       emulator: !1,
       isDev: !1,
       user: E?.currentUser ? { uid: E.currentUser.uid } : null,
@@ -237,7 +237,7 @@ try {
   }
 } catch {}
 function Ae(r) {
-  return rt(
+  return at(
     E,
     (t) => {
       try {
@@ -251,8 +251,8 @@ function Ae(r) {
     }
   );
 }
-async function ut() {
-  const r = new Ge();
+async function mt() {
+  const r = new Je();
   (r.addScope('email'), r.addScope('profile'), r.setCustomParameters({ prompt: 'select_account' }));
   let t = null;
   try {
@@ -270,7 +270,7 @@ async function ut() {
       o.includes('cross-origin') ||
       o.includes('popup')
     )
-      return (await Je(E, r), null);
+      return (await Ke(E, r), null);
     throw a;
   }
   return (t && t.user && (await Ne(t.user)), t);
@@ -289,25 +289,25 @@ async function Ne(r) {
           provider: 'google',
           ...t,
         };
-      await q(r.uid, o);
+      await G(r.uid, o);
     }
   } catch (t) {
     console.warn('Errore creazione/aggiornamento profilo:', t);
   }
 }
-async function mt() {
-  const r = new Ke();
+async function ht() {
+  const r = new Ye();
   (r.addScope('email'), r.addScope('public_profile'));
   const t = await ve(E, r);
   return (t && t.user && (await Ne(t.user)), t);
 }
-async function ht(r, t) {
+async function gt(r, t) {
   if (!r || !t) throw new Error('Email e password sono obbligatorie');
-  const a = await Ye(E, r, t);
+  const a = await Xe(E, r, t);
   if (a.user) {
     const o = await F(a.user.uid);
     o.email ||
-      (await q(a.user.uid, {
+      (await G(a.user.uid, {
         email: a.user.email,
         firstName: '',
         lastName: '',
@@ -318,24 +318,24 @@ async function ht(r, t) {
   }
   return a;
 }
-async function gt(r, t) {
+async function ft(r, t) {
   if (!r || !t) throw new Error('Email e password sono obbligatorie');
-  return Xe(E, r, t);
+  return Ze(E, r, t);
 }
-async function ft(r) {
+async function pt(r) {
   if (!r) throw new Error('Email obbligatoria');
-  return Ze(E, r);
+  return Qe(E, r);
 }
-async function pt() {
+async function xt() {
   try {
     const r = window.location.href;
-    if (!Ve(E, r)) return null;
+    if (!He(E, r)) return null;
     let t = null;
     try {
       t = localStorage.getItem('ml-magic-email');
     } catch {}
     t || (t = window.prompt('Per completare l’accesso, inserisci la tua email:') || '');
-    const a = await He(E, t, r);
+    const a = await Ge(E, t, r);
     try {
       localStorage.removeItem('ml-magic-email');
     } catch {}
@@ -350,7 +350,7 @@ async function pt() {
           provider: 'email',
           ...o,
         };
-        await q(a.user.uid, s);
+        await G(a.user.uid, s);
       }
     }
     return a;
@@ -358,7 +358,7 @@ async function pt() {
     throw (console.warn('completeMagicLinkIfPresent error:', r), r);
   }
 }
-async function xt() {
+async function bt() {
   await qe(E);
 }
 async function F(r) {
@@ -366,16 +366,16 @@ async function F(r) {
     a = await we(t);
   return a.exists() ? a.data() : {};
 }
-async function q(r, t) {
+async function G(r, t) {
   const a = U(re, 'profiles', r);
   await ye(a, { ...t, _updatedAt: Date.now() }, { merge: !0 });
 }
-async function bt(r, t) {
-  await Qe(r, { displayName: t });
+async function wt(r, t) {
+  await et(r, { displayName: t });
 }
-async function wt(r = 500) {
+async function vt(r = 500) {
   const t = ke(re, 'profiles'),
-    a = await je(et(t, tt(r))),
+    a = await je(tt(t, rt(r))),
     o = [];
   return (
     a.forEach((s) => {
@@ -385,35 +385,35 @@ async function wt(r = 500) {
     o
   );
 }
-const lr = Object.freeze(
+const cr = Object.freeze(
     Object.defineProperty(
       {
         __proto__: null,
         auth: E,
-        completeMagicLinkIfPresent: pt,
+        completeMagicLinkIfPresent: xt,
         getUserProfile: F,
-        listAllUserProfiles: wt,
-        loginWithEmailPassword: gt,
-        loginWithFacebook: mt,
-        loginWithGoogle: ut,
-        logout: xt,
+        listAllUserProfiles: vt,
+        loginWithEmailPassword: ft,
+        loginWithFacebook: ht,
+        loginWithGoogle: mt,
+        logout: bt,
         onAuth: Ae,
-        registerWithEmailPassword: ht,
-        saveUserProfile: q,
-        sendResetPassword: ft,
-        setDisplayName: bt,
+        registerWithEmailPassword: gt,
+        saveUserProfile: G,
+        sendResetPassword: pt,
+        setDisplayName: wt,
       },
       Symbol.toStringTag,
       { value: 'Module' }
     )
   ),
   Ce = p.createContext(null),
-  G = () => {
+  q = () => {
     const r = p.useContext(Ce);
     if (!r) throw new Error('useAuth must be used within an AuthProvider');
     return r;
   };
-function vt({ children: r }) {
+function yt({ children: r }) {
   const [t, a] = p.useState(null),
     [o, s] = p.useState(null),
     [h, n] = p.useState(!0),
@@ -448,12 +448,12 @@ function vt({ children: r }) {
     };
   return e.jsx(Ce.Provider, { value: g, children: r });
 }
-const yt = {
+const kt = {
     apiKey: 'AIzaSyDMP7772cyEY1oLzo8f9hMW7Leu4lWc6OU',
     authDomain: 'm-padelweb.firebaseapp.com',
     projectId: 'm-padelweb',
   },
-  Ie = ge().length ? fe() : pe(yt);
+  Ie = ge().length ? fe() : pe(kt);
 be(Ie);
 const V = xe(Ie, {
   experimentalAutoDetectLongPolling: !0,
@@ -464,7 +464,7 @@ async function ae(r) {
   const t = await we(U(V, 'leagues', r));
   return t.exists() ? t.data() : null;
 }
-async function kt() {
+async function jt() {
   try {
     const r = await je(ke(V, 'leagues')),
       t = [];
@@ -522,16 +522,16 @@ async function Pe(r, t) {
     }));
 }
 function Le(r, t) {
-  return at(U(V, 'leagues', r), (a) => {
+  return st(U(V, 'leagues', r), (a) => {
     a.exists() && t(a.data());
   });
 }
-const cr = Object.freeze(
+const dr = Object.freeze(
     Object.defineProperty(
       {
         __proto__: null,
         db: V,
-        listLeagues: kt,
+        listLeagues: jt,
         loadLeague: ae,
         saveLeague: Pe,
         subscribeLeague: Le,
@@ -540,9 +540,9 @@ const cr = Object.freeze(
       { value: 'Module' }
     )
   ),
-  W = (r) => Math.round(Number(r || 0)),
+  O = (r) => Math.round(Number(r || 0)),
   Y = (r) => Number(r || 0).toFixed(2);
-function jt(r) {
+function St(r) {
   return (r || [])
     .filter((t) => String(t?.a ?? '') !== '' || String(t?.b ?? '') !== '')
     .map((t) => `${Number(t.a || 0)}-${Number(t.b || 0)}`)
@@ -564,7 +564,7 @@ function X(r) {
     { setsA: t, setsB: a, gamesA: o, gamesB: s, winner: h }
   );
 }
-function St(r) {
+function At(r) {
   return r <= -2e3
     ? 0.4
     : r <= -1500
@@ -583,7 +583,7 @@ function St(r) {
                   ? 1.4
                   : 1.6;
 }
-function At(r) {
+function Nt(r) {
   return r <= -2e3
     ? 'gap ≤ −2000 ⇒ 0.40'
     : r <= -1500
@@ -622,18 +622,18 @@ function Z({
     S = n === 'A' ? c : i,
     f = (i + c) / 100,
     x = S - w,
-    A = St(x),
+    A = At(x),
     L = n === 'A' ? s - h : h - s,
     v = (f + L) * A,
     y = Math.round(v),
     N = n === 'A' ? y : -y,
     k = n === 'B' ? y : -y,
-    b = `Risultato set: ${jt(l)}`,
+    b = `Risultato set: ${St(l)}`,
     P =
-      `Team A=${W(i)}, Team B=${W(c)}, Gap=${W(x)}
-Fascia: ${At(x)}
+      `Team A=${O(i)}, Team B=${O(c)}, Gap=${O(x)}
+Fascia: ${Nt(x)}
 
-Base = (${W(i)} + ${W(c)})/100 = ${Y(f)}
+Base = (${O(i)} + ${O(c)})/100 = ${Y(f)}
 DG (Differenza Game) = ${L}
 
 Punti = (Base + DG) × factor = (${Y(f)} + ${L}) × ${A.toFixed(2)} = ${Y(v)}
@@ -655,10 +655,10 @@ ${b}`;
     formula: P,
   };
 }
-const dr = () => Math.random().toString(36).slice(2, 10),
+const ur = () => Math.random().toString(36).slice(2, 10),
   I = 1e3,
   D = 'paris-league-v1';
-function Nt(r, t) {
+function Ct(r, t) {
   const a = new Map(
       r.map((n) => {
         const l = Number(n.baseRating ?? n.startRating ?? n.rating ?? I);
@@ -740,7 +740,7 @@ function Nt(r, t) {
   }
   return { players: Array.from(a.values()), matches: s };
 }
-function ur(r, t, a) {
+function mr(r, t, a) {
   const o = new Map(r.map((c) => [c.id, c.name])),
     h = [...(t || [])].sort((c, w) => new Date(c.date) - new Date(w.date)).slice(-15),
     n = new Map(r.map((c) => [c.id, Number(c.rating ?? I)])),
@@ -820,13 +820,13 @@ function he() {
   return { players: [], matches: [], courts: [], bookings: [], bookingConfig: z() };
 }
 const _e = p.createContext(null),
-  Ct = () => {
+  It = () => {
     const r = p.useContext(_e);
     if (!r) throw new Error('useLeague must be used within a LeagueProvider');
     return r;
   };
-function It({ children: r }) {
-  const { user: t, loading: a } = G(),
+function Pt({ children: r }) {
+  const { user: t, loading: a } = q(),
     [o, s] = p.useState(null),
     [h, n] = p.useState(!0),
     [l, d] = p.useState(null),
@@ -939,7 +939,7 @@ function It({ children: r }) {
                 J = k?._updatedAt ?? 0,
                 oe = R > P || (R === P && J > B);
               if (oe) {
-                const De = [
+                const Te = [
                   'players',
                   'matches',
                   'courts',
@@ -947,7 +947,7 @@ function It({ children: r }) {
                   'bookingConfig',
                   'lessonConfig',
                 ];
-                S.current = De.reduce((ne, ie) => ((ne[ie] = k[ie]), ne), {});
+                S.current = Te.reduce((ne, ie) => ((ne[ie] = k[ie]), ne), {});
               }
               return oe ? k : b;
             }),
@@ -985,7 +985,7 @@ function It({ children: r }) {
         }
     }, [o, g, u, t]));
   const x = C.useMemo(
-      () => (o ? Nt(o.players || [], o.matches || []) : { players: [], matches: [] }),
+      () => (o ? Ct(o.players || [], o.matches || []) : { players: [], matches: [] }),
       [o]
     ),
     A = C.useMemo(() => Object.fromEntries((x.players || []).map((v) => [v.id, v])), [x]),
@@ -1008,7 +1008,7 @@ const Ee = p.createContext(null),
     if (!r) throw new Error('useUI must be used within a UIProvider');
     return r;
   };
-function Pt({ children: r }) {
+function Lt({ children: r }) {
   const [t, a] = p.useState(() => {
       try {
         const x = localStorage.getItem('play-sport-pro-theme');
@@ -1081,7 +1081,7 @@ function Pt({ children: r }) {
     };
   return e.jsx(Ee.Provider, { value: f, children: r });
 }
-class Lt extends C.Component {
+class _t extends C.Component {
   constructor(t) {
     (super(t), (this.state = { hasError: !1, error: null, errorInfo: null }));
   }
@@ -1184,7 +1184,7 @@ function se({ message: r = 'Caricamento...' }) {
     }),
   });
 }
-function _t({ message: r = 'Caricamento...', visible: t = !0 }) {
+function Et({ message: r = 'Caricamento...', visible: t = !0 }) {
   return t
     ? e.jsx('div', {
         className: 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center',
@@ -1202,7 +1202,7 @@ function _t({ message: r = 'Caricamento...', visible: t = !0 }) {
 function Q(r, t, a) {
   return r !== t;
 }
-function Et(r, t) {
+function Mt(r, t) {
   const a = r.pathname;
   if (a === '/login') {
     const o = r.state?.from?.pathname;
@@ -1210,8 +1210,8 @@ function Et(r, t) {
   }
   return a === '/' ? '/dashboard' : null;
 }
-function Mt({ children: r, requireProfile: t = !0 }) {
-  const { user: a, userProfile: o, isAuthenticated: s, isProfileComplete: h, loading: n } = G(),
+function Rt({ children: r, requireProfile: t = !0 }) {
+  const { user: a, userProfile: o, isAuthenticated: s, isProfileComplete: h, loading: n } = q(),
     l = te();
   if (n) return e.jsx(se, { message: 'Verifica autenticazione...' });
   if (!s) {
@@ -1224,17 +1224,18 @@ function Mt({ children: r, requireProfile: t = !0 }) {
   }
   return r;
 }
-function Rt({ children: r }) {
-  const { isAuthenticated: t, loading: a } = G(),
+function Bt({ children: r }) {
+  const { isAuthenticated: t, loading: a } = q(),
     o = te();
   if (a) return e.jsx(se, { message: 'Verifica autenticazione...' });
   if (t) {
-    const s = Et(o);
+    const s = Mt(o);
     if (s && Q(o.pathname, s)) return e.jsx($, { to: s, replace: !0 });
   }
   return r;
 }
-const Bt = '/play-sport-pro_horizontal.svg',
+const Be = '/logo.png',
+  zt = '/play-sport-pro_icon_only.svg',
   j = {
     borderRadius: { sm: 'rounded-lg', md: 'rounded-xl', lg: 'rounded-2xl', full: 'rounded-full' },
     spacing: { xs: 'p-2', sm: 'p-3', md: 'p-4', lg: 'p-6', xl: 'p-8' },
@@ -1250,7 +1251,7 @@ const Bt = '/play-sport-pro_horizontal.svg',
       slow: 'transition-all duration-300 ease-in-out',
     },
   };
-function zt() {
+function Dt() {
   return {
     name: 'universal',
     ...{
@@ -1274,6 +1275,7 @@ function zt() {
         'focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800',
       primaryRing: 'ring-emerald-400 dark:ring-emerald-500',
     },
+    logos: { main: Be, icon: zt },
     pageBg: 'bg-neutral-50 dark:bg-gray-900',
     text: 'text-neutral-900 dark:text-white',
     subtext: 'text-neutral-600 dark:text-gray-300',
@@ -1297,17 +1299,17 @@ function zt() {
     cardHover: `${j.borderRadius.lg} bg-white dark:bg-gray-800 ring-1 ring-black/10 dark:ring-white/10 ${j.spacing.md} ${j.shadows.md} dark:shadow-dark-md hover:shadow-lg dark:hover:shadow-dark-lg ${j.transitions.normal}`,
   };
 }
-function Dt() {
+function Tt() {
   const { notifications: r, removeNotification: t } = Me();
   return r.length === 0
     ? null
     : e.jsx('div', {
         className: 'fixed top-4 right-4 space-y-2',
         style: { zIndex: 100001 },
-        children: r.map((a) => e.jsx(Tt, { notification: a, onRemove: t }, a.id)),
+        children: r.map((a) => e.jsx(Ot, { notification: a, onRemove: t }, a.id)),
       });
 }
-function Tt({ notification: r, onRemove: t }) {
+function Ot({ notification: r, onRemove: t }) {
   const { id: a, type: o = 'info', title: s, message: h, autoClose: n = !0 } = r,
     l = {
       success: 'bg-green-500 text-white',
@@ -1383,7 +1385,7 @@ function Wt({ active: r, setActive: t, clubMode: a, T: o, user: s, navigation: h
     ),
   });
 }
-function Ot({ active: r, setActive: t, navigation: a = [], clubMode: o = !1 }) {
+function $t({ active: r, setActive: t, navigation: a = [], clubMode: o = !1 }) {
   const [s, h] = p.useState(!1),
     n = (i) => {
       (t(i.id), s && h(!1));
@@ -1793,7 +1795,7 @@ function Ot({ active: r, setActive: t, navigation: a = [], clubMode: o = !1 }) {
     ],
   });
 }
-function Be() {
+function ze() {
   const [r, t] = p.useState(null),
     [a, o] = p.useState(!1),
     [s, h] = p.useState(!1),
@@ -1934,7 +1936,7 @@ function Be() {
     installInstructions: u(),
   };
 }
-function $t({ className: r = '' }) {
+function Ut({ className: r = '' }) {
   const {
       isInstallable: t,
       isInstalled: a,
@@ -1942,7 +1944,7 @@ function $t({ className: r = '' }) {
       browserInfo: s,
       isPWASupported: h,
       installInstructions: n,
-    } = Be(),
+    } = ze(),
     [l, d] = p.useState(!1);
   if (a)
     return e.jsxs('div', {
@@ -2102,14 +2104,14 @@ function $t({ className: r = '' }) {
     ],
   });
 }
-function Ut() {
+function Ft() {
   const {
       isInstallable: r,
       isInstalled: t,
       installApp: a,
       browserInfo: o,
       installInstructions: s,
-    } = Be(),
+    } = ze(),
     [h, n] = p.useState(!1),
     [l, d] = p.useState(!1);
   if (t || !r) return null;
@@ -2262,13 +2264,13 @@ function Ut() {
     ],
   });
 }
-function Ft() {
-  const { user: r } = G(),
+function Vt() {
+  const { user: r } = q(),
     { clubMode: t, loading: a } = Me(),
-    { updatingFromCloud: o } = Ct(),
+    { updatingFromCloud: o } = It(),
     s = te(),
-    h = Oe(),
-    n = C.useMemo(() => zt(), []),
+    h = $e(),
+    n = C.useMemo(() => Dt(), []),
     l = [
       { id: 'dashboard', label: 'Dashboard', path: '/dashboard', public: !0 },
       { id: 'classifica', label: 'Classifica', path: '/classifica', public: !0 },
@@ -2309,15 +2311,19 @@ function Ft() {
             e.jsxs('div', {
               className: 'flex items-center gap-2 sm:gap-3 min-w-0',
               children: [
-                e.jsx('img', {
-                  src: Bt,
-                  alt: 'Sporting Cat',
-                  className: 'h-8 w-auto rounded-md shadow shrink-0',
+                e.jsx('div', {
+                  className: 'h-4 w-auto rounded-md shadow shrink-0 flex items-center',
+                  children: e.jsx('img', {
+                    src: Be,
+                    alt: 'Sporting Cat',
+                    className: 'h-4 w-auto select-none',
+                    draggable: !1,
+                  }),
                 }),
                 e.jsx('div', {
                   className:
                     'text-lg sm:text-2xl font-bold tracking-wide truncate text-neutral-900 dark:text-white',
-                  children: 'Sporting Cat',
+                  children: 'Play-Sport.pro',
                 }),
               ],
             }),
@@ -2326,7 +2332,7 @@ function Ft() {
               children: [
                 e.jsx('div', {
                   className: 'hidden sm:block',
-                  children: e.jsx($t, { className: 'text-xs px-3 py-1.5' }),
+                  children: e.jsx(Ut, { className: 'text-xs px-3 py-1.5' }),
                 }),
                 e.jsx(Wt, { active: u, setActive: m, clubMode: t, T: n, user: r, navigation: l }),
               ],
@@ -2337,97 +2343,97 @@ function Ft() {
       e.jsx('main', {
         className:
           'max-w-[1800px] mx-auto px-3 sm:px-4 py-5 sm:py-6 safe-area-left safe-area-right pb-20 md:pb-5',
-        children: e.jsx($e, {}),
+        children: e.jsx(Ue, {}),
       }),
-      e.jsx(Ot, { active: u, setActive: m, navigation: l, clubMode: t }),
-      e.jsx(Ut, {}),
-      e.jsx(Dt, {}),
-      e.jsx(_t, { visible: a || o, message: o ? 'Sincronizzazione...' : 'Caricamento...' }),
+      e.jsx($t, { active: u, setActive: m, navigation: l, clubMode: t }),
+      e.jsx(Ft, {}),
+      e.jsx(Tt, {}),
+      e.jsx(Et, { visible: a || o, message: o ? 'Sincronizzazione...' : 'Caricamento...' }),
     ],
   });
 }
-const Vt = C.lazy(() =>
-    M(() => import('./LoginPage-mfgpn7fg-BxCcwJ4C.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
-  ),
-  Ht = C.lazy(() =>
-    M(() => import('./DashboardPage-mfgpn7fg-D0cABFrI.js'), __vite__mapDeps([5, 1, 2, 4]))
-  ),
-  qt = C.lazy(() =>
-    M(() => import('./ClassificaPage-mfgpn7fg-w3fjikoJ.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
+const Ht = C.lazy(() =>
+    M(() => import('./LoginPage-mfh2bokv-Cv-v6mCO.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
   ),
   Gt = C.lazy(() =>
-    M(
-      () => import('./StatsPage-mfgpn7fg-Bs1uumHP.js'),
-      __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4])
-    )
+    M(() => import('./DashboardPage-mfh2bokv-DTPNiGAm.js'), __vite__mapDeps([5, 1, 2, 4]))
+  ),
+  qt = C.lazy(() =>
+    M(() => import('./ClassificaPage-mfh2bokv-k6B8WdRQ.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
   ),
   Jt = C.lazy(() =>
     M(
-      () => import('./BookingPage-mfgpn7fg-Bvu9Ngez.js'),
-      __vite__mapDeps([12, 1, 2, 13, 14, 15, 16, 17, 4])
+      () => import('./StatsPage-mfh2bokv-CXRxy1gL.js'),
+      __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4])
     )
   ),
   Kt = C.lazy(() =>
     M(
-      () => import('./LessonBookingPage-mfgpn7fg-Bl90ua_n.js'),
-      __vite__mapDeps([18, 1, 2, 3, 13, 14, 19, 16, 17, 4, 10])
+      () => import('./BookingPage-mfh2bokv-CP2SbZ-R.js'),
+      __vite__mapDeps([12, 1, 2, 13, 14, 15, 16, 17, 4])
     )
   ),
   Yt = C.lazy(() =>
     M(
-      () => import('./PlayersPage-mfgpn7fg-DjnuOx0q.js'),
-      __vite__mapDeps([20, 1, 2, 3, 10, 11, 19, 17, 4])
+      () => import('./LessonBookingPage-mfh2bokv-DSNB_Q3K.js'),
+      __vite__mapDeps([18, 1, 2, 3, 13, 14, 19, 16, 17, 4, 10])
     )
   ),
   Xt = C.lazy(() =>
-    M(() => import('./MatchesPage-mfgpn7fg-CwbG1-Q_.js'), __vite__mapDeps([21, 1, 2, 3, 11, 4]))
+    M(
+      () => import('./PlayersPage-mfh2bokv-DZprrxn2.js'),
+      __vite__mapDeps([20, 1, 2, 3, 10, 11, 19, 17, 4])
+    )
   ),
   Zt = C.lazy(() =>
-    M(() => import('./TournamentsPage-mfgpn7fg-CmpiAkw7.js'), __vite__mapDeps([22, 1, 2, 3, 4]))
+    M(() => import('./MatchesPage-mfh2bokv-BadgOvwg.js'), __vite__mapDeps([21, 1, 2, 3, 11, 4]))
   ),
   Qt = C.lazy(() =>
-    M(() => import('./ProfilePage-mfgpn7fg-CBpO71Yq.js'), __vite__mapDeps([23, 1, 2, 3, 4]))
+    M(() => import('./TournamentsPage-mfh2bokv-DPPJMjBo.js'), __vite__mapDeps([22, 1, 2, 3, 4]))
   ),
   er = C.lazy(() =>
-    M(() => import('./ExtraPage-mfgpn7fg-CxMCOK0X.js'), __vite__mapDeps([24, 1, 2, 3, 25, 4]))
+    M(() => import('./ProfilePage-mfh2bokv-CbteSz3f.js'), __vite__mapDeps([23, 1, 2, 3, 4]))
   ),
   tr = C.lazy(() =>
+    M(() => import('./ExtraPage-mfh2bokv-UAt12cmz.js'), __vite__mapDeps([24, 1, 2, 3, 25, 4]))
+  ),
+  rr = C.lazy(() =>
     M(
-      () => import('./AdminBookingsPage-mfgpn7fg-CQkZpxBC.js'),
+      () => import('./AdminBookingsPage-mfh2bokv-Bxn3w5N4.js'),
       __vite__mapDeps([26, 1, 2, 3, 10, 25, 15, 16, 17, 4, 19])
     )
   ),
-  rr = C.lazy(() =>
-    M(() => import('./DarkModeTestPage-mfgpn7fg-Br-0C2Hy.js'), __vite__mapDeps([27, 1, 2, 14, 4]))
+  ar = C.lazy(() =>
+    M(() => import('./DarkModeTestPage-mfh2bokv-DPP0gu4v.js'), __vite__mapDeps([27, 1, 2, 14, 4]))
   );
-function ar() {
-  return e.jsx(Lt, {
-    children: e.jsx(Ue, {
-      children: e.jsx(vt, {
-        children: e.jsx(It, {
-          children: e.jsx(Pt, {
+function sr() {
+  return e.jsx(_t, {
+    children: e.jsx(Fe, {
+      children: e.jsx(yt, {
+        children: e.jsx(Pt, {
+          children: e.jsx(Lt, {
             children: e.jsx(p.Suspense, {
               fallback: e.jsx(se, {}),
-              children: e.jsxs(Fe, {
+              children: e.jsxs(Ve, {
                 children: [
-                  e.jsx(_, { path: '/login', element: e.jsx(Rt, { children: e.jsx(Vt, {}) }) }),
+                  e.jsx(_, { path: '/login', element: e.jsx(Bt, { children: e.jsx(Ht, {}) }) }),
                   e.jsxs(_, {
                     path: '/',
-                    element: e.jsx(Mt, { children: e.jsx(Ft, {}) }),
+                    element: e.jsx(Rt, { children: e.jsx(Vt, {}) }),
                     children: [
                       e.jsx(_, { index: !0, element: e.jsx($, { to: 'dashboard', replace: !0 }) }),
-                      e.jsx(_, { path: 'dashboard', element: e.jsx(Ht, {}) }),
+                      e.jsx(_, { path: 'dashboard', element: e.jsx(Gt, {}) }),
                       e.jsx(_, { path: 'classifica', element: e.jsx(qt, {}) }),
-                      e.jsx(_, { path: 'stats', element: e.jsx(Gt, {}) }),
-                      e.jsx(_, { path: 'booking', element: e.jsx(Jt, {}) }),
-                      e.jsx(_, { path: 'lessons', element: e.jsx(Kt, {}) }),
-                      e.jsx(_, { path: 'extra', element: e.jsx(er, {}) }),
-                      e.jsx(_, { path: 'players', element: e.jsx(Yt, {}) }),
-                      e.jsx(_, { path: 'matches/create', element: e.jsx(Xt, {}) }),
-                      e.jsx(_, { path: 'tournaments', element: e.jsx(Zt, {}) }),
-                      e.jsx(_, { path: 'admin/bookings', element: e.jsx(tr, {}) }),
-                      e.jsx(_, { path: 'profile', element: e.jsx(Qt, {}) }),
-                      e.jsx(_, { path: 'test/dark-mode', element: e.jsx(rr, {}) }),
+                      e.jsx(_, { path: 'stats', element: e.jsx(Jt, {}) }),
+                      e.jsx(_, { path: 'booking', element: e.jsx(Kt, {}) }),
+                      e.jsx(_, { path: 'lessons', element: e.jsx(Yt, {}) }),
+                      e.jsx(_, { path: 'extra', element: e.jsx(tr, {}) }),
+                      e.jsx(_, { path: 'players', element: e.jsx(Xt, {}) }),
+                      e.jsx(_, { path: 'matches/create', element: e.jsx(Zt, {}) }),
+                      e.jsx(_, { path: 'tournaments', element: e.jsx(Qt, {}) }),
+                      e.jsx(_, { path: 'admin/bookings', element: e.jsx(rr, {}) }),
+                      e.jsx(_, { path: 'profile', element: e.jsx(er, {}) }),
+                      e.jsx(_, { path: 'test/dark-mode', element: e.jsx(ar, {}) }),
                     ],
                   }),
                   e.jsx(_, { path: '*', element: e.jsx($, { to: '/dashboard', replace: !0 }) }),
@@ -2440,7 +2446,7 @@ function ar() {
     }),
   });
 }
-class sr {
+class or {
   constructor() {
     ((this.currentVersion = '1.7.0'),
       (this.swRegistration = null),
@@ -2573,8 +2579,8 @@ class sr {
     this.updateCheckInterval && clearInterval(this.updateCheckInterval);
   }
 }
-const ee = new sr(),
-  mr = Object.freeze(
+const ee = new or(),
+  hr = Object.freeze(
     Object.defineProperty({ __proto__: null, default: ee, updateService: ee }, Symbol.toStringTag, {
       value: 'Module',
     })
@@ -2587,36 +2593,36 @@ const ee = new sr(),
       console.error('❌ Update Service failed:', r);
     }
   });
-const ze = document.getElementById('root');
-if (!ze) throw new Error('Elemento #root non trovato in index.html');
-it.createRoot(ze).render(e.jsx(C.StrictMode, { children: e.jsx(ar, {}) }));
+const De = document.getElementById('root');
+if (!De) throw new Error('Elemento #root non trovato in index.html');
+lt.createRoot(De).render(e.jsx(C.StrictMode, { children: e.jsx(sr, {}) }));
 export {
   I as D,
-  Bt as L,
+  Be as L,
   M as _,
-  ut as a,
-  mt as b,
-  pt as c,
-  bt as d,
-  Be as e,
-  Ct as f,
-  ur as g,
+  mt as a,
+  ht as b,
+  xt as c,
+  wt as d,
+  ze as e,
+  It as f,
+  mr as g,
   X as h,
-  dr as i,
+  ur as i,
   e as j,
   Me as k,
-  xt as l,
-  wt as m,
-  At as n,
+  bt as l,
+  vt as m,
+  Nt as n,
   E as o,
   F as p,
   z as q,
-  St as r,
-  q as s,
-  zt as t,
-  G as u,
+  At as r,
+  G as s,
+  Dt as t,
+  q as u,
   re as v,
-  lr as w,
-  cr as x,
-  mr as y,
+  cr as w,
+  dr as x,
+  hr as y,
 };

@@ -76,6 +76,10 @@ export function themeTokens() {
   return {
     name: 'universal',
     ...shared,
+    logos: {
+      main: LOGO_URL,
+      icon: LOGO_ICON_URL,
+    },
 
     // Layout - Adaptive light/dark
     pageBg: 'bg-neutral-50 dark:bg-gray-900',
