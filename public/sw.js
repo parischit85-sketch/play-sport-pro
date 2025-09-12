@@ -1,6 +1,6 @@
 // Service Worker per Paris League PWA
-const CACHE_NAME = 'paris-league-v1.7.2';
-const APP_VERSION = '1.7.2';
+const CACHE_NAME = 'paris-league-v1.8.0';
+const APP_VERSION = '1.8.0';
 const urlsToCache = [
   '/',
   '/play-sport-pro_horizontal.svg',

@@ -5,7 +5,7 @@
 
 class UpdateService {
   constructor() {
-    this.currentVersion = '1.7.0';
+    this.currentVersion = '1.8.0';
     this.swRegistration = null;
     this.updateCheckInterval = null;
   }
@@ -21,7 +21,7 @@ class UpdateService {
 
         console.log('[UpdateService] Service Worker registrato:', this.swRegistration.scope);
 
-        // Controlla aggiornamenti ogni 30 secondi
+        // Controlla aggiornamenti ogni 15 secondi (più frequente)
         this.startUpdateCheck();
 
         // Ascolta messaggi dal SW
@@ -54,10 +54,10 @@ class UpdateService {
     // Check immediato
     this.checkForUpdates();
 
-    // Check ogni 30 secondi
+    // Check ogni 15 secondi (più frequente)
     this.updateCheckInterval = setInterval(() => {
       this.checkForUpdates();
-    }, 30000);
+    }, 15000);
   }
 
   // Controlla se ci sono aggiornamenti disponibili

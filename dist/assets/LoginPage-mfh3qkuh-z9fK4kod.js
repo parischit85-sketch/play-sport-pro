@@ -3,11 +3,11 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/index-mfh2bokv-DsiFzhNE.js',
-      'assets/vendor-mfh2bokv-D3F3s8fL.js',
-      'assets/router-mfh2bokv-CQdDuJ2E.js',
-      'assets/firebase-mfh2bokv-X_I_guKF.js',
-      'assets/index-mfh2buuy-Ca4cmXhp.css',
+      'assets/index-mfh3qkuh-BuI3yHrG.js',
+      'assets/vendor-mfh3qkuh-D3F3s8fL.js',
+      'assets/router-mfh3qkuh-7WMG9iCE.js',
+      'assets/firebase-mfh3qkuh-X_I_guKF.js',
+      'assets/index-mfh3qv3b-DuaZ1Rel.css',
     ])
 ) => i.map((i) => d[i]);
 import {
@@ -22,15 +22,15 @@ import {
   u as H,
   t as O,
   L as W,
-} from './index-mfh2bokv-DsiFzhNE.js';
-import { r as l, b as D } from './router-mfh2bokv-CQdDuJ2E.js';
-import { S as y } from './Section-mfh2bokv-CaYeeEit.js';
-import './vendor-mfh2bokv-D3F3s8fL.js';
-import './firebase-mfh2bokv-X_I_guKF.js';
+} from './index-mfh3qkuh-BuI3yHrG.js';
+import { r as l, b as D } from './router-mfh3qkuh-7WMG9iCE.js';
+import { S as y } from './Section-mfh3qkuh-DofZmbDr.js';
+import './vendor-mfh3qkuh-D3F3s8fL.js';
+import './firebase-mfh3qkuh-X_I_guKF.js';
 function V({ T: s, user: o, userProfile: i, setUserProfile: m }) {
   const [c, C] = l.useState(''),
-    [d, $] = l.useState(''),
-    [h, P] = l.useState(''),
+    [d, P] = l.useState(''),
+    [h, $] = l.useState(''),
     [E, g] = l.useState(!1),
     b = !1,
     [N, U] = l.useState('password'),
@@ -87,7 +87,7 @@ function V({ T: s, user: o, userProfile: i, setUserProfile: m }) {
           const { registerWithEmailPassword: t } = await f(
             async () => {
               const { registerWithEmailPassword: a } = await import(
-                './index-mfh2bokv-DsiFzhNE.js'
+                './index-mfh3qkuh-BuI3yHrG.js'
               ).then((p) => p.w);
               return { registerWithEmailPassword: a };
             },
@@ -99,7 +99,7 @@ function V({ T: s, user: o, userProfile: i, setUserProfile: m }) {
           const { loginWithEmailPassword: t } = await f(
             async () => {
               const { loginWithEmailPassword: a } = await import(
-                './index-mfh2bokv-DsiFzhNE.js'
+                './index-mfh3qkuh-BuI3yHrG.js'
               ).then((p) => p.w);
               return { loginWithEmailPassword: a };
             },
@@ -132,7 +132,7 @@ function V({ T: s, user: o, userProfile: i, setUserProfile: m }) {
       try {
         const { sendResetPassword: t } = await f(
           async () => {
-            const { sendResetPassword: a } = await import('./index-mfh2bokv-DsiFzhNE.js').then(
+            const { sendResetPassword: a } = await import('./index-mfh3qkuh-BuI3yHrG.js').then(
               (p) => p.w
             );
             return { sendResetPassword: a };
@@ -429,7 +429,7 @@ function V({ T: s, user: o, userProfile: i, setUserProfile: m }) {
                               type: 'password',
                               value: d,
                               placeholder: 'Almeno 6 caratteri',
-                              onChange: (t) => $(t.target.value),
+                              onChange: (t) => P(t.target.value),
                               className: `${s.input} w-full mt-1`,
                             }),
                           ],
@@ -447,7 +447,7 @@ function V({ T: s, user: o, userProfile: i, setUserProfile: m }) {
                                 type: 'password',
                                 value: h,
                                 placeholder: 'Ripeti la password',
-                                onChange: (t) => P(t.target.value),
+                                onChange: (t) => $(t.target.value),
                                 className: `${s.input} w-full mt-1`,
                               }),
                             ],
@@ -506,11 +506,11 @@ function Y() {
               className: 'flex items-center gap-2 sm:gap-3 min-w-0',
               children: [
                 e.jsx('div', {
-                  className: 'h-4 w-auto rounded-md shadow shrink-0 flex items-center',
+                  className: 'h-10 w-auto rounded-md shadow shrink-0 flex items-center',
                   children: e.jsx('img', {
                     src: W,
-                    alt: 'Sporting Cat',
-                    className: 'h-4 w-auto select-none',
+                    alt: 'Play-Sport.pro',
+                    className: 'h-10 w-auto select-none dark:bg-white dark:rounded-md dark:p-1',
                     draggable: !1,
                   }),
                 }),

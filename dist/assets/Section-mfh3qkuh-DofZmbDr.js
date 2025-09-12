@@ -1,5 +1,5 @@
-import { j as s } from './index-mfh2bokv-DsiFzhNE.js';
-import './router-mfh2bokv-CQdDuJ2E.js';
+import { j as s } from './index-mfh3qkuh-BuI3yHrG.js';
+import './router-mfh3qkuh-7WMG9iCE.js';
 function o({ title: a, right: t, children: c, T: e, variant: d = 'default' }) {
   const r = {
     default: e.card,

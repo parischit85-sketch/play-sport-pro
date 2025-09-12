@@ -1,5 +1,5 @@
-import { j as a, _ as y } from './index-mfh2bokv-DsiFzhNE.js';
-import './router-mfh2bokv-CQdDuJ2E.js';
+import { j as a, _ as y } from './index-mfh3qkuh-BuI3yHrG.js';
+import './router-mfh3qkuh-7WMG9iCE.js';
 function N({ title: o, url: u, captureRef: g, captionBuilder: l, size: f = 'sm', T: s }) {
   const n = u || (typeof window < 'u' ? window.location.href : ''),
     i = (typeof l == 'function' ? l() : '') || o || 'Sporting Cat',
@@ -30,7 +30,7 @@ function N({ title: o, url: u, captureRef: g, captionBuilder: l, size: f = 'sm',
     const e = g?.current || null;
     if (e)
       try {
-        const c = await y(() => import('./index-mfh2bokv-Cs9OzAhw.js'), []),
+        const c = await y(() => import('./index-mfh3qkuh-Cs9OzAhw.js'), []),
           t = s?.name === 'dark' ? '#0a0a0a' : '#fafafa',
           m = await c.toPng(e, { pixelRatio: 2, backgroundColor: t });
         try {

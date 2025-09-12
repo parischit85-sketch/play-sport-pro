@@ -3,20 +3,20 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/UserBookingsCard-mfh2bokv-DWnLB8L1.js',
-      'assets/index-mfh2bokv-DsiFzhNE.js',
-      'assets/vendor-mfh2bokv-D3F3s8fL.js',
-      'assets/router-mfh2bokv-CQdDuJ2E.js',
-      'assets/firebase-mfh2bokv-X_I_guKF.js',
-      'assets/index-mfh2buuy-Ca4cmXhp.css',
-      'assets/Modal-mfh2bokv-DZWtRxlN.js',
-      'assets/Badge-mfh2bokv-BdYeskvP.js',
+      'assets/UserBookingsCard-mfh3qkuh-Bzbx4oy2.js',
+      'assets/index-mfh3qkuh-BuI3yHrG.js',
+      'assets/vendor-mfh3qkuh-D3F3s8fL.js',
+      'assets/router-mfh3qkuh-7WMG9iCE.js',
+      'assets/firebase-mfh3qkuh-X_I_guKF.js',
+      'assets/index-mfh3qv3b-DuaZ1Rel.css',
+      'assets/Modal-mfh3qkuh-p65zKN9F.js',
+      'assets/Badge-mfh3qkuh-DbXmBg1C.js',
     ])
 ) => i.map((i) => d[i]);
-import { j as e, e as w, u as y, f as N, t as M, _ as C } from './index-mfh2bokv-DsiFzhNE.js';
-import { r as g, c as I, b as o } from './router-mfh2bokv-CQdDuJ2E.js';
-import './vendor-mfh2bokv-D3F3s8fL.js';
-import './firebase-mfh2bokv-X_I_guKF.js';
+import { j as e, e as w, u as y, f as N, t as M, _ as C } from './index-mfh3qkuh-BuI3yHrG.js';
+import { r as g, c as I, b as o } from './router-mfh3qkuh-7WMG9iCE.js';
+import './vendor-mfh3qkuh-D3F3s8fL.js';
+import './firebase-mfh3qkuh-X_I_guKF.js';
 const b = ({ onProfileClick: s, onBackupClick: i }) =>
   e.jsxs('button', {
     onClick: s,
@@ -290,7 +290,7 @@ function u({ className: s = '' }) {
 }
 const p = o.lazy(() =>
     C(
-      () => import('./UserBookingsCard-mfh2bokv-DWnLB8L1.js'),
+      () => import('./UserBookingsCard-mfh3qkuh-Bzbx4oy2.js'),
       __vite__mapDeps([0, 1, 2, 3, 4, 5, 6, 7])
     )
   ),
@@ -431,11 +431,11 @@ function B() {
       })
     : e.jsxs('div', {
         className:
-          'space-y-6 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800',
+          'space-y-1 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800',
         children: [
           e.jsx(u, {}),
           e.jsxs('div', {
-            className: 'hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start lg:p-6',
+            className: 'hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start lg:p-2',
             children: [
               e.jsx('div', {
                 className:
@@ -505,7 +505,7 @@ function B() {
             ],
           }),
           e.jsxs('div', {
-            className: 'lg:hidden space-y-6 p-4',
+            className: 'lg:hidden space-y-1 p-1',
             children: [
               e.jsx('div', {
                 className:

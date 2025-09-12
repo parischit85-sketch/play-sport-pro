@@ -3,37 +3,37 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/LoginPage-mfh2bokv-Cv-v6mCO.js',
-      'assets/router-mfh2bokv-CQdDuJ2E.js',
-      'assets/vendor-mfh2bokv-D3F3s8fL.js',
-      'assets/Section-mfh2bokv-CaYeeEit.js',
-      'assets/firebase-mfh2bokv-X_I_guKF.js',
-      'assets/DashboardPage-mfh2bokv-DTPNiGAm.js',
-      'assets/ClassificaPage-mfh2bokv-k6B8WdRQ.js',
-      'assets/charts-mfh2bokv-CRuyWRT6.js',
-      'assets/ShareButtons-mfh2bokv-Bz7AAQPV.js',
-      'assets/StatsPage-mfh2bokv-CXRxy1gL.js',
-      'assets/Modal-mfh2bokv-DZWtRxlN.js',
-      'assets/names-mfh2bokv-BW9lV2zG.js',
-      'assets/BookingPage-mfh2bokv-CP2SbZ-R.js',
-      'assets/Badge-mfh2bokv-BdYeskvP.js',
-      'assets/design-system-mfh2bokv-B5fzZ68S.js',
-      'assets/pricing-mfh2bokv-DMaWA4wL.js',
-      'assets/useUnifiedBookings-mfh2bokv-BvNOXy9O.js',
-      'assets/unified-booking-service-mfh2bokv-C4-lsFtH.js',
-      'assets/LessonBookingPage-mfh2bokv-DSNB_Q3K.js',
-      'assets/playerTypes-mfh2bokv-CIm-hM8a.js',
-      'assets/PlayersPage-mfh2bokv-DZprrxn2.js',
-      'assets/MatchesPage-mfh2bokv-BadgOvwg.js',
-      'assets/TournamentsPage-mfh2bokv-DPPJMjBo.js',
-      'assets/ProfilePage-mfh2bokv-CbteSz3f.js',
-      'assets/ExtraPage-mfh2bokv-UAt12cmz.js',
-      'assets/format-mfh2bokv-DAEZv7Mi.js',
-      'assets/AdminBookingsPage-mfh2bokv-Bxn3w5N4.js',
-      'assets/DarkModeTestPage-mfh2bokv-DPP0gu4v.js',
+      'assets/LoginPage-mfh3qkuh-z9fK4kod.js',
+      'assets/router-mfh3qkuh-7WMG9iCE.js',
+      'assets/vendor-mfh3qkuh-D3F3s8fL.js',
+      'assets/Section-mfh3qkuh-DofZmbDr.js',
+      'assets/firebase-mfh3qkuh-X_I_guKF.js',
+      'assets/DashboardPage-mfh3qkuh-5OZWWHba.js',
+      'assets/ClassificaPage-mfh3qkuh-eUtbyUSz.js',
+      'assets/charts-mfh3qkuh-DUw7r4_4.js',
+      'assets/ShareButtons-mfh3qkuh-PJIiWKTO.js',
+      'assets/StatsPage-mfh3qkuh-BmQ86RwL.js',
+      'assets/Modal-mfh3qkuh-p65zKN9F.js',
+      'assets/names-mfh3qkuh-BW9lV2zG.js',
+      'assets/BookingPage-mfh3qkuh-EQPlbIoV.js',
+      'assets/Badge-mfh3qkuh-DbXmBg1C.js',
+      'assets/design-system-mfh3qkuh-B5fzZ68S.js',
+      'assets/pricing-mfh3qkuh-DMaWA4wL.js',
+      'assets/useUnifiedBookings-mfh3qkuh-DA63SB-8.js',
+      'assets/unified-booking-service-mfh3qkuh-CB00Ce3w.js',
+      'assets/LessonBookingPage-mfh3qkuh-BaVSxmDN.js',
+      'assets/playerTypes-mfh3qkuh-CIm-hM8a.js',
+      'assets/PlayersPage-mfh3qkuh-B0Dop9cg.js',
+      'assets/MatchesPage-mfh3qkuh-Bc11cSU9.js',
+      'assets/TournamentsPage-mfh3qkuh-DWizJjrm.js',
+      'assets/ProfilePage-mfh3qkuh-DzMoXNLy.js',
+      'assets/ExtraPage-mfh3qkuh-vX9zqzKh.js',
+      'assets/format-mfh3qkuh-DAEZv7Mi.js',
+      'assets/AdminBookingsPage-mfh3qkuh-C5WgJ4SU.js',
+      'assets/DarkModeTestPage-mfh3qkuh-COvincdp.js',
     ])
 ) => i.map((i) => d[i]);
-import { r as Oe, a as We } from './vendor-mfh2bokv-D3F3s8fL.js';
+import { r as Oe, a as We } from './vendor-mfh3qkuh-D3F3s8fL.js';
 import {
   r as p,
   b as C,
@@ -44,7 +44,7 @@ import {
   B as Fe,
   d as Ve,
   e as _,
-} from './router-mfh2bokv-CQdDuJ2E.js';
+} from './router-mfh3qkuh-7WMG9iCE.js';
 import {
   g as ge,
   a as fe,
@@ -71,7 +71,7 @@ import {
   t as rt,
   v as at,
   w as st,
-} from './firebase-mfh2bokv-X_I_guKF.js';
+} from './firebase-mfh3qkuh-X_I_guKF.js';
 (function () {
   const t = document.createElement('link').relList;
   if (t && t.supports && t.supports('modulepreload')) return;
@@ -1234,7 +1234,7 @@ function Bt({ children: r }) {
   }
   return r;
 }
-const Be = '/logo.png',
+const Be = '/play-sport-pro_horizontal.svg',
   zt = '/play-sport-pro_icon_only.svg',
   j = {
     borderRadius: { sm: 'rounded-lg', md: 'rounded-xl', lg: 'rounded-2xl', full: 'rounded-full' },
@@ -2312,18 +2312,18 @@ function Vt() {
               className: 'flex items-center gap-2 sm:gap-3 min-w-0',
               children: [
                 e.jsx('div', {
-                  className: 'h-4 w-auto rounded-md shadow shrink-0 flex items-center',
+                  className: 'h-10 w-auto rounded-md shadow shrink-0 flex items-center',
                   children: e.jsx('img', {
                     src: Be,
-                    alt: 'Sporting Cat',
-                    className: 'h-4 w-auto select-none',
+                    alt: 'Play-Sport.pro',
+                    className: 'h-10 w-auto select-none dark:bg-white dark:rounded-md dark:p-1',
                     draggable: !1,
                   }),
                 }),
                 e.jsx('div', {
                   className:
                     'text-lg sm:text-2xl font-bold tracking-wide truncate text-neutral-900 dark:text-white',
-                  children: 'Play-Sport.pro',
+                  children: 'Sporting Cat',
                 }),
               ],
             }),
@@ -2353,58 +2353,58 @@ function Vt() {
   });
 }
 const Ht = C.lazy(() =>
-    M(() => import('./LoginPage-mfh2bokv-Cv-v6mCO.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
+    M(() => import('./LoginPage-mfh3qkuh-z9fK4kod.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
   ),
   Gt = C.lazy(() =>
-    M(() => import('./DashboardPage-mfh2bokv-DTPNiGAm.js'), __vite__mapDeps([5, 1, 2, 4]))
+    M(() => import('./DashboardPage-mfh3qkuh-5OZWWHba.js'), __vite__mapDeps([5, 1, 2, 4]))
   ),
   qt = C.lazy(() =>
-    M(() => import('./ClassificaPage-mfh2bokv-k6B8WdRQ.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
+    M(() => import('./ClassificaPage-mfh3qkuh-eUtbyUSz.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
   ),
   Jt = C.lazy(() =>
     M(
-      () => import('./StatsPage-mfh2bokv-CXRxy1gL.js'),
+      () => import('./StatsPage-mfh3qkuh-BmQ86RwL.js'),
       __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4])
     )
   ),
   Kt = C.lazy(() =>
     M(
-      () => import('./BookingPage-mfh2bokv-CP2SbZ-R.js'),
+      () => import('./BookingPage-mfh3qkuh-EQPlbIoV.js'),
       __vite__mapDeps([12, 1, 2, 13, 14, 15, 16, 17, 4])
     )
   ),
   Yt = C.lazy(() =>
     M(
-      () => import('./LessonBookingPage-mfh2bokv-DSNB_Q3K.js'),
+      () => import('./LessonBookingPage-mfh3qkuh-BaVSxmDN.js'),
       __vite__mapDeps([18, 1, 2, 3, 13, 14, 19, 16, 17, 4, 10])
     )
   ),
   Xt = C.lazy(() =>
     M(
-      () => import('./PlayersPage-mfh2bokv-DZprrxn2.js'),
+      () => import('./PlayersPage-mfh3qkuh-B0Dop9cg.js'),
       __vite__mapDeps([20, 1, 2, 3, 10, 11, 19, 17, 4])
     )
   ),
   Zt = C.lazy(() =>
-    M(() => import('./MatchesPage-mfh2bokv-BadgOvwg.js'), __vite__mapDeps([21, 1, 2, 3, 11, 4]))
+    M(() => import('./MatchesPage-mfh3qkuh-Bc11cSU9.js'), __vite__mapDeps([21, 1, 2, 3, 11, 4]))
   ),
   Qt = C.lazy(() =>
-    M(() => import('./TournamentsPage-mfh2bokv-DPPJMjBo.js'), __vite__mapDeps([22, 1, 2, 3, 4]))
+    M(() => import('./TournamentsPage-mfh3qkuh-DWizJjrm.js'), __vite__mapDeps([22, 1, 2, 3, 4]))
   ),
   er = C.lazy(() =>
-    M(() => import('./ProfilePage-mfh2bokv-CbteSz3f.js'), __vite__mapDeps([23, 1, 2, 3, 4]))
+    M(() => import('./ProfilePage-mfh3qkuh-DzMoXNLy.js'), __vite__mapDeps([23, 1, 2, 3, 4]))
   ),
   tr = C.lazy(() =>
-    M(() => import('./ExtraPage-mfh2bokv-UAt12cmz.js'), __vite__mapDeps([24, 1, 2, 3, 25, 4]))
+    M(() => import('./ExtraPage-mfh3qkuh-vX9zqzKh.js'), __vite__mapDeps([24, 1, 2, 3, 25, 4]))
   ),
   rr = C.lazy(() =>
     M(
-      () => import('./AdminBookingsPage-mfh2bokv-Bxn3w5N4.js'),
+      () => import('./AdminBookingsPage-mfh3qkuh-C5WgJ4SU.js'),
       __vite__mapDeps([26, 1, 2, 3, 10, 25, 15, 16, 17, 4, 19])
     )
   ),
   ar = C.lazy(() =>
-    M(() => import('./DarkModeTestPage-mfh2bokv-DPP0gu4v.js'), __vite__mapDeps([27, 1, 2, 14, 4]))
+    M(() => import('./DarkModeTestPage-mfh3qkuh-COvincdp.js'), __vite__mapDeps([27, 1, 2, 14, 4]))
   );
 function sr() {
   return e.jsx(_t, {
@@ -2448,7 +2448,7 @@ function sr() {
 }
 class or {
   constructor() {
-    ((this.currentVersion = '1.7.0'),
+    ((this.currentVersion = '1.8.0'),
       (this.swRegistration = null),
       (this.updateCheckInterval = null));
   }
@@ -2480,7 +2480,7 @@ class or {
     (this.checkForUpdates(),
       (this.updateCheckInterval = setInterval(() => {
         this.checkForUpdates();
-      }, 3e4)));
+      }, 15e3)));
   }
   async checkForUpdates() {
     if (this.swRegistration)

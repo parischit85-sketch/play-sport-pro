@@ -1,6 +1,6 @@
-import { j as e, g as V, f as D, t as G } from './index-mfh2bokv-DsiFzhNE.js';
-import { r as f, b as F, c as O } from './router-mfh2bokv-CQdDuJ2E.js';
-import { S as _ } from './Section-mfh2bokv-CaYeeEit.js';
+import { j as e, g as V, f as D, t as G } from './index-mfh3qkuh-BuI3yHrG.js';
+import { r as f, b as F, c as O } from './router-mfh3qkuh-7WMG9iCE.js';
+import { S as _ } from './Section-mfh3qkuh-DofZmbDr.js';
 import {
   R as X,
   L as Y,
@@ -9,10 +9,10 @@ import {
   T as J,
   a as Q,
   b as Z,
-} from './charts-mfh2bokv-CRuyWRT6.js';
-import { S as K } from './ShareButtons-mfh2bokv-Bz7AAQPV.js';
-import './vendor-mfh2bokv-D3F3s8fL.js';
-import './firebase-mfh2bokv-X_I_guKF.js';
+} from './charts-mfh3qkuh-DUw7r4_4.js';
+import { S as K } from './ShareButtons-mfh3qkuh-PJIiWKTO.js';
+import './vendor-mfh3qkuh-D3F3s8fL.js';
+import './firebase-mfh3qkuh-X_I_guKF.js';
 function I({ total: o = 0, pos: m = 0, neg: u = 0 }) {
   const k = `Ultime 5: +${Math.round(m)} / -${Math.round(u)} = ${o >= 0 ? '+' : ''}${Math.round(o)}`;
   return o > 0
@@ -54,11 +54,13 @@ function ee({
   const j = f.useMemo(() => {
       if (o.length === 0) return [];
       const d = l ? 8 : 15;
-      return o.slice(-d).map((N, t) => ({
-        index: t + 1,
-        period: l ? `P${t + 1}` : `Partita ${t + 1}`,
-        ...m.reduce((s, r) => ((s[r] = N[r] || 0), s), {}),
-      }));
+      return o
+        .slice(-d)
+        .map((N, t) => ({
+          index: t + 1,
+          period: l ? `P${t + 1}` : `Partita ${t + 1}`,
+          ...m.reduce((s, r) => ((s[r] = N[r] || 0), s), {}),
+        }));
     }, [o, m, l]),
     w = (d) => {
       const g = new Set(y);
@@ -711,54 +713,56 @@ function te({ players: o, matches: m, onOpenStats: u, T: k }) {
                     }),
                     e.jsx('div', {
                       className: 'block md:hidden space-y-2',
-                      children: l.slice(0, 8).map((t, s) =>
-                        e.jsxs(
-                          'div',
-                          {
-                            className:
-                              'flex items-center justify-between py-2 px-3 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-xl border border-white/20 dark:border-gray-600/20 hover:bg-white/50 dark:hover:bg-gray-600/40 transition-all duration-200',
-                            children: [
-                              e.jsxs('div', {
-                                className: 'flex items-center gap-2',
-                                children: [
-                                  e.jsxs('span', {
-                                    className:
-                                      'text-sm font-bold text-amber-600 dark:text-amber-400 w-6',
-                                    children: ['#', s + 1],
-                                  }),
-                                  e.jsxs('span', {
-                                    className:
-                                      'text-sm font-medium text-gray-900 dark:text-gray-100',
-                                    children: [
-                                      t.players[0].split(' ').pop(),
-                                      ' & ',
-                                      t.players[1].split(' ').pop(),
-                                    ],
-                                  }),
-                                ],
-                              }),
-                              e.jsxs('div', {
-                                className: 'flex items-center gap-2 text-sm',
-                                children: [
-                                  e.jsxs('span', {
-                                    className: 'text-green-600 dark:text-green-400 font-semibold',
-                                    children: [t.wins, 'V'],
-                                  }),
-                                  e.jsxs('span', {
-                                    className: 'text-red-600 dark:text-red-400 font-semibold',
-                                    children: [t.losses, 'S'],
-                                  }),
-                                  e.jsxs('span', {
-                                    className: 'font-bold text-amber-700 dark:text-amber-300',
-                                    children: [t.winRate.toFixed(0), '%'],
-                                  }),
-                                ],
-                              }),
-                            ],
-                          },
-                          t.key
-                        )
-                      ),
+                      children: l
+                        .slice(0, 8)
+                        .map((t, s) =>
+                          e.jsxs(
+                            'div',
+                            {
+                              className:
+                                'flex items-center justify-between py-2 px-3 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-xl border border-white/20 dark:border-gray-600/20 hover:bg-white/50 dark:hover:bg-gray-600/40 transition-all duration-200',
+                              children: [
+                                e.jsxs('div', {
+                                  className: 'flex items-center gap-2',
+                                  children: [
+                                    e.jsxs('span', {
+                                      className:
+                                        'text-sm font-bold text-amber-600 dark:text-amber-400 w-6',
+                                      children: ['#', s + 1],
+                                    }),
+                                    e.jsxs('span', {
+                                      className:
+                                        'text-sm font-medium text-gray-900 dark:text-gray-100',
+                                      children: [
+                                        t.players[0].split(' ').pop(),
+                                        ' & ',
+                                        t.players[1].split(' ').pop(),
+                                      ],
+                                    }),
+                                  ],
+                                }),
+                                e.jsxs('div', {
+                                  className: 'flex items-center gap-2 text-sm',
+                                  children: [
+                                    e.jsxs('span', {
+                                      className: 'text-green-600 dark:text-green-400 font-semibold',
+                                      children: [t.wins, 'V'],
+                                    }),
+                                    e.jsxs('span', {
+                                      className: 'text-red-600 dark:text-red-400 font-semibold',
+                                      children: [t.losses, 'S'],
+                                    }),
+                                    e.jsxs('span', {
+                                      className: 'font-bold text-amber-700 dark:text-amber-300',
+                                      children: [t.winRate.toFixed(0), '%'],
+                                    }),
+                                  ],
+                                }),
+                              ],
+                            },
+                            t.key
+                          )
+                        ),
                     }),
                     e.jsx('div', {
                       className: 'hidden md:block overflow-x-auto',
@@ -790,48 +794,51 @@ function te({ players: o, matches: m, onOpenStats: u, T: k }) {
                             }),
                           }),
                           e.jsx('tbody', {
-                            children: l.slice(0, 8).map((t, s) =>
-                              e.jsxs(
-                                'tr',
-                                {
-                                  className:
-                                    'border-b border-white/10 dark:border-gray-700/20 hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-200',
-                                  children: [
-                                    e.jsx('td', {
-                                      className:
-                                        'py-3 pr-3 font-semibold text-gray-800 dark:text-gray-200',
-                                      children: s + 1,
-                                    }),
-                                    e.jsxs('td', {
-                                      className:
-                                        'py-3 pr-3 font-medium text-sm text-gray-900 dark:text-gray-100',
-                                      children: [t.players[0], ' & ', t.players[1]],
-                                    }),
-                                    e.jsxs('td', {
-                                      className: 'py-3 pr-3 text-sm',
-                                      children: [
-                                        e.jsx('span', {
-                                          className:
-                                            'text-green-600 dark:text-green-400 font-semibold',
-                                          children: t.wins,
-                                        }),
-                                        '/',
-                                        e.jsx('span', {
-                                          className: 'text-red-600 dark:text-red-400 font-semibold',
-                                          children: t.losses,
-                                        }),
-                                      ],
-                                    }),
-                                    e.jsxs('td', {
-                                      className:
-                                        'py-3 pr-3 font-bold text-amber-700 dark:text-amber-300',
-                                      children: [t.winRate.toFixed(0), '%'],
-                                    }),
-                                  ],
-                                },
-                                t.key
-                              )
-                            ),
+                            children: l
+                              .slice(0, 8)
+                              .map((t, s) =>
+                                e.jsxs(
+                                  'tr',
+                                  {
+                                    className:
+                                      'border-b border-white/10 dark:border-gray-700/20 hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-200',
+                                    children: [
+                                      e.jsx('td', {
+                                        className:
+                                          'py-3 pr-3 font-semibold text-gray-800 dark:text-gray-200',
+                                        children: s + 1,
+                                      }),
+                                      e.jsxs('td', {
+                                        className:
+                                          'py-3 pr-3 font-medium text-sm text-gray-900 dark:text-gray-100',
+                                        children: [t.players[0], ' & ', t.players[1]],
+                                      }),
+                                      e.jsxs('td', {
+                                        className: 'py-3 pr-3 text-sm',
+                                        children: [
+                                          e.jsx('span', {
+                                            className:
+                                              'text-green-600 dark:text-green-400 font-semibold',
+                                            children: t.wins,
+                                          }),
+                                          '/',
+                                          e.jsx('span', {
+                                            className:
+                                              'text-red-600 dark:text-red-400 font-semibold',
+                                            children: t.losses,
+                                          }),
+                                        ],
+                                      }),
+                                      e.jsxs('td', {
+                                        className:
+                                          'py-3 pr-3 font-bold text-amber-700 dark:text-amber-300',
+                                        children: [t.winRate.toFixed(0), '%'],
+                                      }),
+                                    ],
+                                  },
+                                  t.key
+                                )
+                              ),
                           }),
                         ],
                       }),
@@ -1072,53 +1079,55 @@ function te({ players: o, matches: m, onOpenStats: u, T: k }) {
                     }),
                     e.jsx('div', {
                       className: 'block md:hidden space-y-2',
-                      children: j.positive.slice(0, 8).map((t, s) =>
-                        e.jsxs(
-                          'div',
-                          {
-                            className:
-                              'flex items-center justify-between py-2 px-3 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-xl border border-white/20 dark:border-gray-600/20 hover:bg-white/50 dark:hover:bg-gray-600/40 transition-all duration-200',
-                            children: [
-                              e.jsxs('div', {
-                                className: 'flex items-center gap-2',
-                                children: [
-                                  e.jsxs('span', {
-                                    className:
-                                      'text-sm font-bold text-green-600 dark:text-green-400 w-6',
-                                    children: ['#', s + 1],
-                                  }),
-                                  e.jsx('button', {
-                                    className:
-                                      'text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm',
-                                    onClick: () => u(t.id),
-                                    children: t.name,
-                                  }),
-                                ],
-                              }),
-                              e.jsxs('div', {
-                                className: 'flex items-center gap-2 text-sm',
-                                children: [
-                                  t.streakType === 'win'
-                                    ? e.jsxs('span', {
-                                        className:
-                                          'text-green-600 dark:text-green-400 font-semibold',
-                                        children: ['🔥', t.currentStreak],
-                                      })
-                                    : e.jsx('span', {
-                                        className: 'text-gray-400',
-                                        children: '-',
-                                      }),
-                                  e.jsx('span', {
-                                    className: 'font-bold text-green-700 dark:text-green-300',
-                                    children: t.bestWinStreak,
-                                  }),
-                                ],
-                              }),
-                            ],
-                          },
-                          t.id
-                        )
-                      ),
+                      children: j.positive
+                        .slice(0, 8)
+                        .map((t, s) =>
+                          e.jsxs(
+                            'div',
+                            {
+                              className:
+                                'flex items-center justify-between py-2 px-3 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-xl border border-white/20 dark:border-gray-600/20 hover:bg-white/50 dark:hover:bg-gray-600/40 transition-all duration-200',
+                              children: [
+                                e.jsxs('div', {
+                                  className: 'flex items-center gap-2',
+                                  children: [
+                                    e.jsxs('span', {
+                                      className:
+                                        'text-sm font-bold text-green-600 dark:text-green-400 w-6',
+                                      children: ['#', s + 1],
+                                    }),
+                                    e.jsx('button', {
+                                      className:
+                                        'text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm',
+                                      onClick: () => u(t.id),
+                                      children: t.name,
+                                    }),
+                                  ],
+                                }),
+                                e.jsxs('div', {
+                                  className: 'flex items-center gap-2 text-sm',
+                                  children: [
+                                    t.streakType === 'win'
+                                      ? e.jsxs('span', {
+                                          className:
+                                            'text-green-600 dark:text-green-400 font-semibold',
+                                          children: ['🔥', t.currentStreak],
+                                        })
+                                      : e.jsx('span', {
+                                          className: 'text-gray-400',
+                                          children: '-',
+                                        }),
+                                    e.jsx('span', {
+                                      className: 'font-bold text-green-700 dark:text-green-300',
+                                      children: t.bestWinStreak,
+                                    }),
+                                  ],
+                                }),
+                              ],
+                            },
+                            t.id
+                          )
+                        ),
                     }),
                     e.jsx('div', {
                       className: 'hidden md:block overflow-x-auto',
@@ -1150,51 +1159,53 @@ function te({ players: o, matches: m, onOpenStats: u, T: k }) {
                             }),
                           }),
                           e.jsx('tbody', {
-                            children: j.positive.slice(0, 8).map((t, s) =>
-                              e.jsxs(
-                                'tr',
-                                {
-                                  className:
-                                    'border-b border-white/10 dark:border-gray-700/20 hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-200',
-                                  children: [
-                                    e.jsx('td', {
-                                      className:
-                                        'py-3 pr-3 font-semibold text-gray-800 dark:text-gray-200',
-                                      children: s + 1,
-                                    }),
-                                    e.jsx('td', {
-                                      className: 'py-3 pr-3',
-                                      children: e.jsx('button', {
+                            children: j.positive
+                              .slice(0, 8)
+                              .map((t, s) =>
+                                e.jsxs(
+                                  'tr',
+                                  {
+                                    className:
+                                      'border-b border-white/10 dark:border-gray-700/20 hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-200',
+                                    children: [
+                                      e.jsx('td', {
                                         className:
-                                          'text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm',
-                                        onClick: () => u(t.id),
-                                        children: t.name,
+                                          'py-3 pr-3 font-semibold text-gray-800 dark:text-gray-200',
+                                        children: s + 1,
                                       }),
-                                    }),
-                                    e.jsx('td', {
-                                      className:
-                                        'py-3 pr-3 font-bold text-green-600 dark:text-green-400',
-                                      children: t.bestWinStreak,
-                                    }),
-                                    e.jsx('td', {
-                                      className: 'py-3 pr-3',
-                                      children:
-                                        t.streakType === 'win'
-                                          ? e.jsxs('span', {
-                                              className:
-                                                'text-sm text-green-600 dark:text-green-400 font-semibold',
-                                              children: ['🔥 +', t.currentStreak],
-                                            })
-                                          : e.jsx('span', {
-                                              className: 'text-sm text-gray-500',
-                                              children: '-',
-                                            }),
-                                    }),
-                                  ],
-                                },
-                                t.id
-                              )
-                            ),
+                                      e.jsx('td', {
+                                        className: 'py-3 pr-3',
+                                        children: e.jsx('button', {
+                                          className:
+                                            'text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm',
+                                          onClick: () => u(t.id),
+                                          children: t.name,
+                                        }),
+                                      }),
+                                      e.jsx('td', {
+                                        className:
+                                          'py-3 pr-3 font-bold text-green-600 dark:text-green-400',
+                                        children: t.bestWinStreak,
+                                      }),
+                                      e.jsx('td', {
+                                        className: 'py-3 pr-3',
+                                        children:
+                                          t.streakType === 'win'
+                                            ? e.jsxs('span', {
+                                                className:
+                                                  'text-sm text-green-600 dark:text-green-400 font-semibold',
+                                                children: ['🔥 +', t.currentStreak],
+                                              })
+                                            : e.jsx('span', {
+                                                className: 'text-sm text-gray-500',
+                                                children: '-',
+                                              }),
+                                      }),
+                                    ],
+                                  },
+                                  t.id
+                                )
+                              ),
                           }),
                         ],
                       }),
@@ -1255,51 +1266,53 @@ function te({ players: o, matches: m, onOpenStats: u, T: k }) {
                     }),
                     e.jsx('div', {
                       className: 'block md:hidden space-y-2',
-                      children: j.ingiocabili.slice(0, 8).map((t, s) =>
-                        e.jsxs(
-                          'div',
-                          {
-                            className:
-                              'flex items-center justify-between py-2 px-3 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-xl border border-white/20 dark:border-gray-600/20 hover:bg-white/50 dark:hover:bg-gray-600/40 transition-all duration-200',
-                            children: [
-                              e.jsxs('div', {
-                                className: 'flex items-center gap-2',
-                                children: [
-                                  e.jsxs('span', {
-                                    className:
-                                      'text-sm font-bold text-purple-600 dark:text-purple-400 w-6',
-                                    children: ['#', s + 1],
-                                  }),
-                                  e.jsx('button', {
-                                    className:
-                                      'text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm',
-                                    onClick: () => u(t.id),
-                                    children: t.name,
-                                  }),
-                                ],
-                              }),
-                              e.jsxs('div', {
-                                className: 'flex items-center gap-2 text-sm',
-                                children: [
-                                  e.jsxs('span', {
-                                    className: 'text-green-600 dark:text-green-400 font-semibold',
-                                    children: [t.totalWins, 'V'],
-                                  }),
-                                  e.jsxs('span', {
-                                    className: 'text-red-600 dark:text-red-400 font-semibold',
-                                    children: [t.totalLosses, 'S'],
-                                  }),
-                                  e.jsxs('span', {
-                                    className: 'font-bold text-purple-700 dark:text-purple-300',
-                                    children: [t.lossRatio.toFixed(1), '%'],
-                                  }),
-                                ],
-                              }),
-                            ],
-                          },
-                          t.id
-                        )
-                      ),
+                      children: j.ingiocabili
+                        .slice(0, 8)
+                        .map((t, s) =>
+                          e.jsxs(
+                            'div',
+                            {
+                              className:
+                                'flex items-center justify-between py-2 px-3 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-xl border border-white/20 dark:border-gray-600/20 hover:bg-white/50 dark:hover:bg-gray-600/40 transition-all duration-200',
+                              children: [
+                                e.jsxs('div', {
+                                  className: 'flex items-center gap-2',
+                                  children: [
+                                    e.jsxs('span', {
+                                      className:
+                                        'text-sm font-bold text-purple-600 dark:text-purple-400 w-6',
+                                      children: ['#', s + 1],
+                                    }),
+                                    e.jsx('button', {
+                                      className:
+                                        'text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm',
+                                      onClick: () => u(t.id),
+                                      children: t.name,
+                                    }),
+                                  ],
+                                }),
+                                e.jsxs('div', {
+                                  className: 'flex items-center gap-2 text-sm',
+                                  children: [
+                                    e.jsxs('span', {
+                                      className: 'text-green-600 dark:text-green-400 font-semibold',
+                                      children: [t.totalWins, 'V'],
+                                    }),
+                                    e.jsxs('span', {
+                                      className: 'text-red-600 dark:text-red-400 font-semibold',
+                                      children: [t.totalLosses, 'S'],
+                                    }),
+                                    e.jsxs('span', {
+                                      className: 'font-bold text-purple-700 dark:text-purple-300',
+                                      children: [t.lossRatio.toFixed(1), '%'],
+                                    }),
+                                  ],
+                                }),
+                              ],
+                            },
+                            t.id
+                          )
+                        ),
                     }),
                     e.jsx('div', {
                       className: 'hidden md:block overflow-x-auto',
@@ -1331,52 +1344,55 @@ function te({ players: o, matches: m, onOpenStats: u, T: k }) {
                             }),
                           }),
                           e.jsx('tbody', {
-                            children: j.ingiocabili.slice(0, 8).map((t, s) =>
-                              e.jsxs(
-                                'tr',
-                                {
-                                  className:
-                                    'border-b border-white/10 dark:border-gray-700/20 hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-200',
-                                  children: [
-                                    e.jsx('td', {
-                                      className:
-                                        'py-3 pr-3 font-semibold text-gray-800 dark:text-gray-200',
-                                      children: s + 1,
-                                    }),
-                                    e.jsx('td', {
-                                      className: 'py-3 pr-3',
-                                      children: e.jsx('button', {
+                            children: j.ingiocabili
+                              .slice(0, 8)
+                              .map((t, s) =>
+                                e.jsxs(
+                                  'tr',
+                                  {
+                                    className:
+                                      'border-b border-white/10 dark:border-gray-700/20 hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-200',
+                                    children: [
+                                      e.jsx('td', {
                                         className:
-                                          'text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm',
-                                        onClick: () => u(t.id),
-                                        children: t.name,
+                                          'py-3 pr-3 font-semibold text-gray-800 dark:text-gray-200',
+                                        children: s + 1,
                                       }),
-                                    }),
-                                    e.jsxs('td', {
-                                      className:
-                                        'py-3 pr-3 font-bold text-purple-600 dark:text-purple-400',
-                                      children: [t.lossRatio.toFixed(1), '%'],
-                                    }),
-                                    e.jsxs('td', {
-                                      className: 'py-3 pr-3 text-sm',
-                                      children: [
-                                        e.jsx('span', {
+                                      e.jsx('td', {
+                                        className: 'py-3 pr-3',
+                                        children: e.jsx('button', {
                                           className:
-                                            'text-green-600 dark:text-green-400 font-semibold',
-                                          children: t.totalWins,
+                                            'text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm',
+                                          onClick: () => u(t.id),
+                                          children: t.name,
                                         }),
-                                        '/',
-                                        e.jsx('span', {
-                                          className: 'text-red-600 dark:text-red-400 font-semibold',
-                                          children: t.totalLosses,
-                                        }),
-                                      ],
-                                    }),
-                                  ],
-                                },
-                                t.id
-                              )
-                            ),
+                                      }),
+                                      e.jsxs('td', {
+                                        className:
+                                          'py-3 pr-3 font-bold text-purple-600 dark:text-purple-400',
+                                        children: [t.lossRatio.toFixed(1), '%'],
+                                      }),
+                                      e.jsxs('td', {
+                                        className: 'py-3 pr-3 text-sm',
+                                        children: [
+                                          e.jsx('span', {
+                                            className:
+                                              'text-green-600 dark:text-green-400 font-semibold',
+                                            children: t.totalWins,
+                                          }),
+                                          '/',
+                                          e.jsx('span', {
+                                            className:
+                                              'text-red-600 dark:text-red-400 font-semibold',
+                                            children: t.totalLosses,
+                                          }),
+                                        ],
+                                      }),
+                                    ],
+                                  },
+                                  t.id
+                                )
+                              ),
                           }),
                         ],
                       }),
