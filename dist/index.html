@@ -22,12 +22,30 @@
     
     <!-- FORCE REBUILD v11: 2025-09-12T10:30:00Z - IMPROVED CACHE BUSTING SYSTEM -->
     
+    <!-- Development fixes for WebSocket errors -->
+    <script>
+      if (location.hostname === 'localhost') {
+        // Sopprimi gli errori WebSocket fastidiosi durante lo sviluppo
+        const originalError = console.error;
+        console.error = function(...args) {
+          const message = args[0];
+          if (typeof message === 'string' && 
+              (message.includes('WebSocket connection') || 
+               message.includes('failed to connect to websocket'))) {
+            console.warn('🔄 HMR WebSocket disconnesso - usa F5 per refresh manuale');
+            return;
+          }
+          originalError.apply(console, args);
+        };
+      }
+    </script>
+    
     <!-- In dev Vite userà questo entry; in build lo rimpiazzerà con /assets/... -->
-    <script type="module" crossorigin src="/assets/index-mfh4d38h-CPKWh84w.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/vendor-mfh4d38h-D3F3s8fL.js">
-    <link rel="modulepreload" crossorigin href="/assets/router-mfh4d38h-D14HHbEI.js">
-    <link rel="modulepreload" crossorigin href="/assets/firebase-mfh4d38h-X_I_guKF.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-mfh4dd21-BbNF3oHO.css">
+    <script type="module" crossorigin src="/assets/index-mfh82qsn-DzXPqwq9.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-mfh82qsn-D3F3s8fL.js">
+    <link rel="modulepreload" crossorigin href="/assets/router-mfh82qsn-Bc5I10Ra.js">
+    <link rel="modulepreload" crossorigin href="/assets/firebase-mfh82qsn-X_I_guKF.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-mfh830hq-CTLVTD5v.css">
   </head>
   <body class="bg-gray-50">
     <div id="root"></div>

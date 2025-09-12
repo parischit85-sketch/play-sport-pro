@@ -22,6 +22,24 @@
     
     <!-- FORCE REBUILD v11: 2025-09-12T10:30:00Z - IMPROVED CACHE BUSTING SYSTEM -->
     
+    <!-- Development fixes for WebSocket errors -->
+    <script>
+      if (location.hostname === 'localhost') {
+        // Sopprimi gli errori WebSocket fastidiosi durante lo sviluppo
+        const originalError = console.error;
+        console.error = function(...args) {
+          const message = args[0];
+          if (typeof message === 'string' && 
+              (message.includes('WebSocket connection') || 
+               message.includes('failed to connect to websocket'))) {
+            console.warn('🔄 HMR WebSocket disconnesso - usa F5 per refresh manuale');
+            return;
+          }
+          originalError.apply(console, args);
+        };
+      }
+    </script>
+    
     <!-- In dev Vite userà questo entry; in build lo rimpiazzerà con /assets/... -->
     <script type="module" src="/src/main.jsx"></script>
   </head>

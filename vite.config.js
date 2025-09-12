@@ -24,6 +24,8 @@ export default defineConfig({
     },
   },
   server: {
+    port: 5173,
+    host: true,
     headers: {
       'Cross-Origin-Opener-Policy': 'unsafe-none',
       'Cross-Origin-Embedder-Policy': 'unsafe-none',
@@ -31,6 +33,13 @@ export default defineConfig({
     cors: {
       origin: ['http://localhost:5173', 'https://*.firebaseapp.com', 'https://*.googleapis.com'],
       credentials: true,
+    },
+    hmr: {
+      port: 5174,
+      host: 'localhost',
+    },
+    watch: {
+      usePolling: true,
     },
   },
   css: {

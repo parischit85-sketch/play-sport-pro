@@ -13,6 +13,7 @@ import NavTabs from '@ui/NavTabs.jsx';
 import BottomNavigation from '@ui/BottomNavigation.jsx';
 import PWAInstallButton from '@components/PWAInstallButton.jsx';
 import PWAFloatingButton from '@components/PWAFloatingButton.jsx';
+import DevConnectionStatus from '@components/DevConnectionStatus.jsx';
 
 export default function AppLayout() {
   const { user } = useAuth();
@@ -123,6 +124,9 @@ export default function AppLayout() {
         visible={loading || updatingFromCloud}
         message={updatingFromCloud ? 'Sincronizzazione...' : 'Caricamento...'}
       />
+
+      {/* Development Connection Status (only in dev) */}
+      <DevConnectionStatus />
     </div>
   );
 }

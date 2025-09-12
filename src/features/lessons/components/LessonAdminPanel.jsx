@@ -135,25 +135,25 @@ export default function LessonAdminPanel({
   return (
     <div className="space-y-6">
       {/* Section Navigation */}
-      <div className="border-b border-gray-200 dark:border-gray-600">
-        <nav className="flex space-x-8 overflow-x-auto">
+      <div className="border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-t-lg">
+        <nav className="flex space-x-8 overflow-x-auto px-6 py-2">
           {[
-            { id: 'config', label: 'Configurazione Generale', icon: '⚙️' },
-            { id: 'timeslots', label: 'Fasce Orarie', icon: '⏰' },
-            { id: 'instructors', label: 'Gestione Istruttori', icon: '👨‍🏫' },
-            { id: 'cleanup', label: 'Pulizia Dati', icon: '🗑️' },
+            { id: 'config', label: 'Configurazione Generale', icon: '⚙️', color: 'blue' },
+            { id: 'timeslots', label: 'Fasce Orarie', icon: '⏰', color: 'green' },
+            { id: 'instructors', label: 'Gestione Istruttori', icon: '👨‍🏫', color: 'purple' },
+            { id: 'cleanup', label: 'Pulizia Dati', icon: '🗑️', color: 'red' },
           ].map((section) => (
             <button
               key={section.id}
               onClick={() => setActiveSection(section.id)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+              className={`py-3 px-4 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-2 ${
                 activeSection === section.id
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500'
+                  ? `border-${section.color}-500 text-${section.color}-600 dark:text-${section.color}-400 bg-${section.color}-50 dark:bg-${section.color}-900/20 rounded-t-lg`
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-t-lg'
               }`}
             >
-              <span className="text-base mr-1">{section.icon}</span>
-              {section.label}
+              <span className="text-base">{section.icon}</span>
+              <span>{section.label}</span>
             </button>
           ))}
         </nav>
@@ -165,32 +165,38 @@ export default function LessonAdminPanel({
           <Section title="Configurazione Sistema Lezioni" variant="minimal" T={T}>
             <div className="space-y-4">
               {/* Enable/Disable System */}
-              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div className="flex items-center justify-between p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm">
                 <div>
-                  <h3 className={`${ds.h6} font-medium mb-1`}>Sistema Lezioni</h3>
-                  <p className={`text-sm ${T.subtext}`}>
+                  <h3
+                    className={`${ds.h6} font-semibold mb-2 text-gray-900 dark:text-white flex items-center gap-2`}
+                  >
+                    🎾 Sistema Lezioni
+                  </h3>
+                  <p className={`text-sm ${T.subtext} max-w-md`}>
                     {lessonConfig.isEnabled
-                      ? 'Il sistema di prenotazione lezioni è attivo'
-                      : 'Il sistema di prenotazione lezioni è disattivato'}
+                      ? '✅ Il sistema di prenotazione lezioni è attivo e funzionante'
+                      : '❌ Il sistema di prenotazione lezioni è disattivato'}
                   </p>
                 </div>
                 <button
                   onClick={toggleLessonSystem}
-                  className={`px-4 py-2 rounded-lg font-medium ${
+                  className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg ${
                     lessonConfig.isEnabled
-                      ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50'
-                      : 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50'
+                      ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/60 border border-red-300 dark:border-red-700'
+                      : 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/60 border border-green-300 dark:border-green-700'
                   }`}
                 >
-                  {lessonConfig.isEnabled ? 'Disattiva' : 'Attiva'}
+                  {lessonConfig.isEnabled ? '🛑 Disattiva' : '🚀 Attiva'}
                 </button>
               </div>
 
               {/* Configuration Options */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className={`block ${ds.label} mb-2`}>
-                    Giorni di Anticipo per Prenotazione
+              <div className="grid gap-6 sm:grid-cols-2">
+                <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
+                  <label
+                    className={`block ${ds.label} mb-3 flex items-center gap-2 text-gray-900 dark:text-white font-medium`}
+                  >
+                    📅 Giorni di Anticipo per Prenotazione
                   </label>
                   <input
                     type="number"
@@ -203,12 +209,19 @@ export default function LessonAdminPanel({
                         bookingAdvanceDays: parseInt(e.target.value) || 14,
                       })
                     }
-                    className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    className={`w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white`}
                   />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    Quanto in anticipo si può prenotare
+                  </p>
                 </div>
 
-                <div>
-                  <label className={`block ${ds.label} mb-2`}>Ore Prima per Cancellazione</label>
+                <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm">
+                  <label
+                    className={`block ${ds.label} mb-3 flex items-center gap-2 text-gray-900 dark:text-white font-medium`}
+                  >
+                    ⏰ Ore Prima per Cancellazione
+                  </label>
                   <input
                     type="number"
                     min="1"
@@ -220,8 +233,11 @@ export default function LessonAdminPanel({
                         cancellationHours: parseInt(e.target.value) || 24,
                       })
                     }
-                    className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    className={`w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white`}
                   />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    Limite per cancellazioni gratuite
+                  </p>
                 </div>
               </div>
             </div>
@@ -237,14 +253,13 @@ export default function LessonAdminPanel({
               {/* Add Time Slot Button */}
               <button
                 onClick={() => setShowTimeSlotModal(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600"
               >
                 + Aggiungi Fascia Oraria
-              </button>
-
+              </button>{' '}
               {/* Time Slots List */}
               {(lessonConfig.timeSlots || []).length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className={`text-center py-8 ${T.subtext}`}>
                   Nessuna fascia oraria configurata. Crea la prima fascia per iniziare.
                 </div>
               ) : (
@@ -273,7 +288,7 @@ export default function LessonAdminPanel({
                               </Badge>
                             </div>
 
-                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                               <span>Max prenotazioni: {slot.maxBookings}</span>
                               <span>Istruttori: {availableInstructors.length}</span>
                             </div>
@@ -306,13 +321,13 @@ export default function LessonAdminPanel({
                                 setEditingTimeSlot(slot);
                                 setShowTimeSlotModal(true);
                               }}
-                              className="text-blue-600 hover:text-blue-700"
+                              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                             >
                               Modifica
                             </button>
                             <button
                               onClick={() => handleDeleteTimeSlot(slot.id)}
-                              className="text-red-600 hover:text-red-700"
+                              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                             >
                               Elimina
                             </button>
@@ -340,7 +355,7 @@ export default function LessonAdminPanel({
                 </h3>
 
                 {instructors.length === 0 ? (
-                  <div className="text-center py-6 text-gray-500">
+                  <div className={`text-center py-6 ${T.subtext}`}>
                     Nessun istruttore configurato
                   </div>
                 ) : (
@@ -348,39 +363,41 @@ export default function LessonAdminPanel({
                     {instructors.map((instructor) => (
                       <div
                         key={instructor.id}
-                        className={`${T.cardBg} ${T.border} ${T.borderMd} p-4`}
+                        className={`${T.cardBg} ${T.border} rounded-lg p-4 hover:shadow-lg dark:hover:shadow-gray-700/50 transition-all duration-200`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div
-                              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+                              className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md"
                               style={{ backgroundColor: instructor.instructorData?.color }}
                             >
                               {instructor.name?.charAt(0) || '?'}
                             </div>
                             <div>
-                              <h4 className={`${ds.h6} font-medium`}>{instructor.name}</h4>
-                              <div className="flex flex-col gap-1 text-sm text-gray-600">
-                                {/* Prezzi lezioni */}
-                                <div className="flex flex-wrap gap-2">
+                              <h4 className={`${ds.h6} font-medium text-gray-900 dark:text-white`}>
+                                {instructor.name}
+                              </h4>
+                              <div className="flex flex-col gap-2 text-sm">
+                                {/* Prezzi lezioni con design migliorato */}
+                                <div className="flex flex-wrap gap-1.5">
                                   {instructor.instructorData?.priceSingle > 0 && (
-                                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded text-xs">
-                                      Singola: €{instructor.instructorData.priceSingle}
+                                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium border border-blue-200 dark:border-blue-700">
+                                      💼 €{instructor.instructorData.priceSingle}
                                     </span>
                                   )}
                                   {instructor.instructorData?.priceCouple > 0 && (
-                                    <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded text-xs">
-                                      Coppia: €{instructor.instructorData.priceCouple}
+                                    <span className="px-2 py-1 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 rounded-full text-xs font-medium border border-green-200 dark:border-green-700">
+                                      👥 €{instructor.instructorData.priceCouple}
                                     </span>
                                   )}
                                   {instructor.instructorData?.priceThree > 0 && (
-                                    <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded text-xs">
-                                      Tre: €{instructor.instructorData.priceThree}
+                                    <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium border border-purple-200 dark:border-purple-700">
+                                      👥👤 €{instructor.instructorData.priceThree}
                                     </span>
                                   )}
                                   {instructor.instructorData?.priceMatchLesson > 0 && (
-                                    <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 rounded text-xs">
-                                      Partita: €{instructor.instructorData.priceMatchLesson}
+                                    <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-200 rounded-full text-xs font-medium border border-orange-200 dark:border-orange-700">
+                                      🏆 €{instructor.instructorData.priceMatchLesson}
                                     </span>
                                   )}
                                   {/* Fallback alla tariffa oraria se non ci sono prezzi specifici */}
@@ -389,14 +406,23 @@ export default function LessonAdminPanel({
                                     !instructor.instructorData?.priceThree &&
                                     !instructor.instructorData?.priceMatchLesson &&
                                     instructor.instructorData?.hourlyRate > 0 && (
-                                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded text-xs">
-                                        €{instructor.instructorData.hourlyRate}/ora
+                                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full text-xs font-medium border border-gray-200 dark:border-gray-600">
+                                        ⏰ €{instructor.instructorData.hourlyRate}/ora
                                       </span>
                                     )}
                                 </div>
-                                {/* Specialità */}
+                                {/* Specialità con design migliorato */}
                                 {instructor.instructorData?.specialties?.length > 0 && (
-                                  <span>{instructor.instructorData.specialties.join(', ')}</span>
+                                  <div className="flex flex-wrap gap-1">
+                                    {instructor.instructorData.specialties.map((specialty, idx) => (
+                                      <span
+                                        key={idx}
+                                        className="px-2 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded text-xs border border-indigo-200 dark:border-indigo-700"
+                                      >
+                                        ⭐ {specialty}
+                                      </span>
+                                    ))}
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -408,15 +434,15 @@ export default function LessonAdminPanel({
                                 setEditingPlayer(instructor);
                                 setShowInstructorModal(true);
                               }}
-                              className="text-blue-600 hover:text-blue-700"
+                              className="px-3 py-1.5 text-blue-600 dark:text-blue-400 hover:text-white hover:bg-blue-600 dark:hover:bg-blue-500 border border-blue-600 dark:border-blue-400 rounded-lg transition-all duration-200 font-medium text-sm"
                             >
-                              Modifica
+                              ✏️ Modifica
                             </button>
                             <button
                               onClick={() => handleRemoveInstructor(instructor.id)}
-                              className="text-red-600 hover:text-red-700"
+                              className="px-3 py-1.5 text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 dark:hover:bg-red-500 border border-red-600 dark:border-red-400 rounded-lg transition-all duration-200 font-medium text-sm"
                             >
-                              Rimuovi
+                              🗑️ Rimuovi
                             </button>
                           </div>
                         </div>
@@ -431,28 +457,42 @@ export default function LessonAdminPanel({
                 <h3 className={`${ds.h6} font-medium mb-3`}>Aggiungi Istruttore</h3>
 
                 {potentialInstructors.length === 0 ? (
-                  <div className="text-center py-6 text-gray-500">
+                  <div className={`text-center py-6 ${T.subtext}`}>
                     Tutti i giocatori sono già istruttori o non ci sono giocatori disponibili
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {potentialInstructors.slice(0, 5).map((player) => (
-                      <div key={player.id} className={`${T.cardBg} ${T.border} ${T.borderMd} p-4`}>
+                      <div
+                        key={player.id}
+                        className={`${T.cardBg} ${T.border} rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-700/50 transition-all duration-200`}
+                      >
                         <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className={`${ds.h6} font-medium`}>{player.name}</h4>
-                            <p className={`text-sm ${T.subtext}`}>
-                              {player.email} • {player.category}
-                            </p>
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-gray-400 to-gray-600 dark:from-gray-600 dark:to-gray-800 flex items-center justify-center text-white font-bold shadow-md">
+                              {player.name?.charAt(0) || '?'}
+                            </div>
+                            <div>
+                              <h4 className={`${ds.h6} font-medium text-gray-900 dark:text-white`}>
+                                {player.name}
+                              </h4>
+                              <p className={`text-sm ${T.subtext} flex items-center gap-2`}>
+                                <span>📧 {player.email}</span>
+                                <span>•</span>
+                                <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-medium">
+                                  {player.category}
+                                </span>
+                              </p>
+                            </div>
                           </div>
                           <button
                             onClick={() => {
                               setEditingPlayer(player);
                               setShowInstructorModal(true);
                             }}
-                            className="px-3 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200"
+                            className="px-4 py-2 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/60 border border-green-300 dark:border-green-700 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                           >
-                            Rendi Istruttore
+                            ➕ Rendi Istruttore
                           </button>
                         </div>
                       </div>
@@ -476,12 +516,12 @@ export default function LessonAdminPanel({
         <div className="space-y-6">
           <Section title="Pulizia Dati di Test" variant="minimal" T={T}>
             <div className="space-y-4">
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-yellow-800 mb-2">
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200 mb-2">
                   <span className="text-xl">⚠️</span>
                   <h3 className="font-semibold">Attenzione</h3>
                 </div>
-                <p className="text-sm text-yellow-700">
+                <p className="text-sm text-yellow-700 dark:text-yellow-300">
                   Questa sezione permette di cancellare tutte le prenotazioni di lezione di test. Le
                   prenotazioni dei campi associate verranno anche cancellate automaticamente.
                 </p>
@@ -504,8 +544,8 @@ export default function LessonAdminPanel({
 
                 {lessonBookingsCount > 0 ? (
                   <div className="space-y-3">
-                    <div className="bg-red-50 border border-red-200 rounded p-3">
-                      <p className="text-sm text-red-700">
+                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded p-3">
+                      <p className="text-sm text-red-700 dark:text-red-300">
                         <strong>Cosa verrà eliminato:</strong>
                         <br />• {lessonBookingsCount} prenotazione/i di lezione
                         <br />
@@ -516,13 +556,13 @@ export default function LessonAdminPanel({
 
                     <button
                       onClick={onClearAllLessons}
-                      className="w-full px-4 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors"
+                      className="w-full px-4 py-3 bg-red-600 dark:bg-red-700 text-white font-medium rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-colors"
                     >
                       🗑️ Cancella Tutte le Prenotazioni di Lezione
                     </button>
                   </div>
                 ) : (
-                  <div className="text-center py-6 text-gray-500">
+                  <div className={`text-center py-6 ${T.subtext}`}>
                     <div className="text-4xl mb-2">✨</div>
                     <p>Nessuna prenotazione di lezione da cancellare</p>
                   </div>
@@ -531,7 +571,7 @@ export default function LessonAdminPanel({
 
               <div className={`${T.cardBg} ${T.border} ${T.borderMd} p-4 rounded-lg`}>
                 <h4 className={`${ds.h6} font-medium mb-2`}>Come funziona la pulizia:</h4>
-                <ul className="text-sm space-y-1 text-gray-600">
+                <ul className={`text-sm space-y-1 ${T.subtext}`}>
                   <li>• Cancella tutte le prenotazioni di lezione dal localStorage</li>
                   <li>• Cancella i corrispondenti slot prenotati nei campi</li>
                   <li>• Aggiorna automaticamente la vista "Gestione Campi"</li>
@@ -693,7 +733,9 @@ function TimeSlotModal({
         {/* Instructor Selection */}
         <div>
           <label className={`block ${ds.label} mb-2`}>Istruttori Disponibili *</label>
-          <div className="space-y-2 max-h-40 overflow-y-auto border rounded p-2">
+          <div
+            className={`space-y-2 max-h-40 overflow-y-auto border rounded p-2 ${T.border} ${T.cardBg}`}
+          >
             {instructors.map((instructor) => (
               <label key={instructor.id} className="flex items-center gap-2">
                 <input
@@ -715,7 +757,7 @@ function TimeSlotModal({
                     className="w-4 h-4 rounded-full"
                     style={{ backgroundColor: instructor.instructorData?.color }}
                   ></div>
-                  <span>{instructor.name}</span>
+                  <span className={T.text}>{instructor.name}</span>
                 </div>
               </label>
             ))}
@@ -725,7 +767,9 @@ function TimeSlotModal({
         {/* Court Selection */}
         <div>
           <label className={`block ${ds.label} mb-2`}>Campi Disponibili *</label>
-          <div className="space-y-2 max-h-40 overflow-y-auto border rounded p-2">
+          <div
+            className={`space-y-2 max-h-40 overflow-y-auto border rounded p-2 ${T.border} ${T.cardBg}`}
+          >
             {courts &&
               courts.map((court) => (
                 <label key={court.id} className="flex items-center gap-2">
@@ -748,9 +792,9 @@ function TimeSlotModal({
                       className="w-4 h-4 rounded border"
                       style={{ backgroundColor: court.surface?.color || '#e5e7eb' }}
                     ></div>
-                    <span>{court.name || `Campo ${court.id}`}</span>
+                    <span className={T.text}>{court.name || `Campo ${court.id}`}</span>
                     {court.surface?.type && (
-                      <span className={`text-xs px-2 py-1 ${T.cardBg} rounded`}>
+                      <span className={`text-xs px-2 py-1 ${T.cardBg} ${T.border} rounded`}>
                         {court.surface.type}
                       </span>
                     )}
@@ -759,7 +803,7 @@ function TimeSlotModal({
               ))}
           </div>
           {(!courts || courts.length === 0) && (
-            <p className="text-sm text-gray-500 mt-1">
+            <p className={`text-sm ${T.subtext} mt-1`}>
               Nessun campo configurato. Vai alla sezione Campi per aggiungerne.
             </p>
           )}
@@ -818,7 +862,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
   const [newSpecialty, setNewSpecialty] = useState('');
   const [newCertification, setNewCertification] = useState('');
 
-  const commonSpecialties = ['Padel', 'Tennis', 'Fitness', 'Calcio', 'Basket'];
+  const commonSpecialties = ['Padel', 'Tennis', 'Fitness'];
   const predefinedColors = [
     '#3B82F6',
     '#EF4444',
@@ -876,130 +920,172 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
       isOpen={isOpen}
       onClose={onClose}
       title={`Configura Istruttore: ${player.name}`}
-      size="large"
+      size="extraLarge"
       T={T}
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         {/* Color Selection */}
         <div>
           <label className={`block ${ds.label} mb-2`}>Colore Istruttore</label>
-          <div className="flex gap-2 mb-2">
+          <div className="flex gap-2 mb-2 flex-wrap">
             {predefinedColors.map((color) => (
               <button
                 key={color}
                 type="button"
                 onClick={() => setFormData({ ...formData, color })}
-                className={`w-8 h-8 rounded-full border-2 ${
-                  formData.color === color ? 'border-gray-800' : 'border-gray-300'
+                className={`w-8 h-8 rounded-full border-2 transition-all duration-200 hover:scale-110 ${
+                  formData.color === color
+                    ? 'border-gray-800 dark:border-white scale-110 shadow-lg'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-500 dark:hover:border-gray-400'
                 }`}
                 style={{ backgroundColor: color }}
-              />
+                title={`Seleziona colore ${color}`}
+              >
+                {formData.color === color && <span className="text-white text-xs">✓</span>}
+              </button>
             ))}
           </div>
-          <input
-            type="color"
-            value={formData.color}
-            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-            className="w-full h-10 rounded border"
-          />
+          <div className="flex items-center gap-3">
+            <input
+              type="color"
+              value={formData.color}
+              onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+              className="w-12 h-8 rounded border cursor-pointer"
+              title="Colore personalizzato"
+            />
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Colore: {formData.color}
+            </span>
+          </div>
         </div>
 
         {/* Pricing Section */}
-        <div>
-          <label className={`block ${ds.label} mb-3`}>Tariffe Lezioni (€)</label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className={`block text-sm ${T.subtext} mb-1`}>Lezione Singola</label>
-              <input
-                type="number"
-                min="0"
-                step="5"
-                value={formData.priceSingle || 0}
-                onChange={(e) =>
-                  setFormData({ ...formData, priceSingle: parseFloat(e.target.value) || 0 })
-                }
-                className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                placeholder="es. 50"
-              />
+        <div className="relative group">
+          <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-600 rounded-xl blur opacity-20 group-hover:opacity-30 transition-opacity"></div>
+          <div className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/50">
+            <label className={`block ${ds.label} mb-2`}>Tariffe (€/ora)</label>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                <div className="relative p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-blue-200/50 dark:border-blue-700/50 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-1">
+                  <label className="flex items-center gap-2 text-sm font-bold text-blue-600 dark:text-blue-400 mb-3">
+                    <span className="text-lg">🎯</span>
+                    <span>Lezione Singola</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.priceSingle || 0}
+                    onChange={(e) =>
+                      setFormData({ ...formData, priceSingle: parseFloat(e.target.value) || 0 })
+                    }
+                    className="w-full p-3 bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-white border-2 border-blue-300/50 dark:border-blue-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 dark:placeholder-gray-500"
+                    placeholder="50€"
+                  />
+                </div>
+              </div>
+
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-teal-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                <div className="relative p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-green-200/50 dark:border-green-700/50 hover:shadow-xl hover:shadow-green-500/20 transition-all duration-300 transform hover:-translate-y-1">
+                  <label className="flex items-center gap-2 text-sm font-bold text-green-600 dark:text-green-400 mb-3">
+                    <span className="text-lg">👥</span>
+                    <span>Lezione di Coppia</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.priceCouple || 0}
+                    onChange={(e) =>
+                      setFormData({ ...formData, priceCouple: parseFloat(e.target.value) || 0 })
+                    }
+                    className="w-full p-3 bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-white border-2 border-green-300/50 dark:border-green-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 dark:placeholder-gray-500"
+                    placeholder="70€"
+                  />
+                </div>
+              </div>
+
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-violet-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                <div className="relative p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-purple-200/50 dark:border-purple-700/50 hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 transform hover:-translate-y-1">
+                  <label className="flex items-center gap-2 text-sm font-bold text-purple-600 dark:text-purple-400 mb-3">
+                    <span className="text-lg">👨‍�‍�</span>
+                    <span>Lezione a 3 Persone</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.priceThree || 0}
+                    onChange={(e) =>
+                      setFormData({ ...formData, priceThree: parseFloat(e.target.value) || 0 })
+                    }
+                    className="w-full p-3 bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-white border-2 border-purple-300/50 dark:border-purple-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 dark:placeholder-gray-500"
+                    placeholder="90€"
+                  />
+                </div>
+              </div>
+
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                <div className="relative p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-orange-200/50 dark:border-orange-700/50 hover:shadow-xl hover:shadow-orange-500/20 transition-all duration-300 transform hover:-translate-y-1">
+                  <label className="flex items-center gap-2 text-sm font-bold text-orange-600 dark:text-orange-400 mb-3">
+                    <span className="text-lg">🏆</span>
+                    <span>Partita Lezione</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={formData.priceMatchLesson || 0}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        priceMatchLesson: parseFloat(e.target.value) || 0,
+                      })
+                    }
+                    className="w-full p-3 bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-white border-2 border-orange-300/50 dark:border-orange-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 dark:placeholder-gray-500"
+                    placeholder="80€"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className={`block text-sm ${T.subtext} mb-1`}>Lezione di Coppia</label>
-              <input
-                type="number"
-                min="0"
-                step="5"
-                value={formData.priceCouple || 0}
-                onChange={(e) =>
-                  setFormData({ ...formData, priceCouple: parseFloat(e.target.value) || 0 })
-                }
-                className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                placeholder="es. 70"
-              />
-            </div>
-
-            <div>
-              <label className={`block text-sm ${T.subtext} mb-1`}>Lezione a 3 Persone</label>
-              <input
-                type="number"
-                min="0"
-                step="5"
-                value={formData.priceThree || 0}
-                onChange={(e) =>
-                  setFormData({ ...formData, priceThree: parseFloat(e.target.value) || 0 })
-                }
-                className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                placeholder="es. 90"
-              />
-            </div>
-
-            <div>
-              <label className={`block text-sm ${T.subtext} mb-1`}>Partita Lezione</label>
-              <input
-                type="number"
-                min="0"
-                step="5"
-                value={formData.priceMatchLesson || 0}
-                onChange={(e) =>
-                  setFormData({ ...formData, priceMatchLesson: parseFloat(e.target.value) || 0 })
-                }
-                className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                placeholder="es. 80"
-              />
+            <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200/50 dark:border-blue-700/50">
+              <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
+                <span className="text-base">💡</span>
+                <span className="font-medium">Neural Tip:</span>
+                <span>Prezzi per ora di lezione. Impostare a 0 per disabilitare la tipologia.</span>
+              </div>
             </div>
           </div>
-          <p className={`text-xs ${T.subtext} mt-2`}>
-            Prezzi per ora di lezione. Lasciare a 0 per disabilitare una tipologia.
-          </p>
         </div>
 
         {/* Specialties */}
         <div>
           <label className={`block ${ds.label} mb-2`}>Specialità</label>
-
-          {/* Quick Add Common Specialties */}
-          <div className="flex flex-wrap gap-2 mb-2">
-            {commonSpecialties.map((specialty) => (
-              <button
-                key={specialty}
-                type="button"
-                onClick={() => {
-                  if (!formData.specialties.includes(specialty)) {
-                    setFormData({
-                      ...formData,
-                      specialties: [...formData.specialties, specialty],
-                    });
-                  }
-                }}
-                className={`px-3 py-1 text-sm rounded border ${
-                  formData.specialties.includes(specialty)
-                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-600'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                {specialty}
-              </button>
-            ))}
+          <div className="grid grid-cols-2 gap-2 mb-2">
+            {commonSpecialties.map((specialty) => {
+              const isSelected = formData.specialties.includes(specialty);
+              return (
+                <button
+                  key={specialty}
+                  type="button"
+                  onClick={() => {
+                    const newSpecialties = isSelected
+                      ? formData.specialties.filter((s) => s !== specialty)
+                      : [...formData.specialties, specialty];
+                    setFormData({ ...formData, specialties: newSpecialties });
+                  }}
+                  className={`p-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isSelected
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {specialty}
+                </button>
+              );
+            })}
           </div>
 
           {/* Custom Specialty */}
@@ -1008,67 +1094,56 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
               type="text"
               value={newSpecialty}
               onChange={(e) => setNewSpecialty(e.target.value)}
-              className={`flex-1 p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-              placeholder="Aggiungi specialità personalizzata"
+              className={`flex-1 ${ds.input}`}
+              placeholder="Specialità personalizzata..."
               onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSpecialty())}
             />
             <button
               type="button"
               onClick={addSpecialty}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500"
+              disabled={!newSpecialty.trim()}
+              className="px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               Aggiungi
             </button>
           </div>
-
-          {/* Current Specialties */}
-          {formData.specialties.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {formData.specialties.map((specialty, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                >
-                  <span>{specialty}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeSpecialty(specialty)}
-                    className="text-blue-600 hover:text-blue-800"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Bio */}
         <div>
-          <label className={`block ${ds.label} mb-2`}>Biografia</label>
+          <label className={`block ${ds.label} mb-2`}>Biografia Istruttore</label>
           <textarea
             value={formData.bio}
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-            rows={3}
-            className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            placeholder="Descrizione dell'istruttore, esperienza, etc..."
+            rows={4}
+            maxLength={500}
+            className={`w-full ${ds.textarea} resize-none`}
+            placeholder="Descrivi l'esperienza e le competenze dell'istruttore..."
           />
+          <div className="flex justify-between items-center mt-1">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {formData.bio.length}/500 caratteri
+            </span>
+            {formData.bio.length > 450 && (
+              <span className="text-xs text-orange-500">Limite quasi raggiunto</span>
+            )}
+          </div>
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 pt-4">
+        <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
           <button
             type="button"
             onClick={onClose}
-            className={`flex-1 py-2 px-4 ${T.cardBg} ${T.border} ${T.borderMd} hover:bg-gray-50 dark:hover:bg-gray-700`}
+            className="flex-1 py-2 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-200 dark:hover:bg-gray-600 font-medium transition-colors"
           >
             Annulla
           </button>
           <button
             type="submit"
-            className="flex-1 py-2 px-4 bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-600"
+            className="flex-1 py-2 px-4 bg-blue-600 dark:bg-blue-700 text-white rounded hover:bg-blue-700 dark:hover:bg-blue-600 font-medium transition-colors"
           >
-            Salva Istruttore
+            Salva
           </button>
         </div>
       </form>

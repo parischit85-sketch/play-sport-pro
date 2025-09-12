@@ -1,33 +1,33 @@
-import { j as e, i as fe, u as ge, f as je, k as Ne, t as ke } from './index-mfh4d38h-CPKWh84w.js';
-import { r as u, b as Se } from './router-mfh4d38h-D14HHbEI.js';
-import { S as K } from './Section-mfh4d38h-Df1Gzqw4.js';
-import { B as be } from './Badge-mfh4d38h-B0617-OG.js';
-import { c as $e } from './design-system-mfh4d38h-B5fzZ68S.js';
-import { P as se, c as we, a as Ce } from './playerTypes-mfh4d38h-CIm-hM8a.js';
-import { b as ze, u as Ie } from './useUnifiedBookings-mfh4d38h-CC_USPZv.js';
-import { M as he } from './Modal-mfh4d38h-xCnxAVWo.js';
-import './vendor-mfh4d38h-D3F3s8fL.js';
-import './firebase-mfh4d38h-X_I_guKF.js';
-import './unified-booking-service-mfh4d38h-1xV4n-cy.js';
+import { j as e, i as fe, u as ge, f as je, k as ke, t as Ne } from './index-mfh82qsn-DzXPqwq9.js';
+import { r as m, b as we } from './router-mfh82qsn-Bc5I10Ra.js';
+import { S as K } from './Section-mfh82qsn-Cz7s2yQ_.js';
+import { B as be } from './Badge-mfh82qsn-BKfo2CO2.js';
+import { c as Se } from './design-system-mfh82qsn-B5fzZ68S.js';
+import { P as te, c as Ce, a as $e } from './playerTypes-mfh82qsn-CIm-hM8a.js';
+import { b as ze, u as Ie } from './useUnifiedBookings-mfh82qsn-w0TipWxN.js';
+import { M as he } from './Modal-mfh82qsn-CAuX7xtz.js';
+import './vendor-mfh82qsn-D3F3s8fL.js';
+import './firebase-mfh82qsn-X_I_guKF.js';
+import './unified-booking-service-mfh82qsn-s4tISnVR.js';
 function De({
-  T: i,
-  ds: x,
-  lessonConfig: c,
+  T: s,
+  ds: u,
+  lessonConfig: d,
   updateLessonConfig: N,
-  instructors: r,
-  players: I,
+  instructors: b,
+  players: w,
   setState: n,
-  state: o,
-  courts: j,
-  onClearAllLessons: d,
-  lessonBookingsCount: y,
+  state: t,
+  courts: y,
+  onClearAllLessons: c,
+  lessonBookingsCount: v,
 }) {
-  const [A, l] = u.useState('config'),
-    [k, L] = u.useState(!1),
-    [p, F] = u.useState(null),
-    [s, D] = u.useState(!1),
-    [B, H] = u.useState(null),
-    S = [
+  const [O, i] = m.useState('config'),
+    [S, A] = m.useState(!1),
+    [p, l] = m.useState(null),
+    [I, B] = m.useState(!1),
+    [D, W] = m.useState(null),
+    C = [
       { value: 0, label: 'Domenica' },
       { value: 1, label: 'Lunedì' },
       { value: 2, label: 'Martedì' },
@@ -36,67 +36,68 @@ function De({
       { value: 5, label: 'Venerdì' },
       { value: 6, label: 'Sabato' },
     ],
-    Q = u.useMemo(() => (I || []).filter((a) => a.category !== se.INSTRUCTOR), [I]),
-    T = () => {
-      N({ ...c, isEnabled: !c.isEnabled });
+    Q = m.useMemo(() => (w || []).filter((a) => a.category !== te.INSTRUCTOR), [w]),
+    H = () => {
+      N({ ...d, isEnabled: !d.isEnabled });
     },
     Y = (a) => {
-      const z = p
-        ? (c.timeSlots || []).map((m) => (m.id === p.id ? { ...m, ...a } : m))
-        : [...(c.timeSlots || []), { ...we(), ...a, id: fe() }];
-      (N({ ...c, timeSlots: z }), L(!1), F(null));
+      const k = p
+        ? (d.timeSlots || []).map((o) => (o.id === p.id ? { ...o, ...a } : o))
+        : [...(d.timeSlots || []), { ...Ce(), ...a, id: fe() }];
+      (N({ ...d, timeSlots: k }), A(!1), l(null));
     },
-    E = (a) => {
+    T = (a) => {
       confirm('Sei sicuro di voler eliminare questa fascia oraria?') &&
-        N({ ...c, timeSlots: (c.timeSlots || []).filter((z) => z.id !== a) });
+        N({ ...d, timeSlots: (d.timeSlots || []).filter((k) => k.id !== a) });
     },
     V = (a) => {
-      const z = (I || []).map((m) =>
-        m.id === B.id
+      const k = (w || []).map((o) =>
+        o.id === D.id
           ? {
-              ...m,
-              category: se.INSTRUCTOR,
-              instructorData: { ...m.instructorData, isInstructor: !0, ...a },
+              ...o,
+              category: te.INSTRUCTOR,
+              instructorData: { ...o.instructorData, isInstructor: !0, ...a },
             }
-          : m
+          : o
       );
-      (n((m) => ({ ...m, players: z })), D(!1), H(null));
+      (n((o) => ({ ...o, players: k })), B(!1), W(null));
     },
-    C = (a) => {
+    M = (a) => {
       if (confirm('Sei sicuro di voler rimuovere questo giocatore come istruttore?')) {
-        const z = (I || []).map((m) =>
-          m.id === a
+        const k = (w || []).map((o) =>
+          o.id === a
             ? {
-                ...m,
-                category: se.MEMBER,
-                instructorData: { ...m.instructorData, isInstructor: !1 },
+                ...o,
+                category: te.MEMBER,
+                instructorData: { ...o.instructorData, isInstructor: !1 },
               }
-            : m
+            : o
         );
-        n((m) => ({ ...m, players: z }));
+        n((o) => ({ ...o, players: k }));
       }
     };
   return e.jsxs('div', {
     className: 'space-y-6',
     children: [
       e.jsx('div', {
-        className: 'border-b border-gray-200 dark:border-gray-600',
+        className:
+          'border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-t-lg',
         children: e.jsx('nav', {
-          className: 'flex space-x-8 overflow-x-auto',
+          className: 'flex space-x-8 overflow-x-auto px-6 py-2',
           children: [
-            { id: 'config', label: 'Configurazione Generale', icon: '⚙️' },
-            { id: 'timeslots', label: 'Fasce Orarie', icon: '⏰' },
-            { id: 'instructors', label: 'Gestione Istruttori', icon: '👨‍🏫' },
-            { id: 'cleanup', label: 'Pulizia Dati', icon: '🗑️' },
+            { id: 'config', label: 'Configurazione Generale', icon: '⚙️', color: 'blue' },
+            { id: 'timeslots', label: 'Fasce Orarie', icon: '⏰', color: 'green' },
+            { id: 'instructors', label: 'Gestione Istruttori', icon: '👨‍🏫', color: 'purple' },
+            { id: 'cleanup', label: 'Pulizia Dati', icon: '🗑️', color: 'red' },
           ].map((a) =>
             e.jsxs(
               'button',
               {
-                onClick: () => l(a.id),
-                className: `py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${A === a.id ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500'}`,
+                onClick: () => i(a.id),
+                className: `py-3 px-4 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-2 ${O === a.id ? `border-${a.color}-500 text-${a.color}-600 dark:text-${a.color}-400 bg-${a.color}-50 dark:bg-${a.color}-900/20 rounded-t-lg` : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-t-lg'}`,
                 children: [
-                  e.jsx('span', { className: 'text-base mr-1', children: a.icon }),
-                  a.label,
+                  e.jsx('span', { className: 'text-base', children: a.icon }),
+                  e.jsx('span', { children: a.label }),
                 ],
               },
               a.id
@@ -104,75 +105,89 @@ function De({
           ),
         }),
       }),
-      A === 'config' &&
+      O === 'config' &&
         e.jsx('div', {
           className: 'space-y-6',
           children: e.jsx(K, {
             title: 'Configurazione Sistema Lezioni',
             variant: 'minimal',
-            T: i,
+            T: s,
             children: e.jsxs('div', {
               className: 'space-y-4',
               children: [
                 e.jsxs('div', {
                   className:
-                    'flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg',
+                    'flex items-center justify-between p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm',
                   children: [
                     e.jsxs('div', {
                       children: [
                         e.jsx('h3', {
-                          className: `${x.h6} font-medium mb-1`,
-                          children: 'Sistema Lezioni',
+                          className: `${u.h6} font-semibold mb-2 text-gray-900 dark:text-white flex items-center gap-2`,
+                          children: '🎾 Sistema Lezioni',
                         }),
                         e.jsx('p', {
-                          className: `text-sm ${i.subtext}`,
-                          children: c.isEnabled
-                            ? 'Il sistema di prenotazione lezioni è attivo'
-                            : 'Il sistema di prenotazione lezioni è disattivato',
+                          className: `text-sm ${s.subtext} max-w-md`,
+                          children: d.isEnabled
+                            ? '✅ Il sistema di prenotazione lezioni è attivo e funzionante'
+                            : '❌ Il sistema di prenotazione lezioni è disattivato',
                         }),
                       ],
                     }),
                     e.jsx('button', {
-                      onClick: T,
-                      className: `px-4 py-2 rounded-lg font-medium ${c.isEnabled ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50' : 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50'}`,
-                      children: c.isEnabled ? 'Disattiva' : 'Attiva',
+                      onClick: H,
+                      className: `px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg ${d.isEnabled ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/60 border border-red-300 dark:border-red-700' : 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/60 border border-green-300 dark:border-green-700'}`,
+                      children: d.isEnabled ? '🛑 Disattiva' : '🚀 Attiva',
                     }),
                   ],
                 }),
                 e.jsxs('div', {
-                  className: 'grid gap-4 sm:grid-cols-2',
+                  className: 'grid gap-6 sm:grid-cols-2',
                   children: [
                     e.jsxs('div', {
+                      className:
+                        'p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm',
                       children: [
                         e.jsx('label', {
-                          className: `block ${x.label} mb-2`,
-                          children: 'Giorni di Anticipo per Prenotazione',
+                          className: `block ${u.label} mb-3 flex items-center gap-2 text-gray-900 dark:text-white font-medium`,
+                          children: '📅 Giorni di Anticipo per Prenotazione',
                         }),
                         e.jsx('input', {
                           type: 'number',
                           min: '1',
                           max: '30',
-                          value: c.bookingAdvanceDays,
+                          value: d.bookingAdvanceDays,
                           onChange: (a) =>
-                            N({ ...c, bookingAdvanceDays: parseInt(a.target.value) || 14 }),
-                          className: `w-full p-2 ${i.cardBg} ${i.border} ${i.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                            N({ ...d, bookingAdvanceDays: parseInt(a.target.value) || 14 }),
+                          className:
+                            'w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white',
+                        }),
+                        e.jsx('p', {
+                          className: 'text-xs text-gray-500 dark:text-gray-400 mt-2',
+                          children: 'Quanto in anticipo si può prenotare',
                         }),
                       ],
                     }),
                     e.jsxs('div', {
+                      className:
+                        'p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm',
                       children: [
                         e.jsx('label', {
-                          className: `block ${x.label} mb-2`,
-                          children: 'Ore Prima per Cancellazione',
+                          className: `block ${u.label} mb-3 flex items-center gap-2 text-gray-900 dark:text-white font-medium`,
+                          children: '⏰ Ore Prima per Cancellazione',
                         }),
                         e.jsx('input', {
                           type: 'number',
                           min: '1',
                           max: '72',
-                          value: c.cancellationHours,
+                          value: d.cancellationHours,
                           onChange: (a) =>
-                            N({ ...c, cancellationHours: parseInt(a.target.value) || 24 }),
-                          className: `w-full p-2 ${i.cardBg} ${i.border} ${i.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                            N({ ...d, cancellationHours: parseInt(a.target.value) || 24 }),
+                          className:
+                            'w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white',
+                        }),
+                        e.jsx('p', {
+                          className: 'text-xs text-gray-500 dark:text-gray-400 mt-2',
+                          children: 'Limite per cancellazioni gratuite',
                         }),
                       ],
                     }),
@@ -182,36 +197,38 @@ function De({
             }),
           }),
         }),
-      A === 'timeslots' &&
+      O === 'timeslots' &&
         e.jsx('div', {
           className: 'space-y-6',
           children: e.jsx(K, {
             title: 'Gestione Fasce Orarie',
             variant: 'minimal',
-            T: i,
+            T: s,
             children: e.jsxs('div', {
               className: 'space-y-4',
               children: [
                 e.jsx('button', {
-                  onClick: () => L(!0),
-                  className: 'px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700',
+                  onClick: () => A(!0),
+                  className:
+                    'px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600',
                   children: '+ Aggiungi Fascia Oraria',
                 }),
-                (c.timeSlots || []).length === 0
+                '              ',
+                (d.timeSlots || []).length === 0
                   ? e.jsx('div', {
-                      className: 'text-center py-8 text-gray-500',
+                      className: `text-center py-8 ${s.subtext}`,
                       children:
                         'Nessuna fascia oraria configurata. Crea la prima fascia per iniziare.',
                     })
                   : e.jsx('div', {
                       className: 'space-y-3',
-                      children: (c.timeSlots || []).map((a) => {
-                        const z = S.find((R) => R.value === a.dayOfWeek)?.label || 'Sconosciuto',
-                          m = (r || []).filter((R) => a.instructorIds.includes(R.id));
+                      children: (d.timeSlots || []).map((a) => {
+                        const k = C.find((F) => F.value === a.dayOfWeek)?.label || 'Sconosciuto',
+                          o = (b || []).filter((F) => a.instructorIds.includes(F.id));
                         return e.jsx(
                           'div',
                           {
-                            className: `${i.cardBg} ${i.border} ${i.borderMd} p-4`,
+                            className: `${s.cardBg} ${s.border} ${s.borderMd} p-4`,
                             children: e.jsxs('div', {
                               className: 'flex items-start justify-between',
                               children: [
@@ -222,32 +239,33 @@ function De({
                                       className: 'flex items-center gap-3 mb-2',
                                       children: [
                                         e.jsxs('h4', {
-                                          className: `${x.h6} font-medium`,
-                                          children: [z, ' • ', a.startTime, ' - ', a.endTime],
+                                          className: `${u.h6} font-medium`,
+                                          children: [k, ' • ', a.startTime, ' - ', a.endTime],
                                         }),
                                         e.jsx(be, {
                                           variant: a.isActive ? 'success' : 'default',
                                           size: 'sm',
-                                          T: i,
+                                          T: s,
                                           children: a.isActive ? 'Attiva' : 'Inattiva',
                                         }),
                                       ],
                                     }),
                                     e.jsxs('div', {
-                                      className: 'flex items-center gap-4 text-sm text-gray-600',
+                                      className:
+                                        'flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400',
                                       children: [
                                         e.jsxs('span', {
                                           children: ['Max prenotazioni: ', a.maxBookings],
                                         }),
-                                        e.jsxs('span', { children: ['Istruttori: ', m.length] }),
+                                        e.jsxs('span', { children: ['Istruttori: ', o.length] }),
                                       ],
                                     }),
-                                    m.length > 0 &&
+                                    o.length > 0 &&
                                       e.jsx('div', {
                                         className: 'mt-2',
                                         children: e.jsx('div', {
                                           className: 'flex flex-wrap gap-1',
-                                          children: m.map((R) =>
+                                          children: o.map((F) =>
                                             e.jsxs(
                                               'div',
                                               {
@@ -257,13 +275,13 @@ function De({
                                                   e.jsx('div', {
                                                     className: 'w-3 h-3 rounded-full',
                                                     style: {
-                                                      backgroundColor: R.instructorData?.color,
+                                                      backgroundColor: F.instructorData?.color,
                                                     },
                                                   }),
-                                                  R.name,
+                                                  F.name,
                                                 ],
                                               },
-                                              R.id
+                                              F.id
                                             )
                                           ),
                                         }),
@@ -275,14 +293,16 @@ function De({
                                   children: [
                                     e.jsx('button', {
                                       onClick: () => {
-                                        (F(a), L(!0));
+                                        (l(a), A(!0));
                                       },
-                                      className: 'text-blue-600 hover:text-blue-700',
+                                      className:
+                                        'text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300',
                                       children: 'Modifica',
                                     }),
                                     e.jsx('button', {
-                                      onClick: () => E(a.id),
-                                      className: 'text-red-600 hover:text-red-700',
+                                      onClick: () => T(a.id),
+                                      className:
+                                        'text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300',
                                       children: 'Elimina',
                                     }),
                                   ],
@@ -298,34 +318,34 @@ function De({
             }),
           }),
         }),
-      A === 'instructors' &&
+      O === 'instructors' &&
         e.jsx('div', {
           className: 'space-y-6',
           children: e.jsx(K, {
             title: 'Gestione Istruttori',
             variant: 'minimal',
-            T: i,
+            T: s,
             children: e.jsxs('div', {
               className: 'space-y-6',
               children: [
                 e.jsxs('div', {
                   children: [
                     e.jsxs('h3', {
-                      className: `${x.h6} font-medium mb-3`,
-                      children: ['Istruttori Attivi (', r.length, ')'],
+                      className: `${u.h6} font-medium mb-3`,
+                      children: ['Istruttori Attivi (', b.length, ')'],
                     }),
-                    r.length === 0
+                    b.length === 0
                       ? e.jsx('div', {
-                          className: 'text-center py-6 text-gray-500',
+                          className: `text-center py-6 ${s.subtext}`,
                           children: 'Nessun istruttore configurato',
                         })
                       : e.jsx('div', {
                           className: 'space-y-3',
-                          children: r.map((a) =>
+                          children: b.map((a) =>
                             e.jsx(
                               'div',
                               {
-                                className: `${i.cardBg} ${i.border} ${i.borderMd} p-4`,
+                                className: `${s.cardBg} ${s.border} rounded-lg p-4 hover:shadow-lg dark:hover:shadow-gray-700/50 transition-all duration-200`,
                                 children: e.jsxs('div', {
                                   className: 'flex items-center justify-between',
                                   children: [
@@ -334,56 +354,55 @@ function De({
                                       children: [
                                         e.jsx('div', {
                                           className:
-                                            'w-10 h-10 rounded-full flex items-center justify-center text-white font-bold',
+                                            'w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md',
                                           style: { backgroundColor: a.instructorData?.color },
                                           children: a.name?.charAt(0) || '?',
                                         }),
                                         e.jsxs('div', {
                                           children: [
                                             e.jsx('h4', {
-                                              className: `${x.h6} font-medium`,
+                                              className: `${u.h6} font-medium text-gray-900 dark:text-white`,
                                               children: a.name,
                                             }),
                                             e.jsxs('div', {
-                                              className:
-                                                'flex flex-col gap-1 text-sm text-gray-600',
+                                              className: 'flex flex-col gap-2 text-sm',
                                               children: [
                                                 e.jsxs('div', {
-                                                  className: 'flex flex-wrap gap-2',
+                                                  className: 'flex flex-wrap gap-1.5',
                                                   children: [
                                                     a.instructorData?.priceSingle > 0 &&
                                                       e.jsxs('span', {
                                                         className:
-                                                          'px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded text-xs',
+                                                          'px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium border border-blue-200 dark:border-blue-700',
                                                         children: [
-                                                          'Singola: €',
+                                                          '💼 €',
                                                           a.instructorData.priceSingle,
                                                         ],
                                                       }),
                                                     a.instructorData?.priceCouple > 0 &&
                                                       e.jsxs('span', {
                                                         className:
-                                                          'px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded text-xs',
+                                                          'px-2 py-1 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 rounded-full text-xs font-medium border border-green-200 dark:border-green-700',
                                                         children: [
-                                                          'Coppia: €',
+                                                          '👥 €',
                                                           a.instructorData.priceCouple,
                                                         ],
                                                       }),
                                                     a.instructorData?.priceThree > 0 &&
                                                       e.jsxs('span', {
                                                         className:
-                                                          'px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 rounded text-xs',
+                                                          'px-2 py-1 bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium border border-purple-200 dark:border-purple-700',
                                                         children: [
-                                                          'Tre: €',
+                                                          '👥👤 €',
                                                           a.instructorData.priceThree,
                                                         ],
                                                       }),
                                                     a.instructorData?.priceMatchLesson > 0 &&
                                                       e.jsxs('span', {
                                                         className:
-                                                          'px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 rounded text-xs',
+                                                          'px-2 py-1 bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-200 rounded-full text-xs font-medium border border-orange-200 dark:border-orange-700',
                                                         children: [
-                                                          'Partita: €',
+                                                          '🏆 €',
                                                           a.instructorData.priceMatchLesson,
                                                         ],
                                                       }),
@@ -394,9 +413,9 @@ function De({
                                                       a.instructorData?.hourlyRate > 0 &&
                                                       e.jsxs('span', {
                                                         className:
-                                                          'px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded text-xs',
+                                                          'px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full text-xs font-medium border border-gray-200 dark:border-gray-600',
                                                         children: [
-                                                          '€',
+                                                          '⏰ €',
                                                           a.instructorData.hourlyRate,
                                                           '/ora',
                                                         ],
@@ -404,9 +423,20 @@ function De({
                                                   ],
                                                 }),
                                                 a.instructorData?.specialties?.length > 0 &&
-                                                  e.jsx('span', {
-                                                    children:
-                                                      a.instructorData.specialties.join(', '),
+                                                  e.jsx('div', {
+                                                    className: 'flex flex-wrap gap-1',
+                                                    children: a.instructorData.specialties.map(
+                                                      (k, o) =>
+                                                        e.jsxs(
+                                                          'span',
+                                                          {
+                                                            className:
+                                                              'px-2 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded text-xs border border-indigo-200 dark:border-indigo-700',
+                                                            children: ['⭐ ', k],
+                                                          },
+                                                          o
+                                                        )
+                                                    ),
                                                   }),
                                               ],
                                             }),
@@ -419,15 +449,17 @@ function De({
                                       children: [
                                         e.jsx('button', {
                                           onClick: () => {
-                                            (H(a), D(!0));
+                                            (W(a), B(!0));
                                           },
-                                          className: 'text-blue-600 hover:text-blue-700',
-                                          children: 'Modifica',
+                                          className:
+                                            'px-3 py-1.5 text-blue-600 dark:text-blue-400 hover:text-white hover:bg-blue-600 dark:hover:bg-blue-500 border border-blue-600 dark:border-blue-400 rounded-lg transition-all duration-200 font-medium text-sm',
+                                          children: '✏️ Modifica',
                                         }),
                                         e.jsx('button', {
-                                          onClick: () => C(a.id),
-                                          className: 'text-red-600 hover:text-red-700',
-                                          children: 'Rimuovi',
+                                          onClick: () => M(a.id),
+                                          className:
+                                            'px-3 py-1.5 text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 dark:hover:bg-red-500 border border-red-600 dark:border-red-400 rounded-lg transition-all duration-200 font-medium text-sm',
+                                          children: '🗑️ Rimuovi',
                                         }),
                                       ],
                                     }),
@@ -443,12 +475,12 @@ function De({
                 e.jsxs('div', {
                   children: [
                     e.jsx('h3', {
-                      className: `${x.h6} font-medium mb-3`,
+                      className: `${u.h6} font-medium mb-3`,
                       children: 'Aggiungi Istruttore',
                     }),
                     Q.length === 0
                       ? e.jsx('div', {
-                          className: 'text-center py-6 text-gray-500',
+                          className: `text-center py-6 ${s.subtext}`,
                           children:
                             'Tutti i giocatori sono già istruttori o non ci sono giocatori disponibili',
                         })
@@ -459,29 +491,47 @@ function De({
                               e.jsx(
                                 'div',
                                 {
-                                  className: `${i.cardBg} ${i.border} ${i.borderMd} p-4`,
+                                  className: `${s.cardBg} ${s.border} rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-700/50 transition-all duration-200`,
                                   children: e.jsxs('div', {
                                     className: 'flex items-center justify-between',
                                     children: [
                                       e.jsxs('div', {
+                                        className: 'flex items-center gap-3',
                                         children: [
-                                          e.jsx('h4', {
-                                            className: `${x.h6} font-medium`,
-                                            children: a.name,
+                                          e.jsx('div', {
+                                            className:
+                                              'w-10 h-10 rounded-full bg-gradient-to-r from-gray-400 to-gray-600 dark:from-gray-600 dark:to-gray-800 flex items-center justify-center text-white font-bold shadow-md',
+                                            children: a.name?.charAt(0) || '?',
                                           }),
-                                          e.jsxs('p', {
-                                            className: `text-sm ${i.subtext}`,
-                                            children: [a.email, ' • ', a.category],
+                                          e.jsxs('div', {
+                                            children: [
+                                              e.jsx('h4', {
+                                                className: `${u.h6} font-medium text-gray-900 dark:text-white`,
+                                                children: a.name,
+                                              }),
+                                              e.jsxs('p', {
+                                                className: `text-sm ${s.subtext} flex items-center gap-2`,
+                                                children: [
+                                                  e.jsxs('span', { children: ['📧 ', a.email] }),
+                                                  e.jsx('span', { children: '•' }),
+                                                  e.jsx('span', {
+                                                    className:
+                                                      'px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-medium',
+                                                    children: a.category,
+                                                  }),
+                                                ],
+                                              }),
+                                            ],
                                           }),
                                         ],
                                       }),
                                       e.jsx('button', {
                                         onClick: () => {
-                                          (H(a), D(!0));
+                                          (W(a), B(!0));
                                         },
                                         className:
-                                          'px-3 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200',
-                                        children: 'Rendi Istruttore',
+                                          'px-4 py-2 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/60 border border-green-300 dark:border-green-700 font-medium transition-all duration-200 shadow-sm hover:shadow-md',
+                                        children: '➕ Rendi Istruttore',
                                       }),
                                     ],
                                   }),
@@ -491,7 +541,7 @@ function De({
                             ),
                             Q.length > 5 &&
                               e.jsxs('p', {
-                                className: `text-sm ${i.subtext} text-center`,
+                                className: `text-sm ${s.subtext} text-center`,
                                 children: ['... e altri ', Q.length - 5, ' giocatori'],
                               }),
                           ],
@@ -502,35 +552,37 @@ function De({
             }),
           }),
         }),
-      A === 'cleanup' &&
+      O === 'cleanup' &&
         e.jsx('div', {
           className: 'space-y-6',
           children: e.jsx(K, {
             title: 'Pulizia Dati di Test',
             variant: 'minimal',
-            T: i,
+            T: s,
             children: e.jsxs('div', {
               className: 'space-y-4',
               children: [
                 e.jsxs('div', {
-                  className: 'bg-yellow-50 border border-yellow-200 rounded-lg p-4',
+                  className:
+                    'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4',
                   children: [
                     e.jsxs('div', {
-                      className: 'flex items-center gap-2 text-yellow-800 mb-2',
+                      className:
+                        'flex items-center gap-2 text-yellow-800 dark:text-yellow-200 mb-2',
                       children: [
                         e.jsx('span', { className: 'text-xl', children: '⚠️' }),
                         e.jsx('h3', { className: 'font-semibold', children: 'Attenzione' }),
                       ],
                     }),
                     e.jsx('p', {
-                      className: 'text-sm text-yellow-700',
+                      className: 'text-sm text-yellow-700 dark:text-yellow-300',
                       children:
                         'Questa sezione permette di cancellare tutte le prenotazioni di lezione di test. Le prenotazioni dei campi associate verranno anche cancellate automaticamente.',
                     }),
                   ],
                 }),
                 e.jsxs('div', {
-                  className: `${i.cardBg} ${i.border} ${i.borderMd} p-6 rounded-lg`,
+                  className: `${s.cardBg} ${s.border} ${s.borderMd} p-6 rounded-lg`,
                   children: [
                     e.jsxs('div', {
                       className: 'flex items-center justify-between mb-4',
@@ -538,36 +590,37 @@ function De({
                         e.jsxs('div', {
                           children: [
                             e.jsx('h3', {
-                              className: `${x.h6} font-medium`,
+                              className: `${u.h6} font-medium`,
                               children: 'Prenotazioni Lezioni Presenti',
                             }),
                             e.jsx('p', {
-                              className: `text-sm ${i.subtext}`,
+                              className: `text-sm ${s.subtext}`,
                               children:
-                                y === 0
+                                v === 0
                                   ? 'Nessuna prenotazione di lezione presente'
-                                  : y === 1
+                                  : v === 1
                                     ? '1 prenotazione di lezione presente'
-                                    : `${y} prenotazioni di lezione presenti`,
+                                    : `${v} prenotazioni di lezione presenti`,
                             }),
                           ],
                         }),
                         e.jsx('div', { className: 'text-3xl', children: '🗑️' }),
                       ],
                     }),
-                    y > 0
+                    v > 0
                       ? e.jsxs('div', {
                           className: 'space-y-3',
                           children: [
                             e.jsx('div', {
-                              className: 'bg-red-50 border border-red-200 rounded p-3',
+                              className:
+                                'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded p-3',
                               children: e.jsxs('p', {
-                                className: 'text-sm text-red-700',
+                                className: 'text-sm text-red-700 dark:text-red-300',
                                 children: [
                                   e.jsx('strong', { children: 'Cosa verrà eliminato:' }),
                                   e.jsx('br', {}),
                                   '• ',
-                                  y,
+                                  v,
                                   ' prenotazione/i di lezione',
                                   e.jsx('br', {}),
                                   '• I relativi slot prenotati nei campi',
@@ -577,15 +630,15 @@ function De({
                               }),
                             }),
                             e.jsx('button', {
-                              onClick: d,
+                              onClick: c,
                               className:
-                                'w-full px-4 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors',
+                                'w-full px-4 py-3 bg-red-600 dark:bg-red-700 text-white font-medium rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-colors',
                               children: '🗑️ Cancella Tutte le Prenotazioni di Lezione',
                             }),
                           ],
                         })
                       : e.jsxs('div', {
-                          className: 'text-center py-6 text-gray-500',
+                          className: `text-center py-6 ${s.subtext}`,
                           children: [
                             e.jsx('div', { className: 'text-4xl mb-2', children: '✨' }),
                             e.jsx('p', {
@@ -596,14 +649,14 @@ function De({
                   ],
                 }),
                 e.jsxs('div', {
-                  className: `${i.cardBg} ${i.border} ${i.borderMd} p-4 rounded-lg`,
+                  className: `${s.cardBg} ${s.border} ${s.borderMd} p-4 rounded-lg`,
                   children: [
                     e.jsx('h4', {
-                      className: `${x.h6} font-medium mb-2`,
+                      className: `${u.h6} font-medium mb-2`,
                       children: 'Come funziona la pulizia:',
                     }),
                     e.jsxs('ul', {
-                      className: 'text-sm space-y-1 text-gray-600',
+                      className: `text-sm space-y-1 ${s.subtext}`,
                       children: [
                         e.jsx('li', {
                           children: '• Cancella tutte le prenotazioni di lezione dal localStorage',
@@ -626,47 +679,47 @@ function De({
             }),
           }),
         }),
-      k &&
+      S &&
         e.jsx(Me, {
-          isOpen: k,
+          isOpen: S,
           onClose: () => {
-            (L(!1), F(null));
+            (A(!1), l(null));
           },
           timeSlot: p,
-          instructors: r,
-          courts: j,
-          weekDays: S,
+          instructors: b,
+          courts: y,
+          weekDays: C,
           onSave: Y,
-          T: i,
-          ds: x,
+          T: s,
+          ds: u,
         }),
-      s &&
-        B &&
+      I &&
+        D &&
         e.jsx(Le, {
-          isOpen: s,
+          isOpen: I,
           onClose: () => {
-            (D(!1), H(null));
+            (B(!1), W(null));
           },
-          player: B,
+          player: D,
           onSave: V,
-          T: i,
-          ds: x,
+          T: s,
+          ds: u,
         }),
     ],
   });
 }
 function Me({
-  isOpen: i,
-  onClose: x,
-  timeSlot: c,
+  isOpen: s,
+  onClose: u,
+  timeSlot: d,
   instructors: N,
-  courts: r,
-  weekDays: I,
+  courts: b,
+  weekDays: w,
   onSave: n,
-  T: o,
-  ds: j,
+  T: t,
+  ds: y,
 }) {
-  const [d, y] = u.useState(() => ({
+  const [c, v] = m.useState(() => ({
       dayOfWeek: 1,
       startTime: '09:00',
       endTime: '10:00',
@@ -674,49 +727,49 @@ function Me({
       courtIds: [],
       maxBookings: 1,
       isActive: !0,
-      ...c,
+      ...d,
     })),
-    A = (l) => {
-      if ((l.preventDefault(), !d.startTime || !d.endTime)) {
+    O = (i) => {
+      if ((i.preventDefault(), !c.startTime || !c.endTime)) {
         alert('Inserisci orario di inizio e fine');
         return;
       }
-      if (d.startTime >= d.endTime) {
+      if (c.startTime >= c.endTime) {
         alert("L'orario di fine deve essere dopo quello di inizio");
         return;
       }
-      if (d.instructorIds.length === 0) {
+      if (c.instructorIds.length === 0) {
         alert('Seleziona almeno un istruttore');
         return;
       }
-      if (d.courtIds.length === 0) {
+      if (c.courtIds.length === 0) {
         alert('Seleziona almeno un campo');
         return;
       }
-      n(d);
+      n(c);
     };
   return e.jsx(he, {
-    isOpen: i,
-    onClose: x,
-    title: c ? 'Modifica Fascia Oraria' : 'Aggiungi Fascia Oraria',
+    isOpen: s,
+    onClose: u,
+    title: d ? 'Modifica Fascia Oraria' : 'Aggiungi Fascia Oraria',
     size: 'medium',
-    T: o,
+    T: t,
     children: e.jsxs('form', {
-      onSubmit: A,
+      onSubmit: O,
       className: 'space-y-4',
       children: [
         e.jsxs('div', {
           children: [
             e.jsx('label', {
-              className: `block ${j.label} mb-2`,
+              className: `block ${y.label} mb-2`,
               children: 'Giorno della Settimana *',
             }),
             e.jsx('select', {
-              value: d.dayOfWeek,
-              onChange: (l) => y({ ...d, dayOfWeek: parseInt(l.target.value) }),
-              className: `w-full p-2 ${o.cardBg} ${o.border} ${o.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
-              children: I.map((l) =>
-                e.jsx('option', { value: l.value, children: l.label }, l.value)
+              value: c.dayOfWeek,
+              onChange: (i) => v({ ...c, dayOfWeek: parseInt(i.target.value) }),
+              className: `w-full p-2 ${t.cardBg} ${t.border} ${t.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+              children: w.map((i) =>
+                e.jsx('option', { value: i.value, children: i.label }, i.value)
               ),
             }),
           ],
@@ -726,23 +779,23 @@ function Me({
           children: [
             e.jsxs('div', {
               children: [
-                e.jsx('label', { className: `block ${j.label} mb-2`, children: 'Ora Inizio *' }),
+                e.jsx('label', { className: `block ${y.label} mb-2`, children: 'Ora Inizio *' }),
                 e.jsx('input', {
                   type: 'time',
-                  value: d.startTime,
-                  onChange: (l) => y({ ...d, startTime: l.target.value }),
-                  className: `w-full p-2 ${o.cardBg} ${o.border} ${o.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                  value: c.startTime,
+                  onChange: (i) => v({ ...c, startTime: i.target.value }),
+                  className: `w-full p-2 ${t.cardBg} ${t.border} ${t.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
                 }),
               ],
             }),
             e.jsxs('div', {
               children: [
-                e.jsx('label', { className: `block ${j.label} mb-2`, children: 'Ora Fine *' }),
+                e.jsx('label', { className: `block ${y.label} mb-2`, children: 'Ora Fine *' }),
                 e.jsx('input', {
                   type: 'time',
-                  value: d.endTime,
-                  onChange: (l) => y({ ...d, endTime: l.target.value }),
-                  className: `w-full p-2 ${o.cardBg} ${o.border} ${o.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+                  value: c.endTime,
+                  onChange: (i) => v({ ...c, endTime: i.target.value }),
+                  className: `w-full p-2 ${t.cardBg} ${t.border} ${t.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
                 }),
               ],
             }),
@@ -751,28 +804,28 @@ function Me({
         e.jsxs('div', {
           children: [
             e.jsx('label', {
-              className: `block ${j.label} mb-2`,
+              className: `block ${y.label} mb-2`,
               children: 'Numero Massimo Prenotazioni',
             }),
             e.jsx('input', {
               type: 'number',
               min: '1',
               max: '10',
-              value: d.maxBookings,
-              onChange: (l) => y({ ...d, maxBookings: parseInt(l.target.value) || 1 }),
-              className: `w-full p-2 ${o.cardBg} ${o.border} ${o.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
+              value: c.maxBookings,
+              onChange: (i) => v({ ...c, maxBookings: parseInt(i.target.value) || 1 }),
+              className: `w-full p-2 ${t.cardBg} ${t.border} ${t.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
             }),
           ],
         }),
         e.jsxs('div', {
           children: [
             e.jsx('label', {
-              className: `block ${j.label} mb-2`,
+              className: `block ${y.label} mb-2`,
               children: 'Istruttori Disponibili *',
             }),
             e.jsx('div', {
-              className: 'space-y-2 max-h-40 overflow-y-auto border rounded p-2',
-              children: N.map((l) =>
+              className: `space-y-2 max-h-40 overflow-y-auto border rounded p-2 ${t.border} ${t.cardBg}`,
+              children: N.map((i) =>
                 e.jsxs(
                   'label',
                   {
@@ -780,14 +833,14 @@ function Me({
                     children: [
                       e.jsx('input', {
                         type: 'checkbox',
-                        checked: d.instructorIds.includes(l.id),
-                        onChange: (k) => {
-                          const { checked: L } = k.target;
-                          y({
-                            ...d,
-                            instructorIds: L
-                              ? [...d.instructorIds, l.id]
-                              : d.instructorIds.filter((p) => p !== l.id),
+                        checked: c.instructorIds.includes(i.id),
+                        onChange: (S) => {
+                          const { checked: A } = S.target;
+                          v({
+                            ...c,
+                            instructorIds: A
+                              ? [...c.instructorIds, i.id]
+                              : c.instructorIds.filter((p) => p !== i.id),
                           });
                         },
                         className: 'rounded',
@@ -797,14 +850,14 @@ function Me({
                         children: [
                           e.jsx('div', {
                             className: 'w-4 h-4 rounded-full',
-                            style: { backgroundColor: l.instructorData?.color },
+                            style: { backgroundColor: i.instructorData?.color },
                           }),
-                          e.jsx('span', { children: l.name }),
+                          e.jsx('span', { className: t.text, children: i.name }),
                         ],
                       }),
                     ],
                   },
-                  l.id
+                  i.id
                 )
               ),
             }),
@@ -812,12 +865,12 @@ function Me({
         }),
         e.jsxs('div', {
           children: [
-            e.jsx('label', { className: `block ${j.label} mb-2`, children: 'Campi Disponibili *' }),
+            e.jsx('label', { className: `block ${y.label} mb-2`, children: 'Campi Disponibili *' }),
             e.jsx('div', {
-              className: 'space-y-2 max-h-40 overflow-y-auto border rounded p-2',
+              className: `space-y-2 max-h-40 overflow-y-auto border rounded p-2 ${t.border} ${t.cardBg}`,
               children:
-                r &&
-                r.map((l) =>
+                b &&
+                b.map((i) =>
                   e.jsxs(
                     'label',
                     {
@@ -825,14 +878,14 @@ function Me({
                       children: [
                         e.jsx('input', {
                           type: 'checkbox',
-                          checked: d.courtIds.includes(l.id),
-                          onChange: (k) => {
-                            const { checked: L } = k.target;
-                            y({
-                              ...d,
-                              courtIds: L
-                                ? [...d.courtIds, l.id]
-                                : d.courtIds.filter((p) => p !== l.id),
+                          checked: c.courtIds.includes(i.id),
+                          onChange: (S) => {
+                            const { checked: A } = S.target;
+                            v({
+                              ...c,
+                              courtIds: A
+                                ? [...c.courtIds, i.id]
+                                : c.courtIds.filter((p) => p !== i.id),
                             });
                           },
                           className: 'rounded',
@@ -842,25 +895,28 @@ function Me({
                           children: [
                             e.jsx('div', {
                               className: 'w-4 h-4 rounded border',
-                              style: { backgroundColor: l.surface?.color || '#e5e7eb' },
+                              style: { backgroundColor: i.surface?.color || '#e5e7eb' },
                             }),
-                            e.jsx('span', { children: l.name || `Campo ${l.id}` }),
-                            l.surface?.type &&
+                            e.jsx('span', {
+                              className: t.text,
+                              children: i.name || `Campo ${i.id}`,
+                            }),
+                            i.surface?.type &&
                               e.jsx('span', {
-                                className: `text-xs px-2 py-1 ${o.cardBg} rounded`,
-                                children: l.surface.type,
+                                className: `text-xs px-2 py-1 ${t.cardBg} ${t.border} rounded`,
+                                children: i.surface.type,
                               }),
                           ],
                         }),
                       ],
                     },
-                    l.id
+                    i.id
                   )
                 ),
             }),
-            (!r || r.length === 0) &&
+            (!b || b.length === 0) &&
               e.jsx('p', {
-                className: 'text-sm text-gray-500 mt-1',
+                className: `text-sm ${t.subtext} mt-1`,
                 children: 'Nessun campo configurato. Vai alla sezione Campi per aggiungerne.',
               }),
           ],
@@ -871,13 +927,13 @@ function Me({
             e.jsx('input', {
               type: 'checkbox',
               id: 'isActive',
-              checked: d.isActive,
-              onChange: (l) => y({ ...d, isActive: l.target.checked }),
+              checked: c.isActive,
+              onChange: (i) => v({ ...c, isActive: i.target.checked }),
               className: 'rounded',
             }),
             e.jsx('label', {
               htmlFor: 'isActive',
-              className: j.label,
+              className: y.label,
               children: 'Fascia oraria attiva',
             }),
           ],
@@ -887,15 +943,15 @@ function Me({
           children: [
             e.jsx('button', {
               type: 'button',
-              onClick: x,
-              className: `flex-1 py-2 px-4 ${o.cardBg} ${o.border} ${o.borderMd} hover:bg-gray-50 dark:hover:bg-gray-700`,
+              onClick: u,
+              className: `flex-1 py-2 px-4 ${t.cardBg} ${t.border} ${t.borderMd} hover:bg-gray-50 dark:hover:bg-gray-700`,
               children: 'Annulla',
             }),
             e.jsxs('button', {
               type: 'submit',
               className:
                 'flex-1 py-2 px-4 bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-600',
-              children: [c ? 'Aggiorna' : 'Crea', ' Fascia Oraria'],
+              children: [d ? 'Aggiorna' : 'Crea', ' Fascia Oraria'],
             }),
           ],
         }),
@@ -903,8 +959,8 @@ function Me({
     }),
   });
 }
-function Le({ isOpen: i, onClose: x, player: c, onSave: N, T: r, ds: I }) {
-  const [n, o] = u.useState(() => ({
+function Le({ isOpen: s, onClose: u, player: d, onSave: N, T: b, ds: w }) {
+  const [n, t] = m.useState(() => ({
       color: '#3B82F6',
       hourlyRate: 0,
       priceSingle: 0,
@@ -914,12 +970,12 @@ function Le({ isOpen: i, onClose: x, player: c, onSave: N, T: r, ds: I }) {
       specialties: [],
       bio: '',
       certifications: [],
-      ...c.instructorData,
+      ...d.instructorData,
     })),
-    [j, d] = u.useState(''),
-    [y, A] = u.useState(''),
-    l = ['Padel', 'Tennis', 'Fitness', 'Calcio', 'Basket'],
-    k = [
+    [y, c] = m.useState(''),
+    [v, O] = m.useState(''),
+    i = ['Padel', 'Tennis', 'Fitness'],
+    S = [
       '#3B82F6',
       '#EF4444',
       '#10B981',
@@ -931,227 +987,322 @@ function Le({ isOpen: i, onClose: x, player: c, onSave: N, T: r, ds: I }) {
       '#F97316',
       '#6366F1',
     ],
-    L = (s) => {
-      (s.preventDefault(), N(n));
+    A = (l) => {
+      (l.preventDefault(), N(n));
     },
     p = () => {
-      j.trim() &&
-        !n.specialties.includes(j.trim()) &&
-        (o({ ...n, specialties: [...n.specialties, j.trim()] }), d(''));
-    },
-    F = (s) => {
-      o({ ...n, specialties: n.specialties.filter((D) => D !== s) });
+      y.trim() &&
+        !n.specialties.includes(y.trim()) &&
+        (t({ ...n, specialties: [...n.specialties, y.trim()] }), c(''));
     };
   return e.jsx(he, {
-    isOpen: i,
-    onClose: x,
-    title: `Configura Istruttore: ${c.name}`,
-    size: 'large',
-    T: r,
+    isOpen: s,
+    onClose: u,
+    title: `Configura Istruttore: ${d.name}`,
+    size: 'extraLarge',
+    T: b,
     children: e.jsxs('form', {
-      onSubmit: L,
-      className: 'space-y-4',
+      onSubmit: A,
+      className: 'space-y-3',
       children: [
         e.jsxs('div', {
           children: [
-            e.jsx('label', { className: `block ${I.label} mb-2`, children: 'Colore Istruttore' }),
+            e.jsx('label', { className: `block ${w.label} mb-2`, children: 'Colore Istruttore' }),
             e.jsx('div', {
-              className: 'flex gap-2 mb-2',
-              children: k.map((s) =>
+              className: 'flex gap-2 mb-2 flex-wrap',
+              children: S.map((l) =>
                 e.jsx(
                   'button',
                   {
                     type: 'button',
-                    onClick: () => o({ ...n, color: s }),
-                    className: `w-8 h-8 rounded-full border-2 ${n.color === s ? 'border-gray-800' : 'border-gray-300'}`,
-                    style: { backgroundColor: s },
+                    onClick: () => t({ ...n, color: l }),
+                    className: `w-8 h-8 rounded-full border-2 transition-all duration-200 hover:scale-110 ${n.color === l ? 'border-gray-800 dark:border-white scale-110 shadow-lg' : 'border-gray-300 dark:border-gray-600 hover:border-gray-500 dark:hover:border-gray-400'}`,
+                    style: { backgroundColor: l },
+                    title: `Seleziona colore ${l}`,
+                    children:
+                      n.color === l &&
+                      e.jsx('span', { className: 'text-white text-xs', children: '✓' }),
                   },
-                  s
+                  l
                 )
               ),
             }),
-            e.jsx('input', {
-              type: 'color',
-              value: n.color,
-              onChange: (s) => o({ ...n, color: s.target.value }),
-              className: 'w-full h-10 rounded border',
-            }),
-          ],
-        }),
-        e.jsxs('div', {
-          children: [
-            e.jsx('label', { className: `block ${I.label} mb-3`, children: 'Tariffe Lezioni (€)' }),
             e.jsxs('div', {
-              className: 'grid grid-cols-1 sm:grid-cols-2 gap-4',
+              className: 'flex items-center gap-3',
               children: [
-                e.jsxs('div', {
-                  children: [
-                    e.jsx('label', {
-                      className: `block text-sm ${r.subtext} mb-1`,
-                      children: 'Lezione Singola',
-                    }),
-                    e.jsx('input', {
-                      type: 'number',
-                      min: '0',
-                      step: '5',
-                      value: n.priceSingle || 0,
-                      onChange: (s) => o({ ...n, priceSingle: parseFloat(s.target.value) || 0 }),
-                      className: `w-full p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
-                      placeholder: 'es. 50',
-                    }),
-                  ],
+                e.jsx('input', {
+                  type: 'color',
+                  value: n.color,
+                  onChange: (l) => t({ ...n, color: l.target.value }),
+                  className: 'w-12 h-8 rounded border cursor-pointer',
+                  title: 'Colore personalizzato',
                 }),
-                e.jsxs('div', {
-                  children: [
-                    e.jsx('label', {
-                      className: `block text-sm ${r.subtext} mb-1`,
-                      children: 'Lezione di Coppia',
-                    }),
-                    e.jsx('input', {
-                      type: 'number',
-                      min: '0',
-                      step: '5',
-                      value: n.priceCouple || 0,
-                      onChange: (s) => o({ ...n, priceCouple: parseFloat(s.target.value) || 0 }),
-                      className: `w-full p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
-                      placeholder: 'es. 70',
-                    }),
-                  ],
-                }),
-                e.jsxs('div', {
-                  children: [
-                    e.jsx('label', {
-                      className: `block text-sm ${r.subtext} mb-1`,
-                      children: 'Lezione a 3 Persone',
-                    }),
-                    e.jsx('input', {
-                      type: 'number',
-                      min: '0',
-                      step: '5',
-                      value: n.priceThree || 0,
-                      onChange: (s) => o({ ...n, priceThree: parseFloat(s.target.value) || 0 }),
-                      className: `w-full p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
-                      placeholder: 'es. 90',
-                    }),
-                  ],
-                }),
-                e.jsxs('div', {
-                  children: [
-                    e.jsx('label', {
-                      className: `block text-sm ${r.subtext} mb-1`,
-                      children: 'Partita Lezione',
-                    }),
-                    e.jsx('input', {
-                      type: 'number',
-                      min: '0',
-                      step: '5',
-                      value: n.priceMatchLesson || 0,
-                      onChange: (s) =>
-                        o({ ...n, priceMatchLesson: parseFloat(s.target.value) || 0 }),
-                      className: `w-full p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
-                      placeholder: 'es. 80',
-                    }),
-                  ],
+                e.jsxs('span', {
+                  className: 'text-sm text-gray-600 dark:text-gray-400',
+                  children: ['Colore: ', n.color],
                 }),
               ],
             }),
-            e.jsx('p', {
-              className: `text-xs ${r.subtext} mt-2`,
-              children: 'Prezzi per ora di lezione. Lasciare a 0 per disabilitare una tipologia.',
+          ],
+        }),
+        e.jsxs('div', {
+          className: 'relative group',
+          children: [
+            e.jsx('div', {
+              className:
+                'absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-600 rounded-xl blur opacity-20 group-hover:opacity-30 transition-opacity',
+            }),
+            e.jsxs('div', {
+              className:
+                'relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 border border-white/20 dark:border-gray-700/50',
+              children: [
+                e.jsx('label', { className: `block ${w.label} mb-2`, children: 'Tariffe (€/ora)' }),
+                e.jsxs('div', {
+                  className: 'grid grid-cols-1 sm:grid-cols-2 gap-4',
+                  children: [
+                    e.jsxs('div', {
+                      className: 'relative group',
+                      children: [
+                        e.jsx('div', {
+                          className:
+                            'absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity',
+                        }),
+                        e.jsxs('div', {
+                          className:
+                            'relative p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-blue-200/50 dark:border-blue-700/50 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-1',
+                          children: [
+                            e.jsxs('label', {
+                              className:
+                                'flex items-center gap-2 text-sm font-bold text-blue-600 dark:text-blue-400 mb-3',
+                              children: [
+                                e.jsx('span', { className: 'text-lg', children: '🎯' }),
+                                e.jsx('span', { children: 'Lezione Singola' }),
+                              ],
+                            }),
+                            e.jsx('input', {
+                              type: 'number',
+                              min: '0',
+                              value: n.priceSingle || 0,
+                              onChange: (l) =>
+                                t({ ...n, priceSingle: parseFloat(l.target.value) || 0 }),
+                              className:
+                                'w-full p-3 bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-white border-2 border-blue-300/50 dark:border-blue-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 dark:placeholder-gray-500',
+                              placeholder: '50€',
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    e.jsxs('div', {
+                      className: 'relative group',
+                      children: [
+                        e.jsx('div', {
+                          className:
+                            'absolute inset-0 bg-gradient-to-r from-green-400 to-teal-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity',
+                        }),
+                        e.jsxs('div', {
+                          className:
+                            'relative p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-green-200/50 dark:border-green-700/50 hover:shadow-xl hover:shadow-green-500/20 transition-all duration-300 transform hover:-translate-y-1',
+                          children: [
+                            e.jsxs('label', {
+                              className:
+                                'flex items-center gap-2 text-sm font-bold text-green-600 dark:text-green-400 mb-3',
+                              children: [
+                                e.jsx('span', { className: 'text-lg', children: '👥' }),
+                                e.jsx('span', { children: 'Lezione di Coppia' }),
+                              ],
+                            }),
+                            e.jsx('input', {
+                              type: 'number',
+                              min: '0',
+                              value: n.priceCouple || 0,
+                              onChange: (l) =>
+                                t({ ...n, priceCouple: parseFloat(l.target.value) || 0 }),
+                              className:
+                                'w-full p-3 bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-white border-2 border-green-300/50 dark:border-green-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 dark:placeholder-gray-500',
+                              placeholder: '70€',
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    e.jsxs('div', {
+                      className: 'relative group',
+                      children: [
+                        e.jsx('div', {
+                          className:
+                            'absolute inset-0 bg-gradient-to-r from-purple-400 to-violet-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity',
+                        }),
+                        e.jsxs('div', {
+                          className:
+                            'relative p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-purple-200/50 dark:border-purple-700/50 hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 transform hover:-translate-y-1',
+                          children: [
+                            e.jsxs('label', {
+                              className:
+                                'flex items-center gap-2 text-sm font-bold text-purple-600 dark:text-purple-400 mb-3',
+                              children: [
+                                e.jsx('span', { className: 'text-lg', children: '👨‍�‍�' }),
+                                e.jsx('span', { children: 'Lezione a 3 Persone' }),
+                              ],
+                            }),
+                            e.jsx('input', {
+                              type: 'number',
+                              min: '0',
+                              value: n.priceThree || 0,
+                              onChange: (l) =>
+                                t({ ...n, priceThree: parseFloat(l.target.value) || 0 }),
+                              className:
+                                'w-full p-3 bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-white border-2 border-purple-300/50 dark:border-purple-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 dark:placeholder-gray-500',
+                              placeholder: '90€',
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                    e.jsxs('div', {
+                      className: 'relative group',
+                      children: [
+                        e.jsx('div', {
+                          className:
+                            'absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity',
+                        }),
+                        e.jsxs('div', {
+                          className:
+                            'relative p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg border border-orange-200/50 dark:border-orange-700/50 hover:shadow-xl hover:shadow-orange-500/20 transition-all duration-300 transform hover:-translate-y-1',
+                          children: [
+                            e.jsxs('label', {
+                              className:
+                                'flex items-center gap-2 text-sm font-bold text-orange-600 dark:text-orange-400 mb-3',
+                              children: [
+                                e.jsx('span', { className: 'text-lg', children: '🏆' }),
+                                e.jsx('span', { children: 'Partita Lezione' }),
+                              ],
+                            }),
+                            e.jsx('input', {
+                              type: 'number',
+                              min: '0',
+                              value: n.priceMatchLesson || 0,
+                              onChange: (l) =>
+                                t({ ...n, priceMatchLesson: parseFloat(l.target.value) || 0 }),
+                              className:
+                                'w-full p-3 bg-white/90 dark:bg-gray-900/90 text-gray-900 dark:text-white border-2 border-orange-300/50 dark:border-orange-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 dark:placeholder-gray-500',
+                              placeholder: '80€',
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                e.jsx('div', {
+                  className:
+                    'mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200/50 dark:border-blue-700/50',
+                  children: e.jsxs('div', {
+                    className: 'flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300',
+                    children: [
+                      e.jsx('span', { className: 'text-base', children: '💡' }),
+                      e.jsx('span', { className: 'font-medium', children: 'Neural Tip:' }),
+                      e.jsx('span', {
+                        children:
+                          'Prezzi per ora di lezione. Impostare a 0 per disabilitare la tipologia.',
+                      }),
+                    ],
+                  }),
+                }),
+              ],
             }),
           ],
         }),
         e.jsxs('div', {
           children: [
-            e.jsx('label', { className: `block ${I.label} mb-2`, children: 'Specialità' }),
+            e.jsx('label', { className: `block ${w.label} mb-2`, children: 'Specialità' }),
             e.jsx('div', {
-              className: 'flex flex-wrap gap-2 mb-2',
-              children: l.map((s) =>
-                e.jsx(
+              className: 'grid grid-cols-2 gap-2 mb-2',
+              children: i.map((l) => {
+                const I = n.specialties.includes(l);
+                return e.jsx(
                   'button',
                   {
                     type: 'button',
                     onClick: () => {
-                      n.specialties.includes(s) || o({ ...n, specialties: [...n.specialties, s] });
+                      const B = I ? n.specialties.filter((D) => D !== l) : [...n.specialties, l];
+                      t({ ...n, specialties: B });
                     },
-                    className: `px-3 py-1 text-sm rounded border ${n.specialties.includes(s) ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-600' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'}`,
-                    children: s,
+                    className: `p-2 rounded-lg text-sm font-medium transition-all duration-200 ${I ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`,
+                    children: l,
                   },
-                  s
-                )
-              ),
+                  l
+                );
+              }),
             }),
             e.jsxs('div', {
               className: 'flex gap-2 mb-2',
               children: [
                 e.jsx('input', {
                   type: 'text',
-                  value: j,
-                  onChange: (s) => d(s.target.value),
-                  className: `flex-1 p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
-                  placeholder: 'Aggiungi specialità personalizzata',
-                  onKeyPress: (s) => s.key === 'Enter' && (s.preventDefault(), p()),
+                  value: y,
+                  onChange: (l) => c(l.target.value),
+                  className: `flex-1 ${w.input}`,
+                  placeholder: 'Specialità personalizzata...',
+                  onKeyPress: (l) => l.key === 'Enter' && (l.preventDefault(), p()),
                 }),
                 e.jsx('button', {
                   type: 'button',
                   onClick: p,
+                  disabled: !y.trim(),
                   className:
-                    'px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500',
+                    'px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors',
                   children: 'Aggiungi',
                 }),
               ],
             }),
-            n.specialties.length > 0 &&
-              e.jsx('div', {
-                className: 'flex flex-wrap gap-1',
-                children: n.specialties.map((s, D) =>
-                  e.jsxs(
-                    'div',
-                    {
-                      className:
-                        'flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm',
-                      children: [
-                        e.jsx('span', { children: s }),
-                        e.jsx('button', {
-                          type: 'button',
-                          onClick: () => F(s),
-                          className: 'text-blue-600 hover:text-blue-800',
-                          children: '×',
-                        }),
-                      ],
-                    },
-                    D
-                  )
-                ),
-              }),
           ],
         }),
         e.jsxs('div', {
           children: [
-            e.jsx('label', { className: `block ${I.label} mb-2`, children: 'Biografia' }),
+            e.jsx('label', {
+              className: `block ${w.label} mb-2`,
+              children: 'Biografia Istruttore',
+            }),
             e.jsx('textarea', {
               value: n.bio,
-              onChange: (s) => o({ ...n, bio: s.target.value }),
-              rows: 3,
-              className: `w-full p-2 ${r.cardBg} ${r.border} ${r.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
-              placeholder: "Descrizione dell'istruttore, esperienza, etc...",
+              onChange: (l) => t({ ...n, bio: l.target.value }),
+              rows: 4,
+              maxLength: 500,
+              className: `w-full ${w.textarea} resize-none`,
+              placeholder: "Descrivi l'esperienza e le competenze dell'istruttore...",
+            }),
+            e.jsxs('div', {
+              className: 'flex justify-between items-center mt-1',
+              children: [
+                e.jsxs('span', {
+                  className: 'text-xs text-gray-500 dark:text-gray-400',
+                  children: [n.bio.length, '/500 caratteri'],
+                }),
+                n.bio.length > 450 &&
+                  e.jsx('span', {
+                    className: 'text-xs text-orange-500',
+                    children: 'Limite quasi raggiunto',
+                  }),
+              ],
             }),
           ],
         }),
         e.jsxs('div', {
-          className: 'flex gap-3 pt-4',
+          className: 'flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-600',
           children: [
             e.jsx('button', {
               type: 'button',
-              onClick: x,
-              className: `flex-1 py-2 px-4 ${r.cardBg} ${r.border} ${r.borderMd} hover:bg-gray-50 dark:hover:bg-gray-700`,
+              onClick: u,
+              className:
+                'flex-1 py-2 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-200 dark:hover:bg-gray-600 font-medium transition-colors',
               children: 'Annulla',
             }),
             e.jsx('button', {
               type: 'submit',
               className:
-                'flex-1 py-2 px-4 bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-600',
-              children: 'Salva Istruttore',
+                'flex-1 py-2 px-4 bg-blue-600 dark:bg-blue-700 text-white rounded hover:bg-blue-700 dark:hover:bg-blue-600 font-medium transition-colors',
+              children: 'Salva',
             }),
           ],
         }),
@@ -1159,29 +1310,29 @@ function Le({ isOpen: i, onClose: x, player: c, onSave: N, T: r, ds: I }) {
     }),
   });
 }
-function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
-  const { user: I } = ge(),
-    n = I || x,
+function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
+  const { user: w } = ge(),
+    n = w || u,
     {
-      lessonBookings: o,
-      loading: j,
-      createLessonBooking: d,
-      cancelBooking: y,
-      clearAllLessons: A,
-      refresh: l,
+      lessonBookings: t,
+      loading: y,
+      createLessonBooking: c,
+      cancelBooking: v,
+      clearAllLessons: O,
+      refresh: i,
     } = ze(),
-    { bookings: k } = Ie(),
-    L = $e(i),
-    p = c?.lessonConfig || Ce(),
-    F = c?.players || [],
-    [s, D] = u.useState('book'),
-    [B, H] = u.useState(1),
-    [S, Q] = u.useState(''),
-    [T, Y] = u.useState(null),
-    [E, V] = u.useState(''),
-    [C, a] = u.useState([]),
-    [z, m] = u.useState({ type: '', text: '' }),
-    R = u.useCallback(async () => {
+    { bookings: S } = Ie(),
+    A = Se(s),
+    p = d?.lessonConfig || $e(),
+    l = d?.players || [],
+    [I, B] = m.useState('book'),
+    [D, W] = m.useState(1),
+    [C, Q] = m.useState(''),
+    [H, Y] = m.useState(null),
+    [T, V] = m.useState(''),
+    [M, a] = m.useState([]),
+    [k, o] = m.useState({ type: '', text: '' }),
+    F = m.useCallback(async () => {
       if (
         window.confirm(
           '⚠️ ATTENZIONE: Questa azione cancellerà TUTTE le prenotazioni di lezione e i relativi slot nei campi. Continuare?'
@@ -1189,72 +1340,72 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
       ) {
         console.log('🗑️ Clearing all lesson bookings...');
         try {
-          const t = await A();
-          (console.log(`✅ Cleared ${t} lesson bookings successfully`),
-            m({ type: 'success', text: `Cancellate ${t} prenotazioni di lezione con successo!` }),
-            setTimeout(() => m({ type: '', text: '' }), 3e3));
-        } catch (t) {
-          (console.error('❌ Error clearing lesson bookings:', t),
-            m({ type: 'error', text: 'Errore durante la cancellazione delle prenotazioni.' }));
+          const r = await O();
+          (console.log(`✅ Cleared ${r} lesson bookings successfully`),
+            o({ type: 'success', text: `Cancellate ${r} prenotazioni di lezione con successo!` }),
+            setTimeout(() => o({ type: '', text: '' }), 3e3));
+        } catch (r) {
+          (console.error('❌ Error clearing lesson bookings:', r),
+            o({ type: 'error', text: 'Errore durante la cancellazione delle prenotazioni.' }));
         }
       }
-    }, [A]),
-    pe = u.useCallback(
-      (t) => {
-        N((b) => ({ ...b, lessonConfig: t }));
+    }, [O]),
+    pe = m.useCallback(
+      (r) => {
+        N((g) => ({ ...g, lessonConfig: r }));
       },
       [N]
     );
-  u.useEffect(() => {
-    s === 'admin' && !r && D('book');
-  }, [s, r]);
-  const U = u.useMemo(
-      () => F.filter((t) => t.category === se.INSTRUCTOR && t.instructorData?.isInstructor),
-      [F]
+  m.useEffect(() => {
+    I === 'admin' && !b && B('book');
+  }, [I, b]);
+  const U = m.useMemo(
+      () => l.filter((r) => r.category === te.INSTRUCTOR && r.instructorData?.isInstructor),
+      [l]
     ),
-    ce = u.useCallback(
-      (t) => {
-        const P = new Date(t).getDay(),
-          v = (p.timeSlots || []).filter((h) => h.dayOfWeek === P && h.isActive);
-        return v.length === 0
+    de = m.useCallback(
+      (r) => {
+        const P = new Date(r).getDay(),
+          f = (p.timeSlots || []).filter((h) => h.dayOfWeek === P && h.isActive);
+        return f.length === 0
           ? !1
-          : v.some((h) => {
-              const f = parseInt(h.startTime.split(':')[0]),
+          : f.some((h) => {
+              const j = parseInt(h.startTime.split(':')[0]),
                 q = parseInt(h.startTime.split(':')[1]),
-                re = parseInt(h.endTime.split(':')[0]),
+                se = parseInt(h.endTime.split(':')[0]),
                 ie = parseInt(h.endTime.split(':')[1]),
-                le = f * 60 + q,
-                ae = re * 60 + ie;
+                le = j * 60 + q,
+                ae = se * 60 + ie;
               let Z = !1;
-              for (let O = le; O < ae; O += 60) {
-                if (O + 60 > ae) continue;
-                const _ = Math.floor(O / 60),
-                  J = O % 60,
-                  M = `${_.toString().padStart(2, '0')}:${J.toString().padStart(2, '0')}`,
+              for (let E = le; E < ae; E += 60) {
+                if (E + 60 > ae) continue;
+                const _ = Math.floor(E / 60),
+                  J = E % 60,
+                  L = `${_.toString().padStart(2, '0')}:${J.toString().padStart(2, '0')}`,
                   X = U.filter(
                     ($) =>
                       h.instructorIds.includes($.id) &&
-                      !k.some((w) => {
-                        const g = w.status || 'confirmed';
+                      !S.some((z) => {
+                        const x = z.status || 'confirmed';
                         return (
-                          w.date === t &&
-                          w.time === M &&
-                          w.instructorId === $.id &&
-                          g === 'confirmed'
+                          z.date === r &&
+                          z.time === L &&
+                          z.instructorId === $.id &&
+                          x === 'confirmed'
                         );
                       })
                   ),
-                  ee = (c?.courts || []).filter(($) =>
+                  ee = (d?.courts || []).filter(($) =>
                     h.courtIds.includes($.id)
-                      ? !k.some((g) => {
-                          const G = g.status || 'confirmed';
-                          if (g.courtId !== $.id || g.date !== t || G !== 'confirmed') return !1;
-                          const W = parseInt(M.split(':')[0]) * 60 + parseInt(M.split(':')[1]),
-                            ne = W + 60,
-                            te =
-                              parseInt(g.time.split(':')[0]) * 60 + parseInt(g.time.split(':')[1]),
-                            oe = te + (g.duration || 90);
-                          return W < oe && te < ne;
+                      ? !S.some((x) => {
+                          const R = x.status || 'confirmed';
+                          if (x.courtId !== $.id || x.date !== r || R !== 'confirmed') return !1;
+                          const G = parseInt(L.split(':')[0]) * 60 + parseInt(L.split(':')[1]),
+                            ne = G + 60,
+                            re =
+                              parseInt(x.time.split(':')[0]) * 60 + parseInt(x.time.split(':')[1]),
+                            oe = re + (x.duration || 90);
+                          return G < oe && re < ne;
                         })
                       : !1
                   );
@@ -1263,25 +1414,25 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
               return Z;
             });
       },
-      [p.timeSlots, U, k, c?.courts]
+      [p.timeSlots, U, S, d?.courts]
     ),
-    de = u.useMemo(() => {
-      const t = [],
-        b = new Date(),
+    ce = m.useMemo(() => {
+      const r = [],
+        g = new Date(),
         P = new Set();
-      (p.timeSlots || []).forEach((v) => {
-        v.isActive && P.add(v.dayOfWeek);
+      (p.timeSlots || []).forEach((f) => {
+        f.isActive && P.add(f.dayOfWeek);
       });
-      for (let v = 0; v < 7; v++) {
-        const h = new Date(b);
-        h.setDate(b.getDate() + v);
-        const f = h.getDay(),
+      for (let f = 0; f < 7; f++) {
+        const h = new Date(g);
+        h.setDate(g.getDate() + f);
+        const j = h.getDay(),
           q = h.toISOString().split('T')[0];
-        P.has(f) &&
-          ce(q) &&
-          t.push({
+        P.has(j) &&
+          de(q) &&
+          r.push({
             date: q,
-            dayOfWeek: f,
+            dayOfWeek: j,
             display: h.toLocaleDateString('it-IT', {
               weekday: 'short',
               day: 'numeric',
@@ -1289,140 +1440,140 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
             }),
           });
       }
-      return t;
-    }, [p.timeSlots, ce]),
-    me = u.useMemo(() => {
-      if (!S) return [];
-      const b = new Date(S).getDay(),
-        P = (p.timeSlots || []).filter((f) => f.dayOfWeek === b && f.isActive),
-        v = new Map();
-      P.forEach((f) => {
-        const q = parseInt(f.startTime.split(':')[0]),
-          re = parseInt(f.startTime.split(':')[1]),
-          ie = parseInt(f.endTime.split(':')[0]),
-          le = parseInt(f.endTime.split(':')[1]),
-          ae = q * 60 + re,
+      return r;
+    }, [p.timeSlots, de]),
+    me = m.useMemo(() => {
+      if (!C) return [];
+      const g = new Date(C).getDay(),
+        P = (p.timeSlots || []).filter((j) => j.dayOfWeek === g && j.isActive),
+        f = new Map();
+      P.forEach((j) => {
+        const q = parseInt(j.startTime.split(':')[0]),
+          se = parseInt(j.startTime.split(':')[1]),
+          ie = parseInt(j.endTime.split(':')[0]),
+          le = parseInt(j.endTime.split(':')[1]),
+          ae = q * 60 + se,
           Z = ie * 60 + le;
-        for (let O = ae; O < Z && !(O + 60 > Z); O += 60) {
-          const _ = Math.floor(O / 60),
-            J = O % 60,
-            M = `${_.toString().padStart(2, '0')}:${J.toString().padStart(2, '0')}`,
+        for (let E = ae; E < Z && !(E + 60 > Z); E += 60) {
+          const _ = Math.floor(E / 60),
+            J = E % 60,
+            L = `${_.toString().padStart(2, '0')}:${J.toString().padStart(2, '0')}`,
             X = U.filter(
               ($) =>
-                f.instructorIds.includes($.id) &&
-                !k.some((w) => {
-                  const g = w.status || 'confirmed';
+                j.instructorIds.includes($.id) &&
+                !S.some((z) => {
+                  const x = z.status || 'confirmed';
                   return (
-                    w.date === S && w.time === M && w.instructorId === $.id && g === 'confirmed'
+                    z.date === C && z.time === L && z.instructorId === $.id && x === 'confirmed'
                   );
                 })
             ),
-            ee = (c?.courts || []).filter(($) =>
-              f.courtIds.includes($.id)
-                ? !k.some((g) => {
-                    const G = g.status || 'confirmed';
-                    if (g.courtId !== $.id || g.date !== S || G !== 'confirmed') return !1;
-                    const W = parseInt(M.split(':')[0]) * 60 + parseInt(M.split(':')[1]),
-                      ne = W + 60,
-                      te = parseInt(g.time.split(':')[0]) * 60 + parseInt(g.time.split(':')[1]),
-                      oe = te + (g.duration || 90);
-                    return W < oe && te < ne;
+            ee = (d?.courts || []).filter(($) =>
+              j.courtIds.includes($.id)
+                ? !S.some((x) => {
+                    const R = x.status || 'confirmed';
+                    if (x.courtId !== $.id || x.date !== C || R !== 'confirmed') return !1;
+                    const G = parseInt(L.split(':')[0]) * 60 + parseInt(L.split(':')[1]),
+                      ne = G + 60,
+                      re = parseInt(x.time.split(':')[0]) * 60 + parseInt(x.time.split(':')[1]),
+                      oe = re + (x.duration || 90);
+                    return G < oe && re < ne;
                   })
                 : !1
             );
           if (X.length > 0 && ee.length > 0)
-            if (v.has(M)) {
-              const $ = v.get(M),
-                w = [...$.availableInstructors];
-              X.forEach((G) => {
-                w.some((W) => W.id === G.id) || w.push(G);
+            if (f.has(L)) {
+              const $ = f.get(L),
+                z = [...$.availableInstructors];
+              X.forEach((R) => {
+                z.some((G) => G.id === R.id) || z.push(R);
               });
-              const g = [...$.availableCourts];
-              (ee.forEach((G) => {
-                g.some((W) => W.id === G.id) || g.push(G);
+              const x = [...$.availableCourts];
+              (ee.forEach((R) => {
+                x.some((G) => G.id === R.id) || x.push(R);
               }),
-                v.set(M, { ...$, availableInstructors: w, availableCourts: g }));
+                f.set(L, { ...$, availableInstructors: z, availableCourts: x }));
             } else
-              v.set(M, {
-                id: `${S}-${M}`,
-                time: M,
+              f.set(L, {
+                id: `${C}-${L}`,
+                time: L,
                 displayTime: `${_.toString().padStart(2, '0')}:${J.toString().padStart(2, '0')} - ${(_ + 1).toString().padStart(2, '0')}:${J.toString().padStart(2, '0')}`,
                 availableInstructors: X,
                 availableCourts: ee,
-                configSlot: f,
+                configSlot: j,
               });
         }
       });
-      const h = Array.from(v.values());
+      const h = Array.from(f.values());
       return (
         h.length === 0 &&
           P.length > 0 &&
           console.warn(
             '⚠️ No available slots found despite having configured time slots. Check instructor/court availability.'
           ),
-        h.sort((f, q) => f.time.localeCompare(q.time))
+        h.sort((j, q) => j.time.localeCompare(q.time))
       );
-    }, [S, p.timeSlots, U, k, c?.courts]),
-    ye = u.useCallback(async () => {
-      if (!S || !T || !E) {
-        m({ type: 'error', text: 'Seleziona data, orario e maestro per continuare.' });
+    }, [C, p.timeSlots, U, S, d?.courts]),
+    ye = m.useCallback(async () => {
+      if (!C || !H || !T) {
+        o({ type: 'error', text: 'Seleziona data, orario e maestro per continuare.' });
         return;
       }
       try {
-        m({ type: '', text: '' });
-        const t = T.availableCourts[0],
-          b = U.find((h) => h.id === E),
+        o({ type: '', text: '' });
+        const r = H.availableCourts[0],
+          g = U.find((h) => h.id === T),
           P = {
-            instructorId: E,
-            instructorName: b?.name,
+            instructorId: T,
+            instructorName: g?.name,
             lessonType: 'individual',
-            courtId: t.id,
-            courtName: t.name,
-            date: S,
-            time: T.time,
+            courtId: r.id,
+            courtName: r.name,
+            date: C,
+            time: H.time,
             duration: 60,
             price: 0,
-            notes: `Lezione con ${b?.name}`,
+            notes: `Lezione con ${g?.name}`,
             players: [n?.displayName || n?.email],
             userPhone: '',
             bookedBy: n?.displayName || n?.email,
             createCourtBooking: !1,
           };
         console.log('Creating unified lesson booking:', P);
-        const v = await d(P);
-        (console.log('✅ Created unified lesson booking:', v),
-          m({ type: 'success', text: 'Lezione prenotata con successo!' }),
-          H(1),
+        const f = await c(P);
+        (console.log('✅ Created unified lesson booking:', f),
+          o({ type: 'success', text: 'Lezione prenotata con successo!' }),
+          W(1),
           Q(''),
           Y(null),
           V(''),
           a([]),
-          await l(),
-          setTimeout(() => m({ type: '', text: '' }), 3e3));
-      } catch (t) {
-        (console.error('Error booking lesson:', t),
-          m({ type: 'error', text: 'Errore durante la prenotazione della lezione.' }));
+          await i(),
+          setTimeout(() => o({ type: '', text: '' }), 3e3));
+      } catch (r) {
+        (console.error('Error booking lesson:', r),
+          o({ type: 'error', text: 'Errore durante la prenotazione della lezione.' }));
       }
-    }, [S, T, E, U, d, n, l]),
-    ve = u.useCallback(
-      async (t) => {
+    }, [C, H, T, U, c, n, i]),
+    ve = m.useCallback(
+      async (r) => {
         if (window.confirm('Sei sicuro di voler cancellare questa lezione?'))
           try {
-            (await y(t),
-              m({ type: 'success', text: 'Lezione cancellata con successo!' }),
-              setTimeout(() => m({ type: '', text: '' }), 3e3));
-          } catch (b) {
-            (console.error('Error cancelling lesson:', b),
-              m({ type: 'error', text: 'Errore durante la cancellazione della lezione.' }));
+            (await v(r),
+              o({ type: 'success', text: 'Lezione cancellata con successo!' }),
+              setTimeout(() => o({ type: '', text: '' }), 3e3));
+          } catch (g) {
+            (console.error('Error cancelling lesson:', g),
+              o({ type: 'error', text: 'Errore durante la cancellazione della lezione.' }));
           }
       },
-      [y]
+      [v]
     ),
-    ue = () => H((t) => Math.min(t + 1, 3)),
-    xe = () => H((t) => Math.max(t - 1, 1));
-  return j
+    ue = () => W((r) => Math.min(r + 1, 3)),
+    xe = () => W((r) => Math.max(r - 1, 1));
+  return y
     ? e.jsx(K, {
-        T: i,
+        T: s,
         title: 'Prenota Lezione',
         className: 'space-y-6',
         children: e.jsxs('div', {
@@ -1439,47 +1590,47 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
         }),
       })
     : e.jsxs(K, {
-        T: i,
+        T: s,
         title: 'Prenota Lezione',
         className: 'space-y-6',
         children: [
-          z.text &&
+          k.text &&
             e.jsx('div', {
-              className: `p-4 rounded-lg ${z.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : z.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}`,
-              children: z.text,
+              className: `p-4 rounded-lg ${k.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : k.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}`,
+              children: k.text,
             }),
           e.jsxs('div', {
             className: 'flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1',
             children: [
               e.jsx('button', {
-                onClick: () => D('book'),
-                className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${s === 'book' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
+                onClick: () => B('book'),
+                className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${I === 'book' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
                 children: 'Prenota Lezione',
               }),
               e.jsxs('button', {
-                onClick: () => D('bookings'),
-                className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${s === 'bookings' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
+                onClick: () => B('bookings'),
+                className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${I === 'bookings' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
                 children: [
                   'Le Mie Lezioni',
                   ' ',
-                  o.length > 0 &&
+                  t.length > 0 &&
                     e.jsx(be, {
                       variant: 'primary',
                       size: 'sm',
                       className: 'ml-2',
-                      children: o.filter((t) => t.status === 'confirmed').length,
+                      children: t.filter((r) => r.status === 'confirmed').length,
                     }),
                 ],
               }),
-              r &&
+              b &&
                 e.jsx('button', {
-                  onClick: () => D('admin'),
-                  className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${s === 'admin' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
+                  onClick: () => B('admin'),
+                  className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${I === 'admin' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
                   children: 'Gestione',
                 }),
             ],
           }),
-          s === 'book' &&
+          I === 'book' &&
             e.jsxs('div', {
               className: 'bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-600 p-6',
               children: [
@@ -1488,37 +1639,37 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                   children: [
                     e.jsx('div', {
                       className: 'flex items-center justify-between text-sm',
-                      children: [1, 2, 3].map((t) =>
+                      children: [1, 2, 3].map((r) =>
                         e.jsxs(
                           'div',
                           {
-                            className: `flex items-center ${t < 3 ? 'flex-1' : ''}`,
+                            className: `flex items-center ${r < 3 ? 'flex-1' : ''}`,
                             children: [
                               e.jsx('div', {
-                                className: `w-8 h-8 rounded-full flex items-center justify-center ${B >= t ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'}`,
-                                children: t,
+                                className: `w-8 h-8 rounded-full flex items-center justify-center ${D >= r ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'}`,
+                                children: r,
                               }),
-                              t < 3 &&
+                              r < 3 &&
                                 e.jsx('div', {
-                                  className: `flex-1 h-0.5 mx-2 ${B > t ? 'bg-blue-600 dark:bg-blue-500' : 'bg-gray-200 dark:bg-gray-600'}`,
+                                  className: `flex-1 h-0.5 mx-2 ${D > r ? 'bg-blue-600 dark:bg-blue-500' : 'bg-gray-200 dark:bg-gray-600'}`,
                                 }),
                             ],
                           },
-                          t
+                          r
                         )
                       ),
                     }),
                     e.jsxs('div', {
                       className: 'mt-2 text-sm text-gray-600 dark:text-gray-300',
                       children: [
-                        B === 1 && 'Scegli il Giorno',
-                        B === 2 && 'Seleziona Orario',
-                        B === 3 && 'Scegli Maestro e Conferma',
+                        D === 1 && 'Scegli il Giorno',
+                        D === 2 && 'Seleziona Orario',
+                        D === 3 && 'Scegli Maestro e Conferma',
                       ],
                     }),
                   ],
                 }),
-                B === 1 &&
+                D === 1 &&
                   e.jsxs('div', {
                     className: 'space-y-4',
                     children: [
@@ -1530,7 +1681,7 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                         className: 'text-sm text-gray-600 dark:text-gray-300',
                         children: 'Prossimi 7 giorni disponibili per le lezioni',
                       }),
-                      de.length === 0
+                      ce.length === 0
                         ? e.jsxs('div', {
                             className: 'text-center py-8 text-gray-500',
                             children: [
@@ -1554,30 +1705,30 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                         : e.jsx('div', {
                             className:
                               'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3',
-                            children: de.map((t) => {
-                              const b = t.date === new Date().toISOString().split('T')[0];
+                            children: ce.map((r) => {
+                              const g = r.date === new Date().toISOString().split('T')[0];
                               return e.jsxs(
                                 'button',
                                 {
                                   onClick: () => {
-                                    (Q(t.date), Y(null), V(''), a([]), ue());
+                                    (Q(r.date), Y(null), V(''), a([]), ue());
                                   },
-                                  className: `p-3 rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${S === t.date ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg' : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md'} ${b ? 'ring-2 ring-green-300 dark:ring-green-500 bg-green-50 dark:bg-green-900/30' : ''}`,
+                                  className: `p-3 rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${C === r.date ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg' : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md'} ${g ? 'ring-2 ring-green-300 dark:ring-green-500 bg-green-50 dark:bg-green-900/30' : ''}`,
                                   children: [
                                     e.jsx('div', {
                                       className: 'text-xs text-gray-500 uppercase mb-1 font-medium',
-                                      children: t.display.split(' ')[0],
+                                      children: r.display.split(' ')[0],
                                     }),
                                     e.jsx('div', {
                                       className: 'font-bold text-xl mb-1',
-                                      children: t.display.split(' ')[1],
+                                      children: r.display.split(' ')[1],
                                     }),
                                     e.jsx('div', {
                                       className:
                                         'text-xs text-gray-600 dark:text-gray-300 font-medium',
-                                      children: t.display.split(' ')[2],
+                                      children: r.display.split(' ')[2],
                                     }),
-                                    b &&
+                                    g &&
                                       e.jsx('div', {
                                         className:
                                           'text-xs text-green-600 font-bold mt-1 bg-green-100 rounded-full px-2 py-0.5',
@@ -1585,13 +1736,13 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                                       }),
                                   ],
                                 },
-                                t.date
+                                r.date
                               );
                             }),
                           }),
                     ],
                   }),
-                B === 2 &&
+                D === 2 &&
                   e.jsxs('div', {
                     className: 'space-y-4',
                     children: [
@@ -1606,7 +1757,7 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                           ' ',
                           e.jsx('span', {
                             className: 'font-medium',
-                            children: new Date(S).toLocaleDateString('it-IT', {
+                            children: new Date(C).toLocaleDateString('it-IT', {
                               weekday: 'long',
                               year: 'numeric',
                               month: 'long',
@@ -1644,24 +1795,24 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                               }),
                               e.jsx('div', {
                                 className: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3',
-                                children: me.map((t) =>
+                                children: me.map((r) =>
                                   e.jsxs(
                                     'button',
                                     {
                                       onClick: () => {
-                                        (Y(t),
-                                          a(t.availableInstructors),
-                                          t.availableInstructors.length === 1
-                                            ? V(t.availableInstructors[0].id)
+                                        (Y(r),
+                                          a(r.availableInstructors),
+                                          r.availableInstructors.length === 1
+                                            ? V(r.availableInstructors[0].id)
                                             : V(''),
                                           ue());
                                       },
-                                      className: `p-4 rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${T?.id === t.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg' : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md'}`,
+                                      className: `p-4 rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${H?.id === r.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg' : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md'}`,
                                       children: [
                                         e.jsx('div', {
                                           className:
                                             'font-bold text-lg mb-2 text-gray-800 dark:text-gray-200',
-                                          children: t.displayTime,
+                                          children: r.displayTime,
                                         }),
                                         e.jsxs('div', {
                                           className:
@@ -1673,16 +1824,16 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                                             }),
                                             e.jsxs('span', {
                                               children: [
-                                                t.availableInstructors.length,
+                                                r.availableInstructors.length,
                                                 ' maestr',
-                                                t.availableInstructors.length === 1 ? 'o' : 'i',
+                                                r.availableInstructors.length === 1 ? 'o' : 'i',
                                               ],
                                             }),
                                           ],
                                         }),
                                       ],
                                     },
-                                    t.id
+                                    r.id
                                   )
                                 ),
                               }),
@@ -1699,7 +1850,7 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                       }),
                     ],
                   }),
-                B === 3 &&
+                D === 3 &&
                   e.jsxs('div', {
                     className: 'space-y-6',
                     children: [
@@ -1719,7 +1870,7 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                               }),
                               e.jsx('span', {
                                 className: 'font-medium text-gray-900 dark:text-white',
-                                children: new Date(S).toLocaleDateString('it-IT', {
+                                children: new Date(C).toLocaleDateString('it-IT', {
                                   weekday: 'long',
                                   year: 'numeric',
                                   month: 'long',
@@ -1737,7 +1888,7 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                               }),
                               e.jsx('span', {
                                 className: 'font-medium text-gray-900 dark:text-white',
-                                children: T?.displayTime,
+                                children: H?.displayTime,
                               }),
                             ],
                           }),
@@ -1763,13 +1914,13 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                             className: 'text-md font-medium text-gray-900 dark:text-white',
                             children: [
                               'Maestr',
-                              C.length === 1 ? 'o disponibile' : 'i disponibili',
+                              M.length === 1 ? 'o disponibile' : 'i disponibili',
                               ' (',
-                              C.length,
+                              M.length,
                               ')',
                             ],
                           }),
-                          C.length === 1
+                          M.length === 1
                             ? e.jsx('div', {
                                 className:
                                   'border rounded-lg p-4 bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700',
@@ -1779,26 +1930,26 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                                     e.jsx('div', {
                                       className:
                                         'w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg',
-                                      style: { backgroundColor: C[0].instructorData?.color },
-                                      children: C[0].name?.charAt(0) || '?',
+                                      style: { backgroundColor: M[0].instructorData?.color },
+                                      children: M[0].name?.charAt(0) || '?',
                                     }),
                                     e.jsxs('div', {
                                       children: [
                                         e.jsx('div', {
                                           className:
                                             'font-medium text-lg text-gray-900 dark:text-white',
-                                          children: C[0].name,
+                                          children: M[0].name,
                                         }),
-                                        C[0].instructorData?.specialties?.length > 0 &&
+                                        M[0].instructorData?.specialties?.length > 0 &&
                                           e.jsx('div', {
                                             className: 'text-sm text-gray-600 dark:text-gray-300',
-                                            children: C[0].instructorData.specialties.join(', '),
+                                            children: M[0].instructorData.specialties.join(', '),
                                           }),
-                                        C[0].instructorData?.hourlyRate > 0 &&
+                                        M[0].instructorData?.hourlyRate > 0 &&
                                           e.jsxs('div', {
                                             className:
                                               'text-sm font-semibold text-blue-600 dark:text-blue-400',
-                                            children: ['€', C[0].instructorData.hourlyRate, '/ora'],
+                                            children: ['€', M[0].instructorData.hourlyRate, '/ora'],
                                           }),
                                       ],
                                     }),
@@ -1807,12 +1958,12 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                               })
                             : e.jsx('div', {
                                 className: 'grid grid-cols-1 md:grid-cols-2 gap-4',
-                                children: C.map((t) =>
+                                children: M.map((r) =>
                                   e.jsxs(
                                     'button',
                                     {
-                                      onClick: () => V(t.id),
-                                      className: `p-4 rounded-lg border-2 text-left transition-colors ${E === t.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`,
+                                      onClick: () => V(r.id),
+                                      className: `p-4 rounded-lg border-2 text-left transition-colors ${T === r.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`,
                                       children: [
                                         e.jsxs('div', {
                                           className: 'flex items-center gap-3 mb-2',
@@ -1820,35 +1971,35 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                                             e.jsx('div', {
                                               className:
                                                 'w-10 h-10 rounded-full flex items-center justify-center text-white font-bold',
-                                              style: { backgroundColor: t.instructorData?.color },
-                                              children: t.name?.charAt(0) || '?',
+                                              style: { backgroundColor: r.instructorData?.color },
+                                              children: r.name?.charAt(0) || '?',
                                             }),
                                             e.jsx('div', {
                                               className:
                                                 'font-medium text-gray-900 dark:text-white',
-                                              children: t.name,
+                                              children: r.name,
                                             }),
                                           ],
                                         }),
-                                        t.instructorData?.specialties?.length > 0 &&
+                                        r.instructorData?.specialties?.length > 0 &&
                                           e.jsx('div', {
                                             className:
                                               'text-sm text-gray-600 dark:text-gray-300 mb-1',
-                                            children: t.instructorData.specialties.join(', '),
+                                            children: r.instructorData.specialties.join(', '),
                                           }),
-                                        t.instructorData?.hourlyRate > 0 &&
+                                        r.instructorData?.hourlyRate > 0 &&
                                           e.jsxs('div', {
                                             className: 'text-sm font-semibold text-blue-600',
-                                            children: ['€', t.instructorData.hourlyRate, '/ora'],
+                                            children: ['€', r.instructorData.hourlyRate, '/ora'],
                                           }),
                                       ],
                                     },
-                                    t.id
+                                    r.id
                                   )
                                 ),
                               }),
-                          C.length > 1 &&
-                            !E &&
+                          M.length > 1 &&
+                            !T &&
                             e.jsx('p', {
                               className:
                                 'text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded p-3',
@@ -1867,8 +2018,8 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                           }),
                           e.jsx('button', {
                             onClick: ye,
-                            disabled: !E,
-                            className: `px-6 py-2 rounded-lg font-medium transition-colors ${E ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`,
+                            disabled: !T,
+                            className: `px-6 py-2 rounded-lg font-medium transition-colors ${T ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`,
                             children: 'Conferma Prenotazione',
                           }),
                         ],
@@ -1877,7 +2028,7 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                   }),
               ],
             }),
-          s === 'bookings' &&
+          I === 'bookings' &&
             e.jsxs('div', {
               className: 'bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-600 p-6',
               children: [
@@ -1885,20 +2036,20 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                   className: 'text-lg font-semibold text-gray-900 dark:text-white mb-4',
                   children: 'Le Mie Lezioni',
                 }),
-                o.length === 0
+                t.length === 0
                   ? e.jsx('div', {
                       className: 'text-center py-8 text-gray-500 dark:text-gray-400',
                       children: 'Non hai ancora prenotato nessuna lezione.',
                     })
                   : e.jsx('div', {
                       className: 'space-y-4',
-                      children: o
-                        .filter((t) => t.status === 'confirmed')
+                      children: t
+                        .filter((r) => r.status === 'confirmed')
                         .sort(
-                          (t, b) =>
-                            new Date(t.date + 'T' + t.time) - new Date(b.date + 'T' + b.time)
+                          (r, g) =>
+                            new Date(r.date + 'T' + r.time) - new Date(g.date + 'T' + g.time)
                         )
-                        .map((t) =>
+                        .map((r) =>
                           e.jsx(
                             'div',
                             {
@@ -1915,8 +2066,8 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                                         children: [
                                           'Lezione con',
                                           ' ',
-                                          U.find((b) => b.id === t.instructorId)?.name ||
-                                            t.instructorName,
+                                          U.find((g) => g.id === r.instructorId)?.name ||
+                                            r.instructorName,
                                         ],
                                       }),
                                       e.jsxs('div', {
@@ -1924,7 +2075,7 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                                         children: [
                                           '📅',
                                           ' ',
-                                          new Date(t.date).toLocaleDateString('it-IT', {
+                                          new Date(r.date).toLocaleDateString('it-IT', {
                                             weekday: 'long',
                                             year: 'numeric',
                                             month: 'long',
@@ -1934,17 +2085,17 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                                       }),
                                       e.jsxs('div', {
                                         className: 'text-sm text-gray-600 dark:text-gray-300',
-                                        children: ['🕐 ', t.time, ' - ', t.duration, ' minuti'],
+                                        children: ['🕐 ', r.time, ' - ', r.duration, ' minuti'],
                                       }),
-                                      t.courtName &&
+                                      r.courtName &&
                                         e.jsxs('div', {
                                           className: 'text-sm text-gray-600 dark:text-gray-300',
-                                          children: ['🎾 Campo: ', t.courtName],
+                                          children: ['🎾 Campo: ', r.courtName],
                                         }),
                                     ],
                                   }),
                                   e.jsx('button', {
-                                    onClick: () => ve(t.id),
+                                    onClick: () => ve(r.id),
                                     className:
                                       'px-3 py-1 text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors',
                                     children: 'Cancella',
@@ -1952,35 +2103,35 @@ function Be({ T: i, user: x, state: c, setState: N, clubMode: r }) {
                                 ],
                               }),
                             },
-                            t.id
+                            r.id
                           )
                         ),
                     }),
               ],
             }),
-          s === 'admin' &&
-            r &&
+          I === 'admin' &&
+            b &&
             e.jsx(De, {
-              T: i,
-              ds: L,
+              T: s,
+              ds: A,
               lessonConfig: p,
               updateLessonConfig: pe,
               instructors: U,
-              players: F,
+              players: l,
               setState: N,
-              state: c,
-              courts: c?.courts || [],
-              onClearAllLessons: R,
-              lessonBookingsCount: o?.length || 0,
+              state: d,
+              courts: d?.courts || [],
+              onClearAllLessons: F,
+              lessonBookingsCount: t?.length || 0,
             }),
         ],
       });
 }
 function qe() {
-  const { user: i } = ge(),
-    { state: x, setState: c } = je(),
-    { clubMode: N } = Ne(),
-    r = Se.useMemo(() => ke(), []);
-  return e.jsx(Be, { T: r, user: i, state: x, setState: c, clubMode: N });
+  const { user: s } = ge(),
+    { state: u, setState: d } = je(),
+    { clubMode: N } = ke(),
+    b = we.useMemo(() => Ne(), []);
+  return e.jsx(Ae, { T: b, user: s, state: u, setState: d, clubMode: N });
 }
 export { qe as default };

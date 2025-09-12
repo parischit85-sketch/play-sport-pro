@@ -3,39 +3,39 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/LoginPage-mfh4d38h-Di-g-Qxg.js',
-      'assets/router-mfh4d38h-D14HHbEI.js',
-      'assets/vendor-mfh4d38h-D3F3s8fL.js',
-      'assets/Section-mfh4d38h-Df1Gzqw4.js',
-      'assets/firebase-mfh4d38h-X_I_guKF.js',
-      'assets/DashboardPage-mfh4d38h-BiGizN42.js',
-      'assets/ClassificaPage-mfh4d38h-mPuxIbvt.js',
-      'assets/charts-mfh4d38h-CsjIY6G7.js',
-      'assets/ShareButtons-mfh4d38h-BVbkMxAd.js',
-      'assets/StatsPage-mfh4d38h-DLRZwj2V.js',
-      'assets/Modal-mfh4d38h-xCnxAVWo.js',
-      'assets/names-mfh4d38h-BW9lV2zG.js',
-      'assets/BookingPage-mfh4d38h-BGLGWTEk.js',
-      'assets/Badge-mfh4d38h-B0617-OG.js',
-      'assets/design-system-mfh4d38h-B5fzZ68S.js',
-      'assets/pricing-mfh4d38h-DMaWA4wL.js',
-      'assets/useUnifiedBookings-mfh4d38h-CC_USPZv.js',
-      'assets/unified-booking-service-mfh4d38h-1xV4n-cy.js',
-      'assets/LessonBookingPage-mfh4d38h-DgX8L_8J.js',
-      'assets/playerTypes-mfh4d38h-CIm-hM8a.js',
-      'assets/PlayersPage-mfh4d38h-Fq_i7EB0.js',
-      'assets/MatchesPage-mfh4d38h--edKOpMd.js',
-      'assets/TournamentsPage-mfh4d38h-BqyfJYHk.js',
-      'assets/ProfilePage-mfh4d38h-CAJ4WGOw.js',
-      'assets/ExtraPage-mfh4d38h-CnTvVTYf.js',
-      'assets/format-mfh4d38h-DAEZv7Mi.js',
-      'assets/AdminBookingsPage-mfh4d38h-BYy3mtAD.js',
-      'assets/DarkModeTestPage-mfh4d38h-BJC01zZg.js',
+      'assets/LoginPage-mfh82qsn-vUvt2nS-.js',
+      'assets/router-mfh82qsn-Bc5I10Ra.js',
+      'assets/vendor-mfh82qsn-D3F3s8fL.js',
+      'assets/Section-mfh82qsn-Cz7s2yQ_.js',
+      'assets/firebase-mfh82qsn-X_I_guKF.js',
+      'assets/DashboardPage-mfh82qsn-BxPTiYbO.js',
+      'assets/ClassificaPage-mfh82qsn-B2Uk9GSW.js',
+      'assets/charts-mfh82qsn-DOVMFapp.js',
+      'assets/ShareButtons-mfh82qsn-4PuyW3F9.js',
+      'assets/StatsPage-mfh82qsn-CnEenN0Q.js',
+      'assets/Modal-mfh82qsn-CAuX7xtz.js',
+      'assets/names-mfh82qsn-BW9lV2zG.js',
+      'assets/BookingPage-mfh82qsn-LtqX4Kcq.js',
+      'assets/Badge-mfh82qsn-BKfo2CO2.js',
+      'assets/design-system-mfh82qsn-B5fzZ68S.js',
+      'assets/pricing-mfh82qsn-DMaWA4wL.js',
+      'assets/useUnifiedBookings-mfh82qsn-w0TipWxN.js',
+      'assets/unified-booking-service-mfh82qsn-s4tISnVR.js',
+      'assets/LessonBookingPage-mfh82qsn-BKI8A3_F.js',
+      'assets/playerTypes-mfh82qsn-CIm-hM8a.js',
+      'assets/PlayersPage-mfh82qsn-Z5pLTkyd.js',
+      'assets/MatchesPage-mfh82qsn-DrOnC31T.js',
+      'assets/TournamentsPage-mfh82qsn-D0b7vGDc.js',
+      'assets/ProfilePage-mfh82qsn-BOduRlQu.js',
+      'assets/ExtraPage-mfh82qsn-DPKEAMOW.js',
+      'assets/format-mfh82qsn-DAEZv7Mi.js',
+      'assets/AdminBookingsPage-mfh82qsn-DJW48RqG.js',
+      'assets/DarkModeTestPage-mfh82qsn-DhxAQISv.js',
     ])
 ) => i.map((i) => d[i]);
-import { r as Oe, a as We } from './vendor-mfh4d38h-D3F3s8fL.js';
+import { r as Oe, a as We } from './vendor-mfh82qsn-D3F3s8fL.js';
 import {
-  r as p,
+  r as f,
   b as C,
   u as te,
   N as $,
@@ -44,7 +44,7 @@ import {
   B as Fe,
   d as Ve,
   e as _,
-} from './router-mfh4d38h-D14HHbEI.js';
+} from './router-mfh82qsn-Bc5I10Ra.js';
 import {
   g as ge,
   a as fe,
@@ -71,7 +71,7 @@ import {
   t as rt,
   v as at,
   w as st,
-} from './firebase-mfh4d38h-X_I_guKF.js';
+} from './firebase-mfh82qsn-X_I_guKF.js';
 (function () {
   const t = document.createElement('link').relList;
   if (t && t.supports && t.supports('modulepreload')) return;
@@ -385,7 +385,7 @@ async function vt(r = 500) {
     o
   );
 }
-const cr = Object.freeze(
+const dr = Object.freeze(
     Object.defineProperty(
       {
         __proto__: null,
@@ -407,18 +407,18 @@ const cr = Object.freeze(
       { value: 'Module' }
     )
   ),
-  Ce = p.createContext(null),
+  Ce = f.createContext(null),
   q = () => {
-    const r = p.useContext(Ce);
+    const r = f.useContext(Ce);
     if (!r) throw new Error('useAuth must be used within an AuthProvider');
     return r;
   };
 function yt({ children: r }) {
-  const [t, a] = p.useState(null),
-    [o, s] = p.useState(null),
-    [h, n] = p.useState(!0),
-    [l, d] = p.useState(null);
-  p.useEffect(
+  const [t, a] = f.useState(null),
+    [o, s] = f.useState(null),
+    [h, n] = f.useState(!0),
+    [l, d] = f.useState(null);
+  f.useEffect(
     () =>
       Ae(async (c) => {
         try {
@@ -526,7 +526,7 @@ function Le(r, t) {
     a.exists() && t(a.data());
   });
 }
-const dr = Object.freeze(
+const ur = Object.freeze(
     Object.defineProperty(
       {
         __proto__: null,
@@ -620,11 +620,11 @@ function Z({
     c = m + g,
     w = n === 'A' ? i : c,
     S = n === 'A' ? c : i,
-    f = (i + c) / 100,
+    p = (i + c) / 100,
     x = S - w,
     A = At(x),
     L = n === 'A' ? s - h : h - s,
-    v = (f + L) * A,
+    v = (p + L) * A,
     y = Math.round(v),
     N = n === 'A' ? y : -y,
     k = n === 'B' ? y : -y,
@@ -633,10 +633,10 @@ function Z({
       `Team A=${O(i)}, Team B=${O(c)}, Gap=${O(x)}
 Fascia: ${Nt(x)}
 
-Base = (${O(i)} + ${O(c)})/100 = ${Y(f)}
+Base = (${O(i)} + ${O(c)})/100 = ${Y(p)}
 DG (Differenza Game) = ${L}
 
-Punti = (Base + DG) × factor = (${Y(f)} + ${L}) × ${A.toFixed(2)} = ${Y(v)}
+Punti = (Base + DG) × factor = (${Y(p)} + ${L}) × ${A.toFixed(2)} = ${Y(v)}
 Punti (arrotondato) = ${y}
 ` +
       (n === 'A' ? `Team A +${y}, Team B -${y}` : `Team B +${y}, Team A -${y}`) +
@@ -646,7 +646,7 @@ ${b}`;
     deltaA: N,
     deltaB: k,
     pts: y,
-    base: f,
+    base: p,
     factor: A,
     gap: x,
     sumA: i,
@@ -655,7 +655,7 @@ ${b}`;
     formula: P,
   };
 }
-const ur = () => Math.random().toString(36).slice(2, 10),
+const mr = () => Math.random().toString(36).slice(2, 10),
   I = 1e3,
   D = 'paris-league-v1';
 function Ct(r, t) {
@@ -698,10 +698,10 @@ function Ct(r, t) {
       }),
       c = { ...n, ...g, ...i };
     s.push(c);
-    const w = (S, f) => {
+    const w = (S, p) => {
       if (!S) return;
       const x = o.get(S) || [];
-      (x.push(f), o.set(S, x));
+      (x.push(p), o.set(S, x));
     };
     (w(l?.id, i.deltaA),
       w(d?.id, i.deltaA),
@@ -740,7 +740,7 @@ function Ct(r, t) {
   }
   return { players: Array.from(a.values()), matches: s };
 }
-function mr(r, t, a) {
+function hr(r, t, a) {
   const o = new Map(r.map((c) => [c.id, c.name])),
     h = [...(t || [])].sort((c, w) => new Date(c.date) - new Date(w.date)).slice(-15),
     n = new Map(r.map((c) => [c.id, Number(c.rating ?? I)])),
@@ -758,11 +758,11 @@ function mr(r, t, a) {
         winner: w.winner,
         sets: c.sets,
       }),
-      f = (x, A) => l.set(x, (l.get(x) ?? I) - A);
-    (f(c.teamA[0], S.deltaA),
-      f(c.teamA[1], S.deltaA),
-      f(c.teamB[0], S.deltaB),
-      f(c.teamB[1], S.deltaB));
+      p = (x, A) => l.set(x, (l.get(x) ?? I) - A);
+    (p(c.teamA[0], S.deltaA),
+      p(c.teamA[1], S.deltaA),
+      p(c.teamB[0], S.deltaB),
+      p(c.teamB[1], S.deltaB));
   }
   const u = new Map(l),
     m = [],
@@ -781,11 +781,11 @@ function mr(r, t, a) {
         winner: w.winner,
         sets: c.sets,
       }),
-      f = (A, L) => u.set(A, (u.get(A) ?? I) + L);
-    (f(c.teamA[0], S.deltaA),
-      f(c.teamA[1], S.deltaA),
-      f(c.teamB[0], S.deltaB),
-      f(c.teamB[1], S.deltaB));
+      p = (A, L) => u.set(A, (u.get(A) ?? I) + L);
+    (p(c.teamA[0], S.deltaA),
+      p(c.teamA[1], S.deltaA),
+      p(c.teamB[0], S.deltaB),
+      p(c.teamB[1], S.deltaB));
     const x = {
       label: new Date(c.date).toLocaleString('it-IT', {
         day: '2-digit',
@@ -819,20 +819,20 @@ function z() {
 function he() {
   return { players: [], matches: [], courts: [], bookings: [], bookingConfig: z() };
 }
-const _e = p.createContext(null),
+const _e = f.createContext(null),
   It = () => {
-    const r = p.useContext(_e);
+    const r = f.useContext(_e);
     if (!r) throw new Error('useLeague must be used within a LeagueProvider');
     return r;
   };
 function Pt({ children: r }) {
   const { user: t, loading: a } = q(),
-    [o, s] = p.useState(null),
-    [h, n] = p.useState(!0),
-    [l, d] = p.useState(null),
-    [u, m] = p.useState(!1),
-    [g, i] = p.useState(localStorage.getItem(D + '-leagueId') || 'lega-andrea-2025'),
-    c = p.useRef(null);
+    [o, s] = f.useState(null),
+    [h, n] = f.useState(!0),
+    [l, d] = f.useState(null),
+    [u, m] = f.useState(!1),
+    [g, i] = f.useState(localStorage.getItem(D + '-leagueId') || 'lega-andrea-2025'),
+    c = f.useRef(null);
   if (!c.current) {
     const v = (() => {
       try {
@@ -850,12 +850,12 @@ function Pt({ children: r }) {
       } catch {}
     }
   }
-  const w = p.useRef(0),
-    S = p.useRef(null);
-  p.useEffect(() => {
+  const w = f.useRef(0),
+    S = f.useRef(null);
+  f.useEffect(() => {
     localStorage.setItem(D + '-leagueId', g);
   }, [g]);
-  const f = (v) => {
+  const p = (v) => {
     s((y) => {
       const N = typeof v == 'function' ? v(y) : v,
         k = Date.now(),
@@ -863,7 +863,7 @@ function Pt({ children: r }) {
       return ((w.current = k + 2e3), { ...N, _updatedAt: k, _rev: b, _lastWriter: c.current });
     });
   };
-  (p.useEffect(() => {
+  (f.useEffect(() => {
     a ||
       (async () => {
         try {
@@ -914,7 +914,7 @@ function Pt({ children: r }) {
         }
       })();
   }, [g, t, a]),
-    p.useEffect(() => {
+    f.useEffect(() => {
       if (!g || !t || a) return;
       let v = null;
       try {
@@ -958,7 +958,7 @@ function Pt({ children: r }) {
       }
       return () => v && v();
     }, [g, t, a]),
-    p.useEffect(() => {
+    f.useEffect(() => {
       if (!o || u || !t) return;
       const v = ['players', 'matches', 'courts', 'bookings', 'bookingConfig', 'lessonConfig'],
         y = v.reduce((b, P) => ((b[P] = o[P]), b), {}),
@@ -991,7 +991,7 @@ function Pt({ children: r }) {
     A = C.useMemo(() => Object.fromEntries((x.players || []).map((v) => [v.id, v])), [x]),
     L = {
       state: o,
-      setState: f,
+      setState: p,
       derived: x,
       playersById: A,
       leagueId: g,
@@ -1002,14 +1002,14 @@ function Pt({ children: r }) {
     };
   return e.jsx(_e.Provider, { value: L, children: r });
 }
-const Ee = p.createContext(null),
+const Ee = f.createContext(null),
   Me = () => {
-    const r = p.useContext(Ee);
+    const r = f.useContext(Ee);
     if (!r) throw new Error('useUI must be used within a UIProvider');
     return r;
   };
 function Lt({ children: r }) {
-  const [t, a] = p.useState(() => {
+  const [t, a] = f.useState(() => {
       try {
         const x = localStorage.getItem('play-sport-pro-theme');
         return x ? x === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -1017,7 +1017,7 @@ function Lt({ children: r }) {
         return !1;
       }
     }),
-    [o, s] = p.useState(() => {
+    [o, s] = f.useState(() => {
       try {
         const x = sessionStorage.getItem('ml-extra-unlocked') === '1',
           A = sessionStorage.getItem('ml-club-mode') === '1';
@@ -1026,10 +1026,10 @@ function Lt({ children: r }) {
         return !1;
       }
     }),
-    [h, n] = p.useState([]),
-    [l, d] = p.useState(!1),
-    [u, m] = p.useState(null);
-  (p.useEffect(() => {
+    [h, n] = f.useState([]),
+    [l, d] = f.useState(!1),
+    [u, m] = f.useState(null);
+  (f.useEffect(() => {
     try {
       t
         ? (document.documentElement.classList.add('dark'),
@@ -1060,7 +1060,7 @@ function Lt({ children: r }) {
     c = (x) => {
       n((A) => A.filter((L) => L.id !== x));
     },
-    f = {
+    p = {
       darkMode: t,
       setDarkMode: a,
       toggleTheme: g,
@@ -1079,7 +1079,7 @@ function Lt({ children: r }) {
         m(null);
       },
     };
-  return e.jsx(Ee.Provider, { value: f, children: r });
+  return e.jsx(Ee.Provider, { value: p, children: r });
 }
 class _t extends C.Component {
   constructor(t) {
@@ -1386,7 +1386,7 @@ function Wt({ active: r, setActive: t, clubMode: a, T: o, user: s, navigation: h
   });
 }
 function $t({ active: r, setActive: t, navigation: a = [], clubMode: o = !1 }) {
-  const [s, h] = p.useState(!1),
+  const [s, h] = f.useState(!1),
     n = (i) => {
       (t(i.id), s && h(!1));
     },
@@ -1796,22 +1796,22 @@ function $t({ active: r, setActive: t, navigation: a = [], clubMode: o = !1 }) {
   });
 }
 function ze() {
-  const [r, t] = p.useState(null),
-    [a, o] = p.useState(!1),
-    [s, h] = p.useState(!1),
-    [n, l] = p.useState({});
-  p.useEffect(() => {
+  const [r, t] = f.useState(null),
+    [a, o] = f.useState(!1),
+    [s, h] = f.useState(!1),
+    [n, l] = f.useState({});
+  f.useEffect(() => {
     ((() => {
-      const f = navigator.userAgent,
-        x = /iPad|iPhone|iPod/.test(f),
-        A = /Android/.test(f),
-        L = x || A || /Mobile|Tablet/.test(f),
-        v = /Chrome/.test(f) && !/Edge|Edg/.test(f),
-        y = /Edge|Edg/.test(f),
-        N = /Firefox/.test(f),
-        k = /Safari/.test(f) && !/Chrome|CriOS|FxiOS/.test(f),
-        b = /OPR|Opera/.test(f),
-        P = /SamsungBrowser/.test(f);
+      const p = navigator.userAgent,
+        x = /iPad|iPhone|iPod/.test(p),
+        A = /Android/.test(p),
+        L = x || A || /Mobile|Tablet/.test(p),
+        v = /Chrome/.test(p) && !/Edge|Edg/.test(p),
+        y = /Edge|Edg/.test(p),
+        N = /Firefox/.test(p),
+        k = /Safari/.test(p) && !/Chrome|CriOS|FxiOS/.test(p),
+        b = /OPR|Opera/.test(p),
+        P = /SamsungBrowser/.test(p);
       l({
         isIOS: x,
         isAndroid: A,
@@ -1826,15 +1826,15 @@ function ze() {
       });
     })(),
       (() => {
-        const f = window.matchMedia('(display-mode: standalone)').matches,
+        const p = window.matchMedia('(display-mode: standalone)').matches,
           x = window.navigator.standalone === !0,
           A = window.matchMedia('(display-mode: fullscreen)').matches,
           L = window.matchMedia('(display-mode: minimal-ui)').matches,
-          v = f || x || A || L;
+          v = p || x || A || L;
         (h(v), v && console.log('✅ PWA is already installed'));
       })());
-    const w = (f) => {
-        (console.log('🚀 PWA installation prompt ready'), f.preventDefault(), t(f), o(!0));
+    const w = (p) => {
+        (console.log('🚀 PWA installation prompt ready'), p.preventDefault(), t(p), o(!0));
       },
       S = () => {
         (console.log('✅ PWA installed successfully'),
@@ -1866,7 +1866,7 @@ function ze() {
       }
     },
     u = () => {
-      const { isIOS: i, isAndroid: c, isSafari: w, isFirefox: S, isChrome: f, isEdge: x } = n;
+      const { isIOS: i, isAndroid: c, isSafari: w, isFirefox: S, isChrome: p, isEdge: x } = n;
       return i && w
         ? {
             show: !0,
@@ -1896,7 +1896,7 @@ function ze() {
                     'Conferma cliccando "Installa"',
                   ],
             }
-          : c && (f || x)
+          : c && (p || x)
             ? {
                 show: !0,
                 title: 'Installa su Android',
@@ -1908,7 +1908,7 @@ function ze() {
                   "L'app verrà aggiunta alla home screen",
                 ],
               }
-            : !n.isMobile && (f || x)
+            : !n.isMobile && (p || x)
               ? {
                   show: !0,
                   title: 'Installa sul Desktop',
@@ -1945,7 +1945,7 @@ function Ut({ className: r = '' }) {
       isPWASupported: h,
       installInstructions: n,
     } = ze(),
-    [l, d] = p.useState(!1);
+    [l, d] = f.useState(!1);
   if (a)
     return e.jsxs('div', {
       className: `flex items-center gap-2 text-green-600 text-sm ${r}`,
@@ -2112,8 +2112,8 @@ function Ft() {
       browserInfo: o,
       installInstructions: s,
     } = ze(),
-    [h, n] = p.useState(!1),
-    [l, d] = p.useState(!1);
+    [h, n] = f.useState(!1),
+    [l, d] = f.useState(!1);
   if (t || !r) return null;
   const u = async () => {
       if (s && s.show) {
@@ -2265,6 +2265,11 @@ function Ft() {
   });
 }
 function Vt() {
+  const [r, t] = f.useState(!0),
+    [a, o] = f.useState(!1);
+  return (f.useEffect(() => {}, []), null);
+}
+function Ht() {
   const { user: r } = q(),
     { clubMode: t, loading: a } = Me(),
     { updatingFromCloud: o } = It(),
@@ -2349,91 +2354,92 @@ function Vt() {
       e.jsx(Ft, {}),
       e.jsx(Tt, {}),
       e.jsx(Et, { visible: a || o, message: o ? 'Sincronizzazione...' : 'Caricamento...' }),
+      e.jsx(Vt, {}),
     ],
   });
 }
-const Ht = C.lazy(() =>
-    M(() => import('./LoginPage-mfh4d38h-Di-g-Qxg.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
-  ),
-  Gt = C.lazy(() =>
-    M(() => import('./DashboardPage-mfh4d38h-BiGizN42.js'), __vite__mapDeps([5, 1, 2, 4]))
+const Gt = C.lazy(() =>
+    M(() => import('./LoginPage-mfh82qsn-vUvt2nS-.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
   ),
   qt = C.lazy(() =>
-    M(() => import('./ClassificaPage-mfh4d38h-mPuxIbvt.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
+    M(() => import('./DashboardPage-mfh82qsn-BxPTiYbO.js'), __vite__mapDeps([5, 1, 2, 4]))
   ),
   Jt = C.lazy(() =>
-    M(
-      () => import('./StatsPage-mfh4d38h-DLRZwj2V.js'),
-      __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4])
-    )
+    M(() => import('./ClassificaPage-mfh82qsn-B2Uk9GSW.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
   ),
   Kt = C.lazy(() =>
     M(
-      () => import('./BookingPage-mfh4d38h-BGLGWTEk.js'),
-      __vite__mapDeps([12, 1, 2, 13, 14, 15, 16, 17, 4])
+      () => import('./StatsPage-mfh82qsn-CnEenN0Q.js'),
+      __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4])
     )
   ),
   Yt = C.lazy(() =>
     M(
-      () => import('./LessonBookingPage-mfh4d38h-DgX8L_8J.js'),
-      __vite__mapDeps([18, 1, 2, 3, 13, 14, 19, 16, 17, 4, 10])
+      () => import('./BookingPage-mfh82qsn-LtqX4Kcq.js'),
+      __vite__mapDeps([12, 1, 2, 13, 14, 15, 16, 17, 4])
     )
   ),
   Xt = C.lazy(() =>
     M(
-      () => import('./PlayersPage-mfh4d38h-Fq_i7EB0.js'),
-      __vite__mapDeps([20, 1, 2, 3, 10, 11, 19, 17, 4])
+      () => import('./LessonBookingPage-mfh82qsn-BKI8A3_F.js'),
+      __vite__mapDeps([18, 1, 2, 3, 13, 14, 19, 16, 17, 4, 10])
     )
   ),
   Zt = C.lazy(() =>
-    M(() => import('./MatchesPage-mfh4d38h--edKOpMd.js'), __vite__mapDeps([21, 1, 2, 3, 11, 4]))
+    M(
+      () => import('./PlayersPage-mfh82qsn-Z5pLTkyd.js'),
+      __vite__mapDeps([20, 1, 2, 3, 10, 11, 19, 17, 4])
+    )
   ),
   Qt = C.lazy(() =>
-    M(() => import('./TournamentsPage-mfh4d38h-BqyfJYHk.js'), __vite__mapDeps([22, 1, 2, 3, 4]))
+    M(() => import('./MatchesPage-mfh82qsn-DrOnC31T.js'), __vite__mapDeps([21, 1, 2, 3, 11, 4]))
   ),
   er = C.lazy(() =>
-    M(() => import('./ProfilePage-mfh4d38h-CAJ4WGOw.js'), __vite__mapDeps([23, 1, 2, 3, 4]))
+    M(() => import('./TournamentsPage-mfh82qsn-D0b7vGDc.js'), __vite__mapDeps([22, 1, 2, 3, 4]))
   ),
   tr = C.lazy(() =>
-    M(() => import('./ExtraPage-mfh4d38h-CnTvVTYf.js'), __vite__mapDeps([24, 1, 2, 3, 25, 4]))
+    M(() => import('./ProfilePage-mfh82qsn-BOduRlQu.js'), __vite__mapDeps([23, 1, 2, 3, 4]))
   ),
   rr = C.lazy(() =>
+    M(() => import('./ExtraPage-mfh82qsn-DPKEAMOW.js'), __vite__mapDeps([24, 1, 2, 3, 25, 4]))
+  ),
+  ar = C.lazy(() =>
     M(
-      () => import('./AdminBookingsPage-mfh4d38h-BYy3mtAD.js'),
+      () => import('./AdminBookingsPage-mfh82qsn-DJW48RqG.js'),
       __vite__mapDeps([26, 1, 2, 3, 10, 25, 15, 16, 17, 4, 19])
     )
   ),
-  ar = C.lazy(() =>
-    M(() => import('./DarkModeTestPage-mfh4d38h-BJC01zZg.js'), __vite__mapDeps([27, 1, 2, 14, 4]))
+  sr = C.lazy(() =>
+    M(() => import('./DarkModeTestPage-mfh82qsn-DhxAQISv.js'), __vite__mapDeps([27, 1, 2, 14, 4]))
   );
-function sr() {
+function or() {
   return e.jsx(_t, {
     children: e.jsx(Fe, {
       children: e.jsx(yt, {
         children: e.jsx(Pt, {
           children: e.jsx(Lt, {
-            children: e.jsx(p.Suspense, {
+            children: e.jsx(f.Suspense, {
               fallback: e.jsx(se, {}),
               children: e.jsxs(Ve, {
                 children: [
-                  e.jsx(_, { path: '/login', element: e.jsx(Bt, { children: e.jsx(Ht, {}) }) }),
+                  e.jsx(_, { path: '/login', element: e.jsx(Bt, { children: e.jsx(Gt, {}) }) }),
                   e.jsxs(_, {
                     path: '/',
-                    element: e.jsx(Rt, { children: e.jsx(Vt, {}) }),
+                    element: e.jsx(Rt, { children: e.jsx(Ht, {}) }),
                     children: [
                       e.jsx(_, { index: !0, element: e.jsx($, { to: 'dashboard', replace: !0 }) }),
-                      e.jsx(_, { path: 'dashboard', element: e.jsx(Gt, {}) }),
-                      e.jsx(_, { path: 'classifica', element: e.jsx(qt, {}) }),
-                      e.jsx(_, { path: 'stats', element: e.jsx(Jt, {}) }),
-                      e.jsx(_, { path: 'booking', element: e.jsx(Kt, {}) }),
-                      e.jsx(_, { path: 'lessons', element: e.jsx(Yt, {}) }),
-                      e.jsx(_, { path: 'extra', element: e.jsx(tr, {}) }),
-                      e.jsx(_, { path: 'players', element: e.jsx(Xt, {}) }),
-                      e.jsx(_, { path: 'matches/create', element: e.jsx(Zt, {}) }),
-                      e.jsx(_, { path: 'tournaments', element: e.jsx(Qt, {}) }),
-                      e.jsx(_, { path: 'admin/bookings', element: e.jsx(rr, {}) }),
-                      e.jsx(_, { path: 'profile', element: e.jsx(er, {}) }),
-                      e.jsx(_, { path: 'test/dark-mode', element: e.jsx(ar, {}) }),
+                      e.jsx(_, { path: 'dashboard', element: e.jsx(qt, {}) }),
+                      e.jsx(_, { path: 'classifica', element: e.jsx(Jt, {}) }),
+                      e.jsx(_, { path: 'stats', element: e.jsx(Kt, {}) }),
+                      e.jsx(_, { path: 'booking', element: e.jsx(Yt, {}) }),
+                      e.jsx(_, { path: 'lessons', element: e.jsx(Xt, {}) }),
+                      e.jsx(_, { path: 'extra', element: e.jsx(rr, {}) }),
+                      e.jsx(_, { path: 'players', element: e.jsx(Zt, {}) }),
+                      e.jsx(_, { path: 'matches/create', element: e.jsx(Qt, {}) }),
+                      e.jsx(_, { path: 'tournaments', element: e.jsx(er, {}) }),
+                      e.jsx(_, { path: 'admin/bookings', element: e.jsx(ar, {}) }),
+                      e.jsx(_, { path: 'profile', element: e.jsx(tr, {}) }),
+                      e.jsx(_, { path: 'test/dark-mode', element: e.jsx(sr, {}) }),
                     ],
                   }),
                   e.jsx(_, { path: '*', element: e.jsx($, { to: '/dashboard', replace: !0 }) }),
@@ -2446,7 +2452,7 @@ function sr() {
     }),
   });
 }
-class or {
+class nr {
   constructor() {
     ((this.currentVersion = '1.8.0'),
       (this.swRegistration = null),
@@ -2579,8 +2585,8 @@ class or {
     this.updateCheckInterval && clearInterval(this.updateCheckInterval);
   }
 }
-const ee = new or(),
-  hr = Object.freeze(
+const ee = new nr(),
+  gr = Object.freeze(
     Object.defineProperty({ __proto__: null, default: ee, updateService: ee }, Symbol.toStringTag, {
       value: 'Module',
     })
@@ -2595,7 +2601,7 @@ const ee = new or(),
   });
 const De = document.getElementById('root');
 if (!De) throw new Error('Elemento #root non trovato in index.html');
-lt.createRoot(De).render(e.jsx(C.StrictMode, { children: e.jsx(sr, {}) }));
+lt.createRoot(De).render(e.jsx(C.StrictMode, { children: e.jsx(or, {}) }));
 export {
   I as D,
   Be as L,
@@ -2606,9 +2612,9 @@ export {
   wt as d,
   ze as e,
   It as f,
-  mr as g,
+  hr as g,
   X as h,
-  ur as i,
+  mr as i,
   e as j,
   Me as k,
   bt as l,
@@ -2622,7 +2628,7 @@ export {
   Dt as t,
   q as u,
   re as v,
-  cr as w,
-  dr as x,
-  hr as y,
+  dr as w,
+  ur as x,
+  gr as y,
 };
