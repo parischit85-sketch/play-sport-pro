@@ -45,8 +45,24 @@ class HashChecker {
   init() {
     if (this.isChecking) return;
 
+    // Non attivare in development mode (quando si usa /src/main.jsx)
+    const isDevelopment =
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      document.querySelector('script[src="/src/main.jsx"]');
+
+    if (isDevelopment) {
+      console.log('[HashChecker] Disabled in development mode');
+      return;
+    }
+
     this.currentHash = this.extractCurrentHash();
     console.log('[HashChecker] Current hash:', this.currentHash);
+
+    if (!this.currentHash) {
+      console.log('[HashChecker] No hash found, skipping monitoring');
+      return;
+    }
 
     // Controlla ogni 15 secondi se ci sono nuovi asset
     this.checkInterval = setInterval(() => {

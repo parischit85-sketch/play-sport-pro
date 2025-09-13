@@ -22,7 +22,7 @@ if (import.meta.env.PROD) {
 }
 
 // PWA Service Worker e Update Service
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', async () => {
     try {
       // Inizializza il servizio di aggiornamenti
@@ -34,6 +34,8 @@ if ('serviceWorker' in navigator) {
       console.error('❌ Update Service failed:', error);
     }
   });
+} else {
+  console.log('🔧 Service Worker disabled in development mode');
 }
 
 const container = document.getElementById('root');

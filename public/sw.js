@@ -1,13 +1,17 @@
 // Service Worker per Paris League PWA
-const CACHE_NAME = 'paris-league-v1.8.1';
-const APP_VERSION = '1.8.1';
-const CURRENT_HASH = 'mfi3xrqx'; // Hash corrente degli asset
+const CACHE_NAME = 'paris-league-v1.8.3';
+const APP_VERSION = '1.8.3';
+const CURRENT_HASH = 'dev-mode'; // Hash per development mode
 const urlsToCache = [
   '/',
   '/play-sport-pro_horizontal.svg',
+  '/play-sport-pro_icon_only.svg',
   '/favicon.ico',
+  '/favicon.png',
   '/manifest.json',
   '/icons/icon.svg',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png',
   // Rimosso /src/main.jsx per evitare caching di asset di sviluppo
 ];
 
@@ -64,11 +68,41 @@ self.addEventListener('fetch', (event) => {
     url.pathname.startsWith('/assets/') ||
     url.pathname.endsWith('.js') ||
     url.pathname.endsWith('.css');
+  const isImage =
+    url.pathname.endsWith('.svg') ||
+    url.pathname.endsWith('.png') ||
+    url.pathname.endsWith('.jpg') ||
+    url.pathname.endsWith('.ico');
   const isApiCall = url.pathname.includes('api') || url.hostname.includes('firebase');
 
   // API calls: sempre network first
   if (isApiCall) {
     event.respondWith(fetch(event.request).catch(() => caches.match(event.request)));
+    return;
+  }
+
+  // Immagini e file statici: cache first con fallback a network
+  if (isImage) {
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        if (response) {
+          return response;
+        }
+
+        return fetch(event.request)
+          .then((response) => {
+            if (response && response.status === 200) {
+              const responseToCache = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+            }
+            return response;
+          })
+          .catch((error) => {
+            console.error('[SW] Image fetch failed:', event.request.url, error);
+            throw error;
+          });
+      })
+    );
     return;
   }
 
