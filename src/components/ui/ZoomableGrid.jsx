@@ -1,7 +1,7 @@
 // =============================================
 // FILE: src/components/ui/ZoomableGrid.jsx
 // =============================================
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePinchZoom } from '@hooks/usePinchZoom.js';
 
 /**
@@ -13,6 +13,17 @@ export default function ZoomableGrid({ children, className = '', T }) {
     maxScale: 2.5,
     initialScale: 0.7, // Inizia un po' zoommato out per vedere meglio su mobile
   });
+
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div className="relative w-full" style={{ minHeight: '400px' }}>
@@ -56,12 +67,18 @@ export default function ZoomableGrid({ children, className = '', T }) {
       {/* Container scrollabile con zoom */}
       <div
         ref={containerRef}
-        className={`w-full overflow-auto ${className}`}
+        className={`w-full ${isMobile ? 'overflow-auto' : 'overflow-visible'} ${className}`}
         style={{
           touchAction: 'manipulation', // Permette solo pan e zoom
           WebkitOverflowScrolling: 'touch', // Smooth scrolling su iOS
-          minHeight: '400px',
-          maxHeight: 'calc(100vh - 200px)', // Evita che vada oltre il viewport
+          ...(isMobile
+            ? {
+                minHeight: '400px',
+                maxHeight: 'calc(100vh - 200px)',
+              }
+            : {
+                // Su desktop: nessuna limitazione di altezza
+              }),
         }}
       >
         <div
