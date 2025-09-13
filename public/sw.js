@@ -1,7 +1,7 @@
 // Service Worker per Paris League PWA
-const CACHE_NAME = 'paris-league-v1.8.3';
-const APP_VERSION = '1.8.3';
-const CURRENT_HASH = 'dev-mode'; // Hash per development mode
+const CACHE_NAME = 'paris-league-v1.8.4';
+const APP_VERSION = '1.8.4';
+const CURRENT_HASH = 'dev-mode-disabled'; // Hash checking disabilitato
 const urlsToCache = [
   '/',
   '/play-sport-pro_horizontal.svg',
@@ -169,22 +169,15 @@ self.addEventListener('message', (event) => {
     event.ports[0].postMessage({ version: APP_VERSION });
   }
 
-  // Controllo hash degli asset
+  // Controllo hash degli asset - TEMPORANEAMENTE DISABILITATO
   if (event.data && event.data.type === 'CHECK_HASH') {
-    const clientHash = event.data.hash;
-    if (clientHash && clientHash !== CURRENT_HASH) {
-      console.log(`[SW] Hash mismatch detected! Client: ${clientHash}, SW: ${CURRENT_HASH}`);
-      event.ports[0].postMessage({
-        hashMismatch: true,
-        currentHash: CURRENT_HASH,
-        clientHash: clientHash,
-      });
-    } else {
-      event.ports[0].postMessage({
-        hashMismatch: false,
-        currentHash: CURRENT_HASH,
-      });
-    }
+    // Sempre risponde che non c'è mismatch per evitare refresh continui
+    console.log('[SW] Hash checking disabled - no refresh triggered');
+    event.ports[0].postMessage({
+      hashMismatch: false,
+      currentHash: CURRENT_HASH,
+      clientHash: event.data.hash,
+    });
   }
 
   // Forza clear cache
