@@ -1,5 +1,5 @@
-import { v as R, _ as A, u as fe, j as e } from './index-mfiaeih4-BH71Qot4.js';
-import { r as g, c as be, b as pe } from './router-mfiaeih4-DNPpahz0.js';
+import { v as R, _ as A, u as fe, j as e } from './index-mfibl1yk-D2ihnd7m.js';
+import { r as g, c as be, b as pe } from './router-mfibl1yk-BvCXkbo6.js';
 import {
   r as Z,
   p as ee,
@@ -9,10 +9,10 @@ import {
   A as ye,
   B as we,
   f as ve,
-} from './firebase-mfiaeih4-X_I_guKF.js';
-import { M as je } from './Modal-mfiaeih4-DqY2S1Zr.js';
-import { B as O } from './Badge-mfiaeih4-BV5ik9nr.js';
-import './vendor-mfiaeih4-D3F3s8fL.js';
+} from './firebase-mfibl1yk-X_I_guKF.js';
+import { M as je } from './Modal-mfibl1yk-DuoMxXxE.js';
+import { B as O } from './Badge-mfibl1yk-dJZTtx7M.js';
+import './vendor-mfibl1yk-D3F3s8fL.js';
 const F = 'bookings';
 async function G() {
   try {
@@ -833,40 +833,42 @@ function Ee({
                         children: [
                           r.players &&
                             r.players.length > 1 &&
-                            r.players.slice(1).map((m, p) =>
-                              e.jsxs(
-                                'div',
-                                {
-                                  className:
-                                    'flex items-center gap-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/20 dark:border-gray-600/20 shadow-sm',
-                                  children: [
-                                    e.jsx('div', {
-                                      className:
-                                        'w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center shadow-lg',
-                                      children: e.jsx('span', {
-                                        className: 'text-white text-sm font-bold',
-                                        children: p + 2,
+                            r.players
+                              .slice(1)
+                              .map((m, p) =>
+                                e.jsxs(
+                                  'div',
+                                  {
+                                    className:
+                                      'flex items-center gap-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/20 dark:border-gray-600/20 shadow-sm',
+                                    children: [
+                                      e.jsx('div', {
+                                        className:
+                                          'w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center shadow-lg',
+                                        children: e.jsx('span', {
+                                          className: 'text-white text-sm font-bold',
+                                          children: p + 2,
+                                        }),
                                       }),
-                                    }),
-                                    e.jsxs('div', {
-                                      className: 'flex-1',
-                                      children: [
-                                        e.jsx('div', {
-                                          className:
-                                            'text-sm font-medium text-gray-900 dark:text-gray-100',
-                                          children: M(m),
-                                        }),
-                                        e.jsxs('div', {
-                                          className: 'text-xs text-gray-500 dark:text-gray-400',
-                                          children: ['Giocatore ', p + 2],
-                                        }),
-                                      ],
-                                    }),
-                                  ],
-                                },
-                                p
-                              )
-                            ),
+                                      e.jsxs('div', {
+                                        className: 'flex-1',
+                                        children: [
+                                          e.jsx('div', {
+                                            className:
+                                              'text-sm font-medium text-gray-900 dark:text-gray-100',
+                                            children: M(m),
+                                          }),
+                                          e.jsxs('div', {
+                                            className: 'text-xs text-gray-500 dark:text-gray-400',
+                                            children: ['Giocatore ', p + 2],
+                                          }),
+                                        ],
+                                      }),
+                                    ],
+                                  },
+                                  p
+                                )
+                              ),
                           (() => {
                             const m = r.players?.length || 1,
                               p = 4 - m;
@@ -1048,18 +1050,20 @@ const me = pe.memo(({ booking: r, onBookingClick: a, courts: t, user: s }) => {
                       e.jsxs('span', {
                         children: [
                           r.bookedBy ? ' + ' : '',
-                          r.players.slice(0, 2).map((y, h) =>
-                            e.jsxs(
-                              'span',
-                              {
-                                children: [
-                                  y.name || y,
-                                  h < r.players.slice(0, 2).length - 1 ? ', ' : '',
-                                ],
-                              },
-                              h
-                            )
-                          ),
+                          r.players
+                            .slice(0, 2)
+                            .map((y, h) =>
+                              e.jsxs(
+                                'span',
+                                {
+                                  children: [
+                                    y.name || y,
+                                    h < r.players.slice(0, 2).length - 1 ? ', ' : '',
+                                  ],
+                                },
+                                h
+                              )
+                            ),
                           r.players.length > 2 &&
                             e.jsxs('span', { children: [' +', r.players.length - 2, ' altri'] }),
                         ],
@@ -1389,15 +1393,17 @@ Giocatori: ${n.players?.join(', ') || 'Da definire'}`;
                   children: e.jsxs('div', {
                     className: 'flex gap-1',
                     children: [
-                      u.slice(0, Math.min(6, u.length)).map((n, N) =>
-                        e.jsx(
-                          'div',
-                          {
-                            className: 'w-1 h-1 rounded-full bg-gray-300/60 dark:bg-gray-600/60',
-                          },
-                          N
-                        )
-                      ),
+                      u
+                        .slice(0, Math.min(6, u.length))
+                        .map((n, N) =>
+                          e.jsx(
+                            'div',
+                            {
+                              className: 'w-1 h-1 rounded-full bg-gray-300/60 dark:bg-gray-600/60',
+                            },
+                            N
+                          )
+                        ),
                       u.length > 6 &&
                         e.jsx('div', { className: 'w-1 h-1 rounded-full bg-blue-500' }),
                     ],

@@ -8,12 +8,12 @@ import {
   f as ie,
   k as de,
   t as ce,
-} from './index-mfiaeih4-BH71Qot4.js';
-import { r as k, b as D, c as oe } from './router-mfiaeih4-DNPpahz0.js';
-import { S as Z } from './Section-mfiaeih4-DiH4h-T9.js';
-import { s as H, b as xe } from './names-mfiaeih4-BW9lV2zG.js';
-import './vendor-mfiaeih4-D3F3s8fL.js';
-import './firebase-mfiaeih4-X_I_guKF.js';
+} from './index-mfibl1yk-D2ihnd7m.js';
+import { r as k, b as D, c as oe } from './router-mfibl1yk-BvCXkbo6.js';
+import { S as Z } from './Section-mfibl1yk-Bni894MT.js';
+import { s as H, b as xe } from './names-mfibl1yk-BW9lV2zG.js';
+import './vendor-mfibl1yk-D3F3s8fL.js';
+import './firebase-mfibl1yk-X_I_guKF.js';
 function me({ m: a, playersById: t, onShowFormula: r, onDelete: d, T: i }) {
   const [s, x] = k.useState(!1),
     n = (j) => t?.[j]?.name ?? j,

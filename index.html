@@ -27,12 +27,20 @@
       if (location.hostname === 'localhost') {
         // Sopprimi gli errori WebSocket fastidiosi durante lo sviluppo
         const originalError = console.error;
+        let hmrWarningShown = false;
+        
         console.error = function(...args) {
           const message = args[0];
           if (typeof message === 'string' && 
               (message.includes('WebSocket connection') || 
-               message.includes('failed to connect to websocket'))) {
-            console.warn('🔄 HMR WebSocket disconnesso - usa F5 per refresh manuale');
+               message.includes('failed to connect to websocket') ||
+               message.includes('WebSocket closed without opened'))) {
+            // Mostra il warning solo una volta ogni 30 secondi
+            if (!hmrWarningShown) {
+              console.warn('🔄 HMR WebSocket disconnesso - usa F5 per refresh manuale');
+              hmrWarningShown = true;
+              setTimeout(() => { hmrWarningShown = false; }, 30000);
+            }
             return;
           }
           originalError.apply(console, args);

@@ -1,15 +1,15 @@
-import { j as e, u as qe, f as Ve, k as We, t as _e } from './index-mfiaeih4-BH71Qot4.js';
-import { r as l, b as Me, c as Xe } from './router-mfiaeih4-DNPpahz0.js';
-import { S as Je } from './Section-mfiaeih4-DiH4h-T9.js';
-import { M as Ke } from './Modal-mfiaeih4-DqY2S1Zr.js';
-import { a as ge, e as Qe } from './format-mfiaeih4-DAEZv7Mi.js';
-import { g as ke, c as ze, a as et, i as se } from './pricing-mfiaeih4-BdjzWTQe.js';
-import { u as tt } from './useUnifiedBookings-mfiaeih4-B_RTsWnr.js';
-import { P as rt } from './playerTypes-mfiaeih4-CIm-hM8a.js';
-import './vendor-mfiaeih4-D3F3s8fL.js';
-import './firebase-mfiaeih4-X_I_guKF.js';
-import './unified-booking-service-mfiaeih4-D7duu2eN.js';
-function ot(p, k) {
+import { j as e, u as Ve, f as We, k as _e, t as Xe } from './index-mfibl1yk-D2ihnd7m.js';
+import { r as l, b as ze, c as Je } from './router-mfibl1yk-BvCXkbo6.js';
+import { S as Ke } from './Section-mfibl1yk-Bni894MT.js';
+import { M as Qe } from './Modal-mfibl1yk-DuoMxXxE.js';
+import { a as ge, e as et } from './format-mfibl1yk-DAEZv7Mi.js';
+import { g as ke, c as Me, a as tt, i as se } from './pricing-mfibl1yk-BdjzWTQe.js';
+import { u as rt } from './useUnifiedBookings-mfibl1yk-D_or3Kbt.js';
+import { P as ot } from './playerTypes-mfibl1yk-CIm-hM8a.js';
+import './vendor-mfibl1yk-D3F3s8fL.js';
+import './firebase-mfibl1yk-X_I_guKF.js';
+import './unified-booking-service-mfibl1yk-Dyy4hClR.js';
+function at(p, k) {
   return (
     p.getFullYear() === k.getFullYear() &&
     p.getMonth() === k.getMonth() &&
@@ -30,7 +30,7 @@ function T(p, k) {
 function te(p, k, g, j) {
   return p < j && g < k;
 }
-function at(p = {}) {
+function nt(p = {}) {
   const { minScale: k = 0.5, maxScale: g = 3, initialScale: j = 1 } = p,
     [d, L] = l.useState(j),
     [P, h] = l.useState(j),
@@ -105,7 +105,7 @@ function at(p = {}) {
     }
   );
 }
-function nt({ children: p, className: k = '', T: g }) {
+function st({ children: p, className: k = '', T: g }) {
   const {
     containerRef: j,
     scale: d,
@@ -114,7 +114,7 @@ function nt({ children: p, className: k = '', T: g }) {
     zoomOut: h,
     resetZoom: Y,
     transform: A,
-  } = at({ minScale: 0.3, maxScale: 2.5, initialScale: 0.7 });
+  } = nt({ minScale: 0.3, maxScale: 2.5, initialScale: 0.7 });
   return e.jsxs('div', {
     className: 'relative w-full',
     style: { minHeight: '400px' },
@@ -192,7 +192,7 @@ function nt({ children: p, className: k = '', T: g }) {
     ],
   });
 }
-function st({ currentDay: p, onSelectDay: k, T: g }) {
+function it({ currentDay: p, onSelectDay: k, T: g }) {
   const [j, d] = l.useState(new Date(p.getFullYear(), p.getMonth(), 1)),
     L = new Date();
   L.setHours(0, 0, 0, 0);
@@ -291,15 +291,15 @@ function st({ currentDay: p, onSelectDay: k, T: g }) {
     ],
   });
 }
-function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
-  const { user: L } = qe(),
+function lt({ state: p, setState: k, players: g, playersById: j, T: d }) {
+  const { user: L } = Ve(),
     {
       bookings: P,
       refresh: h,
       createBooking: Y,
       updateBooking: A,
       deleteBooking: X,
-    } = tt({ autoLoadUser: !1, autoLoadLessons: !0, enableRealtime: !0 }),
+    } = rt({ autoLoadUser: !1, autoLoadLessons: !0, enableRealtime: !0 }),
     s = p?.bookingConfig || {
       slotMinutes: 30,
       dayStartHour: 8,
@@ -313,7 +313,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
     H = l.useMemo(
       () =>
         (p.players || []).filter(
-          (r) => r.category === rt.INSTRUCTOR && r.instructorData?.isInstructor
+          (r) => r.category === ot.INSTRUCTOR && r.instructorData?.isInstructor
         ),
       [p.players]
     ),
@@ -391,7 +391,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
       () =>
         (V || [])
           .filter((t) => t && t.status !== 'cancelled')
-          .filter((t) => ot(new Date(t.start), S))
+          .filter((t) => at(new Date(t.start), S))
           .sort((t, r) => new Date(t.start) - new Date(r.start)),
       [V, S]
     ),
@@ -422,12 +422,13 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
     ),
     Ee = (t) => j?.[t]?.name || '',
     be = (t, r) => (r && ke(r, s, t, m).isPromo) || !1,
-    [Ne, K] = l.useState(!1),
-    [R, we] = l.useState(null),
+    [we, K] = l.useState(!1),
+    [R, Ne] = l.useState(null),
     [pe, Le] = l.useState('all'),
     [D, he] = l.useState(null),
     [fe, oe] = l.useState(null),
-    [$, Oe] = l.useState(() => window.innerWidth >= 1024);
+    [$, Oe] = l.useState(() => window.innerWidth >= 1024),
+    [Pe, dt] = l.useState('detail');
   l.useEffect(() => {
     const t = () => {
       Oe(window.innerWidth >= 1024);
@@ -453,7 +454,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
   });
   function je(t, r) {
     const n = ee(r, s.slotMinutes);
-    (we(null),
+    (Ne(null),
       I({
         courtId: t,
         start: n,
@@ -473,7 +474,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
       K(!0));
   }
   function Se(t) {
-    we(t.id);
+    Ne(t.id);
     const r = new Date(t.start),
       n = (t.players || []).map(Ee);
     let a = t.playerNames && t.playerNames.length ? t.playerNames : n;
@@ -499,7 +500,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
     }),
       K(!0));
   }
-  function Pe(t, r, n, a = null) {
+  function Ae(t, r, n, a = null) {
     const c = new Date(r),
       f = T(r, n),
       C = le.get(t) || [];
@@ -512,18 +513,18 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
         ignoreId: a,
         existingBookings: C.length,
       }),
-      C.find((N) => {
-        if (a && N.id === a) return (console.log('⏭️ Ignoring booking:', N.id), !1);
-        const E = new Date(N.start),
-          y = T(new Date(N.start), N.duration),
+      C.find((w) => {
+        if (a && w.id === a) return (console.log('⏭️ Ignoring booking:', w.id), !1);
+        const E = new Date(w.start),
+          y = T(new Date(w.start), w.duration),
           O = te(c, f, E, y);
         return (
           O &&
             console.log('🚫 Overlap detected with booking:', {
-              bookingId: N.id,
+              bookingId: w.id,
               bookingStart: E.toISOString(),
               bookingEnd: y.toISOString(),
-              bookingDuration: N.duration,
+              bookingDuration: w.duration,
             }),
           O
         );
@@ -562,13 +563,13 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
       return;
     }
     const n = R || null;
-    if (Pe(o.courtId, t, o.duration, n)) {
+    if (Ae(o.courtId, t, o.duration, n)) {
       alert('Esiste già una prenotazione che si sovrappone su questo campo.');
       return;
     }
-    const a = [o.p1Name, o.p2Name, o.p3Name, o.p4Name].map((w) => (w || '').trim()).filter(Boolean),
+    const a = [o.p1Name, o.p2Name, o.p3Name, o.p4Name].map((N) => (N || '').trim()).filter(Boolean),
       c = (o.bookedBy && o.bookedBy.trim()) || a[0] || '',
-      f = ze(
+      f = Me(
         t,
         o.duration,
         s,
@@ -578,17 +579,17 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
       ),
       C = String(t.getFullYear()).padStart(4, '0'),
       B = String(t.getMonth() + 1).padStart(2, '0'),
-      N = String(t.getDate()).padStart(2, '0'),
+      w = String(t.getDate()).padStart(2, '0'),
       E = String(t.getHours()).padStart(2, '0'),
       y = String(t.getMinutes()).padStart(2, '0'),
-      O = `${C}-${B}-${N}`,
+      O = `${C}-${B}-${w}`,
       b = `${E}:${y}`,
-      z = m.find((w) => w.id === o.courtId)?.name || o.courtId;
+      M = m.find((N) => N.id === o.courtId)?.name || o.courtId;
     try {
       if (R) {
-        const w = {
+        const N = {
           courtId: o.courtId,
-          courtName: z,
+          courtName: M,
           date: O,
           time: b,
           duration: o.duration,
@@ -608,11 +609,11 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
               }
             : { instructorId: null, instructorName: null, lessonType: null }),
         };
-        await A(R, w, L);
+        await A(R, N, L);
       } else {
-        const w = {
+        const N = {
             courtId: o.courtId,
-            courtName: z,
+            courtName: M,
             date: O,
             time: b,
             duration: o.duration,
@@ -632,7 +633,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                 }
               : {}),
           },
-          F = await Y(w);
+          F = await Y(N);
         c && (await A(F.id, { bookedBy: c }));
       }
       K(!1);
@@ -640,7 +641,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
       alert('Errore nel salvataggio della prenotazione.');
     }
   }
-  async function Ae(t) {
+  async function He(t) {
     if (confirm('Cancellare la prenotazione?'))
       try {
         await A(t, { status: 'cancelled', cancelledAt: new Date().toISOString() });
@@ -657,17 +658,17 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
       }
   }
   const Ce = (t) => m.find((r) => r.id === t)?.name || t,
-    He = (t, r) => {
+    Re = (t, r) => {
       $ &&
         (he(r),
         (t.dataTransfer.effectAllowed = 'move'),
         t.dataTransfer.setData('text/plain', r.id),
         (t.target.style.opacity = '0.6'));
     },
-    Re = (t) => {
+    Fe = (t) => {
       $ && (he(null), oe(null), (t.target.style.opacity = '1'));
     },
-    Fe = (t, r, n) => {
+    Ge = (t, r, n) => {
       if (!$ || !D) return;
       (t.preventDefault(), (t.dataTransfer.dropEffect = 'move'));
       const a = new Date(D.start).toDateString(),
@@ -676,7 +677,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
       const f = ee(n, s.slotMinutes),
         C = D.duration || 60,
         B = T(f, C),
-        N = [];
+        w = [];
       let E = !1;
       for (let y = new Date(f); y < B; y = T(y, s.slotMinutes)) {
         if (!se(y, r, m)) {
@@ -685,24 +686,24 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
         }
         const O = T(y, s.slotMinutes);
         if (
-          V.find((z) => {
-            if (z.id === D.id || z.courtId !== r) return !1;
-            const w = new Date(z.start),
-              F = T(w, z.duration);
-            return te(y, O, w, F);
+          V.find((M) => {
+            if (M.id === D.id || M.courtId !== r) return !1;
+            const N = new Date(M.start),
+              F = T(N, M.duration);
+            return te(y, O, N, F);
           })
         ) {
           E = !0;
           break;
         }
-        N.push({ courtId: r, time: y.getTime() });
+        w.push({ courtId: r, time: y.getTime() });
       }
-      oe(E ? null : { courtId: r, slots: N });
+      oe(E ? null : { courtId: r, slots: w });
     },
-    Ge = (t) => {
+    Ue = (t) => {
       $ && (t.currentTarget.contains(t.relatedTarget) || oe(null));
     },
-    Ue = async (t, r, n) => {
+    Ze = async (t, r, n) => {
       if (!(!$ || !D)) {
         (t.preventDefault(),
           oe(null),
@@ -735,25 +736,25 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
               );
               return;
             }
-          const N = V.find((b) => {
+          const w = V.find((b) => {
             if (b.id === D.id || b.courtId !== r) return !1;
-            const z = new Date(b.start),
-              w = T(z, b.duration);
-            return te(f, C, z, w);
+            const M = new Date(b.start),
+              N = T(M, b.duration);
+            return te(f, C, M, N);
           });
-          if (N) {
-            (console.log('🚫 Conflict detected with booking:', N.id),
+          if (w) {
+            (console.log('🚫 Conflict detected with booking:', w.id),
               alert("Lo slot di destinazione è già occupato da un'altra prenotazione."));
             return;
           }
           for (const b of B) {
-            const z = T(b, s.slotMinutes);
+            const M = T(b, s.slotMinutes);
             if (
               V.find((F) => {
                 if (F.id === D.id || F.courtId !== r) return !1;
                 const i = new Date(F.start),
                   v = T(i, F.duration);
-                return te(b, z, i, v);
+                return te(b, M, i, v);
               })
             ) {
               (console.log('🚫 Slot conflict detected at:', b.toISOString()),
@@ -791,12 +792,12 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
         he(null);
       }
     },
-    Ze = 52;
-  function Ye(t, r) {
+    Ye = 52;
+  function qe(t, r) {
     const a = (le.get(t) || []).find((i) => {
         const v = new Date(i.start),
-          M = T(new Date(i.start), i.duration);
-        return te(v, M, r, T(r, s.slotMinutes));
+          z = T(new Date(i.start), i.duration);
+        return te(v, z, r, T(r, s.slotMinutes));
       }),
       c = se(r, t, m);
     if (!a && !c) {
@@ -814,7 +815,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
     if (!a) {
       const i = ke(r, s, t, m),
         v = $e(i.rate),
-        M = i.source === 'discounted' || i.isPromo,
+        z = i.source === 'discounted' || i.isPromo,
         Z = r.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         _ = fe && fe.courtId === t && fe.slots?.some((ne) => ne.time === r.getTime()),
         ue =
@@ -841,14 +842,14 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
             ? 'Disponibile per nuove prenotazioni (non compatibile con lo spostamento)'
             : i.isPromo
               ? 'Fascia Promo'
-              : M
+              : z
                 ? 'Fascia scontata'
                 : 'Tariffa standard',
-        onDragOver: $ ? (ne) => Fe(ne, t, r) : void 0,
-        onDragLeave: $ ? Ge : void 0,
-        onDrop: $ ? (ne) => Ue(ne, t, r) : void 0,
+        onDragOver: $ ? (ne) => Ge(ne, t, r) : void 0,
+        onDragLeave: $ ? Ue : void 0,
+        onDrop: $ ? (ne) => Ze(ne, t, r) : void 0,
         children: [
-          M &&
+          z &&
             e.jsx('span', {
               className:
                 'absolute top-0.5 right-0.5 px-1.5 py-[1px] rounded-full text-[10px] leading-none',
@@ -869,7 +870,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
     const f = new Date(a.start),
       C = T(f, a.duration);
     if (!(r.getTime() === f.getTime())) return e.jsx('div', { className: 'w-full h-9' });
-    const E = Math.ceil((C - r) / (s.slotMinutes * 60 * 1e3)) * Ze - 6,
+    const E = Math.ceil((C - r) / (s.slotMinutes * 60 * 1e3)) * Ye - 6,
       y = (
         a.playerNames && a.playerNames.length
           ? a.playerNames
@@ -879,8 +880,8 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
         .slice(0, 4),
       O = e.jsx('span', { className: 'text-2xl', children: '💡' }),
       b = e.jsx('span', { className: 'text-2xl', children: '🔥' });
-    let z = 'rgba(220, 38, 127, 0.35)',
-      w = 'rgba(220, 38, 127, 0.6)';
+    let M = 'rgba(220, 38, 127, 0.35)',
+      N = 'rgba(220, 38, 127, 0.6)';
     const F =
       a.isLessonBooking ||
       (a.notes && a.notes.includes('Lezione con')) ||
@@ -889,25 +890,25 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
     if (a.color) {
       const i = a.color.replace('#', ''),
         v = parseInt(i.substr(0, 2), 16),
-        M = parseInt(i.substr(2, 2), 16),
+        z = parseInt(i.substr(2, 2), 16),
         Z = parseInt(i.substr(4, 2), 16);
-      ((z = `rgba(${v}, ${M}, ${Z}, 0.35)`), (w = `rgba(${v}, ${M}, ${Z}, 0.6)`));
+      ((M = `rgba(${v}, ${z}, ${Z}, 0.35)`), (N = `rgba(${v}, ${z}, ${Z}, 0.6)`));
     } else if (F) {
       let i = null;
       if (a.instructorId) i = H.find((v) => v.id === a.instructorId);
       else {
         const v = a.notes.match(/Lezione con (.+)/);
         if (v) {
-          const M = v[1];
-          i = H.find((Z) => Z.name === M);
+          const z = v[1];
+          i = H.find((Z) => Z.name === z);
         }
       }
       if (i && i.instructorData?.color) {
         const v = i.instructorData.color.replace('#', ''),
-          M = parseInt(v.substr(0, 2), 16),
+          z = parseInt(v.substr(0, 2), 16),
           Z = parseInt(v.substr(2, 2), 16),
           _ = parseInt(v.substr(4, 2), 16);
-        ((z = `rgba(${M}, ${Z}, ${_}, 0.35)`), (w = `rgba(${M}, ${Z}, ${_}, 0.6)`));
+        ((M = `rgba(${z}, ${Z}, ${_}, 0.35)`), (N = `rgba(${z}, ${Z}, ${_}, 0.6)`));
       }
     }
     return e.jsx('div', {
@@ -919,15 +920,15 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
         style: {
           top: 0,
           height: `${E}px`,
-          background: z,
-          borderColor: w,
+          background: M,
+          borderColor: N,
           borderRadius: '8px',
           overflow: 'hidden',
         },
         title: `${Ce(a.courtId)} — ${f.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} (${a.duration}′) • ${$ ? 'Trascina per spostare o clicca per modificare' : 'Clicca per modificare'}`,
         draggable: $,
-        onDragStart: $ ? (i) => He(i, a) : void 0,
-        onDragEnd: $ ? Re : void 0,
+        onDragStart: $ ? (i) => Re(i, a) : void 0,
+        onDragEnd: $ ? Fe : void 0,
         onMouseDown: $ ? (i) => (i.target.style.cursor = 'grabbing') : void 0,
         onMouseUp: $ ? (i) => (i.target.style.cursor = 'grab') : void 0,
         children: [
@@ -939,11 +940,11 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
             (() => {
               let i = null,
                 v = '';
-              if (a.instructorId) i = H.find((M) => M.id === a.instructorId);
+              if (a.instructorId) i = H.find((z) => z.id === a.instructorId);
               else {
-                const M = a.notes.match(/Lezione con (.+)/);
-                if (M) {
-                  const Z = M[1];
+                const z = a.notes.match(/Lezione con (.+)/);
+                if (z) {
+                  const Z = z[1];
                   i = H.find((_) => _.name === Z);
                 }
               }
@@ -1031,7 +1032,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
     () =>
       !o.start || !o.courtId
         ? null
-        : ze(
+        : Me(
             new Date(o.start),
             o.duration,
             s,
@@ -1046,7 +1047,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
       () =>
         ae == null
           ? null
-          : et(
+          : tt(
               new Date(o.start),
               o.duration,
               s,
@@ -1057,7 +1058,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
             ),
       [o.start, o.duration, o.courtId, o.useLighting, o.useHeating, o.numberOfPlayers, s, m]
     ),
-    e.jsxs(Je, {
+    e.jsxs(Ke, {
       title: 'Gestione Campi',
       T: d,
       children: [
@@ -1136,7 +1137,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                             }),
                           ],
                         }),
-                        e.jsx(st, {
+                        e.jsx(it, {
                           currentDay: S,
                           onSelectDay: (t) => {
                             (q(t), G(!1));
@@ -1175,7 +1176,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                       ],
                     }),
                   }),
-                mobileView === 'detail' &&
+                Pe === 'detail' &&
                   e.jsxs('div', {
                     className: 'md:hidden mb-6',
                     children: [
@@ -1232,12 +1233,12 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                                       const f = t,
                                         C = T(t, s.slotMinutes),
                                         B = se(t, c.id, m),
-                                        N = le.get(c.id)?.find((b) => {
-                                          const z = new Date(b.start),
-                                            w = T(new Date(b.start), b.duration);
-                                          return te(f, C, z, w);
+                                        w = le.get(c.id)?.find((b) => {
+                                          const M = new Date(b.start),
+                                            N = T(new Date(b.start), b.duration);
+                                          return te(f, C, M, N);
                                         }),
-                                        E = !N && B;
+                                        E = !w && B;
                                       E &&
                                         (t.toISOString().split('T')[0],
                                         t.toISOString().split('T')[1].substring(0, 5),
@@ -1257,7 +1258,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                                           onClick: () => {
                                             if (B) {
                                               if (y) return je(c.id, t);
-                                              if (N) return Se(N);
+                                              if (w) return Se(w);
                                             }
                                           },
                                           className: `p-2 rounded-lg text-sm font-medium transition-all ${y ? `hover:scale-105 ${d.btnGhost} border-2 ${O ? 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20' : 'border-green-200 dark:border-green-700'}` : B ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-2 border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 cursor-pointer' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border-2 border-dashed border-gray-300 dark:border-gray-700 cursor-not-allowed'}`,
@@ -1287,13 +1288,13 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                                               }),
                                             B &&
                                               !y &&
-                                              N &&
+                                              w &&
                                               e.jsxs('div', {
                                                 className: 'text-xs mt-1 truncate',
                                                 children: [
                                                   e.jsx('div', {
                                                     className: 'font-medium',
-                                                    children: N.bookedByName || 'Occupato',
+                                                    children: w.bookedByName || 'Occupato',
                                                   }),
                                                   e.jsx('div', {
                                                     className:
@@ -1316,7 +1317,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                       }),
                     ],
                   }),
-                e.jsx(nt, {
+                e.jsx(st, {
                   children: e.jsxs('div', {
                     className: 'min-w-[720px] grid gap-2',
                     style: { gridTemplateColumns: `repeat(${m.length}, 1fr)` },
@@ -1361,14 +1362,14 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                       ),
                       J.map((t, r) =>
                         e.jsx(
-                          Me.Fragment,
+                          ze.Fragment,
                           {
                             children: m.map((n) =>
                               e.jsx(
                                 'div',
                                 {
                                   className: `px-0.5 py-0.5 ${d.cardBg} ${d.border} rounded-lg`,
-                                  children: Ye(n.id, t),
+                                  children: qe(n.id, t),
                                 },
                                 n.id + '_' + r
                               )
@@ -1380,8 +1381,8 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                     ],
                   }),
                 }),
-                e.jsx(Ke, {
-                  open: Ne,
+                e.jsx(Qe, {
+                  open: we,
                   onClose: () => K(!1),
                   title: R ? 'Modifica prenotazione' : 'Nuova prenotazione',
                   T: d,
@@ -1686,7 +1687,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                                                 ae != null &&
                                                   e.jsxs('div', {
                                                     className: 'text-sm text-emerald-100 mt-1',
-                                                    children: ['/ giocatore: ', Qe(ae / 4)],
+                                                    children: ['/ giocatore: ', et(ae / 4)],
                                                   }),
                                               ],
                                             }),
@@ -1964,7 +1965,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                         ],
                       }),
                 }),
-                Ne &&
+                we &&
                   o.start &&
                   e.jsxs(e.Fragment, {
                     children: [
@@ -1995,7 +1996,7 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
                             'fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[99999] md:hidden',
                           children: e.jsx('button', {
                             type: 'button',
-                            onClick: () => Ae(R),
+                            onClick: () => He(R),
                             className:
                               'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold px-8 py-4 rounded-full shadow-2xl transition-all duration-200 hover:scale-105 border border-red-300/50',
                             children: '🗑️ Elimina',
@@ -2026,11 +2027,11 @@ function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
     })
   );
 }
-function yt() {
-  const p = Xe(),
-    { state: k, setState: g, derived: j, playersById: d, loading: L } = Ve(),
-    { clubMode: P } = We(),
-    h = Me.useMemo(() => _e(), []);
+function vt() {
+  const p = Je(),
+    { state: k, setState: g, derived: j, playersById: d, loading: L } = We(),
+    { clubMode: P } = _e(),
+    h = ze.useMemo(() => Xe(), []);
   return L || !k
     ? e.jsxs('div', {
         className: `text-center py-12 ${h.cardBg} ${h.border} rounded-xl m-4`,
@@ -2047,7 +2048,7 @@ function yt() {
         ],
       })
     : P
-      ? e.jsx(it, { T: h, state: k, setState: g, players: j.players, playersById: d })
+      ? e.jsx(lt, { T: h, state: k, setState: g, players: j.players, playersById: d })
       : e.jsxs('div', {
           className: `text-center py-12 ${h.cardBg} ${h.border} rounded-xl m-4`,
           children: [
@@ -2069,4 +2070,4 @@ function yt() {
           ],
         });
 }
-export { yt as default };
+export { vt as default };

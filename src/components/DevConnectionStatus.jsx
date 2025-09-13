@@ -9,42 +9,72 @@ export default function DevConnectionStatus() {
     // Solo in development
     if (import.meta.env.DEV) {
       let reconnectAttempts = 0;
-      const maxAttempts = 3;
+      const maxAttempts = 2; // Ridotto da 3 a 2
+      let isChecking = false;
+      let timeoutId = null;
 
       const checkConnection = () => {
+        if (isChecking || reconnectAttempts >= maxAttempts) return;
+
+        isChecking = true;
+
         try {
           const ws = new WebSocket(`ws://localhost:5174`);
 
+          // Timeout per evitare connessioni appese
+          const connectionTimeout = setTimeout(() => {
+            ws.close();
+            isChecking = false;
+          }, 3000);
+
           ws.onopen = () => {
+            clearTimeout(connectionTimeout);
             setWsConnected(true);
             setShowStatus(false);
             reconnectAttempts = 0;
+            isChecking = false;
           };
 
           ws.onerror = () => {
-            setWsConnected(false);
+            clearTimeout(connectionTimeout);
+            isChecking = false;
             if (reconnectAttempts < maxAttempts) {
+              setWsConnected(false);
               setShowStatus(true);
               reconnectAttempts++;
-              setTimeout(checkConnection, 2000);
+              // Aumentato delay per ridurre spam
+              timeoutId = setTimeout(checkConnection, 5000);
             }
           };
 
           ws.onclose = () => {
-            setWsConnected(false);
+            clearTimeout(connectionTimeout);
+            isChecking = false;
             if (reconnectAttempts < maxAttempts) {
+              setWsConnected(false);
               setShowStatus(true);
               reconnectAttempts++;
-              setTimeout(checkConnection, 2000);
+              timeoutId = setTimeout(checkConnection, 5000);
             }
           };
         } catch (error) {
-          setWsConnected(false);
-          setShowStatus(true);
+          isChecking = false;
+          if (reconnectAttempts < maxAttempts) {
+            setWsConnected(false);
+            setShowStatus(true);
+            reconnectAttempts++;
+            timeoutId = setTimeout(checkConnection, 5000);
+          }
         }
       };
 
-      checkConnection();
+      // Initial check dopo un breve delay
+      timeoutId = setTimeout(checkConnection, 1000);
+
+      // Cleanup
+      return () => {
+        if (timeoutId) clearTimeout(timeoutId);
+      };
     }
   }, []);
 

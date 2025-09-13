@@ -7,15 +7,15 @@ import {
   m as q,
   u as K,
   t as Q,
-} from './index-mfiaeih4-BH71Qot4.js';
-import { r as N, c as Z, b as J } from './router-mfiaeih4-DNPpahz0.js';
-import { S as X } from './Section-mfiaeih4-DiH4h-T9.js';
-import { M as U } from './Modal-mfiaeih4-DqY2S1Zr.js';
-import { b as T } from './names-mfiaeih4-BW9lV2zG.js';
-import { P as w, b as G, d as F, N as B, e as L } from './playerTypes-mfiaeih4-CIm-hM8a.js';
-import { s as ee } from './unified-booking-service-mfiaeih4-D7duu2eN.js';
-import './vendor-mfiaeih4-D3F3s8fL.js';
-import './firebase-mfiaeih4-X_I_guKF.js';
+} from './index-mfibl1yk-D2ihnd7m.js';
+import { r as N, c as Z, b as J } from './router-mfibl1yk-BvCXkbo6.js';
+import { S as X } from './Section-mfibl1yk-Bni894MT.js';
+import { M as U } from './Modal-mfibl1yk-DuoMxXxE.js';
+import { b as T } from './names-mfibl1yk-BW9lV2zG.js';
+import { P as w, b as G, d as F, N as B, e as L } from './playerTypes-mfibl1yk-CIm-hM8a.js';
+import { s as ee } from './unified-booking-service-mfibl1yk-Dyy4hClR.js';
+import './vendor-mfibl1yk-D3F3s8fL.js';
+import './firebase-mfibl1yk-X_I_guKF.js';
 function te({ player: a, playersById: s, onEdit: r, onDelete: l, onView: i, onStats: u, T: d }) {
   const j = s?.[a.id]?.rating ?? a.rating ?? z,
     f = (t) => {
@@ -203,17 +203,19 @@ function te({ player: a, playersById: s, onEdit: r, onDelete: l, onView: i, onSt
                     e.jsxs('div', {
                       className: 'flex gap-1 flex-wrap',
                       children: [
-                        n.slice(0, 3).map((t, o) =>
-                          e.jsx(
-                            'span',
-                            {
-                              className:
-                                'px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-[11px] break-words max-w-[10rem]',
-                              children: t,
-                            },
-                            o
-                          )
-                        ),
+                        n
+                          .slice(0, 3)
+                          .map((t, o) =>
+                            e.jsx(
+                              'span',
+                              {
+                                className:
+                                  'px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-[11px] break-words max-w-[10rem]',
+                                children: t,
+                              },
+                              o
+                            )
+                          ),
                         n.length > 3 &&
                           e.jsxs('span', {
                             className: `text-[11px] ${d.subtext}`,
