@@ -1493,7 +1493,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           )}
 
           {/* Griglia Unificata - Responsive con Zoom */}
-          <ZoomableGrid>
+          <ZoomableGrid T={T}>
             <div
               className="min-w-[720px] grid gap-2"
               style={{ gridTemplateColumns: `repeat(${courts.length}, 1fr)` }}
