@@ -1,6 +1,7 @@
 // Service Worker per Paris League PWA
-const CACHE_NAME = 'paris-league-v1.8.0';
-const APP_VERSION = '1.8.0';
+const CACHE_NAME = 'paris-league-v1.8.1';
+const APP_VERSION = '1.8.1';
+const CURRENT_HASH = 'mfi3xrqx'; // Hash corrente degli asset
 const urlsToCache = [
   '/',
   '/play-sport-pro_horizontal.svg',
@@ -132,6 +133,24 @@ self.addEventListener('message', (event) => {
   // Controllo versione app
   if (event.data && event.data.type === 'GET_VERSION') {
     event.ports[0].postMessage({ version: APP_VERSION });
+  }
+
+  // Controllo hash degli asset
+  if (event.data && event.data.type === 'CHECK_HASH') {
+    const clientHash = event.data.hash;
+    if (clientHash && clientHash !== CURRENT_HASH) {
+      console.log(`[SW] Hash mismatch detected! Client: ${clientHash}, SW: ${CURRENT_HASH}`);
+      event.ports[0].postMessage({
+        hashMismatch: true,
+        currentHash: CURRENT_HASH,
+        clientHash: clientHash,
+      });
+    } else {
+      event.ports[0].postMessage({
+        hashMismatch: false,
+        currentHash: CURRENT_HASH,
+      });
+    }
   }
 
   // Forza clear cache

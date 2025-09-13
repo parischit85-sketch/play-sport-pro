@@ -6,6 +6,7 @@ import './index.css';
 import { createRoot } from 'react-dom/client';
 import AppRouter from './router/AppRouter.jsx';
 import updateService from './services/updateService.js';
+import hashChecker from './services/hashChecker.js';
 
 // PWA web application initialization
 
@@ -25,7 +26,9 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
       // Inizializza il servizio di aggiornamenti
-      await updateService.init();
+      // Initialize services
+      updateService.init();
+      hashChecker.init();
       console.log('✅ Update Service initialized');
     } catch (error) {
       console.error('❌ Update Service failed:', error);
