@@ -358,6 +358,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   const [draggedBooking, setDraggedBooking] = useState(null);
   const [dragOverSlot, setDragOverSlot] = useState(null);
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
+  const [mobileView, setMobileView] = useState('detail'); // 'grid' or 'detail'
 
   // Update isDesktop on resize
   useEffect(() => {
