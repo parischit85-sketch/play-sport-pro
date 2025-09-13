@@ -47,6 +47,7 @@ export default function LessonBookingInterface({ T, user: propUser, state, setSt
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [selectedInstructor, setSelectedInstructor] = useState('');
+  const [numberOfPlayers, setNumberOfPlayers] = useState(1); // Default 1 player for lessons
   const [availableInstructors, setAvailableInstructors] = useState([]);
   const [message, setMessage] = useState({ type: '', text: '' });
 
@@ -399,6 +400,7 @@ export default function LessonBookingInterface({ T, user: propUser, state, setSt
         duration: 60,
 
         // Additional data
+        numberOfPlayers: numberOfPlayers, // Add number of players
         price: 0, // Lessons are priced separately
         notes: `Lezione con ${selectedInstructorObj?.name}`,
         players: [actualUser?.displayName || actualUser?.email],
@@ -746,6 +748,35 @@ export default function LessonBookingInterface({ T, user: propUser, state, setSt
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-300">Durata:</span>
                   <span className="font-medium text-gray-900 dark:text-white">60 minuti</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600 dark:text-gray-300">Giocatori:</span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {numberOfPlayers}
+                  </span>
+                </div>
+              </div>
+
+              {/* Number of Players Selection */}
+              <div className="space-y-3">
+                <h4 className="text-md font-medium text-gray-900 dark:text-white">
+                  👥 Numero di Giocatori
+                </h4>
+                <div className="grid grid-cols-4 gap-2">
+                  {[1, 2, 3, 4].map((count) => (
+                    <button
+                      key={count}
+                      onClick={() => setNumberOfPlayers(count)}
+                      className={`p-3 rounded-lg border-2 transition-all ${
+                        numberOfPlayers === count
+                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                          : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                      }`}
+                    >
+                      <div className="text-lg font-bold">{count}</div>
+                      <div className="text-xs">{count === 1 ? 'giocatore' : 'giocatori'}</div>
+                    </button>
+                  ))}
                 </div>
               </div>
 

@@ -103,7 +103,15 @@ export function getRateInfo(date, cfg, courtId, courts = null) {
 /**
  * Calcola il prezzo totale su intervallo (in minuti) tenendo conto dei time slots per-campo
  */
-export function computePrice(startDate, durationMin, cfg, addons = {}, courtId, courts = null) {
+export function computePrice(
+  startDate,
+  durationMin,
+  cfg,
+  addons = {},
+  courtId,
+  courts = null,
+  numberOfPlayers = null
+) {
   const slot = Math.max(5, Number(cfg?.slotMinutes) || 30);
   const steps = Math.ceil(durationMin / slot);
   let d = new Date(startDate);
@@ -128,5 +136,25 @@ export function computePrice(startDate, durationMin, cfg, addons = {}, courtId, 
     euro += Number(a.heatingFee || 0);
   }
 
-  return Math.round(euro * 100) / 100;
+  const totalPrice = Math.round(euro * 100) / 100;
+
+  // Se numberOfPlayers è specificato, calcoliamo il prezzo per giocatore
+  // ma manteniamo il prezzo totale per compatibilità
+  return totalPrice;
+}
+
+/**
+ * Calcola il prezzo per giocatore dato il numero di giocatori
+ */
+export function computePricePerPlayer(
+  startDate,
+  durationMin,
+  cfg,
+  addons = {},
+  courtId,
+  courts = null,
+  numberOfPlayers = 4
+) {
+  const totalPrice = computePrice(startDate, durationMin, cfg, addons, courtId, courts);
+  return Math.round((totalPrice / numberOfPlayers) * 100) / 100;
 }

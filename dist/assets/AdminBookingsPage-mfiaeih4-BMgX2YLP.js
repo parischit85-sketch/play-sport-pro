@@ -1,87 +1,87 @@
-import { j as e, u as We, f as _e, k as Xe, t as Je } from './index-mfi9c35w-CsSxx0JE.js';
-import { r as c, b as Ee, c as Ke } from './router-mfi9c35w-8jyiX-w-.js';
-import { S as Qe } from './Section-mfi9c35w-BVpF_AdT.js';
-import { M as et } from './Modal-mfi9c35w-CcDrB430.js';
-import { a as me, e as tt } from './format-mfi9c35w-DAEZv7Mi.js';
-import { g as we, c as Te, i as te } from './pricing-mfi9c35w-DMaWA4wL.js';
-import { u as rt } from './useUnifiedBookings-mfi9c35w-C4D5ju_K.js';
-import { P as at } from './playerTypes-mfi9c35w-CIm-hM8a.js';
-import './vendor-mfi9c35w-D3F3s8fL.js';
-import './firebase-mfi9c35w-X_I_guKF.js';
-import './unified-booking-service-mfi9c35w-Dow-Gq1E.js';
-function ot(f, v) {
+import { j as e, u as qe, f as Ve, k as We, t as _e } from './index-mfiaeih4-BH71Qot4.js';
+import { r as l, b as Me, c as Xe } from './router-mfiaeih4-DNPpahz0.js';
+import { S as Je } from './Section-mfiaeih4-DiH4h-T9.js';
+import { M as Ke } from './Modal-mfiaeih4-DqY2S1Zr.js';
+import { a as ge, e as Qe } from './format-mfiaeih4-DAEZv7Mi.js';
+import { g as ke, c as ze, a as et, i as se } from './pricing-mfiaeih4-BdjzWTQe.js';
+import { u as tt } from './useUnifiedBookings-mfiaeih4-B_RTsWnr.js';
+import { P as rt } from './playerTypes-mfiaeih4-CIm-hM8a.js';
+import './vendor-mfiaeih4-D3F3s8fL.js';
+import './firebase-mfiaeih4-X_I_guKF.js';
+import './unified-booking-service-mfiaeih4-D7duu2eN.js';
+function ot(p, k) {
   return (
-    f.getFullYear() === v.getFullYear() &&
-    f.getMonth() === v.getMonth() &&
-    f.getDate() === v.getDate()
+    p.getFullYear() === k.getFullYear() &&
+    p.getMonth() === k.getMonth() &&
+    p.getDate() === k.getDate()
   );
 }
-function re(f, v = 30) {
-  const g = new Date(f);
+function ee(p, k = 30) {
+  const g = new Date(p);
   g.setSeconds(0, 0);
-  const S = g.getMinutes(),
-    l = Math.floor(S / v) * v;
-  return (g.setMinutes(l), g);
+  const j = g.getMinutes(),
+    d = Math.floor(j / k) * k;
+  return (g.setMinutes(d), g);
 }
-function j(f, v) {
-  const g = new Date(f);
-  return (g.setMinutes(g.getMinutes() + v), g);
+function T(p, k) {
+  const g = new Date(p);
+  return (g.setMinutes(g.getMinutes() + k), g);
 }
-function ae(f, v, g, S) {
-  return f < S && g < v;
+function te(p, k, g, j) {
+  return p < j && g < k;
 }
-function st(f = {}) {
-  const { minScale: v = 0.5, maxScale: g = 3, initialScale: S = 1 } = f,
-    [l, O] = c.useState(S),
-    [P, y] = c.useState(S),
-    [Y, A] = c.useState(!1),
-    J = c.useRef(null),
-    n = c.useRef(0),
-    D = c.useCallback((u, b) => {
-      const U = u.clientX - b.clientX,
-        _ = u.clientY - b.clientY;
-      return Math.sqrt(U * U + _ * _);
+function at(p = {}) {
+  const { minScale: k = 0.5, maxScale: g = 3, initialScale: j = 1 } = p,
+    [d, L] = l.useState(j),
+    [P, h] = l.useState(j),
+    [Y, A] = l.useState(!1),
+    X = l.useRef(null),
+    s = l.useRef(0),
+    S = l.useCallback((u, x) => {
+      const U = u.clientX - x.clientX,
+        W = u.clientY - x.clientY;
+      return Math.sqrt(U * U + W * W);
     }, []),
-    q = c.useCallback(
+    q = l.useCallback(
       (u) => {
         if (u.touches.length === 2) {
           A(!0);
-          const b = D(u.touches[0], u.touches[1]);
-          ((n.current = b), u.preventDefault());
+          const x = S(u.touches[0], u.touches[1]);
+          ((s.current = x), u.preventDefault());
         }
       },
-      [D]
+      [S]
     ),
-    Q = c.useCallback(
+    Q = l.useCallback(
       (u) => {
         if (u.touches.length === 2 && Y) {
-          const U = D(u.touches[0], u.touches[1]) / n.current,
-            _ = Math.min(g, Math.max(v, P * U));
-          (O(_), u.preventDefault());
+          const U = S(u.touches[0], u.touches[1]) / s.current,
+            W = Math.min(g, Math.max(k, P * U));
+          (L(W), u.preventDefault());
         }
       },
-      [Y, P, v, g, D]
+      [Y, P, k, g, S]
     ),
-    G = c.useCallback(
+    G = l.useCallback(
       (u) => {
-        u.touches.length < 2 && (A(!1), y(l));
+        u.touches.length < 2 && (A(!1), h(d));
       },
-      [l]
+      [d]
     ),
-    m = c.useCallback(() => {
-      const u = Math.min(g, l * 1.2);
-      (O(u), y(u));
-    }, [l, g]),
-    R = c.useCallback(() => {
-      const u = Math.max(v, l * 0.8);
-      (O(u), y(u));
-    }, [l, v]),
-    W = c.useCallback(() => {
-      (O(S), y(S));
-    }, [S]);
+    m = l.useCallback(() => {
+      const u = Math.min(g, d * 1.2);
+      (L(u), h(u));
+    }, [d, g]),
+    H = l.useCallback(() => {
+      const u = Math.max(k, d * 0.8);
+      (L(u), h(u));
+    }, [d, k]),
+    V = l.useCallback(() => {
+      (L(j), h(j));
+    }, [j]);
   return (
-    c.useEffect(() => {
-      const u = J.current;
+    l.useEffect(() => {
+      const u = X.current;
       if (u)
         return (
           u.addEventListener('touchstart', q, { passive: !1 }),
@@ -95,26 +95,26 @@ function st(f = {}) {
         );
     }, [q, Q, G]),
     {
-      containerRef: J,
-      scale: l,
+      containerRef: X,
+      scale: d,
       isZooming: Y,
       zoomIn: m,
-      zoomOut: R,
-      resetZoom: W,
-      transform: `scale(${l})`,
+      zoomOut: H,
+      resetZoom: V,
+      transform: `scale(${d})`,
     }
   );
 }
-function nt({ children: f, className: v = '', T: g }) {
+function nt({ children: p, className: k = '', T: g }) {
   const {
-    containerRef: S,
-    scale: l,
-    isZooming: O,
+    containerRef: j,
+    scale: d,
+    isZooming: L,
     zoomIn: P,
-    zoomOut: y,
+    zoomOut: h,
     resetZoom: Y,
     transform: A,
-  } = st({ minScale: 0.3, maxScale: 2.5, initialScale: 0.7 });
+  } = at({ minScale: 0.3, maxScale: 2.5, initialScale: 0.7 });
   return e.jsxs('div', {
     className: 'relative w-full',
     style: { minHeight: '400px' },
@@ -129,7 +129,7 @@ function nt({ children: f, className: v = '', T: g }) {
             children: '+',
           }),
           e.jsx('button', {
-            onClick: y,
+            onClick: h,
             className: `w-12 h-12 rounded-full bg-blue-500 dark:bg-blue-600 text-white shadow-lg flex items-center justify-center text-xl font-bold ${g.shadow}`,
             'aria-label': 'Zoom Out',
             children: '−',
@@ -149,9 +149,9 @@ function nt({ children: f, className: v = '', T: g }) {
           children: [
             e.jsxs('div', {
               className: 'text-xs font-medium text-gray-600 dark:text-gray-400',
-              children: [Math.round(l * 100), '%'],
+              children: [Math.round(d * 100), '%'],
             }),
-            O &&
+            L &&
               e.jsx('div', {
                 className: 'text-xs text-blue-500 dark:text-blue-400',
                 children: 'Pinch per zoom',
@@ -160,8 +160,8 @@ function nt({ children: f, className: v = '', T: g }) {
         }),
       }),
       e.jsx('div', {
-        ref: S,
-        className: `w-full overflow-auto ${v}`,
+        ref: j,
+        className: `w-full overflow-auto ${k}`,
         style: {
           touchAction: 'manipulation',
           WebkitOverflowScrolling: 'touch',
@@ -172,11 +172,11 @@ function nt({ children: f, className: v = '', T: g }) {
           style: {
             transform: A,
             transformOrigin: 'top left',
-            transition: O ? 'none' : 'transform 0.2s ease-out',
+            transition: L ? 'none' : 'transform 0.2s ease-out',
             minWidth: '100%',
             minHeight: '100%',
           },
-          children: f,
+          children: p,
         }),
       }),
       e.jsx('div', {
@@ -192,20 +192,20 @@ function nt({ children: f, className: v = '', T: g }) {
     ],
   });
 }
-function it({ currentDay: f, onSelectDay: v, T: g }) {
-  const [S, l] = c.useState(new Date(f.getFullYear(), f.getMonth(), 1)),
-    O = new Date();
-  O.setHours(0, 0, 0, 0);
-  const P = S.getFullYear(),
-    y = S.getMonth(),
-    Y = new Date(P, y, 1),
+function st({ currentDay: p, onSelectDay: k, T: g }) {
+  const [j, d] = l.useState(new Date(p.getFullYear(), p.getMonth(), 1)),
+    L = new Date();
+  L.setHours(0, 0, 0, 0);
+  const P = j.getFullYear(),
+    h = j.getMonth(),
+    Y = new Date(P, h, 1),
     A = new Date(Y);
   A.setDate(A.getDate() - Y.getDay() + 1);
-  const J = new Date(A);
-  J.setDate(J.getDate() + 41);
-  const n = [];
-  for (let b = new Date(A); b <= J; b.setDate(b.getDate() + 1)) n.push(new Date(b));
-  const D = [
+  const X = new Date(A);
+  X.setDate(X.getDate() + 41);
+  const s = [];
+  for (let x = new Date(A); x <= X; x.setDate(x.getDate() + 1)) s.push(new Date(x));
+  const S = [
       'Gennaio',
       'Febbraio',
       'Marzo',
@@ -221,15 +221,15 @@ function it({ currentDay: f, onSelectDay: v, T: g }) {
     ],
     q = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'],
     Q = () => {
-      l(new Date(P, y - 1, 1));
+      d(new Date(P, h - 1, 1));
     },
     G = () => {
-      l(new Date(P, y + 1, 1));
+      d(new Date(P, h + 1, 1));
     },
-    m = (b) => b.getTime() === O.getTime(),
-    R = (b) => b.getTime() === f.getTime(),
-    W = (b) => b.getMonth() === y,
-    u = (b) => b < O;
+    m = (x) => x.getTime() === L.getTime(),
+    H = (x) => x.getTime() === p.getTime(),
+    V = (x) => x.getMonth() === h,
+    u = (x) => x < L;
   return e.jsxs('div', {
     className: 'w-full',
     children: [
@@ -243,7 +243,7 @@ function it({ currentDay: f, onSelectDay: v, T: g }) {
               'w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-xl font-bold transition-colors',
             children: '←',
           }),
-          e.jsxs('h4', { className: `text-xl font-bold ${g.text}`, children: [D[y], ' ', P] }),
+          e.jsxs('h4', { className: `text-xl font-bold ${g.text}`, children: [S[h], ' ', P] }),
           e.jsx('button', {
             type: 'button',
             onClick: G,
@@ -255,34 +255,34 @@ function it({ currentDay: f, onSelectDay: v, T: g }) {
       }),
       e.jsx('div', {
         className: 'grid grid-cols-7 gap-1 mb-2',
-        children: q.map((b) =>
+        children: q.map((x) =>
           e.jsx(
             'div',
-            { className: `text-center text-sm font-semibold ${g.subtext} py-2`, children: b },
-            b
+            { className: `text-center text-sm font-semibold ${g.subtext} py-2`, children: x },
+            x
           )
         ),
       }),
       e.jsx('div', {
         className: 'grid grid-cols-7 gap-1',
-        children: n.map((b, U) => {
-          const _ = b.getDate(),
-            le = W(b),
-            V = m(b),
-            oe = R(b),
-            xe = u(b);
+        children: s.map((x, U) => {
+          const W = x.getDate(),
+            ie = V(x),
+            J = m(x),
+            re = H(x),
+            me = u(x);
           return e.jsx(
             'button',
             {
               type: 'button',
-              onClick: () => v(b),
-              disabled: xe,
+              onClick: () => k(x),
+              disabled: me,
               className: `
                 h-12 w-full rounded-lg text-sm font-medium transition-all duration-200
-                ${oe ? 'bg-blue-500 text-white shadow-lg dark:bg-emerald-500' : V ? 'bg-blue-100 text-blue-700 border-2 border-blue-300 dark:bg-emerald-100 dark:text-emerald-700 dark:border-emerald-300' : le ? 'hover:bg-gray-200 dark:hover:bg-gray-700 ' + g.text : 'text-gray-400 dark:text-gray-600'}
-                ${xe ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
+                ${re ? 'bg-blue-500 text-white shadow-lg dark:bg-emerald-500' : J ? 'bg-blue-100 text-blue-700 border-2 border-blue-300 dark:bg-emerald-100 dark:text-emerald-700 dark:border-emerald-300' : ie ? 'hover:bg-gray-200 dark:hover:bg-gray-700 ' + g.text : 'text-gray-400 dark:text-gray-600'}
+                ${me ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
               `,
-              children: _,
+              children: W,
             },
             U
           );
@@ -291,33 +291,33 @@ function it({ currentDay: f, onSelectDay: v, T: g }) {
     ],
   });
 }
-function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
-  const { user: O } = We(),
+function it({ state: p, setState: k, players: g, playersById: j, T: d }) {
+  const { user: L } = qe(),
     {
       bookings: P,
-      refresh: y,
+      refresh: h,
       createBooking: Y,
       updateBooking: A,
-      deleteBooking: J,
-    } = rt({ autoLoadUser: !1, autoLoadLessons: !0, enableRealtime: !0 }),
-    n = f?.bookingConfig || {
+      deleteBooking: X,
+    } = tt({ autoLoadUser: !1, autoLoadLessons: !0, enableRealtime: !0 }),
+    s = p?.bookingConfig || {
       slotMinutes: 30,
       dayStartHour: 8,
       dayEndHour: 23,
       defaultDurations: [60, 90, 120],
       addons: {},
     },
-    [D, q] = c.useState(() => re(new Date(), n.slotMinutes)),
-    [Q, G] = c.useState(!1),
-    m = Array.isArray(f?.courts) ? f.courts : [],
-    R = c.useMemo(
+    [S, q] = l.useState(() => ee(new Date(), s.slotMinutes)),
+    [Q, G] = l.useState(!1),
+    m = Array.isArray(p?.courts) ? p.courts : [],
+    H = l.useMemo(
       () =>
-        (f.players || []).filter(
-          (r) => r.category === at.INSTRUCTOR && r.instructorData?.isInstructor
+        (p.players || []).filter(
+          (r) => r.category === rt.INSTRUCTOR && r.instructorData?.isInstructor
         ),
-      [f.players]
+      [p.players]
     ),
-    W = c.useMemo(
+    V = l.useMemo(
       () =>
         (P || [])
           .filter((t) => t.status === 'confirmed')
@@ -349,96 +349,96 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
           .filter(Boolean),
       [P]
     ),
-    u = c.useMemo(() => {
-      const t = Array.isArray(n?.defaultDurations) ? n.defaultDurations : [];
+    u = l.useMemo(() => {
+      const t = Array.isArray(s?.defaultDurations) ? s.defaultDurations : [];
       return t.includes(90) ? 90 : t.length > 0 ? t[0] : 90;
-    }, [n]),
-    b = () => q(re(new Date(), n.slotMinutes)),
+    }, [s]),
+    x = () => q(ee(new Date(), s.slotMinutes)),
     U = (t) =>
       q((r) => {
-        const s = new Date(r);
-        return (s.setDate(s.getDate() + t), s);
+        const n = new Date(r);
+        return (n.setDate(n.getDate() + t), n);
       }),
-    _ = new Date(D);
-  _.setHours(n.dayStartHour, 0, 0, 0);
-  const le = new Date(D);
-  le.setHours(n.dayEndHour, 0, 0, 0);
-  const V = [],
-    oe = new Set();
+    W = new Date(S);
+  W.setHours(s.dayStartHour, 0, 0, 0);
+  const ie = new Date(S);
+  ie.setHours(s.dayEndHour, 0, 0, 0);
+  const J = [],
+    re = new Set();
   if (
     (m.forEach((t) => {
       t.timeSlots &&
         t.timeSlots.length > 0 &&
         t.timeSlots.forEach((r) => {
-          if (r.days?.includes(D.getDay())) {
-            const s = parseInt(r.from.split(':')[0]) * 60 + parseInt(r.from.split(':')[1]),
-              o = parseInt(r.to.split(':')[0]) * 60 + parseInt(r.to.split(':')[1]);
-            for (let d = s; d < o; d += n.slotMinutes) oe.add(d);
+          if (r.days?.includes(S.getDay())) {
+            const n = parseInt(r.from.split(':')[0]) * 60 + parseInt(r.from.split(':')[1]),
+              a = parseInt(r.to.split(':')[0]) * 60 + parseInt(r.to.split(':')[1]);
+            for (let c = n; c < a; c += s.slotMinutes) re.add(c);
           }
         });
     }),
-    oe.size > 0)
+    re.size > 0)
   )
-    Array.from(oe)
-      .sort((r, s) => r - s)
+    Array.from(re)
+      .sort((r, n) => r - n)
       .forEach((r) => {
-        const s = new Date(D);
-        (s.setHours(Math.floor(r / 60), r % 60, 0, 0), V.push(s));
+        const n = new Date(S);
+        (n.setHours(Math.floor(r / 60), r % 60, 0, 0), J.push(n));
       });
-  else for (let t = new Date(_); t < le; t = j(t, n.slotMinutes)) V.push(new Date(t));
-  const Be = `${((t) => t.charAt(0).toUpperCase() + t.slice(1))(new Intl.DateTimeFormat('it-IT', { weekday: 'long' }).format(D))} - ${String(D.getDate()).padStart(2, '0')} ${new Intl.DateTimeFormat('it-IT', { month: 'long' }).format(D)} ${D.getFullYear()}`,
-    Ne = c.useMemo(
+  else for (let t = new Date(W); t < ie; t = T(t, s.slotMinutes)) J.push(new Date(t));
+  const Te = `${((t) => t.charAt(0).toUpperCase() + t.slice(1))(new Intl.DateTimeFormat('it-IT', { weekday: 'long' }).format(S))} - ${String(S.getDate()).padStart(2, '0')} ${new Intl.DateTimeFormat('it-IT', { month: 'long' }).format(S)} ${S.getFullYear()}`,
+    ve = l.useMemo(
       () =>
-        (W || [])
+        (V || [])
           .filter((t) => t && t.status !== 'cancelled')
-          .filter((t) => ot(new Date(t.start), D))
+          .filter((t) => ot(new Date(t.start), S))
           .sort((t, r) => new Date(t.start) - new Date(r.start)),
-      [W, D]
+      [V, S]
     ),
-    se = c.useMemo(() => {
+    le = l.useMemo(() => {
       const t = new Map(m.map((r) => [r.id, []]));
-      for (const r of Ne) {
-        const s = t.get(r.courtId) || [];
-        (s.push(r), t.set(r.courtId, s));
+      for (const r of ve) {
+        const n = t.get(r.courtId) || [];
+        (n.push(r), t.set(r.courtId, n));
       }
       return t;
-    }, [Ne, m]),
-    de = c.useMemo(
+    }, [ve, m]),
+    de = l.useMemo(
       () =>
-        V.map((t) => {
-          const r = m.map((s) => we(t, n, s.id, m).rate);
+        J.map((t) => {
+          const r = m.map((n) => ke(t, s, n.id, m).rate);
           return r.length > 0 ? Math.min(...r) : 0;
         }),
-      [V, n, m]
+      [J, s, m]
     ),
-    ce = c.useMemo(() => Math.min(...de), [de]),
-    be = c.useMemo(() => Math.max(...de), [de]),
-    Le = (t) =>
-      !isFinite(ce) || !isFinite(be) || ce === be ? 0.18 : 0.12 + ((t - ce) / (be - ce)) * 0.22,
-    Oe = c.useMemo(
+    ce = l.useMemo(() => Math.min(...de), [de]),
+    xe = l.useMemo(() => Math.max(...de), [de]),
+    $e = (t) =>
+      !isFinite(ce) || !isFinite(xe) || ce === xe ? 0.18 : 0.12 + ((t - ce) / (xe - ce)) * 0.22,
+    Be = l.useMemo(
       () =>
         [...g].sort((t, r) => (t.name || '').localeCompare(r.name, 'it', { sensitivity: 'base' })),
       [g]
     ),
-    Pe = (t) => S?.[t]?.name || '',
-    pe = (t, r) => (r && we(r, n, t, m).isPromo) || !1,
-    [je, K] = c.useState(!1),
-    [H, Se] = c.useState(null),
-    [ue, he] = c.useState('overview'),
-    [fe, De] = c.useState('all'),
-    [I, ye] = c.useState(null),
-    [ke, ne] = c.useState(null),
-    [L, Ae] = c.useState(() => window.innerWidth >= 1024);
-  c.useEffect(() => {
+    Ee = (t) => j?.[t]?.name || '',
+    be = (t, r) => (r && ke(r, s, t, m).isPromo) || !1,
+    [Ne, K] = l.useState(!1),
+    [R, we] = l.useState(null),
+    [pe, Le] = l.useState('all'),
+    [D, he] = l.useState(null),
+    [fe, oe] = l.useState(null),
+    [$, Oe] = l.useState(() => window.innerWidth >= 1024);
+  l.useEffect(() => {
     const t = () => {
-      Ae(window.innerWidth >= 1024);
+      Oe(window.innerWidth >= 1024);
     };
     return (window.addEventListener('resize', t), () => window.removeEventListener('resize', t));
   }, []);
-  const [a, T] = c.useState({
+  const [o, I] = l.useState({
     courtId: '',
     start: null,
     duration: u,
+    numberOfPlayers: 4,
     p1Name: '',
     p2Name: '',
     p3Name: '',
@@ -451,12 +451,12 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
     bookingType: 'partita',
     instructorId: '',
   });
-  function Ie(t, r) {
-    const s = re(r, n.slotMinutes);
-    (Se(null),
-      T({
+  function je(t, r) {
+    const n = ee(r, s.slotMinutes);
+    (we(null),
+      I({
         courtId: t,
-        start: s,
+        start: n,
         duration: u,
         p1Name: '',
         p2Name: '',
@@ -472,86 +472,88 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
       }),
       K(!0));
   }
-  function Ce(t) {
-    Se(t.id);
+  function Se(t) {
+    we(t.id);
     const r = new Date(t.start),
-      s = (t.players || []).map(Pe);
-    let o = t.playerNames && t.playerNames.length ? t.playerNames : s;
-    const d = t.bookedByName || '';
-    (d && !o.includes(d) && (o = [d, ...o].slice(0, 4)),
-      T({
-        courtId: t.courtId,
-        start: r,
-        duration: t.duration,
-        p1Name: o[0] || '',
-        p2Name: o[1] || '',
-        p3Name: o[2] || '',
-        p4Name: o[3] || '',
-        note: t.note || '',
-        bookedBy: d,
-        useLighting: !!t.addons?.lighting,
-        useHeating: !!t.addons?.heating,
-        color: t.color || '#e91e63',
-        bookingType: t.instructorId ? 'lezione' : 'partita',
-        instructorId: t.instructorId || '',
-      }),
+      n = (t.players || []).map(Ee);
+    let a = t.playerNames && t.playerNames.length ? t.playerNames : n;
+    const c = t.bookedByName || '';
+    c && !a.includes(c) && (a = [c, ...a].slice(0, 4));
+    const f = a.filter((C) => C && C.trim()).length || 1;
+    (I({
+      courtId: t.courtId,
+      start: r,
+      duration: t.duration,
+      numberOfPlayers: t.numberOfPlayers || f,
+      p1Name: a[0] || '',
+      p2Name: a[1] || '',
+      p3Name: a[2] || '',
+      p4Name: a[3] || '',
+      note: t.note || '',
+      bookedBy: c,
+      useLighting: !!t.addons?.lighting,
+      useHeating: !!t.addons?.heating,
+      color: t.color || '#e91e63',
+      bookingType: t.instructorId ? 'lezione' : 'partita',
+      instructorId: t.instructorId || '',
+    }),
       K(!0));
   }
-  function Re(t, r, s, o = null) {
-    const d = new Date(r),
-      p = j(r, s),
-      E = se.get(t) || [];
+  function Pe(t, r, n, a = null) {
+    const c = new Date(r),
+      f = T(r, n),
+      C = le.get(t) || [];
     return (
       console.log('🔍 Checking overlap for:', {
         courtId: t,
-        blockStart: d.toISOString(),
-        blockEnd: p.toISOString(),
-        duration: s,
-        ignoreId: o,
-        existingBookings: E.length,
+        blockStart: c.toISOString(),
+        blockEnd: f.toISOString(),
+        duration: n,
+        ignoreId: a,
+        existingBookings: C.length,
       }),
-      E.find((k) => {
-        if (o && k.id === o) return (console.log('⏭️ Ignoring booking:', k.id), !1);
-        const $ = new Date(k.start),
-          h = j(new Date(k.start), k.duration),
-          B = ae(d, p, $, h);
+      C.find((N) => {
+        if (a && N.id === a) return (console.log('⏭️ Ignoring booking:', N.id), !1);
+        const E = new Date(N.start),
+          y = T(new Date(N.start), N.duration),
+          O = te(c, f, E, y);
         return (
-          B &&
+          O &&
             console.log('🚫 Overlap detected with booking:', {
-              bookingId: k.id,
-              bookingStart: $.toISOString(),
-              bookingEnd: h.toISOString(),
-              bookingDuration: k.duration,
+              bookingId: N.id,
+              bookingStart: E.toISOString(),
+              bookingEnd: y.toISOString(),
+              bookingDuration: N.duration,
             }),
-          B
+          O
         );
       })
     );
   }
-  const $e = c.useRef('');
-  (c.useEffect(() => {
-    const t = a.p1Name?.trim() || '',
-      r = $e.current;
-    ((!a.bookedBy?.trim() || a.bookedBy?.trim() === r) && t && T((s) => ({ ...s, bookedBy: t })),
-      ($e.current = t));
-  }, [a.p1Name]),
-    c.useEffect(() => {
-      if (a.bookingType === 'lezione' && a.instructorId && R.length > 0) {
-        const t = R.find((r) => r.id === a.instructorId);
-        t?.instructorData?.color && T((r) => ({ ...r, color: t.instructorData.color }));
-      } else a.bookingType === 'partita' && T((t) => ({ ...t, color: '#e91e63' }));
-    }, [a.bookingType, a.instructorId, R]));
-  async function ze() {
-    if (!a.courtId || !a.start) {
+  const De = l.useRef('');
+  (l.useEffect(() => {
+    const t = o.p1Name?.trim() || '',
+      r = De.current;
+    ((!o.bookedBy?.trim() || o.bookedBy?.trim() === r) && t && I((n) => ({ ...n, bookedBy: t })),
+      (De.current = t));
+  }, [o.p1Name]),
+    l.useEffect(() => {
+      if (o.bookingType === 'lezione' && o.instructorId && H.length > 0) {
+        const t = H.find((r) => r.id === o.instructorId);
+        t?.instructorData?.color && I((r) => ({ ...r, color: t.instructorData.color }));
+      } else o.bookingType === 'partita' && I((t) => ({ ...t, color: '#e91e63' }));
+    }, [o.bookingType, o.instructorId, H]));
+  async function Ie() {
+    if (!o.courtId || !o.start) {
       alert('Seleziona campo e orario.');
       return;
     }
-    if (a.bookingType === 'lezione' && !a.instructorId) {
+    if (o.bookingType === 'lezione' && !o.instructorId) {
       alert('Seleziona un maestro per le lezioni.');
       return;
     }
-    const t = re(a.start, n.slotMinutes);
-    if (!te(t, a.courtId, m)) {
+    const t = ee(o.start, s.slotMinutes);
+    if (!se(t, o.courtId, m)) {
       alert('Orario fuori dalle fasce prenotabili per questo campo.');
       return;
     }
@@ -559,84 +561,86 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
       alert('Non puoi prenotare nel passato.');
       return;
     }
-    const s = H || null;
-    if (Re(a.courtId, t, a.duration, s)) {
+    const n = R || null;
+    if (Pe(o.courtId, t, o.duration, n)) {
       alert('Esiste già una prenotazione che si sovrappone su questo campo.');
       return;
     }
-    const o = [a.p1Name, a.p2Name, a.p3Name, a.p4Name].map((N) => (N || '').trim()).filter(Boolean),
-      d = (a.bookedBy && a.bookedBy.trim()) || o[0] || '',
-      p = Te(
+    const a = [o.p1Name, o.p2Name, o.p3Name, o.p4Name].map((w) => (w || '').trim()).filter(Boolean),
+      c = (o.bookedBy && o.bookedBy.trim()) || a[0] || '',
+      f = ze(
         t,
-        a.duration,
-        n,
-        { lighting: !!a.useLighting, heating: !!a.useHeating },
-        a.courtId,
+        o.duration,
+        s,
+        { lighting: !!o.useLighting, heating: !!o.useHeating },
+        o.courtId,
         m
       ),
-      E = String(t.getFullYear()).padStart(4, '0'),
-      C = String(t.getMonth() + 1).padStart(2, '0'),
-      k = String(t.getDate()).padStart(2, '0'),
-      $ = String(t.getHours()).padStart(2, '0'),
-      h = String(t.getMinutes()).padStart(2, '0'),
-      B = `${E}-${C}-${k}`,
-      x = `${$}:${h}`,
-      z = m.find((N) => N.id === a.courtId)?.name || a.courtId;
+      C = String(t.getFullYear()).padStart(4, '0'),
+      B = String(t.getMonth() + 1).padStart(2, '0'),
+      N = String(t.getDate()).padStart(2, '0'),
+      E = String(t.getHours()).padStart(2, '0'),
+      y = String(t.getMinutes()).padStart(2, '0'),
+      O = `${C}-${B}-${N}`,
+      b = `${E}:${y}`,
+      z = m.find((w) => w.id === o.courtId)?.name || o.courtId;
     try {
-      if (H) {
-        const N = {
-          courtId: a.courtId,
+      if (R) {
+        const w = {
+          courtId: o.courtId,
           courtName: z,
-          date: B,
-          time: x,
-          duration: a.duration,
-          lighting: !!a.useLighting,
-          heating: !!a.useHeating,
-          price: p,
-          players: o,
-          notes: a.note?.trim() || '',
-          color: a.color,
-          ...(d ? { bookedBy: d } : {}),
-          ...(a.bookingType === 'lezione' && a.instructorId
+          date: O,
+          time: b,
+          duration: o.duration,
+          numberOfPlayers: o.numberOfPlayers,
+          lighting: !!o.useLighting,
+          heating: !!o.useHeating,
+          price: f,
+          players: a,
+          notes: o.note?.trim() || '',
+          color: o.color,
+          ...(c ? { bookedBy: c } : {}),
+          ...(o.bookingType === 'lezione' && o.instructorId
             ? {
-                instructorId: a.instructorId,
-                instructorName: R.find((F) => F.id === a.instructorId)?.name || '',
+                instructorId: o.instructorId,
+                instructorName: H.find((F) => F.id === o.instructorId)?.name || '',
                 lessonType: 'individual',
               }
             : { instructorId: null, instructorName: null, lessonType: null }),
         };
-        await A(H, N, O);
+        await A(R, w, L);
       } else {
-        const N = {
-            courtId: a.courtId,
+        const w = {
+            courtId: o.courtId,
             courtName: z,
-            date: B,
-            time: x,
-            duration: a.duration,
-            lighting: !!a.useLighting,
-            heating: !!a.useHeating,
-            price: p,
-            players: o,
-            notes: a.note?.trim() || '',
+            date: O,
+            time: b,
+            duration: o.duration,
+            numberOfPlayers: o.numberOfPlayers,
+            lighting: !!o.useLighting,
+            heating: !!o.useHeating,
+            price: f,
+            players: a,
+            notes: o.note?.trim() || '',
             type: 'court',
-            color: a.color,
-            ...(a.bookingType === 'lezione' && a.instructorId
+            color: o.color,
+            ...(o.bookingType === 'lezione' && o.instructorId
               ? {
-                  instructorId: a.instructorId,
-                  instructorName: R.find((i) => i.id === a.instructorId)?.name || '',
+                  instructorId: o.instructorId,
+                  instructorName: H.find((i) => i.id === o.instructorId)?.name || '',
                   lessonType: 'individual',
                 }
               : {}),
           },
-          F = await Y(N);
-        d && (await A(F.id, { bookedBy: d }));
+          F = await Y(w);
+        c && (await A(F.id, { bookedBy: c }));
       }
       K(!1);
     } catch {
       alert('Errore nel salvataggio della prenotazione.');
     }
   }
-  async function He(t) {
+  async function Ae(t) {
     if (confirm('Cancellare la prenotazione?'))
       try {
         await A(t, { status: 'cancelled', cancelledAt: new Date().toISOString() });
@@ -644,158 +648,158 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
         alert('Errore durante la cancellazione.');
       }
   }
-  async function ve(t) {
+  async function ye(t) {
     if (confirm('Eliminare definitivamente la prenotazione?'))
       try {
-        (await J(t), K(!1));
+        (await X(t), K(!1));
       } catch {
         alert("Errore durante l'eliminazione.");
       }
   }
-  const Me = (t) => m.find((r) => r.id === t)?.name || t,
-    Fe = (t, r) => {
-      L &&
-        (ye(r),
+  const Ce = (t) => m.find((r) => r.id === t)?.name || t,
+    He = (t, r) => {
+      $ &&
+        (he(r),
         (t.dataTransfer.effectAllowed = 'move'),
         t.dataTransfer.setData('text/plain', r.id),
         (t.target.style.opacity = '0.6'));
     },
-    Ge = (t) => {
-      L && (ye(null), ne(null), (t.target.style.opacity = '1'));
+    Re = (t) => {
+      $ && (he(null), oe(null), (t.target.style.opacity = '1'));
     },
-    Ue = (t, r, s) => {
-      if (!L || !I) return;
+    Fe = (t, r, n) => {
+      if (!$ || !D) return;
       (t.preventDefault(), (t.dataTransfer.dropEffect = 'move'));
-      const o = new Date(I.start).toDateString(),
-        d = s.toDateString();
-      if (o !== d) return;
-      const p = re(s, n.slotMinutes),
-        E = I.duration || 60,
-        C = j(p, E),
-        k = [];
-      let $ = !1;
-      for (let h = new Date(p); h < C; h = j(h, n.slotMinutes)) {
-        if (!te(h, r, m)) {
-          $ = !0;
+      const a = new Date(D.start).toDateString(),
+        c = n.toDateString();
+      if (a !== c) return;
+      const f = ee(n, s.slotMinutes),
+        C = D.duration || 60,
+        B = T(f, C),
+        N = [];
+      let E = !1;
+      for (let y = new Date(f); y < B; y = T(y, s.slotMinutes)) {
+        if (!se(y, r, m)) {
+          E = !0;
           break;
         }
-        const B = j(h, n.slotMinutes);
+        const O = T(y, s.slotMinutes);
         if (
-          W.find((z) => {
-            if (z.id === I.id || z.courtId !== r) return !1;
-            const N = new Date(z.start),
-              F = j(N, z.duration);
-            return ae(h, B, N, F);
+          V.find((z) => {
+            if (z.id === D.id || z.courtId !== r) return !1;
+            const w = new Date(z.start),
+              F = T(w, z.duration);
+            return te(y, O, w, F);
           })
         ) {
-          $ = !0;
+          E = !0;
           break;
         }
-        k.push({ courtId: r, time: h.getTime() });
+        N.push({ courtId: r, time: y.getTime() });
       }
-      ne($ ? null : { courtId: r, slots: k });
+      oe(E ? null : { courtId: r, slots: N });
     },
-    Ze = (t) => {
-      L && (t.currentTarget.contains(t.relatedTarget) || ne(null));
+    Ge = (t) => {
+      $ && (t.currentTarget.contains(t.relatedTarget) || oe(null));
     },
-    Ye = async (t, r, s) => {
-      if (!(!L || !I)) {
+    Ue = async (t, r, n) => {
+      if (!(!$ || !D)) {
         (t.preventDefault(),
-          ne(null),
+          oe(null),
           console.log('🎯 DROP EVENT:', {
             courtId: r,
-            slotTime: s.toISOString(),
-            draggedBookingId: I.id,
-            draggedBookingDuration: I.duration,
+            slotTime: n.toISOString(),
+            draggedBookingId: D.id,
+            draggedBookingDuration: D.duration,
           }));
         try {
-          const o = new Date(I.start).toDateString(),
-            d = s.toDateString();
-          if (o !== d) {
+          const a = new Date(D.start).toDateString(),
+            c = n.toDateString();
+          if (a !== c) {
             alert("Puoi spostare le prenotazioni solo all'interno dello stesso giorno.");
             return;
           }
-          const p = re(s, n.slotMinutes),
-            E = j(p, I.duration);
+          const f = ee(n, s.slotMinutes),
+            C = T(f, D.duration);
           console.log('🎯 Drop validation:', {
-            targetTime: p.toISOString(),
-            targetEnd: E.toISOString(),
-            duration: I.duration,
+            targetTime: f.toISOString(),
+            targetEnd: C.toISOString(),
+            duration: D.duration,
           });
-          const C = [];
-          for (let x = new Date(p); x < E; x = j(x, n.slotMinutes)) C.push(new Date(x));
-          for (const x of C)
-            if (!te(x, r, m)) {
+          const B = [];
+          for (let b = new Date(f); b < C; b = T(b, s.slotMinutes)) B.push(new Date(b));
+          for (const b of B)
+            if (!se(b, r, m)) {
               alert(
                 'Uno o più slot di destinazione sono fuori dalle fasce prenotabili per questo campo.'
               );
               return;
             }
-          const k = W.find((x) => {
-            if (x.id === I.id || x.courtId !== r) return !1;
-            const z = new Date(x.start),
-              N = j(z, x.duration);
-            return ae(p, E, z, N);
+          const N = V.find((b) => {
+            if (b.id === D.id || b.courtId !== r) return !1;
+            const z = new Date(b.start),
+              w = T(z, b.duration);
+            return te(f, C, z, w);
           });
-          if (k) {
-            (console.log('🚫 Conflict detected with booking:', k.id),
+          if (N) {
+            (console.log('🚫 Conflict detected with booking:', N.id),
               alert("Lo slot di destinazione è già occupato da un'altra prenotazione."));
             return;
           }
-          for (const x of C) {
-            const z = j(x, n.slotMinutes);
+          for (const b of B) {
+            const z = T(b, s.slotMinutes);
             if (
-              W.find((F) => {
-                if (F.id === I.id || F.courtId !== r) return !1;
+              V.find((F) => {
+                if (F.id === D.id || F.courtId !== r) return !1;
                 const i = new Date(F.start),
-                  w = j(i, F.duration);
-                return ae(x, z, i, w);
+                  v = T(i, F.duration);
+                return te(b, z, i, v);
               })
             ) {
-              (console.log('🚫 Slot conflict detected at:', x.toISOString()),
+              (console.log('🚫 Slot conflict detected at:', b.toISOString()),
                 alert("Lo slot di destinazione è già occupato da un'altra prenotazione."));
               return;
             }
           }
           console.log('✅ Drop validation passed, updating booking...');
-          const $ = new Date(p.getTime() - p.getTimezoneOffset() * 6e4),
-            h = $.toISOString().split('T')[0],
-            B = $.toISOString().split('T')[1].substring(0, 5);
+          const E = new Date(f.getTime() - f.getTimezoneOffset() * 6e4),
+            y = E.toISOString().split('T')[0],
+            O = E.toISOString().split('T')[1].substring(0, 5);
           (console.log('🔄 Updating booking with:', {
-            bookingId: I.id,
+            bookingId: D.id,
             newCourtId: r,
-            newDateStr: h,
-            newTimeStr: B,
-            targetTimeLocal: p.toLocaleString('it-IT'),
+            newDateStr: y,
+            newTimeStr: O,
+            targetTimeLocal: f.toLocaleString('it-IT'),
           }),
-            await A(I.id, {
+            await A(D.id, {
               courtId: r,
-              courtName: Me(r),
-              date: h,
-              time: B,
+              courtName: Ce(r),
+              date: y,
+              time: O,
               updatedAt: new Date().toISOString(),
             }),
             console.log('✅ Booking moved successfully'),
-            y &&
+            h &&
               setTimeout(() => {
-                (console.log('🔄 Refreshing bookings after drag & drop...'), y());
+                (console.log('🔄 Refreshing bookings after drag & drop...'), h());
               }, 500));
-        } catch (o) {
-          (console.error('❌ Error moving booking:', o),
+        } catch (a) {
+          (console.error('❌ Error moving booking:', a),
             alert('Errore durante lo spostamento della prenotazione.'));
         }
-        ye(null);
+        he(null);
       }
     },
-    Ve = 52;
-  function qe(t, r) {
-    const o = (se.get(t) || []).find((i) => {
-        const w = new Date(i.start),
-          M = j(new Date(i.start), i.duration);
-        return ae(w, M, r, j(r, n.slotMinutes));
+    Ze = 52;
+  function Ye(t, r) {
+    const a = (le.get(t) || []).find((i) => {
+        const v = new Date(i.start),
+          M = T(new Date(i.start), i.duration);
+        return te(v, M, r, T(r, s.slotMinutes));
       }),
-      d = te(r, t, m);
-    if (!o && !d) {
+      c = se(r, t, m);
+    if (!a && !c) {
       const i = r.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       return e.jsx('div', {
         className:
@@ -807,42 +811,42 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
         }),
       });
     }
-    if (!o) {
-      const i = we(r, n, t, m),
-        w = Le(i.rate),
+    if (!a) {
+      const i = ke(r, s, t, m),
+        v = $e(i.rate),
         M = i.source === 'discounted' || i.isPromo,
         Z = r.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        X = ke && ke.courtId === t && ke.slots?.some((ie) => ie.time === r.getTime()),
-        ge =
-          I && I.start && new Date(I.start).toDateString() === r.toDateString() && t !== I.courtId;
+        _ = fe && fe.courtId === t && fe.slots?.some((ne) => ne.time === r.getTime()),
+        ue =
+          D && D.start && new Date(D.start).toDateString() === r.toDateString() && t !== D.courtId;
       return e.jsxs('button', {
         type: 'button',
-        onClick: () => Ie(t, r),
-        className: `relative w-full h-9 rounded-lg ring-1 text-[11px] font-medium transition-all duration-200 ${X ? 'ring-2 ring-blue-500 ring-offset-1 scale-105' : ge ? 'ring-2 ring-red-300 ring-offset-1 opacity-75' : ''}`,
+        onClick: () => je(t, r),
+        className: `relative w-full h-9 rounded-lg ring-1 text-[11px] font-medium transition-all duration-200 ${_ ? 'ring-2 ring-blue-500 ring-offset-1 scale-105' : ue ? 'ring-2 ring-red-300 ring-offset-1 opacity-75' : ''}`,
         style: {
-          background: X
+          background: _
             ? 'rgba(59, 130, 246, 0.2)'
-            : ge
+            : ue
               ? 'rgba(239, 68, 68, 0.1)'
-              : `rgba(16,185,129,${w})`,
-          borderColor: X
+              : `rgba(16,185,129,${v})`,
+          borderColor: _
             ? 'rgba(59, 130, 246, 0.6)'
-            : ge
+            : ue
               ? 'rgba(239, 68, 68, 0.3)'
               : 'rgba(16,185,129,0.35)',
         },
-        title: X
+        title: _
           ? 'Rilascia qui per spostare la prenotazione'
-          : ge
+          : ue
             ? 'Disponibile per nuove prenotazioni (non compatibile con lo spostamento)'
             : i.isPromo
               ? 'Fascia Promo'
               : M
                 ? 'Fascia scontata'
                 : 'Tariffa standard',
-        onDragOver: L ? (ie) => Ue(ie, t, r) : void 0,
-        onDragLeave: L ? Ze : void 0,
-        onDrop: L ? (ie) => Ye(ie, t, r) : void 0,
+        onDragOver: $ ? (ne) => Fe(ne, t, r) : void 0,
+        onDragLeave: $ ? Ge : void 0,
+        onDrop: $ ? (ne) => Ue(ne, t, r) : void 0,
         children: [
           M &&
             e.jsx('span', {
@@ -862,89 +866,89 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
         ],
       });
     }
-    const p = new Date(o.start),
-      E = j(p, o.duration);
-    if (!(r.getTime() === p.getTime())) return e.jsx('div', { className: 'w-full h-9' });
-    const $ = Math.ceil((E - r) / (n.slotMinutes * 60 * 1e3)) * Ve - 6,
-      h = (
-        o.playerNames && o.playerNames.length
-          ? o.playerNames
-          : (o.players || []).map((i) => S?.[i]?.name || '—')
+    const f = new Date(a.start),
+      C = T(f, a.duration);
+    if (!(r.getTime() === f.getTime())) return e.jsx('div', { className: 'w-full h-9' });
+    const E = Math.ceil((C - r) / (s.slotMinutes * 60 * 1e3)) * Ze - 6,
+      y = (
+        a.playerNames && a.playerNames.length
+          ? a.playerNames
+          : (a.players || []).map((i) => j?.[i]?.name || '—')
       )
-        .concat(o.guestNames || [])
+        .concat(a.guestNames || [])
         .slice(0, 4),
-      B = e.jsx('span', { className: 'text-2xl', children: '💡' }),
-      x = e.jsx('span', { className: 'text-2xl', children: '🔥' });
+      O = e.jsx('span', { className: 'text-2xl', children: '💡' }),
+      b = e.jsx('span', { className: 'text-2xl', children: '🔥' });
     let z = 'rgba(220, 38, 127, 0.35)',
-      N = 'rgba(220, 38, 127, 0.6)';
+      w = 'rgba(220, 38, 127, 0.6)';
     const F =
-      o.isLessonBooking ||
-      (o.notes && o.notes.includes('Lezione con')) ||
-      o.instructorId ||
-      o.instructorName;
-    if (o.color) {
-      const i = o.color.replace('#', ''),
-        w = parseInt(i.substr(0, 2), 16),
+      a.isLessonBooking ||
+      (a.notes && a.notes.includes('Lezione con')) ||
+      a.instructorId ||
+      a.instructorName;
+    if (a.color) {
+      const i = a.color.replace('#', ''),
+        v = parseInt(i.substr(0, 2), 16),
         M = parseInt(i.substr(2, 2), 16),
         Z = parseInt(i.substr(4, 2), 16);
-      ((z = `rgba(${w}, ${M}, ${Z}, 0.35)`), (N = `rgba(${w}, ${M}, ${Z}, 0.6)`));
+      ((z = `rgba(${v}, ${M}, ${Z}, 0.35)`), (w = `rgba(${v}, ${M}, ${Z}, 0.6)`));
     } else if (F) {
       let i = null;
-      if (o.instructorId) i = R.find((w) => w.id === o.instructorId);
+      if (a.instructorId) i = H.find((v) => v.id === a.instructorId);
       else {
-        const w = o.notes.match(/Lezione con (.+)/);
-        if (w) {
-          const M = w[1];
-          i = R.find((Z) => Z.name === M);
+        const v = a.notes.match(/Lezione con (.+)/);
+        if (v) {
+          const M = v[1];
+          i = H.find((Z) => Z.name === M);
         }
       }
       if (i && i.instructorData?.color) {
-        const w = i.instructorData.color.replace('#', ''),
-          M = parseInt(w.substr(0, 2), 16),
-          Z = parseInt(w.substr(2, 2), 16),
-          X = parseInt(w.substr(4, 2), 16);
-        ((z = `rgba(${M}, ${Z}, ${X}, 0.35)`), (N = `rgba(${M}, ${Z}, ${X}, 0.6)`));
+        const v = i.instructorData.color.replace('#', ''),
+          M = parseInt(v.substr(0, 2), 16),
+          Z = parseInt(v.substr(2, 2), 16),
+          _ = parseInt(v.substr(4, 2), 16);
+        ((z = `rgba(${M}, ${Z}, ${_}, 0.35)`), (w = `rgba(${M}, ${Z}, ${_}, 0.6)`));
       }
     }
     return e.jsx('div', {
       className: 'w-full h-9 relative',
       children: e.jsxs('button', {
         type: 'button',
-        onClick: () => Ce(o),
-        className: `absolute left-0 right-0 px-2 py-2 ring-1 text-left text-[13px] font-semibold flex flex-col justify-center transition-all duration-200 ${L ? 'cursor-grab hover:shadow-lg' : ''}`,
+        onClick: () => Se(a),
+        className: `absolute left-0 right-0 px-2 py-2 ring-1 text-left text-[13px] font-semibold flex flex-col justify-center transition-all duration-200 ${$ ? 'cursor-grab hover:shadow-lg' : ''}`,
         style: {
           top: 0,
-          height: `${$}px`,
+          height: `${E}px`,
           background: z,
-          borderColor: N,
+          borderColor: w,
           borderRadius: '8px',
           overflow: 'hidden',
         },
-        title: `${Me(o.courtId)} — ${p.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} (${o.duration}′) • ${L ? 'Trascina per spostare o clicca per modificare' : 'Clicca per modificare'}`,
-        draggable: L,
-        onDragStart: L ? (i) => Fe(i, o) : void 0,
-        onDragEnd: L ? Ge : void 0,
-        onMouseDown: L ? (i) => (i.target.style.cursor = 'grabbing') : void 0,
-        onMouseUp: L ? (i) => (i.target.style.cursor = 'grab') : void 0,
+        title: `${Ce(a.courtId)} — ${f.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} (${a.duration}′) • ${$ ? 'Trascina per spostare o clicca per modificare' : 'Clicca per modificare'}`,
+        draggable: $,
+        onDragStart: $ ? (i) => He(i, a) : void 0,
+        onDragEnd: $ ? Re : void 0,
+        onMouseDown: $ ? (i) => (i.target.style.cursor = 'grabbing') : void 0,
+        onMouseUp: $ ? (i) => (i.target.style.cursor = 'grab') : void 0,
         children: [
           e.jsxs('div', {
             className: 'absolute left-2 top-2 flex flex-row items-center gap-2 z-20',
-            children: [o.addons?.lighting && B, o.addons?.heating && x],
+            children: [a.addons?.lighting && O, a.addons?.heating && b],
           }),
           F &&
             (() => {
               let i = null,
-                w = '';
-              if (o.instructorId) i = R.find((M) => M.id === o.instructorId);
+                v = '';
+              if (a.instructorId) i = H.find((M) => M.id === a.instructorId);
               else {
-                const M = o.notes.match(/Lezione con (.+)/);
+                const M = a.notes.match(/Lezione con (.+)/);
                 if (M) {
                   const Z = M[1];
-                  i = R.find((X) => X.name === Z);
+                  i = H.find((_) => _.name === Z);
                 }
               }
               return (
-                i?.name && (w = i.name.trim().split(/\s+/)[0]),
+                i?.name && (v = i.name.trim().split(/\s+/)[0]),
                 e.jsx('div', {
                   className: 'absolute right-2 top-2 z-30',
                   children: e.jsxs('span', {
@@ -953,10 +957,10 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                     title: `Lezione${i?.name ? ` con ${i.name}` : ''}`,
                     children: [
                       '🎾',
-                      w &&
+                      v &&
                         e.jsx('span', {
                           className: 'text-[11px] font-bold uppercase',
-                          children: w,
+                          children: v,
                         }),
                     ],
                   }),
@@ -971,27 +975,27 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                 e.jsxs('span', {
                   className: 'font-bold text-[15px] leading-tight',
                   children: [
-                    p.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    f.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                     ' -',
                     ' ',
-                    E.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    C.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                     ' •',
                     ' ',
-                    me(o.price),
+                    ge(a.price),
                   ],
                 }),
                 e.jsx('span', {
                   className: 'flex items-center gap-2 mt-1',
                   children: e.jsx('div', {
                     className: 'text-[10px] font-medium opacity-80 flex flex-wrap gap-1',
-                    children: h.map((i, w) =>
+                    children: y.map((i, v) =>
                       e.jsx(
                         'span',
                         {
                           className: 'bg-white/20 px-1 py-0.5 rounded text-[9px] font-medium',
                           children: i,
                         },
-                        w
+                        v
                       )
                     ),
                   }),
@@ -1006,44 +1010,58 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
               ' ',
               e.jsx('span', {
                 className: 'font-semibold',
-                children: o.bookedByName || h[0] || '—',
+                children: a.bookedByName || y[0] || '—',
               }),
             ],
           }),
-          o.note &&
-            e.jsx('div', { className: 'text-[11px] opacity-70 mt-1 truncate', children: o.note }),
+          a.note &&
+            e.jsx('div', { className: 'text-[11px] opacity-70 mt-1 truncate', children: a.note }),
           e.jsx('div', {
             className: 'absolute bottom-2 right-2 z-20',
             children: e.jsxs('span', {
               className: 'text-[13px] opacity-80 font-bold bg-black/20 px-2 py-1 rounded',
-              children: [Math.round(o.duration), '′'],
+              children: [Math.round(a.duration), '′'],
             }),
           }),
         ],
       }),
     });
   }
-  const ee = c.useMemo(
+  const ae = l.useMemo(
     () =>
-      !a.start || !a.courtId
+      !o.start || !o.courtId
         ? null
-        : Te(
-            new Date(a.start),
-            a.duration,
-            n,
-            { lighting: a.useLighting, heating: a.useHeating },
-            a.courtId,
+        : ze(
+            new Date(o.start),
+            o.duration,
+            s,
+            { lighting: o.useLighting, heating: o.useHeating },
+            o.courtId,
             m
           ),
-    [a.start, a.duration, a.courtId, a.useLighting, a.useHeating, n, m]
+    [o.start, o.duration, o.courtId, o.useLighting, o.useHeating, o.numberOfPlayers, s, m]
   );
   return (
-    c.useMemo(() => (ee == null ? null : ee / 4), [ee]),
-    e.jsxs(Qe, {
+    l.useMemo(
+      () =>
+        ae == null
+          ? null
+          : et(
+              new Date(o.start),
+              o.duration,
+              s,
+              { lighting: o.useLighting, heating: o.useHeating },
+              o.courtId,
+              m,
+              o.numberOfPlayers
+            ),
+      [o.start, o.duration, o.courtId, o.useLighting, o.useHeating, o.numberOfPlayers, s, m]
+    ),
+    e.jsxs(Je, {
       title: 'Gestione Campi',
-      T: l,
+      T: d,
       children: [
-        L &&
+        $ &&
           e.jsx('div', {
             className:
               'mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg',
@@ -1059,11 +1077,11 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
               ],
             }),
           }),
-        f
+        p
           ? e.jsxs(e.Fragment, {
               children: [
                 e.jsx('div', {
-                  className: `flex flex-col items-center gap-6 mb-6 ${l.cardBg} ${l.border} p-6 rounded-xl shadow-lg`,
+                  className: `flex flex-col items-center gap-6 mb-6 ${d.cardBg} ${d.border} p-6 rounded-xl shadow-lg`,
                   children: e.jsxs('div', {
                     className: 'flex items-center justify-center gap-6',
                     children: [
@@ -1081,7 +1099,7 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                         className:
                           'text-3xl font-bold cursor-pointer hover:scale-105 transition-transform bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent dark:from-emerald-400 dark:to-lime-400 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800',
                         title: 'Clicca per aprire calendario',
-                        children: Be,
+                        children: Te,
                       }),
                       e.jsx('button', {
                         type: 'button',
@@ -1099,13 +1117,13 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                     className:
                       'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4',
                     children: e.jsxs('div', {
-                      className: `${l.cardBg} ${l.border} rounded-2xl shadow-2xl p-8 max-w-2xl w-full`,
+                      className: `${d.cardBg} ${d.border} rounded-2xl shadow-2xl p-8 max-w-2xl w-full`,
                       children: [
                         e.jsxs('div', {
                           className: 'flex items-center justify-between mb-6',
                           children: [
                             e.jsx('h3', {
-                              className: `text-2xl font-bold ${l.text} flex items-center gap-2`,
+                              className: `text-2xl font-bold ${d.text} flex items-center gap-2`,
                               children: '📅 Seleziona data',
                             }),
                             e.jsx('button', {
@@ -1118,12 +1136,12 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                             }),
                           ],
                         }),
-                        e.jsx(it, {
-                          currentDay: D,
+                        e.jsx(st, {
+                          currentDay: S,
                           onSelectDay: (t) => {
                             (q(t), G(!1));
                           },
-                          T: l,
+                          T: d,
                         }),
                         e.jsxs('div', {
                           className: 'mt-6 grid grid-cols-3 gap-3',
@@ -1131,9 +1149,9 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                             e.jsx('button', {
                               type: 'button',
                               onClick: () => {
-                                (b(), G(!1));
+                                (x(), G(!1));
                               },
-                              className: `${l.btnPrimary} py-3 text-sm font-semibold flex items-center justify-center gap-2`,
+                              className: `${d.btnPrimary} py-3 text-sm font-semibold flex items-center justify-center gap-2`,
                               children: '🏠 Oggi',
                             }),
                             e.jsx('button', {
@@ -1141,7 +1159,7 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                               onClick: () => {
                                 (U(-1), G(!1));
                               },
-                              className: `${l.btnGhost} py-3 text-sm font-medium`,
+                              className: `${d.btnGhost} py-3 text-sm font-medium`,
                               children: '← Ieri',
                             }),
                             e.jsx('button', {
@@ -1149,7 +1167,7 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                               onClick: () => {
                                 (U(1), G(!1));
                               },
-                              className: `${l.btnGhost} py-3 text-sm font-medium`,
+                              className: `${d.btnGhost} py-3 text-sm font-medium`,
                               children: 'Domani →',
                             }),
                           ],
@@ -1157,123 +1175,16 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                       ],
                     }),
                   }),
-                e.jsx('div', {
-                  className: 'md:hidden mb-4',
-                  children: e.jsxs('div', {
-                    className: 'flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1 gap-1',
-                    children: [
-                      e.jsx('button', {
-                        onClick: () => he('overview'),
-                        className: `flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-semibold transition-all ${ue === 'overview' ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}`,
-                        children: '📊 Panoramica',
-                      }),
-                      e.jsx('button', {
-                        onClick: () => he('detail'),
-                        className: `flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-sm font-semibold transition-all ${ue === 'detail' ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}`,
-                        children: '🔍 Dettaglio',
-                      }),
-                    ],
-                  }),
-                }),
-                ue === 'overview' &&
-                  e.jsx('div', {
-                    className: 'md:hidden mb-6',
-                    children: e.jsx('div', {
-                      className: 'grid grid-cols-2 gap-3',
-                      children: m.map((t) => {
-                        const r = V.filter((p) => {
-                            const E = p,
-                              C = j(p, n.slotMinutes),
-                              k = te(p, t.id, m),
-                              $ = se.get(t.id)?.some((h) => {
-                                const B = new Date(h.start),
-                                  x = j(new Date(h.start), h.duration);
-                                return ae(E, C, B, x);
-                              });
-                            return k && !$;
-                          }).length,
-                          s = V.filter((p) => te(p, t.id, m)).length || 0,
-                          o = s - r,
-                          d = r / s;
-                        return e.jsxs(
-                          'div',
-                          {
-                            className: `${l.cardBg} ${l.border} rounded-xl p-4 shadow-md`,
-                            children: [
-                              e.jsxs('div', {
-                                className: 'flex items-center gap-2 mb-3',
-                                children: [
-                                  e.jsx('span', {
-                                    className:
-                                      'w-8 h-8 rounded-full bg-blue-400 dark:bg-emerald-400 text-white flex items-center justify-center font-bold text-sm shadow',
-                                    children: t.name[0],
-                                  }),
-                                  e.jsxs('div', {
-                                    className: 'flex-1',
-                                    children: [
-                                      e.jsx('div', {
-                                        className: 'font-semibold text-sm',
-                                        children: t.name,
-                                      }),
-                                      t.hasHeating &&
-                                        e.jsx('div', {
-                                          className: 'text-xs text-orange-500 dark:text-orange-400',
-                                          children: '🔥 Riscaldato',
-                                        }),
-                                    ],
-                                  }),
-                                ],
-                              }),
-                              e.jsxs('div', {
-                                className: 'mb-2',
-                                children: [
-                                  e.jsxs('div', {
-                                    className: 'flex justify-between text-xs mb-1',
-                                    children: [
-                                      e.jsxs('span', {
-                                        className: 'text-green-600 dark:text-green-400',
-                                        children: ['Liberi: ', r],
-                                      }),
-                                      e.jsxs('span', {
-                                        className: 'text-red-600 dark:text-red-400',
-                                        children: ['Occupati: ', o],
-                                      }),
-                                    ],
-                                  }),
-                                  e.jsx('div', {
-                                    className:
-                                      'w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2',
-                                    children: e.jsx('div', {
-                                      className: `h-2 rounded-full transition-all duration-300 ${d > 0.7 ? 'bg-green-500' : d > 0.4 ? 'bg-yellow-500' : 'bg-red-500'}`,
-                                      style: { width: `${d * 100}%` },
-                                    }),
-                                  }),
-                                ],
-                              }),
-                              e.jsx('button', {
-                                onClick: () => {
-                                  (De(t.id), he('detail'));
-                                },
-                                className: `w-full ${l.btnGhost} py-2 text-xs font-semibold`,
-                                children: 'Visualizza dettaglio',
-                              }),
-                            ],
-                          },
-                          t.id
-                        );
-                      }),
-                    }),
-                  }),
-                ue === 'detail' &&
+                mobileView === 'detail' &&
                   e.jsxs('div', {
                     className: 'md:hidden mb-6',
                     children: [
                       e.jsx('div', {
                         className: 'mb-4',
                         children: e.jsxs('select', {
-                          value: fe,
-                          onChange: (t) => De(t.target.value),
-                          className: `w-full ${l.input} text-sm`,
+                          value: pe,
+                          onChange: (t) => Le(t.target.value),
+                          className: `w-full ${d.input} text-sm`,
                           children: [
                             e.jsx('option', { value: 'all', children: 'Tutti i campi' }),
                             m.map((t) => e.jsx('option', { value: t.id, children: t.name }, t.id)),
@@ -1282,26 +1193,26 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                       }),
                       e.jsx('div', {
                         className: 'space-y-2',
-                        children: V.map((t) => {
+                        children: J.map((t) => {
                           const r = t.toLocaleTimeString('it-IT', {
                               hour: '2-digit',
                               minute: '2-digit',
                             }),
-                            o = j(t, n.slotMinutes).toLocaleTimeString('it-IT', {
+                            a = T(t, s.slotMinutes).toLocaleTimeString('it-IT', {
                               hour: '2-digit',
                               minute: '2-digit',
                             });
                           return e.jsxs(
                             'div',
                             {
-                              className: `${l.cardBg} ${l.border} rounded-lg p-3 shadow-sm`,
+                              className: `${d.cardBg} ${d.border} rounded-lg p-3 shadow-sm`,
                               children: [
                                 e.jsxs('div', {
                                   className: 'flex items-center justify-between mb-2',
                                   children: [
                                     e.jsxs('div', {
                                       className: 'font-semibold text-base',
-                                      children: [r, ' - ', o],
+                                      children: [r, ' - ', a],
                                     }),
                                     e.jsx('div', {
                                       className: 'text-xs text-gray-500 dark:text-gray-400',
@@ -1316,73 +1227,73 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                 e.jsx('div', {
                                   className: 'grid grid-cols-2 gap-2',
                                   children: m
-                                    .filter((d) => fe === 'all' || d.id === fe)
-                                    .map((d) => {
-                                      const p = t,
-                                        E = j(t, n.slotMinutes),
-                                        C = te(t, d.id, m),
-                                        k = se.get(d.id)?.find((x) => {
-                                          const z = new Date(x.start),
-                                            N = j(new Date(x.start), x.duration);
-                                          return ae(p, E, z, N);
+                                    .filter((c) => pe === 'all' || c.id === pe)
+                                    .map((c) => {
+                                      const f = t,
+                                        C = T(t, s.slotMinutes),
+                                        B = se(t, c.id, m),
+                                        N = le.get(c.id)?.find((b) => {
+                                          const z = new Date(b.start),
+                                            w = T(new Date(b.start), b.duration);
+                                          return te(f, C, z, w);
                                         }),
-                                        $ = !k && C;
-                                      $ &&
+                                        E = !N && B;
+                                      E &&
                                         (t.toISOString().split('T')[0],
                                         t.toISOString().split('T')[1].substring(0, 5),
-                                        n.slotMinutes,
-                                        Array.from(se.get(d.id) || []).map((x) => ({
-                                          courtId: d.id,
-                                          date: x.start.split('T')[0],
-                                          time: x.start.split('T')[1].substring(0, 5),
-                                          duration: x.duration,
+                                        s.slotMinutes,
+                                        Array.from(le.get(c.id) || []).map((b) => ({
+                                          courtId: c.id,
+                                          date: b.start.split('T')[0],
+                                          time: b.start.split('T')[1].substring(0, 5),
+                                          duration: b.duration,
                                           status: 'booked',
                                         })));
-                                      const h = $,
-                                        B = pe(d.id, t);
+                                      const y = E,
+                                        O = be(c.id, t);
                                       return e.jsxs(
                                         'button',
                                         {
                                           onClick: () => {
-                                            if (C) {
-                                              if (h) return Ie(d.id, t);
-                                              if (k) return Ce(k);
+                                            if (B) {
+                                              if (y) return je(c.id, t);
+                                              if (N) return Se(N);
                                             }
                                           },
-                                          className: `p-2 rounded-lg text-sm font-medium transition-all ${h ? `hover:scale-105 ${l.btnGhost} border-2 ${B ? 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20' : 'border-green-200 dark:border-green-700'}` : C ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-2 border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 cursor-pointer' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border-2 border-dashed border-gray-300 dark:border-gray-700 cursor-not-allowed'}`,
+                                          className: `p-2 rounded-lg text-sm font-medium transition-all ${y ? `hover:scale-105 ${d.btnGhost} border-2 ${O ? 'border-yellow-400 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20' : 'border-green-200 dark:border-green-700'}` : B ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-2 border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/30 cursor-pointer' : 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border-2 border-dashed border-gray-300 dark:border-gray-700 cursor-not-allowed'}`,
                                           children: [
                                             e.jsxs('div', {
                                               className: 'flex items-center gap-1 justify-center',
                                               children: [
                                                 e.jsx('span', {
-                                                  className: `w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${h ? 'bg-green-500 text-white' : C ? 'bg-red-500 text-white' : 'bg-gray-400 text-white'}`,
-                                                  children: d.name[0],
+                                                  className: `w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${y ? 'bg-green-500 text-white' : B ? 'bg-red-500 text-white' : 'bg-gray-400 text-white'}`,
+                                                  children: c.name[0],
                                                 }),
-                                                e.jsx('span', { children: d.name }),
+                                                e.jsx('span', { children: c.name }),
                                               ],
                                             }),
-                                            B &&
-                                              h &&
+                                            O &&
+                                              y &&
                                               e.jsx('div', {
                                                 className:
                                                   'text-xs text-yellow-600 dark:text-yellow-400 mt-1',
                                                 children: '🏷️ Promo',
                                               }),
-                                            !C &&
+                                            !B &&
                                               e.jsx('div', {
                                                 className:
                                                   'text-xs mt-1 text-gray-500 dark:text-gray-400',
                                                 children: 'Fuori fascia',
                                               }),
-                                            C &&
-                                              !h &&
-                                              k &&
+                                            B &&
+                                              !y &&
+                                              N &&
                                               e.jsxs('div', {
                                                 className: 'text-xs mt-1 truncate',
                                                 children: [
                                                   e.jsx('div', {
                                                     className: 'font-medium',
-                                                    children: k.bookedByName || 'Occupato',
+                                                    children: N.bookedByName || 'Occupato',
                                                   }),
                                                   e.jsx('div', {
                                                     className:
@@ -1393,7 +1304,7 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                               }),
                                           ],
                                         },
-                                        d.id
+                                        c.id
                                       );
                                     }),
                                 }),
@@ -1414,7 +1325,7 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                         e.jsx(
                           'div',
                           {
-                            className: `px-2 py-3 text-base font-bold text-center rounded-xl shadow-md mb-2 ${l.cardBg} ${l.border}`,
+                            className: `px-2 py-3 text-base font-bold text-center rounded-xl shadow-md mb-2 ${d.cardBg} ${d.border}`,
                             children: e.jsxs('span', {
                               className: 'inline-flex items-center gap-2',
                               children: [
@@ -1427,8 +1338,8 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                   className: 'flex flex-col items-start',
                                   children: [
                                     e.jsx('span', { children: t.name }),
-                                    a.start &&
-                                      pe(t.id, a.start) &&
+                                    o.start &&
+                                      be(t.id, o.start) &&
                                       e.jsx('span', {
                                         className:
                                           'text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-black px-2 py-0.5 rounded-full font-medium',
@@ -1448,18 +1359,18 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                           `hdr_${t.id}`
                         )
                       ),
-                      V.map((t, r) =>
+                      J.map((t, r) =>
                         e.jsx(
-                          Ee.Fragment,
+                          Me.Fragment,
                           {
-                            children: m.map((s) =>
+                            children: m.map((n) =>
                               e.jsx(
                                 'div',
                                 {
-                                  className: `px-0.5 py-0.5 ${l.cardBg} ${l.border} rounded-lg`,
-                                  children: qe(s.id, t),
+                                  className: `px-0.5 py-0.5 ${d.cardBg} ${d.border} rounded-lg`,
+                                  children: Ye(n.id, t),
                                 },
-                                s.id + '_' + r
+                                n.id + '_' + r
                               )
                             ),
                           },
@@ -1469,13 +1380,13 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                     ],
                   }),
                 }),
-                e.jsx(et, {
-                  open: je,
+                e.jsx(Ke, {
+                  open: Ne,
                   onClose: () => K(!1),
-                  title: H ? 'Modifica prenotazione' : 'Nuova prenotazione',
-                  T: l,
+                  title: R ? 'Modifica prenotazione' : 'Nuova prenotazione',
+                  T: d,
                   size: 'xl',
-                  children: a.start
+                  children: o.start
                     ? e.jsxs('div', {
                         className: 'relative',
                         children: [
@@ -1499,13 +1410,13 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                         children: '🎯 Tipo prenotazione',
                                       }),
                                       e.jsxs('select', {
-                                        value: a.bookingType,
+                                        value: o.bookingType,
                                         onChange: (t) => {
                                           const r = t.target.value;
-                                          T((s) => ({
-                                            ...s,
+                                          I((n) => ({
+                                            ...n,
                                             bookingType: r,
-                                            instructorId: r === 'partita' ? '' : s.instructorId,
+                                            instructorId: r === 'partita' ? '' : n.instructorId,
                                           }));
                                         },
                                         className:
@@ -1523,7 +1434,7 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                       }),
                                     ],
                                   }),
-                                  a.bookingType === 'lezione' &&
+                                  o.bookingType === 'lezione' &&
                                     e.jsxs('div', {
                                       className: 'sm:col-span-2 flex flex-col gap-1',
                                       children: [
@@ -1533,18 +1444,18 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                           children: '👨‍🏫 Maestro',
                                         }),
                                         e.jsxs('select', {
-                                          value: a.instructorId,
+                                          value: o.instructorId,
                                           onChange: (t) =>
-                                            T((r) => ({ ...r, instructorId: t.target.value })),
+                                            I((r) => ({ ...r, instructorId: t.target.value })),
                                           className:
                                             'px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium',
-                                          required: a.bookingType === 'lezione',
+                                          required: o.bookingType === 'lezione',
                                           children: [
                                             e.jsx('option', {
                                               value: '',
                                               children: '-- Seleziona un maestro --',
                                             }),
-                                            R.map((t) =>
+                                            H.map((t) =>
                                               e.jsxs(
                                                 'option',
                                                 {
@@ -1560,8 +1471,8 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                             ),
                                           ],
                                         }),
-                                        a.bookingType === 'lezione' &&
-                                          !a.instructorId &&
+                                        o.bookingType === 'lezione' &&
+                                          !o.instructorId &&
                                           e.jsx('div', {
                                             className:
                                               'text-sm text-red-600 dark:text-red-400 bg-red-50/50 dark:bg-red-900/20 backdrop-blur-sm px-3 py-2 rounded-lg border border-red-200/50 dark:border-red-800/30',
@@ -1578,17 +1489,17 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                         children: '🏟️ Campo',
                                       }),
                                       e.jsx('select', {
-                                        value: a.courtId,
+                                        value: o.courtId,
                                         onChange: (t) =>
-                                          T((r) => ({ ...r, courtId: t.target.value })),
+                                          I((r) => ({ ...r, courtId: t.target.value })),
                                         className:
                                           'px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium',
-                                        children: f.courts.map((t) =>
+                                        children: p.courts.map((t) =>
                                           e.jsx('option', { value: t.id, children: t.name }, t.id)
                                         ),
                                       }),
-                                      a.courtId &&
-                                        pe(a.courtId, a.start) &&
+                                      o.courtId &&
+                                        be(o.courtId, o.start) &&
                                         e.jsx('div', {
                                           className:
                                             'text-sm bg-gradient-to-r from-yellow-400/80 to-orange-400/80 text-yellow-900 dark:text-yellow-100 px-2 py-1 rounded-lg font-semibold inline-flex items-center gap-1 w-fit backdrop-blur-sm border border-yellow-300/50',
@@ -1606,12 +1517,12 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                       }),
                                       e.jsx('input', {
                                         type: 'time',
-                                        value: `${String(new Date(a.start).getHours()).padStart(2, '0')}:${String(new Date(a.start).getMinutes()).padStart(2, '0')}`,
+                                        value: `${String(new Date(o.start).getHours()).padStart(2, '0')}:${String(new Date(o.start).getMinutes()).padStart(2, '0')}`,
                                         onChange: (t) => {
-                                          const [r, s] = t.target.value.split(':').map(Number),
-                                            o = new Date(a.start);
-                                          (o.setHours(r, s, 0, 0),
-                                            T((d) => ({ ...d, start: re(o, n.slotMinutes) })));
+                                          const [r, n] = t.target.value.split(':').map(Number),
+                                            a = new Date(o.start);
+                                          (a.setHours(r, n, 0, 0),
+                                            I((c) => ({ ...c, start: ee(a, s.slotMinutes) })));
                                         },
                                         className:
                                           'px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium',
@@ -1624,15 +1535,41 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                       e.jsx('label', {
                                         className:
                                           'text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent',
+                                        children: '👥 Numero Giocatori',
+                                      }),
+                                      e.jsxs('select', {
+                                        value: o.numberOfPlayers,
+                                        onChange: (t) =>
+                                          I((r) => ({
+                                            ...r,
+                                            numberOfPlayers: Number(t.target.value),
+                                          })),
+                                        className:
+                                          'px-4 py-3 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium',
+                                        children: [
+                                          e.jsx('option', { value: 1, children: '1 giocatore' }),
+                                          e.jsx('option', { value: 2, children: '2 giocatori' }),
+                                          e.jsx('option', { value: 3, children: '3 giocatori' }),
+                                          e.jsx('option', { value: 4, children: '4 giocatori' }),
+                                        ],
+                                      }),
+                                    ],
+                                  }),
+                                  e.jsxs('div', {
+                                    className: 'flex flex-col gap-2',
+                                    children: [
+                                      e.jsx('label', {
+                                        className:
+                                          'text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent',
                                         children: '⏱️ Durata',
                                       }),
                                       e.jsx('select', {
-                                        value: a.duration,
+                                        value: o.duration,
                                         onChange: (t) =>
-                                          T((r) => ({ ...r, duration: Number(t.target.value) })),
+                                          I((r) => ({ ...r, duration: Number(t.target.value) })),
                                         className:
                                           'px-4 py-3 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium',
-                                        children: (n.defaultDurations || [60, 90, 120]).map((t) =>
+                                        children: (s.defaultDurations || [60, 90, 120]).map((t) =>
                                           e.jsxs(
                                             'option',
                                             { value: t, children: [t, ' minuti'] },
@@ -1659,16 +1596,16 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                         e.jsxs('div', {
                                           className: 'flex flex-col gap-2',
                                           children: [
-                                            n.addons?.lightingEnabled &&
+                                            s.addons?.lightingEnabled &&
                                               e.jsxs('label', {
                                                 className:
                                                   'inline-flex items-center gap-2 cursor-pointer bg-blue-50/50 dark:bg-blue-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-blue-200/50 dark:border-blue-800/30 hover:bg-blue-100/50 dark:hover:bg-blue-800/30 transition-all duration-200',
                                                 children: [
                                                   e.jsx('input', {
                                                     type: 'checkbox',
-                                                    checked: a.useLighting,
+                                                    checked: o.useLighting,
                                                     onChange: (t) =>
-                                                      T((r) => ({
+                                                      I((r) => ({
                                                         ...r,
                                                         useLighting: t.target.checked,
                                                       })),
@@ -1688,25 +1625,25 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                                           'text-xs text-blue-600 dark:text-blue-400',
                                                         children: [
                                                           '+',
-                                                          me(n.addons.lightingFee || 0),
+                                                          ge(s.addons.lightingFee || 0),
                                                         ],
                                                       }),
                                                     ],
                                                   }),
                                                 ],
                                               }),
-                                            n.addons?.heatingEnabled &&
-                                              m.find((r) => r.id === a.courtId)?.hasHeating &&
+                                            s.addons?.heatingEnabled &&
+                                              m.find((r) => r.id === o.courtId)?.hasHeating &&
                                               e.jsxs('label', {
                                                 className:
                                                   'inline-flex items-center gap-2 cursor-pointer bg-purple-50/50 dark:bg-purple-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-purple-200/50 dark:border-purple-800/30 hover:bg-purple-100/50 dark:hover:bg-purple-800/30 transition-all duration-200',
                                                 children: [
                                                   e.jsx('input', {
                                                     type: 'checkbox',
-                                                    checked: a.useHeating,
+                                                    checked: o.useHeating,
                                                     onChange: (r) =>
-                                                      T((s) => ({
-                                                        ...s,
+                                                      I((n) => ({
+                                                        ...n,
                                                         useHeating: r.target.checked,
                                                       })),
                                                     className:
@@ -1725,7 +1662,7 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                                           'text-xs text-purple-600 dark:text-purple-400',
                                                         children: [
                                                           '+',
-                                                          me(n.addons.heatingFee || 0),
+                                                          ge(s.addons.heatingFee || 0),
                                                         ],
                                                       }),
                                                     ],
@@ -1744,12 +1681,12 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                               children: [
                                                 e.jsxs('div', {
                                                   className: 'text-lg font-bold text-white',
-                                                  children: ['Totale: ', ee == null ? '—' : me(ee)],
+                                                  children: ['Totale: ', ae == null ? '—' : ge(ae)],
                                                 }),
-                                                ee != null &&
+                                                ae != null &&
                                                   e.jsxs('div', {
                                                     className: 'text-sm text-emerald-100 mt-1',
-                                                    children: ['/ giocatore: ', tt(ee / 4)],
+                                                    children: ['/ giocatore: ', Qe(ae / 4)],
                                                   }),
                                               ],
                                             }),
@@ -1784,9 +1721,9 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                                 }),
                                                 e.jsx('input', {
                                                   list: 'players-list',
-                                                  value: a[t],
-                                                  onChange: (s) =>
-                                                    T((o) => ({ ...o, [t]: s.target.value })),
+                                                  value: o[t],
+                                                  onChange: (n) =>
+                                                    I((a) => ({ ...a, [t]: n.target.value })),
                                                   className:
                                                     'w-full px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200',
                                                   placeholder: 'Nome giocatore',
@@ -1810,9 +1747,9 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                             children: '📝 Prenotazione a nome di',
                                           }),
                                           e.jsx('input', {
-                                            value: a.bookedBy,
+                                            value: o.bookedBy,
                                             onChange: (t) =>
-                                              T((r) => ({ ...r, bookedBy: t.target.value })),
+                                              I((r) => ({ ...r, bookedBy: t.target.value })),
                                             className:
                                               'w-full px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200',
                                             placeholder: 'Es. Andrea Paris',
@@ -1827,9 +1764,9 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                             children: '💬 Note',
                                           }),
                                           e.jsx('input', {
-                                            value: a.note,
+                                            value: o.note,
                                             onChange: (t) =>
-                                              T((r) => ({ ...r, note: t.target.value })),
+                                              I((r) => ({ ...r, note: t.target.value })),
                                             className:
                                               'w-full px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200',
                                             placeholder: 'Es. Lezioni, torneo, ecc.',
@@ -1843,14 +1780,14 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                               'text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-1 block',
                                             children: [
                                               '🎨 Colore prenotazione',
-                                              a.bookingType === 'lezione' &&
-                                                a.instructorId &&
+                                              o.bookingType === 'lezione' &&
+                                                o.instructorId &&
                                                 e.jsx('span', {
                                                   className:
                                                     'ml-2 text-xs text-blue-600 dark:text-blue-400 font-normal',
                                                   children: '(Colore del maestro)',
                                                 }),
-                                              a.bookingType === 'partita' &&
+                                              o.bookingType === 'partita' &&
                                                 e.jsx('span', {
                                                   className:
                                                     'ml-2 text-xs text-pink-600 dark:text-pink-400 font-normal',
@@ -1866,9 +1803,9 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                                 children: [
                                                   e.jsx('input', {
                                                     type: 'color',
-                                                    value: a.color,
+                                                    value: o.color,
                                                     onChange: (t) =>
-                                                      T((r) => ({ ...r, color: t.target.value })),
+                                                      I((r) => ({ ...r, color: t.target.value })),
                                                     className:
                                                       'w-12 h-12 rounded-xl border-2 border-white/30 dark:border-gray-600/30 cursor-pointer shadow-lg',
                                                     title: 'Seleziona il colore della prenotazione',
@@ -1879,9 +1816,9 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                                       className:
                                                         'h-12 rounded-xl border-2 flex items-center px-4 text-sm font-semibold shadow-lg backdrop-blur-sm',
                                                       style: {
-                                                        backgroundColor: a.color + '33',
-                                                        borderColor: a.color,
-                                                        color: a.color,
+                                                        backgroundColor: o.color + '33',
+                                                        borderColor: o.color,
+                                                        color: o.color,
                                                       },
                                                       children: 'Anteprima colore',
                                                     }),
@@ -1914,8 +1851,8 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                                         {
                                                           type: 'button',
                                                           onClick: () =>
-                                                            T((r) => ({ ...r, color: t.color })),
-                                                          className: `w-10 h-10 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-110 shadow-lg ${a.color === t.color ? 'border-gray-800 dark:border-white scale-110 shadow-xl' : 'border-white/50 dark:border-gray-600/50'}`,
+                                                            I((r) => ({ ...r, color: t.color })),
+                                                          className: `w-10 h-10 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-110 shadow-lg ${o.color === t.color ? 'border-gray-800 dark:border-white scale-110 shadow-xl' : 'border-white/50 dark:border-gray-600/50'}`,
                                                           style: { backgroundColor: t.color },
                                                           title: t.name,
                                                         },
@@ -1933,7 +1870,7 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                   }),
                                   e.jsx('datalist', {
                                     id: 'players-list',
-                                    children: Oe.map((t) =>
+                                    children: Be.map((t) =>
                                       e.jsx('option', { value: t.name }, t.id)
                                     ),
                                   }),
@@ -1942,10 +1879,10 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                     children: [
                                       e.jsx('button', {
                                         type: 'button',
-                                        onClick: ze,
+                                        onClick: Ie,
                                         className:
                                           'flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-3 px-6 rounded-xl shadow-2xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105',
-                                        children: H
+                                        children: R
                                           ? '✓ Aggiorna prenotazione'
                                           : '✓ Conferma prenotazione',
                                       }),
@@ -1956,10 +1893,10 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                           'px-6 py-3 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm border border-white/30 dark:border-gray-600/30 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-white/70 dark:hover:bg-gray-600/70 transition-all duration-200',
                                         children: 'Annulla',
                                       }),
-                                      H &&
+                                      R &&
                                         e.jsx('button', {
                                           type: 'button',
-                                          onClick: () => ve(H),
+                                          onClick: () => ye(R),
                                           className:
                                             'bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold px-6 py-3 rounded-xl shadow-2xl hover:from-red-600 hover:to-rose-700 transition-all duration-300 transform hover:scale-105',
                                           children: '🗑️ Elimina',
@@ -1977,10 +1914,10 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                   children: [
                                     e.jsx('button', {
                                       type: 'button',
-                                      onClick: ze,
+                                      onClick: Ie,
                                       className:
                                         'flex-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-4 rounded-xl shadow-2xl hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105',
-                                      children: H ? '✓ Aggiorna' : '✓ Conferma',
+                                      children: R ? '✓ Aggiorna' : '✓ Conferma',
                                     }),
                                     e.jsx('button', {
                                       type: 'button',
@@ -1989,10 +1926,10 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                                         'flex-1 bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm text-gray-700 dark:text-gray-300 font-semibold py-4 rounded-xl border border-white/30 dark:border-gray-600/30 hover:bg-white/90 dark:hover:bg-gray-600/90 transition-all duration-200',
                                       children: 'Annulla',
                                     }),
-                                    H &&
+                                    R &&
                                       e.jsx('button', {
                                         type: 'button',
-                                        onClick: () => ve(H),
+                                        onClick: () => ye(R),
                                         className:
                                           'bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold px-6 py-4 rounded-xl shadow-2xl hover:from-red-600 hover:to-rose-700 transition-all duration-300',
                                         children: '🗑️',
@@ -2027,8 +1964,8 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                         ],
                       }),
                 }),
-                je &&
-                  a.start &&
+                Ne &&
+                  o.start &&
                   e.jsxs(e.Fragment, {
                     children: [
                       e.jsxs('div', {
@@ -2042,23 +1979,23 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
                               'flex-1 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all duration-200 hover:scale-105',
                             children: '❌ Annulla',
                           }),
-                          H &&
+                          R &&
                             e.jsx('button', {
                               type: 'button',
-                              onClick: () => ve(H),
+                              onClick: () => ye(R),
                               className:
                                 'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold px-8 py-4 rounded-xl shadow-2xl transition-all duration-200 hover:scale-105 border border-red-300/50',
                               children: '🗑️ Elimina',
                             }),
                         ],
                       }),
-                      H &&
+                      R &&
                         e.jsx('div', {
                           className:
                             'fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[99999] md:hidden',
                           children: e.jsx('button', {
                             type: 'button',
-                            onClick: () => He(H),
+                            onClick: () => Ae(R),
                             className:
                               'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold px-8 py-4 rounded-full shadow-2xl transition-all duration-200 hover:scale-105 border border-red-300/50',
                             children: '🗑️ Elimina',
@@ -2089,47 +2026,47 @@ function lt({ state: f, setState: v, players: g, playersById: S, T: l }) {
     })
   );
 }
-function kt() {
-  const f = Ke(),
-    { state: v, setState: g, derived: S, playersById: l, loading: O } = _e(),
-    { clubMode: P } = Xe(),
-    y = Ee.useMemo(() => Je(), []);
-  return O || !v
+function yt() {
+  const p = Xe(),
+    { state: k, setState: g, derived: j, playersById: d, loading: L } = Ve(),
+    { clubMode: P } = We(),
+    h = Me.useMemo(() => _e(), []);
+  return L || !k
     ? e.jsxs('div', {
-        className: `text-center py-12 ${y.cardBg} ${y.border} rounded-xl m-4`,
+        className: `text-center py-12 ${h.cardBg} ${h.border} rounded-xl m-4`,
         children: [
           e.jsx('div', { className: 'text-4xl mb-4', children: '⏳' }),
           e.jsx('h3', {
-            className: `text-lg font-medium mb-2 ${y.text}`,
+            className: `text-lg font-medium mb-2 ${h.text}`,
             children: 'Caricamento...',
           }),
           e.jsx('p', {
-            className: `${y.subtext}`,
+            className: `${h.subtext}`,
             children: 'Caricamento configurazione campi in corso...',
           }),
         ],
       })
     : P
-      ? e.jsx(lt, { T: y, state: v, setState: g, players: S.players, playersById: l })
+      ? e.jsx(it, { T: h, state: k, setState: g, players: j.players, playersById: d })
       : e.jsxs('div', {
-          className: `text-center py-12 ${y.cardBg} ${y.border} rounded-xl m-4`,
+          className: `text-center py-12 ${h.cardBg} ${h.border} rounded-xl m-4`,
           children: [
             e.jsx('div', { className: 'text-6xl mb-4', children: '🔒' }),
             e.jsx('h3', {
-              className: `text-xl font-bold mb-2 ${y.text}`,
+              className: `text-xl font-bold mb-2 ${h.text}`,
               children: 'Modalità Club Richiesta',
             }),
             e.jsx('p', {
-              className: `${y.subtext} mb-4`,
+              className: `${h.subtext} mb-4`,
               children:
                 'Per accedere alla gestione campi, devi prima sbloccare la modalità club nella sezione Extra.',
             }),
             e.jsx('button', {
-              onClick: () => f('/extra'),
-              className: `${y.btnPrimary} px-6 py-3`,
+              onClick: () => p('/extra'),
+              className: `${h.btnPrimary} px-6 py-3`,
               children: 'Vai a Extra per sbloccare',
             }),
           ],
         });
 }
-export { kt as default };
+export { yt as default };

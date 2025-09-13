@@ -1,30 +1,30 @@
-import { j as e, i as fe, u as ge, f as je, k as ke, t as Ne } from './index-mfi9c35w-CsSxx0JE.js';
-import { r as m, b as we } from './router-mfi9c35w-8jyiX-w-.js';
-import { S as K } from './Section-mfi9c35w-BVpF_AdT.js';
-import { B as be } from './Badge-mfi9c35w-BZ5VokVV.js';
-import { c as Se } from './design-system-mfi9c35w-B5fzZ68S.js';
-import { P as te, c as Ce, a as $e } from './playerTypes-mfi9c35w-CIm-hM8a.js';
-import { b as ze, u as Ie } from './useUnifiedBookings-mfi9c35w-C4D5ju_K.js';
-import { M as he } from './Modal-mfi9c35w-CcDrB430.js';
-import './vendor-mfi9c35w-D3F3s8fL.js';
-import './firebase-mfi9c35w-X_I_guKF.js';
-import './unified-booking-service-mfi9c35w-Dow-Gq1E.js';
-function De({
+import { j as e, i as ke, u as be, f as Ne, k as we, t as Se } from './index-mfiaeih4-BH71Qot4.js';
+import { r as m, b as Ce } from './router-mfiaeih4-DNPpahz0.js';
+import { S as K } from './Section-mfiaeih4-DiH4h-T9.js';
+import { B as he } from './Badge-mfiaeih4-BV5ik9nr.js';
+import { c as $e } from './design-system-mfiaeih4-B5fzZ68S.js';
+import { P as se, c as ze, a as Ie } from './playerTypes-mfiaeih4-CIm-hM8a.js';
+import { b as De, u as Me } from './useUnifiedBookings-mfiaeih4-B_RTsWnr.js';
+import { M as pe } from './Modal-mfiaeih4-DqY2S1Zr.js';
+import './vendor-mfiaeih4-D3F3s8fL.js';
+import './firebase-mfiaeih4-X_I_guKF.js';
+import './unified-booking-service-mfiaeih4-D7duu2eN.js';
+function Le({
   T: s,
   ds: u,
-  lessonConfig: d,
+  lessonConfig: o,
   updateLessonConfig: N,
-  instructors: b,
+  instructors: h,
   players: w,
   setState: n,
   state: t,
-  courts: y,
-  onClearAllLessons: c,
-  lessonBookingsCount: v,
+  courts: v,
+  onClearAllLessons: d,
+  lessonBookingsCount: f,
 }) {
   const [O, i] = m.useState('config'),
-    [S, A] = m.useState(!1),
-    [p, l] = m.useState(null),
+    [S, L] = m.useState(!1),
+    [y, l] = m.useState(null),
     [I, B] = m.useState(!1),
     [D, W] = m.useState(null),
     C = [
@@ -36,44 +36,44 @@ function De({
       { value: 5, label: 'Venerdì' },
       { value: 6, label: 'Sabato' },
     ],
-    Q = m.useMemo(() => (w || []).filter((a) => a.category !== te.INSTRUCTOR), [w]),
+    Q = m.useMemo(() => (w || []).filter((a) => a.category !== se.INSTRUCTOR), [w]),
     H = () => {
-      N({ ...d, isEnabled: !d.isEnabled });
+      N({ ...o, isEnabled: !o.isEnabled });
     },
     Y = (a) => {
-      const k = p
-        ? (d.timeSlots || []).map((o) => (o.id === p.id ? { ...o, ...a } : o))
-        : [...(d.timeSlots || []), { ...Ce(), ...a, id: fe() }];
-      (N({ ...d, timeSlots: k }), A(!1), l(null));
+      const x = y
+        ? (o.timeSlots || []).map((c) => (c.id === y.id ? { ...c, ...a } : c))
+        : [...(o.timeSlots || []), { ...ze(), ...a, id: ke() }];
+      (N({ ...o, timeSlots: x }), L(!1), l(null));
     },
     T = (a) => {
       confirm('Sei sicuro di voler eliminare questa fascia oraria?') &&
-        N({ ...d, timeSlots: (d.timeSlots || []).filter((k) => k.id !== a) });
+        N({ ...o, timeSlots: (o.timeSlots || []).filter((x) => x.id !== a) });
     },
     V = (a) => {
-      const k = (w || []).map((o) =>
-        o.id === D.id
+      const x = (w || []).map((c) =>
+        c.id === D.id
           ? {
-              ...o,
-              category: te.INSTRUCTOR,
-              instructorData: { ...o.instructorData, isInstructor: !0, ...a },
+              ...c,
+              category: se.INSTRUCTOR,
+              instructorData: { ...c.instructorData, isInstructor: !0, ...a },
             }
-          : o
+          : c
       );
-      (n((o) => ({ ...o, players: k })), B(!1), W(null));
+      (n((c) => ({ ...c, players: x })), B(!1), W(null));
     },
-    M = (a) => {
+    Z = (a) => {
       if (confirm('Sei sicuro di voler rimuovere questo giocatore come istruttore?')) {
-        const k = (w || []).map((o) =>
-          o.id === a
+        const x = (w || []).map((c) =>
+          c.id === a
             ? {
-                ...o,
-                category: te.MEMBER,
-                instructorData: { ...o.instructorData, isInstructor: !1 },
+                ...c,
+                category: se.MEMBER,
+                instructorData: { ...c.instructorData, isInstructor: !1 },
               }
-            : o
+            : c
         );
-        n((o) => ({ ...o, players: k }));
+        n((c) => ({ ...c, players: x }));
       }
     };
   return e.jsxs('div', {
@@ -127,7 +127,7 @@ function De({
                         }),
                         e.jsx('p', {
                           className: `text-sm ${s.subtext} max-w-md`,
-                          children: d.isEnabled
+                          children: o.isEnabled
                             ? '✅ Il sistema di prenotazione lezioni è attivo e funzionante'
                             : '❌ Il sistema di prenotazione lezioni è disattivato',
                         }),
@@ -135,8 +135,8 @@ function De({
                     }),
                     e.jsx('button', {
                       onClick: H,
-                      className: `px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg ${d.isEnabled ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/60 border border-red-300 dark:border-red-700' : 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/60 border border-green-300 dark:border-green-700'}`,
-                      children: d.isEnabled ? '🛑 Disattiva' : '🚀 Attiva',
+                      className: `px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg ${o.isEnabled ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/60 border border-red-300 dark:border-red-700' : 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/60 border border-green-300 dark:border-green-700'}`,
+                      children: o.isEnabled ? '🛑 Disattiva' : '🚀 Attiva',
                     }),
                   ],
                 }),
@@ -155,9 +155,9 @@ function De({
                           type: 'number',
                           min: '1',
                           max: '30',
-                          value: d.bookingAdvanceDays,
+                          value: o.bookingAdvanceDays,
                           onChange: (a) =>
-                            N({ ...d, bookingAdvanceDays: parseInt(a.target.value) || 14 }),
+                            N({ ...o, bookingAdvanceDays: parseInt(a.target.value) || 14 }),
                           className:
                             'w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white',
                         }),
@@ -179,9 +179,9 @@ function De({
                           type: 'number',
                           min: '1',
                           max: '72',
-                          value: d.cancellationHours,
+                          value: o.cancellationHours,
                           onChange: (a) =>
-                            N({ ...d, cancellationHours: parseInt(a.target.value) || 24 }),
+                            N({ ...o, cancellationHours: parseInt(a.target.value) || 24 }),
                           className:
                             'w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white',
                         }),
@@ -208,13 +208,13 @@ function De({
               className: 'space-y-4',
               children: [
                 e.jsx('button', {
-                  onClick: () => A(!0),
+                  onClick: () => L(!0),
                   className:
                     'px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600',
                   children: '+ Aggiungi Fascia Oraria',
                 }),
                 ' ',
-                (d.timeSlots || []).length === 0
+                (o.timeSlots || []).length === 0
                   ? e.jsx('div', {
                       className: `text-center py-8 ${s.subtext}`,
                       children:
@@ -222,9 +222,9 @@ function De({
                     })
                   : e.jsx('div', {
                       className: 'space-y-3',
-                      children: (d.timeSlots || []).map((a) => {
-                        const k = C.find((F) => F.value === a.dayOfWeek)?.label || 'Sconosciuto',
-                          o = (b || []).filter((F) => a.instructorIds.includes(F.id));
+                      children: (o.timeSlots || []).map((a) => {
+                        const x = C.find((A) => A.value === a.dayOfWeek)?.label || 'Sconosciuto',
+                          c = (h || []).filter((A) => a.instructorIds.includes(A.id));
                         return e.jsx(
                           'div',
                           {
@@ -240,9 +240,9 @@ function De({
                                       children: [
                                         e.jsxs('h4', {
                                           className: `${u.h6} font-medium`,
-                                          children: [k, ' • ', a.startTime, ' - ', a.endTime],
+                                          children: [x, ' • ', a.startTime, ' - ', a.endTime],
                                         }),
-                                        e.jsx(be, {
+                                        e.jsx(he, {
                                           variant: a.isActive ? 'success' : 'default',
                                           size: 'sm',
                                           T: s,
@@ -257,15 +257,15 @@ function De({
                                         e.jsxs('span', {
                                           children: ['Max prenotazioni: ', a.maxBookings],
                                         }),
-                                        e.jsxs('span', { children: ['Istruttori: ', o.length] }),
+                                        e.jsxs('span', { children: ['Istruttori: ', c.length] }),
                                       ],
                                     }),
-                                    o.length > 0 &&
+                                    c.length > 0 &&
                                       e.jsx('div', {
                                         className: 'mt-2',
                                         children: e.jsx('div', {
                                           className: 'flex flex-wrap gap-1',
-                                          children: o.map((F) =>
+                                          children: c.map((A) =>
                                             e.jsxs(
                                               'div',
                                               {
@@ -275,13 +275,13 @@ function De({
                                                   e.jsx('div', {
                                                     className: 'w-3 h-3 rounded-full',
                                                     style: {
-                                                      backgroundColor: F.instructorData?.color,
+                                                      backgroundColor: A.instructorData?.color,
                                                     },
                                                   }),
-                                                  F.name,
+                                                  A.name,
                                                 ],
                                               },
-                                              F.id
+                                              A.id
                                             )
                                           ),
                                         }),
@@ -293,7 +293,7 @@ function De({
                                   children: [
                                     e.jsx('button', {
                                       onClick: () => {
-                                        (l(a), A(!0));
+                                        (l(a), L(!0));
                                       },
                                       className:
                                         'text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300',
@@ -332,16 +332,16 @@ function De({
                   children: [
                     e.jsxs('h3', {
                       className: `${u.h6} font-medium mb-3`,
-                      children: ['Istruttori Attivi (', b.length, ')'],
+                      children: ['Istruttori Attivi (', h.length, ')'],
                     }),
-                    b.length === 0
+                    h.length === 0
                       ? e.jsx('div', {
                           className: `text-center py-6 ${s.subtext}`,
                           children: 'Nessun istruttore configurato',
                         })
                       : e.jsx('div', {
                           className: 'space-y-3',
-                          children: b.map((a) =>
+                          children: h.map((a) =>
                             e.jsx(
                               'div',
                               {
@@ -426,15 +426,15 @@ function De({
                                                   e.jsx('div', {
                                                     className: 'flex flex-wrap gap-1',
                                                     children: a.instructorData.specialties.map(
-                                                      (k, o) =>
+                                                      (x, c) =>
                                                         e.jsxs(
                                                           'span',
                                                           {
                                                             className:
                                                               'px-2 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded text-xs border border-indigo-200 dark:border-indigo-700',
-                                                            children: ['⭐ ', k],
+                                                            children: ['⭐ ', x],
                                                           },
-                                                          o
+                                                          c
                                                         )
                                                     ),
                                                   }),
@@ -456,7 +456,7 @@ function De({
                                           children: '✏️ Modifica',
                                         }),
                                         e.jsx('button', {
-                                          onClick: () => M(a.id),
+                                          onClick: () => Z(a.id),
                                           className:
                                             'px-3 py-1.5 text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 dark:hover:bg-red-500 border border-red-600 dark:border-red-400 rounded-lg transition-all duration-200 font-medium text-sm',
                                           children: '🗑️ Rimuovi',
@@ -596,18 +596,18 @@ function De({
                             e.jsx('p', {
                               className: `text-sm ${s.subtext}`,
                               children:
-                                v === 0
+                                f === 0
                                   ? 'Nessuna prenotazione di lezione presente'
-                                  : v === 1
+                                  : f === 1
                                     ? '1 prenotazione di lezione presente'
-                                    : `${v} prenotazioni di lezione presenti`,
+                                    : `${f} prenotazioni di lezione presenti`,
                             }),
                           ],
                         }),
                         e.jsx('div', { className: 'text-3xl', children: '🗑️' }),
                       ],
                     }),
-                    v > 0
+                    f > 0
                       ? e.jsxs('div', {
                           className: 'space-y-3',
                           children: [
@@ -620,7 +620,7 @@ function De({
                                   e.jsx('strong', { children: 'Cosa verrà eliminato:' }),
                                   e.jsx('br', {}),
                                   '• ',
-                                  v,
+                                  f,
                                   ' prenotazione/i di lezione',
                                   e.jsx('br', {}),
                                   '• I relativi slot prenotati nei campi',
@@ -630,7 +630,7 @@ function De({
                               }),
                             }),
                             e.jsx('button', {
-                              onClick: c,
+                              onClick: d,
                               className:
                                 'w-full px-4 py-3 bg-red-600 dark:bg-red-700 text-white font-medium rounded-lg hover:bg-red-700 dark:hover:bg-red-600 transition-colors',
                               children: '🗑️ Cancella Tutte le Prenotazioni di Lezione',
@@ -680,14 +680,14 @@ function De({
           }),
         }),
       S &&
-        e.jsx(Me, {
+        e.jsx(Ae, {
           isOpen: S,
           onClose: () => {
-            (A(!1), l(null));
+            (L(!1), l(null));
           },
-          timeSlot: p,
-          instructors: b,
-          courts: y,
+          timeSlot: y,
+          instructors: h,
+          courts: v,
           weekDays: C,
           onSave: Y,
           T: s,
@@ -695,7 +695,7 @@ function De({
         }),
       I &&
         D &&
-        e.jsx(Le, {
+        e.jsx(Oe, {
           isOpen: I,
           onClose: () => {
             (B(!1), W(null));
@@ -708,18 +708,18 @@ function De({
     ],
   });
 }
-function Me({
+function Ae({
   isOpen: s,
   onClose: u,
-  timeSlot: d,
+  timeSlot: o,
   instructors: N,
-  courts: b,
+  courts: h,
   weekDays: w,
   onSave: n,
   T: t,
-  ds: y,
+  ds: v,
 }) {
-  const [c, v] = m.useState(() => ({
+  const [d, f] = m.useState(() => ({
       dayOfWeek: 1,
       startTime: '09:00',
       endTime: '10:00',
@@ -727,31 +727,31 @@ function Me({
       courtIds: [],
       maxBookings: 1,
       isActive: !0,
-      ...d,
+      ...o,
     })),
     O = (i) => {
-      if ((i.preventDefault(), !c.startTime || !c.endTime)) {
+      if ((i.preventDefault(), !d.startTime || !d.endTime)) {
         alert('Inserisci orario di inizio e fine');
         return;
       }
-      if (c.startTime >= c.endTime) {
+      if (d.startTime >= d.endTime) {
         alert("L'orario di fine deve essere dopo quello di inizio");
         return;
       }
-      if (c.instructorIds.length === 0) {
+      if (d.instructorIds.length === 0) {
         alert('Seleziona almeno un istruttore');
         return;
       }
-      if (c.courtIds.length === 0) {
+      if (d.courtIds.length === 0) {
         alert('Seleziona almeno un campo');
         return;
       }
-      n(c);
+      n(d);
     };
-  return e.jsx(he, {
+  return e.jsx(pe, {
     isOpen: s,
     onClose: u,
-    title: d ? 'Modifica Fascia Oraria' : 'Aggiungi Fascia Oraria',
+    title: o ? 'Modifica Fascia Oraria' : 'Aggiungi Fascia Oraria',
     size: 'medium',
     T: t,
     children: e.jsxs('form', {
@@ -761,12 +761,12 @@ function Me({
         e.jsxs('div', {
           children: [
             e.jsx('label', {
-              className: `block ${y.label} mb-2`,
+              className: `block ${v.label} mb-2`,
               children: 'Giorno della Settimana *',
             }),
             e.jsx('select', {
-              value: c.dayOfWeek,
-              onChange: (i) => v({ ...c, dayOfWeek: parseInt(i.target.value) }),
+              value: d.dayOfWeek,
+              onChange: (i) => f({ ...d, dayOfWeek: parseInt(i.target.value) }),
               className: `w-full p-2 ${t.cardBg} ${t.border} ${t.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
               children: w.map((i) =>
                 e.jsx('option', { value: i.value, children: i.label }, i.value)
@@ -779,22 +779,22 @@ function Me({
           children: [
             e.jsxs('div', {
               children: [
-                e.jsx('label', { className: `block ${y.label} mb-2`, children: 'Ora Inizio *' }),
+                e.jsx('label', { className: `block ${v.label} mb-2`, children: 'Ora Inizio *' }),
                 e.jsx('input', {
                   type: 'time',
-                  value: c.startTime,
-                  onChange: (i) => v({ ...c, startTime: i.target.value }),
+                  value: d.startTime,
+                  onChange: (i) => f({ ...d, startTime: i.target.value }),
                   className: `w-full p-2 ${t.cardBg} ${t.border} ${t.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
                 }),
               ],
             }),
             e.jsxs('div', {
               children: [
-                e.jsx('label', { className: `block ${y.label} mb-2`, children: 'Ora Fine *' }),
+                e.jsx('label', { className: `block ${v.label} mb-2`, children: 'Ora Fine *' }),
                 e.jsx('input', {
                   type: 'time',
-                  value: c.endTime,
-                  onChange: (i) => v({ ...c, endTime: i.target.value }),
+                  value: d.endTime,
+                  onChange: (i) => f({ ...d, endTime: i.target.value }),
                   className: `w-full p-2 ${t.cardBg} ${t.border} ${t.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
                 }),
               ],
@@ -804,15 +804,15 @@ function Me({
         e.jsxs('div', {
           children: [
             e.jsx('label', {
-              className: `block ${y.label} mb-2`,
+              className: `block ${v.label} mb-2`,
               children: 'Numero Massimo Prenotazioni',
             }),
             e.jsx('input', {
               type: 'number',
               min: '1',
               max: '10',
-              value: c.maxBookings,
-              onChange: (i) => v({ ...c, maxBookings: parseInt(i.target.value) || 1 }),
+              value: d.maxBookings,
+              onChange: (i) => f({ ...d, maxBookings: parseInt(i.target.value) || 1 }),
               className: `w-full p-2 ${t.cardBg} ${t.border} ${t.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`,
             }),
           ],
@@ -820,7 +820,7 @@ function Me({
         e.jsxs('div', {
           children: [
             e.jsx('label', {
-              className: `block ${y.label} mb-2`,
+              className: `block ${v.label} mb-2`,
               children: 'Istruttori Disponibili *',
             }),
             e.jsx('div', {
@@ -833,14 +833,14 @@ function Me({
                     children: [
                       e.jsx('input', {
                         type: 'checkbox',
-                        checked: c.instructorIds.includes(i.id),
+                        checked: d.instructorIds.includes(i.id),
                         onChange: (S) => {
-                          const { checked: A } = S.target;
-                          v({
-                            ...c,
-                            instructorIds: A
-                              ? [...c.instructorIds, i.id]
-                              : c.instructorIds.filter((p) => p !== i.id),
+                          const { checked: L } = S.target;
+                          f({
+                            ...d,
+                            instructorIds: L
+                              ? [...d.instructorIds, i.id]
+                              : d.instructorIds.filter((y) => y !== i.id),
                           });
                         },
                         className: 'rounded',
@@ -865,12 +865,12 @@ function Me({
         }),
         e.jsxs('div', {
           children: [
-            e.jsx('label', { className: `block ${y.label} mb-2`, children: 'Campi Disponibili *' }),
+            e.jsx('label', { className: `block ${v.label} mb-2`, children: 'Campi Disponibili *' }),
             e.jsx('div', {
               className: `space-y-2 max-h-40 overflow-y-auto border rounded p-2 ${t.border} ${t.cardBg}`,
               children:
-                b &&
-                b.map((i) =>
+                h &&
+                h.map((i) =>
                   e.jsxs(
                     'label',
                     {
@@ -878,14 +878,14 @@ function Me({
                       children: [
                         e.jsx('input', {
                           type: 'checkbox',
-                          checked: c.courtIds.includes(i.id),
+                          checked: d.courtIds.includes(i.id),
                           onChange: (S) => {
-                            const { checked: A } = S.target;
-                            v({
-                              ...c,
-                              courtIds: A
-                                ? [...c.courtIds, i.id]
-                                : c.courtIds.filter((p) => p !== i.id),
+                            const { checked: L } = S.target;
+                            f({
+                              ...d,
+                              courtIds: L
+                                ? [...d.courtIds, i.id]
+                                : d.courtIds.filter((y) => y !== i.id),
                             });
                           },
                           className: 'rounded',
@@ -914,7 +914,7 @@ function Me({
                   )
                 ),
             }),
-            (!b || b.length === 0) &&
+            (!h || h.length === 0) &&
               e.jsx('p', {
                 className: `text-sm ${t.subtext} mt-1`,
                 children: 'Nessun campo configurato. Vai alla sezione Campi per aggiungerne.',
@@ -927,13 +927,13 @@ function Me({
             e.jsx('input', {
               type: 'checkbox',
               id: 'isActive',
-              checked: c.isActive,
-              onChange: (i) => v({ ...c, isActive: i.target.checked }),
+              checked: d.isActive,
+              onChange: (i) => f({ ...d, isActive: i.target.checked }),
               className: 'rounded',
             }),
             e.jsx('label', {
               htmlFor: 'isActive',
-              className: y.label,
+              className: v.label,
               children: 'Fascia oraria attiva',
             }),
           ],
@@ -951,7 +951,7 @@ function Me({
               type: 'submit',
               className:
                 'flex-1 py-2 px-4 bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-600',
-              children: [d ? 'Aggiorna' : 'Crea', ' Fascia Oraria'],
+              children: [o ? 'Aggiorna' : 'Crea', ' Fascia Oraria'],
             }),
           ],
         }),
@@ -959,7 +959,7 @@ function Me({
     }),
   });
 }
-function Le({ isOpen: s, onClose: u, player: d, onSave: N, T: b, ds: w }) {
+function Oe({ isOpen: s, onClose: u, player: o, onSave: N, T: h, ds: w }) {
   const [n, t] = m.useState(() => ({
       color: '#3B82F6',
       hourlyRate: 0,
@@ -970,10 +970,10 @@ function Le({ isOpen: s, onClose: u, player: d, onSave: N, T: b, ds: w }) {
       specialties: [],
       bio: '',
       certifications: [],
-      ...d.instructorData,
+      ...o.instructorData,
     })),
-    [y, c] = m.useState(''),
-    [v, O] = m.useState(''),
+    [v, d] = m.useState(''),
+    [f, O] = m.useState(''),
     i = ['Padel', 'Tennis', 'Fitness'],
     S = [
       '#3B82F6',
@@ -987,22 +987,22 @@ function Le({ isOpen: s, onClose: u, player: d, onSave: N, T: b, ds: w }) {
       '#F97316',
       '#6366F1',
     ],
-    A = (l) => {
+    L = (l) => {
       (l.preventDefault(), N(n));
     },
-    p = () => {
-      y.trim() &&
-        !n.specialties.includes(y.trim()) &&
-        (t({ ...n, specialties: [...n.specialties, y.trim()] }), c(''));
+    y = () => {
+      v.trim() &&
+        !n.specialties.includes(v.trim()) &&
+        (t({ ...n, specialties: [...n.specialties, v.trim()] }), d(''));
     };
-  return e.jsx(he, {
+  return e.jsx(pe, {
     isOpen: s,
     onClose: u,
-    title: `Configura Istruttore: ${d.name}`,
+    title: `Configura Istruttore: ${o.name}`,
     size: 'extraLarge',
-    T: b,
+    T: h,
     children: e.jsxs('form', {
-      onSubmit: A,
+      onSubmit: L,
       className: 'space-y-3',
       children: [
         e.jsxs('div', {
@@ -1240,16 +1240,16 @@ function Le({ isOpen: s, onClose: u, player: d, onSave: N, T: b, ds: w }) {
               children: [
                 e.jsx('input', {
                   type: 'text',
-                  value: y,
-                  onChange: (l) => c(l.target.value),
+                  value: v,
+                  onChange: (l) => d(l.target.value),
                   className: `flex-1 ${w.input}`,
                   placeholder: 'Specialità personalizzata...',
-                  onKeyPress: (l) => l.key === 'Enter' && (l.preventDefault(), p()),
+                  onKeyPress: (l) => l.key === 'Enter' && (l.preventDefault(), y()),
                 }),
                 e.jsx('button', {
                   type: 'button',
-                  onClick: p,
-                  disabled: !y.trim(),
+                  onClick: y,
+                  disabled: !v.trim(),
                   className:
                     'px-3 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors',
                   children: 'Aggiungi',
@@ -1310,29 +1310,30 @@ function Le({ isOpen: s, onClose: u, player: d, onSave: N, T: b, ds: w }) {
     }),
   });
 }
-function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
-  const { user: w } = ge(),
+function Be({ T: s, user: u, state: o, setState: N, clubMode: h }) {
+  const { user: w } = be(),
     n = w || u,
     {
       lessonBookings: t,
-      loading: y,
-      createLessonBooking: c,
-      cancelBooking: v,
+      loading: v,
+      createLessonBooking: d,
+      cancelBooking: f,
       clearAllLessons: O,
       refresh: i,
-    } = ze(),
-    { bookings: S } = Ie(),
-    A = Se(s),
-    p = d?.lessonConfig || $e(),
-    l = d?.players || [],
+    } = De(),
+    { bookings: S } = Me(),
+    L = $e(s),
+    y = o?.lessonConfig || Ie(),
+    l = o?.players || [],
     [I, B] = m.useState('book'),
     [D, W] = m.useState(1),
     [C, Q] = m.useState(''),
     [H, Y] = m.useState(null),
     [T, V] = m.useState(''),
-    [M, a] = m.useState([]),
-    [k, o] = m.useState({ type: '', text: '' }),
-    F = m.useCallback(async () => {
+    [Z, a] = m.useState(1),
+    [x, c] = m.useState([]),
+    [A, E] = m.useState({ type: '', text: '' }),
+    ye = m.useCallback(async () => {
       if (
         window.confirm(
           '⚠️ ATTENZIONE: Questa azione cancellerà TUTTE le prenotazioni di lezione e i relativi slot nei campi. Continuare?'
@@ -1342,98 +1343,98 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
         try {
           const r = await O();
           (console.log(`✅ Cleared ${r} lesson bookings successfully`),
-            o({ type: 'success', text: `Cancellate ${r} prenotazioni di lezione con successo!` }),
-            setTimeout(() => o({ type: '', text: '' }), 3e3));
+            E({ type: 'success', text: `Cancellate ${r} prenotazioni di lezione con successo!` }),
+            setTimeout(() => E({ type: '', text: '' }), 3e3));
         } catch (r) {
           (console.error('❌ Error clearing lesson bookings:', r),
-            o({ type: 'error', text: 'Errore durante la cancellazione delle prenotazioni.' }));
+            E({ type: 'error', text: 'Errore durante la cancellazione delle prenotazioni.' }));
         }
       }
     }, [O]),
-    pe = m.useCallback(
+    ve = m.useCallback(
       (r) => {
-        N((g) => ({ ...g, lessonConfig: r }));
+        N((b) => ({ ...b, lessonConfig: r }));
       },
       [N]
     );
   m.useEffect(() => {
-    I === 'admin' && !b && B('book');
-  }, [I, b]);
+    I === 'admin' && !h && B('book');
+  }, [I, h]);
   const U = m.useMemo(
-      () => l.filter((r) => r.category === te.INSTRUCTOR && r.instructorData?.isInstructor),
+      () => l.filter((r) => r.category === se.INSTRUCTOR && r.instructorData?.isInstructor),
       [l]
     ),
-    de = m.useCallback(
+    ce = m.useCallback(
       (r) => {
-        const P = new Date(r).getDay(),
-          f = (p.timeSlots || []).filter((h) => h.dayOfWeek === P && h.isActive);
-        return f.length === 0
+        const F = new Date(r).getDay(),
+          j = (y.timeSlots || []).filter((p) => p.dayOfWeek === F && p.isActive);
+        return j.length === 0
           ? !1
-          : f.some((h) => {
-              const j = parseInt(h.startTime.split(':')[0]),
-                q = parseInt(h.startTime.split(':')[1]),
-                se = parseInt(h.endTime.split(':')[0]),
-                ie = parseInt(h.endTime.split(':')[1]),
-                le = j * 60 + q,
-                ae = se * 60 + ie;
-              let Z = !1;
-              for (let E = le; E < ae; E += 60) {
-                if (E + 60 > ae) continue;
-                const _ = Math.floor(E / 60),
-                  J = E % 60,
-                  L = `${_.toString().padStart(2, '0')}:${J.toString().padStart(2, '0')}`,
-                  X = U.filter(
+          : j.some((p) => {
+              const k = parseInt(p.startTime.split(':')[0]),
+                q = parseInt(p.startTime.split(':')[1]),
+                ie = parseInt(p.endTime.split(':')[0]),
+                le = parseInt(p.endTime.split(':')[1]),
+                ne = k * 60 + q,
+                te = ie * 60 + le;
+              let _ = !1;
+              for (let P = ne; P < te; P += 60) {
+                if (P + 60 > te) continue;
+                const J = Math.floor(P / 60),
+                  X = P % 60,
+                  M = `${J.toString().padStart(2, '0')}:${X.toString().padStart(2, '0')}`,
+                  ee = U.filter(
                     ($) =>
-                      h.instructorIds.includes($.id) &&
+                      p.instructorIds.includes($.id) &&
                       !S.some((z) => {
-                        const x = z.status || 'confirmed';
+                        const g = z.status || 'confirmed';
                         return (
                           z.date === r &&
-                          z.time === L &&
+                          z.time === M &&
                           z.instructorId === $.id &&
-                          x === 'confirmed'
+                          g === 'confirmed'
                         );
                       })
                   ),
-                  ee = (d?.courts || []).filter(($) =>
-                    h.courtIds.includes($.id)
-                      ? !S.some((x) => {
-                          const R = x.status || 'confirmed';
-                          if (x.courtId !== $.id || x.date !== r || R !== 'confirmed') return !1;
-                          const G = parseInt(L.split(':')[0]) * 60 + parseInt(L.split(':')[1]),
-                            ne = G + 60,
-                            re =
-                              parseInt(x.time.split(':')[0]) * 60 + parseInt(x.time.split(':')[1]),
-                            oe = re + (x.duration || 90);
-                          return G < oe && re < ne;
+                  re = (o?.courts || []).filter(($) =>
+                    p.courtIds.includes($.id)
+                      ? !S.some((g) => {
+                          const R = g.status || 'confirmed';
+                          if (g.courtId !== $.id || g.date !== r || R !== 'confirmed') return !1;
+                          const G = parseInt(M.split(':')[0]) * 60 + parseInt(M.split(':')[1]),
+                            oe = G + 60,
+                            ae =
+                              parseInt(g.time.split(':')[0]) * 60 + parseInt(g.time.split(':')[1]),
+                            de = ae + (g.duration || 90);
+                          return G < de && ae < oe;
                         })
                       : !1
                   );
-                X.length > 0 && ee.length > 0 && (Z = !0);
+                ee.length > 0 && re.length > 0 && (_ = !0);
               }
-              return Z;
+              return _;
             });
       },
-      [p.timeSlots, U, S, d?.courts]
+      [y.timeSlots, U, S, o?.courts]
     ),
-    ce = m.useMemo(() => {
+    me = m.useMemo(() => {
       const r = [],
-        g = new Date(),
-        P = new Set();
-      (p.timeSlots || []).forEach((f) => {
-        f.isActive && P.add(f.dayOfWeek);
+        b = new Date(),
+        F = new Set();
+      (y.timeSlots || []).forEach((j) => {
+        j.isActive && F.add(j.dayOfWeek);
       });
-      for (let f = 0; f < 7; f++) {
-        const h = new Date(g);
-        h.setDate(g.getDate() + f);
-        const j = h.getDay(),
-          q = h.toISOString().split('T')[0];
-        P.has(j) &&
-          de(q) &&
+      for (let j = 0; j < 7; j++) {
+        const p = new Date(b);
+        p.setDate(b.getDate() + j);
+        const k = p.getDay(),
+          q = p.toISOString().split('T')[0];
+        F.has(k) &&
+          ce(q) &&
           r.push({
             date: q,
-            dayOfWeek: j,
-            display: h.toLocaleDateString('it-IT', {
+            dayOfWeek: k,
+            display: p.toLocaleDateString('it-IT', {
               weekday: 'short',
               day: 'numeric',
               month: 'short',
@@ -1441,137 +1442,138 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
           });
       }
       return r;
-    }, [p.timeSlots, de]),
-    me = m.useMemo(() => {
+    }, [y.timeSlots, ce]),
+    xe = m.useMemo(() => {
       if (!C) return [];
-      const g = new Date(C).getDay(),
-        P = (p.timeSlots || []).filter((j) => j.dayOfWeek === g && j.isActive),
-        f = new Map();
-      P.forEach((j) => {
-        const q = parseInt(j.startTime.split(':')[0]),
-          se = parseInt(j.startTime.split(':')[1]),
-          ie = parseInt(j.endTime.split(':')[0]),
-          le = parseInt(j.endTime.split(':')[1]),
-          ae = q * 60 + se,
-          Z = ie * 60 + le;
-        for (let E = ae; E < Z && !(E + 60 > Z); E += 60) {
-          const _ = Math.floor(E / 60),
-            J = E % 60,
-            L = `${_.toString().padStart(2, '0')}:${J.toString().padStart(2, '0')}`,
-            X = U.filter(
+      const b = new Date(C).getDay(),
+        F = (y.timeSlots || []).filter((k) => k.dayOfWeek === b && k.isActive),
+        j = new Map();
+      F.forEach((k) => {
+        const q = parseInt(k.startTime.split(':')[0]),
+          ie = parseInt(k.startTime.split(':')[1]),
+          le = parseInt(k.endTime.split(':')[0]),
+          ne = parseInt(k.endTime.split(':')[1]),
+          te = q * 60 + ie,
+          _ = le * 60 + ne;
+        for (let P = te; P < _ && !(P + 60 > _); P += 60) {
+          const J = Math.floor(P / 60),
+            X = P % 60,
+            M = `${J.toString().padStart(2, '0')}:${X.toString().padStart(2, '0')}`,
+            ee = U.filter(
               ($) =>
-                j.instructorIds.includes($.id) &&
+                k.instructorIds.includes($.id) &&
                 !S.some((z) => {
-                  const x = z.status || 'confirmed';
+                  const g = z.status || 'confirmed';
                   return (
-                    z.date === C && z.time === L && z.instructorId === $.id && x === 'confirmed'
+                    z.date === C && z.time === M && z.instructorId === $.id && g === 'confirmed'
                   );
                 })
             ),
-            ee = (d?.courts || []).filter(($) =>
-              j.courtIds.includes($.id)
-                ? !S.some((x) => {
-                    const R = x.status || 'confirmed';
-                    if (x.courtId !== $.id || x.date !== C || R !== 'confirmed') return !1;
-                    const G = parseInt(L.split(':')[0]) * 60 + parseInt(L.split(':')[1]),
-                      ne = G + 60,
-                      re = parseInt(x.time.split(':')[0]) * 60 + parseInt(x.time.split(':')[1]),
-                      oe = re + (x.duration || 90);
-                    return G < oe && re < ne;
+            re = (o?.courts || []).filter(($) =>
+              k.courtIds.includes($.id)
+                ? !S.some((g) => {
+                    const R = g.status || 'confirmed';
+                    if (g.courtId !== $.id || g.date !== C || R !== 'confirmed') return !1;
+                    const G = parseInt(M.split(':')[0]) * 60 + parseInt(M.split(':')[1]),
+                      oe = G + 60,
+                      ae = parseInt(g.time.split(':')[0]) * 60 + parseInt(g.time.split(':')[1]),
+                      de = ae + (g.duration || 90);
+                    return G < de && ae < oe;
                   })
                 : !1
             );
-          if (X.length > 0 && ee.length > 0)
-            if (f.has(L)) {
-              const $ = f.get(L),
+          if (ee.length > 0 && re.length > 0)
+            if (j.has(M)) {
+              const $ = j.get(M),
                 z = [...$.availableInstructors];
-              X.forEach((R) => {
+              ee.forEach((R) => {
                 z.some((G) => G.id === R.id) || z.push(R);
               });
-              const x = [...$.availableCourts];
-              (ee.forEach((R) => {
-                x.some((G) => G.id === R.id) || x.push(R);
+              const g = [...$.availableCourts];
+              (re.forEach((R) => {
+                g.some((G) => G.id === R.id) || g.push(R);
               }),
-                f.set(L, { ...$, availableInstructors: z, availableCourts: x }));
+                j.set(M, { ...$, availableInstructors: z, availableCourts: g }));
             } else
-              f.set(L, {
-                id: `${C}-${L}`,
-                time: L,
-                displayTime: `${_.toString().padStart(2, '0')}:${J.toString().padStart(2, '0')} - ${(_ + 1).toString().padStart(2, '0')}:${J.toString().padStart(2, '0')}`,
-                availableInstructors: X,
-                availableCourts: ee,
-                configSlot: j,
+              j.set(M, {
+                id: `${C}-${M}`,
+                time: M,
+                displayTime: `${J.toString().padStart(2, '0')}:${X.toString().padStart(2, '0')} - ${(J + 1).toString().padStart(2, '0')}:${X.toString().padStart(2, '0')}`,
+                availableInstructors: ee,
+                availableCourts: re,
+                configSlot: k,
               });
         }
       });
-      const h = Array.from(f.values());
+      const p = Array.from(j.values());
       return (
-        h.length === 0 &&
-          P.length > 0 &&
+        p.length === 0 &&
+          F.length > 0 &&
           console.warn(
             '⚠️ No available slots found despite having configured time slots. Check instructor/court availability.'
           ),
-        h.sort((j, q) => j.time.localeCompare(q.time))
+        p.sort((k, q) => k.time.localeCompare(q.time))
       );
-    }, [C, p.timeSlots, U, S, d?.courts]),
-    ye = m.useCallback(async () => {
+    }, [C, y.timeSlots, U, S, o?.courts]),
+    fe = m.useCallback(async () => {
       if (!C || !H || !T) {
-        o({ type: 'error', text: 'Seleziona data, orario e maestro per continuare.' });
+        E({ type: 'error', text: 'Seleziona data, orario e maestro per continuare.' });
         return;
       }
       try {
-        o({ type: '', text: '' });
+        E({ type: '', text: '' });
         const r = H.availableCourts[0],
-          g = U.find((h) => h.id === T),
-          P = {
+          b = U.find((p) => p.id === T),
+          F = {
             instructorId: T,
-            instructorName: g?.name,
+            instructorName: b?.name,
             lessonType: 'individual',
             courtId: r.id,
             courtName: r.name,
             date: C,
             time: H.time,
             duration: 60,
+            numberOfPlayers: Z,
             price: 0,
-            notes: `Lezione con ${g?.name}`,
+            notes: `Lezione con ${b?.name}`,
             players: [n?.displayName || n?.email],
             userPhone: '',
             bookedBy: n?.displayName || n?.email,
             createCourtBooking: !1,
           };
-        console.log('Creating unified lesson booking:', P);
-        const f = await c(P);
-        (console.log('✅ Created unified lesson booking:', f),
-          o({ type: 'success', text: 'Lezione prenotata con successo!' }),
+        console.log('Creating unified lesson booking:', F);
+        const j = await d(F);
+        (console.log('✅ Created unified lesson booking:', j),
+          E({ type: 'success', text: 'Lezione prenotata con successo!' }),
           W(1),
           Q(''),
           Y(null),
           V(''),
-          a([]),
+          c([]),
           await i(),
-          setTimeout(() => o({ type: '', text: '' }), 3e3));
+          setTimeout(() => E({ type: '', text: '' }), 3e3));
       } catch (r) {
         (console.error('Error booking lesson:', r),
-          o({ type: 'error', text: 'Errore durante la prenotazione della lezione.' }));
+          E({ type: 'error', text: 'Errore durante la prenotazione della lezione.' }));
       }
-    }, [C, H, T, U, c, n, i]),
-    ve = m.useCallback(
+    }, [C, H, T, U, d, n, i]),
+    je = m.useCallback(
       async (r) => {
         if (window.confirm('Sei sicuro di voler cancellare questa lezione?'))
           try {
-            (await v(r),
-              o({ type: 'success', text: 'Lezione cancellata con successo!' }),
-              setTimeout(() => o({ type: '', text: '' }), 3e3));
-          } catch (g) {
-            (console.error('Error cancelling lesson:', g),
-              o({ type: 'error', text: 'Errore durante la cancellazione della lezione.' }));
+            (await f(r),
+              E({ type: 'success', text: 'Lezione cancellata con successo!' }),
+              setTimeout(() => E({ type: '', text: '' }), 3e3));
+          } catch (b) {
+            (console.error('Error cancelling lesson:', b),
+              E({ type: 'error', text: 'Errore durante la cancellazione della lezione.' }));
           }
       },
-      [v]
+      [f]
     ),
     ue = () => W((r) => Math.min(r + 1, 3)),
-    xe = () => W((r) => Math.max(r - 1, 1));
-  return y
+    ge = () => W((r) => Math.max(r - 1, 1));
+  return v
     ? e.jsx(K, {
         T: s,
         title: 'Prenota Lezione',
@@ -1594,10 +1596,10 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
         title: 'Prenota Lezione',
         className: 'space-y-6',
         children: [
-          k.text &&
+          A.text &&
             e.jsx('div', {
-              className: `p-4 rounded-lg ${k.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : k.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}`,
-              children: k.text,
+              className: `p-4 rounded-lg ${A.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : A.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}`,
+              children: A.text,
             }),
           e.jsxs('div', {
             className: 'flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1',
@@ -1614,7 +1616,7 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                   'Le Mie Lezioni',
                   ' ',
                   t.length > 0 &&
-                    e.jsx(be, {
+                    e.jsx(he, {
                       variant: 'primary',
                       size: 'sm',
                       className: 'ml-2',
@@ -1622,7 +1624,7 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                     }),
                 ],
               }),
-              b &&
+              h &&
                 e.jsx('button', {
                   onClick: () => B('admin'),
                   className: `px-4 py-2 rounded-md text-sm font-medium transition-colors ${I === 'admin' ? 'bg-white dark:bg-gray-600 text-blue-600 dark:text-emerald-400 shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'}`,
@@ -1681,7 +1683,7 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                         className: 'text-sm text-gray-600 dark:text-gray-300',
                         children: 'Prossimi 7 giorni disponibili per le lezioni',
                       }),
-                      ce.length === 0
+                      me.length === 0
                         ? e.jsxs('div', {
                             className: 'text-center py-8 text-gray-500',
                             children: [
@@ -1705,15 +1707,15 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                         : e.jsx('div', {
                             className:
                               'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3',
-                            children: ce.map((r) => {
-                              const g = r.date === new Date().toISOString().split('T')[0];
+                            children: me.map((r) => {
+                              const b = r.date === new Date().toISOString().split('T')[0];
                               return e.jsxs(
                                 'button',
                                 {
                                   onClick: () => {
-                                    (Q(r.date), Y(null), V(''), a([]), ue());
+                                    (Q(r.date), Y(null), V(''), c([]), ue());
                                   },
-                                  className: `p-3 rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${C === r.date ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg' : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md'} ${g ? 'ring-2 ring-green-300 dark:ring-green-500 bg-green-50 dark:bg-green-900/30' : ''}`,
+                                  className: `p-3 rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${C === r.date ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg' : 'border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md'} ${b ? 'ring-2 ring-green-300 dark:ring-green-500 bg-green-50 dark:bg-green-900/30' : ''}`,
                                   children: [
                                     e.jsx('div', {
                                       className: 'text-xs text-gray-500 uppercase mb-1 font-medium',
@@ -1728,7 +1730,7 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                                         'text-xs text-gray-600 dark:text-gray-300 font-medium',
                                       children: r.display.split(' ')[2],
                                     }),
-                                    g &&
+                                    b &&
                                       e.jsx('div', {
                                         className:
                                           'text-xs text-green-600 font-bold mt-1 bg-green-100 rounded-full px-2 py-0.5',
@@ -1766,7 +1768,7 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                           }),
                         ],
                       }),
-                      me.length === 0
+                      xe.length === 0
                         ? e.jsxs('div', {
                             className: 'text-center py-8 text-gray-500',
                             children: [
@@ -1795,13 +1797,13 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                               }),
                               e.jsx('div', {
                                 className: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3',
-                                children: me.map((r) =>
+                                children: xe.map((r) =>
                                   e.jsxs(
                                     'button',
                                     {
                                       onClick: () => {
                                         (Y(r),
-                                          a(r.availableInstructors),
+                                          c(r.availableInstructors),
                                           r.availableInstructors.length === 1
                                             ? V(r.availableInstructors[0].id)
                                             : V(''),
@@ -1842,7 +1844,7 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                       e.jsx('div', {
                         className: 'flex justify-between pt-4',
                         children: e.jsx('button', {
-                          onClick: xe,
+                          onClick: ge,
                           className:
                             'px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors',
                           children: '← Cambia Giorno',
@@ -1905,6 +1907,48 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                               }),
                             ],
                           }),
+                          e.jsxs('div', {
+                            className: 'flex justify-between',
+                            children: [
+                              e.jsx('span', {
+                                className: 'text-gray-600 dark:text-gray-300',
+                                children: 'Giocatori:',
+                              }),
+                              e.jsx('span', {
+                                className: 'font-medium text-gray-900 dark:text-white',
+                                children: Z,
+                              }),
+                            ],
+                          }),
+                        ],
+                      }),
+                      e.jsxs('div', {
+                        className: 'space-y-3',
+                        children: [
+                          e.jsx('h4', {
+                            className: 'text-md font-medium text-gray-900 dark:text-white',
+                            children: '👥 Numero di Giocatori',
+                          }),
+                          e.jsx('div', {
+                            className: 'grid grid-cols-4 gap-2',
+                            children: [1, 2, 3, 4].map((r) =>
+                              e.jsxs(
+                                'button',
+                                {
+                                  onClick: () => a(r),
+                                  className: `p-3 rounded-lg border-2 transition-all ${Z === r ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'}`,
+                                  children: [
+                                    e.jsx('div', { className: 'text-lg font-bold', children: r }),
+                                    e.jsx('div', {
+                                      className: 'text-xs',
+                                      children: r === 1 ? 'giocatore' : 'giocatori',
+                                    }),
+                                  ],
+                                },
+                                r
+                              )
+                            ),
+                          }),
                         ],
                       }),
                       e.jsxs('div', {
@@ -1914,13 +1958,13 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                             className: 'text-md font-medium text-gray-900 dark:text-white',
                             children: [
                               'Maestr',
-                              M.length === 1 ? 'o disponibile' : 'i disponibili',
+                              x.length === 1 ? 'o disponibile' : 'i disponibili',
                               ' (',
-                              M.length,
+                              x.length,
                               ')',
                             ],
                           }),
-                          M.length === 1
+                          x.length === 1
                             ? e.jsx('div', {
                                 className:
                                   'border rounded-lg p-4 bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700',
@@ -1930,26 +1974,26 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                                     e.jsx('div', {
                                       className:
                                         'w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg',
-                                      style: { backgroundColor: M[0].instructorData?.color },
-                                      children: M[0].name?.charAt(0) || '?',
+                                      style: { backgroundColor: x[0].instructorData?.color },
+                                      children: x[0].name?.charAt(0) || '?',
                                     }),
                                     e.jsxs('div', {
                                       children: [
                                         e.jsx('div', {
                                           className:
                                             'font-medium text-lg text-gray-900 dark:text-white',
-                                          children: M[0].name,
+                                          children: x[0].name,
                                         }),
-                                        M[0].instructorData?.specialties?.length > 0 &&
+                                        x[0].instructorData?.specialties?.length > 0 &&
                                           e.jsx('div', {
                                             className: 'text-sm text-gray-600 dark:text-gray-300',
-                                            children: M[0].instructorData.specialties.join(', '),
+                                            children: x[0].instructorData.specialties.join(', '),
                                           }),
-                                        M[0].instructorData?.hourlyRate > 0 &&
+                                        x[0].instructorData?.hourlyRate > 0 &&
                                           e.jsxs('div', {
                                             className:
                                               'text-sm font-semibold text-blue-600 dark:text-blue-400',
-                                            children: ['€', M[0].instructorData.hourlyRate, '/ora'],
+                                            children: ['€', x[0].instructorData.hourlyRate, '/ora'],
                                           }),
                                       ],
                                     }),
@@ -1958,7 +2002,7 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                               })
                             : e.jsx('div', {
                                 className: 'grid grid-cols-1 md:grid-cols-2 gap-4',
-                                children: M.map((r) =>
+                                children: x.map((r) =>
                                   e.jsxs(
                                     'button',
                                     {
@@ -1998,7 +2042,7 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                                   )
                                 ),
                               }),
-                          M.length > 1 &&
+                          x.length > 1 &&
                             !T &&
                             e.jsx('p', {
                               className:
@@ -2011,13 +2055,13 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                         className: 'flex justify-between pt-4',
                         children: [
                           e.jsx('button', {
-                            onClick: xe,
+                            onClick: ge,
                             className:
                               'px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors',
                             children: '← Cambia Orario',
                           }),
                           e.jsx('button', {
-                            onClick: ye,
+                            onClick: fe,
                             disabled: !T,
                             className: `px-6 py-2 rounded-lg font-medium transition-colors ${T ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`,
                             children: 'Conferma Prenotazione',
@@ -2046,8 +2090,8 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                       children: t
                         .filter((r) => r.status === 'confirmed')
                         .sort(
-                          (r, g) =>
-                            new Date(r.date + 'T' + r.time) - new Date(g.date + 'T' + g.time)
+                          (r, b) =>
+                            new Date(r.date + 'T' + r.time) - new Date(b.date + 'T' + b.time)
                         )
                         .map((r) =>
                           e.jsx(
@@ -2066,7 +2110,7 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                                         children: [
                                           'Lezione con',
                                           ' ',
-                                          U.find((g) => g.id === r.instructorId)?.name ||
+                                          U.find((b) => b.id === r.instructorId)?.name ||
                                             r.instructorName,
                                         ],
                                       }),
@@ -2095,7 +2139,7 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
                                     ],
                                   }),
                                   e.jsx('button', {
-                                    onClick: () => ve(r.id),
+                                    onClick: () => je(r.id),
                                     className:
                                       'px-3 py-1 text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors',
                                     children: 'Cancella',
@@ -2110,28 +2154,28 @@ function Ae({ T: s, user: u, state: d, setState: N, clubMode: b }) {
               ],
             }),
           I === 'admin' &&
-            b &&
-            e.jsx(De, {
+            h &&
+            e.jsx(Le, {
               T: s,
-              ds: A,
-              lessonConfig: p,
-              updateLessonConfig: pe,
+              ds: L,
+              lessonConfig: y,
+              updateLessonConfig: ve,
               instructors: U,
               players: l,
               setState: N,
-              state: d,
-              courts: d?.courts || [],
-              onClearAllLessons: F,
+              state: o,
+              courts: o?.courts || [],
+              onClearAllLessons: ye,
               lessonBookingsCount: t?.length || 0,
             }),
         ],
       });
 }
-function qe() {
-  const { user: s } = ge(),
-    { state: u, setState: d } = je(),
-    { clubMode: N } = ke(),
-    b = we.useMemo(() => Ne(), []);
-  return e.jsx(Ae, { T: b, user: s, state: u, setState: d, clubMode: N });
+function Ve() {
+  const { user: s } = be(),
+    { state: u, setState: o } = Ne(),
+    { clubMode: N } = we(),
+    h = Ce.useMemo(() => Se(), []);
+  return e.jsx(Be, { T: h, user: s, state: u, setState: o, clubMode: N });
 }
-export { qe as default };
+export { Ve as default };

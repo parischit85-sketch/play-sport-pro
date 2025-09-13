@@ -3,19 +3,19 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/index-mfi9c35w-CsSxx0JE.js',
-      'assets/vendor-mfi9c35w-D3F3s8fL.js',
-      'assets/router-mfi9c35w-8jyiX-w-.js',
-      'assets/firebase-mfi9c35w-X_I_guKF.js',
-      'assets/index-mfi9cdyl-BO8YAxFo.css',
+      'assets/index-mfiaeih4-BH71Qot4.js',
+      'assets/vendor-mfiaeih4-D3F3s8fL.js',
+      'assets/router-mfiaeih4-DNPpahz0.js',
+      'assets/firebase-mfiaeih4-X_I_guKF.js',
+      'assets/index-mfiaepws-BO8YAxFo.css',
     ])
 ) => i.map((i) => d[i]);
-import { j as e, q as z, _ as A, f as D, k as I, t as _ } from './index-mfi9c35w-CsSxx0JE.js';
-import { r as $, b as w, c as F } from './router-mfi9c35w-8jyiX-w-.js';
-import { S as L } from './Section-mfi9c35w-BVpF_AdT.js';
-import { e as R } from './format-mfi9c35w-DAEZv7Mi.js';
-import './vendor-mfi9c35w-D3F3s8fL.js';
-import './firebase-mfi9c35w-X_I_guKF.js';
+import { j as e, q as z, _ as A, f as D, k as I, t as _ } from './index-mfiaeih4-BH71Qot4.js';
+import { r as $, b as w, c as F } from './router-mfiaeih4-DNPpahz0.js';
+import { S as L } from './Section-mfiaeih4-DiH4h-T9.js';
+import { e as R } from './format-mfiaeih4-DAEZv7Mi.js';
+import './vendor-mfiaeih4-D3F3s8fL.js';
+import './firebase-mfiaeih4-X_I_guKF.js';
 function H({ value: a = [], onChange: i, T: o }) {
   const t = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
     m = (d) => {
@@ -975,7 +975,7 @@ function V({ T: a, leagueId: i, setState: o, cloudMsg: t, setCloudMsg: m }) {
     try {
       const { listLeagues: l } = await A(
           async () => {
-            const { listLeagues: N } = await import('./index-mfi9c35w-CsSxx0JE.js').then(
+            const { listLeagues: N } = await import('./index-mfiaeih4-BH71Qot4.js').then(
               (C) => C.x
             );
             return { listLeagues: N };
@@ -994,7 +994,7 @@ function V({ T: a, leagueId: i, setState: o, cloudMsg: t, setCloudMsg: m }) {
     try {
       const { saveLeague: l } = await A(
           async () => {
-            const { saveLeague: N } = await import('./index-mfi9c35w-CsSxx0JE.js').then((C) => C.x);
+            const { saveLeague: N } = await import('./index-mfiaeih4-BH71Qot4.js').then((C) => C.x);
             return { saveLeague: N };
           },
           __vite__mapDeps([0, 1, 2, 3, 4])
@@ -1012,7 +1012,7 @@ function V({ T: a, leagueId: i, setState: o, cloudMsg: t, setCloudMsg: m }) {
     try {
       const { loadLeague: p } = await A(
           async () => {
-            const { loadLeague: C } = await import('./index-mfi9c35w-CsSxx0JE.js').then((S) => S.x);
+            const { loadLeague: C } = await import('./index-mfiaeih4-BH71Qot4.js').then((S) => S.x);
             return { loadLeague: C };
           },
           __vite__mapDeps([0, 1, 2, 3, 4])
@@ -1261,7 +1261,7 @@ function V({ T: a, leagueId: i, setState: o, cloudMsg: t, setCloudMsg: m }) {
                           const { default: l } = await A(
                             async () => {
                               const { default: p } = await import(
-                                './index-mfi9c35w-CsSxx0JE.js'
+                                './index-mfiaeih4-BH71Qot4.js'
                               ).then((N) => N.y);
                               return { default: p };
                             },

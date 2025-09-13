@@ -8,7 +8,12 @@ import Modal from '@ui/Modal.jsx';
 import ZoomableGrid from '@ui/ZoomableGrid.jsx';
 import { euro, euro2 } from '@lib/format.js';
 import { sameDay, floorToSlot, addMinutes, overlaps } from '@lib/date.js';
-import { computePrice, getRateInfo, isCourtBookableAt } from '@lib/pricing.js';
+import {
+  computePrice,
+  computePricePerPlayer,
+  getRateInfo,
+  isCourtBookableAt,
+} from '@lib/pricing.js';
 import { useUnifiedBookings } from '@hooks/useUnifiedBookings.js';
 import { PLAYER_CATEGORIES } from '@features/players/types/playerTypes.js';
 
@@ -367,6 +372,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     courtId: '',
     start: null,
     duration: defaultDuration,
+    numberOfPlayers: 4, // Default 4 players
     p1Name: '',
     p2Name: '',
     p3Name: '',
@@ -415,10 +421,14 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       playerNames = [organizerName, ...playerNames].slice(0, 4); // Max 4 giocatori
     }
 
+    // Count actual players (non-empty names)
+    const actualPlayerCount = playerNames.filter((name) => name && name.trim()).length || 1;
+
     setForm({
       courtId: booking.courtId,
       start,
       duration: booking.duration,
+      numberOfPlayers: booking.numberOfPlayers || actualPlayerCount, // Use saved count or calculate from names
       p1Name: playerNames[0] || '',
       p2Name: playerNames[1] || '',
       p3Name: playerNames[2] || '',
@@ -558,6 +568,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           date: dateStr,
           time: timeStr,
           duration: form.duration,
+          numberOfPlayers: form.numberOfPlayers, // Add number of players
           lighting: !!form.useLighting,
           heating: !!form.useHeating,
           price,
@@ -589,6 +600,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           date: dateStr,
           time: timeStr,
           duration: form.duration,
+          numberOfPlayers: form.numberOfPlayers, // Add number of players
           lighting: !!form.useLighting,
           heating: !!form.useHeating,
           price,
@@ -1161,8 +1173,40 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       form.courtId,
       courts
     );
-  }, [form.start, form.duration, form.courtId, form.useLighting, form.useHeating, cfg, courts]);
-  const perPlayer = useMemo(() => (previewPrice == null ? null : previewPrice / 4), [previewPrice]);
+  }, [
+    form.start,
+    form.duration,
+    form.courtId,
+    form.useLighting,
+    form.useHeating,
+    form.numberOfPlayers,
+    cfg,
+    courts,
+  ]);
+  const perPlayer = useMemo(
+    () =>
+      previewPrice == null
+        ? null
+        : computePricePerPlayer(
+            new Date(form.start),
+            form.duration,
+            cfg,
+            { lighting: form.useLighting, heating: form.useHeating },
+            form.courtId,
+            courts,
+            form.numberOfPlayers
+          ),
+    [
+      form.start,
+      form.duration,
+      form.courtId,
+      form.useLighting,
+      form.useHeating,
+      form.numberOfPlayers,
+      cfg,
+      courts,
+    ]
+  );
 
   return (
     <Section title="Gestione Campi" T={T}>
@@ -1610,6 +1654,23 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                         }}
                         className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
                       />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                        👥 Numero Giocatori
+                      </label>
+                      <select
+                        value={form.numberOfPlayers}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, numberOfPlayers: Number(e.target.value) }))
+                        }
+                        className="px-4 py-3 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
+                      >
+                        <option value={1}>1 giocatore</option>
+                        <option value={2}>2 giocatori</option>
+                        <option value={3}>3 giocatori</option>
+                        <option value={4}>4 giocatori</option>
+                      </select>
                     </div>
                     <div className="flex flex-col gap-2">
                       <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
