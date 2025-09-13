@@ -3,57 +3,57 @@ const __vite__mapDeps = (
   m = __vite__mapDeps,
   d = m.f ||
     (m.f = [
-      'assets/LoginPage-mfi3xrqx-C7WqHhAp.js',
-      'assets/router-mfi3xrqx-CHJqmtwD.js',
-      'assets/vendor-mfi3xrqx-D3F3s8fL.js',
-      'assets/Section-mfi3xrqx-C-mnImjO.js',
-      'assets/firebase-mfi3xrqx-X_I_guKF.js',
-      'assets/DashboardPage-mfi3xrqx-DSFZpMix.js',
-      'assets/ClassificaPage-mfi3xrqx-uaL-W3Zk.js',
-      'assets/charts-mfi3xrqx-D4Hbzm79.js',
-      'assets/ShareButtons-mfi3xrqx-CEaYzNwh.js',
-      'assets/StatsPage-mfi3xrqx-C6vU89wi.js',
-      'assets/Modal-mfi3xrqx-Z0JKSJ-p.js',
-      'assets/names-mfi3xrqx-BW9lV2zG.js',
-      'assets/BookingPage-mfi3xrqx-9KNPwtCp.js',
-      'assets/Badge-mfi3xrqx-BYFA4bzL.js',
-      'assets/design-system-mfi3xrqx-B5fzZ68S.js',
-      'assets/pricing-mfi3xrqx-DMaWA4wL.js',
-      'assets/useUnifiedBookings-mfi3xrqx-DPQ_L2-K.js',
-      'assets/unified-booking-service-mfi3xrqx-D9ZNhZ3r.js',
-      'assets/LessonBookingPage-mfi3xrqx-H0CGnnkt.js',
-      'assets/playerTypes-mfi3xrqx-CIm-hM8a.js',
-      'assets/PlayersPage-mfi3xrqx-CnZ6QZ6p.js',
-      'assets/MatchesPage-mfi3xrqx-Cv7SYm2t.js',
-      'assets/TournamentsPage-mfi3xrqx-Cflgg-8P.js',
-      'assets/ProfilePage-mfi3xrqx-DsO4TPJ6.js',
-      'assets/ExtraPage-mfi3xrqx-B6xLF1I1.js',
-      'assets/format-mfi3xrqx-DAEZv7Mi.js',
-      'assets/AdminBookingsPage-mfi3xrqx-Ckmvq-Df.js',
-      'assets/DarkModeTestPage-mfi3xrqx-4aqyT1im.js',
+      'assets/LoginPage-mfi9c35w-DfX0F0ZP.js',
+      'assets/router-mfi9c35w-8jyiX-w-.js',
+      'assets/vendor-mfi9c35w-D3F3s8fL.js',
+      'assets/Section-mfi9c35w-BVpF_AdT.js',
+      'assets/firebase-mfi9c35w-X_I_guKF.js',
+      'assets/DashboardPage-mfi9c35w-CKfMyj6P.js',
+      'assets/ClassificaPage-mfi9c35w-Dy3DFrZb.js',
+      'assets/charts-mfi9c35w-LeUWk76r.js',
+      'assets/ShareButtons-mfi9c35w-BY_xlkTz.js',
+      'assets/StatsPage-mfi9c35w-B6efK7vh.js',
+      'assets/Modal-mfi9c35w-CcDrB430.js',
+      'assets/names-mfi9c35w-BW9lV2zG.js',
+      'assets/BookingPage-mfi9c35w-C451-uo2.js',
+      'assets/Badge-mfi9c35w-BZ5VokVV.js',
+      'assets/design-system-mfi9c35w-B5fzZ68S.js',
+      'assets/pricing-mfi9c35w-DMaWA4wL.js',
+      'assets/useUnifiedBookings-mfi9c35w-C4D5ju_K.js',
+      'assets/unified-booking-service-mfi9c35w-Dow-Gq1E.js',
+      'assets/LessonBookingPage-mfi9c35w-M3jHeE4U.js',
+      'assets/playerTypes-mfi9c35w-CIm-hM8a.js',
+      'assets/PlayersPage-mfi9c35w-CKYsKjPA.js',
+      'assets/MatchesPage-mfi9c35w-B9v02FR2.js',
+      'assets/TournamentsPage-mfi9c35w-DhAFG3Nl.js',
+      'assets/ProfilePage-mfi9c35w-D-gm9rlB.js',
+      'assets/ExtraPage-mfi9c35w-CW9phrcX.js',
+      'assets/format-mfi9c35w-DAEZv7Mi.js',
+      'assets/AdminBookingsPage-mfi9c35w-DrLAh06x.js',
+      'assets/DarkModeTestPage-mfi9c35w-BQ2xmeDh.js',
     ])
 ) => i.map((i) => d[i]);
-import { r as Oe, a as We } from './vendor-mfi3xrqx-D3F3s8fL.js';
+import { r as De, a as Oe } from './vendor-mfi9c35w-D3F3s8fL.js';
 import {
   r as p,
-  b as C,
+  b as N,
   u as te,
   N as $,
   c as $e,
   O as Ue,
   B as Fe,
-  d as Ve,
+  d as He,
   e as _,
-} from './router-mfi3xrqx-CHJqmtwD.js';
+} from './router-mfi9c35w-8jyiX-w-.js';
 import {
   g as ge,
   a as fe,
   i as pe,
   b as xe,
   c as be,
-  d as He,
-  s as Ge,
-  e as qe,
+  d as Ve,
+  s as qe,
+  e as Ge,
   f as U,
   h as we,
   G as Je,
@@ -71,38 +71,38 @@ import {
   t as rt,
   v as at,
   w as st,
-} from './firebase-mfi3xrqx-X_I_guKF.js';
+} from './firebase-mfi9c35w-X_I_guKF.js';
 (function () {
   const t = document.createElement('link').relList;
   if (t && t.supports && t.supports('modulepreload')) return;
-  for (const s of document.querySelectorAll('link[rel="modulepreload"]')) n(s);
+  for (const s of document.querySelectorAll('link[rel="modulepreload"]')) o(s);
   new MutationObserver((s) => {
-    for (const h of s)
-      if (h.type === 'childList')
-        for (const i of h.addedNodes) i.tagName === 'LINK' && i.rel === 'modulepreload' && n(i);
+    for (const u of s)
+      if (u.type === 'childList')
+        for (const n of u.addedNodes) n.tagName === 'LINK' && n.rel === 'modulepreload' && o(n);
   }).observe(document, { childList: !0, subtree: !0 });
   function a(s) {
-    const h = {};
+    const u = {};
     return (
-      s.integrity && (h.integrity = s.integrity),
-      s.referrerPolicy && (h.referrerPolicy = s.referrerPolicy),
+      s.integrity && (u.integrity = s.integrity),
+      s.referrerPolicy && (u.referrerPolicy = s.referrerPolicy),
       s.crossOrigin === 'use-credentials'
-        ? (h.credentials = 'include')
+        ? (u.credentials = 'include')
         : s.crossOrigin === 'anonymous'
-          ? (h.credentials = 'omit')
-          : (h.credentials = 'same-origin'),
-      h
+          ? (u.credentials = 'omit')
+          : (u.credentials = 'same-origin'),
+      u
     );
   }
-  function n(s) {
+  function o(s) {
     if (s.ep) return;
     s.ep = !0;
-    const h = a(s);
-    fetch(s.href, h);
+    const u = a(s);
+    fetch(s.href, u);
   }
 })();
 var K = { exports: {} },
-  D = {};
+  W = {};
 /**
  * @license React
  * react-jsx-runtime.production.min.js
@@ -113,40 +113,40 @@ var K = { exports: {} },
  * LICENSE file in the root directory of this source tree.
  */ var le;
 function ot() {
-  if (le) return D;
+  if (le) return W;
   le = 1;
-  var r = Oe(),
+  var r = De(),
     t = Symbol.for('react.element'),
     a = Symbol.for('react.fragment'),
-    n = Object.prototype.hasOwnProperty,
+    o = Object.prototype.hasOwnProperty,
     s = r.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner,
-    h = { key: !0, ref: !0, __self: !0, __source: !0 };
-  function i(l, d, u) {
+    u = { key: !0, ref: !0, __self: !0, __source: !0 };
+  function n(l, d, h) {
     var m,
       g = {},
       c = null,
-      o = null;
-    (u !== void 0 && (c = '' + u),
+      i = null;
+    (h !== void 0 && (c = '' + h),
       d.key !== void 0 && (c = '' + d.key),
-      d.ref !== void 0 && (o = d.ref));
-    for (m in d) n.call(d, m) && !h.hasOwnProperty(m) && (g[m] = d[m]);
+      d.ref !== void 0 && (i = d.ref));
+    for (m in d) o.call(d, m) && !u.hasOwnProperty(m) && (g[m] = d[m]);
     if (l && l.defaultProps) for (m in ((d = l.defaultProps), d)) g[m] === void 0 && (g[m] = d[m]);
-    return { $$typeof: t, type: l, key: c, ref: o, props: g, _owner: s.current };
+    return { $$typeof: t, type: l, key: c, ref: i, props: g, _owner: s.current };
   }
-  return ((D.Fragment = a), (D.jsx = i), (D.jsxs = i), D);
+  return ((W.Fragment = a), (W.jsx = n), (W.jsxs = n), W);
 }
 var ce;
 function nt() {
   return (ce || ((ce = 1), (K.exports = ot())), K.exports);
 }
 var e = nt(),
-  H = {},
+  V = {},
   de;
 function it() {
-  if (de) return H;
+  if (de) return V;
   de = 1;
-  var r = We();
-  return ((H.createRoot = r.createRoot), (H.hydrateRoot = r.hydrateRoot), H);
+  var r = Oe();
+  return ((V.createRoot = r.createRoot), (V.hydrateRoot = r.hydrateRoot), V);
 }
 var lt = it();
 const ct = 'modulepreload',
@@ -154,12 +154,12 @@ const ct = 'modulepreload',
     return '/' + r;
   },
   ue = {},
-  M = function (t, a, n) {
+  M = function (t, a, o) {
     let s = Promise.resolve();
     if (a && a.length > 0) {
-      let d = function (u) {
+      let d = function (h) {
         return Promise.all(
-          u.map((m) =>
+          h.map((m) =>
             Promise.resolve(m).then(
               (g) => ({ status: 'fulfilled', value: g }),
               (g) => ({ status: 'rejected', reason: g })
@@ -168,42 +168,42 @@ const ct = 'modulepreload',
         );
       };
       document.getElementsByTagName('link');
-      const i = document.querySelector('meta[property=csp-nonce]'),
-        l = i?.nonce || i?.getAttribute('nonce');
+      const n = document.querySelector('meta[property=csp-nonce]'),
+        l = n?.nonce || n?.getAttribute('nonce');
       s = d(
-        a.map((u) => {
-          if (((u = dt(u)), u in ue)) return;
-          ue[u] = !0;
-          const m = u.endsWith('.css'),
+        a.map((h) => {
+          if (((h = dt(h)), h in ue)) return;
+          ue[h] = !0;
+          const m = h.endsWith('.css'),
             g = m ? '[rel="stylesheet"]' : '';
-          if (document.querySelector(`link[href="${u}"]${g}`)) return;
+          if (document.querySelector(`link[href="${h}"]${g}`)) return;
           const c = document.createElement('link');
           if (
             ((c.rel = m ? 'stylesheet' : ct),
             m || (c.as = 'script'),
             (c.crossOrigin = ''),
-            (c.href = u),
+            (c.href = h),
             l && c.setAttribute('nonce', l),
             document.head.appendChild(c),
             m)
           )
-            return new Promise((o, f) => {
-              (c.addEventListener('load', o),
-                c.addEventListener('error', () => f(new Error(`Unable to preload CSS for ${u}`))));
+            return new Promise((i, f) => {
+              (c.addEventListener('load', i),
+                c.addEventListener('error', () => f(new Error(`Unable to preload CSS for ${h}`))));
             });
         })
       );
     }
-    function h(i) {
+    function u(n) {
       const l = new Event('vite:preloadError', { cancelable: !0 });
-      if (((l.payload = i), window.dispatchEvent(l), !l.defaultPrevented)) throw i;
+      if (((l.payload = n), window.dispatchEvent(l), !l.defaultPrevented)) throw n;
     }
-    return s.then((i) => {
-      for (const l of i || []) l.status === 'rejected' && h(l.reason);
-      return t().catch(h);
+    return s.then((n) => {
+      for (const l of n || []) l.status === 'rejected' && u(l.reason);
+      return t().catch(u);
     });
   },
-  W = {
+  O = {
     apiKey: 'AIzaSyDMP7772cyEY1oLzo8f9hMW7Leu4lWc6OU',
     authDomain: 'm-padelweb.firebaseapp.com',
     projectId: 'm-padelweb',
@@ -213,9 +213,9 @@ const ct = 'modulepreload',
     measurementId: 'G-0XZCHGMWVR',
   },
   ut = ['apiKey', 'authDomain', 'projectId', 'appId'],
-  me = ut.filter((r) => !W[r]);
-if (me.length > 0) throw new Error(`Missing Firebase configuration: ${me.join(', ')}`);
-const Se = ge().length ? fe() : pe(W),
+  he = ut.filter((r) => !O[r]);
+if (he.length > 0) throw new Error(`Missing Firebase configuration: ${he.join(', ')}`);
+const Se = ge().length ? fe() : pe(O),
   re = xe(Se, {
     experimentalAutoDetectLongPolling: !0,
     experimentalForceLongPolling: !1,
@@ -226,9 +226,9 @@ E.useDeviceLanguage && E.useDeviceLanguage();
 try {
   if (typeof window < 'u' && new URLSearchParams(window.location.search || '').has('authdebug')) {
     const t = {
-      projectId: W.projectId,
-      authDomain: W.authDomain,
-      appId: W.appId,
+      projectId: O.projectId,
+      authDomain: O.authDomain,
+      appId: O.appId,
       emulator: !1,
       isDev: !1,
       user: E?.currentUser ? { uid: E.currentUser.uid } : null,
@@ -236,7 +236,7 @@ try {
     console.log('[Firebase][authdebug]', t);
   }
 } catch {}
-function Ae(r) {
+function Ce(r) {
   return at(
     E,
     (t) => {
@@ -251,36 +251,36 @@ function Ae(r) {
     }
   );
 }
-async function mt() {
+async function ht() {
   const r = new Je();
   (r.addScope('email'), r.addScope('profile'), r.setCustomParameters({ prompt: 'select_account' }));
   let t = null;
   try {
     t = await ve(E, r);
   } catch (a) {
-    const n = String(a?.message || '').toLowerCase(),
+    const o = String(a?.message || '').toLowerCase(),
       s = String(a?.code || '').toLowerCase();
-    if (n.includes('cross-origin-opener-policy') || n.includes('window.closed')) return t;
+    if (o.includes('cross-origin-opener-policy') || o.includes('window.closed')) return t;
     if (
       s.includes('auth/unauthorized-domain') ||
       s.includes('auth/operation-not-supported') ||
       s.includes('auth/popup-blocked') ||
       s.includes('auth/popup-closed-by-user') ||
-      n.includes('requests-from-referer') ||
-      n.includes('cross-origin') ||
-      n.includes('popup')
+      o.includes('requests-from-referer') ||
+      o.includes('cross-origin') ||
+      o.includes('popup')
     )
       return (await Ke(E, r), null);
     throw a;
   }
-  return (t && t.user && (await Ne(t.user)), t);
+  return (t && t.user && (await Ae(t.user)), t);
 }
-async function Ne(r) {
+async function Ae(r) {
   try {
     const t = await F(r.uid);
     if (!t.email || !t.firstName) {
       const a = (r.displayName || '').split(' '),
-        n = {
+        o = {
           email: r.email,
           firstName: t.firstName || a[0] || '',
           lastName: t.lastName || a.slice(1).join(' ') || '',
@@ -289,31 +289,31 @@ async function Ne(r) {
           provider: 'google',
           ...t,
         };
-      await G(r.uid, n);
+      await q(r.uid, o);
     }
   } catch (t) {
     console.warn('Errore creazione/aggiornamento profilo:', t);
   }
 }
-async function ht() {
+async function mt() {
   const r = new Ye();
   (r.addScope('email'), r.addScope('public_profile'));
   const t = await ve(E, r);
-  return (t && t.user && (await Ne(t.user)), t);
+  return (t && t.user && (await Ae(t.user)), t);
 }
 async function gt(r, t) {
   if (!r || !t) throw new Error('Email e password sono obbligatorie');
   const a = await Xe(E, r, t);
   if (a.user) {
-    const n = await F(a.user.uid);
-    n.email ||
-      (await G(a.user.uid, {
+    const o = await F(a.user.uid);
+    o.email ||
+      (await q(a.user.uid, {
         email: a.user.email,
         firstName: '',
         lastName: '',
         phone: '',
         provider: 'password',
-        ...n,
+        ...o,
       }));
   }
   return a;
@@ -329,28 +329,28 @@ async function pt(r) {
 async function xt() {
   try {
     const r = window.location.href;
-    if (!He(E, r)) return null;
+    if (!Ve(E, r)) return null;
     let t = null;
     try {
       t = localStorage.getItem('ml-magic-email');
     } catch {}
     t || (t = window.prompt('Per completare l’accesso, inserisci la tua email:') || '');
-    const a = await Ge(E, t, r);
+    const a = await qe(E, t, r);
     try {
       localStorage.removeItem('ml-magic-email');
     } catch {}
     if ((window.history.replaceState({}, document.title, window.location.pathname), a.user)) {
-      const n = await F(a.user.uid);
-      if (!n.email) {
+      const o = await F(a.user.uid);
+      if (!o.email) {
         const s = {
           email: a.user.email,
           firstName: '',
           lastName: '',
           phone: '',
           provider: 'email',
-          ...n,
+          ...o,
         };
-        await G(a.user.uid, s);
+        await q(a.user.uid, s);
       }
     }
     return a;
@@ -359,14 +359,14 @@ async function xt() {
   }
 }
 async function bt() {
-  await qe(E);
+  await Ge(E);
 }
 async function F(r) {
   const t = U(re, 'profiles', r),
     a = await we(t);
   return a.exists() ? a.data() : {};
 }
-async function G(r, t) {
+async function q(r, t) {
   const a = U(re, 'profiles', r);
   await ye(a, { ...t, _updatedAt: Date.now() }, { merge: !0 });
 }
@@ -376,16 +376,16 @@ async function wt(r, t) {
 async function vt(r = 500) {
   const t = ke(re, 'profiles'),
     a = await je(tt(t, rt(r))),
-    n = [];
+    o = [];
   return (
     a.forEach((s) => {
-      const h = s.data() || {};
-      n.push({ uid: s.id, ...h });
+      const u = s.data() || {};
+      o.push({ uid: s.id, ...u });
     }),
-    n
+    o
   );
 }
-const dr = Object.freeze(
+const hr = Object.freeze(
     Object.defineProperty(
       {
         __proto__: null,
@@ -394,12 +394,12 @@ const dr = Object.freeze(
         getUserProfile: F,
         listAllUserProfiles: vt,
         loginWithEmailPassword: ft,
-        loginWithFacebook: ht,
-        loginWithGoogle: mt,
+        loginWithFacebook: mt,
+        loginWithGoogle: ht,
         logout: bt,
-        onAuth: Ae,
+        onAuth: Ce,
         registerWithEmailPassword: gt,
-        saveUserProfile: G,
+        saveUserProfile: q,
         sendResetPassword: pt,
         setDisplayName: wt,
       },
@@ -407,46 +407,46 @@ const dr = Object.freeze(
       { value: 'Module' }
     )
   ),
-  Ce = p.createContext(null),
-  q = () => {
-    const r = p.useContext(Ce);
+  Ne = p.createContext(null),
+  G = () => {
+    const r = p.useContext(Ne);
     if (!r) throw new Error('useAuth must be used within an AuthProvider');
     return r;
   };
 function yt({ children: r }) {
   const [t, a] = p.useState(null),
-    [n, s] = p.useState(null),
-    [h, i] = p.useState(!0),
+    [o, s] = p.useState(null),
+    [u, n] = p.useState(!0),
     [l, d] = p.useState(null);
   p.useEffect(
     () =>
-      Ae(async (o) => {
+      Ce(async (i) => {
         try {
-          if ((a(o), o)) {
-            const f = await F(o.uid);
+          if ((a(i), i)) {
+            const f = await F(i.uid);
             s(f);
           } else s(null);
           d(null);
         } catch (f) {
           (console.error('Auth error:', f), d(f), s(null));
         } finally {
-          i(!1);
+          n(!1);
         }
       }),
     []
   );
-  const u = !!t,
-    m = n?.firstName && n?.phone,
+  const h = !!t,
+    m = o?.firstName && o?.phone,
     g = {
       user: t,
-      userProfile: n,
+      userProfile: o,
       setUserProfile: s,
-      loading: h,
+      loading: u,
       error: l,
-      isAuthenticated: u,
+      isAuthenticated: h,
       isProfileComplete: m,
     };
-  return e.jsx(Ce.Provider, { value: g, children: r });
+  return e.jsx(Ne.Provider, { value: g, children: r });
 }
 const kt = {
     apiKey: 'AIzaSyDMP7772cyEY1oLzo8f9hMW7Leu4lWc6OU',
@@ -455,32 +455,32 @@ const kt = {
   },
   Ie = ge().length ? fe() : pe(kt);
 be(Ie);
-const V = xe(Ie, {
+const H = xe(Ie, {
   experimentalAutoDetectLongPolling: !0,
   experimentalForceLongPolling: !1,
   useFetchStreams: !1,
 });
 async function ae(r) {
-  const t = await we(U(V, 'leagues', r));
+  const t = await we(U(H, 'leagues', r));
   return t.exists() ? t.data() : null;
 }
 async function jt() {
   try {
-    const r = await je(ke(V, 'leagues')),
+    const r = await je(ke(H, 'leagues')),
       t = [];
     return (
       r.forEach((a) => {
-        const n = a.data();
+        const o = a.data();
         t.push({
           id: a.id,
-          name: n.name || a.id,
-          players: n.players?.length || 0,
-          matches: n.matches?.length || 0,
-          lastUpdated: n._updatedAt ? new Date(n._updatedAt).toLocaleString() : 'N/A',
-          courts: n.courts?.length || 0,
+          name: o.name || a.id,
+          players: o.players?.length || 0,
+          matches: o.matches?.length || 0,
+          lastUpdated: o._updatedAt ? new Date(o._updatedAt).toLocaleString() : 'N/A',
+          courts: o.courts?.length || 0,
         });
       }),
-      t.sort((a, n) => (n._updatedAt || 0) - (a._updatedAt || 0))
+      t.sort((a, o) => (o._updatedAt || 0) - (a._updatedAt || 0))
     );
   } catch (r) {
     return (console.error('Errore nel recupero della lista backup:', r), []);
@@ -501,36 +501,36 @@ async function Pe(r, t) {
   try {
     const a = await ae(r);
     if (a && a.players && a.players.length > (t.players?.length || 0)) {
-      const n = `firebase-backup-${Date.now()}`;
+      const o = `firebase-backup-${Date.now()}`;
       (localStorage.setItem(
-        n,
+        o,
         JSON.stringify({
           timestamp: new Date().toISOString(),
           data: a,
           reason: 'Auto-backup before potential data loss',
         })
       ),
-        console.log('🔒 Backup automatico creato prima del salvataggio:', n));
+        console.log('🔒 Backup automatico creato prima del salvataggio:', o));
     }
   } catch (a) {
     console.warn('Impossibile creare backup automatico:', a);
   }
-  (await ye(U(V, 'leagues', r), t, { merge: !0 }),
+  (await ye(U(H, 'leagues', r), t, { merge: !0 }),
     console.log('✅ Dati salvati nel cloud:', {
       players: t.players?.length,
       matches: t.matches?.length,
     }));
 }
 function Le(r, t) {
-  return st(U(V, 'leagues', r), (a) => {
+  return st(U(H, 'leagues', r), (a) => {
     a.exists() && t(a.data());
   });
 }
-const ur = Object.freeze(
+const mr = Object.freeze(
     Object.defineProperty(
       {
         __proto__: null,
-        db: V,
+        db: H,
         listLeagues: jt,
         loadLeague: ae,
         saveLeague: Pe,
@@ -540,7 +540,7 @@ const ur = Object.freeze(
       { value: 'Module' }
     )
   ),
-  O = (r) => Math.round(Number(r || 0)),
+  D = (r) => Math.round(Number(r || 0)),
   Y = (r) => Number(r || 0).toFixed(2);
 function St(r) {
   return (r || [])
@@ -551,20 +551,20 @@ function St(r) {
 function X(r) {
   let t = 0,
     a = 0,
-    n = 0,
+    o = 0,
     s = 0;
-  for (const i of r || []) {
-    const l = Number(i?.a || 0),
-      d = Number(i?.b || 0);
-    (String(l) === '' && String(d) === '') || ((n += l), (s += d), l > d ? t++ : d > l && a++);
+  for (const n of r || []) {
+    const l = Number(n?.a || 0),
+      d = Number(n?.b || 0);
+    (String(l) === '' && String(d) === '') || ((o += l), (s += d), l > d ? t++ : d > l && a++);
   }
-  let h = null;
+  let u = null;
   return (
-    t > a ? (h = 'A') : a > t && (h = 'B'),
-    { setsA: t, setsB: a, gamesA: n, gamesB: s, winner: h }
+    t > a ? (u = 'A') : a > t && (u = 'B'),
+    { setsA: t, setsB: a, gamesA: o, gamesB: s, winner: u }
   );
 }
-function At(r) {
+function Ct(r) {
   return r <= -2e3
     ? 0.4
     : r <= -1500
@@ -583,7 +583,7 @@ function At(r) {
                   ? 1.4
                   : 1.6;
 }
-function Nt(r) {
+function At(r) {
   return r <= -2e3
     ? 'gap ≤ −2000 ⇒ 0.40'
     : r <= -1500
@@ -606,66 +606,66 @@ function Z({
   ratingA1: r,
   ratingA2: t,
   ratingB1: a,
-  ratingB2: n,
+  ratingB2: o,
   gamesA: s,
-  gamesB: h,
-  winner: i,
+  gamesB: u,
+  winner: n,
   sets: l,
 }) {
   const d = Number(r || 0),
-    u = Number(t || 0),
+    h = Number(t || 0),
     m = Number(a || 0),
-    g = Number(n || 0),
-    c = d + u,
-    o = m + g,
-    f = i === 'A' ? c : o,
-    j = i === 'A' ? o : c,
-    x = (c + o) / 100,
+    g = Number(o || 0),
+    c = d + h,
+    i = m + g,
+    f = n === 'A' ? c : i,
+    j = n === 'A' ? i : c,
+    x = (c + i) / 100,
     b = j - f,
-    A = At(b),
-    L = i === 'A' ? s - h : h - s,
-    v = (x + L) * A,
+    C = Ct(b),
+    L = n === 'A' ? s - u : u - s,
+    v = (x + L) * C,
     y = Math.round(v),
-    N = i === 'A' ? y : -y,
-    k = i === 'B' ? y : -y,
+    A = n === 'A' ? y : -y,
+    k = n === 'B' ? y : -y,
     w = `Risultato set: ${St(l)}`,
     P =
-      `Team A=${O(c)}, Team B=${O(o)}, Gap=${O(b)}
-Fascia: ${Nt(b)}
+      `Team A=${D(c)}, Team B=${D(i)}, Gap=${D(b)}
+Fascia: ${At(b)}
 
-Base = (${O(c)} + ${O(o)})/100 = ${Y(x)}
+Base = (${D(c)} + ${D(i)})/100 = ${Y(x)}
 DG (Differenza Game) = ${L}
 
-Punti = (Base + DG) × factor = (${Y(x)} + ${L}) × ${A.toFixed(2)} = ${Y(v)}
+Punti = (Base + DG) × factor = (${Y(x)} + ${L}) × ${C.toFixed(2)} = ${Y(v)}
 Punti (arrotondato) = ${y}
 ` +
-      (i === 'A' ? `Team A +${y}, Team B -${y}` : `Team B +${y}, Team A -${y}`) +
+      (n === 'A' ? `Team A +${y}, Team B -${y}` : `Team B +${y}, Team A -${y}`) +
       `
 ${w}`;
   return {
-    deltaA: N,
+    deltaA: A,
     deltaB: k,
     pts: y,
     base: x,
-    factor: A,
+    factor: C,
     gap: b,
     sumA: c,
-    sumB: o,
+    sumB: i,
     gd: L,
     formula: P,
   };
 }
-const mr = () => Math.random().toString(36).slice(2, 10),
+const gr = () => Math.random().toString(36).slice(2, 10),
   I = 1e3,
   T = 'paris-league-v1';
-function Ct(r, t) {
+function Nt(r, t) {
   const a = new Map(
-      r.map((i) => {
-        const l = Number(i.baseRating ?? i.startRating ?? i.rating ?? I);
+      r.map((n) => {
+        const l = Number(n.baseRating ?? n.startRating ?? n.rating ?? I);
         return [
-          i.id,
+          n.id,
           {
-            ...i,
+            ...n,
             rating: l,
             wins: 0,
             losses: 0,
@@ -677,128 +677,128 @@ function Ct(r, t) {
         ];
       })
     ),
-    n = new Map(r.map((i) => [i.id, []])),
+    o = new Map(r.map((n) => [n.id, []])),
     s = [],
-    h = [...(t || [])].sort((i, l) => new Date(i.date) - new Date(l.date));
-  for (const i of h) {
-    const l = a.get(i.teamA[0]),
-      d = a.get(i.teamA[1]),
-      u = a.get(i.teamB[0]),
-      m = a.get(i.teamB[1]),
-      g = X(i.sets),
+    u = [...(t || [])].sort((n, l) => new Date(n.date) - new Date(l.date));
+  for (const n of u) {
+    const l = a.get(n.teamA[0]),
+      d = a.get(n.teamA[1]),
+      h = a.get(n.teamB[0]),
+      m = a.get(n.teamB[1]),
+      g = X(n.sets),
       c = Z({
         ratingA1: l?.rating ?? I,
         ratingA2: d?.rating ?? I,
-        ratingB1: u?.rating ?? I,
+        ratingB1: h?.rating ?? I,
         ratingB2: m?.rating ?? I,
         gamesA: g.gamesA,
         gamesB: g.gamesB,
         winner: g.winner,
-        sets: i.sets,
+        sets: n.sets,
       }),
-      o = { ...i, ...g, ...c };
-    s.push(o);
+      i = { ...n, ...g, ...c };
+    s.push(i);
     const f = (j, x) => {
       if (!j) return;
-      const b = n.get(j) || [];
-      (b.push(x), n.set(j, b));
+      const b = o.get(j) || [];
+      (b.push(x), o.set(j, b));
     };
     (f(l?.id, c.deltaA),
       f(d?.id, c.deltaA),
-      f(u?.id, c.deltaB),
+      f(h?.id, c.deltaB),
       f(m?.id, c.deltaB),
       l && (l.lastDelta = c.deltaA),
       d && (d.lastDelta = c.deltaA),
-      u && (u.lastDelta = c.deltaB),
+      h && (h.lastDelta = c.deltaB),
       m && (m.lastDelta = c.deltaB),
       g.winner === 'A'
         ? (l && (l.rating += c.deltaA),
           d && (d.rating += c.deltaA),
-          u && (u.rating += c.deltaB),
+          h && (h.rating += c.deltaB),
           m && (m.rating += c.deltaB),
           l && l.wins++,
           d && d.wins++,
-          u && u.losses++,
+          h && h.losses++,
           m && m.losses++)
         : g.winner === 'B' &&
           (l && (l.rating += c.deltaA),
           d && (d.rating += c.deltaA),
-          u && (u.rating += c.deltaB),
+          h && (h.rating += c.deltaB),
           m && (m.rating += c.deltaB),
-          u && u.wins++,
+          h && h.wins++,
           m && m.wins++,
           l && l.losses++,
           d && d.losses++));
   }
-  for (const i of a.values()) {
-    const d = (n.get(i.id) || []).slice(-5);
-    let u = 0,
+  for (const n of a.values()) {
+    const d = (o.get(n.id) || []).slice(-5);
+    let h = 0,
       m = 0,
       g = 0;
-    for (const c of d) ((g += c), c >= 0 ? (u += c) : (m += -c));
-    ((i.trend5Total = g), (i.trend5Pos = u), (i.trend5Neg = m));
+    for (const c of d) ((g += c), c >= 0 ? (h += c) : (m += -c));
+    ((n.trend5Total = g), (n.trend5Pos = h), (n.trend5Neg = m));
   }
   return { players: Array.from(a.values()), matches: s };
 }
-function hr(r, t, a) {
-  const n = new Map(r.map((o) => [o.id, o.name])),
-    h = [...(t || [])].sort((o, f) => new Date(o.date) - new Date(f.date)).slice(-15),
-    i = new Map(r.map((o) => [o.id, Number(o.rating ?? I)])),
-    l = new Map(i),
-    d = [...h].reverse();
-  for (const o of d) {
-    const f = X(o.sets),
+function fr(r, t, a) {
+  const o = new Map(r.map((i) => [i.id, i.name])),
+    u = [...(t || [])].sort((i, f) => new Date(i.date) - new Date(f.date)).slice(-15),
+    n = new Map(r.map((i) => [i.id, Number(i.rating ?? I)])),
+    l = new Map(n),
+    d = [...u].reverse();
+  for (const i of d) {
+    const f = X(i.sets),
       j = Z({
-        ratingA1: l.get(o.teamA[0]) ?? I,
-        ratingA2: l.get(o.teamA[1]) ?? I,
-        ratingB1: l.get(o.teamB[0]) ?? I,
-        ratingB2: l.get(o.teamB[1]) ?? I,
+        ratingA1: l.get(i.teamA[0]) ?? I,
+        ratingA2: l.get(i.teamA[1]) ?? I,
+        ratingB1: l.get(i.teamB[0]) ?? I,
+        ratingB2: l.get(i.teamB[1]) ?? I,
         gamesA: f.gamesA,
         gamesB: f.gamesB,
         winner: f.winner,
-        sets: o.sets,
+        sets: i.sets,
       }),
-      x = (b, A) => l.set(b, (l.get(b) ?? I) - A);
-    (x(o.teamA[0], j.deltaA),
-      x(o.teamA[1], j.deltaA),
-      x(o.teamB[0], j.deltaB),
-      x(o.teamB[1], j.deltaB));
+      x = (b, C) => l.set(b, (l.get(b) ?? I) - C);
+    (x(i.teamA[0], j.deltaA),
+      x(i.teamA[1], j.deltaA),
+      x(i.teamB[0], j.deltaB),
+      x(i.teamB[1], j.deltaB));
   }
-  const u = new Map(l),
+  const h = new Map(l),
     m = [],
     g = { label: 'Inizio periodo' };
-  for (const o of a) g[n.get(o) || o] = Math.round(u.get(o) ?? I);
+  for (const i of a) g[o.get(i) || i] = Math.round(h.get(i) ?? I);
   m.push(g);
-  for (const o of h) {
-    const f = X(o.sets),
+  for (const i of u) {
+    const f = X(i.sets),
       j = Z({
-        ratingA1: u.get(o.teamA[0]) ?? I,
-        ratingA2: u.get(o.teamA[1]) ?? I,
-        ratingB1: u.get(o.teamB[0]) ?? I,
-        ratingB2: u.get(o.teamB[1]) ?? I,
+        ratingA1: h.get(i.teamA[0]) ?? I,
+        ratingA2: h.get(i.teamA[1]) ?? I,
+        ratingB1: h.get(i.teamB[0]) ?? I,
+        ratingB2: h.get(i.teamB[1]) ?? I,
         gamesA: f.gamesA,
         gamesB: f.gamesB,
         winner: f.winner,
-        sets: o.sets,
+        sets: i.sets,
       }),
-      x = (A, L) => u.set(A, (u.get(A) ?? I) + L);
-    (x(o.teamA[0], j.deltaA),
-      x(o.teamA[1], j.deltaA),
-      x(o.teamB[0], j.deltaB),
-      x(o.teamB[1], j.deltaB));
+      x = (C, L) => h.set(C, (h.get(C) ?? I) + L);
+    (x(i.teamA[0], j.deltaA),
+      x(i.teamA[1], j.deltaA),
+      x(i.teamB[0], j.deltaB),
+      x(i.teamB[1], j.deltaB));
     const b = {
-      label: new Date(o.date).toLocaleString('it-IT', {
+      label: new Date(i.date).toLocaleString('it-IT', {
         day: '2-digit',
         month: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
       }),
     };
-    for (const A of a) b[n.get(A) || A] = Math.round(u.get(A) ?? I);
+    for (const C of a) b[o.get(C) || C] = Math.round(h.get(C) ?? I);
     m.push(b);
   }
   const c = { label: 'Attuale' };
-  for (const o of a) c[n.get(o) || o] = Math.round(i.get(o) ?? I);
+  for (const i of a) c[o.get(i) || i] = Math.round(n.get(i) ?? I);
   return (m.push(c), m);
 }
 function z() {
@@ -816,7 +816,7 @@ function z() {
     peakEndHour: 22,
   };
 }
-function he() {
+function me() {
   return { players: [], matches: [], courts: [], bookings: [], bookingConfig: z() };
 }
 const _e = p.createContext(null),
@@ -826,14 +826,14 @@ const _e = p.createContext(null),
     return r;
   };
 function Pt({ children: r }) {
-  const { user: t, loading: a } = q(),
-    [n, s] = p.useState(null),
-    [h, i] = p.useState(!0),
+  const { user: t, loading: a } = G(),
+    [o, s] = p.useState(null),
+    [u, n] = p.useState(!0),
     [l, d] = p.useState(null),
-    [u, m] = p.useState(!1),
+    [h, m] = p.useState(!1),
     [g, c] = p.useState(localStorage.getItem(T + '-leagueId') || 'lega-andrea-2025'),
-    o = p.useRef(null);
-  if (!o.current) {
+    i = p.useRef(null);
+  if (!i.current) {
     const v = (() => {
       try {
         return localStorage.getItem('ml-client-id');
@@ -841,10 +841,10 @@ function Pt({ children: r }) {
         return null;
       }
     })();
-    if (v) o.current = v;
+    if (v) i.current = v;
     else {
       const y = Math.random().toString(36).slice(2, 10);
-      o.current = y;
+      i.current = y;
       try {
         localStorage.setItem('ml-client-id', y);
       } catch {}
@@ -857,20 +857,20 @@ function Pt({ children: r }) {
   }, [g]);
   const x = (v) => {
     s((y) => {
-      const N = typeof v == 'function' ? v(y) : v,
+      const A = typeof v == 'function' ? v(y) : v,
         k = Date.now(),
         w = (y?._rev || 0) + 1;
-      return ((f.current = k + 2e3), { ...N, _updatedAt: k, _rev: w, _lastWriter: o.current });
+      return ((f.current = k + 2e3), { ...A, _updatedAt: k, _rev: w, _lastWriter: i.current });
     });
   };
   (p.useEffect(() => {
     a ||
       (async () => {
         try {
-          if ((i(!0), d(null), t)) {
-            const N = await ae(g);
-            if (N && typeof N == 'object' && Array.isArray(N.players) && Array.isArray(N.matches)) {
-              const w = { ...N };
+          if ((n(!0), d(null), t)) {
+            const A = await ae(g);
+            if (A && typeof A == 'object' && Array.isArray(A.players) && Array.isArray(A.matches)) {
+              const w = { ...A };
               (Array.isArray(w.courts) || (w.courts = []),
                 Array.isArray(w.bookings) || (w.bookings = []),
                 w.bookingConfig || (w.bookingConfig = z()),
@@ -886,9 +886,9 @@ function Pt({ children: r }) {
             }
           }
           try {
-            const N = localStorage.getItem(T);
-            if (N) {
-              const k = JSON.parse(N);
+            const A = localStorage.getItem(T);
+            if (A) {
+              const k = JSON.parse(A);
               if (k && Array.isArray(k.players) && Array.isArray(k.matches)) {
                 s(k);
                 const w = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
@@ -897,20 +897,20 @@ function Pt({ children: r }) {
               }
             }
           } catch {}
-          const v = he();
+          const v = me();
           s(v);
           const y = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
-          ((j.current = y.reduce((N, k) => ((N[k] = v[k] || []), N), {})),
+          ((j.current = y.reduce((A, k) => ((A[k] = v[k] || []), A), {})),
             console.log('� App inizializzata con stato vuoto - aggiungi i tuoi dati!'));
           try {
             localStorage.setItem(T, JSON.stringify(v));
           } catch {}
         } catch (v) {
           (console.error('League load error:', v), d(v));
-          const y = he();
+          const y = me();
           s(y);
         } finally {
-          i(!1);
+          n(!1);
         }
       })();
   }, [g, t, a]),
@@ -939,7 +939,7 @@ function Pt({ children: r }) {
                 J = k?._updatedAt ?? 0,
                 oe = R > P || (R === P && J > B);
               if (oe) {
-                const De = [
+                const We = [
                   'players',
                   'matches',
                   'courts',
@@ -947,7 +947,7 @@ function Pt({ children: r }) {
                   'bookingConfig',
                   'lessonConfig',
                 ];
-                j.current = De.reduce((ne, ie) => ((ne[ie] = k[ie]), ne), {});
+                j.current = We.reduce((ne, ie) => ((ne[ie] = k[ie]), ne), {});
               }
               return oe ? k : w;
             }),
@@ -959,18 +959,18 @@ function Pt({ children: r }) {
       return () => v && v();
     }, [g, t, a]),
     p.useEffect(() => {
-      if (!n || u || !t) return;
+      if (!o || h || !t) return;
       const v = ['players', 'matches', 'courts', 'bookings', 'bookingConfig', 'lessonConfig'],
-        y = v.reduce((w, P) => ((w[P] = n[P]), w), {}),
-        N = j.current;
-      if (!N || v.some((w) => JSON.stringify(y[w]) !== JSON.stringify(N[w])))
+        y = v.reduce((w, P) => ((w[P] = o[P]), w), {}),
+        A = j.current;
+      if (!A || v.some((w) => JSON.stringify(y[w]) !== JSON.stringify(A[w])))
         try {
-          localStorage.setItem(T, JSON.stringify(n));
+          localStorage.setItem(T, JSON.stringify(o));
           const P = {
-              ...Object.fromEntries(Object.entries(n).filter(([B, J]) => J !== void 0)),
+              ...Object.fromEntries(Object.entries(o).filter(([B, J]) => J !== void 0)),
               _updatedAt: Date.now(),
-              _lastWriter: o.current,
-              _rev: (n._rev || 0) + 1,
+              _lastWriter: i.current,
+              _rev: (o._rev || 0) + 1,
             },
             R = setTimeout(async () => {
               try {
@@ -983,22 +983,22 @@ function Pt({ children: r }) {
         } catch (w) {
           console.error('LocalStorage save error:', w);
         }
-    }, [n, g, u, t]));
-  const b = C.useMemo(
-      () => (n ? Ct(n.players || [], n.matches || []) : { players: [], matches: [] }),
-      [n]
+    }, [o, g, h, t]));
+  const b = N.useMemo(
+      () => (o ? Nt(o.players || [], o.matches || []) : { players: [], matches: [] }),
+      [o]
     ),
-    A = C.useMemo(() => Object.fromEntries((b.players || []).map((v) => [v.id, v])), [b]),
+    C = N.useMemo(() => Object.fromEntries((b.players || []).map((v) => [v.id, v])), [b]),
     L = {
-      state: n,
+      state: o,
       setState: x,
       derived: b,
-      playersById: A,
+      playersById: C,
       leagueId: g,
       setLeagueId: c,
-      loading: h,
+      loading: u,
       error: l,
-      updatingFromCloud: u,
+      updatingFromCloud: h,
     };
   return e.jsx(_e.Provider, { value: L, children: r });
 }
@@ -1017,18 +1017,18 @@ function Lt({ children: r }) {
         return !1;
       }
     }),
-    [n, s] = p.useState(() => {
+    [o, s] = p.useState(() => {
       try {
         const b = sessionStorage.getItem('ml-extra-unlocked') === '1',
-          A = sessionStorage.getItem('ml-club-mode') === '1';
-        return b && A;
+          C = sessionStorage.getItem('ml-club-mode') === '1';
+        return b && C;
       } catch {
         return !1;
       }
     }),
-    [h, i] = p.useState([]),
+    [u, n] = p.useState([]),
     [l, d] = p.useState(!1),
-    [u, m] = p.useState(null);
+    [h, m] = p.useState(null);
   (p.useEffect(() => {
     try {
       t
@@ -1038,40 +1038,40 @@ function Lt({ children: r }) {
           localStorage.setItem('play-sport-pro-theme', 'light'));
     } catch {}
   }, [t]),
-    C.useEffect(() => {
+    N.useEffect(() => {
       try {
-        n ? sessionStorage.setItem('ml-club-mode', '1') : sessionStorage.removeItem('ml-club-mode');
+        o ? sessionStorage.setItem('ml-club-mode', '1') : sessionStorage.removeItem('ml-club-mode');
       } catch {}
-    }, [n]));
+    }, [o]));
   const g = () => {
       a((b) => !b);
     },
     c = (b) => {
-      const A = Math.random().toString(36).slice(2),
-        L = { id: A, ...b };
+      const C = Math.random().toString(36).slice(2),
+        L = { id: C, ...b };
       return (
-        i((v) => [...v, L]),
+        n((v) => [...v, L]),
         setTimeout(() => {
-          o(A);
+          i(C);
         }, 5e3),
-        A
+        C
       );
     },
-    o = (b) => {
-      i((A) => A.filter((L) => L.id !== b));
+    i = (b) => {
+      n((C) => C.filter((L) => L.id !== b));
     },
     x = {
       darkMode: t,
       setDarkMode: a,
       toggleTheme: g,
-      clubMode: n,
+      clubMode: o,
       setClubMode: s,
-      notifications: h,
+      notifications: u,
       addNotification: c,
-      removeNotification: o,
+      removeNotification: i,
       loading: l,
       setLoading: d,
-      modal: u,
+      modal: h,
       showModal: (b) => {
         m(b);
       },
@@ -1081,7 +1081,7 @@ function Lt({ children: r }) {
     };
   return e.jsx(Ee.Provider, { value: x, children: r });
 }
-class _t extends C.Component {
+class _t extends N.Component {
   constructor(t) {
     (super(t), (this.state = { hasError: !1, error: null, errorInfo: null }));
   }
@@ -1205,32 +1205,32 @@ function Q(r, t, a) {
 function Mt(r, t) {
   const a = r.pathname;
   if (a === '/login') {
-    const n = r.state?.from?.pathname;
-    return n && n !== '/login' ? n : '/dashboard';
+    const o = r.state?.from?.pathname;
+    return o && o !== '/login' ? o : '/dashboard';
   }
   return a === '/' ? '/dashboard' : null;
 }
 function Rt({ children: r, requireProfile: t = !0 }) {
-  const { user: a, userProfile: n, isAuthenticated: s, isProfileComplete: h, loading: i } = q(),
+  const { user: a, userProfile: o, isAuthenticated: s, isProfileComplete: u, loading: n } = G(),
     l = te();
-  if (i) return e.jsx(se, { message: 'Verifica autenticazione...' });
+  if (n) return e.jsx(se, { message: 'Verifica autenticazione...' });
   if (!s) {
     const d = '/login';
     if (Q(l.pathname, d)) return e.jsx($, { to: d, state: { from: l }, replace: !0 });
   }
-  if (s && t && n !== null && !h) {
+  if (s && t && o !== null && !u) {
     const d = '/profile';
     if (Q(l.pathname, d)) return e.jsx($, { to: d, state: { from: l }, replace: !0 });
   }
   return r;
 }
 function Bt({ children: r }) {
-  const { isAuthenticated: t, loading: a } = q(),
-    n = te();
+  const { isAuthenticated: t, loading: a } = G(),
+    o = te();
   if (a) return e.jsx(se, { message: 'Verifica autenticazione...' });
   if (t) {
-    const s = Mt(n);
-    if (s && Q(n.pathname, s)) return e.jsx($, { to: s, replace: !0 });
+    const s = Mt(o);
+    if (s && Q(o.pathname, s)) return e.jsx($, { to: s, replace: !0 });
   }
   return r;
 }
@@ -1299,18 +1299,18 @@ function Tt() {
     cardHover: `${S.borderRadius.lg} bg-white dark:bg-gray-800 ring-1 ring-black/10 dark:ring-white/10 ${S.spacing.md} ${S.shadows.md} dark:shadow-dark-md hover:shadow-lg dark:hover:shadow-dark-lg ${S.transitions.normal}`,
   };
 }
-function Dt() {
+function Wt() {
   const { notifications: r, removeNotification: t } = Me();
   return r.length === 0
     ? null
     : e.jsx('div', {
         className: 'fixed top-4 right-4 space-y-2',
         style: { zIndex: 100001 },
-        children: r.map((a) => e.jsx(Ot, { notification: a, onRemove: t }, a.id)),
+        children: r.map((a) => e.jsx(Dt, { notification: a, onRemove: t }, a.id)),
       });
 }
-function Ot({ notification: r, onRemove: t }) {
-  const { id: a, type: n = 'info', title: s, message: h, autoClose: i = !0 } = r,
+function Dt({ notification: r, onRemove: t }) {
+  const { id: a, type: o = 'info', title: s, message: u, autoClose: n = !0 } = r,
     l = {
       success: 'bg-green-500 text-white',
       error: 'bg-red-500 text-white',
@@ -1319,26 +1319,26 @@ function Ot({ notification: r, onRemove: t }) {
     },
     d = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
   return (
-    C.useEffect(() => {
-      if (i) {
-        const u = setTimeout(() => {
+    N.useEffect(() => {
+      if (n) {
+        const h = setTimeout(() => {
           t(a);
         }, 5e3);
-        return () => clearTimeout(u);
+        return () => clearTimeout(h);
       }
-    }, [a, i, t]),
+    }, [a, n, t]),
     e.jsx('div', {
-      className: `${l[n]} px-4 py-3 rounded-lg shadow-lg max-w-sm animate-slide-in-right`,
+      className: `${l[o]} px-4 py-3 rounded-lg shadow-lg max-w-sm animate-slide-in-right`,
       role: 'alert',
       children: e.jsxs('div', {
         className: 'flex items-start',
         children: [
-          e.jsx('span', { className: 'text-lg mr-2', children: d[n] }),
+          e.jsx('span', { className: 'text-lg mr-2', children: d[o] }),
           e.jsxs('div', {
             className: 'flex-1',
             children: [
               s && e.jsx('div', { className: 'font-medium', children: s }),
-              h && e.jsx('div', { className: 'text-sm opacity-90', children: h }),
+              u && e.jsx('div', { className: 'text-sm opacity-90', children: u }),
             ],
           }),
           e.jsx('button', {
@@ -1352,8 +1352,8 @@ function Ot({ notification: r, onRemove: t }) {
     })
   );
 }
-function Wt({ active: r, setActive: t, clubMode: a, T: n, user: s, navigation: h }) {
-  const i = h || [
+function Ot({ active: r, setActive: t, clubMode: a, T: o, user: s, navigation: u }) {
+  const n = u || [
     { id: 'classifica', label: 'Classifica' },
     { id: 'stats', label: 'Statistiche' },
     { id: 'prenota-campo', label: 'Prenota Campo' },
@@ -1370,13 +1370,13 @@ function Wt({ active: r, setActive: t, clubMode: a, T: n, user: s, navigation: h
   ];
   return e.jsx('nav', {
     className: 'hidden md:flex gap-1',
-    children: i.map((l) =>
+    children: n.map((l) =>
       e.jsx(
         'button',
         {
           type: 'button',
           onClick: () => t(l.id),
-          className: `px-3 py-1.5 rounded-xl text-sm transition ring-1 ${r === l.id ? n.btnPrimary : n.ghostRing}`,
+          className: `px-3 py-1.5 rounded-xl text-sm transition ring-1 ${r === l.id ? o.btnPrimary : o.ghostRing}`,
           'aria-current': r === l.id ? 'page' : void 0,
           children: l.label,
         },
@@ -1385,28 +1385,28 @@ function Wt({ active: r, setActive: t, clubMode: a, T: n, user: s, navigation: h
     ),
   });
 }
-function $t({ active: r, setActive: t, navigation: a = [], clubMode: n = !1 }) {
-  const [s, h] = p.useState(!1),
-    i =
+function $t({ active: r, setActive: t, navigation: a = [], clubMode: o = !1 }) {
+  const [s, u] = p.useState(!1),
+    n =
       /iPad|iPhone|iPod/.test(navigator.userAgent) ||
       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1),
-    l = (o, f) => {
-      if ((f && (f.preventDefault(), f.stopPropagation()), r === o.id)) return;
+    l = (i, f) => {
+      if ((f && (f.preventDefault(), f.stopPropagation()), r === i.id)) return;
       setTimeout(
         () => {
-          (t(o.id), s && h(!1));
+          (t(i.id), s && u(!1));
         },
-        i ? 0 : 50
+        n ? 0 : 50
       );
     },
-    d = (o) => {
-      (o.stopPropagation(), o.preventDefault(), h(!s));
+    d = (i) => {
+      (i.stopPropagation(), i.preventDefault(), u(!s));
     },
-    u = (o, f) => {
+    h = (i, f) => {
       (f.stopPropagation(),
         f.preventDefault(),
         setTimeout(() => {
-          (t(o.id), h(!1));
+          (t(i.id), u(!1));
         }, 50));
     },
     m = [
@@ -1600,7 +1600,7 @@ function $t({ active: r, setActive: t, navigation: a = [], clubMode: n = !1 }) {
         }),
       },
     ],
-    c = n
+    c = o
       ? [
           ...m.slice(0, 3),
           {
@@ -1655,8 +1655,8 @@ function $t({ active: r, setActive: t, navigation: a = [], clubMode: n = !1 }) {
       paddingBottom: 'env(safe-area-inset-bottom)',
       height: 'calc(68px + env(safe-area-inset-bottom))',
     },
-    onClick: (o) => o.stopPropagation(),
-    onTouchEnd: (o) => o.stopPropagation(),
+    onClick: (i) => i.stopPropagation(),
+    onTouchEnd: (i) => i.stopPropagation(),
     children: [
       s &&
         e.jsx('div', {
@@ -1694,12 +1694,12 @@ function $t({ active: r, setActive: t, navigation: a = [], clubMode: n = !1 }) {
               }),
               e.jsx('div', {
                 className: 'grid grid-cols-2 gap-3',
-                children: g.map((o) =>
+                children: g.map((i) =>
                   e.jsxs(
                     'div',
                     {
-                      className: `flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${r === o.id ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 text-blue-600 dark:text-blue-400 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 border border-blue-200/30 dark:border-blue-600/30' : 'bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-600/80 border border-white/30 dark:border-gray-600/30 shadow-lg hover:shadow-xl'}`,
-                      onClick: (f) => u(o, f),
+                      className: `flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${r === i.id ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 text-blue-600 dark:text-blue-400 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 border border-blue-200/30 dark:border-blue-600/30' : 'bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-600/80 border border-white/30 dark:border-gray-600/30 shadow-lg hover:shadow-xl'}`,
+                      onClick: (f) => h(i, f),
                       style: {
                         WebkitTapHighlightColor: 'rgba(0,0,0,0)',
                         WebkitTouchCallout: 'none',
@@ -1708,13 +1708,13 @@ function $t({ active: r, setActive: t, navigation: a = [], clubMode: n = !1 }) {
                       },
                       children: [
                         e.jsx('div', {
-                          className: `w-8 h-8 rounded-lg flex items-center justify-center ${r === o.id ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-md'}`,
-                          children: o.icon,
+                          className: `w-8 h-8 rounded-lg flex items-center justify-center ${r === i.id ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg' : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-md'}`,
+                          children: i.icon,
                         }),
-                        e.jsx('span', { className: 'text-sm font-medium', children: o.label }),
+                        e.jsx('span', { className: 'text-sm font-medium', children: i.label }),
                       ],
                     },
-                    o.id
+                    i.id
                   )
                 ),
               }),
@@ -1724,13 +1724,13 @@ function $t({ active: r, setActive: t, navigation: a = [], clubMode: n = !1 }) {
       e.jsxs('div', {
         className: 'grid grid-cols-5 h-16 px-2',
         children: [
-          c.map((o, f) =>
+          c.map((i, f) =>
             e.jsxs(
               'div',
               {
-                className: `bottom-nav-item flex flex-col items-center justify-center space-y-1 cursor-pointer transition-all duration-300 ${r === o.id ? 'text-blue-500 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}`,
-                onClick: i ? void 0 : (j) => l(o, j),
-                onTouchEnd: i ? (j) => l(o, j) : void 0,
+                className: `bottom-nav-item flex flex-col items-center justify-center space-y-1 cursor-pointer transition-all duration-300 ${r === i.id ? 'text-blue-500 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}`,
+                onClick: n ? void 0 : (j) => l(i, j),
+                onTouchEnd: n ? (j) => l(i, j) : void 0,
                 style: {
                   WebkitTapHighlightColor: 'rgba(0,0,0,0)',
                   WebkitTouchCallout: 'none',
@@ -1742,30 +1742,30 @@ function $t({ active: r, setActive: t, navigation: a = [], clubMode: n = !1 }) {
                 },
                 children: [
                   e.jsxs('div', {
-                    className: `relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 ${r === o.id ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 backdrop-blur-sm border border-blue-200/30 dark:border-blue-600/30 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 transform scale-110' : 'hover:bg-white/60 dark:hover:bg-gray-700/60 hover:backdrop-blur-sm hover:border hover:border-white/20 dark:hover:border-gray-600/20 hover:shadow-lg hover:transform hover:scale-105'}`,
+                    className: `relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 ${r === i.id ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 backdrop-blur-sm border border-blue-200/30 dark:border-blue-600/30 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 transform scale-110' : 'hover:bg-white/60 dark:hover:bg-gray-700/60 hover:backdrop-blur-sm hover:border hover:border-white/20 dark:hover:border-gray-600/20 hover:shadow-lg hover:transform hover:scale-105'}`,
                     children: [
-                      r === o.id &&
+                      r === i.id &&
                         e.jsx('div', {
                           className:
                             'absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg',
                         }),
-                      o.icon,
+                      i.icon,
                     ],
                   }),
                   e.jsx('span', {
-                    className: `font-medium text-xs leading-tight ${r === o.id ? 'font-semibold' : ''}`,
-                    children: o.label,
+                    className: `font-medium text-xs leading-tight ${r === i.id ? 'font-semibold' : ''}`,
+                    children: i.label,
                   }),
                 ],
               },
-              o.id
+              i.id
             )
           ),
-          n &&
+          o &&
             e.jsxs('div', {
               className: `bottom-nav-item flex flex-col items-center justify-center space-y-1 cursor-pointer transition-all duration-300 ${s ? 'text-blue-500 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'}`,
-              onClick: i ? void 0 : (o) => d(o),
-              onTouchEnd: i ? (o) => d(o) : void 0,
+              onClick: n ? void 0 : (i) => d(i),
+              onTouchEnd: n ? (i) => d(i) : void 0,
               style: {
                 WebkitTapHighlightColor: 'rgba(0,0,0,0)',
                 WebkitTouchCallout: 'none',
@@ -1811,28 +1811,28 @@ function $t({ active: r, setActive: t, navigation: a = [], clubMode: n = !1 }) {
 }
 function ze() {
   const [r, t] = p.useState(null),
-    [a, n] = p.useState(!1),
-    [s, h] = p.useState(!1),
-    [i, l] = p.useState({});
+    [a, o] = p.useState(!1),
+    [s, u] = p.useState(!1),
+    [n, l] = p.useState({});
   p.useEffect(() => {
     ((() => {
       const x = navigator.userAgent,
         b = /iPad|iPhone|iPod/.test(x),
-        A = /Android/.test(x),
-        L = b || A || /Mobile|Tablet/.test(x),
+        C = /Android/.test(x),
+        L = b || C || /Mobile|Tablet/.test(x),
         v = /Chrome/.test(x) && !/Edge|Edg/.test(x),
         y = /Edge|Edg/.test(x),
-        N = /Firefox/.test(x),
+        A = /Firefox/.test(x),
         k = /Safari/.test(x) && !/Chrome|CriOS|FxiOS/.test(x),
         w = /OPR|Opera/.test(x),
         P = /SamsungBrowser/.test(x);
       l({
         isIOS: b,
-        isAndroid: A,
+        isAndroid: C,
         isMobile: L,
         isChrome: v,
         isEdge: y,
-        isFirefox: N,
+        isFirefox: A,
         isSafari: k,
         isOpera: w,
         isSamsung: P,
@@ -1842,23 +1842,23 @@ function ze() {
       (() => {
         const x = window.matchMedia('(display-mode: standalone)').matches,
           b = window.navigator.standalone === !0,
-          A = window.matchMedia('(display-mode: fullscreen)').matches,
+          C = window.matchMedia('(display-mode: fullscreen)').matches,
           L = window.matchMedia('(display-mode: minimal-ui)').matches,
-          v = x || b || A || L;
-        (h(v), v && console.log('✅ PWA is already installed'));
+          v = x || b || C || L;
+        (u(v), v && console.log('✅ PWA is already installed'));
       })());
     const f = (x) => {
-        (console.log('🚀 PWA installation prompt ready'), x.preventDefault(), t(x), n(!0));
+        (console.log('🚀 PWA installation prompt ready'), x.preventDefault(), t(x), o(!0));
       },
       j = () => {
         (console.log('✅ PWA installed successfully'),
-          h(!0),
-          n(!1),
+          u(!0),
+          o(!1),
           t(null),
           localStorage.setItem('pwa_installed', 'true'));
       };
     return (
-      i.supportsInstallPrompt &&
+      n.supportsInstallPrompt &&
         (window.addEventListener('beforeinstallprompt', f),
         window.addEventListener('appinstalled', j)),
       () => {
@@ -1866,21 +1866,21 @@ function ze() {
           window.removeEventListener('appinstalled', j));
       }
     );
-  }, [i.supportsInstallPrompt]);
+  }, [n.supportsInstallPrompt]);
   const d = async () => {
       if (!r) return (console.warn('⚠️ No deferred prompt available'), !1);
       try {
         r.prompt();
         const { outcome: c } = await r.userChoice;
         return c === 'accepted'
-          ? (console.log('✅ User accepted PWA installation'), n(!1), t(null), !0)
+          ? (console.log('✅ User accepted PWA installation'), o(!1), t(null), !0)
           : (console.log('❌ User declined PWA installation'), !1);
       } catch (c) {
         return (console.error('❌ PWA installation failed:', c), !1);
       }
     },
-    u = () => {
-      const { isIOS: c, isAndroid: o, isSafari: f, isFirefox: j, isChrome: x, isEdge: b } = i;
+    h = () => {
+      const { isIOS: c, isAndroid: i, isSafari: f, isFirefox: j, isChrome: x, isEdge: b } = n;
       return c && f
         ? {
             show: !0,
@@ -1898,7 +1898,7 @@ function ze() {
               show: !0,
               title: 'Installa con Firefox',
               icon: '🦊',
-              instructions: o
+              instructions: i
                 ? [
                     'Tocca il menu (3 punti) in alto a destra',
                     'Seleziona "Installa"',
@@ -1910,7 +1910,7 @@ function ze() {
                     'Conferma cliccando "Installa"',
                   ],
             }
-          : o && (x || b)
+          : i && (x || b)
             ? {
                 show: !0,
                 title: 'Installa su Android',
@@ -1922,7 +1922,7 @@ function ze() {
                   "L'app verrà aggiunta alla home screen",
                 ],
               }
-            : !i.isMobile && (x || b)
+            : !n.isMobile && (x || b)
               ? {
                   show: !0,
                   title: 'Installa sul Desktop',
@@ -1942,22 +1942,22 @@ function ze() {
       'caches' in window &&
       'PushManager' in window;
   return {
-    isInstallable: s ? !1 : !!((i.isIOS && i.isSafari) || (a && r) || i.isFirefox),
+    isInstallable: s ? !1 : !!((n.isIOS && n.isSafari) || (a && r) || n.isFirefox),
     isInstalled: s,
     installApp: d,
-    browserInfo: i,
+    browserInfo: n,
     isPWASupported: m(),
-    installInstructions: u(),
+    installInstructions: h(),
   };
 }
 function Ut({ className: r = '' }) {
   const {
       isInstallable: t,
       isInstalled: a,
-      installApp: n,
+      installApp: o,
       browserInfo: s,
-      isPWASupported: h,
-      installInstructions: i,
+      isPWASupported: u,
+      installInstructions: n,
     } = ze(),
     [l, d] = p.useState(!1);
   if (a)
@@ -1973,21 +1973,21 @@ function Ut({ className: r = '' }) {
         'App già installata',
       ],
     });
-  if (!h)
+  if (!u)
     return e.jsx('div', {
       className: `text-gray-500 text-sm ${r}`,
       children: 'Browser non supportato per PWA',
     });
   if (!t) return null;
-  const u = async () => {
-      if (i.show) {
+  const h = async () => {
+      if (n.show) {
         d(!0);
         return;
       }
       try {
-        (await n()) || (i.show && d(!0));
+        (await o()) || (n.show && d(!0));
       } catch (g) {
-        (console.error('Install failed:', g), i.show && d(!0));
+        (console.error('Install failed:', g), n.show && d(!0));
       }
     },
     m = () =>
@@ -2001,7 +2001,7 @@ function Ut({ className: r = '' }) {
   return e.jsxs(e.Fragment, {
     children: [
       e.jsxs('button', {
-        onClick: u,
+        onClick: h,
         className: `flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${r}`,
         children: [
           e.jsx('svg', {
@@ -2020,7 +2020,7 @@ function Ut({ className: r = '' }) {
         ],
       }),
       l &&
-        i.show &&
+        n.show &&
         e.jsx('div', {
           className: 'fixed inset-0 bg-black/50 flex items-center justify-center z-[99999] p-4',
           children: e.jsx('div', {
@@ -2031,11 +2031,11 @@ function Ut({ className: r = '' }) {
                 e.jsx('div', {
                   className:
                     'w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4',
-                  children: e.jsx('span', { className: 'text-3xl', children: i.icon }),
+                  children: e.jsx('span', { className: 'text-3xl', children: n.icon }),
                 }),
                 e.jsx('h3', {
                   className: 'text-xl font-bold text-gray-900 mb-2',
-                  children: i.title,
+                  children: n.title,
                 }),
                 e.jsx('p', {
                   className: 'text-gray-600 mb-6',
@@ -2043,7 +2043,7 @@ function Ut({ className: r = '' }) {
                 }),
                 e.jsx('div', {
                   className: 'text-left space-y-4 mb-8',
-                  children: i.instructions.map((g, c) =>
+                  children: n.instructions.map((g, c) =>
                     e.jsxs(
                       'div',
                       {
@@ -2103,7 +2103,7 @@ function Ut({ className: r = '' }) {
                       !s.isFirefox &&
                       e.jsx('button', {
                         onClick: async () => {
-                          (d(!1), await n());
+                          (d(!1), await o());
                         },
                         className:
                           'flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-4 rounded-xl font-medium transition-all shadow-lg',
@@ -2123,24 +2123,24 @@ function Ft() {
       isInstallable: r,
       isInstalled: t,
       installApp: a,
-      browserInfo: n,
+      browserInfo: o,
       installInstructions: s,
     } = ze(),
-    [h, i] = p.useState(!1),
+    [u, n] = p.useState(!1),
     [l, d] = p.useState(!1);
   if (t || !r) return null;
-  const u = async () => {
+  const h = async () => {
       if (s && s.show) {
-        i(!0);
+        n(!0);
         return;
       }
       try {
         await a();
       } catch (g) {
-        (console.error('Install failed:', g), s && s.show && i(!0));
+        (console.error('Install failed:', g), s && s.show && n(!0));
       }
     },
-    m = () => (n && n.isIOS ? '📱 Installa' : n && n.isAndroid ? '🤖 Installa' : 'Installa App');
+    m = () => (o && o.isIOS ? '📱 Installa' : o && o.isAndroid ? '🤖 Installa' : 'Installa App');
   return e.jsxs(e.Fragment, {
     children: [
       e.jsx('div', {
@@ -2168,7 +2168,7 @@ function Ft() {
                 'flex items-center bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-full shadow-lg backdrop-blur-sm',
               children: [
                 e.jsxs('button', {
-                  onClick: u,
+                  onClick: h,
                   className: 'flex items-center gap-2 px-4 py-3 text-sm font-medium',
                   children: [
                     e.jsx('svg', {
@@ -2205,7 +2205,7 @@ function Ft() {
               ],
             }),
       }),
-      h &&
+      u &&
         s &&
         s.show &&
         e.jsx('div', {
@@ -2252,19 +2252,19 @@ function Ft() {
                 e.jsxs('div', {
                   className: 'space-y-2',
                   children: [
-                    n &&
-                      !n.isIOS &&
-                      !n.isFirefox &&
+                    o &&
+                      !o.isIOS &&
+                      !o.isFirefox &&
                       e.jsx('button', {
                         onClick: async () => {
-                          (i(!1), await a());
+                          (n(!1), await a());
                         },
                         className:
                           'w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors',
                         children: 'Prova Auto-Install',
                       }),
                     e.jsx('button', {
-                      onClick: () => i(!1),
+                      onClick: () => n(!1),
                       className:
                         'w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 px-4 rounded-lg font-medium transition-colors text-sm',
                       children: 'Ho capito',
@@ -2278,18 +2278,18 @@ function Ft() {
     ],
   });
 }
-function Vt() {
+function Ht() {
   const [r, t] = p.useState(!0),
-    [a, n] = p.useState(!1);
+    [a, o] = p.useState(!1);
   return (p.useEffect(() => {}, []), null);
 }
-function Ht() {
-  const { user: r } = q(),
+function Vt() {
+  const { user: r } = G(),
     { clubMode: t, loading: a } = Me(),
-    { updatingFromCloud: n } = It(),
+    { updatingFromCloud: o } = It(),
     s = te(),
-    h = $e(),
-    i = C.useMemo(() => Tt(), []),
+    u = $e(),
+    n = N.useMemo(() => Tt(), []),
     l = [
       { id: 'dashboard', label: 'Dashboard', path: '/dashboard', public: !0 },
       { id: 'classifica', label: 'Classifica', path: '/classifica', public: !0 },
@@ -2312,21 +2312,21 @@ function Ht() {
       { id: 'extra', label: 'Extra', path: '/extra', public: !0 },
     ],
     d = s.pathname,
-    u = l.find((c) => c.path === d)?.id || '',
+    h = l.find((c) => c.path === d)?.id || '',
     m = (c) => {
-      if (u === c) {
+      if (h === c) {
         console.log(`Already on tab ${c}, preventing navigation`);
         return;
       }
-      const o = l.find((f) => f.id === c);
-      o && (console.log(`Navigating from ${u} to ${c}`), h(o.path, { replace: !0 }));
+      const i = l.find((f) => f.id === c);
+      i && (console.log(`Navigating from ${h} to ${c}`), u(i.path, { replace: !0 }));
     },
     g = d === '/dashboard' || d === '/';
   return e.jsxs('div', {
-    className: `min-h-screen safe-area-top safe-area-bottom ${i.text} ${g ? 'bg-gradient-to-b from-neutral-50 via-white to-neutral-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900' : i.pageBg}`,
+    className: `min-h-screen safe-area-top safe-area-bottom ${n.text} ${g ? 'bg-gradient-to-b from-neutral-50 via-white to-neutral-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900' : n.pageBg}`,
     children: [
       e.jsx('header', {
-        className: `sticky top-0 z-20 ${i.headerBg} safe-area-left safe-area-right`,
+        className: `sticky top-0 z-20 ${n.headerBg} safe-area-left safe-area-right`,
         children: e.jsxs('div', {
           className:
             'max-w-[1800px] mx-auto px-3 sm:px-4 py-3 flex items-center justify-between gap-2',
@@ -2357,7 +2357,7 @@ function Ht() {
                   className: 'hidden sm:block',
                   children: e.jsx(Ut, { className: 'text-xs px-3 py-1.5' }),
                 }),
-                e.jsx(Wt, { active: u, setActive: m, clubMode: t, T: i, user: r, navigation: l }),
+                e.jsx(Ot, { active: h, setActive: m, clubMode: t, T: n, user: r, navigation: l }),
               ],
             }),
           ],
@@ -2368,67 +2368,67 @@ function Ht() {
           'max-w-[1800px] mx-auto px-3 sm:px-4 py-5 sm:py-6 safe-area-left safe-area-right pb-20 md:pb-5',
         children: e.jsx(Ue, {}),
       }),
-      e.jsx($t, { active: u, setActive: m, navigation: l, clubMode: t }),
+      e.jsx($t, { active: h, setActive: m, navigation: l, clubMode: t }),
       e.jsx(Ft, {}),
-      e.jsx(Dt, {}),
-      e.jsx(Et, { visible: a || n, message: n ? 'Sincronizzazione...' : 'Caricamento...' }),
-      e.jsx(Vt, {}),
+      e.jsx(Wt, {}),
+      e.jsx(Et, { visible: a || o, message: o ? 'Sincronizzazione...' : 'Caricamento...' }),
+      e.jsx(Ht, {}),
     ],
   });
 }
-const Gt = C.lazy(() =>
-    M(() => import('./LoginPage-mfi3xrqx-C7WqHhAp.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
+const qt = N.lazy(() =>
+    M(() => import('./LoginPage-mfi9c35w-DfX0F0ZP.js'), __vite__mapDeps([0, 1, 2, 3, 4]))
   ),
-  qt = C.lazy(() =>
-    M(() => import('./DashboardPage-mfi3xrqx-DSFZpMix.js'), __vite__mapDeps([5, 1, 2, 4]))
+  Gt = N.lazy(() =>
+    M(() => import('./DashboardPage-mfi9c35w-CKfMyj6P.js'), __vite__mapDeps([5, 1, 2, 4]))
   ),
-  Jt = C.lazy(() =>
-    M(() => import('./ClassificaPage-mfi3xrqx-uaL-W3Zk.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
+  Jt = N.lazy(() =>
+    M(() => import('./ClassificaPage-mfi9c35w-Dy3DFrZb.js'), __vite__mapDeps([6, 1, 2, 3, 7, 8, 4]))
   ),
-  Kt = C.lazy(() =>
+  Kt = N.lazy(() =>
     M(
-      () => import('./StatsPage-mfi3xrqx-C6vU89wi.js'),
+      () => import('./StatsPage-mfi9c35w-B6efK7vh.js'),
       __vite__mapDeps([9, 1, 2, 3, 8, 7, 10, 11, 4])
     )
   ),
-  Yt = C.lazy(() =>
+  Yt = N.lazy(() =>
     M(
-      () => import('./BookingPage-mfi3xrqx-9KNPwtCp.js'),
+      () => import('./BookingPage-mfi9c35w-C451-uo2.js'),
       __vite__mapDeps([12, 1, 2, 13, 14, 15, 16, 17, 4])
     )
   ),
-  Xt = C.lazy(() =>
+  Xt = N.lazy(() =>
     M(
-      () => import('./LessonBookingPage-mfi3xrqx-H0CGnnkt.js'),
+      () => import('./LessonBookingPage-mfi9c35w-M3jHeE4U.js'),
       __vite__mapDeps([18, 1, 2, 3, 13, 14, 19, 16, 17, 4, 10])
     )
   ),
-  Zt = C.lazy(() =>
+  Zt = N.lazy(() =>
     M(
-      () => import('./PlayersPage-mfi3xrqx-CnZ6QZ6p.js'),
+      () => import('./PlayersPage-mfi9c35w-CKYsKjPA.js'),
       __vite__mapDeps([20, 1, 2, 3, 10, 11, 19, 17, 4])
     )
   ),
-  Qt = C.lazy(() =>
-    M(() => import('./MatchesPage-mfi3xrqx-Cv7SYm2t.js'), __vite__mapDeps([21, 1, 2, 3, 11, 4]))
+  Qt = N.lazy(() =>
+    M(() => import('./MatchesPage-mfi9c35w-B9v02FR2.js'), __vite__mapDeps([21, 1, 2, 3, 11, 4]))
   ),
-  er = C.lazy(() =>
-    M(() => import('./TournamentsPage-mfi3xrqx-Cflgg-8P.js'), __vite__mapDeps([22, 1, 2, 3, 4]))
+  er = N.lazy(() =>
+    M(() => import('./TournamentsPage-mfi9c35w-DhAFG3Nl.js'), __vite__mapDeps([22, 1, 2, 3, 4]))
   ),
-  tr = C.lazy(() =>
-    M(() => import('./ProfilePage-mfi3xrqx-DsO4TPJ6.js'), __vite__mapDeps([23, 1, 2, 3, 4]))
+  tr = N.lazy(() =>
+    M(() => import('./ProfilePage-mfi9c35w-D-gm9rlB.js'), __vite__mapDeps([23, 1, 2, 3, 4]))
   ),
-  rr = C.lazy(() =>
-    M(() => import('./ExtraPage-mfi3xrqx-B6xLF1I1.js'), __vite__mapDeps([24, 1, 2, 3, 25, 4]))
+  rr = N.lazy(() =>
+    M(() => import('./ExtraPage-mfi9c35w-CW9phrcX.js'), __vite__mapDeps([24, 1, 2, 3, 25, 4]))
   ),
-  ar = C.lazy(() =>
+  ar = N.lazy(() =>
     M(
-      () => import('./AdminBookingsPage-mfi3xrqx-Ckmvq-Df.js'),
+      () => import('./AdminBookingsPage-mfi9c35w-DrLAh06x.js'),
       __vite__mapDeps([26, 1, 2, 3, 10, 25, 15, 16, 17, 4, 19])
     )
   ),
-  sr = C.lazy(() =>
-    M(() => import('./DarkModeTestPage-mfi3xrqx-4aqyT1im.js'), __vite__mapDeps([27, 1, 2, 14, 4]))
+  sr = N.lazy(() =>
+    M(() => import('./DarkModeTestPage-mfi9c35w-BQ2xmeDh.js'), __vite__mapDeps([27, 1, 2, 14, 4]))
   );
 function or() {
   return e.jsx(_t, {
@@ -2438,15 +2438,15 @@ function or() {
           children: e.jsx(Lt, {
             children: e.jsx(p.Suspense, {
               fallback: e.jsx(se, {}),
-              children: e.jsxs(Ve, {
+              children: e.jsxs(He, {
                 children: [
-                  e.jsx(_, { path: '/login', element: e.jsx(Bt, { children: e.jsx(Gt, {}) }) }),
+                  e.jsx(_, { path: '/login', element: e.jsx(Bt, { children: e.jsx(qt, {}) }) }),
                   e.jsxs(_, {
                     path: '/',
-                    element: e.jsx(Rt, { children: e.jsx(Ht, {}) }),
+                    element: e.jsx(Rt, { children: e.jsx(Vt, {}) }),
                     children: [
                       e.jsx(_, { index: !0, element: e.jsx($, { to: 'dashboard', replace: !0 }) }),
-                      e.jsx(_, { path: 'dashboard', element: e.jsx(qt, {}) }),
+                      e.jsx(_, { path: 'dashboard', element: e.jsx(Gt, {}) }),
                       e.jsx(_, { path: 'classifica', element: e.jsx(Jt, {}) }),
                       e.jsx(_, { path: 'stats', element: e.jsx(Kt, {}) }),
                       e.jsx(_, { path: 'booking', element: e.jsx(Yt, {}) }),
@@ -2604,49 +2604,132 @@ class nr {
   }
 }
 const ee = new nr(),
-  gr = Object.freeze(
+  pr = Object.freeze(
     Object.defineProperty({ __proto__: null, default: ee, updateService: ee }, Symbol.toStringTag, {
       value: 'Module',
     })
   );
-'serviceWorker' in navigator &&
-  window.addEventListener('load', async () => {
+class ir {
+  constructor() {
+    ((this.currentHash = null), (this.checkInterval = null), (this.isChecking = !1));
+  }
+  extractCurrentHash() {
     try {
-      (await ee.init(), console.log('✅ Update Service initialized'));
-    } catch (r) {
-      console.error('❌ Update Service failed:', r);
+      const t = document.querySelectorAll('link[rel="stylesheet"]');
+      for (const u of t) {
+        const n = u.href.match(/assets\/index-([^-]+)-/);
+        if (n) return n[1];
+      }
+      const a = document.querySelectorAll('script[src*="/assets/"]');
+      for (const u of a) {
+        const n = u.src.match(/assets\/[^-]+-([^-]+)-/);
+        if (n) return n[1];
+      }
+      const s = document.documentElement.outerHTML.match(/assets\/index-([a-z0-9]+)-/);
+      return s ? s[1] : null;
+    } catch (t) {
+      return (console.error('[HashChecker] Error extracting hash:', t), null);
     }
-  });
+  }
+  init() {
+    console.log('[HashChecker] Temporarily disabled to prevent refresh loops');
+  }
+  async checkForUpdates() {
+    try {
+      if (!navigator.serviceWorker || !navigator.serviceWorker.controller) return;
+      const t = new MessageChannel();
+      return new Promise((a) => {
+        ((t.port1.onmessage = (o) => {
+          const { hashMismatch: s, currentHash: u, clientHash: n } = o.data;
+          (s &&
+            (console.log('[HashChecker] Hash mismatch detected!'),
+            console.log('Client hash:', n),
+            console.log('SW hash:', u),
+            this.handleHashMismatch()),
+            a(o.data));
+        }),
+          navigator.serviceWorker.controller.postMessage(
+            { type: 'CHECK_HASH', hash: this.currentHash },
+            [t.port2]
+          ));
+      });
+    } catch (t) {
+      console.error('[HashChecker] Update check failed:', t);
+    }
+  }
+  handleHashMismatch() {
+    this.clearCacheAndReload();
+  }
+  async clearCacheAndReload() {
+    try {
+      if ((console.log('[HashChecker] Clearing cache and reloading...'), 'caches' in window)) {
+        const t = await caches.keys();
+        await Promise.all(t.map((a) => caches.delete(a)));
+      }
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        const t = new MessageChannel();
+        ((t.port1.onmessage = () => {
+          setTimeout(() => {
+            window.location.reload(!0);
+          }, 500);
+        }),
+          navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' }, [t.port2]));
+      } else
+        setTimeout(() => {
+          window.location.reload(!0);
+        }, 500);
+    } catch (t) {
+      (console.error('[HashChecker] Cache clear failed:', t), window.location.reload(!0));
+    }
+  }
+  stop() {
+    (this.checkInterval && (clearInterval(this.checkInterval), (this.checkInterval = null)),
+      (this.isChecking = !1));
+  }
+  async forceCheck() {
+    return this.checkForUpdates();
+  }
+}
+const lr = new ir();
+'serviceWorker' in navigator
+  ? window.addEventListener('load', async () => {
+      try {
+        (ee.init(), lr.init(), console.log('✅ Update Service initialized'));
+      } catch (r) {
+        console.error('❌ Update Service failed:', r);
+      }
+    })
+  : console.log('🔧 Service Worker disabled in development mode');
 const Te = document.getElementById('root');
 if (!Te) throw new Error('Elemento #root non trovato in index.html');
-lt.createRoot(Te).render(e.jsx(C.StrictMode, { children: e.jsx(or, {}) }));
+lt.createRoot(Te).render(e.jsx(N.StrictMode, { children: e.jsx(or, {}) }));
 export {
   I as D,
   Be as L,
   M as _,
-  mt as a,
-  ht as b,
+  ht as a,
+  mt as b,
   xt as c,
   wt as d,
   ze as e,
   It as f,
-  hr as g,
+  fr as g,
   X as h,
-  mr as i,
+  gr as i,
   e as j,
   Me as k,
   bt as l,
   vt as m,
-  Nt as n,
+  At as n,
   E as o,
   F as p,
   z as q,
-  At as r,
-  G as s,
+  Ct as r,
+  q as s,
   Tt as t,
-  q as u,
+  G as u,
   re as v,
-  dr as w,
-  ur as x,
-  gr as y,
+  hr as w,
+  mr as x,
+  pr as y,
 };

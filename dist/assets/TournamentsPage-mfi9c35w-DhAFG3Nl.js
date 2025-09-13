@@ -1,8 +1,8 @@
-import { j as e, k as s, t as i } from './index-mfi3xrqx-VPQ73D1g.js';
-import { c as n, b as o } from './router-mfi3xrqx-CHJqmtwD.js';
-import { S as c } from './Section-mfi3xrqx-C-mnImjO.js';
-import './vendor-mfi3xrqx-D3F3s8fL.js';
-import './firebase-mfi3xrqx-X_I_guKF.js';
+import { j as e, k as s, t as i } from './index-mfi9c35w-CsSxx0JE.js';
+import { c as n, b as o } from './router-mfi9c35w-8jyiX-w-.js';
+import { S as c } from './Section-mfi9c35w-BVpF_AdT.js';
+import './vendor-mfi9c35w-D3F3s8fL.js';
+import './firebase-mfi9c35w-X_I_guKF.js';
 function l({ T: a }) {
   return e.jsx(c, {
     title: 'Crea Tornei',
