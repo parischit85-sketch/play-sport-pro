@@ -1,14 +1,14 @@
-import { j as e, i as fe, u as ge, f as je, k as ke, t as Ne } from './index-mfh82qsn-DzXPqwq9.js';
-import { r as m, b as we } from './router-mfh82qsn-Bc5I10Ra.js';
-import { S as K } from './Section-mfh82qsn-Cz7s2yQ_.js';
-import { B as be } from './Badge-mfh82qsn-BKfo2CO2.js';
-import { c as Se } from './design-system-mfh82qsn-B5fzZ68S.js';
-import { P as te, c as Ce, a as $e } from './playerTypes-mfh82qsn-CIm-hM8a.js';
-import { b as ze, u as Ie } from './useUnifiedBookings-mfh82qsn-w0TipWxN.js';
-import { M as he } from './Modal-mfh82qsn-CAuX7xtz.js';
-import './vendor-mfh82qsn-D3F3s8fL.js';
-import './firebase-mfh82qsn-X_I_guKF.js';
-import './unified-booking-service-mfh82qsn-s4tISnVR.js';
+import { j as e, i as fe, u as ge, f as je, k as ke, t as Ne } from './index-mfi3xrqx-VPQ73D1g.js';
+import { r as m, b as we } from './router-mfi3xrqx-CHJqmtwD.js';
+import { S as K } from './Section-mfi3xrqx-C-mnImjO.js';
+import { B as be } from './Badge-mfi3xrqx-BYFA4bzL.js';
+import { c as Se } from './design-system-mfi3xrqx-B5fzZ68S.js';
+import { P as te, c as Ce, a as $e } from './playerTypes-mfi3xrqx-CIm-hM8a.js';
+import { b as ze, u as Ie } from './useUnifiedBookings-mfi3xrqx-DPQ_L2-K.js';
+import { M as he } from './Modal-mfi3xrqx-Z0JKSJ-p.js';
+import './vendor-mfi3xrqx-D3F3s8fL.js';
+import './firebase-mfi3xrqx-X_I_guKF.js';
+import './unified-booking-service-mfi3xrqx-D9ZNhZ3r.js';
 function De({
   T: s,
   ds: u,
@@ -213,7 +213,7 @@ function De({
                     'px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600',
                   children: '+ Aggiungi Fascia Oraria',
                 }),
-                '              ',
+                ' ',
                 (d.timeSlots || []).length === 0
                   ? e.jsx('div', {
                       className: `text-center py-8 ${s.subtext}`,

@@ -1,5 +1,5 @@
-import { j as t } from './index-mfh82qsn-DzXPqwq9.js';
-import { r as x, a as b } from './router-mfh82qsn-Bc5I10Ra.js';
+import { j as t } from './index-mfi3xrqx-VPQ73D1g.js';
+import { r as x, a as b } from './router-mfi3xrqx-CHJqmtwD.js';
 function w({ open: s, isOpen: o, onClose: a, title: n, children: d, T: u, size: l = 'md' }) {
   const r = typeof o == 'boolean' ? o : s;
   if (

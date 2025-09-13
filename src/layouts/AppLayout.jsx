@@ -51,9 +51,17 @@ export default function AppLayout() {
   const activeTab = navigation.find((nav) => nav.path === currentPath)?.id || '';
 
   const handleTabChange = (tabId) => {
+    // Prevent navigation if already on the same tab (iOS fix for refresh issue)
+    if (activeTab === tabId) {
+      console.log(`Already on tab ${tabId}, preventing navigation`);
+      return;
+    }
+
     const nav = navigation.find((n) => n.id === tabId);
     if (nav) {
-      navigate(nav.path);
+      console.log(`Navigating from ${activeTab} to ${tabId}`);
+      // Use replace instead of push to prevent back stack issues on iOS
+      navigate(nav.path, { replace: true });
     }
   };
 

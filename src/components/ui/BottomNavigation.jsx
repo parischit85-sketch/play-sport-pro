@@ -7,12 +7,32 @@ import React, { useState } from 'react';
 export default function BottomNavigation({ active, setActive, navigation = [], clubMode = false }) {
   const [showClubMenu, setShowClubMenu] = useState(false);
 
-  // Handle navigation clicks
-  const handleNavClick = (item) => {
-    setActive(item.id);
-    if (showClubMenu) {
-      setShowClubMenu(false); // Chiudi il menu se è aperto
+  // Detect iOS
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+  // Handle navigation clicks with iOS specific fixes
+  const handleNavClick = (item, event) => {
+    // Prevent default behavior and stop propagation
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
     }
+
+    // Prevent navigation to same tab (especially for profile refresh issue)
+    if (active === item.id) {
+      return;
+    }
+
+    // Set active immediately on iOS, with small delay on other platforms
+    const delay = isIOS ? 0 : 50;
+    setTimeout(() => {
+      setActive(item.id);
+      if (showClubMenu) {
+        setShowClubMenu(false);
+      }
+    }, delay);
   };
 
   const toggleClubMenu = (event) => {
@@ -24,8 +44,10 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
   const handleClubItemClick = (item, event) => {
     event.stopPropagation();
     event.preventDefault();
-    setActive(item.id);
-    setShowClubMenu(false); // Chiudi solo quando si seleziona un'opzione
+    setTimeout(() => {
+      setActive(item.id);
+      setShowClubMenu(false); // Chiudi solo quando si seleziona un'opzione
+    }, 50);
   };
 
   // Mobile navigation items - always 5 base items
@@ -324,8 +346,8 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
                 ? 'text-blue-500 dark:text-blue-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
             }`}
-            onClick={() => handleNavClick(item)}
-            onTouchEnd={() => handleNavClick(item)}
+            onClick={!isIOS ? (e) => handleNavClick(item, e) : undefined}
+            onTouchEnd={isIOS ? (e) => handleNavClick(item, e) : undefined}
             style={{
               WebkitTapHighlightColor: 'rgba(0,0,0,0)',
               WebkitTouchCallout: 'none',
@@ -368,7 +390,8 @@ export default function BottomNavigation({ active, setActive, navigation = [], c
                 ? 'text-blue-500 dark:text-blue-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
             }`}
-            onClick={toggleClubMenu}
+            onClick={!isIOS ? (e) => toggleClubMenu(e) : undefined}
+            onTouchEnd={isIOS ? (e) => toggleClubMenu(e) : undefined}
             style={{
               WebkitTapHighlightColor: 'rgba(0,0,0,0)',
               WebkitTouchCallout: 'none',
