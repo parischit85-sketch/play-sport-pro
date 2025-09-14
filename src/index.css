@@ -387,3 +387,50 @@ a,
 .border-2 {
   border-width: 0px;
 }
+
+/* ===== DARK MODE SELECT FIXES ===== */
+/* Fix per i menù a tendina in dark mode */
+@media (prefers-color-scheme: dark) {
+  select option {
+    background-color: rgb(55, 65, 81) !important; /* gray-700 */
+    color: rgb(229, 231, 235) !important; /* gray-200 */
+  }
+  
+  select option:checked {
+    background-color: rgb(59, 130, 246) !important; /* blue-500 */
+    color: white !important;
+  }
+}
+
+/* Per gli utenti che forzano la dark mode */
+.dark select option {
+  background-color: rgb(55, 65, 81) !important; /* gray-700 */
+  color: rgb(229, 231, 235) !important; /* gray-200 */
+}
+
+.dark select option:checked {
+  background-color: rgb(59, 130, 246) !important; /* blue-500 */
+  color: white !important;
+}
+
+/* Fix specifico per WebKit browsers (Safari, Chrome) */
+@media (prefers-color-scheme: dark) {
+  select {
+    color-scheme: dark;
+  }
+}
+
+.dark select {
+  color-scheme: dark;
+}
+
+/* Force proper text color in select dropdowns */
+select.dark-select option {
+  background-color: rgb(55, 65, 81) !important;
+  color: rgb(229, 231, 235) !important;
+}
+
+.dark select.dark-select option {
+  background-color: rgb(55, 65, 81) !important;
+  color: rgb(229, 231, 235) !important;
+}

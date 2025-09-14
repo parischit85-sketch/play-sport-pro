@@ -1301,7 +1301,7 @@ export default function PrenotazioneCampi({
                   {labelPlayers.map((name, i) => (
                     <span
                       key={i}
-                      className="bg-white/20 px-1 py-0.5 rounded text-[9px] font-medium"
+                      className="bg-white/20 dark:bg-gray-800/40 px-1 py-0.5 rounded text-[9px] font-medium"
                     >
                       {name}
                     </span>
@@ -1416,7 +1416,7 @@ export default function PrenotazioneCampi({
             <h3 className="text-lg font-medium mb-2 text-gray-900 dark:text-white">
               Caricamento...
             </h3>
-            <p className="text-gray-500">
+            <p className="text-gray-500 dark:text-gray-400">
               Caricamento configurazione campi in corso...
             </p>
           </div>
@@ -1904,259 +1904,192 @@ export default function PrenotazioneCampi({
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-3xl blur-xl"></div>
                 <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/30 p-4 shadow-2xl">
                   <div className="grid sm:grid-cols-2 gap-4">
-                    {/* Tipo prenotazione */}
-                    <div className="sm:col-span-2 flex flex-col gap-1">
-                      <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                        🎯 Tipo prenotazione
-                      </label>
-                      <select
-                        value={form.bookingType}
-                        onChange={(e) => {
-                          const newType = e.target.value;
-                          setForm((f) => ({
-                            ...f,
-                            bookingType: newType,
-                            instructorId:
-                              newType === "partita" ? "" : f.instructorId,
-                            participants:
-                              newType === "lezione"
-                                ? f.participants || 1
-                                : f.participants,
-                          }));
-                        }}
-                        className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
-                      >
-                        <option value="partita">🏓 Partita</option>
-                        <option value="lezione">👨‍🏫 Lezione</option>
-                      </select>
-                    </div>
+                    {/* Prima riga: Tipo prenotazione - Maestro - Numero partecipanti */}
+                    <div className="sm:col-span-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {/* Tipo prenotazione */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                            🎯 Tipo prenotazione
+                          </label>
+                          <select
+                            value={form.bookingType}
+                            onChange={(e) => {
+                              const newType = e.target.value;
+                              setForm((f) => ({
+                                ...f,
+                                bookingType: newType,
+                                instructorId:
+                                  newType === "partita" ? "" : f.instructorId,
+                                participants:
+                                  newType === "lezione"
+                                    ? f.participants || 1
+                                    : f.participants,
+                              }));
+                            }}
+                            className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium dark-select"
+                          >
+                            <option value="partita">🏓 Partita</option>
+                            <option value="lezione">👨‍🏫 Lezione</option>
+                          </select>
+                        </div>
 
-                    {/* Selettore istruttore - mostrato solo per lezioni */}
-                    {form.bookingType === "lezione" && (
-                      <div className="sm:col-span-2 flex flex-col gap-1">
-                        <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                          👨‍🏫 Maestro
-                        </label>
-                        <select
-                          value={form.instructorId}
-                          onChange={(e) =>
-                            setForm((f) => ({
-                              ...f,
-                              instructorId: e.target.value,
-                            }))
-                          }
-                          className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
-                          required={form.bookingType === "lezione"}
-                        >
-                          <option value="">-- Seleziona un maestro --</option>
-                          {instructors.map((instructor) => (
-                            <option key={instructor.id} value={instructor.id}>
-                              {instructor.name}
-                              {instructor.instructorData?.specialties?.length >
-                                0 &&
-                                ` (${instructor.instructorData.specialties.join(", ")})`}
+                        {/* Maestro */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                            👨‍🏫 Maestro
+                          </label>
+                          <select
+                            value={form.instructorId}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                instructorId: e.target.value,
+                              }))
+                            }
+                            className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium disabled:opacity-50 dark-select"
+                            required={form.bookingType === "lezione"}
+                            disabled={form.bookingType !== "lezione"}
+                          >
+                            <option value="">
+                              {form.bookingType === "lezione" 
+                                ? "-- Seleziona un maestro --"
+                                : "-- Non necessario per partite --"}
                             </option>
-                          ))}
-                        </select>
-                        {form.bookingType === "lezione" &&
-                          !form.instructorId && (
-                            <div className="text-sm text-red-600 dark:text-red-400 bg-red-50/50 dark:bg-red-900/20 backdrop-blur-sm px-3 py-2 rounded-lg border border-red-200/50 dark:border-red-800/30">
-                              ⚠️ Seleziona un maestro per le lezioni
-                            </div>
-                          )}
-                      </div>
-                    )}
-
-                    {/* Partecipanti (solo lezioni) */}
-                    {form.bookingType === "lezione" && (
-                      <div className="sm:col-span-2 flex flex-col gap-1">
-                        <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                          👥 Partecipanti
-                        </label>
-                        <select
-                          value={form.participants}
-                          onChange={(e) => {
-                            const val = Number(e.target.value);
-                            setForm((f) => ({
-                              ...f,
-                              participants: val,
-                              // Se si riduce il numero partecipanti, svuota campi giocatori eccedenti
-                              p3Name: val < 3 ? "" : f.p3Name,
-                              p4Name: val < 4 ? "" : f.p4Name,
-                            }));
-                          }}
-                          className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
-                        >
-                          {[1, 2, 3, 4].map((n) => (
-                            <option key={n} value={n}>
-                              {n}
-                            </option>
-                          ))}
-                        </select>
-                        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                          Il prezzo della lezione si adatta automaticamente al
-                          numero di partecipanti.
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex flex-col gap-1">
-                      <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                        🏟️ Campo
-                      </label>
-                      <select
-                        value={form.courtId}
-                        onChange={(e) =>
-                          setForm((f) => ({ ...f, courtId: e.target.value }))
-                        }
-                        className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
-                      >
-                        {state.courts.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.name}
-                          </option>
-                        ))}
-                      </select>
-                      {form.courtId &&
-                        hasPromoSlot(form.courtId, form.start) && (
-                          <div className="text-sm bg-gradient-to-r from-yellow-400/80 to-orange-400/80 text-yellow-900 dark:text-yellow-100 px-2 py-1 rounded-lg font-semibold inline-flex items-center gap-1 w-fit backdrop-blur-sm border border-yellow-300/50">
-                            🏷️ Fascia Promo
-                          </div>
-                        )}
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                        ⏰ Inizio
-                      </label>
-                      <input
-                        type="time"
-                        value={`${String(new Date(form.start).getHours()).padStart(2, "0")}:${String(new Date(form.start).getMinutes()).padStart(2, "0")}`}
-                        onChange={(e) => {
-                          const [hh, mm] = e.target.value
-                            .split(":")
-                            .map(Number);
-                          const d = new Date(form.start);
-                          d.setHours(hh, mm, 0, 0);
-                          setForm((f) => ({
-                            ...f,
-                            start: floorToSlot(d, cfg.slotMinutes),
-                          }));
-                        }}
-                        className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                        ⏱️ Durata
-                      </label>
-                      <select
-                        value={form.duration}
-                        onChange={(e) =>
-                          setForm((f) => ({
-                            ...f,
-                            duration: Number(e.target.value),
-                          }))
-                        }
-                        className="px-4 py-3 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
-                      >
-                        {(cfg.defaultDurations || [60, 90, 120]).map((m) => (
-                          <option key={m} value={m}>
-                            {m} minuti
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="sm:col-span-1">
-                      {/* Addon in layout futuristico - compatto */}
-                      <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-2 border border-white/20 dark:border-gray-600/20">
-                        <div className="flex items-center gap-1 mb-1">
-                          <h3 className="text-xs font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                            ⚡ Servizi
-                          </h3>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          {cfg.addons?.lightingEnabled && (
-                            <label className="inline-flex items-center gap-2 cursor-pointer bg-blue-50/50 dark:bg-blue-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-blue-200/50 dark:border-blue-800/30 hover:bg-blue-100/50 dark:hover:bg-blue-800/30 transition-all duration-200">
-                              <input
-                                type="checkbox"
-                                checked={form.useLighting}
-                                onChange={(e) =>
-                                  setForm((f) => ({
-                                    ...f,
-                                    useLighting: e.target.checked,
-                                  }))
-                                }
-                                className="w-4 h-4 text-blue-600 bg-white/50 border-blue-300 rounded focus:ring-blue-500 focus:ring-2"
-                              />
-                              <div className="flex flex-col">
-                                <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                                  💡 Illuminazione
-                                </span>
-                                <span className="text-xs text-blue-600 dark:text-blue-400">
-                                  +{euro(cfg.addons.lightingFee || 0)}
-                                </span>
-                              </div>
-                            </label>
-                          )}
-                          {cfg.addons?.heatingEnabled &&
-                            (() => {
-                              const selectedCourt = courts.find(
-                                (c) => c.id === form.courtId,
-                              );
-                              return (
-                                selectedCourt?.hasHeating && (
-                                  <label className="inline-flex items-center gap-2 cursor-pointer bg-purple-50/50 dark:bg-purple-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-purple-200/50 dark:border-purple-800/30 hover:bg-purple-100/50 dark:hover:bg-purple-800/30 transition-all duration-200">
-                                    <input
-                                      type="checkbox"
-                                      checked={form.useHeating}
-                                      onChange={(e) =>
-                                        setForm((f) => ({
-                                          ...f,
-                                          useHeating: e.target.checked,
-                                        }))
-                                      }
-                                      className="w-4 h-4 text-purple-600 bg-white/50 border-purple-300 rounded focus:ring-purple-500 focus:ring-2"
-                                    />
-                                    <div className="flex flex-col">
-                                      <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
-                                        🔥 Riscaldamento
-                                      </span>
-                                      <span className="text-xs text-purple-600 dark:text-purple-400">
-                                        +{euro(cfg.addons.heatingFee || 0)}
-                                      </span>
-                                    </div>
-                                  </label>
-                                )
-                              );
-                            })()}
+                            {instructors.map((instructor) => (
+                              <option key={instructor.id} value={instructor.id}>
+                                {instructor.name}
+                                {instructor.instructorData?.specialties?.length >
+                                  0 &&
+                                  ` (${instructor.instructorData.specialties.join(", ")})`}
+                              </option>
+                            ))}
+                          </select>
                         </div>
 
-                        {/* Totale separato */}
-                        <div className="mt-4 flex justify-end">
-                          <div className="bg-gradient-to-r from-emerald-500/90 to-blue-500/90 backdrop-blur-xl rounded-xl border border-white/20 px-4 py-3 shadow-xl">
-                            <div className="text-right">
-                              <div className="text-lg font-bold text-white">
-                                Totale:{" "}
-                                {previewPrice == null
-                                  ? "—"
-                                  : euro(previewPrice)}
-                              </div>
-                              {previewPrice != null && perPlayer != null && (
-                                <div className="text-sm text-emerald-100 mt-1">
-                                  {form.bookingType === "lezione"
-                                    ? `/ partecipante: ${euro2(perPlayer)}`
-                                    : `/ giocatore: ${euro2(perPlayer)}`}
-                                </div>
-                              )}
-                            </div>
+                        {/* Numero partecipanti */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                            👥 Partecipanti
+                          </label>
+                          <select
+                            value={form.participants}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              setForm((f) => ({
+                                ...f,
+                                participants: val,
+                                // Se si riduce il numero partecipanti, svuota campi giocatori eccedenti
+                                p3Name: val < 3 ? "" : f.p3Name,
+                                p4Name: val < 4 ? "" : f.p4Name,
+                              }));
+                            }}
+                            className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium disabled:opacity-50 dark-select"
+                            disabled={form.bookingType !== "lezione"}
+                          >
+                            {[1, 2, 3, 4].map((n) => (
+                              <option key={n} value={n}>
+                                {n}
+                              </option>
+                            ))}
+                          </select>
+                          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                            {form.bookingType === "lezione" 
+                              ? "Il prezzo della lezione si adatta automaticamente al numero di partecipanti."
+                              : "Non necessario per le partite"}
                           </div>
                         </div>
                       </div>
+
+                      {/* Messaggio di errore per maestro mancante */}
+                      {form.bookingType === "lezione" && !form.instructorId && (
+                        <div className="sm:col-span-2">
+                          <div className="text-sm text-red-600 dark:text-red-400 bg-red-50/50 dark:bg-red-900/20 backdrop-blur-sm px-3 py-2 rounded-lg border border-red-200/50 dark:border-red-800/30">
+                            ⚠️ Seleziona un maestro per le lezioni
+                          </div>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Giocatori in grid futuristica */}
-                    <div>
+                    {/* Campo, Inizio e Durata sulla stessa riga */}
+                    <div className="sm:col-span-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {/* Campo */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                            🏟️ Campo
+                          </label>
+                          <select
+                            value={form.courtId}
+                            onChange={(e) =>
+                              setForm((f) => ({ ...f, courtId: e.target.value }))
+                            }
+                            className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium dark-select"
+                          >
+                            {state.courts.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </select>
+                          {form.courtId &&
+                            hasPromoSlot(form.courtId, form.start) && (
+                              <div className="text-xs bg-gradient-to-r from-yellow-400/80 to-orange-400/80 text-yellow-900 dark:text-yellow-100 px-2 py-1 rounded-lg font-semibold inline-flex items-center gap-1 w-fit backdrop-blur-sm border border-yellow-300/50 mt-1">
+                                🏷️ Promo
+                              </div>
+                            )}
+                        </div>
+
+                        {/* Inizio */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                            ⏰ Inizio
+                          </label>
+                          <input
+                            type="time"
+                            value={`${String(new Date(form.start).getHours()).padStart(2, "0")}:${String(new Date(form.start).getMinutes()).padStart(2, "0")}`}
+                            onChange={(e) => {
+                              const [hh, mm] = e.target.value
+                                .split(":")
+                                .map(Number);
+                              const d = new Date(form.start);
+                              d.setHours(hh, mm, 0, 0);
+                              setForm((f) => ({
+                                ...f,
+                                start: floorToSlot(d, cfg.slotMinutes),
+                              }));
+                            }}
+                            className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
+                          />
+                        </div>
+
+                        {/* Durata */}
+                        <div className="flex flex-col gap-1">
+                          <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                            ⏱️ Durata
+                          </label>
+                          <select
+                            value={form.duration}
+                            onChange={(e) =>
+                              setForm((f) => ({
+                                ...f,
+                                duration: Number(e.target.value),
+                              }))
+                            }
+                            className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium dark-select"
+                          >
+                            {(cfg.defaultDurations || [60, 90, 120]).map((m) => (
+                              <option key={m} value={m}>
+                                {m} min
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Giocatori in grid futuristica - spostato qui */}
+                    <div className="sm:col-span-2">
                       <div className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-2">
                         👥 Giocatori
                       </div>
@@ -2195,6 +2128,94 @@ export default function PrenotazioneCampi({
                       </div>
                     </div>
 
+                    <div className="sm:col-span-1">
+                      {/* Addon in layout futuristico - compatto */}
+                      <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-2 border border-white/20 dark:border-gray-600/20">
+                        <div className="flex items-center gap-1 mb-1">
+                          <h3 className="text-xs font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                            ⚡ Servizi
+                          </h3>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          {cfg.addons?.lightingEnabled && (
+                            <label className="inline-flex items-center gap-2 cursor-pointer bg-blue-50/50 dark:bg-blue-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-blue-200/50 dark:border-blue-800/30 hover:bg-blue-100/50 dark:hover:bg-blue-800/30 transition-all duration-200">
+                              <input
+                                type="checkbox"
+                                checked={form.useLighting}
+                                onChange={(e) =>
+                                  setForm((f) => ({
+                                    ...f,
+                                    useLighting: e.target.checked,
+                                  }))
+                                }
+                                className="w-4 h-4 text-blue-600 bg-white/50 dark:bg-gray-700/50 border-blue-300 dark:border-blue-600 rounded focus:ring-blue-500 focus:ring-2"
+                              />
+                              <div className="flex flex-col">
+                                <span className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                                  💡 Illuminazione
+                                </span>
+                                <span className="text-xs text-blue-600 dark:text-blue-400">
+                                  +{euro(cfg.addons.lightingFee || 0)}
+                                </span>
+                              </div>
+                            </label>
+                          )}
+                          {cfg.addons?.heatingEnabled &&
+                            (() => {
+                              const selectedCourt = courts.find(
+                                (c) => c.id === form.courtId,
+                              );
+                              return (
+                                selectedCourt?.hasHeating && (
+                                  <label className="inline-flex items-center gap-2 cursor-pointer bg-purple-50/50 dark:bg-purple-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-purple-200/50 dark:border-purple-800/30 hover:bg-purple-100/50 dark:hover:bg-purple-800/30 transition-all duration-200">
+                                    <input
+                                      type="checkbox"
+                                      checked={form.useHeating}
+                                      onChange={(e) =>
+                                        setForm((f) => ({
+                                          ...f,
+                                          useHeating: e.target.checked,
+                                        }))
+                                      }
+                                      className="w-4 h-4 text-purple-600 bg-white/50 dark:bg-gray-700/50 border-purple-300 dark:border-purple-600 rounded focus:ring-purple-500 focus:ring-2"
+                                    />
+                                    <div className="flex flex-col">
+                                      <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">
+                                        🔥 Riscaldamento
+                                      </span>
+                                      <span className="text-xs text-purple-600 dark:text-purple-400">
+                                        +{euro(cfg.addons.heatingFee || 0)}
+                                      </span>
+                                    </div>
+                                  </label>
+                                )
+                              );
+                            })()}
+                        </div>
+
+                        {/* Totale separato */}
+                        <div className="mt-4 flex justify-end">
+                          <div className="bg-gradient-to-r from-blue-700 to-blue-800 backdrop-blur-xl rounded-xl border border-blue-600/50 px-4 py-3 shadow-xl">
+                            <div className="text-right">
+                              <div className="text-lg font-black text-white">
+                                Totale:{" "}
+                                {previewPrice == null
+                                  ? "—"
+                                  : euro(previewPrice)}
+                              </div>
+                              {previewPrice != null && perPlayer != null && (
+                                <div className="text-sm text-blue-100 mt-1 font-semibold">
+                                  {form.bookingType === "lezione"
+                                    ? `/ partecipante: ${euro2(perPlayer)}`
+                                    : `/ giocatore: ${euro2(perPlayer)}`}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Prenotato da e note */}
                     <div className="space-y-3">
                       <div>
@@ -2227,21 +2248,21 @@ export default function PrenotazioneCampi({
 
                       <div>
                         <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-1 block">
-                          🎨 Colore prenotazione
+                          🎨 Colore
                           {form.bookingType === "lezione" &&
                             form.instructorId && (
-                              <span className="ml-2 text-xs text-blue-600 dark:text-blue-400 font-normal">
-                                (Colore del maestro)
+                              <span className="ml-1 text-xs text-blue-600 dark:text-blue-400 font-normal">
+                                (maestro)
                               </span>
                             )}
                           {form.bookingType === "partita" && (
-                            <span className="ml-2 text-xs text-pink-600 dark:text-pink-400 font-normal">
-                              (Colore standard partita)
+                            <span className="ml-1 text-xs text-pink-600 dark:text-pink-400 font-normal">
+                              (partita)
                             </span>
                           )}
                         </label>
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-3">
+                        <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-lg p-2 border border-white/20 dark:border-gray-600/20">
+                          <div className="flex items-center gap-2 mb-2">
                             <input
                               type="color"
                               value={form.color}
@@ -2251,58 +2272,49 @@ export default function PrenotazioneCampi({
                                   color: e.target.value,
                                 }))
                               }
-                              className="w-12 h-12 rounded-xl border-2 border-white/30 dark:border-gray-600/30 cursor-pointer shadow-lg"
-                              title="Seleziona il colore della prenotazione"
+                              className="w-8 h-8 rounded-lg border border-white/30 dark:border-gray-600/30 cursor-pointer"
+                              title="Seleziona colore personalizzato"
                             />
-                            <div className="flex-1">
-                              <div
-                                className="h-12 rounded-xl border-2 flex items-center px-4 text-sm font-semibold shadow-lg backdrop-blur-sm"
-                                style={{
-                                  backgroundColor: form.color + "33", // Add transparency
-                                  borderColor: form.color,
-                                  color: form.color,
-                                }}
-                              >
-                                Anteprima colore
-                              </div>
+                            <div
+                              className="flex-1 h-8 rounded-lg border flex items-center justify-center text-xs font-medium"
+                              style={{
+                                backgroundColor: form.color + "40",
+                                borderColor: form.color + "80",
+                                color: form.color,
+                              }}
+                            >
+                              Anteprima
                             </div>
                           </div>
-
-                          {/* Preset colors */}
-                          <div className="bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-600/20">
-                            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 block mb-2">
-                              Colori predefiniti:
-                            </span>
-                            <div className="flex gap-2 flex-wrap">
-                              {[
-                                { color: "#e91e63", name: "Rosa (default)" },
-                                { color: "#f44336", name: "Rosso" },
-                                { color: "#00bcd4", name: "Turchese" },
-                                { color: "#2196f3", name: "Blu" },
-                                { color: "#4caf50", name: "Verde" },
-                                { color: "#ff9800", name: "Arancione" },
-                                { color: "#9c27b0", name: "Viola" },
-                                { color: "#607d8b", name: "Grigio" },
-                              ].map((preset) => (
-                                <button
-                                  key={preset.color}
-                                  type="button"
-                                  onClick={() =>
-                                    setForm((f) => ({
-                                      ...f,
-                                      color: preset.color,
-                                    }))
-                                  }
-                                  className={`w-10 h-10 rounded-xl border-2 cursor-pointer transition-all duration-200 hover:scale-110 shadow-lg ${
-                                    form.color === preset.color
-                                      ? "border-gray-800 dark:border-white scale-110 shadow-xl"
-                                      : "border-white/50 dark:border-gray-600/50"
-                                  }`}
-                                  style={{ backgroundColor: preset.color }}
-                                  title={preset.name}
-                                />
-                              ))}
-                            </div>
+                          <div className="flex gap-1 flex-wrap">
+                            {[
+                              { color: "#e91e63", name: "Rosa" },
+                              { color: "#f44336", name: "Rosso" },
+                              { color: "#00bcd4", name: "Turchese" },
+                              { color: "#2196f3", name: "Blu" },
+                              { color: "#4caf50", name: "Verde" },
+                              { color: "#ff9800", name: "Arancione" },
+                              { color: "#9c27b0", name: "Viola" },
+                              { color: "#607d8b", name: "Grigio" },
+                            ].map((preset) => (
+                              <button
+                                key={preset.color}
+                                type="button"
+                                onClick={() =>
+                                  setForm((f) => ({
+                                    ...f,
+                                    color: preset.color,
+                                  }))
+                                }
+                                className={`w-7 h-7 rounded-lg cursor-pointer transition-all duration-200 hover:scale-110 ${
+                                  form.color === preset.color
+                                    ? "ring-2 ring-gray-800 dark:ring-white scale-110"
+                                    : "border border-white/50 dark:border-gray-600/50"
+                                }`}
+                                style={{ backgroundColor: preset.color }}
+                                title={preset.name}
+                              />
+                            ))}
                           </div>
                         </div>
                       </div>
