@@ -5,6 +5,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@contexts/AuthContext.jsx";
 import Section from "@ui/Section.jsx";
 import Modal from "@ui/Modal.jsx";
+import ZoomableGrid from "@ui/ZoomableGrid.jsx";
 import { euro, euro2 } from "@lib/format.js";
 import { sameDay, floorToSlot, addMinutes, overlaps } from "@lib/date.js";
 import { computePrice, getRateInfo, isCourtBookableAt } from "@lib/pricing.js";
@@ -1531,8 +1532,8 @@ export default function PrenotazioneCampi({
 
 
 
-          {/* Griglia principale - sempre visibile anche su mobile */}
-          <div className="overflow-x-auto pb-4">
+          {/* Griglia principale - sempre visibile anche su mobile con zoom */}
+          <ZoomableGrid T={T} className="pb-4">
             <div
               className="min-w-[720px] grid gap-2"
               style={{ gridTemplateColumns: `repeat(${courts.length}, 1fr)` }}
@@ -1580,7 +1581,7 @@ export default function PrenotazioneCampi({
                 </React.Fragment>
               ))}
             </div>
-          </div>
+          </ZoomableGrid>
 
           {/* Modal glassmorphism per prenotazione - FUTURISTIC DESIGN */}
           <Modal
