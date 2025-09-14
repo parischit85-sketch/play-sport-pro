@@ -307,12 +307,20 @@ export default function PrenotazioneCampi({
   }
 
   const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
-  const dayLabel = `${cap(new Intl.DateTimeFormat("it-IT", { weekday: "long" }).format(day))} - ${String(
+  
+  // Formato compatto per mobile, completo per desktop
+  const dayLabelMobile = `${cap(new Intl.DateTimeFormat("it-IT", { weekday: "short" }).format(day))} ${String(
+    day.getDate(),
+  ).padStart(2, "0")} ${new Intl.DateTimeFormat("it-IT", { month: "short" }).format(day)}`;
+  
+  const dayLabelDesktop = `${cap(new Intl.DateTimeFormat("it-IT", { weekday: "long" }).format(day))} - ${String(
     day.getDate(),
   ).padStart(
     2,
     "0",
   )} ${new Intl.DateTimeFormat("it-IT", { month: "long" }).format(day)} ${day.getFullYear()}`;
+  
+  const dayLabel = dayLabelDesktop; // Default per ora, modifichiamo il display dopo
 
   const dayBookings = useMemo(
     () =>
@@ -1442,10 +1450,13 @@ export default function PrenotazioneCampi({
               <button
                 type="button"
                 onClick={() => setShowDatePicker(true)}
-                className={`text-3xl font-bold cursor-pointer hover:scale-105 transition-transform bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent dark:from-emerald-400 dark:to-lime-400 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800`}
+                className={`text-2xl sm:text-3xl font-bold cursor-pointer hover:scale-105 transition-transform bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent dark:from-emerald-400 dark:to-lime-400 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-center`}
                 title="Clicca per aprire calendario"
               >
-                {dayLabel}
+                {/* Versione mobile: formato compatto */}
+                <span className="block sm:hidden">{dayLabelMobile}</span>
+                {/* Versione desktop: formato completo */}
+                <span className="hidden sm:block">{dayLabelDesktop}</span>
               </button>
 
               <button

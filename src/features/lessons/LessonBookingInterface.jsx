@@ -737,7 +737,7 @@ export default function LessonBookingInterface({
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
                   {availableDates.map((dateInfo) => {
                     const isToday =
                       dateInfo.date === new Date().toISOString().split("T")[0];
@@ -753,7 +753,7 @@ export default function LessonBookingInterface({
                           setAvailableInstructors([]);
                           nextStep();
                         }}
-                        className={`p-3 rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${
+                        className={`p-4 sm:p-3 min-h-[80px] sm:min-h-[90px] rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${
                           selectedDate === dateInfo.date
                             ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg"
                             : "border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md"
@@ -762,7 +762,7 @@ export default function LessonBookingInterface({
                         <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
                           {dateInfo.display.split(" ")[0]}
                         </div>
-                        <div className="font-bold text-xl mb-1">
+                        <div className="font-bold text-xl sm:text-2xl mb-1">
                           {dateInfo.display.split(" ")[1]}
                         </div>
                         <div className="text-xs text-gray-600 dark:text-gray-300 font-medium">
