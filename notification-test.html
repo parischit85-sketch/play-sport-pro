@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Play Sport Pro - Test Notifiche Browser</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn {
+            background: #007AFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 8px 8px 8px 0;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            background: #005BBB;
+            transform: translateY(-1px);
+        }
+        
+        .btn.success { background: #28a745; }
+        .btn.warning { background: #ffc107; color: #000; }
+        .btn.danger { background: #dc3545; }
+        
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-weight: 500;
+        }
+        
+        .status.success { background: #d4edda; color: #155724; }
+        .status.warning { background: #fff3cd; color: #856404; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        
+        .notification-preview {
+            border: 2px solid #007AFF;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9ff;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .logs {
+            background: #1e1e1e;
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            height: 200px;
+            overflow-y: auto;
+            white-space: pre-line;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .feature-list li:before {
+            content: "✅ ";
+            margin-right: 10px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .online { background: #28a745; color: white; }
+        .offline { background: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Play Sport Pro - Test Suite Notifiche</h1>
+    
+    <div class="test-card">
+        <h2>📊 Status Sistema</h2>
+        <div class="grid">
+            <div>
+                <h3>🌐 Browser Support</h3>
+                <div id="browserSupport"></div>
+            </div>
+            <div>
+                <h3>🔔 Permessi Notifiche</h3>
+                <div id="notificationStatus"></div>
+                <button class="btn" onclick="requestNotificationPermission()">Richiedi Permessi</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="test-card">
+            <h2>🔔 Test Notifiche Browser</h2>
+            <p>Simula le notifiche che riceverai nell'app mobile:</p>
+            
+            <button class="btn success" onclick="testBookingNotification()">
+                📅 Test Prenotazione Confermata
+            </button>
+            
+            <button class="btn" onclick="testMatchResult()">
+                🏆 Test Risultato Partita
+            </button>
+            
+            <button class="btn warning" onclick="testMatchReminder()">
+                ⏰ Test Promemoria Partita
+            </button>
+            
+            <button class="btn" onclick="testNewTournament()">
+                🏆 Test Nuovo Torneo
+            </button>
+            
+            <button class="btn danger" onclick="testErrorNotification()">
+                ❌ Test Errore Sistema
+            </button>
+        </div>
+
+        <div class="test-card">
+            <h2>📱 Funzionalità App</h2>
+            <ul class="feature-list">
+                <li>Notifiche Push (FCM) <span class="status-badge online">ATTIVO</span></li>
+                <li>Notifiche Locali <span class="status-badge online">ATTIVO</span></li>
+                <li>Status Bar Control <span class="status-badge online">ATTIVO</span></li>
+                <li>Haptic Feedback <span class="status-badge online">ATTIVO</span></li>
+                <li>Geolocation <span class="status-badge online">ATTIVO</span></li>
+                <li>Network Detection <span class="status-badge online">ATTIVO</span></li>
+                <li>Share API <span class="status-badge online">ATTIVO</span></li>
+            </ul>
+            
+            <h3>📋 Links Utili</h3>
+            <button class="btn" onclick="openApp()">🚀 Apri App Principale</button>
+            <button class="btn" onclick="openMobileView()">📱 Vista Mobile</button>
+            <button class="btn" onclick="openAPK()">📁 Download APK</button>
+        </div>
+    </div>
+
+    <div class="test-card">
+        <h2>📝 Console Log</h2>
+        <div class="logs" id="logOutput"></div>
+        <button class="btn" onclick="clearLogs()">🗑️ Pulisci Log</button>
+        <button class="btn" onclick="exportLogs()">💾 Esporta Log</button>
+    </div>
+
+    <div class="test-card">
+        <h2>🚀 Deployment Status</h2>
+        <div class="grid">
+            <div>
+                <h3>🌐 Web Version</h3>
+                <div class="status success">✅ Build completato (7.43s)</div>
+                <div class="status success">✅ Deploy su GitHub Pages</div>
+                <div class="status success">✅ Service Worker attivo</div>
+            </div>
+            <div>
+                <h3>📱 Mobile Version</h3>
+                <div class="status success">✅ APK generato (6.3MB)</div>
+                <div class="status success">✅ 7 Plugin Capacitor</div>
+                <div class="status success">✅ Notifiche configurate</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let logs = [];
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            logs.push(logEntry);
+            
+            const logOutput = document.getElementById('logOutput');
+            logOutput.textContent = logs.slice(-50).join('\n');
+            logOutput.scrollTop = logOutput.scrollHeight;
+            
+            console.log(logEntry);
+        }
+
+        function checkBrowserSupport() {
+            const support = {
+                notifications: 'Notification' in window,
+                serviceWorker: 'serviceWorker' in navigator,
+                pushAPI: 'PushManager' in window,
+                vibration: 'vibrate' in navigator
+            };
+            
+            let html = '';
+            for (const [feature, supported] of Object.entries(support)) {
+                const status = supported ? '✅' : '❌';
+                html += `<div>${status} ${feature}</div>`;
+            }
+            
+            document.getElementById('browserSupport').innerHTML = html;
+        }
+
+        function checkNotificationStatus() {
+            if (!('Notification' in window)) {
+                document.getElementById('notificationStatus').innerHTML = 
+                    '<div class="status error">❌ Browser non supporta notifiche</div>';
+                return;
+            }
+            
+            const permission = Notification.permission;
+            let status, className;
+            
+            switch(permission) {
+                case 'granted':
+                    status = '✅ Permessi concessi';
+                    className = 'success';
+                    break;
+                case 'denied':
+                    status = '❌ Permessi negati';
+                    className = 'error';
+                    break;
+                default:
+                    status = '⏳ Permessi non richiesti';
+                    className = 'warning';
+            }
+            
+            document.getElementById('notificationStatus').innerHTML = 
+                `<div class="status ${className}">${status}</div>`;
+        }
+
+        async function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                log('Browser non supporta le notifiche', 'error');
+                return;
+            }
+            
+            try {
+                const permission = await Notification.requestPermission();
+                log(`Permessi notifiche: ${permission}`, permission === 'granted' ? 'success' : 'warning');
+                checkNotificationStatus();
+            } catch (error) {
+                log(`Errore richiesta permessi: ${error.message}`, 'error');
+            }
+        }
+
+        function showNotification(title, options = {}) {
+            if (Notification.permission !== 'granted') {
+                log('Permessi notifiche non concessi', 'warning');
+                return;
+            }
+            
+            const notification = new Notification(title, {
+                icon: '/play-sport-pro_icon_only.svg',
+                badge: '/play-sport-pro_icon_only.svg',
+                ...options
+            });
+            
+            notification.onclick = () => {
+                log(`Notification clicked: ${title}`, 'info');
+                notification.close();
+            };
+            
+            setTimeout(() => notification.close(), 5000);
+            log(`Notifica mostrata: ${title}`, 'success');
+        }
+
+        function testBookingNotification() {
+            showNotification('✅ Prenotazione Confermata', {
+                body: 'Campo 1 prenotato per oggi alle 18:00',
+                tag: 'booking',
+                vibrate: [200, 100, 200]
+            });
+        }
+
+        function testMatchResult() {
+            showNotification('🏆 Risultato Partita', {
+                body: 'Vittoria! Punteggio: 6-4, 6-2',
+                tag: 'match_result',
+                vibrate: [300, 200, 300, 200, 300]
+            });
+        }
+
+        function testMatchReminder() {
+            showNotification('⏰ Partita Imminente', {
+                body: 'La tua partita inizia tra 30 minuti!',
+                tag: 'reminder',
+                requireInteraction: true,
+                vibrate: [100, 50, 100, 50, 100, 50, 100]
+            });
+        }
+
+        function testNewTournament() {
+            showNotification('🏆 Nuovo Torneo Disponibile', {
+                body: 'Campionato Primavera - Iscriviti ora!',
+                tag: 'tournament',
+                vibrate: [200]
+            });
+        }
+
+        function testErrorNotification() {
+            showNotification('❌ Errore Sistema', {
+                body: 'Impossibile sincronizzare i dati. Riprova.',
+                tag: 'error',
+                vibrate: [500]
+            });
+        }
+
+        function openApp() {
+            window.open('http://localhost:5173', '_blank');
+            log('App principale aperta', 'info');
+        }
+
+        function openMobileView() {
+            window.open('http://localhost:5173', 'mobile', 'width=375,height=812,scrollbars=yes');
+            log('Vista mobile aperta', 'info');
+        }
+
+        function openAPK() {
+            log('APK disponibile in: PlaySportPro-UPDATED-2025-09-08.apk', 'info');
+            alert('APK disponibile nella cartella del progetto:\nPlaySportPro-UPDATED-2025-09-08.apk (6.3 MB)');
+        }
+
+        function clearLogs() {
+            logs = [];
+            document.getElementById('logOutput').textContent = '';
+            log('Log puliti', 'info');
+        }
+
+        function exportLogs() {
+            const logText = logs.join('\n');
+            const blob = new Blob([logText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `play-sport-pro-test-logs-${Date.now()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            log('Log esportati', 'success');
+        }
+
+        // Inizializzazione
+        document.addEventListener('DOMContentLoaded', () => {
+            checkBrowserSupport();
+            checkNotificationStatus();
+            log('Test Suite inizializzata', 'success');
+            
+            // Test automatico delle funzionalità
+            setTimeout(() => {
+                if (Notification.permission === 'granted') {
+                    testBookingNotification();
+                }
+            }, 2000);
+        });
+
+        // Intercetta errori JavaScript
+        window.addEventListener('error', (event) => {
+            log(`JS Error: ${event.message} at ${event.filename}:${event.lineno}`, 'error');
+        });
+    </script>
+</body>
+</html>

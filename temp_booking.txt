@@ -1,0 +1,377 @@
+import React, { useState, useEffect } from 'react';
+import Section from '@ui/Section.jsx';
+import Badge from '@ui/Badge.jsx';
+import { createDSClasses } from '@lib/design-system.js';
+
+function BookingField({ user, existingBookings, onBook, T }) {
+  const ds = createDSClasses(T);
+  
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+  const [selectedCourt, setSelectedCourt] = useState(null);
+  const [duration, setDuration] = useState(60);
+  const [lighting, setLighting] = useState(false);
+  const [heating, setHeating] = useState(false);
+  const [additionalPlayers, setAdditionalPlayers] = useState('');
+
+  const getNextDays = () => {
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      days.push({
+        date: date.toISOString().split('T')[0],
+        label: i === 0 ? 'Oggi' : i === 1 ? 'Domani' : 
+               date.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })
+      });
+    }
+    return days;
+  };
+
+  const getTimeSlots = () => {
+    const slots = [];
+    for (let hour = 11; hour <= 23; hour++) {
+      slots.push(`${hour.toString().padStart(2, '0')}:00`);
+      if (hour < 23) {
+        slots.push(`${hour.toString().padStart(2, '0')}:30`);
+      }
+    }
+    return slots;
+  };
+
+  const courts = [
+    {
+      id: 'campo1',
+      name: 'Campo 1 - Centrale',
+      price60: 45,
+      price90: 65,
+      features: ['Terra rossa', 'Illuminazione LED', 'Riscaldamento'],
+      premium: true
+    },
+    {
+      id: 'campo2',
+      name: 'Campo 2',
+      price60: 40,
+      price90: 58,
+      features: ['Terra rossa', 'Illuminazione', 'Riscaldamento'],
+      premium: false
+    },
+    {
+      id: 'campo3',
+      name: 'Campo 3',
+      price60: 35,
+      price90: 50,
+      features: ['Cemento', 'Illuminazione', 'Riscaldamento'],
+      premium: false
+    },
+    {
+      id: 'campo4',
+      name: 'Campo 4 - Scoperto',
+      price60: 30,
+      price90: 42,
+      features: ['Terra rossa', 'Solo diurno'],
+      premium: false
+    },
+    {
+      id: 'campo5',
+      name: 'Campo 5',
+      price60: 32,
+      price90: 46,
+      features: ['Cemento', 'Illuminazione'],
+      premium: false
+    },
+    {
+      id: 'campo6',
+      name: 'Campo 6 - Padel',
+      price60: 25,
+      price90: 35,
+      features: ['Padel', 'Illuminazione', 'Riscaldamento'],
+      premium: false
+    },
+    {
+      id: 'campo7',
+      name: 'Campo 7 - Calcetto',
+      price60: 40,
+      price90: 55,
+      features: ['Calcetto', 'Illuminazione', 'Riscaldamento'],
+      premium: false
+    }
+  ];
+
+  const isCourtAvailable = (courtId, date, time) => {
+    return !existingBookings.some(booking => 
+      booking.courtId === courtId && booking.date === date && booking.time === time
+    );
+  };
+
+  const calculateTotalPrice = () => {
+    if (!selectedCourt) return 0;
+    const basePrice = duration === 60 ? selectedCourt.price60 : selectedCourt.price90;
+    return basePrice + (lighting ? 5 : 0) + (heating ? 8 : 0);
+  };
+
+  const handleBooking = () => {
+    if (!user) {
+      alert('Devi effettuare il login per prenotare un campo');
+      return;
+    }
+    if (!selectedDate || !selectedTime || !selectedCourt) {
+      alert('Seleziona data, orario e campo');
+      return;
+    }
+
+    const booking = {
+      id: Date.now().toString(),
+      courtId: selectedCourt.id,
+      courtName: selectedCourt.name,
+      date: selectedDate,
+      time: selectedTime,
+      duration,
+      lighting,
+      heating,
+      price: calculateTotalPrice(),
+      bookedBy: user.displayName || user.email,
+      players: [user.displayName || user.email],
+      createdAt: new Date().toISOString()
+    };
+
+    onBook(booking);
+    alert('Prenotazione effettuata con successo!');
+  };
+
+  useEffect(() => {
+    if (!selectedDate) {
+      setSelectedDate(new Date().toISOString().split('T')[0]);
+    }
+  }, [selectedDate]);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className={`${ds.h3} mb-2`}>Prenota Campo</h1>
+        <p className={ds.bodySm}>Scegli data, orario e campo per la tua prenotazione</p>
+      </div>
+
+      <Section title="Seleziona Giorno" variant="minimal" T={T}>
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+          {getNextDays().map((day) => (
+            <button
+              key={day.date}
+              onClick={() => setSelectedDate(day.date)}
+              className={`p-3 rounded-lg border text-center transition-all ${
+                selectedDate === day.date
+                  ? `${T.primaryBg} ${T.primaryText} border-transparent`
+                  : `${T.cardBg} ${T.border} hover:bg-gray-50 dark:hover:bg-gray-800`
+              }`}
+            >
+              <div className="text-sm font-medium">{day.label}</div>
+            </button>
+          ))}
+        </div>
+      </Section>
+
+      {selectedDate && (
+        <Section title="Seleziona Orario" variant="minimal" T={T}>
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+            {getTimeSlots().map((time) => (
+              <button
+                key={time}
+                onClick={() => setSelectedTime(time)}
+                className={`p-2 rounded-lg border text-center transition-all ${
+                  selectedTime === time
+                    ? `${T.primaryBg} ${T.primaryText} border-transparent`
+                    : `${T.cardBg} ${T.border} hover:bg-gray-50 dark:hover:bg-gray-800`
+                }`}
+              >
+                <div className="text-sm font-medium">{time}</div>
+              </button>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {selectedDate && selectedTime && (
+        <Section title="Campi Disponibili" variant="minimal" T={T}>
+          <div className="grid gap-3">
+            {courts.map((court) => {
+              const available = isCourtAvailable(court.id, selectedDate, selectedTime);
+              return (
+                <div
+                  key={court.id}
+                  className={`${T.cardBg} ${T.border} ${T.borderMd} p-4 transition-all ${
+                    available 
+                      ? selectedCourt?.id === court.id
+                        ? `${T.primaryBorder} ring-2 ${T.primaryRing}`
+                        : 'hover:shadow-md cursor-pointer'
+                      : 'opacity-50 cursor-not-allowed'
+                  }`}
+                  onClick={() => available && setSelectedCourt(court)}
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className={`${ds.h5} mb-1 flex items-center gap-2`}>
+                        {court.name}
+                        {court.premium && (
+                          <Badge variant="warning" size="xs" T={T}>Premium</Badge>
+                        )}
+                      </h3>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {court.features.map((feature, index) => (
+                          <Badge key={index} variant="default" size="xs" T={T}>
+                            {feature}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                        {court.price60}€/60min
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                        {court.price90}€/90min
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-sm ${
+                      available ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
+                    }`}>
+                      {available ? 'Disponibile' : 'Occupato'}
+                    </span>
+                    {selectedCourt?.id === court.id && (
+                      <Badge variant="primary" size="sm" T={T}>Selezionato</Badge>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Section>
+      )}
+
+      {selectedCourt && (
+        <Section title="Configurazione" variant="minimal" T={T}>
+          <div className="space-y-4">
+            <div>
+              <label className={`${ds.bodySm} block mb-2`}>Durata</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setDuration(60)}
+                  className={`p-3 rounded-lg border text-center transition-all ${
+                    duration === 60
+                      ? `${T.primaryBg} ${T.primaryText} border-transparent`
+                      : `${T.cardBg} ${T.border} hover:bg-gray-50 dark:hover:bg-gray-800`
+                  }`}
+                >
+                  <div className="font-medium">60 minuti</div>
+                  <div className="text-sm opacity-70">{selectedCourt.price60}€</div>
+                </button>
+                <button
+                  onClick={() => setDuration(90)}
+                  className={`p-3 rounded-lg border text-center transition-all ${
+                    duration === 90
+                      ? `${T.primaryBg} ${T.primaryText} border-transparent`
+                      : `${T.cardBg} ${T.border} hover:bg-gray-50 dark:hover:bg-gray-800`
+                  }`}
+                >
+                  <div className="font-medium">90 minuti</div>
+                  <div className="text-sm opacity-70">{selectedCourt.price90}€</div>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className={`${ds.bodySm} block mb-2`}>Servizi Extra</label>
+              <div className="space-y-2">
+                {selectedCourt.features.includes('Illuminazione') && (
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={lighting}
+                      onChange={(e) => setLighting(e.target.checked)}
+                      className="rounded"
+                    />
+                    <span>Illuminazione (+5€)</span>
+                  </label>
+                )}
+                {selectedCourt.features.includes('Riscaldamento') && (
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={heating}
+                      onChange={(e) => setHeating(e.target.checked)}
+                      className="rounded"
+                    />
+                    <span>Riscaldamento (+8€)</span>
+                  </label>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label className={`${ds.bodySm} block mb-2`}>Giocatori Aggiuntivi (opzionale)</label>
+              <input
+                type="text"
+                value={additionalPlayers}
+                onChange={(e) => setAdditionalPlayers(e.target.value)}
+                placeholder="Es: Mario Rossi, Luigi Verdi (separati da virgola)"
+                className={`w-full p-3 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing}`}
+              />
+            </div>
+          </div>
+        </Section>
+      )}
+
+      {selectedCourt && (
+        <Section title="Riepilogo" variant="elevated" T={T}>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className={ds.bodySm}>Campo:</span>
+                <div className="font-medium">{selectedCourt.name}</div>
+              </div>
+              <div>
+                <span className={ds.bodySm}>Data e Ora:</span>
+                <div className="font-medium">
+                  {new Date(selectedDate).toLocaleDateString('it-IT')} alle {selectedTime}
+                </div>
+              </div>
+              <div>
+                <span className={ds.bodySm}>Durata:</span>
+                <div className="font-medium">{duration} minuti</div>
+              </div>
+              <div>
+                <span className={ds.bodySm}>Prezzo Totale:</span>
+                <div className="font-bold text-emerald-600 dark:text-emerald-400 text-lg">
+                  {calculateTotalPrice()}€
+                </div>
+              </div>
+            </div>
+
+            {(lighting || heating) && (
+              <div className="flex gap-2">
+                {lighting && <Badge variant="warning" size="sm" T={T}>Illuminazione +5€</Badge>}
+                {heating && <Badge variant="info" size="sm" T={T}>Riscaldamento +8€</Badge>}
+              </div>
+            )}
+
+            <button
+              onClick={handleBooking}
+              className={`w-full ${T.btnPrimary} text-center py-4`}
+            >
+              {user ? 'Conferma Prenotazione' : 'Accedi per Prenotare'}
+            </button>
+
+            {!user && (
+              <p className={`${ds.bodySm} text-center text-gray-600 dark:text-gray-400`}>
+                Devi effettuare il login per completare la prenotazione
+              </p>
+            )}
+          </div>
+        </Section>
+      )}
+    </div>
+  );
+}
+
+export default BookingField;
