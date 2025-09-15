@@ -147,7 +147,7 @@ export default function DashboardPage() {
       {/* Desktop: Layout fianco a fianco */}
       <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start lg:p-2">
         {/* Le tue prenotazioni - Desktop (Lazy loaded) */}
-        <div className="bg-gradient-to-br from-slate-50/95 via-blue-50/90 to-indigo-50/95 dark:from-gray-900/95 dark:via-gray-800/95 dark:to-gray-700/95 backdrop-blur-xl rounded-3xl border-2 border-blue-200/50 dark:border-blue-700/50 p-6 shadow-2xl shadow-blue-100/40 dark:shadow-blue-900/40">
+        <div>
           <React.Suspense
             fallback={
               <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-6 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
@@ -203,7 +203,7 @@ export default function DashboardPage() {
       {/* Mobile/Tablet: Layout verticale */}
       <div className="lg:hidden space-y-1 p-1">
         {/* Le tue prenotazioni - Mobile (Lazy loaded) */}
-        <div className="bg-gradient-to-br from-slate-50/95 via-blue-50/90 to-indigo-50/95 dark:from-gray-900/95 dark:via-gray-800/95 dark:to-gray-700/95 backdrop-blur-xl rounded-3xl border-2 border-blue-200/50 dark:border-blue-700/50 p-6 shadow-2xl shadow-blue-100/40 dark:shadow-blue-900/40">
+        <div>
           <React.Suspense
             fallback={
               <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-4 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30">

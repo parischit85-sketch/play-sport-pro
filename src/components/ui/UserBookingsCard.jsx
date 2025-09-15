@@ -1,10 +1,12 @@
 // =============================================
 // FILE: src/components/ui/UserBookingsCard.jsx
 // =============================================
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BOOKING_CONFIG, updateBooking } from "@services/bookings.js";
+import { getUserBookings } from "@services/unified-booking-service.js";
 import { useUserBookingsFast } from "@hooks/useBookingPerformance.js";
+import { useAuth } from "@contexts/AuthContext.jsx";
 import BookingDetailModal from "@ui/BookingDetailModal.jsx";
 
 // Memoized booking card component
@@ -15,6 +17,9 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
   const isTomorrow =
     bookingDate.toDateString() ===
     new Date(Date.now() + 86400000).toDateString();
+  
+  // Determina se è una prenotazione di lezione
+  const isLessonBooking = booking.isLessonBooking || booking.type === 'lesson';
 
   const dayName = bookingDate.toLocaleDateString("it-IT", { weekday: "short" });
 
@@ -27,16 +32,35 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
     dateLabel = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)} ${bookingDate.getDate()}/${(bookingDate.getMonth() + 1).toString().padStart(2, "0")}`;
   }
 
+  // Colori diversi per lezioni vs partite
+  const cardColors = isLessonBooking 
+    ? {
+        background: "bg-gradient-to-br from-green-50/95 to-emerald-50/95 dark:from-green-900/95 dark:to-emerald-900/95",
+        border: "border-green-300/80 dark:border-green-500/80",
+        hoverBorder: "hover:border-green-400/90 dark:hover:border-green-400/90",
+        ring: "ring-green-300/50 dark:ring-green-600/50",
+        shadow: "shadow-green-200/60 dark:shadow-green-900/40",
+        hoverShadow: "hover:shadow-green-200/40 dark:hover:shadow-green-900/30"
+      }
+    : {
+        background: "bg-white/95 dark:bg-gray-800/95",
+        border: "border-gray-300/80 dark:border-gray-500/80",
+        hoverBorder: "hover:border-blue-400/90 dark:hover:border-blue-400/90",
+        ring: "ring-gray-300/50 dark:ring-gray-600/50",
+        shadow: "shadow-gray-200/60 dark:shadow-gray-900/40",
+        hoverShadow: "hover:shadow-blue-200/40 dark:hover:shadow-blue-900/30"
+      };
+
   return (
     <div
       onClick={() => onBookingClick(booking)}
-      className={`bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-2 border-white/60 dark:border-gray-600/60
-        hover:bg-white dark:hover:bg-gray-800 hover:border-blue-300/80 dark:hover:border-blue-400/80 
-        hover:shadow-2xl hover:shadow-blue-200/40 dark:hover:shadow-blue-900/30 
+      className={`${cardColors.background} backdrop-blur-xl border-2 ${cardColors.border}
+        hover:bg-white dark:hover:bg-gray-800 ${cardColors.hoverBorder} 
+        hover:shadow-2xl ${cardColors.hoverShadow} 
         p-4 rounded-2xl cursor-pointer transition-all duration-300 group
         min-w-[240px] h-32 sm:min-w-0 sm:h-auto flex-shrink-0 sm:flex-shrink
         transform hover:scale-[1.02] flex flex-col justify-between
-        shadow-xl shadow-gray-200/60 dark:shadow-gray-900/40 ring-1 ring-gray-200/30 dark:ring-gray-700/30`}
+        shadow-xl ${cardColors.shadow} ring-1 ${cardColors.ring}`}
     >
       {/* Header con data/ora e campo */}
       <div className="flex items-start justify-between">
@@ -48,54 +72,93 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
             {booking.time.substring(0, 5)}
           </div>
           <div className="text-xs text-gray-600 dark:text-gray-400">
-            {court?.name || "Padel 1"} • {booking.duration || 60}min
+            {isLessonBooking 
+              ? `${booking.lessonType || 'Lezione'} • ${booking.duration || 60}min`
+              : `${court?.name || "Padel 1"} • ${booking.duration || 60}min`
+            }
           </div>
         </div>
-        {isToday && <div className="w-2 h-2 bg-orange-400 rounded-full"></div>}
+        <div className="flex items-center gap-1">
+          {isToday && <div className="w-2 h-2 bg-orange-400 rounded-full"></div>}
+          {isLessonBooking && (
+            <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+              <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Footer con players e prezzo */}
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
-          {/* Nomi partecipanti */}
+          {/* Nomi partecipanti o maestro per lezioni */}
           <div className="text-[10px] text-gray-600 dark:text-gray-400 truncate mb-1">
-            {booking.bookedBy && (
-              <span className="font-medium">{booking.bookedBy}</span>
-            )}
-            {booking.players && booking.players.length > 0 && (
-              <span>
-                {booking.bookedBy ? " + " : ""}
-                {booking.players.slice(0, 2).map((player, idx) => (
-                  <span key={idx}>
-                    {player.name || player}
-                    {idx < booking.players.slice(0, 2).length - 1 ? ", " : ""}
-                  </span>
-                ))}
-                {booking.players.length > 2 && (
-                  <span> +{booking.players.length - 2} altri</span>
+            {isLessonBooking ? (
+              <>
+                {booking.bookedBy && (
+                  <span className="font-medium">{booking.bookedBy}</span>
                 )}
-              </span>
+                {booking.instructor && (
+                  <span> • Maestro: {booking.instructor}</span>
+                )}
+              </>
+            ) : (
+              <>
+                {booking.bookedBy && (
+                  <span className="font-medium">{booking.bookedBy}</span>
+                )}
+                {booking.players && booking.players.length > 0 && (
+                  <span>
+                    {booking.bookedBy ? " + " : ""}
+                    {booking.players.slice(0, 2).map((player, idx) => (
+                      <span key={idx}>
+                        {player.name || player}
+                        {idx < booking.players.slice(0, 2).length - 1 ? ", " : ""}
+                      </span>
+                    ))}
+                    {booking.players.length > 2 && (
+                      <span> +{booking.players.length - 2} altri</span>
+                    )}
+                  </span>
+                )}
+              </>
             )}
           </div>
 
           {/* Avatar mini */}
           <div className="flex -space-x-0.5">
-            <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold text-white border border-white">
+            <div className={`w-5 h-5 rounded-full ${isLessonBooking ? 'bg-green-500' : 'bg-blue-500'} flex items-center justify-center text-xs font-bold text-white border border-white`}>
               <span className="text-[9px]">
                 {user?.displayName?.charAt(0).toUpperCase() || "U"}
               </span>
             </div>
 
-            {(booking.players?.length || 0) > 0 && (
-              <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white border border-white">
-                <span className="text-[8px]">+{booking.players.length}</span>
-              </div>
-            )}
+            {isLessonBooking ? (
+              // Per lezioni: mostra icona maestro se presente
+              booking.instructor && (
+                <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center text-xs font-bold text-white border border-white">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.84L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.84l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                  </svg>
+                </div>
+              )
+            ) : (
+              // Per partite: mostra gli altri giocatori come prima
+              <>
+                {(booking.players?.length || 0) > 0 && (
+                  <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white border border-white">
+                    <span className="text-[8px]">+{booking.players.length}</span>
+                  </div>
+                )}
 
-            {(booking.players?.length || 0) + 1 < 4 && (
-              <div className="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-600 border border-white dark:border-gray-700 flex items-center justify-center">
-                <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-300 rounded-full"></div>
-              </div>
+                {(booking.players?.length || 0) + 1 < 4 && (
+                  <div className="w-5 h-5 rounded-full bg-gray-200 dark:bg-gray-600 border border-white dark:border-gray-700 flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-300 rounded-full"></div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -108,7 +171,10 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
             </div>
           )}
           <div className="text-[9px] text-gray-500 dark:text-gray-400">
-            {(booking.players?.length || 0) + 1 < 4 ? "Aperta" : "Completa"}
+            {isLessonBooking 
+              ? (booking.status === 'confirmed' ? "Confermata" : "In attesa")
+              : ((booking.players?.length || 0) + 1 < 4 ? "Aperta" : "Completa")
+            }
           </div>
         </div>
       </div>
@@ -122,19 +188,78 @@ BookingCard.displayName = "BookingCard";
 export default function UserBookingsCard({ user, state, T, compact }) {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [lessonBookings, setLessonBookings] = useState([]);
+  const [lessonLoading, setLessonLoading] = useState(false);
   const navigate = useNavigate();
+  const { user: authUser } = useAuth();
 
-  // Use high-performance booking hook
+  // Use high-performance booking hook per le prenotazioni dei campi
   const {
-    bookings: userBookings,
-    loading: isLoading,
-    refresh,
-    hasBookings,
+    bookings: courtBookings,
+    loading: courtLoading,
+    refresh: refreshCourts,
+    hasBookings: hasCourtBookings,
     lastUpdate,
   } = useUserBookingsFast({
     refreshInterval: 30000, // 30 seconds
     enableBackground: true,
   });
+
+  // Carica le prenotazioni delle lezioni
+  useEffect(() => {
+    const loadLessonBookings = async () => {
+      if (!authUser) return;
+      
+      setLessonLoading(true);
+      try {
+        const lessons = await getUserBookings(authUser, { lessonOnly: true });
+        setLessonBookings(lessons || []);
+      } catch (error) {
+        console.error("Error loading lesson bookings:", error);
+        setLessonBookings([]);
+      } finally {
+        setLessonLoading(false);
+      }
+    };
+
+    loadLessonBookings();
+  }, [authUser]);
+
+  // Combina le prenotazioni dei campi e delle lezioni - rimuovi duplicati
+  const allBookings = useMemo(() => {
+    const combined = [...(courtBookings || []), ...(lessonBookings || [])];
+    
+    // Remove duplicates based on ID, preferring lesson bookings over court bookings
+    // if the same ID appears in both collections
+    const uniqueBookings = new Map();
+    
+    combined.forEach(booking => {
+      const existingBooking = uniqueBookings.get(booking.id);
+      const isLessonBooking = booking.instructorId || booking.isLessonBooking || booking.type === 'lesson';
+      
+      if (!existingBooking) {
+        // First time seeing this booking
+        uniqueBookings.set(booking.id, { ...booking, isLessonBooking });
+      } else {
+        // Booking already exists, prefer lesson booking if this one has instructor data
+        const existingIsLesson = existingBooking.instructorId || existingBooking.isLessonBooking || existingBooking.type === 'lesson';
+        if (isLessonBooking && !existingIsLesson) {
+          uniqueBookings.set(booking.id, { ...booking, isLessonBooking });
+        }
+      }
+    });
+    
+    const result = Array.from(uniqueBookings.values());
+    
+    // Ordina per data e ora
+    return result.sort((a, b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date);
+      return a.time.localeCompare(b.time);
+    });
+  }, [courtBookings, lessonBookings]);
+
+  const isLoading = courtLoading || lessonLoading;
+  const hasBookings = allBookings.length > 0;
 
   // Memoize courts lookup for performance
   const courts = useMemo(
@@ -153,14 +278,36 @@ export default function UserBookingsCard({ user, state, T, compact }) {
     setSelectedBooking(null);
   }, []);
 
+  // Funzione di refresh combinata
+  const refresh = useCallback(async () => {
+    // Refresh courts
+    refreshCourts();
+    
+    // Refresh lessons
+    if (authUser) {
+      setLessonLoading(true);
+      try {
+        const lessons = await getUserBookings(authUser, { lessonOnly: true });
+        setLessonBookings(lessons || []);
+      } catch (error) {
+        console.error("Error refreshing lesson bookings:", error);
+      } finally {
+        setLessonLoading(false);
+      }
+    }
+  }, [authUser, refreshCourts]);
+
   const handleShare = useCallback(
     async (booking) => {
-      const shareText = `Prenotazione Padel 🎾\n${booking.date} alle ${booking.time}\nCampo: ${courts.find((c) => c.id === booking.courtId)?.name || "Padel 1"}\nGiocatori: ${booking.players?.join(", ") || "Da definire"}`;
+      const isLesson = booking.isLessonBooking || booking.type === 'lesson';
+      const shareText = isLesson 
+        ? `Prenotazione Lezione 🎾\n${booking.date} alle ${booking.time}\nTipo: ${booking.lessonType || 'Lezione'}\n${booking.instructor ? `Maestro: ${booking.instructor}` : ''}`
+        : `Prenotazione Padel 🎾\n${booking.date} alle ${booking.time}\nCampo: ${courts.find((c) => c.id === booking.courtId)?.name || "Padel 1"}\nGiocatori: ${booking.players?.join(", ") || "Da definire"}`;
 
       if (navigator.share) {
         try {
           await navigator.share({
-            title: "Prenotazione Padel",
+            title: isLesson ? "Prenotazione Lezione" : "Prenotazione Padel",
             text: shareText,
           });
         } catch (err) {
@@ -225,8 +372,8 @@ export default function UserBookingsCard({ user, state, T, compact }) {
     alert("Funzionalità di recensioni in arrivo!");
   }, []);
 
-  // Mostra tutte le prenotazioni in scroll orizzontale
-  const displayBookings = userBookings || [];
+  // Mostra tutte le prenotazioni in scroll orizzontale (campi + lezioni)
+  const displayBookings = allBookings || [];
 
   // Early return per performance - no loading skeleton if we have cached data
   if (!user) {
@@ -316,7 +463,7 @@ export default function UserBookingsCard({ user, state, T, compact }) {
   }
 
   return (
-    <div className="bg-gradient-to-br from-gray-50/90 via-blue-50/80 to-indigo-50/90 dark:from-gray-900/90 dark:via-gray-800/90 dark:to-gray-700/90 backdrop-blur-xl border-2 border-blue-200/40 dark:border-blue-700/40 p-6 rounded-3xl shadow-xl shadow-blue-100/30 dark:shadow-blue-900/30">
+    <>
       {/* Header con indicatore di aggiornamento */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-lg text-gray-900 dark:text-white flex items-center gap-2">
@@ -352,26 +499,32 @@ export default function UserBookingsCard({ user, state, T, compact }) {
       {/* Scroll orizzontale ultra-compatto - stile Playtomic */}
       <div className="overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0">
         <div className="flex gap-2 w-max sm:grid sm:grid-cols-1 sm:gap-3 sm:w-full">
-          {displayBookings.map((booking) => (
-            <BookingCard
-              key={booking.id}
-              booking={booking}
-              onBookingClick={handleBookingClick}
-              courts={courts}
-              user={user}
-            />
-          ))}
+          {displayBookings.map((booking, index) => {
+            // Crea una key unica combinando il tipo di prenotazione, l'ID e l'indice
+            const bookingType = booking.isLessonBooking || booking.type === 'lesson' ? 'lesson' : 'court';
+            const uniqueKey = `${bookingType}-${booking.id}-${index}-${booking.date}-${booking.time}`;
+            
+            return (
+              <BookingCard
+                key={uniqueKey}
+                booking={booking}
+                onBookingClick={handleBookingClick}
+                courts={courts}
+                user={user}
+              />
+            );
+          })}
 
           {/* Card "Prenota nuovo" ultra-compatta */}
           <div
             onClick={() => navigate("/booking")}
             className="bg-gradient-to-br from-blue-50/95 to-blue-100/95 dark:from-blue-900/50 dark:to-blue-800/50 
               hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-800/60 dark:hover:to-blue-700/60
-              backdrop-blur-sm border-2 border-dashed border-blue-400/80 dark:border-blue-500/60 rounded-2xl cursor-pointer
+              backdrop-blur-sm border-2 border-dashed border-blue-500/90 dark:border-blue-400/80 rounded-2xl cursor-pointer
               min-w-[240px] h-32 flex-shrink-0 flex flex-col items-center justify-center
-              transition-all duration-300 hover:border-blue-500 dark:hover:border-blue-400 group
+              transition-all duration-300 hover:border-blue-600 dark:hover:border-blue-300 group
               hover:shadow-xl hover:shadow-blue-200/40 dark:hover:shadow-blue-900/30 transform hover:scale-[1.02]
-              ring-1 ring-blue-200/40 dark:ring-blue-700/40"
+              ring-1 ring-blue-400/60 dark:ring-blue-500/60"
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-lg">
               <svg
@@ -436,6 +589,6 @@ export default function UserBookingsCard({ user, state, T, compact }) {
           onReview={handleReview}
         />
       )}
-    </div>
+    </>
   );
 }

@@ -23,6 +23,9 @@ export default function BookingDetailModal({
 
   if (!booking) return null;
 
+  // Determina se è una prenotazione di lezione
+  const isLessonBooking = booking.instructorId || booking.isLessonBooking || booking.type === 'lesson';
+
   // Usa i campi da state se disponibili, altrimenti da BOOKING_CONFIG
   const courts = state?.courts || BOOKING_CONFIG.courts;
   const court = courts?.find((c) => c.id === booking.courtId);
@@ -109,15 +112,18 @@ export default function BookingDetailModal({
     >
       <div className="space-y-6">
         {/* Header compatto */}
-        <div className="bg-gradient-to-br from-blue-500/90 to-blue-600/90 backdrop-blur-xl rounded-2xl p-6 text-white shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20">
+        <div className={`bg-gradient-to-br ${isLessonBooking ? 'from-green-500/90 to-green-600/90' : 'from-blue-500/90 to-blue-600/90'} backdrop-blur-xl rounded-2xl p-6 text-white shadow-lg ${isLessonBooking ? 'shadow-green-100/30 dark:shadow-green-900/20' : 'shadow-blue-100/30 dark:shadow-blue-900/20'}`}>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg">
-                <span className="text-xl">🏟️</span>
+                <span className="text-xl">{isLessonBooking ? '🎾' : '🏟️'}</span>
               </div>
               <div>
                 <h2 className="font-bold text-xl">
-                  {court?.name || `Campo ${booking.courtId}`}
+                  {isLessonBooking 
+                    ? (booking.lessonType || 'Lezione di Tennis')
+                    : (court?.name || `Campo ${booking.courtId}`)
+                  }
                 </h2>
                 <div className="text-white/90 text-sm">
                   {dateLabel} • {booking.time}
@@ -159,44 +165,116 @@ export default function BookingDetailModal({
           </div>
         </div>
 
-        {/* Giocatori - Con stile della conferma prenotazione quando in editing */}
+        {/* Giocatori/Istruttore - Con stile della conferma prenotazione quando in editing */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 rounded-xl p-5 shadow-lg shadow-gray-100/50 dark:shadow-gray-900/20">
           <div className="text-xs text-gray-500 dark:text-gray-400 mb-4 font-medium">
-            👥 GIOCATORI ({booking.players?.length || 1}/4)
+            {isLessonBooking 
+              ? '🎾 DETTAGLI LEZIONE'
+              : `👥 GIOCATORI (${booking.players?.length || 1}/4)`
+            }
           </div>
 
-          <div className="space-y-3">
-            {/* Organizzatore - Sempre visibile con stile blu */}
-            <div className="p-4 bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 backdrop-blur-sm rounded-xl border-l-4 border-blue-500 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-white text-sm">👑</span>
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    {(() => {
-                      const currentPlayers = isEditingPlayers
-                        ? editedPlayers
-                        : booking.players;
-                      if (currentPlayers && currentPlayers[0]) {
-                        return getPlayerDisplayName(currentPlayers[0]);
-                      }
-                      return (
-                        booking.userName || booking.userEmail || "Organizzatore"
-                      );
-                    })()}
+          {isLessonBooking ? (
+            /* Modalità lezione - Mostra istruttore e partecipanti */
+            <div className="space-y-3">
+              {/* Istruttore */}
+              {booking.instructor && (
+                <div className="p-4 bg-gradient-to-r from-green-50/80 to-green-100/80 dark:from-green-900/30 dark:to-green-800/30 backdrop-blur-sm rounded-xl border-l-4 border-green-500 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg">
+                      <span className="text-white text-sm">🎾</span>
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                        {booking.instructor.name || booking.instructor.email || 'Istruttore'}
+                      </div>
+                      <div className="text-xs text-green-600 dark:text-green-400 font-medium">
+                        Maestro di Tennis
+                        {booking.instructor.email && (
+                          <span className="block text-green-600 dark:text-green-400 mt-0.5">
+                            {booking.instructor.email}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                    Organizzatore • Giocatore 1
-                    {booking.userEmail && (
-                      <span className="block text-blue-600 dark:text-blue-400 mt-0.5">
-                        {booking.userEmail}
-                      </span>
-                    )}
+                </div>
+              )}
+
+              {/* Informazioni lezione */}
+              <div className="p-4 bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm rounded-xl border border-white/20 dark:border-gray-600/20 shadow-sm">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Livello</div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">
+                      {booking.level || 'Non specificato'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Partecipanti</div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">
+                      {booking.participants || 1} {booking.participants === 1 ? 'persona' : 'persone'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Studente principale */}
+              <div className="p-4 bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 backdrop-blur-sm rounded-xl border-l-4 border-blue-500 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-white text-sm">👤</span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {booking.userName || booking.userEmail || 'Studente'}
+                    </div>
+                    <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                      Studente principale
+                      {booking.userEmail && (
+                        <span className="block text-blue-600 dark:text-blue-400 mt-0.5">
+                          {booking.userEmail}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+          ) : (
+            /* Modalità partita - Mostra giocatori come prima */
+            <div className="space-y-3">
+              {/* Organizzatore - Sempre visibile con stile blu */}
+              <div className="p-4 bg-gradient-to-r from-blue-50/80 to-blue-100/80 dark:from-blue-900/30 dark:to-blue-800/30 backdrop-blur-sm rounded-xl border-l-4 border-blue-500 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-white text-sm">👑</span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {(() => {
+                        const currentPlayers = isEditingPlayers
+                          ? editedPlayers
+                          : booking.players;
+                        if (currentPlayers && currentPlayers[0]) {
+                          return getPlayerDisplayName(currentPlayers[0]);
+                        }
+                        return (
+                          booking.userName || booking.userEmail || "Organizzatore"
+                        );
+                      })()}
+                    </div>
+                    <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">
+                      Organizzatore • Giocatore 1
+                      {booking.userEmail && (
+                        <span className="block text-blue-600 dark:text-blue-400 mt-0.5">
+                          {booking.userEmail}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
             {/* Altri giocatori */}
             {isEditingPlayers ? (
@@ -374,11 +452,11 @@ export default function BookingDetailModal({
                       </div>
                     ))
                   );
-                })()}
+                })()} 
               </>
             )}
-          </div>
         </div>
+        )}
 
         {/* Note compatte (solo se presenti) */}
         {booking.notes && (
@@ -394,7 +472,7 @@ export default function BookingDetailModal({
 
         {/* Azioni compatte */}
         <div className="space-y-3 pb-4 md:pb-0">
-          {!isPast && canEdit && (
+          {!isPast && canEdit && !isLessonBooking && (
             <button
               onClick={handleToggleEdit}
               className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-4 px-4 rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
@@ -402,6 +480,15 @@ export default function BookingDetailModal({
               {isEditingPlayers
                 ? "💾 Salva Modifiche"
                 : "✏️ Modifica Giocatori"}
+            </button>
+          )}
+
+          {!isPast && canEdit && isLessonBooking && (
+            <button
+              onClick={() => onEdit && onEdit(booking)}
+              className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-4 px-4 rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+            >
+              ✏️ Modifica Lezione
             </button>
           )}
 
@@ -444,6 +531,7 @@ export default function BookingDetailModal({
             )}
           </div>
         </div>
+      </div>
       </div>
     </Modal>
   );
