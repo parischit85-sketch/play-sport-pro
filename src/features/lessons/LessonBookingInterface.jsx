@@ -126,6 +126,13 @@ export default function LessonBookingInterface({
     (dateString) => {
       const dateObj = new Date(dateString);
       const dayOfWeek = dateObj.getDay();
+      
+      // Get current date and time for filtering past slots
+      const now = new Date();
+      const currentDate = now.toISOString().split("T")[0];
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      const currentTotalMinutes = currentHour * 60 + currentMinute;
 
       // Get configured time slots for this specific date or day of week
       const dayTimeSlots = (lessonConfig.timeSlots || []).filter((slot) => {
@@ -171,6 +178,14 @@ export default function LessonBookingInterface({
           const slotStartHour = Math.floor(minutes / 60);
           const slotStartMinute = minutes % 60;
           const timeString = `${slotStartHour.toString().padStart(2, "0")}:${slotStartMinute.toString().padStart(2, "0")}`;
+
+          // Skip past time slots for today
+          if (dateString === currentDate) {
+            const slotTotalMinutes = slotStartHour * 60 + slotStartMinute;
+            if (slotTotalMinutes <= currentTotalMinutes) {
+              continue; // Skip this slot as it's in the past
+            }
+          }
 
           // Check available instructors for this slot
           const availableInstructors = instructors.filter(
@@ -323,6 +338,13 @@ export default function LessonBookingInterface({
 
     const dateObj = new Date(selectedDate);
     const dayOfWeek = dateObj.getDay();
+    
+    // Get current date and time for filtering past slots
+    const now = new Date();
+    const currentDate = now.toISOString().split("T")[0];
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTotalMinutes = currentHour * 60 + currentMinute;
 
     // Get configured time slots for this specific date or day of week
     const dayTimeSlots = (lessonConfig.timeSlots || []).filter((slot) => {
@@ -364,6 +386,14 @@ export default function LessonBookingInterface({
         const slotStartHour = Math.floor(minutes / 60);
         const slotStartMinute = minutes % 60;
         const timeString = `${slotStartHour.toString().padStart(2, "0")}:${slotStartMinute.toString().padStart(2, "0")}`;
+
+        // Skip past time slots for today
+        if (selectedDate === currentDate) {
+          const slotTotalMinutes = slotStartHour * 60 + slotStartMinute;
+          if (slotTotalMinutes <= currentTotalMinutes) {
+            continue; // Skip this slot as it's in the past
+          }
+        }
 
         // Check available instructors for this slot
         const slotInstructors = instructors.filter(
@@ -465,7 +495,7 @@ export default function LessonBookingInterface({
     // Debug only if unexpected empty result
     if (slots.length === 0 && dayTimeSlots.length > 0) {
       console.warn(
-        "⚠️ No available slots found despite having configured time slots. Check instructor/court availability.",
+        "⚠️ No available slots found despite having configured time slots. Check instructor/court availability or if all slots are in the past.",
       );
     }
 
