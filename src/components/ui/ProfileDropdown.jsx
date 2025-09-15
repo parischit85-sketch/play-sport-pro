@@ -4,13 +4,13 @@ const ProfileDropdown = ({ onProfileClick, onBackupClick }) => {
   return (
     <button
       onClick={onProfileClick}
-      className="relative bg-emerald-50/70 dark:bg-emerald-900/30 backdrop-blur-xl border border-emerald-200/40 dark:border-emerald-700/40 hover:border-emerald-300/60 dark:hover:border-emerald-600/60 p-6 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group text-center overflow-hidden w-full"
+      className="relative bg-emerald-50/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/40 dark:border-gray-600/40 hover:border-emerald-300/60 dark:hover:border-gray-500/60 p-6 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group text-center overflow-hidden w-full"
     >
       {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/30 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/30 dark:from-gray-700/30 via-transparent to-transparent pointer-events-none" />
       
       <div className="relative">
-        <div className="bg-gradient-to-r from-slate-50/80 to-gray-50/60 dark:from-slate-900/40 dark:to-gray-900/30 text-slate-600 dark:text-slate-400 border border-white/20 w-12 h-12 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform mx-auto shadow-lg">
+        <div className="bg-gradient-to-r from-slate-50/80 to-gray-50/60 dark:from-slate-900/40 dark:to-gray-900/30 text-slate-600 dark:text-slate-400 border border-white/20 dark:border-gray-600/20 w-12 h-12 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform mx-auto shadow-lg">
           <svg
             className="w-6 h-6"
             fill="none"

@@ -751,7 +751,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
                   className={`flex-shrink-0 p-2 sm:p-3 rounded-lg border-2 text-center transition-all min-w-[60px] sm:min-w-[80px] ${
                     selectedDate === day.date
                       ? "bg-blue-500 text-white border-blue-500 shadow-md"
-                      : "bg-emerald-50/70 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-600 hover:border-emerald-300 dark:hover:border-emerald-500 hover:bg-emerald-100 dark:hover:bg-emerald-800 active:bg-emerald-100 dark:active:bg-emerald-500 text-gray-900 dark:text-gray-100"
+                      : "bg-emerald-50/70 dark:bg-gray-700/50 border-emerald-200 dark:border-gray-600 hover:border-emerald-300 dark:hover:border-gray-500 hover:bg-emerald-100 dark:hover:bg-gray-600 active:bg-emerald-100 dark:active:bg-gray-600 text-gray-900 dark:text-gray-100"
                   }`}
                 >
                   <div className="text-xs font-medium mb-1">{day.dayName}</div>
@@ -798,8 +798,8 @@ function ModernBookingInterface({ user, T, state, setState }) {
                     selectedTime === slot.time
                       ? "bg-blue-500 text-white border-blue-500 shadow-md"
                       : slot.isAvailable
-                        ? "bg-emerald-50/70 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100"
-                        : "bg-gray-100 dark:bg-gray-800 border-emerald-200 dark:border-emerald-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                        ? "bg-emerald-50/70 dark:bg-gray-700/50 border-emerald-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100"
+                        : "bg-gray-100 dark:bg-gray-800 border-emerald-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                   }`}
                 >
                   <div className="font-medium text-sm sm:text-base">
@@ -871,8 +871,8 @@ function ModernBookingInterface({ user, T, state, setState }) {
                     }}
                     className={`border-2 rounded-xl p-4 sm:p-5 transition-all duration-300 touch-manipulation ${
                       isAvailable
-                        ? "bg-emerald-50/70 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-600 hover:shadow-lg hover:shadow-blue-100 dark:hover:shadow-blue-900/20 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 active:bg-blue-100 dark:active:bg-blue-900/20 transform hover:scale-105 hover:-translate-y-1"
-                        : "bg-gray-100 dark:bg-gray-800 border-emerald-300 dark:border-emerald-700 cursor-not-allowed opacity-60"
+                        ? "bg-emerald-50/70 dark:bg-gray-700/50 border-emerald-200 dark:border-gray-600 hover:shadow-lg hover:shadow-blue-100 dark:hover:shadow-blue-900/20 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 active:bg-blue-100 dark:active:bg-blue-900/20 transform hover:scale-105 hover:-translate-y-1"
+                        : "bg-gray-100 dark:bg-gray-800 border-emerald-300 dark:border-gray-700 cursor-not-allowed opacity-60"
                     }`}
                   >
                     <div className="flex justify-between items-start">

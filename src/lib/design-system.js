@@ -96,27 +96,27 @@ export const DS_COLORS = {
     900: "#14532d",
   },
 
-  // Status colors - Dark mode compatible
-  success: "text-emerald-500 dark:text-emerald-400",
+  // Status colors - emerald for light, original for dark
+  success: "text-emerald-500 dark:text-green-400",
   error: "text-rose-500 dark:text-rose-400",
   warning: "text-amber-500 dark:text-amber-400",
   info: "text-blue-500 dark:text-blue-400",
 
-  // Background variants for dark mode
+  // Background variants - emerald for light, gray for dark
   bg: {
-    primary: "bg-emerald-500",
+    primary: "bg-emerald-500 dark:bg-blue-500",
     secondary: "bg-gray-50 dark:bg-gray-800",
     tertiary: "bg-white dark:bg-gray-900",
     muted: "bg-gray-100 dark:bg-gray-800/50",
   },
 
-  // Text variants for dark mode
+  // Text variants - emerald for light, original for dark
   text: {
     primary: "text-gray-900 dark:text-white",
     secondary: "text-gray-600 dark:text-gray-300",
     muted: "text-gray-500 dark:text-gray-400",
     inverse: "text-white dark:text-gray-900",
-    accent: "text-emerald-600 dark:text-emerald-400",
+    accent: "text-emerald-600 dark:text-blue-400",
   },
 
   // Chart colors (consistenti)
@@ -179,9 +179,9 @@ export const DS_ANIMATIONS = {
   scaleHover: "hover:scale-105 transition-transform duration-200",
   fadeHover: "hover:opacity-80 transition-opacity duration-200",
 
-  // Focus states
+  // Focus states - emerald for light, blue for dark
   focusRing:
-    "focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2",
+    "focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:focus:ring-blue-500 focus:ring-offset-2",
 };
 
 // Componenti composite per pattern comuni
