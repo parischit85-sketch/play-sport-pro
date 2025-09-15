@@ -704,7 +704,7 @@ export default function LessonBookingInterface({
 
       {/* Booking Form */}
       {activeTab === "book" && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-600 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border-2 dark:border-emerald-600 p-6">
           {/* Progress Indicator */}
           <div className="mb-6">
             <div className="flex items-center justify-between text-sm">
@@ -783,10 +783,10 @@ export default function LessonBookingInterface({
                           setAvailableInstructors([]);
                           nextStep();
                         }}
-                        className={`p-4 sm:p-3 min-h-[80px] sm:min-h-[90px] rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${
+                        className={`p-4 sm:p-3 min-h-[80px] sm:min-h-[90px] rounded-xl border-2 text-center transition-all duration-200 hover:scale-105 active:scale-95 ${
                           selectedDate === dateInfo.date
                             ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg"
-                            : "border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md"
+                            : "bg-emerald-50/70 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md"
                         } ${isToday ? "ring-2 ring-green-300 dark:ring-green-500 bg-green-50 dark:bg-green-900/30" : ""}`}
                       >
                         <div className="text-xs text-gray-500 uppercase mb-1 font-medium">
@@ -865,10 +865,10 @@ export default function LessonBookingInterface({
                           }
                           nextStep();
                         }}
-                        className={`p-4 rounded-xl border text-center transition-all duration-200 hover:scale-105 active:scale-95 ${
+                        className={`p-4 rounded-xl border-2 text-center transition-all duration-200 hover:scale-105 active:scale-95 ${
                           selectedTimeSlot?.id === slot.id
                             ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg"
-                            : "border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md"
+                            : "bg-emerald-50/70 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md"
                         }`}
                       >
                         <div className="font-bold text-lg mb-2 text-gray-800 dark:text-gray-200">
@@ -919,7 +919,7 @@ export default function LessonBookingInterface({
                     className={`p-6 rounded-xl border-2 text-center transition-all duration-200 hover:scale-105 active:scale-95 ${
                       selectedParticipants === num
                         ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 shadow-lg ring-2 ring-blue-200"
-                        : "border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md"
+                        : "bg-emerald-50/70 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-md"
                     }`}
                   >
                     <div className="text-3xl mb-2">
@@ -1096,8 +1096,8 @@ export default function LessonBookingInterface({
                         onClick={() => setSelectedInstructor(instructor.id)}
                         className={`p-4 rounded-lg border-2 text-left transition-colors ${
                           selectedInstructor === instructor.id
-                            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-400"
-                            : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
+                            ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 dark:border-emerald-400 ring-2 ring-emerald-200 dark:ring-emerald-500"
+                            : "bg-emerald-50/70 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-600 hover:border-emerald-300 dark:hover:border-emerald-500"
                         }`}
                       >
                         <div className="flex items-center gap-3 mb-2">
@@ -1157,7 +1157,7 @@ export default function LessonBookingInterface({
 
       {/* User Bookings List */}
       {activeTab === "bookings" && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-600 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border-2 dark:border-emerald-600 p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Le Mie Lezioni
           </h3>
@@ -1178,7 +1178,7 @@ export default function LessonBookingInterface({
                 .map((booking) => (
                   <div
                     key={booking.id}
-                    className="border dark:border-gray-600 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    className="border-2 dark:border-emerald-600 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
                     <div className="flex justify-between items-start">
                       <div className="space-y-2">

@@ -105,9 +105,9 @@ export const DS_COLORS = {
   // Background variants for dark mode
   bg: {
     primary: "bg-emerald-500",
-    secondary: "bg-gray-100 dark:bg-gray-800",
+    secondary: "bg-gray-50 dark:bg-gray-800",
     tertiary: "bg-white dark:bg-gray-900",
-    muted: "bg-gray-50 dark:bg-gray-800/50",
+    muted: "bg-gray-100 dark:bg-gray-800/50",
   },
 
   // Text variants for dark mode

@@ -708,7 +708,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header mobile-friendly */}
-      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-600 px-4 py-3 sm:hidden">
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-emerald-600 px-4 py-3 sm:hidden">
         <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
           Prenota Campo
         </h1>
@@ -729,7 +729,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
         )}
 
         {/* Selezione Giorno - Migliorata per mobile */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-600 p-3 sm:p-6 mb-4 sm:mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border-2 dark:border-emerald-600 p-3 sm:p-6 mb-4 sm:mb-6">
           <h2 className="font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 text-sm sm:text-base">
             Seleziona il giorno
           </h2>
@@ -748,10 +748,10 @@ function ModernBookingInterface({ user, T, state, setState }) {
                     // Scorri agli orari quando si seleziona un giorno
                     scrollToSection(timeSectionRef, 200);
                   }}
-                  className={`flex-shrink-0 p-2 sm:p-3 rounded-lg border text-center transition-all min-w-[60px] sm:min-w-[80px] ${
+                  className={`flex-shrink-0 p-2 sm:p-3 rounded-lg border-2 text-center transition-all min-w-[60px] sm:min-w-[80px] ${
                     selectedDate === day.date
                       ? "bg-blue-500 text-white border-blue-500 shadow-md"
-                      : "bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600 active:bg-gray-100 dark:active:bg-gray-500 text-gray-900 dark:text-gray-100"
+                      : "bg-emerald-50/70 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-600 hover:border-emerald-300 dark:hover:border-emerald-500 hover:bg-emerald-100 dark:hover:bg-emerald-800 active:bg-emerald-100 dark:active:bg-emerald-500 text-gray-900 dark:text-gray-100"
                   }`}
                 >
                   <div className="text-xs font-medium mb-1">{day.dayName}</div>
@@ -769,7 +769,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
         {selectedDate && (
           <div
             ref={timeSectionRef}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-600 p-3 sm:p-6 mb-4 sm:mb-6"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border-2 dark:border-emerald-600 p-3 sm:p-6 mb-4 sm:mb-6"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-3">
               <h2 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
@@ -794,12 +794,12 @@ function ModernBookingInterface({ user, T, state, setState }) {
                   key={slot.time}
                   onClick={() => handleTimeSlotClick(slot)}
                   disabled={!slot.isAvailable}
-                  className={`p-3 sm:p-3 rounded-lg border text-center transition-all relative min-h-[56px] touch-manipulation ${
+                  className={`p-3 sm:p-3 rounded-lg border-2 text-center transition-all relative min-h-[56px] touch-manipulation ${
                     selectedTime === slot.time
                       ? "bg-blue-500 text-white border-blue-500 shadow-md"
                       : slot.isAvailable
-                        ? "bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100"
-                        : "bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                        ? "bg-emerald-50/70 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100"
+                        : "bg-gray-100 dark:bg-gray-800 border-emerald-200 dark:border-emerald-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
                   }`}
                 >
                   <div className="font-medium text-sm sm:text-base">
@@ -830,7 +830,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
         {selectedTime && (
           <div
             ref={courtSectionRef}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-600 p-3 sm:p-6 mb-4 sm:mb-6"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border-2 dark:border-emerald-600 p-3 sm:p-6 mb-4 sm:mb-6"
           >
             <h2 className="font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4 text-sm sm:text-base">
               Prenota un campo
@@ -869,10 +869,10 @@ function ModernBookingInterface({ user, T, state, setState }) {
                         setShowBookingModal(true);
                       }
                     }}
-                    className={`border rounded-xl p-4 sm:p-5 transition-all duration-300 touch-manipulation ${
+                    className={`border-2 rounded-xl p-4 sm:p-5 transition-all duration-300 touch-manipulation ${
                       isAvailable
-                        ? "bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:shadow-lg hover:shadow-blue-100 dark:hover:shadow-blue-900/20 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 active:bg-blue-100 dark:active:bg-blue-900/20 transform hover:scale-105 hover:-translate-y-1"
-                        : "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 cursor-not-allowed opacity-60"
+                        ? "bg-emerald-50/70 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-600 hover:shadow-lg hover:shadow-blue-100 dark:hover:shadow-blue-900/20 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 active:bg-blue-100 dark:active:bg-blue-900/20 transform hover:scale-105 hover:-translate-y-1"
+                        : "bg-gray-100 dark:bg-gray-800 border-emerald-300 dark:border-emerald-700 cursor-not-allowed opacity-60"
                     }`}
                   >
                     <div className="flex justify-between items-start">
@@ -988,14 +988,14 @@ function ModernBookingInterface({ user, T, state, setState }) {
       {showBookingModal && selectedCourt && (
         <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-black dark:bg-opacity-70 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 backdrop-fade">
           {/* Mobile: Full screen bottom sheet */}
-          <div className="bg-white dark:bg-gray-800 w-full h-auto max-h-[95vh] sm:max-w-md sm:max-h-[90vh] sm:rounded-lg rounded-t-2xl sm:rounded-t-lg flex flex-col slide-up-mobile sm:animate-none shadow-2xl border-t dark:border-gray-600">
+          <div className="bg-white dark:bg-gray-800 w-full h-auto max-h-[95vh] sm:max-w-md sm:max-h-[90vh] sm:rounded-lg rounded-t-2xl sm:rounded-t-lg flex flex-col slide-up-mobile sm:animate-none shadow-2xl border-t dark:border-emerald-600">
             {/* Mobile handle bar */}
             <div className="flex justify-center pt-2 pb-1 sm:hidden">
               <div className="w-10 h-1 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
             </div>
 
             {/* Header fisso */}
-            <div className="px-4 py-3 sm:p-6 border-b dark:border-gray-600 flex-shrink-0 touch-select-none">
+            <div className="px-4 py-3 sm:p-6 border-b dark:border-emerald-600 flex-shrink-0 touch-select-none">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                   Conferma Prenotazione
@@ -1082,7 +1082,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
                             ? "bg-red-50 dark:bg-red-900/30 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed"
                             : duration === dur
                               ? "bg-blue-500 text-white border-blue-500 shadow-lg scale-105"
-                              : "bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100"
+                              : "bg-white dark:bg-gray-700 border-emerald-200 dark:border-emerald-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100"
                         }`}
                         title={
                           !isBookableDuration
@@ -1224,7 +1224,7 @@ function ModernBookingInterface({ user, T, state, setState }) {
                       onChange={(e) => setNewPlayerName(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && addPlayer()}
                       placeholder="Nome nuovo giocatore"
-                      className="flex-1 p-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:border-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
+                      className="flex-1 p-3 border-2 border-emerald-200 dark:border-emerald-600 rounded-xl text-sm focus:border-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                     />
                     <button
                       onClick={addPlayer}
@@ -1447,9 +1447,12 @@ function ModernBookingInterface({ user, T, state, setState }) {
               Questo orario è già stato prenotato da qualcun altro. Seleziona un
               altro orario.
             </p>
-            <div className="mt-4 text-xs text-gray-400 dark:text-gray-500">
-              Questa finestra si chiuderà automaticamente
-            </div>
+            <button
+              onClick={() => setShowErrorAnimation(false)}
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+            >
+              Chiudi
+            </button>
           </div>
         </div>
       )}

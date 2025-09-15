@@ -82,28 +82,28 @@ export function themeTokens() {
     },
 
     // Layout - Adaptive light/dark
-    pageBg: "bg-neutral-50 dark:bg-gray-900",
+    pageBg: "bg-gray-100 dark:bg-gray-900",
     text: "text-neutral-900 dark:text-white",
     subtext: "text-neutral-600 dark:text-gray-300",
-    cardBg: "bg-white dark:bg-gray-800",
-    border: "ring-1 ring-black/10 dark:ring-white/10",
+    cardBg: "bg-gray-50 dark:bg-gray-800",
+    border: "ring-1 ring-emerald-400/50 dark:ring-emerald-500/50",
     headerBg:
-      "bg-white dark:bg-gray-800 border-b border-black/10 dark:border-white/10",
+      "bg-white dark:bg-gray-800 border-b border-emerald-400/50 dark:border-emerald-500/50",
 
     // Brand colors - Ottimizzati per entrambi i temi
     neonText: "text-emerald-600 dark:text-emerald-400",
     link: "underline underline-offset-4 decoration-emerald-600 dark:decoration-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300",
     ghostRing:
-      "ring-black/10 dark:ring-white/10 hover:bg-black/5 dark:hover:bg-white/5",
+      "ring-emerald-400/50 dark:ring-emerald-500/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/20",
     tableHeadText: "text-neutral-500 dark:text-gray-400",
 
     // Form elements
-    input: `${THEME_CONSTANTS.borderRadius.md} px-3 py-2 bg-white dark:bg-gray-700 border border-black/10 dark:border-white/20 text-neutral-900 dark:text-white placeholder-neutral-500 dark:placeholder-gray-400 focus:border-emerald-400 dark:focus:border-emerald-500 focus:ring-1 focus:ring-emerald-400 dark:focus:ring-emerald-500 outline-none ${THEME_CONSTANTS.transitions.normal}`,
+    input: `${THEME_CONSTANTS.borderRadius.md} px-3 py-2 bg-white dark:bg-gray-700 border border-emerald-400/50 dark:border-emerald-500/50 text-neutral-900 dark:text-white placeholder-neutral-500 dark:placeholder-gray-400 focus:border-emerald-400 dark:focus:border-emerald-500 focus:ring-1 focus:ring-emerald-400 dark:focus:ring-emerald-500 outline-none ${THEME_CONSTANTS.transitions.normal}`,
 
     // Buttons - Funzionano in entrambi i temi
     btnPrimary: `inline-flex items-center justify-center ${THEME_CONSTANTS.borderRadius.md} px-4 py-2 font-medium text-black bg-gradient-to-r from-emerald-400 to-lime-400 hover:brightness-110 active:brightness-95 ${THEME_CONSTANTS.transitions.normal} ${THEME_CONSTANTS.shadows.sm}`,
-    btnGhost: `inline-flex items-center justify-center ${THEME_CONSTANTS.borderRadius.md} px-4 py-2 font-medium ring-1 ring-black/10 dark:ring-white/10 hover:bg-black/5 dark:hover:bg-white/5 text-neutral-900 dark:text-white ${THEME_CONSTANTS.transitions.normal}`,
-    btnGhostSm: `inline-flex items-center justify-center ${THEME_CONSTANTS.borderRadius.sm} px-2 py-1 text-xs font-medium ring-1 ring-black/10 dark:ring-white/10 hover:bg-black/5 dark:hover:bg-white/5 text-neutral-900 dark:text-white ${THEME_CONSTANTS.transitions.normal}`,
+    btnGhost: `inline-flex items-center justify-center ${THEME_CONSTANTS.borderRadius.md} px-4 py-2 font-medium ring-1 ring-emerald-400/50 dark:ring-emerald-500/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-neutral-900 dark:text-white ${THEME_CONSTANTS.transitions.normal}`,
+    btnGhostSm: `inline-flex items-center justify-center ${THEME_CONSTANTS.borderRadius.sm} px-2 py-1 text-xs font-medium ring-1 ring-emerald-400/50 dark:ring-emerald-500/50 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-neutral-900 dark:text-white ${THEME_CONSTANTS.transitions.normal}`,
 
     // Status colors - Adattati per dark mode
     accentGood: "text-emerald-600 dark:text-emerald-400",
@@ -115,7 +115,7 @@ export function themeTokens() {
     chip: "bg-emerald-500 text-black",
 
     // Cards unificati con dark mode
-    card: `${THEME_CONSTANTS.borderRadius.lg} bg-white dark:bg-gray-800 ring-1 ring-black/10 dark:ring-white/10 ${THEME_CONSTANTS.spacing.md} ${THEME_CONSTANTS.shadows.card} dark:shadow-dark-sm`,
-    cardHover: `${THEME_CONSTANTS.borderRadius.lg} bg-white dark:bg-gray-800 ring-1 ring-black/10 dark:ring-white/10 ${THEME_CONSTANTS.spacing.md} ${THEME_CONSTANTS.shadows.md} dark:shadow-dark-md hover:shadow-lg dark:hover:shadow-dark-lg ${THEME_CONSTANTS.transitions.normal}`,
+    card: `${THEME_CONSTANTS.borderRadius.lg} bg-white dark:bg-gray-800 ring-1 ring-emerald-400/50 dark:ring-emerald-500/50 ${THEME_CONSTANTS.spacing.md} ${THEME_CONSTANTS.shadows.card} dark:shadow-dark-sm`,
+    cardHover: `${THEME_CONSTANTS.borderRadius.lg} bg-white dark:bg-gray-800 ring-1 ring-emerald-400/50 dark:ring-emerald-500/50 ${THEME_CONSTANTS.spacing.md} ${THEME_CONSTANTS.shadows.md} dark:shadow-dark-md hover:shadow-lg dark:hover:shadow-dark-lg ${THEME_CONSTANTS.transitions.normal}`,
   };
 }

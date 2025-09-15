@@ -17,10 +17,10 @@ const UserBookingsCard = React.lazy(() => import("@ui/UserBookingsCard.jsx"));
 const QuickAction = React.memo(({ action, T }) => (
   <button
     onClick={action.action}
-    className={`relative bg-white/60 dark:bg-gray-700/60 backdrop-blur-xl border border-white/30 dark:border-gray-600/30 hover:border-white/50 dark:hover:border-gray-500/50 p-6 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group text-center overflow-hidden`}
+    className={`relative bg-emerald-50/70 dark:bg-emerald-900/30 backdrop-blur-xl border border-emerald-200/40 dark:border-emerald-700/40 hover:border-emerald-300/60 dark:hover:border-emerald-600/60 p-6 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group text-center overflow-hidden`}
   >
     {/* Subtle gradient overlay */}
-    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
+    <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/30 via-transparent to-transparent pointer-events-none" />
 
     <div className="relative">
       <div
