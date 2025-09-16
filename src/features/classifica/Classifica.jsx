@@ -5,10 +5,9 @@
 import React, { useMemo, useRef, useState } from "react";
 import Section from "@ui/Section.jsx";
 import { TrendArrow } from "@ui/TrendArrow.jsx";
-import ModernMultiLineChart from "@ui/charts/ModernMultiLineChart.jsx";
-import MobileRankingChart from "@ui/charts/MobileRankingChart.jsx";
+import ModernAreaChart from "@ui/charts/ModernAreaChart.jsx";
 import ShareButtons from "@ui/ShareButtons.jsx";
-import { buildPodiumTimeline } from "@lib/ranking.js";
+import { buildPodiumTimeline, buildDailyTimeline } from "@lib/ranking.js";
 
 export default function Classifica({ players, matches, onOpenStats, T }) {
   const classificaRef = useRef(null);
@@ -421,16 +420,22 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
   const chartData = useMemo(() => {
     const timeline = buildPodiumTimeline(players, matches, topIds);
 
+    // Aggiunge un indice per l'asse X e verifica l'ultimo punto
+    const indexedTimeline = timeline.map((point, index) => ({
+      ...point,
+      matchNumber: index,
+    }));
+
     // Verifica che l'ultimo punto del grafico corrisponda ai rating attuali
-    if (timeline.length > 0) {
-      const lastPoint = timeline[timeline.length - 1];
+    if (indexedTimeline.length > 0) {
+      const lastPoint = indexedTimeline[indexedTimeline.length - 1];
       topPlayers.forEach((player) => {
         // Sincronizza l'ultimo valore del grafico con il rating attuale della classifica
         lastPoint[player.name] = Math.round(player.rating);
       });
     }
 
-    return timeline;
+    return indexedTimeline;
   }, [players, matches, topIds, topPlayers]);
 
   const buildCaption = () => {
@@ -467,7 +472,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
         {/* Ranking RPA Card - Futuristic Design */}
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-3xl blur-xl"></div>
-          <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/30 p-6 shadow-2xl">
+          <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/30 p-6 pb-8 md:pb-28 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-white text-xl shadow-lg">
@@ -572,20 +577,32 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                 </select>
               </div>
             </div>
-            {/* Usa il nuovo grafico mobile-ottimizzato per tutte le piattaforme */}
-            <MobileRankingChart
-              data={chartData}
-              seriesKeys={topKeys}
-              chartId="classifica-universal"
-              title={`Evoluzione del Top ${selectedTopCount}`}
-              selectedCount={selectedTopCount}
-              playerRankings={topRankings}
-            />
+            {/* Usa il nuovo grafico per l'andamento del ranking */}
+            {chartData.length > 0 ? (
+              <ModernAreaChart 
+                data={chartData}
+                xKey="matchNumber"
+                yKey="rating"
+                title={`Evoluzione del Ranking Top ${selectedTopCount}`}
+                gradient={{
+                  from: "rgba(59, 130, 246, 0.8)",
+                  to: "rgba(147, 51, 234, 0.1)"
+                }}
+                color="#3B82F6"
+                multiPlayer={true}
+                top5Players={topPlayers}
+                chartId="classifica-ranking"
+              />
+            ) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <p>Nessun dato disponibile per il grafico del ranking</p>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Grid per le altre classifiche - Futuristic Cards */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8 mt-16 md:mt-24">
           {/* Coppie Card */}
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-3xl blur-xl"></div>

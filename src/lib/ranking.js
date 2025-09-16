@@ -199,3 +199,116 @@ export function buildPodiumTimeline(players, matches, targetIds) {
 
   return pts;
 }
+
+// Nuova funzione per timeline basata sui giorni invece che sui match
+export function buildDailyTimeline(players, matches, targetIds, days = 15) {
+  const idToName = new Map(players.map((p) => [p.id, p.name]));
+  
+  // Calcola la data di inizio (giorni fa)
+  const today = new Date();
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() - days);
+  
+  // Filtra le partite negli ultimi X giorni
+  const matchesInPeriod = [...(matches || [])]
+    .filter(m => new Date(m.date) >= startDate)
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  // Rating attuali come punto di riferimento
+  const currentRatings = new Map(
+    players.map((p) => [p.id, Number(p.rating ?? DEFAULT_RATING)])
+  );
+  
+  // Calcola i rating iniziali (all'inizio del periodo)
+  const startRatings = new Map(currentRatings);
+  
+  // Ricostruisce a ritroso per trovare i rating di partenza
+  const reversedMatches = [...matchesInPeriod].reverse();
+  for (const m of reversedMatches) {
+    const rr = computeFromSets(m.sets);
+    const res = calcParisDelta({
+      ratingA1: startRatings.get(m.teamA[0]) ?? DEFAULT_RATING,
+      ratingA2: startRatings.get(m.teamA[1]) ?? DEFAULT_RATING,
+      ratingB1: startRatings.get(m.teamB[0]) ?? DEFAULT_RATING,
+      ratingB2: startRatings.get(m.teamB[1]) ?? DEFAULT_RATING,
+      gamesA: rr.gamesA,
+      gamesB: rr.gamesB,
+      winner: rr.winner,
+      sets: m.sets,
+    });
+    
+    const subtract = (id, d) =>
+      startRatings.set(id, (startRatings.get(id) ?? DEFAULT_RATING) - d);
+    subtract(m.teamA[0], res.deltaA);
+    subtract(m.teamA[1], res.deltaA);
+    subtract(m.teamB[0], res.deltaB);
+    subtract(m.teamB[1], res.deltaB);
+  }
+  
+  // Ora genera un punto per ogni giorno
+  const timeline = new Map(startRatings);
+  const pts = [];
+  
+  // Raggruppa le partite per giorno
+  const matchesByDay = new Map();
+  for (const match of matchesInPeriod) {
+    const dayKey = new Date(match.date).toDateString();
+    if (!matchesByDay.has(dayKey)) {
+      matchesByDay.set(dayKey, []);
+    }
+    matchesByDay.get(dayKey).push(match);
+  }
+  
+  // Genera punti per ogni giorno
+  for (let i = 0; i <= days; i++) {
+    const currentDate = new Date(startDate);
+    currentDate.setDate(startDate.getDate() + i);
+    const dayKey = currentDate.toDateString();
+    
+    // Se ci sono partite in questo giorno, applica i cambiamenti
+    if (matchesByDay.has(dayKey)) {
+      const dayMatches = matchesByDay.get(dayKey);
+      
+      for (const m of dayMatches) {
+        const rr = computeFromSets(m.sets);
+        const res = calcParisDelta({
+          ratingA1: timeline.get(m.teamA[0]) ?? DEFAULT_RATING,
+          ratingA2: timeline.get(m.teamA[1]) ?? DEFAULT_RATING,
+          ratingB1: timeline.get(m.teamB[0]) ?? DEFAULT_RATING,
+          ratingB2: timeline.get(m.teamB[1]) ?? DEFAULT_RATING,
+          gamesA: rr.gamesA,
+          gamesB: rr.gamesB,
+          winner: rr.winner,
+          sets: m.sets,
+        });
+        
+        const add = (id, d) =>
+          timeline.set(id, (timeline.get(id) ?? DEFAULT_RATING) + d);
+        add(m.teamA[0], res.deltaA);
+        add(m.teamA[1], res.deltaA);
+        add(m.teamB[0], res.deltaB);
+        add(m.teamB[1], res.deltaB);
+      }
+    }
+    
+    // Crea il punto per questo giorno
+    const point = {
+      day: i,
+      label: currentDate.toLocaleDateString("it-IT", {
+        day: "2-digit",
+        month: "2-digit",
+      }),
+      date: currentDate.toISOString().split('T')[0], // formato YYYY-MM-DD
+    };
+    
+    for (const id of targetIds) {
+      point[idToName.get(id) || id] = Math.round(
+        timeline.get(id) ?? DEFAULT_RATING
+      );
+    }
+    
+    pts.push(point);
+  }
+  
+  return pts;
+}

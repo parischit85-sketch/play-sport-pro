@@ -30,6 +30,7 @@ export default function LessonAdminPanel({
   const [editingTimeSlot, setEditingTimeSlot] = useState(null);
   const [showInstructorModal, setShowInstructorModal] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState(null);
+  const [instructorSearch, setInstructorSearch] = useState("");
 
   const weekDays = [
     { value: 0, label: "Domenica" },
@@ -47,6 +48,19 @@ export default function LessonAdminPanel({
       (player) => player.category !== PLAYER_CATEGORIES.INSTRUCTOR,
     );
   }, [players]);
+
+  // Filtered potential instructors based on search
+  const filteredPotentialInstructors = useMemo(() => {
+    if (!instructorSearch.trim()) {
+      return potentialInstructors;
+    }
+    
+    const searchTerm = instructorSearch.toLowerCase().trim();
+    return potentialInstructors.filter((player) => 
+      player.name?.toLowerCase().includes(searchTerm) ||
+      player.email?.toLowerCase().includes(searchTerm)
+    );
+  }, [potentialInstructors, instructorSearch]);
 
   // Handle enabling/disabling lesson system
   const toggleLessonSystem = () => {
@@ -93,10 +107,9 @@ export default function LessonAdminPanel({
       if (player.id === editingPlayer.id) {
         return {
           ...player,
-          category: PLAYER_CATEGORIES.INSTRUCTOR,
+          category: instructorData.isInstructor ? PLAYER_CATEGORIES.INSTRUCTOR : player.category,
           instructorData: {
             ...player.instructorData,
-            isInstructor: true,
             ...instructorData,
           },
         };
@@ -427,36 +440,50 @@ export default function LessonAdminPanel({
               {/* Current Instructors */}
               <div>
                 <h3 className={`${ds.h6} font-medium mb-3`}>
-                  Istruttori Attivi ({instructors.length})
+                  Tutti gli Istruttori ({instructors.length} attivi, {(players || []).filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR && !p.instructorData?.isInstructor).length} disattivati)
                 </h3>
 
-                {instructors.length === 0 ? (
+                {/* Mostra tutti gli istruttori, sia attivi che disattivati */}
+                {(players || []).filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR).length === 0 ? (
                   <div className={`text-center py-6 ${T.subtext}`}>
                     Nessun istruttore configurato
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {instructors.map((instructor) => (
+                    {(players || [])
+                      .filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR)
+                      .map((instructor) => {
+                        const isActive = instructor.instructorData?.isInstructor !== false;
+                        return (
                       <div
                         key={instructor.id}
-                        className={`${T.cardBg} ${T.border} rounded-lg p-4 hover:shadow-lg dark:hover:shadow-gray-700/50 transition-all duration-200`}
+                        className={`${T.cardBg} ${T.border} rounded-lg p-4 hover:shadow-lg dark:hover:shadow-gray-700/50 transition-all duration-200 ${
+                          !isActive ? 'opacity-60 border-dashed' : ''
+                        }`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
+                            {!isActive && (
+                              <div className="absolute top-2 right-2 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-2 py-1 rounded-full text-xs font-medium">
+                                🚫 Disattivato
+                              </div>
+                            )}
                             <div
-                              className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md"
+                              className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md ${
+                                !isActive ? 'grayscale' : ''
+                              }`}
                               style={{
-                                backgroundColor:
-                                  instructor.instructorData?.color,
+                                backgroundColor: instructor.instructorData?.color,
                               }}
                             >
                               {instructor.name?.charAt(0) || "?"}
                             </div>
                             <div>
                               <h4
-                                className={`${ds.h6} font-medium text-gray-900 dark:text-white`}
+                                className={`${ds.h6} font-medium ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}
                               >
                                 {instructor.name}
+                                {isActive && <span className="ml-2 text-green-500">🟢</span>}
                               </h4>
                               <div className="flex flex-col gap-2 text-sm">
                                 {/* Prezzi lezioni con design migliorato */}
@@ -548,7 +575,8 @@ export default function LessonAdminPanel({
                           </div>
                         </div>
                       </div>
-                    ))}
+                        );
+                      })}
                   </div>
                 )}
               </div>
@@ -559,14 +587,45 @@ export default function LessonAdminPanel({
                   Aggiungi Istruttore
                 </h3>
 
-                {potentialInstructors.length === 0 ? (
+                {/* Search field for instructors */}
+                <div className="mb-4">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={instructorSearch}
+                      onChange={(e) => setInstructorSearch(e.target.value)}
+                      placeholder="🔍 Cerca giocatore per nome o email..."
+                      className={`w-full px-4 py-3 pl-10 ${T.input} rounded-lg border ${T.border} focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-200`}
+                    />
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                      🔍
+                    </div>
+                    {instructorSearch && (
+                      <button
+                        onClick={() => setInstructorSearch("")}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                  {instructorSearch && (
+                    <p className={`text-sm ${T.subtext} mt-2`}>
+                      {filteredPotentialInstructors.length} risultat{filteredPotentialInstructors.length === 1 ? 'o' : 'i'} trovato/i per "{instructorSearch}"
+                    </p>
+                  )}
+                </div>
+
+                {filteredPotentialInstructors.length === 0 ? (
                   <div className={`text-center py-6 ${T.subtext}`}>
-                    Tutti i giocatori sono già istruttori o non ci sono
-                    giocatori disponibili
+                    {instructorSearch ? 
+                      `Nessun giocatore trovato per "${instructorSearch}"` :
+                      "Tutti i giocatori sono già istruttori o non ci sono giocatori disponibili"
+                    }
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {potentialInstructors.slice(0, 5).map((player) => (
+                    {filteredPotentialInstructors.map((player) => (
                       <div
                         key={player.id}
                         className={`${T.cardBg} ${T.border} rounded-lg p-4 hover:shadow-md dark:hover:shadow-gray-700/50 transition-all duration-200`}
@@ -605,12 +664,6 @@ export default function LessonAdminPanel({
                         </div>
                       </div>
                     ))}
-
-                    {potentialInstructors.length > 5 && (
-                      <p className={`text-sm ${T.subtext} text-center`}>
-                        ... e altri {potentialInstructors.length - 5} giocatori
-                      </p>
-                    )}
                   </div>
                 )}
               </div>
@@ -1163,6 +1216,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
     specialties: [],
     bio: "",
     certifications: [],
+    isInstructor: true, // Default attivo per nuovi istruttori
     ...player.instructorData,
   }));
 
@@ -1276,6 +1330,44 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
               Colore: {formData.color}
             </span>
           </div>
+        </div>
+
+        {/* Attiva/Disattiva Istruttore */}
+        <div className="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-700">
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <div className="relative">
+              <input
+                type="checkbox"
+                checked={formData.isInstructor}
+                onChange={(e) =>
+                  setFormData({ ...formData, isInstructor: e.target.checked })
+                }
+                className="sr-only"
+              />
+              <div
+                className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${
+                  formData.isInstructor
+                    ? "bg-emerald-600 border-emerald-600 shadow-lg"
+                    : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 group-hover:border-emerald-400"
+                }`}
+              >
+                {formData.isInstructor && (
+                  <span className="text-white text-sm font-bold">✓</span>
+                )}
+              </div>
+            </div>
+            <div>
+              <span className={`${ds.label} font-semibold ${formData.isInstructor ? 'text-emerald-700 dark:text-emerald-300' : ''}`}>
+                🎯 Attiva Istruttore
+              </span>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {formData.isInstructor 
+                  ? "L'istruttore è attivo e può ricevere prenotazioni" 
+                  : "L'istruttore è disattivato e non comparirà nelle prenotazioni"
+                }
+              </p>
+            </div>
+          </label>
         </div>
 
         {/* Pricing Section */}

@@ -260,6 +260,124 @@ export default function StatisticheGiocatore({
     return points;
   }, [pid, players, filteredMatches]);
 
+  // Timeline per il giocatore di confronto
+  const compareTimeline = useMemo(() => {
+    if (!comparePlayerId) return [];
+    
+    const current = new Map(
+      players.map((p) => [
+        p.id,
+        Number(p.baseRating ?? p.startRating ?? p.rating ?? DEFAULT_RATING),
+      ]),
+    );
+    const points = [];
+    points.push({
+      date: null,
+      label: "Start",
+      rating: Math.round(current.get(comparePlayerId) ?? DEFAULT_RATING),
+    });
+
+    const byDate = [...(filteredMatches || [])].sort(
+      (a, b) => new Date(a.date) - new Date(b.date),
+    );
+    
+    for (const m of byDate) {
+      const rr = computeFromSets(m.sets);
+      const add = (id, d) =>
+        current.set(id, (current.get(id) ?? DEFAULT_RATING) + d);
+      const deltaA = m.deltaA ?? 0,
+        deltaB = m.deltaB ?? 0;
+      add(m.teamA[0], deltaA);
+      add(m.teamA[1], deltaA);
+      add(m.teamB[0], deltaB);
+      add(m.teamB[1], deltaB);
+      
+      if (m.teamA.includes(comparePlayerId) || m.teamB.includes(comparePlayerId)) {
+        points.push({
+          date: new Date(m.date),
+          label: new Date(m.date).toLocaleString("it-IT", {
+            day: "2-digit",
+            month: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          rating: Math.round(current.get(comparePlayerId) ?? DEFAULT_RATING),
+        });
+      }
+    }
+    return points;
+  }, [comparePlayerId, players, filteredMatches]);
+
+  // Timeline combinata per il grafico di confronto
+  const combinedTimeline = useMemo(() => {
+    if (!comparePlayerId) return timeline.map(point => ({ ...point, playerRating: point.rating }));
+    
+    // Crea un array di tutte le date uniche
+    const allDates = new Set();
+    timeline.forEach(point => {
+      if (point.date) allDates.add(point.date.getTime());
+    });
+    compareTimeline.forEach(point => {
+      if (point.date) allDates.add(point.date.getTime());
+    });
+    
+    // Ordina le date
+    const sortedDates = Array.from(allDates).sort();
+    
+    // Mappa per tracking dei rating correnti
+    let playerRating = timeline[0]?.rating ?? DEFAULT_RATING;
+    let compareRating = compareTimeline[0]?.rating ?? DEFAULT_RATING;
+    
+    const combined = [];
+    
+    // Punto iniziale
+    combined.push({
+      date: null,
+      label: "Start",
+      playerRating: playerRating,
+      compareRating: compareRating,
+      rating: playerRating // Per compatibilità
+    });
+    
+    let playerIndex = 1; // Skip del punto iniziale
+    let compareIndex = 1; // Skip del punto iniziale
+    
+    for (const dateTime of sortedDates) {
+      const date = new Date(dateTime);
+      
+      // Aggiorna rating del player principale se c'è un punto in questa data
+      while (playerIndex < timeline.length && 
+             timeline[playerIndex].date && 
+             timeline[playerIndex].date.getTime() <= dateTime) {
+        playerRating = timeline[playerIndex].rating;
+        playerIndex++;
+      }
+      
+      // Aggiorna rating del player di confronto se c'è un punto in questa data  
+      while (compareIndex < compareTimeline.length && 
+             compareTimeline[compareIndex].date && 
+             compareTimeline[compareIndex].date.getTime() <= dateTime) {
+        compareRating = compareTimeline[compareIndex].rating;
+        compareIndex++;
+      }
+      
+      combined.push({
+        date: date,
+        label: date.toLocaleString("it-IT", {
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        playerRating: playerRating,
+        compareRating: compareRating,
+        rating: playerRating // Per compatibilità con la linea principale
+      });
+    }
+    
+    return combined;
+  }, [timeline, compareTimeline, comparePlayerId]);
+
   const partnerAndOppStats = useMemo(() => {
     if (!pid)
       return {
@@ -830,24 +948,11 @@ export default function StatisticheGiocatore({
                   Striscia Record
                 </span>
               </div>
-              <div
-                className={`text-lg sm:text-2xl font-bold ${
-                  advancedStats.currentStreak > 0
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : advancedStats.currentStreak < 0
-                      ? "text-red-600 dark:text-red-400"
-                      : "text-gray-600 dark:text-gray-400"
-                }`}
-              >
-                {advancedStats.currentStreak > 0 && "+"}
-                {advancedStats.currentStreak}
+              <div className="text-lg sm:text-2xl font-bold text-amber-600 dark:text-amber-400">
+                {advancedStats.maxWinStreak}
               </div>
               <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {advancedStats.currentStreak > 0
-                  ? "vittorie"
-                  : advancedStats.currentStreak < 0
-                    ? "sconfitte"
-                    : "nessuna"}
+                vittorie consecutive (migliore)
               </div>
             </div>
 
@@ -869,7 +974,7 @@ export default function StatisticheGiocatore({
                   </svg>
                 </div>
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                  Striscia attiva
+                  Striscia Attiva
                 </span>
               </div>
               <div
@@ -886,10 +991,10 @@ export default function StatisticheGiocatore({
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {advancedStats.currentStreak > 0
-                  ? "vittorie consecutive"
+                  ? "vittorie consecutive (attuale)"
                   : advancedStats.currentStreak < 0
-                    ? "sconfitte consecutive"
-                    : "nessuna striscia"}
+                    ? "sconfitte consecutive (attuale)"
+                    : "nessuna striscia attiva"}
               </div>
             </div>
           </div>
@@ -923,11 +1028,17 @@ export default function StatisticheGiocatore({
             </span>
           </div>
           <ModernAreaChart
-            data={timeline}
-            dataKey="rating"
+            data={combinedTimeline}
+            dataKey="playerRating"
+            compareDataKey={comparePlayerId ? "compareRating" : null}
+            comparePlayerName={comparePlayerId ? players.find(p => p.id === comparePlayerId)?.name : null}
             chartId={`player-${pid}`}
             color="success"
             title="Evoluzione del rating"
+            multiPlayer={false}
+            xKey="label"
+            yKey="rating"
+            top5Players={[]}
           />
         </div>
 
