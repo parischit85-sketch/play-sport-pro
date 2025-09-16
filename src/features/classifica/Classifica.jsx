@@ -30,90 +30,188 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
     [players],
   );
 
-  // Classifica Coppie
+  // Classifica Coppie - Algoritmo corretto per coppie reali
   const couplesStats = useMemo(() => {
-    const couples = new Map();
-    const MIN_MATCHES = 3; // soglia minima per considerare la coppia
+    const coupleResults = new Map(); // key: "playerId1_playerId2", value: statistiche
+    const MIN_MATCHES = 2; // Ridotto a 2 per mostrare più coppie
 
+    // Step 1: Analizza ogni match per trovare tutte le coppie e i loro risultati
     for (const match of matches) {
+      // Validazione match
       if (
         !Array.isArray(match.teamA) ||
         !Array.isArray(match.teamB) ||
         match.teamA.length !== 2 ||
-        match.teamB.length !== 2
-      )
+        match.teamB.length !== 2 ||
+        !Array.isArray(match.sets) ||
+        match.sets.length === 0
+      ) {
         continue;
-
-      // Chiavi coppia ordinate senza mutare i dati del match
-      const [a1, a2] = [...match.teamA].sort();
-      const [b1, b2] = [...match.teamB].sort();
-      const keyA = `${a1}_${a2}`;
-      const keyB = `${b1}_${b2}`;
-
-      if (!couples.has(keyA)) {
-        const pa1 = players.find((p) => p.id === a1);
-        const pa2 = players.find((p) => p.id === a2);
-        couples.set(keyA, {
-          key: keyA,
-          players: [pa1?.name || "Unknown", pa2?.name || "Unknown"],
-          wins: 0,
-          losses: 0,
-          matches: 0,
-        });
-      }
-      if (!couples.has(keyB)) {
-        const pb1 = players.find((p) => p.id === b1);
-        const pb2 = players.find((p) => p.id === b2);
-        couples.set(keyB, {
-          key: keyB,
-          players: [pb1?.name || "Unknown", pb2?.name || "Unknown"],
-          wins: 0,
-          losses: 0,
-          matches: 0,
-        });
       }
 
-      const cA = couples.get(keyA);
-      const cB = couples.get(keyB);
-      cA.matches++;
-      cB.matches++;
-
-      // Usa il winner calcolato (derivato da recompute). Fallback ai set se assente.
-      let winner = match.winner;
-      if (!winner && Array.isArray(match.sets)) {
-        const aSets = match.sets.reduce(
-          (acc, s) => acc + (s.a > s.b ? 1 : 0),
-          0,
-        );
-        const bSets = match.sets.reduce(
-          (acc, s) => acc + (s.b > s.a ? 1 : 0),
-          0,
-        );
-        winner = aSets > bSets ? "A" : "B";
+      // Determina il vincitore
+      let winner = null;
+      if (match.winner === "A" || match.winner === "B") {
+        winner = match.winner;
+      } else if (match.sets && match.sets.length > 0) {
+        const aSets = match.sets.reduce((acc, s) => {
+          const a = Number(s?.a || 0);
+          const b = Number(s?.b || 0);
+          return acc + (a > b ? 1 : 0);
+        }, 0);
+        const bSets = match.sets.reduce((acc, s) => {
+          const a = Number(s?.a || 0);
+          const b = Number(s?.b || 0);
+          return acc + (b > a ? 1 : 0);
+        }, 0);
+        
+        if (aSets > bSets) winner = "A";
+        else if (bSets > aSets) winner = "B";
       }
+      
+      if (!winner) continue;
+
+      // Crea le chiavi per le due coppie (sempre ordinate)
+      const coupleA = [...match.teamA].sort().join("_");
+      const coupleB = [...match.teamB].sort().join("_");
+
+      // Inizializza le coppie se non esistono
+      [coupleA, coupleB].forEach((coupleKey, index) => {
+        if (!coupleResults.has(coupleKey)) {
+          const teamIds = coupleKey.split("_");
+          const player1 = players.find(p => p.id === teamIds[0]);
+          const player2 = players.find(p => p.id === teamIds[1]);
+          
+          coupleResults.set(coupleKey, {
+            player1: {
+              id: teamIds[0],
+              name: player1?.name || "Unknown"
+            },
+            player2: {
+              id: teamIds[1], 
+              name: player2?.name || "Unknown"
+            },
+            wins: 0,
+            losses: 0,
+            matches: 0,
+            gamesWon: 0,
+            gamesLost: 0,
+            setsWon: 0,
+            setsLost: 0
+          });
+        }
+      });
+
+      // Calcola statistiche del match
+      const totalGamesA = match.sets.reduce((acc, s) => acc + Number(s?.a || 0), 0);
+      const totalGamesB = match.sets.reduce((acc, s) => acc + Number(s?.b || 0), 0);
+      const totalSetsA = match.sets.reduce((acc, s) => {
+        const a = Number(s?.a || 0);
+        const b = Number(s?.b || 0);
+        return acc + (a > b ? 1 : 0);
+      }, 0);
+      const totalSetsB = match.sets.reduce((acc, s) => {
+        const a = Number(s?.a || 0);
+        const b = Number(s?.b || 0);
+        return acc + (b > a ? 1 : 0);
+      }, 0);
+
+      // Aggiorna le statistiche delle coppie
+      const statsA = coupleResults.get(coupleA);
+      const statsB = coupleResults.get(coupleB);
+
+      statsA.matches++;
+      statsB.matches++;
 
       if (winner === "A") {
-        cA.wins++;
-        cB.losses++;
-      } else if (winner === "B") {
-        cB.wins++;
-        cA.losses++;
+        // Coppia A vince
+        statsA.wins++;
+        statsA.gamesWon += totalGamesA;
+        statsA.gamesLost += totalGamesB;
+        statsA.setsWon += totalSetsA;
+        statsA.setsLost += totalSetsB;
+        
+        // Coppia B perde
+        statsB.losses++;
+        statsB.gamesWon += totalGamesB;
+        statsB.gamesLost += totalGamesA;
+        statsB.setsWon += totalSetsB;
+        statsB.setsLost += totalSetsA;
+      } else {
+        // Coppia B vince
+        statsB.wins++;
+        statsB.gamesWon += totalGamesB;
+        statsB.gamesLost += totalGamesA;
+        statsB.setsWon += totalSetsB;
+        statsB.setsLost += totalSetsA;
+        
+        // Coppia A perde
+        statsA.losses++;
+        statsA.gamesWon += totalGamesA;
+        statsA.gamesLost += totalGamesB;
+        statsA.setsWon += totalSetsA;
+        statsA.setsLost += totalSetsB;
       }
     }
 
-    return Array.from(couples.values())
-      .map((c) => ({
-        ...c,
-        winRate: c.matches > 0 ? (c.wins / c.matches) * 100 : 0,
-      }))
-      .filter((c) => c.matches >= MIN_MATCHES)
+    // Step 2: Converte in array e calcola le metriche finali
+    const couplesArray = Array.from(coupleResults.entries()).map(([coupleKey, stats]) => {
+      const winRate = stats.matches > 0 ? (stats.wins / stats.matches) * 100 : 0;
+      const gameEfficiency = (stats.gamesWon + stats.gamesLost) > 0 
+        ? (stats.gamesWon / (stats.gamesWon + stats.gamesLost)) * 100 
+        : 0;
+      const setEfficiency = (stats.setsWon + stats.setsLost) > 0
+        ? (stats.setsWon / (stats.setsWon + stats.setsLost)) * 100
+        : 0;
+
+      return {
+        key: coupleKey,
+        players: [stats.player1.name, stats.player2.name],
+        playerIds: [stats.player1.id, stats.player2.id],
+        wins: stats.wins,
+        losses: stats.losses,
+        matches: stats.matches,
+        winRate: winRate,
+        gameEfficiency: gameEfficiency,
+        setEfficiency: setEfficiency,
+        gamesWon: stats.gamesWon,
+        gamesLost: stats.gamesLost,
+        setsWon: stats.setsWon,
+        setsLost: stats.setsLost
+      };
+    });
+
+    // Step 3: Filtra e ordina
+    const filteredCouples = couplesArray.filter(couple => couple.matches >= MIN_MATCHES);
+    
+    // Log per debug - mostra il numero totale di coppie
+    console.log(`🔍 DEBUG Coppie:
+    - Coppie totali trovate: ${couplesArray.length}
+    - Coppie con ≥${MIN_MATCHES} partite: ${filteredCouples.length}
+    - Coppie filtrate da mostrare: ${Math.min(15, filteredCouples.length)}`);
+    
+    return filteredCouples
       .sort((a, b) => {
-        if (b.winRate !== a.winRate) return b.winRate - a.winRate;
-        if (b.wins !== a.wins) return b.wins - a.wins;
-        if (b.matches !== a.matches) return b.matches - a.matches;
-        const an = `${a.players[0]} & ${a.players[1]}`.toLowerCase();
-        const bn = `${b.players[0]} & ${b.players[1]}`.toLowerCase();
-        return an.localeCompare(bn);
+        // 1. Prima per win rate (percentuale vittorie)
+        if (Math.abs(b.winRate - a.winRate) > 0.1) {
+          return b.winRate - a.winRate;
+        }
+        // 2. A parità di win rate, per numero vittorie assolute
+        if (b.wins !== a.wins) {
+          return b.wins - a.wins;
+        }
+        // 3. A parità di vittorie, per game efficiency
+        if (Math.abs(b.gameEfficiency - a.gameEfficiency) > 0.1) {
+          return b.gameEfficiency - a.gameEfficiency;
+        }
+        // 4. A parità, per numero partite giocate (più esperienza)
+        if (b.matches !== a.matches) {
+          return b.matches - a.matches;
+        }
+        // 5. Ordine alfabetico per consistenza
+        const nameA = `${a.players[0]} & ${a.players[1]}`.toLowerCase();
+        const nameB = `${b.players[0]} & ${b.players[1]}`.toLowerCase();
+        return nameA.localeCompare(nameB);
       });
   }, [players, matches]);
 
@@ -509,7 +607,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                       Come funziona:
                     </p>
                     <p className="text-sm text-amber-700 dark:text-amber-300">
-                      Ordinate per % vittorie. Solo coppie con ≥3 partite.
+                      Ordinate per % vittorie. Solo coppie con ≥2 partite.
                     </p>
                   </div>
                 </div>
