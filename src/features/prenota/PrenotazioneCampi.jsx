@@ -150,6 +150,7 @@ export default function PrenotazioneCampi({
   players,
   playersById,
   T,
+  clubId,
 }) {
   const { user } = useAuth();
 
@@ -162,6 +163,7 @@ export default function PrenotazioneCampi({
     updateBooking: updateUnifiedBooking,
     deleteBooking: deleteUnifiedBooking,
   } = useUnifiedBookings({
+    clubId,
     autoLoadUser: false,
     autoLoadLessons: true,
     enableRealtime: true,
@@ -181,6 +183,40 @@ export default function PrenotazioneCampi({
   );
   const [showDatePicker, setShowDatePicker] = useState(false);
   const courts = Array.isArray(state?.courts) ? state.courts : [];
+  
+  // Stato per il filtro dei campi per tipologia
+  const [activeCourtFilter, setActiveCourtFilter] = useState("all");
+  
+  // Inizializza gli ordini se necessario e ordina i campi per posizione
+  const courtsWithOrder = courts.map((court, index) => ({
+    ...court,
+    order: court.order || (index + 1),
+  }));
+
+  const sortedCourts = [...courtsWithOrder].sort((a, b) => {
+    const orderA = a.order || 999;
+    const orderB = b.order || 999;
+    if (orderA !== orderB) {
+      return orderA - orderB;
+    }
+    // Se gli ordini sono uguali, ordina per nome come fallback
+    return (a.name || '').localeCompare(b.name || '');
+  });
+  
+  // Filtra i campi in base al filtro attivo
+  const filteredCourts = activeCourtFilter === "all" 
+    ? sortedCourts 
+    : sortedCourts.filter(court => court.courtType === activeCourtFilter);
+
+  // Ottieni tutte le tipologie di campo disponibili
+  const availableCourtTypes = [...new Set(courts.map(court => court.courtType).filter(Boolean))];
+  
+  // Conta i campi per ogni tipo
+  const courtTypeCounts = availableCourtTypes.reduce((acc, type) => {
+    acc[type] = sortedCourts.filter(court => court.courtType === type).length;
+    return acc;
+  }, {});
+  
   // Get instructors from players (instead of localStorage)
   const instructors = useMemo(() => {
     const availableInstructors = (state.players || []).filter(
@@ -332,14 +368,14 @@ export default function PrenotazioneCampi({
   );
 
   const bookingsByCourt = useMemo(() => {
-    const map = new Map(courts.map((c) => [c.id, []]));
+    const map = new Map(filteredCourts.map((c) => [c.id, []]));
     for (const b of dayBookings) {
       const arr = map.get(b.courtId) || [];
       arr.push(b);
       map.set(b.courtId, arr);
     }
     return map;
-  }, [dayBookings, courts]);
+  }, [dayBookings, filteredCourts]);
 
   const dayRates = useMemo(() => {
     // Calcola rates considerando tutti i campi per ogni time slot
@@ -443,13 +479,6 @@ export default function PrenotazioneCampi({
   }
 
   function openEdit(booking) {
-    console.log("🔍 Opening edit for booking:", {
-      id: booking.id,
-      participants: booking.participants,
-      price: booking.price,
-      instructorId: booking.instructorId,
-      hasParticipants: "participants" in booking,
-    });
     setEditingId(booking.id);
     const start = new Date(booking.start);
     const namesFromIds = (booking.players || []).map(playersNameById);
@@ -518,15 +547,6 @@ export default function PrenotazioneCampi({
       participantsCount = 4;
     }
 
-    console.log(
-      "💡 Inferred participants:",
-      participantsCount,
-      "from price:",
-      booking.price,
-      "instructor:",
-      booking.instructorId,
-    );
-
     setForm({
       courtId: booking.courtId,
       start,
@@ -552,33 +572,14 @@ export default function PrenotazioneCampi({
     const blockEnd = addMinutes(start, duration);
     const list = bookingsByCourt.get(courtId) || [];
 
-    console.log("🔍 Checking overlap for:", {
-      courtId,
-      blockStart: blockStart.toISOString(),
-      blockEnd: blockEnd.toISOString(),
-      duration,
-      ignoreId,
-      existingBookings: list.length,
-    });
-
     const conflict = list.find((b) => {
       if (ignoreId && b.id === ignoreId) {
-        console.log("⏭️ Ignoring booking:", b.id);
         return false;
       }
 
       const bStart = new Date(b.start);
       const bEnd = addMinutes(new Date(b.start), b.duration);
       const hasOverlap = overlaps(blockStart, blockEnd, bStart, bEnd);
-
-      if (hasOverlap) {
-        console.log("🚫 Overlap detected with booking:", {
-          bookingId: b.id,
-          bookingStart: bStart.toISOString(),
-          bookingEnd: bEnd.toISOString(),
-          bookingDuration: b.duration,
-        });
-      }
 
       return hasOverlap;
     });
@@ -900,13 +901,6 @@ export default function PrenotazioneCampi({
     e.preventDefault();
     setDragOverSlot(null);
 
-    console.log("🎯 DROP EVENT:", {
-      courtId: courtId,
-      slotTime: time.toISOString(),
-      draggedBookingId: draggedBooking.id,
-      draggedBookingDuration: draggedBooking.duration,
-    });
-
     try {
       // Check if the target slot is available and on the same day
       const draggedDate = new Date(draggedBooking.start).toDateString();
@@ -922,12 +916,6 @@ export default function PrenotazioneCampi({
       // Calculate target time slot properly
       const targetTime = floorToSlot(time, cfg.slotMinutes);
       const targetEnd = addMinutes(targetTime, draggedBooking.duration);
-
-      console.log("🎯 Drop validation:", {
-        targetTime: targetTime.toISOString(),
-        targetEnd: targetEnd.toISOString(),
-        duration: draggedBooking.duration,
-      });
 
       // Check if target court is in schedule for ALL slots that will be occupied
       const slotsToOccupy = [];
@@ -986,7 +974,6 @@ export default function PrenotazioneCampi({
         });
 
         if (slotConflict) {
-          console.log("🚫 Slot conflict detected at:", slotTime.toISOString());
           alert(
             "Lo slot di destinazione è già occupato da un'altra prenotazione.",
           );
@@ -994,22 +981,12 @@ export default function PrenotazioneCampi({
         }
       }
 
-      console.log("✅ Drop validation passed, updating booking...");
-
       // Calculate proper date/time strings for cloud format
       const localDate = new Date(
         targetTime.getTime() - targetTime.getTimezoneOffset() * 60000,
       );
       const dateStr = localDate.toISOString().split("T")[0]; // YYYY-MM-DD
       const timeStr = localDate.toISOString().split("T")[1].substring(0, 5); // HH:MM
-
-      console.log("🔄 Updating booking with:", {
-        bookingId: draggedBooking.id,
-        newCourtId: courtId,
-        newDateStr: dateStr,
-        newTimeStr: timeStr,
-        targetTimeLocal: targetTime.toLocaleString("it-IT"),
-      });
 
       // Update the booking - use only cloud format (date/time), not legacy start
       await updateUnifiedBooking(draggedBooking.id, {
@@ -1020,12 +997,9 @@ export default function PrenotazioneCampi({
         updatedAt: new Date().toISOString(),
       });
 
-      console.log("✅ Booking moved successfully");
-
       // Force refresh of bookings to ensure UI is updated
       if (refreshBookings) {
         setTimeout(() => {
-          console.log("🔄 Refreshing bookings after drag & drop...");
           refreshBookings();
         }, 500);
       }
@@ -1043,7 +1017,7 @@ export default function PrenotazioneCampi({
     const list = bookingsByCourt.get(courtId) || [];
     const hit = list.find((b) => {
       const bStart = new Date(b.start);
-      const bEnd = addMinutes(new Date(b.start), b.duration);
+      const bEnd = addMinutes(bStart, b.duration);
       return overlaps(bStart, bEnd, t, addMinutes(t, cfg.slotMinutes));
     });
 
@@ -1397,26 +1371,34 @@ export default function PrenotazioneCampi({
       const participants = Math.max(1, Math.min(4, form.participants || 1));
       return previewPrice / participants;
     }
-    // Partita normale: assumiamo suddivisione su 4 giocatori
-    return previewPrice / 4;
-  }, [previewPrice, form.bookingType, form.participants]);
+    // Partita normale: usa maxPlayers del campo selezionato
+    const selectedCourt = courts.find((c) => c.id === form.courtId);
+    const maxPlayers = selectedCourt?.maxPlayers || 4; // Default 4 se non specificato
+    return previewPrice / Math.max(1, maxPlayers);
+  }, [previewPrice, form.bookingType, form.participants, form.courtId, courts]);
+
+  useEffect(() => {
+    // Refresh dashboard every 2 minutes
+    const interval = setInterval(() => {
+      window.location.reload();
+    }, 2 * 60 * 1000); // 2 minutes in milliseconds
+
+    // Refresh dashboard when the tab becomes visible
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        window.location.reload();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
   return (
-    <Section title="Gestione Campi" T={T}>
-      {/* Drag & Drop Info Banner (Desktop Only) */}
-      {isDesktop && (
-        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <div className="flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
-            <span className="text-lg">🖱️</span>
-            <span className="font-medium">Drag & Drop attivo:</span>
-            <span>
-              Trascina le prenotazioni per spostarle su slot liberi dello stesso
-              giorno
-            </span>
-          </div>
-        </div>
-      )}
-
+    <Section T={T}>
       {/* Show loading state if state is null */}
       {!state ? (
         <div className="flex items-center justify-center py-12">
@@ -1432,156 +1414,146 @@ export default function PrenotazioneCampi({
         </div>
       ) : (
         <>
-          {/* Header moderno con navigazione integrata */}
-          <div
-            className={`flex flex-col items-center gap-6 mb-6 ${T.cardBg} ${T.border} p-6 rounded-xl shadow-lg`}
-          >
-            {/* Navigazione date centrata con frecce grandi */}
-            <div className="flex items-center justify-center gap-6">
-              <button
-                type="button"
-                className={`w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-2xl font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
-                onClick={() => goOffset(-1)}
-                title="Giorno precedente"
-              >
-                ←
-              </button>
+          {/* Header principale con filtri e navigazione affiancati */}
+          <div className="flex flex-col lg:flex-row gap-3 mb-4">
+            {/* Filtri per tipologia campo - a sinistra */}
+            <div className={`flex-1 ${T.cardBg} ${T.border} p-2 rounded-xl shadow-lg`}>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-semibold">🏓</span>
+                <span className="text-sm font-medium">Filtra per tipologia campo</span>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                <button
+                  type="button"
+                  onClick={() => setActiveCourtFilter("all")}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    activeCourtFilter === "all"
+                      ? "bg-blue-500 text-white shadow-lg"
+                      : `${T.btnGhost} hover:bg-blue-50 dark:hover:bg-blue-900/20`
+                  }`}
+                >
+                  Tutti ({sortedCourts.length})
+                </button>
+                {availableCourtTypes.map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setActiveCourtFilter(type)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      activeCourtFilter === type
+                        ? "bg-blue-500 text-white shadow-lg"
+                        : `${T.btnGhost} hover:bg-blue-50 dark:hover:bg-blue-900/20`
+                    }`}
+                  >
+                    {type} ({courtTypeCounts[type]})
+                  </button>
+                ))}
+              </div>
+              {filteredCourts.length === 0 && activeCourtFilter !== "all" && (
+                <div className="mt-2 text-center py-2 text-gray-500 dark:text-gray-400">
+                  <div className="text-lg mb-1">🏓</div>
+                  <div className="text-sm">Nessun campo di tipo "{activeCourtFilter}" disponibile</div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveCourtFilter("all")}
+                    className={`${T.btnPrimary} mt-1 px-3 py-1 text-sm`}
+                  >
+                    Mostra tutti i campi
+                  </button>
+                </div>
+              )}
+            </div>
 
-              <button
-                type="button"
-                onClick={() => setShowDatePicker(true)}
-                className={`text-2xl sm:text-3xl font-bold cursor-pointer hover:scale-105 transition-transform bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent dark:from-emerald-400 dark:to-lime-400 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-center`}
-                title="Clicca per aprire calendario"
-              >
-                {/* Versione mobile: formato compatto */}
-                <span className="block sm:hidden">{dayLabelMobile}</span>
-                {/* Versione desktop: formato completo */}
-                <span className="hidden sm:block">{dayLabelDesktop}</span>
-              </button>
+            {/* Header moderno con navigazione integrata - a destra */}
+            <div className={`flex-1 ${T.cardBg} ${T.border} p-3 rounded-xl shadow-lg`}>
+              {/* Navigazione date centrata con frecce grandi */}
+              <div className="flex items-center justify-center gap-6">
+                <button
+                  type="button"
+                  className={`w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-2xl font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
+                  onClick={() => goOffset(-1)}
+                  title="Giorno precedente"
+                >
+                  ←
+                </button>
 
-              <button
-                type="button"
-                className={`w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-2xl font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
-                onClick={() => goOffset(1)}
-                title="Giorno successivo"
-              >
-                →
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setShowDatePicker(true)}
+                  className={`text-2xl sm:text-3xl font-bold cursor-pointer hover:scale-105 transition-transform bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent dark:from-emerald-400 dark:to-lime-400 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-center`}
+                  title="Clicca per aprire calendario"
+                >
+                  {/* Versione mobile: formato compatto */}
+                  <span className="block sm:hidden">{dayLabelMobile}</span>
+                  {/* Versione desktop: formato completo */}
+                  <span className="hidden sm:block">{dayLabelDesktop}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-2xl font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
+                  onClick={() => goOffset(1)}
+                  title="Giorno successivo"
+                >
+                  →
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Calendario popup con griglia giorni */}
-          {showDatePicker && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div
-                className={`${T.cardBg} ${T.border} rounded-2xl shadow-2xl p-8 max-w-2xl w-full`}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <h3
-                    className={`text-2xl font-bold ${T.text} flex items-center gap-2`}
+          {/* Header campi sticky */}
+          <div className="sticky top-16 z-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm -mx-4 px-4 pb-2">
+            <div className="relative w-full" style={{ minHeight: '70px' }}>
+              <div className="w-full overflow-x-auto" style={{ touchAction: 'auto' }}>
+                <div style={{ transform: 'none', transformOrigin: 'left top', transition: 'transform 0.2s ease-out', minWidth: '100%', minHeight: '100%' }}>
+                  <div
+                    className="min-w-[720px] grid gap-2"
+                    style={{ gridTemplateColumns: `repeat(${filteredCourts.length}, 1fr)` }}
                   >
-                    📅 Seleziona data
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => setShowDatePicker(false)}
-                    className={`w-10 h-10 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center text-2xl font-bold transition-colors`}
-                    title="Chiudi"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                {/* Calendario visuale */}
-                <CalendarGrid
-                  currentDay={day}
-                  onSelectDay={(selectedDay) => {
-                    setDay(selectedDay);
-                    setShowDatePicker(false);
-                  }}
-                  T={T}
-                />
-
-                {/* Pulsanti rapidi */}
-                <div className="mt-6 grid grid-cols-3 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      goToday();
-                      setShowDatePicker(false);
-                    }}
-                    className={`${T.btnPrimary} py-3 text-sm font-semibold flex items-center justify-center gap-2`}
-                  >
-                    🏠 Oggi
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      goOffset(-1);
-                      setShowDatePicker(false);
-                    }}
-                    className={`${T.btnGhost} py-3 text-sm font-medium`}
-                  >
-                    ← Ieri
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      goOffset(1);
-                      setShowDatePicker(false);
-                    }}
-                    className={`${T.btnGhost} py-3 text-sm font-medium`}
-                  >
-                    Domani →
-                  </button>
+                    {/* Header campi */}
+                    {filteredCourts.map((c) => (
+                      <div
+                        key={`hdr_${c.id}`}
+                        className={`px-2 py-3 text-base font-bold text-center rounded-xl shadow-md ${T.cardBg} ${T.border}`}
+                      >
+                        <span className="inline-flex items-center gap-2">
+                          <span
+                            className={`w-7 h-7 rounded-full bg-blue-400 dark:bg-emerald-400 text-white flex items-center justify-center font-bold shadow`}
+                          >
+                            {c.name[0]}
+                          </span>
+                          <div className="flex flex-col items-start">
+                            <span>{c.name}</span>
+                            {form.start && hasPromoSlot(c.id, form.start) && (
+                              <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-black px-2 py-0.5 rounded-full font-medium">
+                                🏷️ Promo
+                              </span>
+                            )}
+                            {c.hasHeating && (
+                              <span className="text-xs text-orange-500 dark:text-orange-400 font-medium">
+                                🔥 Riscaldato
+                              </span>
+                            )}
+                          </div>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          )}
-
-
-
-
+          </div>
 
           {/* Griglia principale - sempre visibile anche su mobile con zoom */}
           <ZoomableGrid T={T} className="pb-4">
             <div
               className="min-w-[720px] grid gap-2"
-              style={{ gridTemplateColumns: `repeat(${courts.length}, 1fr)` }}
+              style={{ gridTemplateColumns: `repeat(${filteredCourts.length}, 1fr)` }}
             >
-              {/* Header campi */}
-              {courts.map((c) => (
-                <div
-                  key={`hdr_${c.id}`}
-                  className={`px-2 py-3 text-base font-bold text-center rounded-xl shadow-md mb-2 ${T.cardBg} ${T.border}`}
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <span
-                      className={`w-7 h-7 rounded-full bg-blue-400 dark:bg-emerald-400 text-white flex items-center justify-center font-bold shadow`}
-                    >
-                      {c.name[0]}
-                    </span>
-                    <div className="flex flex-col items-start">
-                      <span>{c.name}</span>
-                      {form.start && hasPromoSlot(c.id, form.start) && (
-                        <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-black px-2 py-0.5 rounded-full font-medium">
-                          🏷️ Promo
-                        </span>
-                      )}
-                      {c.hasHeating && (
-                        <span className="text-xs text-orange-500 dark:text-orange-400 font-medium">
-                          🔥 Riscaldato
-                        </span>
-                      )}
-                    </div>
-                  </span>
-                </div>
-              ))}
-
               {/* Celle prenotazione */}
               {timeSlots.map((t, r) => (
                 <React.Fragment key={t.getTime()}>
-                  {courts.map((c) => (
+                  {filteredCourts.map((c) => (
                     <div
                       key={c.id + "_" + r}
                       className={`px-0.5 py-0.5 ${T.cardBg} ${T.border} rounded-lg`}
@@ -1741,7 +1713,7 @@ export default function PrenotazioneCampi({
                             }
                             className="px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium dark-select"
                           >
-                            {state.courts.map((c) => (
+                            {filteredCourts.map((c) => (
                               <option key={c.id} value={c.id}>
                                 {c.name}
                               </option>
@@ -1863,6 +1835,7 @@ export default function PrenotazioneCampi({
                                     useLighting: e.target.checked,
                                   }))
                                 }
+
                                 className="w-4 h-4 text-blue-600 bg-white/50 dark:bg-gray-700/50 border-blue-300 dark:border-blue-600 rounded focus:ring-blue-500 focus:ring-2"
                               />
                               <div className="flex flex-col">
@@ -1921,8 +1894,8 @@ export default function PrenotazioneCampi({
                               {previewPrice != null && perPlayer != null && (
                                 <div className="text-sm text-blue-100 mt-1 font-semibold">
                                   {form.bookingType === "lezione"
-                                    ? `/ partecipante: ${euro2(perPlayer)}`
-                                    : `/ giocatore: ${euro2(perPlayer)}`}
+                                    ? `${euro2(perPlayer)} x ${courts.find((c) => c.id === form.courtId)?.maxPlayers || 4} Partecipanti`
+                                    : `${euro2(perPlayer)} x ${courts.find((c) => c.id === form.courtId)?.maxPlayers || 4} Giocatori`}
                                 </div>
                               )}
                             </div>

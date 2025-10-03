@@ -2,6 +2,8 @@
 // FILE: src/components/ErrorBoundary.jsx
 // =============================================
 import React from "react";
+import * as Sentry from '@sentry/react';
+import { trackError } from '../lib/sentry';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -24,7 +26,21 @@ class ErrorBoundary extends React.Component {
       console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
 
-    // You can also log the error to an error reporting service here
+    // Track error with Sentry
+    trackError(error, {
+      errorInfo,
+      component: 'ErrorBoundary',
+      componentStack: errorInfo.componentStack,
+      errorBoundary: true
+    });
+
+    // Set additional context for this error
+    Sentry.withScope((scope) => {
+      scope.setTag('error_boundary', true);
+      scope.setLevel('error');
+      scope.setContext('errorInfo', errorInfo);
+      Sentry.captureException(error);
+    });
   }
 
   render() {

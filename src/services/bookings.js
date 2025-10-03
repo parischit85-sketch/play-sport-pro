@@ -780,6 +780,8 @@ export async function getUserBookings(user, forceFullInit = false) {
     // Carica sempre anche da localStorage (ora sincronizzato) e unisci i risultati
     try {
       const allBookings = await loadBookings();
+      
+      // Filtra le prenotazioni dell'utente
       const localUserBookings = allBookings.filter(
         (booking) =>
           booking.userEmail === user.email ||
@@ -885,7 +887,6 @@ export function addTestBookingsWithParticipants(user) {
   // Aggiungi le prenotazioni di test al localStorage
   testBookings.forEach((bookingData) => {
     const booking = createBookingLocal(bookingData, user);
-    console.log("Added test booking:", booking);
   });
 
   return testBookings.length;

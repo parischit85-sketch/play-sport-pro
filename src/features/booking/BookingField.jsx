@@ -15,12 +15,7 @@ import {
 } from "@services/unified-booking-service.js";
 
 function BookingField({ user, T, state, setState }) {
-  console.log(
-    `🚀 [BOOKING FIELD] Component loaded - user: ${user?.displayName || "not logged in"}`,
-  );
-  console.log(
-    `🎯 [BOOKING FIELD] Hole prevention rules are ACTIVE for user bookings`,
-  );
+
 
   const ds = createDSClasses(T);
 
@@ -34,21 +29,7 @@ function BookingField({ user, T, state, setState }) {
     autoLoadLessons: true,
   });
 
-  // Log when bookings change
-  useEffect(() => {
-    console.log(
-      `📊 [BOOKING FIELD] All bookings updated: ${allBookings.length} total`,
-    );
-    console.log(
-      `📋 [BOOKING FIELD] All bookings (including lessons):`,
-      allBookings,
-    );
-    const courtOnly = allBookings.filter((b) => !b.isLessonBooking);
-    const lessonOnly = allBookings.filter((b) => b.isLessonBooking);
-    console.log(
-      `🏟️ [BOOKING FIELD] Court bookings: ${courtOnly.length}, Lesson bookings: ${lessonOnly.length}`,
-    );
-  }, [allBookings]);
+
 
   const { userBookings, activeUserBookings } = useUserBookings();
 

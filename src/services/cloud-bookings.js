@@ -16,8 +16,19 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase.js";
 
-// Collezioni Firestore
-const BOOKINGS_COLLECTION = "bookings";
+// Club ID principale
+const MAIN_CLUB_ID = 'sporting-cat';
+
+// Funzione helper per ottenere il percorso bookings del club
+// AGGIORNATO: usa la collection root-level "bookings" come unified-booking-service
+const getBookingsCollection = (clubId = MAIN_CLUB_ID) => {
+  return collection(db, 'bookings');  // Root-level collection
+};
+
+// Funzione helper per ottenere un documento booking
+const getBookingDoc = (bookingId, clubId = MAIN_CLUB_ID) => {
+  return doc(db, 'bookings', bookingId);  // Root-level collection
+};
 
 // =============================================
 // FUNZIONI CLOUD PER PRENOTAZIONI
@@ -26,10 +37,10 @@ const BOOKINGS_COLLECTION = "bookings";
 /**
  * Carica tutte le prenotazioni pubbliche (per controllo disponibilità)
  */
-export async function loadPublicBookings() {
+export async function loadPublicBookings(clubId = MAIN_CLUB_ID) {
   try {
     const q = query(
-      collection(db, BOOKINGS_COLLECTION),
+      getBookingsCollection(clubId),
       where("status", "==", "confirmed"),
       orderBy("date", "asc"),
       orderBy("time", "asc"),
@@ -62,10 +73,10 @@ export async function loadPublicBookings() {
 /**
  * Carica prenotazioni di un utente specifico
  */
-export async function loadUserBookings(userId) {
+export async function loadUserBookings(userId, clubId = MAIN_CLUB_ID) {
   try {
     const q = query(
-      collection(db, BOOKINGS_COLLECTION),
+      getBookingsCollection(clubId),
       where("createdBy", "==", userId),
       orderBy("createdAt", "desc"),
     );
@@ -89,25 +100,134 @@ export async function loadUserBookings(userId) {
 /**
  * Carica prenotazioni attive di un utente
  */
-export async function loadActiveUserBookings(userId) {
+export async function loadActiveUserBookings(userId, clubId = MAIN_CLUB_ID, userInfo = {}) {
+  console.log('🔍 [loadActiveUserBookings] Searching for user:', userId, 'in club:', clubId, 'with info:', userInfo);
+  
   try {
     const today = new Date().toISOString().split("T")[0];
+    console.log('📅 [loadActiveUserBookings] Today:', today);
+    
+    // Calcola la data di 7 giorni fa per includere prenotazioni recenti
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const startDate = sevenDaysAgo.toISOString().split('T')[0];
+    console.log('📅 [loadActiveUserBookings] Start date (7 days ago):', startDate);
 
-    const q = query(
-      collection(db, BOOKINGS_COLLECTION),
-      where("createdBy", "==", userId),
-      where("status", "==", "confirmed"),
-      where("date", ">=", today),
-      orderBy("date", "asc"),
-      orderBy("time", "asc"),
-    );
+    // Prepara gli identificatori dell'utente per cercare in più campi
+    const userIdentifiers = {
+      id: userId,
+      name: userInfo.displayName || userInfo.name,
+      email: userInfo.email
+    };
+    
+    console.log('� [loadActiveUserBookings] User identifiers:', userIdentifiers);
 
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    // Crea multiple query per cercare l'utente in diversi campi
+    const queries = [];
+    
+    // Query per bookedBy (ID)
+    if (userId) {
+      queries.push(query(
+        getBookingsCollection(clubId),
+        where("bookedBy", "==", userId)
+      ));
+    }
+    
+    // Query per bookedBy (nome)
+    if (userIdentifiers.name) {
+      queries.push(query(
+        getBookingsCollection(clubId),
+        where("bookedBy", "==", userIdentifiers.name)
+      ));
+    }
+    
+    // Query per userEmail
+    if (userIdentifiers.email) {
+      queries.push(query(
+        getBookingsCollection(clubId),
+        where("userEmail", "==", userIdentifiers.email)
+      ));
+    }
+    
+    // Query per createdBy (ID)
+    if (userId) {
+      queries.push(query(
+        getBookingsCollection(clubId),
+        where("createdBy", "==", userId)
+      ));
+    }
+
+    // Esegui tutte le query in parallelo
+    const queryResults = await Promise.allSettled(queries.map(q => getDocs(q)));
+    
+    // Unisci tutti i risultati senza duplicati
+    const bookingMap = new Map();
+    
+    queryResults.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        const queryType = index === 0 ? 'bookedBy_id' : 
+                         index === 1 ? 'bookedBy_name' : 
+                         index === 2 ? 'userEmail' : 'createdBy';
+        console.log(`📊 [loadActiveUserBookings] Query ${queryType}: ${result.value.docs.length} results`);
+        
+        result.value.docs.forEach(doc => {
+          const booking = { id: doc.id, ...doc.data() };
+          bookingMap.set(doc.id, booking);
+        });
+      } else {
+        console.warn(`⚠️ [loadActiveUserBookings] Query ${index} failed:`, result.reason);
+      }
+    });
+    
+    const allBookings = Array.from(bookingMap.values());
+    console.log('📊 [loadActiveUserBookings] Total unique bookings found:', allBookings.length);
+    
+    // Filtra client-side: confirmed + date >= startDate + check if user is in players array
+    const bookings = allBookings
+      .filter(booking => {
+        // Status confirmed
+        if (booking.status !== 'confirmed') return false;
+        
+        // Date >= startDate
+        if (booking.date < startDate) return false;
+        
+        // Check if user is involved in this booking
+        const isBookedBy = booking.bookedBy === userId || 
+                          booking.bookedBy === userIdentifiers.name ||
+                          booking.createdBy === userId;
+        const isInPlayers = booking.players && 
+                           (booking.players.includes(userIdentifiers.name) || 
+                            booking.players.some(p => typeof p === 'object' && p?.id === userId));
+        const isUserEmail = booking.userEmail === userIdentifiers.email;
+        
+        const isUserInvolved = isBookedBy || isInPlayers || isUserEmail;
+        
+        if (!isUserInvolved) {
+          console.log('❌ [loadActiveUserBookings] Filtering out booking not involving user:', {
+            id: booking.id,
+            bookedBy: booking.bookedBy,
+            createdBy: booking.createdBy,
+            userEmail: booking.userEmail,
+            players: booking.players
+          });
+        }
+        
+        return isUserInvolved;
+      })
+      .sort((a, b) => {
+        if (a.date !== b.date) return a.date.localeCompare(b.date);
+        return (a.time || '').localeCompare(b.time || '');
+      });
+    
+    console.log('✅ [loadActiveUserBookings] Final filtered bookings:', bookings.length);
+    
+    if (bookings.length > 0) {
+      console.log('📋 [loadActiveUserBookings] Sample booking:', bookings[0]);
+    }
+    
+    return bookings;
   } catch (error) {
+    console.error('❌ [loadActiveUserBookings] Error:', error);
     if (
       error?.code !== "permission-denied" &&
       error?.code !== "failed-precondition"
@@ -117,16 +237,12 @@ export async function loadActiveUserBookings(userId) {
     return [];
   }
 }
-
-/**
- * Carica storico prenotazioni di un utente
- */
-export async function loadBookingHistory(userId) {
+export async function loadBookingHistory(userId, clubId = MAIN_CLUB_ID) {
   try {
     const today = new Date().toISOString().split("T")[0];
 
     const q = query(
-      collection(db, BOOKINGS_COLLECTION),
+      getBookingsCollection(clubId),
       where("createdBy", "==", userId),
       where("date", "<", today),
       orderBy("date", "desc"),
@@ -152,7 +268,7 @@ export async function loadBookingHistory(userId) {
 /**
  * Crea una nuova prenotazione nel cloud
  */
-export async function createCloudBooking(bookingData, user) {
+export async function createCloudBooking(bookingData, user, clubId = MAIN_CLUB_ID) {
   try {
     const booking = {
       // Dati prenotazione
@@ -179,7 +295,7 @@ export async function createCloudBooking(bookingData, user) {
       updatedAt: serverTimestamp(),
     };
 
-    const docRef = await addDoc(collection(db, BOOKINGS_COLLECTION), booking);
+    const docRef = await addDoc(getBookingsCollection(clubId), booking);
 
     return {
       id: docRef.id,
@@ -196,7 +312,7 @@ export async function createCloudBooking(bookingData, user) {
 /**
  * Aggiorna una prenotazione esistente
  */
-export async function updateCloudBooking(bookingId, updates, user) {
+export async function updateCloudBooking(bookingId, updates, user, clubId = MAIN_CLUB_ID) {
   try {
     const updateData = {
       ...updates,
@@ -204,7 +320,7 @@ export async function updateCloudBooking(bookingId, updates, user) {
       updatedBy: user?.uid || null,
     };
 
-    await updateDoc(doc(db, BOOKINGS_COLLECTION, bookingId), updateData);
+    await updateDoc(getBookingDoc(bookingId, clubId), updateData);
 
     return {
       id: bookingId,
@@ -222,9 +338,9 @@ export async function updateCloudBooking(bookingId, updates, user) {
 /**
  * Cancella una prenotazione
  */
-export async function cancelCloudBooking(bookingId, user) {
+export async function cancelCloudBooking(bookingId, user, clubId = MAIN_CLUB_ID) {
   try {
-    await updateDoc(doc(db, BOOKINGS_COLLECTION, bookingId), {
+    await updateDoc(getBookingDoc(bookingId, clubId), {
       status: "cancelled",
       cancelledAt: serverTimestamp(),
       cancelledBy: user?.uid || null,

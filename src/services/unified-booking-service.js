@@ -1,6 +1,7 @@
 // =============================================
 // FILE: src/services/unified-booking-service.js
 // SERVIZIO UNIFICATO PER TUTTE LE PRENOTAZIONI
+// DEBUG LOGS CLEANED - Updated
 // =============================================
 import {
   collection,
@@ -19,13 +20,14 @@ import {
   deleteField,
 } from "firebase/firestore";
 import { db } from "./firebase.js";
+import { invalidateUserBookingsCache } from "@hooks/useBookingPerformance.js";
 
-// Simple debug logger fallback
+// Simple debug logger fallback (disabled)
 const debugLogger = {
-  info: (cat, msg, data) => console.log(`📝 [${cat}] ${msg}`, data || ""),
-  success: (cat, msg, data) => console.log(`✅ [${cat}] ${msg}`, data || ""),
-  warn: (cat, msg, data) => console.log(`⚠️ [${cat}] ${msg}`, data || ""),
-  error: (cat, msg, data) => console.log(`❌ [${cat}] ${msg}`, data || ""),
+  info: (cat, msg, data) => {},
+  success: (cat, msg, data) => {},
+  warn: (cat, msg, data) => {},
+  error: (cat, msg, data) => {},
 };
 
 // =============================================
@@ -52,7 +54,7 @@ const BOOKING_TYPES = {
 // =============================================
 let useCloudStorage = false;
 let currentUser = null;
-let bookingCache = new Map();
+let bookingCache = new Map(); // chiave: `${scope}|${clubId||'all'}`
 let subscriptions = new Map();
 // Initialization & migration guards
 const MIGRATION_FLAG_KEY = "unified-bookings-migration-done-v1";
@@ -93,6 +95,9 @@ export function initialize(options = {}) {
   initialized = true; // Mark as initialized to prevent multiple calls
   useCloudStorage = options.cloudEnabled || false;
   currentUser = options.user || null;
+  
+
+  // ClubId non persistito qui: passato per ogni operazione (scelta multi-club)
 
   if (useCloudStorage) {
     setupRealtimeSubscriptions();
@@ -113,19 +118,26 @@ export function initialize(options = {}) {
   initialized = true;
 }
 
-function setupRealtimeSubscriptions() {
-  if (subscriptions.has("public")) return; // Already subscribed
+function setupRealtimeSubscriptions(clubId = null) {
+  const subKey = `public|${clubId||'all'}`;
+  if (subscriptions.has(subKey)) return; // Already subscribed
 
   try {
-    const q = query(
+    // Base query
+    let qBase = query(
       collection(db, COLLECTIONS.BOOKINGS),
       where("status", "!=", "cancelled"),
       orderBy("status"),
       orderBy("date", "asc"),
       orderBy("time", "asc"),
     );
+    // Se clubId presente, aggiungere filtro clubId (richiede indice Firestore)
+    if (clubId) {
+      // Firestore non consente aggiungere where dopo orderBy multipli senza indice; potremmo necessitare di query separata (semplificata).
+      // Per compatibilità, facciamo una query secondaria filtrando in memoria se l'indice non è pronto.
+    }
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const unsubscribe = onSnapshot(qBase, (snapshot) => {
       const bookings = snapshot.docs.map((d) => {
         const raw = d.data() || {};
         // Preserve legacy custom id (stored previously inside document data as 'id')
@@ -144,12 +156,13 @@ function setupRealtimeSubscriptions() {
         return finalBooking;
       });
 
-      bookingCache.set("public", bookings);
+      const filtered = clubId ? bookings.filter(b => b.clubId === clubId || (!b.clubId && clubId === 'default-club')) : bookings;
+      bookingCache.set(subKey, filtered);
 
-      emit("bookingsUpdated", { type: "public", bookings });
+      emit("bookingsUpdated", { type: subKey, bookings: filtered });
     });
 
-    subscriptions.set("public", unsubscribe);
+    subscriptions.set(subKey, unsubscribe);
   } catch (error) {}
 }
 
@@ -161,23 +174,14 @@ function setupRealtimeSubscriptions() {
  * Create a new booking (court or lesson)
  */
 export async function createBooking(bookingData, user, options = {}) {
+  const clubId = bookingData.clubId || options.clubId || null;
+  if (!clubId) {
+    console.warn('[UnifiedBookingService] createBooking senza clubId - fallback default-club (fase compat transitoria)');
+  }
   if (bookingData.time) bookingData.time = normalizeTime(bookingData.time);
 
   // Get existing bookings for validation
   const existingBookings = await getPublicBookings({ forceRefresh: true });
-  console.log(
-    "🔍 Validating booking against",
-    existingBookings.length,
-    "existing bookings",
-  );
-  console.log("📋 New booking data:", {
-    type: bookingData.type,
-    courtId: bookingData.courtId,
-    date: bookingData.date,
-    time: bookingData.time,
-    duration: bookingData.duration,
-    color: bookingData.color, // Add color to debug log
-  });
 
   // Validate booking data and check for conflicts/holes
   const validationErrors = validateBooking(bookingData, existingBookings);
@@ -228,14 +232,8 @@ export async function createBooking(bookingData, user, options = {}) {
     createdBy: user?.uid || null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    clubId: clubId || 'default-club',
   };
-
-  // Debug: Log the final booking object
-  console.log("🎨 Final booking object:", {
-    id: booking.id,
-    color: booking.color,
-    allFields: Object.keys(booking),
-  });
 
   let result;
 
@@ -272,15 +270,6 @@ export async function updateBooking(bookingId, updates, user) {
     try {
       result = await updateCloudBooking(bookingId, updateData);
     } catch (error) {
-      // Solo errori non-attesi vengono mostrati come warning
-      const isExpectedError =
-        error.code === "not-found" ||
-        error.message.includes("No document to update") ||
-        error.message.includes("Document does not exist");
-
-      if (!isExpectedError) {
-      } else {
-      }
       result = updateLocalBooking(bookingId, updateData);
     }
   } else {
@@ -289,6 +278,11 @@ export async function updateBooking(bookingId, updates, user) {
 
   if (result) {
     emit("bookingUpdated", { id: bookingId, booking: result });
+    
+    // Invalidate user bookings cache to ensure UI updates immediately
+    if (user?.uid) {
+      invalidateUserBookingsCache(user.uid);
+    }
   }
 
   return result;
@@ -336,10 +330,19 @@ export async function deleteBooking(bookingId, user) {
  * Get all public bookings (for availability checking)
  */
 export async function getPublicBookings(options = {}) {
-  const { forceRefresh = false, includeLesson = true } = options;
+  const { forceRefresh = false, includeLesson = true, clubId = null } = options;
+  const cacheKey = `public|${clubId||'all'}`;
+  
+  if (!forceRefresh && bookingCache.has(cacheKey)) {
+    let cached = bookingCache.get(cacheKey);
 
-  if (!forceRefresh && bookingCache.has("public")) {
-    let cached = bookingCache.get("public");
+    // Filter by clubId if provided
+    if (clubId) {
+      const isLegacyClub = clubId === 'sporting-cat';
+      cached = cached.filter((b) => 
+        b.clubId === clubId || (isLegacyClub && !b.clubId)
+      );
+    }
 
     // Cache debug disabled to reduce console spam
     // const coloredInCache = cached.filter(b => b.color);
@@ -376,24 +379,19 @@ export async function getPublicBookings(options = {}) {
   // Filter out cancelled bookings for public view
   bookings = bookings.filter((b) => b.status !== BOOKING_STATUS.CANCELLED);
 
+  // Filter by clubId if provided
+  if (clubId) {
+    const isLegacyClub = ['sporting-cat','default-club'].includes(clubId);
+    bookings = bookings.filter(b => b.clubId === clubId || (isLegacyClub && !b.clubId));
+  }
+
   if (!includeLesson) {
     bookings = bookings.filter((b) => !b.isLessonBooking);
   }
 
-  bookingCache.set("public", bookings);
 
-  // 🔍 DEBUG: Check final cache contents
-  const finalBookings = bookings.slice(0, 3); // Sample first 3 for debugging
-  finalBookings.forEach((booking) => {
-    if (booking.color) {
-      console.log("💰 CACHE SET - Color preserved:", {
-        id: booking.id,
-        color: booking.color,
-        hasColor: !!booking.color,
-        allKeys: Object.keys(booking),
-      });
-    }
-  });
+
+  bookingCache.set(cacheKey, bookings);
 
   return bookings;
 }
@@ -408,14 +406,20 @@ export async function getUserBookings(user, options = {}) {
     includeHistory = false,
     includeCancelled = false,
     lessonOnly = false,
+    clubId = null,
   } = options;
 
-  const allBookings = await getPublicBookings({ forceRefresh: true });
-
-  let userBookings = allBookings.filter(
-    (booking) =>
-      booking.userEmail === user.email || booking.createdBy === user.uid,
-  );
+  // Query ottimizzata: prenotazioni dell'utente
+  const bookingsRef = collection(db, 'bookings');
+  let q = query(bookingsRef, where('bookedBy', '==', user.uid));
+  
+  // Filtra per club se specificato
+  if (clubId) {
+    q = query(bookingsRef, where('bookedBy', '==', user.uid), where('clubId', '==', clubId));
+  }
+  
+  const snapshot = await getDocs(q);
+  let userBookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
   if (lessonOnly) {
     userBookings = userBookings.filter((b) => b.isLessonBooking);
@@ -428,8 +432,29 @@ export async function getUserBookings(user, options = {}) {
   }
 
   if (!includeHistory) {
-    const today = new Date().toISOString().split("T")[0];
-    userBookings = userBookings.filter((b) => b.date >= today);
+    const now = new Date();
+    const today = now.toISOString().split("T")[0];
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    
+    // Filtra prenotazioni future + oggi con orario futuro
+    userBookings = userBookings.filter((booking) => {
+      if (!booking.date) return false;
+      
+      // Se la prenotazione è per oggi, controlla anche l'orario
+      if (booking.date === today) {
+        if (!booking.time) return true; // Se non c'è orario, mostrala
+        
+        // Converti l'orario della prenotazione in minuti
+        const [hours, minutes] = booking.time.split(':').map(Number);
+        const bookingTime = hours * 60 + minutes;
+        
+        // Mostra solo se l'orario è futuro
+        return bookingTime > currentTime;
+      }
+      
+      // Per date future, mostra sempre
+      return booking.date > today;
+    });
   }
 
   return userBookings.sort((a, b) => {
@@ -513,10 +538,22 @@ async function updateCloudBooking(bookingId, updates) {
     }
   }
 
-  // Get updated booking
-  const bookings = loadLocalBookings();
-  const updated = bookings.find((b) => b.id === bookingId);
-  return updated ? { ...updated, ...updates } : null;
+  // Update localStorage with the changes
+  const localBookings = loadLocalBookings();
+  const localIndex = localBookings.findIndex((b) => b.id === bookingId);
+
+  if (localIndex !== -1) {
+    // Update the local booking with the new data
+    localBookings[localIndex] = { ...localBookings[localIndex], ...updates };
+    saveLocalBookings(localBookings);
+  }
+
+  // Schedule sync to ensure consistency
+  scheduleSync(1000); // Sync after 1 second
+
+  // Return the updated booking
+  const updatedBooking = localBookings.find((b) => b.id === bookingId);
+  return updatedBooking ? { ...updatedBooking, ...updates } : null;
 }
 
 async function deleteCloudBooking(bookingId) {
@@ -531,6 +568,8 @@ async function deleteCloudBooking(bookingId) {
 }
 
 async function loadCloudBookings() {
+
+  
   // Raw loader including cancelled (admin use)
   async function loadCloudBookingsRaw() {
     const q = query(
@@ -543,14 +582,6 @@ async function loadCloudBookings() {
       const raw = d.data() || {};
       const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId;
       const { id: _discardId, ...rest } = raw;
-
-      // 🔍 DEBUG: Check fields during loading
-      console.log("🔍 LOADING BOOKING:", {
-        docId: d.id,
-        rawParticipants: raw.participants,
-        restParticipants: rest.participants,
-        allFields: Object.keys(raw),
-      });
 
       return {
         ...rest,
@@ -581,13 +612,7 @@ async function loadCloudBookings() {
       updatedAt: raw.updatedAt?.toDate?.()?.toISOString() || raw.updatedAt,
     };
 
-    // Debug participants loading
-    console.log("🔍 PROCESSED BOOKING:", {
-      id: d.id,
-      participants: processedBooking.participants,
-      price: processedBooking.price,
-      instructorId: processedBooking.instructorId,
-    });
+    // Debug log completely removed
 
     return processedBooking;
   });
@@ -595,9 +620,6 @@ async function loadCloudBookings() {
   const activeBookings = allBookings.filter((booking) => {
     const status = booking.status || BOOKING_STATUS.CONFIRMED;
     const isActive = status !== BOOKING_STATUS.CANCELLED;
-    if (!isActive && Math.random() < 0.3) {
-      // Log only ~30% of cancelled bookings to reduce noise
-    }
     return isActive;
   });
 
@@ -639,6 +661,7 @@ function deleteLocalBooking(bookingId) {
   localStorage.setItem("ml-field-bookings", JSON.stringify(filtered));
 
   // Clear cache to force refresh
+
   bookingCache.clear();
 }
 
@@ -868,20 +891,15 @@ export function validateBooking(bookingData, existingBookings = []) {
     );
   });
 
-  console.log("🚨 CONFLICTS FOUND:", conflicts.length, conflicts);
-
   // ✅ FIX: For both lesson and court bookings, check against ALL types of conflicts
   if (conflicts.length > 0) {
     if (bookingData.type === "lesson") {
       errors.push("Orario già occupato da un'altra prenotazione");
-      console.log("🚫 Lesson conflicts with existing bookings:", conflicts);
     } else {
       errors.push("Orario già occupato");
-      console.log("🚫 Court conflict found:", conflicts);
     }
   }
 
-  console.log("✅ VALIDATION RESULT:", errors);
   return errors;
 }
 
@@ -939,14 +957,6 @@ export function wouldCreateHalfHourHole(
   duration,
   existingBookings,
 ) {
-  console.log(
-    `🔍 [HOLE DEBUG] Checking ${courtId} on ${date} at ${startTime} for ${duration}min`,
-  );
-  console.log(
-    `🔍 [HOLE DEBUG] Existing bookings count:`,
-    existingBookings.length,
-  );
-
   const bookingStart = timeToMinutes(startTime);
   const bookingEnd = bookingStart + duration;
 
@@ -960,11 +970,6 @@ export function wouldCreateHalfHourHole(
     )
     .sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
 
-  console.log(
-    `🔍 [HOLE DEBUG] Court ${courtId} bookings for ${date}:`,
-    courtBookings.map((b) => `${b.time}(${b.duration}min)`),
-  );
-
   // Check for hole after our booking
   const nextBooking = courtBookings.find(
     (b) => timeToMinutes(b.time) > bookingEnd,
@@ -973,14 +978,7 @@ export function wouldCreateHalfHourHole(
     const nextStart = timeToMinutes(nextBooking.time);
     const holeSize = nextStart - bookingEnd;
 
-    console.log(
-      `🔍 [HOLE DEBUG] Gap AFTER: ${holeSize}min (${startTime} ends at ${Math.floor(bookingEnd / 60)}:${String(bookingEnd % 60).padStart(2, "0")}, next booking at ${nextBooking.time})`,
-    );
-
     if (holeSize > 0 && holeSize <= 30) {
-      console.log(
-        `⚠️ [HOLE DEBUG] Found problematic gap AFTER: ${holeSize}min`,
-      );
       // Check EXEMPTION: is this part of a trapped slot of EXACTLY 120 minutes?
       const prevBooking = courtBookings
         .filter((b) => timeToMinutes(b.time) + b.duration <= bookingStart)
@@ -992,16 +990,10 @@ export function wouldCreateHalfHourHole(
 
         // EXEMPTION: Only if total gap is EXACTLY 120 minutes
         if (totalGap === 120) {
-          console.log(
-            `✅ [120MIN EXEMPTION] ${courtId} ${startTime}: 120min trapped slot allows ${holeSize}min hole`,
-          );
           return false;
         }
       }
 
-      console.log(
-        `🚫 [HOLE BLOCKED] ${courtId} ${startTime}: Would create ${holeSize}min hole AFTER booking`,
-      );
       return true; // Would create problematic hole without exemption
     }
   }
@@ -1015,14 +1007,7 @@ export function wouldCreateHalfHourHole(
     const prevEnd = timeToMinutes(prevBooking.time) + prevBooking.duration;
     const holeSize = bookingStart - prevEnd;
 
-    console.log(
-      `🔍 [HOLE DEBUG] Gap BEFORE: ${holeSize}min (previous ends at ${Math.floor(prevEnd / 60)}:${String(prevEnd % 60).padStart(2, "0")}, our booking starts at ${startTime})`,
-    );
-
     if (holeSize > 0 && holeSize <= 30) {
-      console.log(
-        `⚠️ [HOLE DEBUG] Found problematic gap BEFORE: ${holeSize}min`,
-      );
       // Check EXEMPTION: is this part of a trapped slot of EXACTLY 120 minutes?
       const nextBooking = courtBookings.find(
         (b) => timeToMinutes(b.time) >= bookingEnd,
@@ -1034,16 +1019,10 @@ export function wouldCreateHalfHourHole(
 
         // EXEMPTION: Only if total gap is EXACTLY 120 minutes
         if (totalGap === 120) {
-          console.log(
-            `✅ [120MIN EXEMPTION] ${courtId} ${startTime}: 120min trapped slot allows ${holeSize}min hole`,
-          );
           return false;
         }
       }
 
-      console.log(
-        `🚫 [HOLE BLOCKED] ${courtId} ${startTime}: Would create ${holeSize}min hole BEFORE booking`,
-      );
       return true; // Would create problematic hole without exemption
     }
   }
@@ -1061,16 +1040,8 @@ export function isSlotAvailable(
   duration,
   existingBookings,
 ) {
-  console.log(
-    `🔍 [SLOT AVAILABLE] Basic check for ${courtId} ${date} ${startTime} (${duration}min)`,
-  );
-
   const bookingStart = timeToMinutes(startTime);
   const bookingEnd = bookingStart + duration;
-
-  console.log(
-    `🕒 [SLOT AVAILABLE] Time range: ${bookingStart}min-${bookingEnd}min (${Math.floor(bookingStart / 60)}:${String(bookingStart % 60).padStart(2, "0")}-${Math.floor(bookingEnd / 60)}:${String(bookingEnd % 60).padStart(2, "0")})`,
-  );
 
   // Check for conflicts with existing bookings
   const hasConflict = existingBookings.some((booking) => {
@@ -1081,23 +1052,18 @@ export function isSlotAvailable(
     if (status === BOOKING_STATUS.CANCELLED) return false;
 
     const existingStart = timeToMinutes(booking.time);
-    const existingEnd = existingStart + booking.duration;
+    const existingEnd = existingStart + existingBookings.duration;
 
     // Check for overlap
     const overlap = bookingStart < existingEnd && bookingEnd > existingStart;
 
     if (overlap) {
-      console.log(
-        `⚠️ [SLOT AVAILABLE] Overlap found with ${booking.time} (${booking.duration}min): ${existingStart}min-${existingEnd}min`,
-      );
+      // Overlap found but no logging needed
     }
 
     return overlap;
   });
 
-  console.log(
-    `📊 [SLOT AVAILABLE] Conflicts found: ${hasConflict}, Result: ${!hasConflict ? "✅ AVAILABLE" : "❌ BLOCKED"}`,
-  );
   return !hasConflict;
 }
 
@@ -1112,10 +1078,6 @@ export function isDurationBookable(
   existingBookings,
   isUserBooking = false,
 ) {
-  console.log(
-    `🎮 [DURATION BOOKABLE] Checking ${courtId} ${date} ${startTime} (${duration}min) - isUserBooking: ${isUserBooking}`,
-  );
-
   // Basic availability check
   const basicAvailable = isSlotAvailable(
     courtId,
@@ -1124,10 +1086,8 @@ export function isDurationBookable(
     duration,
     existingBookings,
   );
-  console.log(`📊 [DURATION BOOKABLE] Basic availability: ${basicAvailable}`);
 
   if (!basicAvailable) {
-    console.log(`❌ [DURATION BOOKABLE] Failed basic availability check`);
     return false;
   }
 
@@ -1140,19 +1100,11 @@ export function isDurationBookable(
       duration,
       existingBookings,
     );
-    console.log(`🕳️ [DURATION BOOKABLE] Would create hole: ${wouldCreateHole}`);
 
     if (wouldCreateHole) {
-      console.log(`❌ [DURATION BOOKABLE] Blocked due to hole prevention rule`);
       return false;
     }
-  } else {
-    console.log(
-      `🔓 [DURATION BOOKABLE] Admin booking - skipping hole prevention`,
-    );
   }
-
-  console.log(`✅ [DURATION BOOKABLE] Duration ${duration}min is bookable`);
   return true;
 }
 

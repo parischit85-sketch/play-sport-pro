@@ -14,7 +14,22 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
 
   useEffect(() => {
     if (player) {
-      setFormData({ ...createPlayerSchema(), ...player });
+      const enhancedPlayer = { ...player };
+      
+      // Se firstName e lastName non sono presenti ma c'è name, li separiamo
+      if (!enhancedPlayer.firstName && !enhancedPlayer.lastName && enhancedPlayer.name) {
+        const nameParts = enhancedPlayer.name.trim().split(' ');
+        enhancedPlayer.firstName = nameParts[0] || '';
+        enhancedPlayer.lastName = nameParts.slice(1).join(' ') || '';
+        console.log(`🔧 Parsed name "${enhancedPlayer.name}" into:`, {
+          firstName: enhancedPlayer.firstName,
+          lastName: enhancedPlayer.lastName
+        });
+      }
+      
+      setFormData({ ...createPlayerSchema(), ...enhancedPlayer });
+    } else {
+      setFormData(createPlayerSchema());
     }
   }, [player]);
 
@@ -38,17 +53,20 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
       // Initialize instructor data when category is set to INSTRUCTOR
       if (
         field === "category" &&
-        value === PLAYER_CATEGORIES.INSTRUCTOR &&
-        !newData.instructorData?.isInstructor
+        value === PLAYER_CATEGORIES.INSTRUCTOR
       ) {
         newData.instructorData = {
-          isInstructor: true,
+          isInstructor: true, // Sempre attivo quando si seleziona categoria INSTRUCTOR
           color: "#3B82F6",
           specialties: [],
           hourlyRate: 0,
+          priceSingle: 0,
+          priceCouple: 0,
+          priceThree: 0,
+          priceMatchLesson: 0,
           bio: "",
           certifications: [],
-          ...newData.instructorData,
+          ...newData.instructorData, // Mantieni i dati esistenti se ci sono
         };
       }
 

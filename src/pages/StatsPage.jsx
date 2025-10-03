@@ -5,18 +5,30 @@
 import React, { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { themeTokens } from "@lib/theme.js";
-import { useLeague } from "@contexts/LeagueContext.jsx";
+import { useClub } from '@contexts/ClubContext.jsx';
+import { computeClubRanking } from "@lib/ranking-club.js";
 import StatisticheGiocatore from "@features/stats/StatisticheGiocatore.jsx";
 
 export default function StatsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { derived } = useLeague();
+  const { players, matches, clubId, playersLoaded, loadPlayers, matchesLoaded, loadMatches } = useClub();
   const T = React.useMemo(() => themeTokens(), []);
 
   const [selectedPlayerId, setSelectedPlayerId] = useState(
     searchParams.get("player") || "",
   );
   const [formulaText, setFormulaText] = useState("");
+
+  // I dati si caricano automaticamente nel ClubContext quando cambia clubId
+
+  // 🎯 AGGIUNTO: Usa computeClubRanking per avere rating calcolati dinamicamente
+  // identici a quelli della Classifica
+  const rankingData = React.useMemo(() => {
+    if (!clubId) return { players: [], matches: [] };
+    const srcPlayers = playersLoaded ? players : [];
+    const srcMatches = matchesLoaded ? matches : [];
+    return computeClubRanking(srcPlayers, srcMatches, clubId);
+  }, [clubId, players, playersLoaded, matches, matchesLoaded]);
 
   const handleSelectPlayer = (playerId) => {
     setSelectedPlayerId(playerId);
@@ -32,8 +44,8 @@ export default function StatsPage() {
       <>
         <StatisticheGiocatore
           T={T}
-          players={derived.players}
-          matches={derived.matches}
+          players={rankingData.players}
+          matches={rankingData.matches}
           selectedPlayerId={selectedPlayerId}
           onSelectPlayer={handleSelectPlayer}
           onShowFormula={setFormulaText}

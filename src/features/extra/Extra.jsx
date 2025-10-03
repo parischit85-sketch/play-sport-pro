@@ -1,12 +1,14 @@
 // =============================================
 // FILE: src/features/extra/Extra.jsx
-// =============================================
+//   // ADMIN F ONLY=====================
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Section from "@ui/Section.jsx";
 import { loadLeague, saveLeague } from "@services/cloud.js";
 import { toCSV, downloadBlob } from "@lib/csv.js";
 import { getDefaultBookingConfig } from "@data/seed.js";
+import { useAuth } from "@contexts/AuthContext.jsx";
+import { useClub } from "@contexts/ClubContext.jsx";
 
 // Nuovo componente per gestione campi avanzata
 import AdvancedCourtsManager from "./AdvancedCourtsManager.jsx";
@@ -22,46 +24,149 @@ export default function Extra({
   setLeagueId,
   clubMode,
   setClubMode,
+  isClubAdmin,
+  clubId,
   T,
 }) {
+  const { user, loading } = useAuth();
+  const { cleanInvalidCourts, club, courts } = useClub();
   const [cloudMsg, setCloudMsg] = React.useState("");
   const navigate = useNavigate();
 
-  // === Sblocco pannello (gate amministrazione)
-  const [pwd, setPwd] = useState("");
-  const [unlocked, setUnlocked] = useState(() => {
-    try {
-      return sessionStorage.getItem("ml-extra-unlocked") === "1";
-    } catch {
-      return false;
-    }
-  });
+  // Gli admin di club possono sempre accedere, anche senza clubMode attivato
+  // Passa esplicitamente il clubId dalla URL alla funzione isClubAdmin
+  const canAccessExtra = clubMode || (typeof isClubAdmin === 'function' ? isClubAdmin(clubId) : isClubAdmin);
+
+  // Mostra loading se l'autenticazione è in corso
+  if (loading) {
+    return (
+      <Section title="Caricamento..." T={T}>
+        <div className="text-center py-12">
+          <div className="text-4xl mb-4">⏳</div>
+          <div className={`text-lg ${T.text}`}>
+            Verifica delle autorizzazioni in corso...
+          </div>
+        </div>
+      </Section>
+    );
+  }
+
+  // Verifica accesso admin - solo amministratori o admin di club possono accedere a questa pagina
+  if (!canAccessExtra) {
+    return (
+      <Section title="Accesso Negato" T={T}>
+        <div className="text-center py-12">
+          <div className="text-6xl mb-4">🚫</div>
+          <div className={`text-xl font-medium ${T.text} mb-2`}>
+            Accesso Non Autorizzato
+          </div>
+          <div className={`text-sm ${T.subtext} mb-6`}>
+            Solo gli amministratori e gli admin di club possono accedere a questa sezione
+          </div>
+          <button 
+            onClick={() => navigate('/dashboard')}
+            className={`${T.btnSecondary} px-6 py-2`}
+          >
+            Torna alla Dashboard
+          </button>
+        </div>
+      </Section>
+    );
+  }
 
   // === Campi con nuovo sistema avanzato
   const [newCourt, setNewCourt] = useState("");
 
   // Gestione campi con il nuovo sistema
   const updateCourts = (updatedCourts) => {
-    setState((s) => ({
-      ...s,
+    console.log("🔧 DEBUG Extra updateCourts - Ricevuti courts:", updatedCourts);
+    console.log("🔧 DEBUG Extra updateCourts - clubMode:", clubMode);
+    
+    // Verifica se i courts sono effettivamente cambiati rispetto allo stato precedente
+    if (JSON.stringify(updatedCourts) === JSON.stringify(courts)) {
+      console.log("🏢 [Extra] Courts not changed, skipping update");
+      return;
+    }
+    
+    // In modalità club, salva tramite AdminBookingsPage
+    if (clubMode) {
+      console.log("🏢 [Extra] Club mode - Saving courts via AdminBookingsPage");
+      // Chiama setState per salvare i courts aggiornati
+      setState({ courts: updatedCourts });
+      return;
+    }
+    
+    // In modalità league, salva nello state locale
+    const newState = {
+      ...state,
       courts: updatedCourts,
-    }));
+    };
+    console.log("🔧 DEBUG Extra updateCourts - League mode - Nuovo state:", newState);
+    
+    // Passa l'oggetto stato aggiornato, non una funzione
+    setState(newState);
   };
+
+  // Funzione per pulire campi non validi
+  const handleCleanInvalidCourts = async () => {
+    try {
+      console.log("🧹 Starting invalid courts cleanup...");
+      await cleanInvalidCourts();
+      console.log("✅ Invalid courts cleanup completed");
+      setCloudMsg("Campi non validi rimossi con successo");
+      setTimeout(() => setCloudMsg(""), 3000);
+    } catch (error) {
+      console.error("❌ Error cleaning invalid courts:", error);
+      setCloudMsg("Errore durante la pulizia dei campi");
+      setTimeout(() => setCloudMsg(""), 3000);
+    }
+  };
+
+  // Pulizia automatica rimossa - solo manuale
 
   // === Config prenotazioni
   const cfg = state?.bookingConfig || getDefaultBookingConfig();
-  const [cfgDraft, setCfgDraft] = useState(() => ({ ...cfg }));
+  const [cfgDraft, setCfgDraft] = useState(() => {
+    const defaults = getDefaultBookingConfig();
+    return {
+      ...defaults,
+      ...cfg,
+      addons: {
+        ...defaults.addons,
+        ...cfg.addons
+      }
+    };
+  });
+  const [userHasModified, setUserHasModified] = useState(false);
   useEffect(() => {
+    // Non aggiornare cfgDraft se l'utente ha modificato qualcosa
+    if (userHasModified) {
+      return;
+    }
+    
     setCfgDraft((prev) => {
       try {
+        const defaults = getDefaultBookingConfig();
+        const mergedCfg = {
+          ...defaults,
+          ...cfg,
+          addons: {
+            ...defaults.addons,
+            ...cfg.addons
+          }
+        };
         const prevJson = JSON.stringify(prev);
-        const cfgJson = JSON.stringify(cfg);
-        return prevJson === cfgJson ? { ...cfg } : prev;
-      } catch {
+        const cfgJson = JSON.stringify(mergedCfg);
+        const shouldUpdate = prevJson !== cfgJson;
+
+        // Se sono diversi, aggiorna con la nuova configurazione
+        return shouldUpdate ? mergedCfg : prev;
+      } catch (e) {
+        console.error("❌ Error in Extra useEffect:", e);
         return prev;
       }
     });
-  }, [state?.bookingConfig]);
+  }, [cfg, userHasModified]);
 
   // Guard clause: return loading state if state is not ready
   if (!state) {
@@ -77,7 +182,7 @@ export default function Extra({
 
   const tryUnlock = (e) => {
     e?.preventDefault?.();
-    if (pwd === "Paris2025") {
+    if (false) { // ADMIN ACCESS DISABLED FOR SECURITY
       setUnlocked(true);
       try {
         sessionStorage.setItem("ml-extra-unlocked", "1");
@@ -210,6 +315,8 @@ export default function Extra({
   };
 
   const saveCfg = () => {
+    console.log("🔧 DEBUG saveCfg - cfgDraft prima della normalizzazione:", cfgDraft);
+    
     let durations = cfgDraft.defaultDurations;
     if (typeof durations === "string")
       durations = durations
@@ -227,7 +334,14 @@ export default function Extra({
       defaultDurations:
         durations && durations.length ? durations : [60, 90, 120],
     };
-    setState((s) => ({ ...s, bookingConfig: normalized }));
+    
+    console.log("🔧 DEBUG saveCfg - configurazione normalizzata:", normalized);
+    console.log("🔧 DEBUG saveCfg - addons:", normalized.addons);
+    
+    setState({ ...state, bookingConfig: normalized });
+    console.log("✅ DEBUG saveCfg - setState chiamato con bookingConfig");
+    // Reset della flag dopo il salvataggio
+    setUserHasModified(false);
     alert("Parametri salvati!");
   };
   const resetCfg = () => setCfgDraft(getDefaultBookingConfig());
@@ -239,111 +353,30 @@ export default function Extra({
 
   return (
     <Section title="Extra – Impostazioni" T={T}>
-      {/* Modalità Circolo */}
-      {unlocked ? (
-        <div className={`rounded-2xl ${T.cardBg} ${T.border} p-4 mb-6`}>
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🎛️</span>
-              <div>
-                <div className="font-semibold text-lg">Modalità Circolo</div>
-                <div className={`text-sm ${T.subtext}`}>
-                  {clubMode
-                    ? "✅ Attiva — le tab amministrative sono visibili"
-                    : "❌ Disattiva — solo Classifica e Statistiche sono visibili"}
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              {!clubMode ? (
-                <button
-                  type="button"
-                  className={`${T.btnPrimary} flex-1 sm:flex-none`}
-                  onClick={() => setClubMode(true)}
-                >
-                  🚀 Attiva Modalità Circolo
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className={`${T.btnGhost} flex-1 sm:flex-none`}
-                  onClick={() => setClubMode(false)}
-                >
-                  🔒 Disattiva Modalità Circolo
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className={`rounded-2xl ${T.cardBg} ${T.border} p-4 mb-6`}>
-          <div className="text-center">
-            <div className="text-4xl mb-2">🔐</div>
-            <div className="font-semibold mb-2">Modalità Circolo</div>
-            <div className={`text-sm ${T.subtext}`}>
-              Sblocca il pannello per gestire la Modalità Circolo e altre
-              impostazioni avanzate.
-            </div>
-          </div>
+
+      {/* Pulsante pulizia campi non validi */}
+      {cloudMsg && (
+        <div className={`mb-4 p-3 rounded-lg ${cloudMsg.includes('Errore') ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+          {cloudMsg}
         </div>
       )}
+      
+      <div className="mb-4">
+        <button
+          onClick={handleCleanInvalidCourts}
+          className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors text-sm"
+        >
+          🧹 Pulisci Campi Non Validi
+        </button>
+      </div>
 
-      {/* Pannello sblocco */}
-      {!unlocked ? (
-        <div className={`rounded-2xl ${T.cardBg} ${T.border} p-4 mb-6`}>
-          <form onSubmit={tryUnlock} className="space-y-4">
-            <div>
-              <label className={`text-sm font-medium ${T.text} mb-2 block`}>
-                🔑 Password Amministratore
-              </label>
-              <input
-                type="password"
-                value={pwd}
-                onChange={(e) => setPwd(e.target.value)}
-                placeholder="Inserisci password"
-                className={`${T.input} w-full`}
-              />
-              <div className={`text-xs ${T.subtext} mt-1`}>
-                Contatta l'amministratore per la password
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button type="submit" className={`${T.btnPrimary} flex-1`}>
-                🔓 Sblocca Pannello
-              </button>
-            </div>
-          </form>
-        </div>
-      ) : (
-        <>
-          {/* Pannello sbloccato */}
-          <div className={`rounded-2xl ${T.cardBg} ${T.border} p-4 mb-6`}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">✅</span>
-                <div>
-                  <div className="font-semibold">Pannello Sbloccato</div>
-                  <div className={`text-sm ${T.subtext}`}>
-                    Accesso completo alle impostazioni
-                  </div>
-                </div>
-              </div>
-              <button
-                type="button"
-                className={`${T.btnGhost} w-full sm:w-auto`}
-                onClick={lockPanel}
-              >
-                🔒 Blocca Pannello
-              </button>
-            </div>
-          </div>
-
-          {/* Gestione Campi Avanzata - Nuovo Sistema */}
-          <AdvancedCourtsManager
-            courts={state?.courts || []}
-            onChange={updateCourts}
-            T={T}
-          />
+      {/* Gestione Campi Avanzata - Solo per Admin */}
+      <AdvancedCourtsManager
+        courts={clubMode ? courts : state?.courts || []}
+        onChange={updateCourts}
+        T={T}
+        courtTypes={[...new Set(club?.courtTypes || ["Indoor", "Outdoor", "Covered"])]}
+      />
 
           {/* Parametri prenotazioni + Regole tariffarie per-campo */}
           <div
@@ -410,15 +443,21 @@ export default function Extra({
                     id="cfg-lighting-enabled"
                     type="checkbox"
                     checked={!!addons.lightingEnabled}
-                    onChange={(e) =>
-                      setCfgDraft((c) => ({
-                        ...c,
-                        addons: {
-                          ...c.addons,
-                          lightingEnabled: e.target.checked,
-                        },
-                      }))
-                    }
+                    onChange={(e) => {
+                      console.log("🔧 DEBUG - Changing lightingEnabled to:", e.target.checked);
+                      setUserHasModified(true);
+                      setCfgDraft((c) => {
+                        const newCfg = {
+                          ...c,
+                          addons: {
+                            ...c.addons,
+                            lightingEnabled: e.target.checked,
+                          },
+                        };
+                        console.log("🔧 DEBUG - New cfgDraft:", newCfg);
+                        return newCfg;
+                      });
+                    }}
                   />
                   <label
                     htmlFor="cfg-lighting-enabled"
@@ -435,15 +474,16 @@ export default function Extra({
                     type="number"
                     className={`${T.input} w-28`}
                     value={addons.lightingFee || 0}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      setUserHasModified(true);
                       setCfgDraft((c) => ({
                         ...c,
                         addons: {
                           ...c.addons,
                           lightingFee: Number(e.target.value) || 0,
                         },
-                      }))
-                    }
+                      }));
+                    }}
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -451,15 +491,21 @@ export default function Extra({
                     id="cfg-heating-enabled"
                     type="checkbox"
                     checked={!!addons.heatingEnabled}
-                    onChange={(e) =>
-                      setCfgDraft((c) => ({
-                        ...c,
-                        addons: {
-                          ...c.addons,
-                          heatingEnabled: e.target.checked,
-                        },
-                      }))
-                    }
+                    onChange={(e) => {
+                      console.log("🔧 DEBUG - Changing heatingEnabled to:", e.target.checked);
+                      setUserHasModified(true);
+                      setCfgDraft((c) => {
+                        const newCfg = {
+                          ...c,
+                          addons: {
+                            ...c.addons,
+                            heatingEnabled: e.target.checked,
+                          },
+                        };
+                        console.log("🔧 DEBUG - New cfgDraft:", newCfg);
+                        return newCfg;
+                      });
+                    }}
                   />
                   <label
                     htmlFor="cfg-heating-enabled"
@@ -476,15 +522,16 @@ export default function Extra({
                     type="number"
                     className={`${T.input} w-28`}
                     value={addons.heatingFee || 0}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      setUserHasModified(true);
                       setCfgDraft((c) => ({
                         ...c,
                         addons: {
                           ...c.addons,
                           heatingFee: Number(e.target.value) || 0,
                         },
-                      }))
-                    }
+                      }));
+                    }}
                   />
                 </div>
               </div>
@@ -518,8 +565,6 @@ export default function Extra({
             configurato, <b>anche su Firestore</b> nel documento{" "}
             <code>leagues/{leagueId}</code>.
           </div>
-        </>
-      )}
     </Section>
   );
 }

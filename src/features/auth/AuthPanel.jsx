@@ -2,6 +2,7 @@
 // FILE: src/features/auth/AuthPanel.jsx
 // =============================================
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Section from "@ui/Section.jsx";
 import {
   loginWithGoogle,
@@ -16,14 +17,11 @@ import {
 export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [sending, setSending] = useState(false);
   const emailLinkEnabled =
     import.meta.env.VITE_AUTH_EMAIL_LINK_ENABLED === "true";
   // method: password | magic
   const [method, setMethod] = useState(emailLinkEnabled ? "magic" : "password");
-  // action: login | register
-  const [action, setAction] = useState("login");
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [profileForm, setProfileForm] = useState({
     firstName: "",
@@ -103,30 +101,11 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
   const handlePasswordAuth = async () => {
     try {
       setSending(true);
-      // Validazioni base lato client
-      if (action === "register") {
-        if (password.length < 6) {
-          alert("La password deve contenere almeno 6 caratteri.");
-          return;
-        }
-        if (confirmPassword !== password) {
-          alert("Le password non coincidono.");
-          return;
-        }
-        // Registrazione
-        console.log("🔐 Attempting registration for:", email.trim());
-        const { registerWithEmailPassword } = await import(
-          "@services/auth.jsx"
-        );
-        await registerWithEmailPassword(email.trim(), password);
-        console.log("✅ Registration successful");
-      } else {
-        // Login
-        console.log("🔐 Attempting login for:", email.trim());
-        const { loginWithEmailPassword } = await import("@services/auth.jsx");
-        await loginWithEmailPassword(email.trim(), password);
-        console.log("✅ Login successful");
-      }
+      // Login
+      console.log("🔐 Attempting login for:", email.trim());
+      const { loginWithEmailPassword } = await import("@services/auth.jsx");
+      await loginWithEmailPassword(email.trim(), password);
+      console.log("✅ Login successful");
       // L'app cambierà automaticamente tab grazie all'effetto in App.jsx
     } catch (e) {
       console.error("❌ Auth error:", e);
@@ -134,13 +113,9 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
 
       // Provide more helpful error messages
       if (e?.code === "auth/user-not-found") {
-        message = "Account non trovato. Prova a registrarti prima.";
+        message = "Account non trovato. Hai già un account? Oppure registrati usando il link qui sotto.";
       } else if (e?.code === "auth/wrong-password") {
         message = "Password non corretta.";
-      } else if (e?.code === "auth/email-already-in-use") {
-        message = "Email già in uso. Prova ad accedere invece di registrarti.";
-      } else if (e?.code === "auth/weak-password") {
-        message = "Password troppo debole. Usa almeno 6 caratteri.";
       } else if (e?.code === "auth/invalid-email") {
         message = "Formato email non valido.";
       } else if (e?.code === "auth/operation-not-allowed") {
@@ -270,27 +245,25 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
             </div>
 
             <div className="space-y-3">
-              {/* Toggle rapido: Accedi | Registrati */}
-              <div className="flex gap-2 text-sm">
-                <button
-                  type="button"
-                  className={`${T.btnGhost} ${action === "login" ? "opacity-100" : "opacity-60"}`}
-                  onClick={() => setAction("login")}
-                >
-                  Accedi
-                </button>
-                <button
-                  type="button"
-                  className={`${T.btnGhost} ${action === "register" ? "opacity-100" : "opacity-60"}`}
-                  onClick={() => setAction("register")}
-                >
-                  Registrati
-                </button>
+              {/* Accesso con informazioni sulla registrazione */}
+              <div className="text-center space-y-2">
+                <p className={`text-sm ${T.subtext}`}>
+                  Hai già un account? Accedi qui sotto
+                </p>
+                <p className={`text-xs ${T.subtext}`}>
+                  Non hai un account?{" "}
+                  <Link
+                    to="/register"
+                    className={`font-medium ${T.text} hover:${T.neonText} transition-colors duration-200`}
+                  >
+                    Registrati qui
+                  </Link>
+                </p>
               </div>
 
               {/* Toggle metodo (solo se abilitato il magic link) */}
               {emailLinkEnabled && (
-                <div className="flex gap-2 text-sm">
+                <div className="flex gap-2 text-sm justify-center">
                   <button
                     type="button"
                     className={`${T.btnGhost} ${method === "password" ? "opacity-100" : "opacity-60"}`}
@@ -344,60 +317,24 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
                       className={`${T.input} w-full mt-1`}
                     />
                   </div>
-                  {action === "register" && (
-                    <div>
-                      <label
-                        htmlFor="auth-confirm"
-                        className={`text-sm font-medium ${T.subtext}`}
-                      >
-                        Conferma password
-                      </label>
-                      <input
-                        id="auth-confirm"
-                        type="password"
-                        value={confirmPassword}
-                        placeholder="Ripeti la password"
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className={`${T.input} w-full mt-1`}
-                      />
-                    </div>
-                  )}
 
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-col gap-2">
                     <button
                       type="button"
                       className={T.btnPrimary}
-                      disabled={
-                        !email ||
-                        !password ||
-                        (action === "register" && !confirmPassword) ||
-                        sending
-                      }
+                      disabled={!email || !password || sending}
                       onClick={handlePasswordAuth}
                     >
-                      {action === "register" ? "Registrati" : "Accedi"}
+                      Accedi
                     </button>
                     <button
                       type="button"
-                      className={T.btnGhost}
-                      onClick={() =>
-                        setAction(action === "register" ? "login" : "register")
-                      }
+                      className="text-xs underline self-center"
+                      disabled={!email}
+                      onClick={handleResetPassword}
                     >
-                      {action === "register"
-                        ? "Hai già un account? Accedi"
-                        : "Non hai un account? Registrati"}
+                      Recupera password
                     </button>
-                    {action === "login" && (
-                      <button
-                        type="button"
-                        className="text-xs underline"
-                        disabled={!email}
-                        onClick={handleResetPassword}
-                      >
-                        Recupera password
-                      </button>
-                    )}
                   </div>
                 </>
               )}

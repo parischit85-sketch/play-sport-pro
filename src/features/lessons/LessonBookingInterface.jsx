@@ -3,6 +3,7 @@
 // Interface principale per la prenotazione delle lezioni - VERSIONE UNIFICATA
 // =============================================
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import Section from "@ui/Section.jsx";
 import Badge from "@ui/Badge.jsx";
 import Modal from "@ui/Modal.jsx";
@@ -22,16 +23,20 @@ import {
 } from "@hooks/useUnifiedBookings.js";
 import { useAuth } from "@contexts/AuthContext.jsx";
 import LessonAdminPanel from "./components/LessonAdminPanel.jsx";
+import { useClub } from '@contexts/ClubContext.jsx';
+import { useClubSettings } from '@hooks/useClubSettings.js';
 
 export default function LessonBookingInterface({
   T,
   user: propUser,
-  state,
-  setState,
+  state, // legacy (players) - lessonConfig ora da club settings
+  setState, // legacy mutation
   clubMode,
+  clubId,
 }) {
   const { user } = useAuth();
   const actualUser = user || propUser; // Use context user if available, fallback to prop user
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // Use unified lesson booking service
   const {
@@ -41,16 +46,61 @@ export default function LessonBookingInterface({
     cancelBooking: cancelLessonBooking,
     clearAllLessons,
     refresh: refreshLessons,
-  } = useLessonBookings();
+  } = useLessonBookings({ clubId: clubId || selectedClub?.id }); // Passa il clubId per salvare su Firebase
 
   // Also get all bookings (court + lesson) to check for conflicts
-  const { bookings: allBookings } = useUnifiedBookings();
+  const { bookings: allBookings } = useUnifiedBookings({ clubId });
+  
+  // Debug: Log all bookings when they change
+  useEffect(() => {
+    const todayBookings = allBookings.filter(b => b.date === '2025-10-02');
+    console.log('📦 [LessonBookingInterface] allBookings updated:', {
+      count: allBookings.length,
+      todayCount: todayBookings.length
+    });
+    
+    // Log each today booking individually for clarity
+    todayBookings.forEach((booking, index) => {
+      console.log(`  📋 Booking ${index + 1}/${todayBookings.length}:`, {
+        id: booking.id,
+        date: booking.date,
+        time: booking.time,
+        instructorId: booking.instructorId,
+        instructorName: booking.instructorName,
+        isLessonBooking: booking.isLessonBooking,
+        players: booking.players,
+        bookedBy: booking.bookedBy,
+        status: booking.status,
+        courtName: booking.courtName,
+        type: booking.type
+      });
+    });
+  }, [allBookings]);
 
   const ds = createDSClasses(T);
 
-  // Lesson system state
-  const lessonConfig = state?.lessonConfig || createLessonConfigSchema();
-  const players = state?.players || [];
+  // Lesson system state: config da club settings, players da ClubContext
+  const { selectedClub, players: clubPlayers, courts } = useClub();
+  const { lessonConfig: clubLessonConfig, updateLessonConfig: updateClubLessonConfig } = useClubSettings({ clubId: clubId || selectedClub?.id });
+  const lessonConfig = clubLessonConfig || createLessonConfigSchema();
+  const players = clubPlayers || state?.players || [];
+  
+  // Debug courts
+  useEffect(() => {
+    if (courts && courts.length > 0) {
+      console.log("🏟️ Courts available:", courts.length, courts.map(c => ({
+        id: c.id,
+        name: c.name
+      })));
+    }
+  }, [courts]);
+  
+  // Monitor lessonConfig updates
+  useEffect(() => {
+    if (lessonConfig.timeSlots && lessonConfig.timeSlots.length > 0) {
+      console.log("✅ LessonConfig loaded with", lessonConfig.timeSlots.length, "time slots");
+    }
+  }, [lessonConfig]);
 
   // UI state
   const [activeTab, setActiveTab] = useState("book");
@@ -96,13 +146,18 @@ export default function LessonBookingInterface({
 
   // Function to update lesson config
   const updateLessonConfig = useCallback(
-    (newConfig) => {
-      setState((prev) => ({
-        ...prev,
-        lessonConfig: newConfig,
-      }));
+    async (newConfig) => {
+      try {
+        // Salva la configurazione lezioni nel club via Firebase
+        await updateClubLessonConfig(newConfig);
+        console.log("✅ Configurazione lezioni salvata su Firebase:", newConfig);
+      } catch (error) {
+        console.error("❌ Errore durante il salvataggio della configurazione lezioni su Firebase:", error);
+        // Non fare fallback locale - mostra errore all'utente
+        throw error;
+      }
     },
-    [setState],
+    [updateClubLessonConfig],
   );
 
   // Reset to book tab if user tries to access admin without club mode
@@ -114,18 +169,43 @@ export default function LessonBookingInterface({
 
   // Get instructors from players
   const instructors = useMemo(() => {
-    return players.filter(
+    const instructorList = players.filter(
       (player) =>
         player.category === PLAYER_CATEGORIES.INSTRUCTOR &&
-        player.instructorData?.isInstructor,
+        (player.instructorData?.isInstructor !== false) // Include anche quelli senza flag esplicito
     );
+    console.log("🧑‍🏫 Instructors found:", instructorList.length, instructorList.map(i => ({
+      id: i.id,
+      name: i.displayName,
+      category: i.category,
+      instructorData: i.instructorData
+    })));
+    return instructorList;
   }, [players]);
 
   // Helper function to check if a specific date has available slots
   const hasAvailableSlotsForDate = useCallback(
     (dateString) => {
+      console.log('🔍 [hasAvailableSlotsForDate] Checking date:', dateString, {
+        allBookingsCount: allBookings.length,
+        instructorsCount: instructors.length,
+        timeSlotsCount: lessonConfig.timeSlots?.length || 0
+      });
+      
+      // ✅ FIX: Aspetta che lessonConfig sia completamente caricato
+      if (!lessonConfig.timeSlots || lessonConfig.timeSlots.length === 0) {
+        console.log("❌ No timeSlots available");
+        return false;
+      }
+
       const dateObj = new Date(dateString);
       const dayOfWeek = dateObj.getDay();
+      
+      console.log("📅 Date analysis:", {
+        dateString,
+        dayOfWeek,
+        dayName: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][dayOfWeek]
+      });
       
       // Get current date and time for filtering past slots
       const now = new Date();
@@ -136,18 +216,27 @@ export default function LessonBookingInterface({
 
       // Get configured time slots for this specific date or day of week
       const dayTimeSlots = (lessonConfig.timeSlots || []).filter((slot) => {
-        if (!slot.isActive) return false;
+        
+        if (!slot.isActive) {
+          console.log("❌ Slot not active");
+          return false;
+        }
 
         // Check new format: specific dates
         if (slot.selectedDates && slot.selectedDates.length > 0) {
-          return slot.selectedDates.includes(dateString);
+          const includes = slot.selectedDates.includes(dateString);
+          console.log("📅 Date check:", includes ? "✅ MATCH" : "❌ NO MATCH");
+          return includes;
         }
 
         // Check old format: day of week (for backward compatibility)
         if (slot.dayOfWeek) {
-          return slot.dayOfWeek === dayOfWeek;
+          const matches = slot.dayOfWeek === dayOfWeek;
+          console.log("📅 Day of week check:", matches ? "✅ MATCH" : "❌ NO MATCH");
+          return matches;
         }
 
+        console.log("❌ No date criteria found");
         return false;
       });
 
@@ -157,6 +246,7 @@ export default function LessonBookingInterface({
 
       // Check if any slot has available instructors and courts
       return dayTimeSlots.some((configSlot) => {
+        
         const startHour = parseInt(configSlot.startTime.split(":")[0]);
         const startMinute = parseInt(configSlot.startTime.split(":")[1]);
         const endHour = parseInt(configSlot.endTime.split(":")[0]);
@@ -186,24 +276,116 @@ export default function LessonBookingInterface({
               continue; // Skip this slot as it's in the past
             }
           }
-
-          // Check available instructors for this slot
+          
+          console.log(`🔍 [hasAvailableSlotsForDate] Checking slot ${timeString} for date ${dateString}`, {
+            configSlotInstructors: configSlot.instructorIds,
+            allInstructors: instructors.map(i => ({ id: i.id, name: i.name }))
+          });
+          
           const availableInstructors = instructors.filter(
-            (instructor) =>
-              configSlot.instructorIds.includes(instructor.id) &&
-              !allBookings.some((booking) => {
+            (instructor) => {
+              const isIncluded = configSlot.instructorIds.includes(instructor.id);
+              console.log(`  🔍 Checking instructor ${instructor.name} (${instructor.id}):`, { isIncluded });
+              
+              if (!isIncluded) return false;
+              
+              // Controlla se l'istruttore ha conflitti (con controllo overlap temporale)
+              const slotStartMinutes = parseInt(timeString.split(':')[0]) * 60 + parseInt(timeString.split(':')[1]);
+              const slotEndMinutes = slotStartMinutes + 60; // Slot lezione di 1 ora
+              
+              const conflictingBookings = allBookings.filter((booking) => {
                 const bookingStatus = booking.status || "confirmed";
-                return (
-                  booking.date === dateString &&
-                  booking.time === timeString &&
-                  booking.instructorId === instructor.id &&
-                  bookingStatus === "confirmed"
-                );
-              }),
+                if (bookingStatus !== "confirmed") return false;
+                if (booking.date !== dateString) return false;
+                
+                // Calcola overlap temporale
+                const bookingStartMinutes = parseInt(booking.time.split(':')[0]) * 60 + parseInt(booking.time.split(':')[1]);
+                const bookingEndMinutes = bookingStartMinutes + (booking.duration || 90);
+                
+                // Check overlap: slot inizia prima che booking finisca E booking inizia prima che slot finisca
+                const hasOverlap = slotStartMinutes < bookingEndMinutes && bookingStartMinutes < slotEndMinutes;
+                return hasOverlap;
+              });
+              
+              console.log(`    📅 Found ${conflictingBookings.length} bookings at ${timeString} on ${dateString}:`, 
+                conflictingBookings.map(b => ({
+                  id: b.id,
+                  instructorId: b.instructorId,
+                  isLessonBooking: b.isLessonBooking,
+                  players: b.players,
+                  bookedBy: b.bookedBy
+                }))
+              );
+              
+              const hasConflict = conflictingBookings.some((booking) => {
+                // Controllo diretto: instructorId presente
+                if (booking.instructorId === instructor.id) {
+                  console.log(`    ❌ CONFLICT: Direct instructorId match for ${instructor.name}`);
+                  return true;
+                }
+                
+                // Controllo aggiuntivo: lezione senza instructorId ma con nome istruttore nei giocatori
+                if (booking.isLessonBooking && !booking.instructorId) {
+                  const instructorName = instructor.displayName || instructor.name;
+                  const bookingPlayers = booking.players || [];
+                  console.log(`    🔍 Checking lesson without instructorId. Looking for "${instructorName}" in players:`, bookingPlayers);
+                  
+                  const hasInstructorInPlayers = bookingPlayers.some(player => {
+                    if (!player || typeof player !== 'string') return false;
+                    const match = player.toLowerCase().includes(instructorName.toLowerCase());
+                    console.log(`      🔍 Player "${player}" includes "${instructorName}"? ${match}`);
+                    return match;
+                  });
+                  
+                  if (hasInstructorInPlayers) {
+                    console.log(`    ❌ CONFLICT: Instructor ${instructorName} found in players for lesson without instructorId:`, {
+                      time: timeString,
+                      date: dateString,
+                      players: bookingPlayers,
+                      bookingId: booking.id
+                    });
+                    return true;
+                  }
+                }
+                
+                // Controllo NUOVO: maestro come giocatore in una partita normale
+                if (!booking.isLessonBooking) {
+                  const instructorName = instructor.displayName || instructor.name;
+                  const bookingPlayers = booking.players || [];
+                  console.log(`    🏃 Checking if instructor is playing in match. Looking for "${instructorName}" in players:`, bookingPlayers);
+                  
+                  const isPlayingInMatch = bookingPlayers.some(player => {
+                    if (!player || typeof player !== 'string') return false;
+                    const match = player.toLowerCase().includes(instructorName.toLowerCase());
+                    console.log(`      🔍 Player "${player}" includes "${instructorName}"? ${match}`);
+                    return match;
+                  });
+                  
+                  if (isPlayingInMatch) {
+                    console.log(`    ❌ CONFLICT: Instructor ${instructorName} is playing in a match at this time:`, {
+                      time: timeString,
+                      date: dateString,
+                      players: bookingPlayers,
+                      courtName: booking.courtName,
+                      bookingId: booking.id
+                    });
+                    return true;
+                  }
+                }
+                
+                return false;
+              });
+              
+              console.log(`    ✅ Instructor ${instructor.name} available: ${!hasConflict}`);
+              return !hasConflict;
+            }
           );
-
+          
+          console.log(`  📊 Available instructors for ${timeString}:`, availableInstructors.map(i => i.name));
+          
           // Check available courts for this slot - must check for overlapping bookings
-          const availableCourts = (state?.courts || []).filter((court) => {
+          
+          const availableCourts = (courts || []).filter((court) => {
             if (!configSlot.courtIds.includes(court.id)) return false;
 
             // Check if court has any overlapping bookings
@@ -235,6 +417,8 @@ export default function LessonBookingInterface({
             return !hasConflict;
           });
 
+
+          
           // If we have both instructors and courts available, this date is bookable
           if (availableInstructors.length > 0 && availableCourts.length > 0) {
             hasAvailableSlot = true;
@@ -244,7 +428,7 @@ export default function LessonBookingInterface({
         return hasAvailableSlot;
       });
     },
-    [lessonConfig.timeSlots, instructors, allBookings, state?.courts],
+    [lessonConfig.timeSlots, instructors, allBookings, courts],
   );
 
   // Get available dates based on configured time slots
@@ -336,6 +520,11 @@ export default function LessonBookingInterface({
       return [];
     }
 
+    // ✅ FIX: Aspetta che lessonConfig sia completamente caricato
+    if (!lessonConfig.timeSlots || lessonConfig.timeSlots.length === 0) {
+      return [];
+    }
+
     const dateObj = new Date(selectedDate);
     const dayOfWeek = dateObj.getDay();
     
@@ -396,23 +585,114 @@ export default function LessonBookingInterface({
         }
 
         // Check available instructors for this slot
+        console.log(`🔍 [availableTimeSlots] Checking slot ${timeString}`, {
+          configSlotInstructors: configSlot.instructorIds,
+          allInstructors: instructors.map(i => ({ id: i.id, name: i.name }))
+        });
+        
         const slotInstructors = instructors.filter(
-          (instructor) =>
-            configSlot.instructorIds.includes(instructor.id) &&
-            !allBookings.some((booking) => {
-              // Use same logic as validation service
+          (instructor) => {
+            const isIncluded = configSlot.instructorIds.includes(instructor.id);
+            console.log(`  🔍 Checking instructor ${instructor.name} (${instructor.id}):`, { isIncluded });
+            
+            if (!isIncluded) return false;
+            
+            // Controlla se l'istruttore ha conflitti (con controllo overlap temporale)
+            const slotStartMinutes = parseInt(timeString.split(':')[0]) * 60 + parseInt(timeString.split(':')[1]);
+            const slotEndMinutes = slotStartMinutes + 60; // Slot lezione di 1 ora
+            
+            const conflictingBookings = allBookings.filter((booking) => {
               const bookingStatus = booking.status || "confirmed";
-              return (
-                booking.date === selectedDate &&
-                booking.time === timeString &&
-                booking.instructorId === instructor.id &&
-                bookingStatus === "confirmed"
-              );
-            }),
+              if (bookingStatus !== "confirmed") return false;
+              if (booking.date !== selectedDate) return false;
+              
+              // Calcola overlap temporale
+              const bookingStartMinutes = parseInt(booking.time.split(':')[0]) * 60 + parseInt(booking.time.split(':')[1]);
+              const bookingEndMinutes = bookingStartMinutes + (booking.duration || 90);
+              
+              // Check overlap: slot inizia prima che booking finisca E booking inizia prima che slot finisca
+              const hasOverlap = slotStartMinutes < bookingEndMinutes && bookingStartMinutes < slotEndMinutes;
+              return hasOverlap;
+            });
+            
+            console.log(`    📅 Found ${conflictingBookings.length} bookings at ${timeString} on ${selectedDate}:`, 
+              conflictingBookings.map(b => ({
+                id: b.id,
+                instructorId: b.instructorId,
+                isLessonBooking: b.isLessonBooking,
+                players: b.players,
+                bookedBy: b.bookedBy
+              }))
+            );
+            
+            const hasConflict = conflictingBookings.some((booking) => {
+              // Controllo diretto: instructorId presente
+              if (booking.instructorId === instructor.id) {
+                console.log(`    ❌ CONFLICT: Direct instructorId match for ${instructor.name}`);
+                return true;
+              }
+              
+              // Controllo aggiuntivo: lezione senza instructorId ma con nome istruttore nei giocatori
+              if (booking.isLessonBooking && !booking.instructorId) {
+                const instructorName = instructor.displayName || instructor.name;
+                const bookingPlayers = booking.players || [];
+                console.log(`    🔍 Checking lesson without instructorId. Looking for "${instructorName}" in players:`, bookingPlayers);
+                
+                const hasInstructorInPlayers = bookingPlayers.some(player => {
+                  if (!player || typeof player !== 'string') return false;
+                  const match = player.toLowerCase().includes(instructorName.toLowerCase());
+                  console.log(`      🔍 Player "${player}" includes "${instructorName}"? ${match}`);
+                  return match;
+                });
+                
+                if (hasInstructorInPlayers) {
+                  console.log(`    ❌ CONFLICT: Instructor ${instructorName} found in players for lesson without instructorId:`, {
+                    time: timeString,
+                    date: selectedDate,
+                    players: bookingPlayers,
+                    bookingId: booking.id
+                  });
+                  return true;
+                }
+              }
+              
+              // Controllo NUOVO: maestro come giocatore in una partita normale
+              if (!booking.isLessonBooking) {
+                const instructorName = instructor.displayName || instructor.name;
+                const bookingPlayers = booking.players || [];
+                console.log(`    🏃 Checking if instructor is playing in match. Looking for "${instructorName}" in players:`, bookingPlayers);
+                
+                const isPlayingInMatch = bookingPlayers.some(player => {
+                  if (!player || typeof player !== 'string') return false;
+                  const match = player.toLowerCase().includes(instructorName.toLowerCase());
+                  console.log(`      🔍 Player "${player}" includes "${instructorName}"? ${match}`);
+                  return match;
+                });
+                
+                if (isPlayingInMatch) {
+                  console.log(`    ❌ CONFLICT: Instructor ${instructorName} is playing in a match at this time:`, {
+                    time: timeString,
+                    date: selectedDate,
+                    players: bookingPlayers,
+                    courtName: booking.courtName,
+                    bookingId: booking.id
+                  });
+                  return true;
+                }
+              }
+              
+              return false;
+            });
+            
+            console.log(`    ✅ Instructor ${instructor.name} available: ${!hasConflict}`);
+            return !hasConflict;
+          }
         );
+        
+        console.log(`  📊 Available instructors for ${timeString}:`, slotInstructors.map(i => i.name));
 
         // Check available courts for this slot - must check for overlapping bookings, not just exact time matches
-        const availableCourts = (state?.courts || []).filter((court) => {
+        const availableCourts = (courts || []).filter((court) => {
           if (!configSlot.courtIds.includes(court.id)) return false;
 
           // Check if court has any overlapping bookings
@@ -505,7 +785,7 @@ export default function LessonBookingInterface({
     lessonConfig.timeSlots,
     instructors,
     allBookings,
-    state?.courts,
+    courts,
   ]);
 
   // Handle lesson booking creation
@@ -566,7 +846,7 @@ export default function LessonBookingInterface({
 
       // Create both lesson and court bookings through unified service
       const createdLessonBooking = await createLessonBooking(lessonData);
-      console.log("✅ Created unified lesson booking:", createdLessonBooking);
+      // Lesson booking created successfully
 
       setMessage({ type: "success", text: "Lezione prenotata con successo!" });
 
@@ -628,6 +908,24 @@ export default function LessonBookingInterface({
   // Step navigation helpers
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 4));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
+
+  // Handle edit parameter from URL
+  useEffect(() => {
+    const editId = searchParams.get('edit');
+    if (editId && lessonBookings && lessonBookings.length > 0) {
+      const lessonToEdit = lessonBookings.find(lesson => lesson.id === editId);
+      if (lessonToEdit) {
+        // Switch to admin tab if club mode is enabled and lesson exists
+        if (clubMode) {
+          setActiveTab("admin");
+        }
+        // Remove edit parameter from URL after handling
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete('edit');
+        setSearchParams(newSearchParams, { replace: true });
+      }
+    }
+  }, [searchParams, lessonBookings, clubMode, setSearchParams, setActiveTab]);
 
   if (lessonLoading) {
     return (
@@ -1245,9 +1543,7 @@ export default function LessonBookingInterface({
           updateLessonConfig={updateLessonConfig}
           instructors={instructors}
           players={players}
-          setState={setState}
-          state={state}
-          courts={state?.courts || []}
+          courts={courts || []}
           onClearAllLessons={handleClearAllLessons}
           lessonBookingsCount={lessonBookings?.length || 0}
         />

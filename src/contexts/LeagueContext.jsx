@@ -42,6 +42,10 @@ export function LeagueProvider({ children }) {
   const [error, setError] = useState(null);
   const [updatingFromCloud, setUpdatingFromCloud] = useState(false);
 
+  // Club selection state
+  const [selectedClub, setSelectedClub] = useState(null);
+  const [selectedClubLoading, setSelectedClubLoading] = useState(false);
+
   const [leagueId, setLeagueId] = useState(
     localStorage.getItem(LS_KEY + "-leagueId") || "lega-andrea-2025",
   );
@@ -335,13 +339,106 @@ export function LeagueProvider({ children }) {
     }
   }, [state, leagueId, updatingFromCloud, user]);
 
-  // Compute derived data
+  // Compute derived data with club filtering
   const derived = React.useMemo(
-    () =>
-      state
-        ? recompute(state.players || [], state.matches || [])
-        : { players: [], matches: [] },
-    [state],
+    () => {
+      if (!state) return { players: [], matches: [] };
+      
+      // If no club is selected, return empty data
+      if (!selectedClub) {
+        return { players: [], matches: [] };
+      }
+      
+      // Filter data by club ID with better legacy support
+      const clubId = selectedClub.id;
+      const clubName = selectedClub.name;
+      
+      // Debug logging
+      console.log('🔍 FILTRO CLUB DEBUG:', {
+        selectedClubId: clubId,
+        selectedClubName: clubName,
+        totalPlayers: (state.players || []).length,
+        totalMatches: (state.matches || []).length,
+        firstPlayer: state.players?.[0],
+        firstMatch: state.matches?.[0]
+      });
+      
+      // For "Sporting Cat" variants, include data without clubId (legacy data)
+      const isLegacyClub = clubName?.toLowerCase().includes('sporting') || 
+                           clubId === 'sporting-cat' || 
+                           clubId === 'Sporting CAT';
+      
+      const filteredPlayers = (state.players || []).filter(p => {
+        const hasMatchingClubId = p.clubId === clubId;
+        const isLegacyData = isLegacyClub && !p.clubId;
+        const shouldInclude = hasMatchingClubId || isLegacyData;
+        
+        if ((state.players || []).indexOf(p) < 3) { // Log first 3 players
+          console.log('🔍 PLAYER FILTER:', {
+            playerName: p.name,
+            playerClubId: p.clubId,
+            hasMatchingClubId,
+            isLegacyData,
+            shouldInclude
+          });
+        }
+        
+        return shouldInclude;
+      });
+      
+      const filteredMatches = (state.matches || []).filter(m => 
+        m.clubId === clubId || (isLegacyClub && !m.clubId)
+      );
+      
+      console.log('🔍 FILTRO RISULTATI:', {
+        filteredPlayers: filteredPlayers.length,
+        filteredMatches: filteredMatches.length,
+        isLegacyClub
+      });
+      
+      return recompute(filteredPlayers, filteredMatches);
+    },
+    [state, selectedClub],
+  );
+
+  // Filter other data arrays by club
+  const filteredState = React.useMemo(
+    () => {
+      if (!state || !selectedClub) {
+        return {
+          ...state,
+          players: [],
+          matches: [],
+          bookings: [],
+          courts: []
+        };
+      }
+      
+      const clubId = selectedClub.id;
+      const clubName = selectedClub.name;
+      const isLegacyClub = clubName?.toLowerCase().includes('sporting') || 
+                           clubId === 'sporting-cat' || 
+                           clubId === 'Sporting CAT';
+      
+      console.log('🔍 FILTERED STATE per', clubName, '- isLegacyClub:', isLegacyClub);
+      
+      return {
+        ...state,
+        players: (state.players || []).filter(p => 
+          p.clubId === clubId || (isLegacyClub && !p.clubId)
+        ),
+        matches: (state.matches || []).filter(m => 
+          m.clubId === clubId || (isLegacyClub && !m.clubId)
+        ),
+        bookings: (state.bookings || []).filter(b => 
+          b.clubId === clubId || (isLegacyClub && !b.clubId)
+        ),
+        courts: (state.courts || []).filter(c => 
+          c.clubId === clubId || (isLegacyClub && !c.clubId)
+        )
+      };
+    },
+    [state, selectedClub],
   );
 
   const playersById = React.useMemo(
@@ -349,8 +446,39 @@ export function LeagueProvider({ children }) {
     [derived],
   );
 
+  // Club selection functions
+  const selectClub = async (club) => {
+    try {
+      setSelectedClubLoading(true);
+      setSelectedClub(club);
+      // Store selected club in localStorage
+      localStorage.setItem('selectedClub', JSON.stringify(club));
+    } catch (error) {
+      console.error('Error selecting club:', error);
+    } finally {
+      setSelectedClubLoading(false);
+    }
+  };
+
+  const exitClub = () => {
+    setSelectedClub(null);
+    localStorage.removeItem('selectedClub');
+  };
+
+  // Load selected club from localStorage on init
+  useEffect(() => {
+    try {
+      const savedClub = localStorage.getItem('selectedClub');
+      if (savedClub) {
+        setSelectedClub(JSON.parse(savedClub));
+      }
+    } catch (error) {
+      console.error('Error loading selected club:', error);
+    }
+  }, []);
+
   const value = {
-    state,
+    state: filteredState,
     setState: setStateSafe,
     derived,
     playersById,
@@ -359,6 +487,14 @@ export function LeagueProvider({ children }) {
     loading,
     error,
     updatingFromCloud,
+    // Club selection
+    selectedClub,
+    selectedClubLoading,
+    selectClub,
+    exitClub,
+    hasSelectedClub: !!selectedClub,
+    // Raw unfiltered state for admin purposes
+    rawState: state,
   };
 
   return (

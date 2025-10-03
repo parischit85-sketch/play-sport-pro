@@ -1,7 +1,46 @@
-// Service Worker per Paris League PWA
-const CACHE_NAME = "paris-league-v1.8.4";
-const APP_VERSION = "1.8.4";
-const CURRENT_HASH = "dev-mode-disabled"; // Hash checking disabilitato
+// Service Worker per PlaySport Pro - Enhanced Performance Optimization
+const CACHE_VERSION = 'v1.9.0';
+const STATIC_CACHE = `playsport-static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `playsport-dynamic-${CACHE_VERSION}`;
+const API_CACHE = `playsport-api-${CACHE_VERSION}`;
+
+// Enhanced cache strategies configuration
+const CACHE_STRATEGIES = {
+  // Static assets - Cache First (images, fonts, icons)
+  STATIC_ASSETS: [
+    /\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/,
+    /\/assets\//,
+    /\/icons\//,
+    /\/images\//
+  ],
+  
+  // API calls - Network First with fallback
+  API_ENDPOINTS: [
+    /\/api\//,
+    /firebase/,
+    /firestore/
+  ],
+  
+  // Pages - Stale While Revalidate
+  PAGES: [
+    /\.html$/,
+    /\/$/,
+    /\/dashboard/,
+    /\/matches/,
+    /\/players/,
+    /\/bookings/
+  ]
+};
+
+// Performance monitoring metrics
+let performanceMetrics = {
+  cacheHits: 0,
+  cacheMisses: 0,
+  networkRequests: 0,
+  offlineRequests: 0,
+  startTime: Date.now()
+};
+
 const urlsToCache = [
   "/",
   "/play-sport-pro_horizontal.svg",
@@ -12,202 +51,314 @@ const urlsToCache = [
   "/icons/icon.svg",
   "/icons/icon-192x192.png",
   "/icons/icon-512x512.png",
-  // Rimosso /src/main.jsx per evitare caching di asset di sviluppo
+  "/offline.html"
 ];
 
-// Installazione del Service Worker
+// Enhanced installation with critical resource caching
 self.addEventListener("install", (event) => {
-  console.log("[SW] Installing Service Worker");
+  console.log('🔧 [SW] Installing Enhanced Service Worker v1.9.0');
+  
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
+    caches.open(STATIC_CACHE)
       .then((cache) => {
-        console.log("[SW] Caching app shell");
+        console.log('📦 [SW] Caching critical resources...');
         return cache.addAll(urlsToCache);
       })
+      .then(() => {
+        console.log('✅ [SW] Critical resources cached successfully');
+        return self.skipWaiting();
+      })
       .catch((error) => {
-        console.error("[SW] Cache installation failed:", error);
-      }),
+        console.error('❌ [SW] Cache installation failed:', error);
+      })
   );
-  // Forza l'aggiornamento immediato
-  self.skipWaiting();
 });
 
-// Attivazione del Service Worker
+// Enhanced activation with smart cache cleanup
 self.addEventListener("activate", (event) => {
-  console.log("[SW] Activating Service Worker");
+  console.log('🚀 [SW] Activating Enhanced Service Worker v1.9.0');
+  
   event.waitUntil(
-    caches
-      .keys()
+    caches.keys()
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== CACHE_NAME) {
-              console.log("[SW] Deleting old cache:", cacheName);
+            if (cacheName !== STATIC_CACHE && 
+                cacheName !== DYNAMIC_CACHE && 
+                cacheName !== API_CACHE) {
+              console.log('🗑️ [SW] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
-          }),
+          })
         );
       })
       .then(() => {
-        // Forza il nuovo SW a prendere il controllo immediatamente
+        console.log('✅ [SW] Service Worker activated with enhanced performance');
         return self.clients.claim();
-      }),
+      })
   );
 });
 
-// Intercettazione delle richieste di rete
+// Enhanced fetch handling with intelligent caching strategies
 self.addEventListener("fetch", (event) => {
-  // Solo per richieste GET
-  if (event.request.method !== "GET") {
+  // Skip non-GET requests and chrome-extension requests
+  if (event.request.method !== "GET" || event.request.url.startsWith('chrome-extension:')) {
     return;
   }
 
-  const url = new URL(event.request.url);
-  const isAsset =
-    url.pathname.startsWith("/assets/") ||
-    url.pathname.endsWith(".js") ||
-    url.pathname.endsWith(".css");
-  const isImage =
-    url.pathname.endsWith(".svg") ||
-    url.pathname.endsWith(".png") ||
-    url.pathname.endsWith(".jpg") ||
-    url.pathname.endsWith(".ico");
-  const isApiCall =
-    url.pathname.includes("api") || url.hostname.includes("firebase");
+  const { request } = event;
+  const url = new URL(request.url);
+  
+  performanceMetrics.networkRequests++;
 
-  // API calls: sempre network first
-  if (isApiCall) {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request)),
-    );
-    return;
+  // Choose caching strategy based on request type
+  if (isStaticAsset(request.url)) {
+    event.respondWith(cacheFirstStrategy(request));
+  } else if (isApiEndpoint(request.url)) {
+    event.respondWith(networkFirstStrategy(request));
+  } else if (isPageRequest(request.url)) {
+    event.respondWith(staleWhileRevalidateStrategy(request));
+  } else {
+    event.respondWith(dynamicCacheStrategy(request));
   }
-
-  // Immagini e file statici: cache first con fallback a network
-  if (isImage) {
-    event.respondWith(
-      caches.match(event.request).then((response) => {
-        if (response) {
-          return response;
-        }
-
-        return fetch(event.request)
-          .then((response) => {
-            if (response && response.status === 200) {
-              const responseToCache = response.clone();
-              caches
-                .open(CACHE_NAME)
-                .then((cache) => cache.put(event.request, responseToCache));
-            }
-            return response;
-          })
-          .catch((error) => {
-            console.error("[SW] Image fetch failed:", event.request.url, error);
-            throw error;
-          });
-      }),
-    );
-    return;
-  }
-
-  // JS/CSS assets: SEMPRE network first con cache busting per forzare aggiornamenti
-  if (isAsset) {
-    event.respondWith(
-      fetch(event.request, { cache: "no-cache" })
-        .then((response) => {
-          if (response && response.status === 200) {
-            const responseToCache = response.clone();
-            caches
-              .open(CACHE_NAME)
-              .then((cache) => cache.put(event.request, responseToCache));
-          }
-          return response;
-        })
-        .catch(() =>
-          caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-              console.log(
-                "[SW] Using cached asset (offline):",
-                event.request.url,
-              );
-              return cachedResponse;
-            }
-            throw new Error("Asset not available offline");
-          }),
-        ),
-    );
-    return;
-  }
-
-  // Altri asset: cache first
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) {
-        return response;
-      }
-
-      return fetch(event.request)
-        .then((response) => {
-          if (
-            !response ||
-            response.status !== 200 ||
-            response.type !== "basic"
-          ) {
-            return response;
-          }
-
-          const responseToCache = response.clone();
-          caches
-            .open(CACHE_NAME)
-            .then((cache) => cache.put(event.request, responseToCache));
-
-          return response;
-        })
-        .catch((error) => {
-          console.error("[SW] Fetch failed:", error);
-          if (event.request.destination === "document") {
-            return caches.match("/");
-          }
-        });
-    }),
-  );
 });
 
-// Gestione dei messaggi dall'app
+/**
+ * Cache First Strategy - For static assets
+ */
+async function cacheFirstStrategy(request) {
+  try {
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      performanceMetrics.cacheHits++;
+      return cachedResponse;
+    }
+
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(STATIC_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+    
+    performanceMetrics.cacheMisses++;
+    return networkResponse;
+  } catch (error) {
+    console.warn('⚠️ [SW] Cache first failed:', error);
+    performanceMetrics.offlineRequests++;
+    return getOfflineFallback(request);
+  }
+}
+
+/**
+ * Network First Strategy - For API calls with TTL
+ */
+async function networkFirstStrategy(request) {
+  try {
+    const networkResponse = await fetch(request);
+    
+    if (networkResponse.ok) {
+      // Cache successful API responses with TTL
+      const cache = await caches.open(API_CACHE);
+      const responseToCache = networkResponse.clone();
+      
+      // Add timestamp for TTL management
+      const headers = new Headers(responseToCache.headers);
+      headers.set('sw-cached-at', Date.now().toString());
+      
+      const modifiedResponse = new Response(responseToCache.body, {
+        status: responseToCache.status,
+        statusText: responseToCache.statusText,
+        headers: headers
+      });
+      
+      cache.put(request, modifiedResponse);
+    }
+    
+    return networkResponse;
+  } catch (error) {
+    console.warn('⚠️ [SW] Network first fallback to cache:', error);
+    
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse && isCacheValid(cachedResponse)) {
+      performanceMetrics.cacheHits++;
+      return cachedResponse;
+    }
+    
+    performanceMetrics.offlineRequests++;
+    return getApiOfflineFallback(request);
+  }
+}
+
+/**
+ * Stale While Revalidate Strategy - For pages
+ */
+async function staleWhileRevalidateStrategy(request) {
+  const cache = await caches.open(DYNAMIC_CACHE);
+  const cachedResponse = await cache.match(request);
+  
+  // Fetch in background to update cache
+  const fetchPromise = fetch(request)
+    .then((networkResponse) => {
+      if (networkResponse.ok) {
+        cache.put(request, networkResponse.clone());
+      }
+      return networkResponse;
+    })
+    .catch(() => cachedResponse);
+
+  if (cachedResponse) {
+    performanceMetrics.cacheHits++;
+    return cachedResponse;
+  }
+
+  performanceMetrics.cacheMisses++;
+  return fetchPromise;
+}
+
+/**
+ * Dynamic Cache Strategy - For other requests
+ */
+async function dynamicCacheStrategy(request) {
+  try {
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) {
+      performanceMetrics.cacheHits++;
+      return cachedResponse;
+    }
+
+    const networkResponse = await fetch(request);
+    if (networkResponse.ok) {
+      const cache = await caches.open(DYNAMIC_CACHE);
+      cache.put(request, networkResponse.clone());
+    }
+    
+    performanceMetrics.cacheMisses++;
+    return networkResponse;
+  } catch (error) {
+    performanceMetrics.offlineRequests++;
+    return getOfflineFallback(request);
+  }
+}
+
+/**
+ * Helper Functions
+ */
+function isStaticAsset(url) {
+  return CACHE_STRATEGIES.STATIC_ASSETS.some(pattern => pattern.test(url));
+}
+
+function isApiEndpoint(url) {
+  return CACHE_STRATEGIES.API_ENDPOINTS.some(pattern => pattern.test(url));
+}
+
+function isPageRequest(url) {
+  return CACHE_STRATEGIES.PAGES.some(pattern => pattern.test(url));
+}
+
+function isCacheValid(response, ttlMinutes = 30) {
+  const cachedAt = response.headers.get('sw-cached-at');
+  if (!cachedAt) return true; // No TTL set, assume valid
+  
+  const cacheAge = Date.now() - parseInt(cachedAt);
+  const ttlMs = ttlMinutes * 60 * 1000;
+  
+  return cacheAge < ttlMs;
+}
+
+async function getOfflineFallback(request) {
+  if (request.destination === 'document') {
+    return caches.match('/offline.html') || caches.match('/');
+  }
+  
+  if (request.destination === 'image') {
+    return new Response(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#f0f0f0"/><text x="100" y="100" text-anchor="middle" font-family="Arial" font-size="12" fill="#666">Immagine non disponibile</text></svg>',
+      { headers: { 'Content-Type': 'image/svg+xml' } }
+    );
+  }
+  
+  return new Response('Contenuto non disponibile offline', {
+    status: 503,
+    statusText: 'Service Unavailable'
+  });
+}
+
+async function getApiOfflineFallback(request) {
+  return new Response(JSON.stringify({
+    error: 'Offline',
+    message: 'Richiesta non disponibile offline',
+    timestamp: new Date().toISOString()
+  }), {
+    status: 503,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+// Enhanced message handling with performance metrics
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
 
-  // Controllo versione app
-  if (event.data && event.data.type === "GET_VERSION") {
-    event.ports[0].postMessage({ version: APP_VERSION });
+  // Performance metrics retrieval
+  if (event.data && event.data.type === "GET_PERFORMANCE_METRICS") {
+    const runtime = Date.now() - performanceMetrics.startTime;
+    const cacheHitRatio = performanceMetrics.cacheHits / (performanceMetrics.cacheHits + performanceMetrics.cacheMisses) || 0;
+    
+    event.ports[0].postMessage({
+      type: 'PERFORMANCE_METRICS',
+      data: {
+        ...performanceMetrics,
+        cacheHitRatio: Math.round(cacheHitRatio * 100) / 100,
+        runtime: runtime,
+        timestamp: new Date().toISOString()
+      }
+    });
   }
 
-  // Controllo hash degli asset - TEMPORANEAMENTE DISABILITATO
+  // Legacy version check
+  if (event.data && event.data.type === "GET_VERSION") {
+    event.ports[0].postMessage({ version: CACHE_VERSION });
+  }
+
+  // Legacy hash checking - disabled but maintained for compatibility
   if (event.data && event.data.type === "CHECK_HASH") {
-    // Sempre risponde che non c'è mismatch per evitare refresh continui
     console.log("[SW] Hash checking disabled - no refresh triggered");
     event.ports[0].postMessage({
       hashMismatch: false,
-      currentHash: CURRENT_HASH,
+      currentHash: "performance-optimized",
       clientHash: event.data.hash,
     });
   }
 
-  // Forza clear cache
+  // Enhanced cache clearing
   if (event.data && event.data.type === "CLEAR_CACHE") {
-    caches
-      .keys()
-      .then((cacheNames) => {
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
         return Promise.all(
-          cacheNames.map((cacheName) => caches.delete(cacheName)),
+          cacheNames.map((cacheName) => caches.delete(cacheName))
         );
+      }).then(() => {
+        // Reset performance metrics
+        performanceMetrics = {
+          cacheHits: 0,
+          cacheMisses: 0,
+          networkRequests: 0,
+          offlineRequests: 0,
+          startTime: Date.now()
+        };
+        event.ports[0].postMessage({ 
+          type: 'CACHE_CLEARED',
+          success: true 
+        });
+      }).catch((error) => {
+        event.ports[0].postMessage({ 
+          type: 'CACHE_CLEARED',
+          success: false,
+          error: error.message 
+        });
       })
-      .then(() => {
-        event.ports[0].postMessage({ success: true });
-      });
+    );
   }
 });
 

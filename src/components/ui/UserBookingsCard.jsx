@@ -1,10 +1,10 @@
 // =============================================
 // FILE: src/components/ui/UserBookingsCard.jsx
 // =============================================
-import React, { useState, useCallback, useMemo, useEffect } from "react";
+import React, { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { BOOKING_CONFIG, updateBooking } from "@services/bookings.js";
-import { getUserBookings } from "@services/unified-booking-service.js";
+import { BOOKING_CONFIG } from "@services/bookings.js";
+import { updateBooking, getUserBookings, addEventListener } from "@services/unified-booking-service.js";
 import { useUserBookingsFast } from "@hooks/useBookingPerformance.js";
 import { useAuth } from "@contexts/AuthContext.jsx";
 import BookingDetailModal from "@ui/BookingDetailModal.jsx";
@@ -186,12 +186,15 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
 BookingCard.displayName = "BookingCard";
 
 export default function UserBookingsCard({ user, state, T, compact }) {
+  console.log('📅 [UserBookingsCard] Mounting with user:', user?.uid || 'no user');
+  
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [lessonBookings, setLessonBookings] = useState([]);
   const [lessonLoading, setLessonLoading] = useState(false);
   const navigate = useNavigate();
   const { user: authUser } = useAuth();
+  const mountedRef = useRef(true);
 
   // Use high-performance booking hook per le prenotazioni dei campi
   const {
@@ -206,60 +209,85 @@ export default function UserBookingsCard({ user, state, T, compact }) {
   });
 
   // Carica le prenotazioni delle lezioni
-  useEffect(() => {
-    const loadLessonBookings = async () => {
-      if (!authUser) return;
-      
-      setLessonLoading(true);
-      try {
-        const lessons = await getUserBookings(authUser, { lessonOnly: true });
+  const loadLessonBookings = useCallback(async () => {
+    if (!authUser || !mountedRef.current) return;
+    
+    setLessonLoading(true);
+    try {
+      const lessons = await getUserBookings(authUser, { lessonOnly: false });
+      if (mountedRef.current) {
         setLessonBookings(lessons || []);
-      } catch (error) {
-        console.error("Error loading lesson bookings:", error);
+      }
+    } catch (error) {
+      console.error("❌ [UserBookingsCard] Error loading lesson bookings:", error);
+      if (mountedRef.current) {
         setLessonBookings([]);
-      } finally {
+      }
+    } finally {
+      if (mountedRef.current) {
         setLessonLoading(false);
+      }
+    }
+  }, [authUser]);
+
+  // Load lesson bookings on mount and when authUser changes
+  useEffect(() => {
+    loadLessonBookings();
+  }, [loadLessonBookings]);
+
+  // Funzione di refresh combinata
+  const refresh = useCallback(async () => {
+    // Refresh courts
+    refreshCourts();
+    
+    // Refresh lessons
+    await loadLessonBookings();
+  }, [refreshCourts, loadLessonBookings]);
+
+  // Listen for booking service events to auto-refresh data
+  useEffect(() => {
+    const handleBookingUpdate = (data) => {
+      if (mountedRef.current && data?.id) {
+        console.log('🔄 [UserBookingsCard] Booking updated, refreshing data:', data.id);
+        // Refresh both court and lesson bookings
+        refreshCourts();
+        if (authUser) {
+          loadLessonBookings();
+        }
       }
     };
 
-    loadLessonBookings();
-  }, [authUser]);
-
-  // Combina le prenotazioni dei campi e delle lezioni - rimuovi duplicati
-  const allBookings = useMemo(() => {
-    const combined = [...(courtBookings || []), ...(lessonBookings || [])];
-    
-    // Remove duplicates based on ID, preferring lesson bookings over court bookings
-    // if the same ID appears in both collections
-    const uniqueBookings = new Map();
-    
-    combined.forEach(booking => {
-      const existingBooking = uniqueBookings.get(booking.id);
-      const isLessonBooking = booking.instructorId || booking.isLessonBooking || booking.type === 'lesson';
-      
-      if (!existingBooking) {
-        // First time seeing this booking
-        uniqueBookings.set(booking.id, { ...booking, isLessonBooking });
-      } else {
-        // Booking already exists, prefer lesson booking if this one has instructor data
-        const existingIsLesson = existingBooking.instructorId || existingBooking.isLessonBooking || existingBooking.type === 'lesson';
-        if (isLessonBooking && !existingIsLesson) {
-          uniqueBookings.set(booking.id, { ...booking, isLessonBooking });
+    const handleBookingCreate = (booking) => {
+      if (mountedRef.current) {
+        console.log('➕ [UserBookingsCard] New booking created, refreshing data');
+        refreshCourts();
+        if (authUser) {
+          loadLessonBookings();
         }
       }
-    });
-    
-    const result = Array.from(uniqueBookings.values());
-    
-    // Ordina per data e ora
-    return result.sort((a, b) => {
-      if (a.date !== b.date) return a.date.localeCompare(b.date);
-      return a.time.localeCompare(b.time);
-    });
-  }, [courtBookings, lessonBookings]);
+    };
 
-  const isLoading = courtLoading || lessonLoading;
-  const hasBookings = allBookings.length > 0;
+    const handleBookingDelete = (data) => {
+      if (mountedRef.current && data?.id) {
+        console.log('🗑️ [UserBookingsCard] Booking deleted, refreshing data:', data.id);
+        refreshCourts();
+        if (authUser) {
+          loadLessonBookings();
+        }
+      }
+    };
+
+    // Subscribe to booking events
+    const unsubscribeUpdate = addEventListener('bookingUpdated', handleBookingUpdate);
+    const unsubscribeCreate = addEventListener('bookingCreated', handleBookingCreate);
+    const unsubscribeDelete = addEventListener('bookingDeleted', handleBookingDelete);
+
+    return () => {
+      unsubscribeUpdate?.();
+      unsubscribeCreate?.();
+      unsubscribeDelete?.();
+    };
+  }, [authUser, loadLessonBookings, refreshCourts]);
 
   // Memoize courts lookup for performance
   const courts = useMemo(
@@ -277,25 +305,6 @@ export default function UserBookingsCard({ user, state, T, compact }) {
     setShowDetailModal(false);
     setSelectedBooking(null);
   }, []);
-
-  // Funzione di refresh combinata
-  const refresh = useCallback(async () => {
-    // Refresh courts
-    refreshCourts();
-    
-    // Refresh lessons
-    if (authUser) {
-      setLessonLoading(true);
-      try {
-        const lessons = await getUserBookings(authUser, { lessonOnly: true });
-        setLessonBookings(lessons || []);
-      } catch (error) {
-        console.error("Error refreshing lesson bookings:", error);
-      } finally {
-        setLessonLoading(false);
-      }
-    }
-  }, [authUser, refreshCourts]);
 
   const handleShare = useCallback(
     async (booking) => {
@@ -345,13 +354,19 @@ export default function UserBookingsCard({ user, state, T, compact }) {
             players: booking.players,
           };
 
-          await updateBooking(booking.id, { players: booking.players });
+          const result = await updateBooking(booking.id, { players: booking.players }, authUser);
 
           // Aggiorna lo stato locale
           setSelectedBooking(updatedBooking);
 
-          // Ricarica i dati
-          refresh();
+          // Chiudi il modal prima del refresh per evitare conflitti
+          handleCloseModal();
+
+          // Piccolo delay per assicurarsi che il modal sia chiuso prima del refresh
+          setTimeout(() => {
+            refresh();
+          }, 100);
+
           console.log("Prenotazione aggiornata con successo");
         } catch (error) {
           console.error("Errore durante l'aggiornamento:", error);
@@ -363,7 +378,7 @@ export default function UserBookingsCard({ user, state, T, compact }) {
         handleCloseModal();
       }
     },
-    [navigate, handleCloseModal, selectedBooking, refresh],
+    [navigate, handleCloseModal, selectedBooking, refresh, authUser],
   );
 
   const handleReview = useCallback((booking) => {
@@ -372,8 +387,82 @@ export default function UserBookingsCard({ user, state, T, compact }) {
     alert("Funzionalità di recensioni in arrivo!");
   }, []);
 
-  // Mostra tutte le prenotazioni in scroll orizzontale (campi + lezioni)
-  const displayBookings = allBookings || [];
+  // Combina le prenotazioni dei campi e delle lezioni - rimuovi duplicati
+  const allBookings = useMemo(() => {
+    const combined = [...(courtBookings || []), ...(lessonBookings || [])];
+
+    // Remove duplicates based on ID, preferring the most recently updated booking
+    const uniqueBookings = new Map();
+
+    combined.forEach(booking => {
+      if (!booking?.id) return; // Skip invalid bookings
+
+      const existingBooking = uniqueBookings.get(booking.id);
+      const isLessonBooking = booking.instructorId || booking.isLessonBooking || booking.type === 'lesson';
+
+      if (!existingBooking) {
+        // First time seeing this booking
+        uniqueBookings.set(booking.id, { ...booking, isLessonBooking });
+      } else {
+        // Booking already exists, prefer the one with more recent updatedAt
+        const existingUpdatedAt = new Date(existingBooking.updatedAt || existingBooking.createdAt || 0);
+        const currentUpdatedAt = new Date(booking.updatedAt || booking.createdAt || 0);
+
+        if (currentUpdatedAt > existingUpdatedAt) {
+          // Current booking is more recent, use it
+          uniqueBookings.set(booking.id, { ...booking, isLessonBooking });
+        } else if (isLessonBooking && !existingBooking.isLessonBooking) {
+          // Prefer lesson booking if existing is not a lesson
+          uniqueBookings.set(booking.id, { ...booking, isLessonBooking });
+        }
+        // Otherwise keep the existing one
+      }
+    });
+
+    const result = Array.from(uniqueBookings.values());
+
+    // Ordina per data e ora
+    return result.sort((a, b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date);
+      return a.time.localeCompare(b.time);
+    });
+  }, [courtBookings, lessonBookings]);
+
+  const isLoading = courtLoading || lessonLoading;
+  const hasBookings = allBookings.length > 0;
+
+  // Filtra solo prenotazioni future
+  const displayBookings = useMemo(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
+    const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+    
+    const filtered = allBookings.filter(booking => {
+      // Se la data è futura, mostrala
+      if (booking.date > todayStr) return true;
+      
+      // Se la data è oggi, controlla l'orario
+      if (booking.date === todayStr) {
+        if (!booking.time) return true; // Se non c'è orario, mostrala
+        
+        const [hours, minutes] = booking.time.split(':').map(Number);
+        const bookingTimeMinutes = hours * 60 + minutes;
+        const bookingDuration = booking.duration || 90;
+        const bookingEndMinutes = bookingTimeMinutes + bookingDuration;
+        
+        // Mostra solo se la prenotazione non è ancora finita
+        return bookingEndMinutes > currentTimeMinutes;
+      }
+      
+      // Se la data è passata, non mostrarla
+      return false;
+    });
+    
+    return filtered;
+  }, [allBookings]);
 
   // Early return per performance - no loading skeleton if we have cached data
   if (!user) {
@@ -398,8 +487,8 @@ export default function UserBookingsCard({ user, state, T, compact }) {
     );
   }
 
-  // Show loading only on initial load
-  if (isLoading && (!displayBookings.length || lastUpdate === 0)) {
+  // Show loading only when actually loading and no bookings
+  if (isLoading && displayBookings.length === 0) {
     return (
       <div className="bg-gradient-to-br from-gray-50/90 via-blue-50/80 to-indigo-50/90 dark:from-gray-900/90 dark:via-gray-800/90 dark:to-gray-700/90 backdrop-blur-xl border-2 border-blue-200/40 dark:border-blue-700/40 p-6 rounded-3xl shadow-xl shadow-blue-100/30 dark:shadow-blue-900/30">
         <div className="flex items-center justify-between mb-4">

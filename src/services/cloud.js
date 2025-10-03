@@ -35,6 +35,28 @@ export async function loginWithGoogle() {
 }
 
 export async function loadLeague(leagueId) {
+  // Admin bypass - return mock data for admin session
+  try {
+    const adminUser = localStorage.getItem('admin-session');
+    if (adminUser) {
+      const parsed = JSON.parse(adminUser);
+      if (parsed?.isSpecialAdmin) {
+        console.log("🔑 Admin bypass: Returning mock league data");
+        return {
+          name: "Admin Test League",
+          players: {},
+          matches: {},
+          tournaments: {},
+          bookings: {},
+          _createdAt: Date.now(),
+          _updatedAt: Date.now()
+        };
+      }
+    }
+  } catch (e) {
+    // Ignore localStorage errors
+  }
+  
   const snap = await getDoc(doc(db, "leagues", leagueId));
   return snap.exists() ? snap.data() : null;
 }
@@ -79,6 +101,10 @@ export async function saveLeague(leagueId, data) {
     return;
   }
 
+  // Get current user
+  const auth = getAuth();
+  const currentUser = auth.currentUser;
+
   // Backup automatico prima di salvare
   try {
     const existing = await loadLeague(leagueId);
@@ -105,15 +131,37 @@ export async function saveLeague(leagueId, data) {
     console.warn("Impossibile creare backup automatico:", e);
   }
 
+  // Add ownership information for new leagues
+  const dataToSave = { ...data };
+  if (currentUser && !dataToSave.createdBy) {
+    dataToSave.createdBy = currentUser.uid;
+    dataToSave.createdAt = new Date().toISOString();
+  }
+
   // merge per non sovrascrivere tutto
-  await setDoc(doc(db, "leagues", leagueId), data, { merge: true });
+  await setDoc(doc(db, "leagues", leagueId), dataToSave, { merge: true });
   console.log("✅ Dati salvati nel cloud:", {
-    players: data.players?.length,
-    matches: data.matches?.length,
+    players: dataToSave.players?.length,
+    matches: dataToSave.matches?.length,
   });
 }
 
 export function subscribeLeague(leagueId, cb) {
+  // Admin bypass - no real-time subscription for admin
+  try {
+    const adminUser = localStorage.getItem('admin-session');
+    if (adminUser) {
+      const parsed = JSON.parse(adminUser);
+      if (parsed?.isSpecialAdmin) {
+        console.log("🔑 Admin bypass: Skipping Firebase subscription");
+        // Return a dummy unsubscribe function
+        return () => {};
+      }
+    }
+  } catch (e) {
+    // Ignore localStorage errors
+  }
+  
   // ritorna l'unsubscribe usato già dal tuo App.jsx
   return onSnapshot(doc(db, "leagues", leagueId), (snap) => {
     if (snap.exists()) cb(snap.data());

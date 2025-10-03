@@ -65,6 +65,10 @@ export default defineConfig({
     devSourcemap: true,
   },
   build: {
+    target: 'esnext',
+    minify: 'terser',
+    sourcemap: false,
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         // Force new hash generation with timestamp
@@ -78,13 +82,60 @@ export default defineConfig({
         },
         chunkFileNames: `assets/[name]-${Date.now().toString(36)}-[hash].js`,
         entryFileNames: `assets/[name]-${Date.now().toString(36)}-[hash].js`,
-        manualChunks: {
-          vendor: ["react", "react-dom"],
-          router: ["react-router-dom"],
-          firebase: ["firebase/app", "firebase/auth", "firebase/firestore"],
-          charts: ["recharts"],
+        manualChunks: (id) => {
+          // Core vendor libraries
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'vendor';
+            }
+            if (id.includes('react-router')) {
+              return 'router';
+            }
+            if (id.includes('firebase')) {
+              return 'firebase';
+            }
+            if (id.includes('recharts') || id.includes('chart')) {
+              return 'charts';
+            }
+            if (id.includes('lucide-react') || id.includes('icon')) {
+              return 'icons';
+            }
+            // Other vendor libraries
+            return 'libs';
+          }
+          
+          // Application chunks
+          if (id.includes('/features/admin/')) {
+            return 'admin';
+          }
+          if (id.includes('/features/clubs/')) {
+            return 'clubs';
+          }
+          if (id.includes('/features/booking/') || id.includes('/features/prenota/')) {
+            return 'booking';
+          }
+          if (id.includes('/features/players/') || id.includes('/features/matches/')) {
+            return 'players-matches';
+          }
+          if (id.includes('/components/ui/')) {
+            return 'ui-components';
+          }
+          if (id.includes('/lib/') || id.includes('/utils/')) {
+            return 'utilities';
+          }
         },
       },
     },
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+      },
+      mangle: {
+        safari10: true,
+      },
+    },
+    chunkSizeWarningLimit: 1000,
   },
 });

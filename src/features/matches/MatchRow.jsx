@@ -10,9 +10,43 @@ export default function MatchRow({
   onDelete,
   T,
 }) {
+  // DEBUG MIRATO: MatchRow rendering
+  // console.log('🎾 MATCHROW RENDER:', {
+  //   matchId: m?.id,
+  //   hasMatch: !!m,
+  //   hasPlayersById: !!playersById,
+  //   teamA: m?.teamA,
+  //   teamB: m?.teamB,
+  //   hasT: !!T,
+  //   Tprops: T ? Object.keys(T) : 'NO_T'
+  // });
+
+  try {
+    if (!m) {
+      console.error('🎾 MATCHROW ERROR: No match data');
+      return null;
+    }
+
+    if (!playersById) {
+      console.error('🎾 MATCHROW ERROR: No playersById');
+      return <div style={{padding: '10px', background: 'red', color: 'white'}}>Loading players...</div>;
+    }
+
+    if (!T) {
+      console.error('🎾 MATCHROW ERROR: No T theme object');
+      return <div style={{padding: '10px', background: 'orange', color: 'white'}}>Missing theme object</div>;
+    }
+
+    // console.log('🎾 MATCHROW: About to render main component');
+  } catch (err) {
+    console.error('🎾 MATCHROW ERROR in validation:', err);
+    return <div style={{padding: '10px', background: 'purple', color: 'white'}}>Error: {err.message}</div>;
+  }
+
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const nameOf = (id) => playersById?.[id]?.name ?? id;
+  try {
+    const nameOf = (id) => playersById?.[id]?.name ?? id;
   const A = `${surnameOf(nameOf(m.teamA[0]))} & ${surnameOf(nameOf(m.teamA[1]))}`;
   const B = `${surnameOf(nameOf(m.teamB[0]))} & ${surnameOf(nameOf(m.teamB[1]))}`;
   const AFull = `${nameOf(m.teamA[0])} & ${nameOf(m.teamA[1])}`;
@@ -32,12 +66,7 @@ export default function MatchRow({
         month: "short",
       })
     : "";
-  const deltaVal = Math.round(m.pts ?? 0);
-  const deltaCls =
-    deltaVal >= 0
-      ? "text-emerald-600 dark:text-emerald-400"
-      : "text-rose-600 dark:text-rose-400";
-
+  
   // Calcoli per la formula
   const rA1 = playersById[m.teamA[0]]?.rating ?? DEFAULT_RATING;
   const rA2 = playersById[m.teamA[1]]?.rating ?? DEFAULT_RATING;
@@ -96,12 +125,17 @@ export default function MatchRow({
         </div>
         <div className="shrink-0 text-right flex items-center gap-2">
           <div>
-            <div className={`text-lg font-bold ${deltaCls}`}>
-              {deltaVal >= 0 ? "+" : ""}
-              {Math.abs(deltaVal)}
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+              Punti RPA
             </div>
-            <div className="text-[10px] text-gray-500 dark:text-gray-400">
-              punti
+            <div className="flex items-center gap-1 text-xs">
+              <span className={`font-bold ${Math.round(m.deltaA ?? 0) >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                A: {Math.round(m.deltaA ?? 0) >= 0 ? "+" : ""}{Math.round(m.deltaA ?? 0)}
+              </span>
+              <span className="text-gray-400">|</span>
+              <span className={`font-bold ${Math.round(m.deltaB ?? 0) >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                B: {Math.round(m.deltaB ?? 0) >= 0 ? "+" : ""}{Math.round(m.deltaB ?? 0)}
+              </span>
             </div>
           </div>
           <div className="text-gray-400 dark:text-gray-300 text-sm">
@@ -173,10 +207,17 @@ export default function MatchRow({
                 </div>
                 <div className="bg-white dark:bg-gray-600 p-2 rounded border dark:border-gray-500">
                   <strong>Risultato:</strong>{" "}
-                  <span className={`font-bold text-lg ${deltaCls}`}>
-                    {deltaVal >= 0 ? "+" : ""}
-                    {Math.abs(deltaVal)} punti
-                  </span>
+                  <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                    Punti RPA calcolati:
+                  </div>
+                  <div className="flex gap-3 text-sm">
+                    <span className={`font-bold ${Math.round(m.deltaA ?? 0) >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                      Team A: {Math.round(m.deltaA ?? 0) >= 0 ? "+" : ""}{Math.round(m.deltaA ?? 0)}
+                    </span>
+                    <span className={`font-bold ${Math.round(m.deltaB ?? 0) >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                      Team B: {Math.round(m.deltaB ?? 0) >= 0 ? "+" : ""}{Math.round(m.deltaB ?? 0)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -230,6 +271,15 @@ export default function MatchRow({
           </div>
         </div>
       )}
-    </div>
-  );
+      </div>
+    );
+  } catch (error) {
+    console.error('[MatchRow] Rendering error:', error);
+    return (
+      <div style={{ padding: '10px', border: '1px solid red', backgroundColor: '#ffe6e6' }}>
+        <p>Error rendering match: {error.message}</p>
+        <p>Match ID: {m?.id}</p>
+      </div>
+    );
+  }
 }

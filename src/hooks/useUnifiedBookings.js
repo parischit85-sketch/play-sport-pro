@@ -23,6 +23,7 @@ export function useUnifiedBookings(options = {}) {
     autoLoadUser = true,
     autoLoadLessons = true,
     enableRealtime = true,
+    clubId = null,
   } = options;
 
   // Initialize service
@@ -45,13 +46,14 @@ export function useUnifiedBookings(options = {}) {
 
         const allBookings = await UnifiedBookingService.getPublicBookings({
           forceRefresh,
+          clubId,
         });
         setBookings(allBookings);
 
         // Load user-specific bookings if user is available
         if (user && autoLoadUser) {
           const userBookingData =
-            await UnifiedBookingService.getUserBookings(user);
+            await UnifiedBookingService.getUserBookings(user, { clubId });
           setUserBookings(userBookingData);
         }
 
@@ -67,7 +69,7 @@ export function useUnifiedBookings(options = {}) {
         setLoading(false);
       }
     },
-    [user, autoLoadUser, autoLoadLessons],
+    [user, autoLoadUser, autoLoadLessons, clubId],
   );
 
   // Load bookings on mount and user change
@@ -79,9 +81,11 @@ export function useUnifiedBookings(options = {}) {
   useEffect(() => {
     if (!enableRealtime) return;
 
+    const subKeyPrefix = `public|${clubId||'all'}`;
     const unsubscribeUpdated = UnifiedBookingService.addEventListener(
       "bookingsUpdated",
       (data) => {
+        if (!data?.type || !data.type.startsWith(subKeyPrefix)) return; // ignora altri club
         setBookings(data.bookings);
       },
     );
@@ -115,8 +119,9 @@ export function useUnifiedBookings(options = {}) {
       try {
         setLoading(true);
         const result = await UnifiedBookingService.createBooking(
-          bookingData,
+          { ...bookingData, clubId: clubId || bookingData.clubId },
           user,
+          { clubId },
         );
 
         // Refresh data
@@ -130,7 +135,7 @@ export function useUnifiedBookings(options = {}) {
         setLoading(false);
       }
     },
-    [user, loadBookings],
+    [user, loadBookings, clubId],
   );
 
   const updateBooking = useCallback(
@@ -297,8 +302,9 @@ export function useCourtBookings() {
 /**
  * Hook for lesson bookings only
  */
-export function useLessonBookings() {
+export function useLessonBookings(options = {}) {
   const { user } = useAuth(); // Aggiungi il context dell'utente
+  const { clubId = null } = options;
   const {
     lessonBookings,
     loading,
@@ -309,6 +315,7 @@ export function useLessonBookings() {
   } = useUnifiedBookings({
     autoLoadUser: true,
     autoLoadLessons: true,
+    clubId, // Passa il clubId al servizio unificato
   });
 
   const createLessonBooking = useCallback(

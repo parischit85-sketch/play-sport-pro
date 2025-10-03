@@ -7,6 +7,7 @@ import {
   connectFirestoreEmulator,
 } from "firebase/firestore";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getStorage, connectStorageEmulator } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -41,6 +42,7 @@ const db = initializeFirestore(app, {
   useFetchStreams: false,
 });
 const auth = getAuth(app);
+const storage = getStorage(app);
 
 // Imposta la lingua dell'interfaccia utente
 if (auth.useDeviceLanguage) {
@@ -55,6 +57,7 @@ if (
   try {
     connectAuthEmulator(auth, "http://127.0.0.1:9099");
     connectFirestoreEmulator(db, "127.0.0.1", 8080);
+    connectStorageEmulator(storage, "127.0.0.1", 9199);
   } catch (error) {
     // Firebase emulators already connected or not available
   }
@@ -82,4 +85,4 @@ try {
   /* no-op */
 }
 
-export { app, db, auth };
+export { app, db, auth, storage };

@@ -1,10 +1,13 @@
 // =============================================
 // FILE: src/components/ui/BookingDetailModal.jsx
 // =============================================
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Modal from "@ui/Modal.jsx";
 import Badge from "@ui/Badge.jsx";
 import { BOOKING_CONFIG } from "@services/bookings.js";
+import { searchUsers } from "@services/users.js";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@services/firebase.js";
 
 export default function BookingDetailModal({
   booking,
@@ -20,6 +23,48 @@ export default function BookingDetailModal({
   const [isEditingPlayers, setIsEditingPlayers] = useState(false);
   const [editedPlayers, setEditedPlayers] = useState(booking?.players || []);
   const [newPlayerName, setNewPlayerName] = useState("");
+  const [clubInfo, setClubInfo] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  // Carica info del club
+  useEffect(() => {
+    const loadClubInfo = async () => {
+      if (booking?.clubId) {
+        try {
+          const clubDoc = await getDoc(doc(db, 'clubs', booking.clubId));
+          if (clubDoc.exists()) {
+            setClubInfo({ id: clubDoc.id, ...clubDoc.data() });
+          }
+        } catch (error) {
+          console.error('Error loading club info:', error);
+        }
+      }
+    };
+    loadClubInfo();
+  }, [booking?.clubId]);
+
+  // Ricerca utenti quando l'utente digita
+  const handleSearchUsers = useCallback(async (searchTerm) => {
+    if (searchTerm.length < 2) {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    setIsSearching(true);
+    setShowSearchResults(true);
+    try {
+      const results = await searchUsers(searchTerm, 10);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Error searching users:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
 
   if (!booking) return null;
 
@@ -61,7 +106,19 @@ export default function BookingDetailModal({
   // Funzioni per l'editing
   const handleSaveChanges = () => {
     if (onEdit && editedPlayers !== booking.players) {
-      onEdit({ ...booking, players: editedPlayers });
+      // Normalizza i players: converti gli oggetti in stringhe
+      const normalizedPlayers = editedPlayers.map(player => {
+        if (typeof player === 'string') {
+          return player;
+        }
+        if (typeof player === 'object' && player !== null) {
+          return player.name || player.email || String(player);
+        }
+        return String(player);
+      });
+      
+      const bookingToUpdate = { ...booking, players: normalizedPlayers };
+      onEdit(bookingToUpdate);
     }
     setIsEditingPlayers(false);
   };
@@ -111,6 +168,37 @@ export default function BookingDetailModal({
       size="md"
     >
       <div className="space-y-6">
+        {/* Club info in cima */}
+        {clubInfo && (
+          <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl p-4 border-2 border-gray-200/50 dark:border-gray-700/50 shadow-lg">
+            <div className="flex items-center gap-4">
+              {/* Logo del club */}
+              {clubInfo.logoUrl ? (
+                <img
+                  src={clubInfo.logoUrl}
+                  alt={clubInfo.name}
+                  className="w-16 h-16 rounded-xl object-cover shadow-md border-2 border-white dark:border-gray-700"
+                />
+              ) : (
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md border-2 border-white dark:border-gray-700">
+                  <span className="text-2xl">🎾</span>
+                </div>
+              )}
+              {/* Nome e indirizzo club */}
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">
+                  {clubInfo.name}
+                </h3>
+                {clubInfo.location && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                    📍 {clubInfo.location.city}{clubInfo.location.region && `, ${clubInfo.location.region}`}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header compatto */}
         <div className={`bg-gradient-to-br ${isLessonBooking ? 'from-green-500/90 to-green-600/90' : 'from-blue-500/90 to-blue-600/90'} backdrop-blur-xl rounded-2xl p-6 text-white shadow-lg ${isLessonBooking ? 'shadow-green-100/30 dark:shadow-green-900/20' : 'shadow-blue-100/30 dark:shadow-blue-900/20'}`}>
           <div className="flex items-center justify-between mb-3">
@@ -122,7 +210,7 @@ export default function BookingDetailModal({
                 <h2 className="font-bold text-xl">
                   {isLessonBooking 
                     ? (booking.lessonType || 'Lezione di Tennis')
-                    : (court?.name || `Campo ${booking.courtId}`)
+                    : (booking.courtName || court?.name || 'Campo da Gioco')
                   }
                 </h2>
                 <div className="text-white/90 text-sm">
@@ -278,8 +366,8 @@ export default function BookingDetailModal({
 
             {/* Altri giocatori */}
             {isEditingPlayers ? (
-              /* Modalità editing - Stile come conferma prenotazione */
-              <div className="space-y-3">
+              /* Modalità editing - Ridisegnata completamente */
+              <div className="space-y-4 pb-4">
                 {/* Giocatori esistenti (modificabili) */}
                 {editedPlayers &&
                   editedPlayers.length > 1 &&
@@ -327,76 +415,131 @@ export default function BookingDetailModal({
                     </div>
                   ))}
 
-                {/* Aggiungi nuovo giocatore */}
+                {/* Aggiungi nuovo giocatore - Sezione separata */}
                 {editedPlayers.length < 4 && (
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
-                      value={newPlayerName}
-                      onChange={(e) => setNewPlayerName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          const newPlayers = editedPlayers
-                            ? [...editedPlayers]
-                            : [
-                                booking.userName ||
-                                  booking.userEmail ||
-                                  "Organizzatore",
-                              ];
+                  <div className="mt-6 pt-6 border-t-2 border-dashed border-gray-300 dark:border-gray-600">
+                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      ➕ Aggiungi giocatore
+                    </h4>
+                    
+                    {/* Input e bottone sulla stessa riga */}
+                    <div className="flex gap-3">
+                      <div className="relative flex-1">
+                        <input
+                          type="text"
+                          value={newPlayerName}
+                          onChange={(e) => {
+                            setNewPlayerName(e.target.value);
+                            handleSearchUsers(e.target.value);
+                          }}
+                          onFocus={() => {
+                            if (newPlayerName.length >= 2) {
+                              setShowSearchResults(true);
+                            }
+                          }}
+                          onBlur={() => {
+                            // Delay per permettere il click sui risultati
+                            setTimeout(() => setShowSearchResults(false), 200);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Escape") {
+                              setShowSearchResults(false);
+                            }
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              if (newPlayerName.trim()) {
+                                const newPlayers = [...editedPlayers];
+                                newPlayers.push({
+                                  name: newPlayerName.trim(),
+                                  id: Date.now(),
+                                });
+                                setEditedPlayers(newPlayers);
+                                setNewPlayerName("");
+                                setShowSearchResults(false);
+                              }
+                            }
+                          }}
+                          placeholder="🔍 Cerca per nome, email o telefono..."
+                          className="w-full p-3 bg-white dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900/50 outline-none transition-all"
+                        />
+                        
+                        {/* Dropdown risultati - Posizionamento assoluto migliorato */}
+                        {showSearchResults && newPlayerName.length >= 2 && (
+                          <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-[9999] bg-white dark:bg-gray-800 rounded-lg shadow-2xl border-2 border-blue-500 dark:border-blue-400 max-h-64 overflow-y-auto">
+                            {isSearching ? (
+                              <div className="p-4 text-center">
+                                <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Ricerca...</p>
+                              </div>
+                            ) : searchResults.length > 0 ? (
+                              <div className="py-1">
+                                {searchResults.map((user) => (
+                                  <button
+                                    key={user.uid}
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      const newPlayers = [...editedPlayers];
+                                      newPlayers.push({
+                                        name: user.displayName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email,
+                                        email: user.email,
+                                        phone: user.phone,
+                                        uid: user.uid,
+                                        id: user.uid,
+                                      });
+                                      setEditedPlayers(newPlayers);
+                                      setNewPlayerName("");
+                                      setShowSearchResults(false);
+                                      setSearchResults([]);
+                                    }}
+                                    className="w-full px-3 py-2 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors flex items-center gap-3 text-left"
+                                  >
+                                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                      <span className="text-white text-xs font-bold">
+                                        {(user.displayName || user.firstName || user.email)?.charAt(0).toUpperCase()}
+                                      </span>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                        {user.displayName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Utente'}
+                                      </div>
+                                      <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                        {user.email}
+                                      </div>
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="p-4 text-center">
+                                <div className="text-2xl mb-1">🔍</div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Nessun utente trovato</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <button
+                        onClick={() => {
                           if (newPlayerName.trim()) {
+                            const newPlayers = [...editedPlayers];
                             newPlayers.push({
                               name: newPlayerName.trim(),
                               id: Date.now(),
                             });
                             setEditedPlayers(newPlayers);
                             setNewPlayerName("");
+                            setShowSearchResults(false);
                           }
-                        }
-                      }}
-                      placeholder="Nome nuovo giocatore"
-                      className="flex-1 p-4 bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm border-2 border-white/30 dark:border-gray-600/30 rounded-xl text-sm focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors shadow-sm"
-                    />
-                    <button
-                      onClick={() => {
-                        const newPlayers = editedPlayers
-                          ? [...editedPlayers]
-                          : [
-                              booking.userName ||
-                                booking.userEmail ||
-                                "Organizzatore",
-                            ];
-                        if (newPlayerName.trim()) {
-                          newPlayers.push({
-                            name: newPlayerName.trim(),
-                            id: Date.now(),
-                          });
-                          setEditedPlayers(newPlayers);
-                          setNewPlayerName("");
-                        }
-                      }}
-                      disabled={!newPlayerName.trim()}
-                      className="px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                    >
-                      Aggiungi
-                    </button>
+                        }}
+                        disabled={!newPlayerName.trim()}
+                        className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg whitespace-nowrap"
+                      >
+                        ➕ Aggiungi
+                      </button>
+                    </div>
                   </div>
                 )}
-
-                {/* Pulsanti di controllo editing */}
-                <div className="flex gap-3 mt-5 pt-4 border-t border-white/20 dark:border-gray-700/20">
-                  <button
-                    onClick={handleSaveChanges}
-                    className="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-4 rounded-xl text-sm font-medium hover:from-green-700 hover:to-green-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                  >
-                    💾 Salva Modifiche
-                  </button>
-                  <button
-                    onClick={handleCancelEdit}
-                    className="flex-1 bg-gradient-to-r from-gray-500 to-gray-600 text-white py-3 px-4 rounded-xl text-sm font-medium hover:from-gray-600 hover:to-gray-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                  >
-                    ❌ Annulla
-                  </button>
-                </div>
               </div>
             ) : (
               /* Modalità visualizzazione normale */

@@ -7,26 +7,14 @@ export default function NavTabs({
   active,
   setActive,
   clubMode,
+  userRole,
+  currentClub,
   T,
   user,
   navigation,
 }) {
-  // Use provided navigation or fallback to default tabs
-  const tabs = navigation || [
-    { id: "classifica", label: "Classifica" },
-    { id: "stats", label: "Statistiche" },
-    { id: "prenota-campo", label: "Prenota Campo" },
-    ...(clubMode
-      ? [
-          { id: "giocatori", label: "Giocatori" },
-          { id: "crea", label: "Crea Partita" },
-          { id: "prenota", label: "Gestione Campi" },
-          { id: "tornei", label: "Crea Tornei" },
-        ]
-      : []),
-    { id: user ? "profile" : "auth", label: user ? "Profilo" : "Accedi" },
-    { id: "extra", label: "Extra" },
-  ];
+  // Use provided navigation array directly since it's already configured in AppLayout
+  const tabs = navigation || [];
 
   return (
     <nav className="hidden md:flex gap-1">
@@ -34,7 +22,16 @@ export default function NavTabs({
         <button
           key={t.id}
           type="button"
-          onClick={() => setActive(t.id)}
+          onClick={() => {
+            console.log('🔘 [NavTabs] Tab clicked:', {
+              tabId: t.id,
+              label: t.label,
+              path: t.path,
+              currentActive: active,
+              timestamp: new Date().toISOString()
+            });
+            setActive(t.id);
+          }}
           className={`px-3 py-1.5 rounded-xl text-sm transition ring-1 ${active === t.id ? T.btnPrimary : T.ghostRing}`}
           aria-current={active === t.id ? "page" : undefined}
         >

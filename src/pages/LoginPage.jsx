@@ -1,13 +1,23 @@
 // FILE: src/pages/LoginPage.jsx
 // =============================================
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { themeTokens, LOGO_URL } from "@lib/theme.js";
 import AuthPanel from "@features/auth/AuthPanel.jsx";
 import { useAuth } from "@contexts/AuthContext.jsx";
 
 export default function LoginPage() {
-  const { user, userProfile, setUserProfile } = useAuth();
+  const { user, userProfile, setUserProfile, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const T = React.useMemo(() => themeTokens(), []);
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log('🔄 [LoginPage] User already authenticated, redirecting to dashboard');
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   return (
     <div className={`min-h-screen ${T.pageBg} ${T.text}`}>

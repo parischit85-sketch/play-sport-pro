@@ -14,7 +14,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
   const [selectedTopCount, setSelectedTopCount] = useState(3);
   const [showAllPlayers, setShowAllPlayers] = useState(false);
 
-  // Classifica generale (RPA)
+  // Classifica generale (RPA) - RIPRISTINATO: usa rating calcolati dinamicamente
   const rows = useMemo(
     () =>
       [...players]

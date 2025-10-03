@@ -1,4 +1,4 @@
-// =============================================
+﻿// =============================================
 // FILE: src/utils/health-check.js
 // =============================================
 
@@ -27,24 +27,28 @@ export function checkBrowserCompatibility() {
   const features = {
     "ES6 Support": () => {
       try {
-        eval("const test = () => {}");
-        return true;
-      } catch {
+        // Check for ES6 features more safely
+        return typeof Symbol !== 'undefined' && 
+               typeof Map !== 'undefined' && 
+               typeof Set !== 'undefined' &&
+               typeof Promise !== 'undefined';
+      } catch (e) {
         return false;
       }
     },
     LocalStorage: () => {
       try {
-        localStorage.setItem("test", "test");
-        localStorage.removeItem("test");
+        const test = "__storage_test__";
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
         return true;
-      } catch {
+      } catch (e) {
         return false;
       }
     },
-    "Fetch API": () => typeof fetch !== "undefined",
-    "History API": () => typeof history?.pushState === "function",
-    "Promise Support": () => typeof Promise !== "undefined",
+    "Fetch API": () => typeof window.fetch === "function",
+    "History API": () => typeof window.history?.pushState === "function",
+    "Promise Support": () => typeof Promise === "function",
   };
 
   const results = {};

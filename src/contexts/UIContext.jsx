@@ -2,6 +2,9 @@
 // FILE: src/contexts/UIContext.jsx
 // =============================================
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext.jsx";
+import PerformanceDashboard from "../components/debug/PerformanceDashboard.jsx";
+import DatabaseDashboard from "../components/debug/DatabaseDashboard.jsx";
 
 const UIContext = createContext(null);
 
@@ -14,6 +17,8 @@ export const useUI = () => {
 };
 
 export function UIProvider({ children }) {
+  const auth = useAuth();
+  
   // Theme management
   const [darkMode, setDarkMode] = useState(() => {
     try {
@@ -37,6 +42,34 @@ export function UIProvider({ children }) {
       return false;
     }
   });
+
+  // Auto-attiva clubMode per admin di club e super admin
+  useEffect(() => {
+    if (!auth || !auth.user) return;
+    
+    const isAdmin = auth.userRole === 'super_admin' || auth.isClubAdmin();
+    
+    // console.log("🔍 UIContext clubMode auto-activation check:", {
+    //   userRole: auth.userRole,
+    //   isClubAdmin: auth.isClubAdmin(),
+    //   isAdmin,
+    //   currentClubMode: clubMode
+    // });
+    
+    // SICUREZZA: Solo amministratori reali possono attivare la modalità club
+    if (isAdmin && !clubMode) {
+      console.log("✅ Auto-activating club mode for admin user");
+      sessionStorage.setItem("ml-extra-unlocked", "1");
+      sessionStorage.setItem("ml-club-mode", "1");
+      setClubMode(true);
+    } else if (!isAdmin && clubMode) {
+      // Se un utente non admin ha la modalità club attiva, disattivarla
+      console.log("🔒 Disabling club mode for non-admin user");
+      sessionStorage.removeItem("ml-club-mode");
+      sessionStorage.removeItem("ml-extra-unlocked");
+      setClubMode(false);
+    }
+  }, [auth?.user, auth?.userRole, auth?.userAffiliations, clubMode]);
 
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -112,5 +145,30 @@ export function UIProvider({ children }) {
     hideModal,
   };
 
-  return <UIContext.Provider value={value}>{children}</UIContext.Provider>;
+  return (
+    <UIContext.Provider value={value}>
+      {children}
+      {/* Performance Dashboard for development and debugging */}
+      {(import.meta.env.DEV || auth?.userRole === 'super_admin') && (
+        <>
+          <PerformanceDashboard T={getTheme(darkMode)} />
+          <div className="mt-4">
+            <DatabaseDashboard />
+          </div>
+        </>
+      )}
+    </UIContext.Provider>
+  );
 }
+
+// Helper function to get theme classes (simplified)
+const getTheme = (isDark) => ({
+  cardBg: isDark ? 'bg-gray-800' : 'bg-white',
+  border: isDark ? 'border-gray-700' : 'border-gray-200',
+  btnSecondary: isDark 
+    ? 'bg-gray-700 hover:bg-gray-600 text-gray-200 border border-gray-600' 
+    : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300',
+  btnGhost: isDark 
+    ? 'hover:bg-gray-700 text-gray-300' 
+    : 'hover:bg-gray-100 text-gray-600'
+});

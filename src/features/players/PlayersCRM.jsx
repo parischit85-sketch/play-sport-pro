@@ -22,6 +22,9 @@ export default function PlayersCRM({
   onOpenStats,
   playersById,
   T,
+  onAddPlayer,
+  onUpdatePlayer,
+  onDeletePlayer,
 }) {
   const { user } = useAuth();
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
@@ -76,57 +79,71 @@ export default function PlayersCRM({
     return { total, members, active, withAccount };
   }, [players]);
 
-  const handleAddPlayer = (playerData) => {
-    const newPlayer = {
-      ...createPlayerSchema(),
-      ...playerData,
-      id: uid(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    setState((s) => {
-      const cur = Array.isArray(s?.players) ? s.players : [];
-      return {
-        ...(s || { players: [], matches: [] }),
-        players: [...cur, newPlayer],
+  const handleAddPlayer = async (playerData) => {
+    if (onAddPlayer) {
+      await onAddPlayer(playerData);
+    } else {
+      // Fallback to local state if no Firebase function provided
+      const newPlayer = {
+        ...createPlayerSchema(),
+        ...playerData,
+        id: uid(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
-    });
+
+      setState((s) => {
+        const cur = Array.isArray(s?.players) ? s.players : [];
+        return {
+          ...(s || { players: [], matches: [] }),
+          players: [...cur, newPlayer],
+        };
+      });
+    }
 
     setShowPlayerForm(false);
   };
 
-  const handleUpdatePlayer = (playerId, updates) => {
-    setState((s) => {
-      const cur = Array.isArray(s?.players) ? s.players : [];
-      return {
-        ...(s || { players: [], matches: [] }),
-        players: cur.map((p) =>
-          p.id === playerId
-            ? { ...p, ...updates, updatedAt: new Date().toISOString() }
-            : p,
-        ),
-      };
-    });
+  const handleUpdatePlayer = async (playerId, updates) => {
+    if (onUpdatePlayer) {
+      await onUpdatePlayer(playerId, updates);
+    } else {
+      // Fallback to local state if no Firebase function provided
+      setState((s) => {
+        const cur = Array.isArray(s?.players) ? s.players : [];
+        return {
+          ...(s || { players: [], matches: [] }),
+          players: cur.map((p) =>
+            p.id === playerId
+              ? { ...p, ...updates, updatedAt: new Date().toISOString() }
+              : p,
+          ),
+        };
+      });
+    }
   };
 
-  const handleDeletePlayer = (playerId) => {
-    if (
-      !confirm(
-        "Sei sicuro di voler eliminare questo giocatore? Questa azione non può essere annullata.",
-      )
-    ) {
-      return;
+  const handleDeletePlayer = async (playerId) => {
+    if (onDeletePlayer) {
+      await onDeletePlayer(playerId);
+    } else {
+      // Fallback to local state if no Firebase function provided
+      if (
+        !confirm(
+          "Sei sicuro di voler eliminare questo giocatore? Questa azione non può essere annullata.",
+        )
+      ) {
+        return;
+      }
+
+      setState((s) => {
+        const cur = Array.isArray(s?.players) ? s.players : [];
+        return {
+          ...(s || { players: [], matches: [] }),
+          players: cur.filter((p) => p.id !== playerId),
+        };
+      });
     }
-
-    setState((s) => {
-      const cur = Array.isArray(s?.players) ? s.players : [];
-      return {
-        ...(s || { players: [], matches: [] }),
-        players: cur.filter((p) => p.id !== playerId),
-      };
-    });
-
     setSelectedPlayerId(null);
   };
 

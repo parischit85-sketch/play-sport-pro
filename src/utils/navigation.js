@@ -60,9 +60,10 @@ export function getRedirectPath(location, isAuthenticated) {
     return from && from !== "/login" ? from : "/dashboard";
   }
 
-  // If on root, redirect to dashboard
+  // Allow authenticated users to stay on landing page (/) - don't redirect to dashboard
+  // This allows logged-in users to view the landing page if they want to
   if (currentPath === "/") {
-    return "/dashboard";
+    return null; // Don't redirect
   }
 
   return null;

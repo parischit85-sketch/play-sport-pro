@@ -3,7 +3,6 @@
 // =============================================
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@contexts/AuthContext.jsx";
-import { useLeague } from "@contexts/LeagueContext.jsx";
 import {
   createBooking,
   getPublicBookings,
@@ -17,7 +16,6 @@ const requestCache = new Map();
 
 export function useBookings() {
   const { user } = useAuth();
-  const { state, setState } = useLeague();
 
   const [publicBookings, setPublicBookings] = useState([]);
   const [userBookings, setUserBookings] = useState([]);
@@ -90,34 +88,7 @@ export function useBookings() {
         setLoading(true);
         const newBooking = await createBooking(bookingData, user);
 
-        // Update local state optimistically
-        if (state && setState) {
-          const toAppBooking = {
-            id: newBooking.id,
-            courtId: newBooking.courtId,
-            start: new Date(
-              `${newBooking.date}T${newBooking.time}:00`,
-            ).toISOString(),
-            duration: newBooking.duration,
-            players: [],
-            playerNames: [user.displayName || user.email],
-            guestNames: [],
-            price: newBooking.price,
-            note: newBooking.notes || "",
-            bookedByName: user.displayName || user.email,
-            addons: {
-              lighting: newBooking.lighting,
-              heating: newBooking.heating,
-            },
-            status: "booked",
-            createdAt: Date.now(),
-          };
-
-          setState((s) => ({
-            ...s,
-            bookings: [...(s.bookings || []), toAppBooking],
-          }));
-        }
+        // Rimosso aggiornamento ottimistico legacy (multi-club usa unified bookings)
 
         // Refresh data
         await Promise.all([loadPublicBookings(), loadUserBookings()]);
@@ -132,7 +103,7 @@ export function useBookings() {
         setLoading(false);
       }
     },
-    [user, state, setState, loadPublicBookings, loadUserBookings],
+  [user, loadPublicBookings, loadUserBookings],
   );
 
   // Cancel booking
@@ -144,13 +115,7 @@ export function useBookings() {
         setLoading(true);
         await cancelBooking(bookingId, user.uid);
 
-        // Update local state optimistically
-        if (state && setState) {
-          setState((s) => ({
-            ...s,
-            bookings: s.bookings?.filter((b) => b.id !== bookingId) || [],
-          }));
-        }
+        // Rimosso aggiornamento ottimistico legacy
 
         // Refresh data
         await Promise.all([loadPublicBookings(), loadUserBookings()]);
@@ -164,7 +129,7 @@ export function useBookings() {
         setLoading(false);
       }
     },
-    [user, state, setState, loadPublicBookings, loadUserBookings],
+  [user, loadPublicBookings, loadUserBookings],
   );
 
   // Load initial data con throttling

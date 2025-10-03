@@ -5,7 +5,7 @@
 
 import React, { useMemo, useState } from "react";
 import { listAllUserProfiles } from "@services/auth.jsx";
-import { useLeague } from "@contexts/LeagueContext.jsx";
+import { useClub } from '@contexts/ClubContext.jsx';
 import { DEFAULT_RATING } from "@lib/ids.js";
 import { PLAYER_CATEGORIES } from "../types/playerTypes.js";
 import PlayerNotes from "./PlayerNotes";
@@ -20,12 +20,12 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
   const [accountSearch, setAccountSearch] = useState("");
   const [accounts, setAccounts] = useState([]);
   const [loadingAccounts, setLoadingAccounts] = useState(false);
-  const { state } = useLeague();
+  const { players: clubPlayers } = useClub();
 
   const linkedEmailsSet = useMemo(
     () =>
       new Set(
-        (state?.players || [])
+  (clubPlayers || [])
           .filter(
             (p) =>
               p.id !== player.id && (p.isAccountLinked || p.linkedAccountEmail),
@@ -33,12 +33,12 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
           .map((p) => (p.linkedAccountEmail || "").toLowerCase())
           .filter(Boolean),
       ),
-    [state?.players, player.id],
+  [clubPlayers, player.id],
   );
   const linkedIdsSet = useMemo(
     () =>
       new Set(
-        (state?.players || [])
+  (clubPlayers || [])
           .filter(
             (p) =>
               p.id !== player.id && (p.isAccountLinked || p.linkedAccountId),
@@ -46,7 +46,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
           .map((p) => p.linkedAccountId)
           .filter(Boolean),
       ),
-    [state?.players, player.id],
+  [clubPlayers, player.id],
   );
 
   const unlinkedAccounts = useMemo(() => {

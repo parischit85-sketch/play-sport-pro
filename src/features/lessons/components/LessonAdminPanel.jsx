@@ -2,7 +2,7 @@
 // FILE: src/features/lessons/components/LessonAdminPanel.jsx
 // Pannello amministrazione per la gestione delle lezioni
 // =============================================
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Section from "@ui/Section.jsx";
 import Badge from "@ui/Badge.jsx";
 import Modal from "@ui/Modal.jsx";
@@ -11,6 +11,7 @@ import {
   createLessonTimeSlotSchema,
   PLAYER_CATEGORIES,
 } from "@features/players/types/playerTypes.js";
+import { useClub } from "@contexts/ClubContext.jsx";
 
 export default function LessonAdminPanel({
   T,
@@ -19,13 +20,37 @@ export default function LessonAdminPanel({
   updateLessonConfig,
   instructors,
   players,
-  setState,
-  state,
   courts,
   onClearAllLessons,
   lessonBookingsCount,
 }) {
+  const { updatePlayer } = useClub();
   const [activeSection, setActiveSection] = useState("config");
+  
+  // Debug logging per vedere i dati caricati
+  console.log("📚 === LESSON ADMIN PANEL - DATI CARICATI ===");
+  console.log("🎯 lessonConfig:", JSON.stringify(lessonConfig, null, 2));
+  console.log("👨‍🏫 instructors:", JSON.stringify(instructors, null, 2));
+  console.log("🎾 courts:", JSON.stringify(courts, null, 2));
+  
+  if (lessonConfig?.timeSlots) {
+    console.log("⏰ FASCE ORARIE ESISTENTI:");
+    lessonConfig.timeSlots.forEach((slot, index) => {
+      console.log(`📋 FASCIA ${index + 1}:`, {
+        id: slot.id,
+        instructorId: slot.instructorId,
+        instructor: slot.instructor,
+        courtId: slot.courtId,
+        courtIds: slot.courtIds,
+        court: slot.court,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        isActive: slot.isActive,
+        selectedDates: slot.selectedDates,
+        allFields: Object.keys(slot)
+      });
+    });
+  }
   const [showTimeSlotModal, setShowTimeSlotModal] = useState(false);
   const [editingTimeSlot, setEditingTimeSlot] = useState(null);
   const [showInstructorModal, setShowInstructorModal] = useState(false);
@@ -62,6 +87,93 @@ export default function LessonAdminPanel({
     );
   }, [potentialInstructors, instructorSearch]);
 
+  // Utility functions for time slot management
+  const isTimeSlotExpired = (slot) => {
+    if (!slot.selectedDates || slot.selectedDates.length === 0) return false;
+    if (!slot.endTime) return false; // Se non c'è orario di fine, non può essere scaduta
+    
+    const latestDate = slot.selectedDates
+      .map(date => new Date(date))
+      .sort((a, b) => b - a)[0]; // Get the latest date
+    
+    const now = new Date();
+    
+    // Combina la data più recente con l'orario di fine
+    const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
+    const endDateTime = new Date(latestDate);
+    endDateTime.setHours(endHours, endMinutes, 0, 0);
+    
+    // La fascia è scaduta solo se l'orario di fine è già passato
+    return endDateTime < now;
+  };
+
+  const isTimeSlotExpiredForWeek = (slot) => {
+    if (!slot.selectedDates || slot.selectedDates.length === 0) return false;
+    if (!slot.endTime) return false;
+    
+    const latestDate = slot.selectedDates
+      .map(date => new Date(date))
+      .sort((a, b) => b - a)[0];
+    
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    // Combina la data più recente con l'orario di fine
+    const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
+    const endDateTime = new Date(latestDate);
+    endDateTime.setHours(endHours, endMinutes, 0, 0);
+    
+    // La fascia è scaduta da più di una settimana se l'orario di fine è passato da più di 7 giorni
+    return endDateTime < oneWeekAgo;
+  };
+
+  const sortTimeSlotsByDate = (slots) => {
+    return [...slots].sort((a, b) => {
+      const getEarliestDate = (slot) => {
+        if (!slot.selectedDates || slot.selectedDates.length === 0) {
+          return new Date('2099-12-31'); // Put slots without dates at the end
+        }
+        return new Date(Math.min(...slot.selectedDates.map(date => new Date(date))));
+      };
+      
+      const dateA = getEarliestDate(a);
+      const dateB = getEarliestDate(b);
+      
+      return dateA - dateB;
+    });
+  };
+
+  // Clean expired time slots automatically
+  useEffect(() => {
+    if (!lessonConfig.timeSlots || lessonConfig.timeSlots.length === 0) return;
+    
+    const expiredSlots = lessonConfig.timeSlots.filter(isTimeSlotExpiredForWeek);
+    
+    if (expiredSlots.length > 0) {
+      console.log(`🗑️ Auto-removing ${expiredSlots.length} expired time slots:`, expiredSlots);
+      
+      const cleanedTimeSlots = lessonConfig.timeSlots.filter(slot => !isTimeSlotExpiredForWeek(slot));
+      
+      updateLessonConfig({
+        ...lessonConfig,
+        timeSlots: cleanedTimeSlots,
+      });
+    }
+  }, [lessonConfig.timeSlots, updateLessonConfig]);
+
+  // Separate and sort time slots
+  const { activeTimeSlots, expiredTimeSlots } = useMemo(() => {
+    const allSlots = lessonConfig.timeSlots || [];
+    
+    const active = allSlots.filter(slot => !isTimeSlotExpired(slot));
+    const expired = allSlots.filter(slot => isTimeSlotExpired(slot) && !isTimeSlotExpiredForWeek(slot));
+    
+    return {
+      activeTimeSlots: sortTimeSlotsByDate(active),
+      expiredTimeSlots: sortTimeSlotsByDate(expired),
+    };
+  }, [lessonConfig.timeSlots]);
+
   // Handle enabling/disabling lesson system
   const toggleLessonSystem = () => {
     updateLessonConfig({
@@ -72,6 +184,13 @@ export default function LessonAdminPanel({
 
   // Handle time slot management
   const handleSaveTimeSlot = (timeSlotData) => {
+    console.log("� === SALVATAGGIO FASCIA ORARIA ===");
+    console.log("🔧 handleSaveTimeSlot - INPUT timeSlotData:", JSON.stringify(timeSlotData, null, 2));
+    console.log("🔧 handleSaveTimeSlot - courtIds:", timeSlotData.courtIds);
+    console.log("🔧 handleSaveTimeSlot - instructorId:", timeSlotData.instructorId);
+    console.log("🔧 handleSaveTimeSlot - instructor:", timeSlotData.instructor);
+    console.log("🔧 handleSaveTimeSlot - ALL FIELDS:", Object.keys(timeSlotData));
+    
     const updatedTimeSlots = editingTimeSlot
       ? (lessonConfig.timeSlots || []).map((slot) =>
           slot.id === editingTimeSlot.id ? { ...slot, ...timeSlotData } : slot,
@@ -80,6 +199,23 @@ export default function LessonAdminPanel({
           ...(lessonConfig.timeSlots || []),
           { ...createLessonTimeSlotSchema(), ...timeSlotData, id: uid() },
         ];
+
+    console.log("🔧 handleSaveTimeSlot - FINAL updatedTimeSlots:", JSON.stringify(updatedTimeSlots, null, 2));
+    
+    // Log della struttura completa di ogni fascia oraria salvata
+    updatedTimeSlots.forEach((slot, index) => {
+      console.log(`📋 SLOT ${index + 1}:`, {
+        id: slot.id,
+        instructorId: slot.instructorId,
+        instructor: slot.instructor,
+        courtId: slot.courtId,
+        courtIds: slot.courtIds,
+        court: slot.court,
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        allFields: Object.keys(slot)
+      });
+    });
 
     updateLessonConfig({
       ...lessonConfig,
@@ -102,52 +238,110 @@ export default function LessonAdminPanel({
   };
 
   // Handle instructor management
-  const handleSaveInstructor = (instructorData) => {
-    const updatedPlayers = (players || []).map((player) => {
-      if (player.id === editingPlayer.id) {
-        return {
-          ...player,
-          category: instructorData.isInstructor ? PLAYER_CATEGORIES.INSTRUCTOR : player.category,
-          instructorData: {
-            ...player.instructorData,
-            ...instructorData,
-          },
-        };
+  const handleSaveInstructor = async (instructorData) => {
+    if (!editingPlayer) return;
+
+    try {
+      // Prepara i dati dell'istruttore aggiornati
+      const updatedPlayerData = {
+        ...editingPlayer,
+        category: instructorData.isInstructor ? PLAYER_CATEGORIES.INSTRUCTOR : editingPlayer.category,
+        instructorData: {
+          ...editingPlayer.instructorData,
+          ...instructorData,
+        },
+      };
+
+      // Salva su Firebase tramite ClubContext
+      if (!updatePlayer) {
+        throw new Error("updatePlayer non disponibile - impossibile salvare su Firebase");
       }
-      return player;
-    });
+      
+      await updatePlayer(editingPlayer.id, updatedPlayerData);
+      console.log("✅ Istruttore aggiornato su Firebase:", updatedPlayerData);
 
-    setState((prev) => ({
-      ...prev,
-      players: updatedPlayers,
-    }));
-
-    setShowInstructorModal(false);
-    setEditingPlayer(null);
+      setShowInstructorModal(false);
+      setEditingPlayer(null);
+    } catch (error) {
+      console.error("❌ Errore durante l'aggiornamento dell'istruttore:", error);
+      alert("Errore durante il salvataggio delle modifiche. Riprova.");
+    }
   };
 
-  const handleRemoveInstructor = (playerId) => {
+  const handleActivateAllInstructors = async () => {
+    const inactiveInstructors = (players || []).filter(
+      p => p.category === PLAYER_CATEGORIES.INSTRUCTOR && 
+      (p.instructorData?.isInstructor === false || !p.instructorData?.isInstructor)
+    );
+    
+    if (inactiveInstructors.length === 0) {
+      alert("Tutti gli istruttori sono già attivi!");
+      return;
+    }
+    
+    if (confirm(`Vuoi attivare ${inactiveInstructors.length} istruttore/i inattivo/i?`)) {
+      try {
+        // Attiva ogni istruttore su Firebase
+        if (!updatePlayer) {
+          throw new Error("updatePlayer non disponibile - impossibile salvare su Firebase");
+        }
+        
+        for (const instructor of inactiveInstructors) {
+          const updatedInstructorData = {
+            ...instructor,
+            instructorData: {
+              isInstructor: true,
+              color: "#3B82F6",
+              specialties: [],
+              hourlyRate: 0,
+              priceSingle: 0,
+              priceCouple: 0,
+              priceThree: 0,
+              priceMatchLesson: 0,
+              bio: "",
+              certifications: [],
+              ...instructor.instructorData, // Mantieni i dati esistenti se ci sono
+            },
+          };
+          
+          await updatePlayer(instructor.id, updatedInstructorData);
+        }
+        alert(`${inactiveInstructors.length} istruttore/i attivato/i con successo!`);
+      } catch (error) {
+        console.error("❌ Errore durante l'attivazione degli istruttori:", error);
+        alert("Errore durante l'attivazione degli istruttori. Riprova.");
+      }
+    }
+  };
+
+  const handleRemoveInstructor = async (playerId) => {
     if (
       confirm("Sei sicuro di voler rimuovere questo giocatore come istruttore?")
     ) {
-      const updatedPlayers = (players || []).map((player) => {
-        if (player.id === playerId) {
-          return {
-            ...player,
-            category: PLAYER_CATEGORIES.MEMBER,
-            instructorData: {
-              ...player.instructorData,
-              isInstructor: false,
-            },
-          };
-        }
-        return player;
-      });
+      try {
+        const playerToUpdate = (players || []).find(p => p.id === playerId);
+        if (!playerToUpdate) return;
 
-      setState((prev) => ({
-        ...prev,
-        players: updatedPlayers,
-      }));
+        const updatedPlayerData = {
+          ...playerToUpdate,
+          category: PLAYER_CATEGORIES.MEMBER,
+          instructorData: {
+            ...playerToUpdate.instructorData,
+            isInstructor: false,
+          },
+        };
+
+        // Salva su Firebase tramite ClubContext
+        if (!updatePlayer) {
+          throw new Error("updatePlayer non disponibile - impossibile salvare su Firebase");
+        }
+        
+        await updatePlayer(playerId, updatedPlayerData);
+        console.log("✅ Istruttore rimosso su Firebase:", updatedPlayerData);
+      } catch (error) {
+        console.error("❌ Errore durante la rimozione dell'istruttore:", error);
+        alert("Errore durante la rimozione dell'istruttore. Riprova.");
+      }
     }
   };
 
@@ -296,14 +490,21 @@ export default function LessonAdminPanel({
                 + Aggiungi Fascia Oraria
               </button>{" "}
               {/* Time Slots List */}
-              {(lessonConfig.timeSlots || []).length === 0 ? (
+              {activeTimeSlots.length === 0 && expiredTimeSlots.length === 0 ? (
                 <div className={`text-center py-8 ${T.subtext}`}>
                   Nessuna fascia oraria configurata. Crea la prima fascia per
                   iniziare.
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {(lessonConfig.timeSlots || []).map((slot) => {
+                <div className="space-y-6">
+                  {/* Active Time Slots */}
+                  {activeTimeSlots.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                        ✅ Fasce Orarie Attive ({activeTimeSlots.length})
+                      </h3>
+                      <div className="space-y-3">
+                        {activeTimeSlots.map((slot) => {
                     // Support both old format (dayOfWeek) and new format (selectedDates)
                     let displayTitle = "";
                     let dateInfo = "";
@@ -379,6 +580,12 @@ export default function LessonAdminPanel({
                               <span>
                                 Istruttori: {availableInstructors.length}
                               </span>
+                              <span>
+                                Campi: {(slot.courtIds || []).length > 0 ? 
+                                  (courts || []).filter(court => (slot.courtIds || []).includes(court.id)).map(court => court.name).join(', ') || 
+                                  `${(slot.courtIds || []).length} selezionati`
+                                  : 'Nessuno'}
+                              </span>
                             </div>
 
                             {availableInstructors.length > 0 && (
@@ -425,6 +632,130 @@ export default function LessonAdminPanel({
                       </div>
                     );
                   })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Expired Time Slots */}
+                  {expiredTimeSlots.length > 0 && (
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                        ⏰ Fasce Orarie Scadute ({expiredTimeSlots.length})
+                        <span className="text-sm text-gray-500 dark:text-gray-500 font-normal">
+                          (si cancellano automaticamente dopo 1 settimana)
+                        </span>
+                      </h3>
+                      <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border-2 border-dashed border-gray-300 dark:border-gray-600">
+                        <div className="space-y-3">
+                          {expiredTimeSlots.map((slot) => {
+                            // Support both old format (dayOfWeek) and new format (selectedDates)
+                            let displayTitle = "";
+                            let dateInfo = "";
+
+                            if (slot.selectedDates && slot.selectedDates.length > 0) {
+                              // New format: specific dates
+                              const sortedDates = [...slot.selectedDates].sort();
+                              if (sortedDates.length === 1) {
+                                displayTitle = new Date(
+                                  sortedDates[0],
+                                ).toLocaleDateString("it-IT", {
+                                  weekday: "long",
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                });
+                              } else {
+                                displayTitle = `${sortedDates.length} date selezionate`;
+                                dateInfo = sortedDates
+                                  .slice(0, 3)
+                                  .map((date) =>
+                                    new Date(date).toLocaleDateString("it-IT"),
+                                  )
+                                  .join(", ");
+                                if (sortedDates.length > 3) {
+                                  dateInfo += ` +${sortedDates.length - 3} altre...`;
+                                }
+                              }
+                            } else if (slot.dayOfWeek) {
+                              // Old format: day of week (for backward compatibility)
+                              const dayName =
+                                weekDays.find((d) => d.value === slot.dayOfWeek)
+                                  ?.label || "Sconosciuto";
+                              displayTitle = dayName;
+                              dateInfo = "Ogni settimana";
+                            } else {
+                              displayTitle = "Configurazione non valida";
+                            }
+
+                            const availableInstructors = (instructors || []).filter(
+                              (i) => slot.instructorIds.includes(i.id),
+                            );
+
+                            return (
+                              <div
+                                key={slot.id}
+                                className={`${T.cardBg} ${T.border} rounded-lg p-4 opacity-60 relative`}
+                              >
+                                <div className="absolute top-2 right-2">
+                                  <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-full">
+                                    Scaduta
+                                  </span>
+                                </div>
+                                
+                                <div className="flex justify-between items-start">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-3 mb-2">
+                                      <h4 className={`${ds.h6} font-medium text-gray-600 dark:text-gray-400`}>
+                                        {displayTitle}
+                                      </h4>
+                                      <div
+                                        className={`px-2 py-1 rounded text-xs font-medium ${
+                                          slot.isActive
+                                            ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+                                            : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                                        }`}
+                                      >
+                                        {slot.isActive ? "Attiva" : "Disattiva"}
+                                      </div>
+                                    </div>
+
+                                    {dateInfo && (
+                                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                        {dateInfo}
+                                      </p>
+                                    )}
+
+                                    <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                      <span>
+                                        🕐 {slot.startTime} - {slot.endTime}
+                                      </span>
+                                      <span>📊 Max {slot.maxBookings} prenotazioni</span>
+                                      <span>
+                                        👨‍🏫{" "}
+                                        {availableInstructors.length > 0
+                                          ? availableInstructors.map((i) => i.name).join(", ")
+                                          : "Nessun istruttore"}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex gap-2 ml-4">
+                                    <button
+                                      onClick={() => handleDeleteTimeSlot(slot.id)}
+                                      className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                      title="Elimina fascia oraria"
+                                    >
+                                      🗑️
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -439,9 +770,21 @@ export default function LessonAdminPanel({
             <div className="space-y-6">
               {/* Current Instructors */}
               <div>
-                <h3 className={`${ds.h6} font-medium mb-3`}>
-                  Tutti gli Istruttori ({instructors.length} attivi, {(players || []).filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR && !p.instructorData?.isInstructor).length} disattivati)
-                </h3>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className={`${ds.h6} font-medium`}>
+                    Tutti gli Istruttori ({(players || []).filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR && (p.instructorData?.isInstructor !== false)).length} attivi, {(players || []).filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR && (p.instructorData?.isInstructor === false || !p.instructorData?.isInstructor)).length} disattivati)
+                  </h3>
+                  
+                  {/* Pulsante per attivare tutti gli istruttori inattivi */}
+                  {(players || []).filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR && (p.instructorData?.isInstructor === false || !p.instructorData?.isInstructor)).length > 0 && (
+                    <button
+                      onClick={handleActivateAllInstructors}
+                      className="px-3 py-1.5 text-green-600 dark:text-green-400 hover:text-white hover:bg-green-600 dark:hover:bg-green-500 border border-green-600 dark:border-green-400 rounded-lg transition-all duration-200 font-medium text-sm"
+                    >
+                      ✅ Attiva Tutti
+                    </button>
+                  )}
+                </div>
 
                 {/* Mostra tutti gli istruttori, sia attivi che disattivati */}
                 {(players || []).filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR).length === 0 ? (
@@ -794,7 +1137,7 @@ export default function LessonAdminPanel({
   );
 }
 
-// Time Slot Management Modal
+// Simplified Time Slot Management Modal
 function TimeSlotModal({
   isOpen,
   onClose,
@@ -806,25 +1149,58 @@ function TimeSlotModal({
   T,
   ds,
 }) {
-  const [formData, setFormData] = useState(() => ({
-    selectedDates: [], // Array of selected date strings in YYYY-MM-DD format
-    startTime: "09:00",
-    endTime: "10:00",
-    instructorIds: [],
-    courtIds: [], // Add court selection
-    maxBookings: 1,
+  const [formData, setFormData] = useState({
+    selectedDate: "", // Data specifica selezionata
+    instructorId: "", // Un solo istruttore
+    startTime: "14:00",
+    endTime: "15:00",
+    maxBookings: 5,
+    courtIds: [], // Tutti i campi selezionati di default
     isActive: true,
-    // Convert old dayOfWeek format if editing existing slot
-    ...(timeSlot && timeSlot.dayOfWeek
-      ? {
-          selectedDates: [], // Will need manual conversion for existing slots
-          ...timeSlot,
-        }
-      : timeSlot),
-  }));
+  });
 
   // Calendar functionality
   const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  // Initialize form data
+  useEffect(() => {
+    if (timeSlot) {
+      // For editing existing time slot
+      let selectedDate = "";
+      if (timeSlot.selectedDates && timeSlot.selectedDates.length > 0) {
+        selectedDate = timeSlot.selectedDates[0];
+      } else if (timeSlot.dayOfWeek !== undefined) {
+        // Create a date for the current week based on dayOfWeek
+        const today = new Date();
+        const currentDay = today.getDay();
+        const diff = timeSlot.dayOfWeek - currentDay;
+        const targetDate = new Date(today);
+        targetDate.setDate(today.getDate() + diff + (diff < 0 ? 7 : 0)); // Next occurrence of this day
+        selectedDate = targetDate.toISOString().split('T')[0];
+      }
+      
+      setFormData({
+        selectedDate,
+        instructorId: timeSlot.instructorIds?.[0] || "",
+        startTime: timeSlot.startTime || "14:00",
+        endTime: timeSlot.endTime || "15:00",
+        maxBookings: timeSlot.maxBookings || 5,
+        courtIds: timeSlot.courtIds || (courts ? courts.map(c => c.id) : []),
+        isActive: timeSlot.isActive !== undefined ? timeSlot.isActive : true,
+      });
+    } else {
+      // Reset form for new time slot - default all courts selected
+      setFormData({
+        selectedDate: "",
+        instructorId: "",
+        startTime: "14:00",
+        endTime: "15:00",
+        maxBookings: 5,
+        courtIds: courts ? courts.map(c => c.id) : [],
+        isActive: true,
+      });
+    }
+  }, [timeSlot, isOpen, courts]);
 
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -847,7 +1223,7 @@ function TimeSlotModal({
       days.push({
         day,
         dateStr,
-        isSelected: formData.selectedDates.includes(dateStr),
+        isSelected: formData.selectedDate === dateStr,
         isPast: new Date(dateStr) < new Date().setHours(0, 0, 0, 0),
       });
     }
@@ -855,13 +1231,8 @@ function TimeSlotModal({
     return days;
   };
 
-  const toggleDateSelection = (dateStr) => {
-    const isSelected = formData.selectedDates.includes(dateStr);
-    const newSelectedDates = isSelected
-      ? formData.selectedDates.filter((d) => d !== dateStr)
-      : [...formData.selectedDates, dateStr].sort();
-
-    setFormData({ ...formData, selectedDates: newSelectedDates });
+  const selectDate = (dateStr) => {
+    setFormData({ ...formData, selectedDate: dateStr });
   };
 
   const navigateMonth = (direction) => {
@@ -871,21 +1242,13 @@ function TimeSlotModal({
   };
 
   const monthNames = [
-    "Gennaio",
-    "Febbraio",
-    "Marzo",
-    "Aprile",
-    "Maggio",
-    "Giugno",
-    "Luglio",
-    "Agosto",
-    "Settembre",
-    "Ottobre",
-    "Novembre",
-    "Dicembre",
+    "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
+    "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
   ];
 
   const dayNames = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
+
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -900,13 +1263,13 @@ function TimeSlotModal({
       return;
     }
 
-    if (formData.selectedDates.length === 0) {
-      alert("Seleziona almeno una data dal calendario");
+    if (!formData.selectedDate) {
+      alert("Seleziona una data dal calendario");
       return;
     }
 
-    if (formData.instructorIds.length === 0) {
-      alert("Seleziona almeno un istruttore");
+    if (!formData.instructorId) {
+      alert("Seleziona un istruttore");
       return;
     }
 
@@ -915,7 +1278,21 @@ function TimeSlotModal({
       return;
     }
 
-    onSave(formData);
+    // Convert data to match the expected schema
+    const selectedDateObj = new Date(formData.selectedDate);
+    const timeSlotData = {
+      ...formData,
+      instructorIds: [formData.instructorId], // Convert single instructor to array
+      dayOfWeek: selectedDateObj.getDay(), // Convert date to day of week (0=Sunday, 1=Monday, etc.)
+      selectedDates: [formData.selectedDate], // Keep for backward compatibility
+    };
+    
+    // Remove the single instructorId as we now have instructorIds array
+    delete timeSlotData.instructorId;
+    delete timeSlotData.selectedDate;
+
+    console.log("🔧 DEBUG TimeSlotModal - Converted data:", timeSlotData);
+    onSave(timeSlotData);
   };
 
   return (
@@ -923,280 +1300,316 @@ function TimeSlotModal({
       isOpen={isOpen}
       onClose={onClose}
       title={timeSlot ? "Modifica Fascia Oraria" : "Aggiungi Fascia Oraria"}
-      size="medium"
+      size="extraLarge"
       T={T}
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Date Calendar Selector */}
-        <div>
-          <label className={`block ${ds.label} mb-2`}>Seleziona Date *</label>
-          <div className={`border rounded-lg p-4 ${T.border} ${T.cardBg}`}>
-            {/* Calendar Header */}
-            <div className="flex items-center justify-between mb-4">
-              <button
-                type="button"
-                onClick={() => navigateMonth(-1)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-              >
-                ←
-              </button>
-              <h3 className={`${ds.h6} font-medium`}>
-                {monthNames[currentMonth.getMonth()]}{" "}
-                {currentMonth.getFullYear()}
-              </h3>
-              <button
-                type="button"
-                onClick={() => navigateMonth(1)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-              >
-                →
-              </button>
-            </div>
-
-            {/* Day names header */}
-            <div className="grid grid-cols-7 gap-1 mb-2">
-              {dayNames.map((dayName) => (
-                <div
-                  key={dayName}
-                  className="text-center text-sm font-medium text-gray-500 p-2"
-                >
-                  {dayName}
-                </div>
-              ))}
-            </div>
-
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1">
-              {getDaysInMonth(currentMonth).map((dayData, index) => {
-                if (!dayData) {
-                  return <div key={index} className="p-2"></div>;
-                }
-
-                return (
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Main Layout - Two columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column - Calendar */}
+          <div className="space-y-4">
+            {/* Date Calendar Selector */}
+            <div>
+              <label className={`block ${ds.label} mb-3 text-lg font-semibold`}>📅 Seleziona Data *</label>
+              <div className={`border-2 rounded-lg p-4 ${T.border} bg-white dark:bg-gray-900 shadow-sm`}>
+                {/* Calendar Header */}
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
                   <button
-                    key={dayData.dateStr}
                     type="button"
-                    onClick={() =>
-                      !dayData.isPast && toggleDateSelection(dayData.dateStr)
-                    }
-                    disabled={dayData.isPast}
-                    className={`
-                      p-2 text-sm rounded border transition-colors
-                      ${
-                        dayData.isPast
-                          ? "text-gray-400 cursor-not-allowed"
-                          : "hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-                      }
-                      ${
-                        dayData.isSelected
-                          ? "bg-blue-500 text-white border-blue-500"
-                          : "border-gray-200 dark:border-gray-600"
-                      }
-                    `}
+                    onClick={() => navigateMonth(-1)}
+                    className="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 font-bold text-lg"
                   >
-                    {dayData.day}
+                    ←
                   </button>
-                );
-              })}
-            </div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 capitalize">
+                    {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => navigateMonth(1)}
+                    className="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 font-bold text-lg"
+                  >
+                    →
+                  </button>
+                </div>
 
-            {/* Selected dates summary */}
-            {formData.selectedDates.length > 0 && (
-              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p className="text-sm font-medium text-blue-700 dark:text-blue-300 mb-2">
-                  Date selezionate ({formData.selectedDates.length}):
-                </p>
-                <div className="flex flex-wrap gap-1">
-                  {formData.selectedDates.map((dateStr) => (
-                    <span
-                      key={dateStr}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 text-xs rounded"
+                {/* Day names header */}
+                <div className="grid grid-cols-7 gap-1 mb-3">
+                  {dayNames.map((dayName) => (
+                    <div
+                      key={dayName}
+                      className="text-center text-sm font-bold text-gray-700 dark:text-gray-300 p-2 bg-gray-50 dark:bg-gray-800 rounded"
                     >
-                      {new Date(dateStr).toLocaleDateString("it-IT")}
-                      <button
-                        type="button"
-                        onClick={() => toggleDateSelection(dateStr)}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        ×
-                      </button>
-                    </span>
+                      {dayName}
+                    </div>
                   ))}
                 </div>
+
+                {/* Calendar Grid */}
+                <div className="grid grid-cols-7 gap-1">
+                  {getDaysInMonth(currentMonth).map((dayData, index) => {
+                    if (!dayData) {
+                      return <div key={index} className="p-2"></div>;
+                    }
+
+                    return (
+                      <button
+                        key={dayData.dateStr}
+                        type="button"
+                        onClick={() => !dayData.isPast && selectDate(dayData.dateStr)}
+                        disabled={dayData.isPast}
+                        className={`
+                          p-3 text-sm rounded-lg border-2 transition-all duration-200 font-semibold min-h-[2.5rem] flex items-center justify-center
+                          ${
+                            dayData.isPast
+                              ? "text-gray-400 dark:text-gray-600 cursor-not-allowed bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                              : "hover:shadow-md cursor-pointer transform hover:scale-105"
+                          }
+                          ${
+                            dayData.isSelected
+                              ? "bg-blue-600 dark:bg-blue-500 text-white border-blue-600 dark:border-blue-500 shadow-lg shadow-blue-500/30"
+                              : dayData.isPast 
+                                ? "" 
+                                : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-500"
+                          }
+                        `}
+                      >
+                        {dayData.day}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Selected date display */}
+                {formData.selectedDate && (
+                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                    <p className="text-sm font-bold text-blue-800 dark:text-blue-200">
+                      📅 Data selezionata: {new Date(formData.selectedDate).toLocaleDateString("it-IT")}
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
+            </div>
 
-        {/* Time Range */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className={`block ${ds.label} mb-2`}>Ora Inizio *</label>
-            <input
-              type="time"
-              value={formData.startTime}
-              onChange={(e) =>
-                setFormData({ ...formData, startTime: e.target.value })
-              }
-              className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            />
+            {/* Instructor Selection */}
+            <div>
+              <label className={`block ${ds.label} mb-3 text-lg font-semibold`}>👨‍🏫 Istruttore *</label>
+              <select
+                value={formData.instructorId}
+                onChange={(e) => setFormData({ ...formData, instructorId: e.target.value })}
+                className={`w-full p-3 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${T.text} font-medium`}
+                required
+              >
+                <option value="">Seleziona un istruttore</option>
+                {instructors.map((instructor) => (
+                  <option key={instructor.id} value={instructor.id}>
+                    {instructor.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div>
-            <label className={`block ${ds.label} mb-2`}>Ora Fine *</label>
-            <input
-              type="time"
-              value={formData.endTime}
-              onChange={(e) =>
-                setFormData({ ...formData, endTime: e.target.value })
-              }
-              className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-            />
-          </div>
-        </div>
 
-        {/* Max Bookings */}
-        <div>
-          <label className={`block ${ds.label} mb-2`}>
-            Numero Massimo Prenotazioni
-          </label>
-          <input
-            type="number"
-            min="1"
-            max="10"
-            value={formData.maxBookings}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                maxBookings: parseInt(e.target.value) || 1,
-              })
-            }
-            className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 focus:ring-blue-500`}
-          />
-        </div>
+          {/* Right Column - Settings */}
+          <div className="space-y-4">
+            {/* Time Range */}
+            <div>
+              <label className={`block ${ds.label} mb-3 text-lg font-semibold`}>⏰ Orario</label>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={`block ${ds.label} mb-2`}>Ora Inizio *</label>
+                  <div className="flex items-center gap-2">
+                    {/* Ora Inizio */}
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-500 whitespace-nowrap">Ora</span>
+                      <select
+                        value={formData.startTime ? formData.startTime.split(':')[0] : ''}
+                        onChange={(e) => {
+                          const hour = e.target.value;
+                          const currentMinutes = formData.startTime ? formData.startTime.split(':')[1] : '00';
+                          setFormData({ ...formData, startTime: hour ? `${hour}:${currentMinutes}` : '' });
+                        }}
+                        className={`w-16 p-2 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${T.text} font-medium text-sm`}
+                      >
+                        <option value="">--</option>
+                        {Array.from({ length: 13 }, (_, i) => i + 11).map((hour) => (
+                          <option key={hour} value={String(hour).padStart(2, '0')}>
+                            {String(hour).padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-500 whitespace-nowrap">Minuti</span>
+                      <select
+                        value={formData.startTime ? formData.startTime.split(':')[1] : ''}
+                        onChange={(e) => {
+                          const minutes = e.target.value;
+                          const currentHour = formData.startTime ? formData.startTime.split(':')[0] : '';
+                          setFormData({ ...formData, startTime: currentHour ? `${currentHour}:${minutes}` : '' });
+                        }}
+                        className={`w-16 p-2 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${T.text} font-medium text-sm`}
+                      >
+                        <option value="">--</option>
+                        <option value="00">00</option>
+                        <option value="30">30</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className={`block ${ds.label} mb-2`}>Ora Fine *</label>
+                  <div className="flex items-center gap-2">
+                    {/* Ora Fine */}
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-500 whitespace-nowrap">Ora</span>
+                      <select
+                        value={formData.endTime ? formData.endTime.split(':')[0] : ''}
+                        onChange={(e) => {
+                          const hour = e.target.value;
+                          const currentMinutes = formData.endTime ? formData.endTime.split(':')[1] : '00';
+                          setFormData({ ...formData, endTime: hour ? `${hour}:${currentMinutes}` : '' });
+                        }}
+                        className={`w-16 p-2 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${T.text} font-medium text-sm`}
+                      >
+                        <option value="">--</option>
+                        {Array.from({ length: 13 }, (_, i) => i + 11).map((hour) => (
+                          <option key={hour} value={String(hour).padStart(2, '0')}>
+                            {String(hour).padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-500 whitespace-nowrap">Minuti</span>
+                      <select
+                        value={formData.endTime ? formData.endTime.split(':')[1] : ''}
+                        onChange={(e) => {
+                          const minutes = e.target.value;
+                          const currentHour = formData.endTime ? formData.endTime.split(':')[0] : '';
+                          setFormData({ ...formData, endTime: currentHour ? `${currentHour}:${minutes}` : '' });
+                        }}
+                        className={`w-16 p-2 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${T.text} font-medium text-sm`}
+                      >
+                        <option value="">--</option>
+                        <option value="00">00</option>
+                        <option value="30">30</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        {/* Instructor Selection */}
-        <div>
-          <label className={`block ${ds.label} mb-2`}>
-            Istruttori Disponibili *
-          </label>
-          <div
-            className={`space-y-2 max-h-40 overflow-y-auto border rounded p-2 ${T.border} ${T.cardBg}`}
-          >
-            {instructors.map((instructor) => (
-              <label key={instructor.id} className="flex items-center gap-2">
+            {/* Max Bookings */}
+            <div>
+              <label className={`block ${ds.label} mb-2`}>
+                📊 Numero Massimo Prenotazioni
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="10"
+                value={formData.maxBookings}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    maxBookings: parseInt(e.target.value) || 1,
+                  })
+                }
+                className={`w-full p-3 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${T.text} font-medium`}
+              />
+            </div>
+
+            {/* Active Toggle */}
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4 border border-green-200 dark:border-green-700">
+              <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
-                  checked={formData.instructorIds.includes(instructor.id)}
-                  onChange={(e) => {
-                    const { checked } = e.target;
-                    setFormData({
-                      ...formData,
-                      instructorIds: checked
-                        ? [...formData.instructorIds, instructor.id]
-                        : formData.instructorIds.filter(
-                            (id) => id !== instructor.id,
-                          ),
-                    });
-                  }}
-                  className="rounded"
+                  id="isActive"
+                  checked={formData.isActive}
+                  onChange={(e) =>
+                    setFormData({ ...formData, isActive: e.target.checked })
+                  }
+                  className="rounded text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400 w-5 h-5"
                 />
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{
-                      backgroundColor: instructor.instructorData?.color,
-                    }}
-                  ></div>
-                  <span className={T.text}>{instructor.name}</span>
-                </div>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Court Selection */}
-        <div>
-          <label className={`block ${ds.label} mb-2`}>
-            Campi Disponibili *
-          </label>
-          <div
-            className={`space-y-2 max-h-40 overflow-y-auto border rounded p-2 ${T.border} ${T.cardBg}`}
-          >
-            {courts &&
-              courts.map((court) => (
-                <label key={court.id} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={formData.courtIds.includes(court.id)}
-                    onChange={(e) => {
-                      const { checked } = e.target;
-                      setFormData({
-                        ...formData,
-                        courtIds: checked
-                          ? [...formData.courtIds, court.id]
-                          : formData.courtIds.filter((id) => id !== court.id),
-                      });
-                    }}
-                    className="rounded"
-                  />
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-4 h-4 rounded border"
-                      style={{
-                        backgroundColor: court.surface?.color || "#e5e7eb",
-                      }}
-                    ></div>
-                    <span className={T.text}>
-                      {court.name || `Campo ${court.id}`}
-                    </span>
-                    {court.surface?.type && (
-                      <span
-                        className={`text-xs px-2 py-1 ${T.cardBg} ${T.border} rounded`}
-                      >
-                        {court.surface.type}
-                      </span>
-                    )}
-                  </div>
+                <label htmlFor="isActive" className="font-semibold text-green-700 dark:text-green-300">
+                  ✅ Fascia oraria attiva
                 </label>
-              ))}
+              </div>
+            </div>
+
+            {/* Court Selection */}
+            <div>
+              <label className={`block ${ds.label} mb-3 text-lg font-semibold`}>
+                🏟️ Campi Disponibili *
+              </label>
+              <div
+                className={`space-y-2 border-2 rounded-lg p-3 ${T.border} bg-white dark:bg-gray-900 shadow-sm`}
+              >
+              {courts &&
+                courts.map((court) => (
+                  <label key={court.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={formData.courtIds.includes(court.id)}
+                      onChange={(e) => {
+                        const { checked } = e.target;
+                        setFormData({
+                          ...formData,
+                          courtIds: checked
+                            ? [...formData.courtIds, court.id]
+                            : formData.courtIds.filter((id) => id !== court.id),
+                        });
+                      }}
+                      className="rounded text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400 w-4 h-4"
+                    />
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-6 h-6 rounded border-2 border-white dark:border-gray-700 shadow-sm"
+                        style={{
+                          backgroundColor: court.surface?.color || "#e5e7eb",
+                        }}
+                      ></div>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-gray-900 dark:text-gray-100">
+                          {court.name || `Campo ${court.id}`}
+                        </span>
+                        {court.surface?.type && (
+                          <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded mt-1 self-start">
+                            {court.surface.type}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </label>
+                ))}
+            </div>
+            {(!courts || courts.length === 0) && (
+              <p className={`text-sm ${T.subtext} mt-1`}>
+                Nessun campo configurato. Vai alla sezione Campi per aggiungerne.
+              </p>
+            )}
+            </div>
           </div>
-          {(!courts || courts.length === 0) && (
-            <p className={`text-sm ${T.subtext} mt-1`}>
-              Nessun campo configurato. Vai alla sezione Campi per aggiungerne.
-            </p>
-          )}
         </div>
 
-        {/* Active Toggle */}
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="isActive"
-            checked={formData.isActive}
-            onChange={(e) =>
-              setFormData({ ...formData, isActive: e.target.checked })
-            }
-            className="rounded"
-          />
-          <label htmlFor="isActive" className={ds.label}>
-            Fascia oraria attiva
-          </label>
-        </div>
+
 
         {/* Actions */}
-        <div className="flex gap-3 pt-4">
+        <div className="flex gap-4 pt-6 border-t border-gray-200 dark:border-gray-600 mt-6">
           <button
             type="button"
             onClick={onClose}
-            className={`flex-1 py-2 px-4 ${T.cardBg} ${T.border} ${T.borderMd} hover:bg-gray-50 dark:hover:bg-gray-700`}
+            className={`flex-1 py-3 px-6 ${T.cardBg} ${T.border} rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 ${T.text} font-semibold transition-colors text-lg`}
           >
-            Annulla
+            ❌ Annulla
           </button>
           <button
             type="submit"
-            className="flex-1 py-2 px-4 bg-blue-600 dark:bg-blue-700 text-white hover:bg-blue-700 dark:hover:bg-blue-600"
+            className="flex-1 py-3 px-6 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 font-semibold transition-colors text-lg shadow-lg"
           >
-            {timeSlot ? "Aggiorna" : "Crea"} Fascia Oraria
+            {timeSlot ? "✏️ Aggiorna" : "➕ Crea"} Fascia Oraria
           </button>
         </div>
       </form>

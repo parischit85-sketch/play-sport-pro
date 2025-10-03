@@ -67,10 +67,22 @@ export default function StatisticheGiocatore({
     return (matches || []).filter((m) => new Date(m.date) >= from);
   }, [matches, timeFilter]);
 
-  const sortedByRating = useMemo(
-    () => [...players].sort((a, b) => b.rating - a.rating),
-    [players],
-  );
+  console.log('📊 [DEBUG] Filtered matches:', { 
+    originalCount: matches?.length || 0, 
+    filteredCount: filteredMatches?.length || 0, 
+    timeFilter,
+    sampleMatch: filteredMatches?.[0] 
+  });
+
+  const sortedByRating = useMemo(() => {
+    return [...players]
+      .map(p => ({
+        ...p,
+        liveRating: p.rating
+      }))
+      .sort((a, b) => b.liveRating - a.liveRating);
+  }, [players]);
+  
   const position = player
     ? sortedByRating.findIndex((p) => p.id === player.id) + 1
     : null;
@@ -81,13 +93,27 @@ export default function StatisticheGiocatore({
 
   // Statistiche avanzate del giocatore (usa filteredMatches)
   const advancedStats = useMemo(() => {
-    if (!pid) return null;
+    console.log('📊 [DEBUG] Computing advanced stats for player:', pid);
+    
+    if (!pid) {
+      console.log('📊 [DEBUG] No player ID selected');
+      return null;
+    }
 
     const playerMatches = (filteredMatches || []).filter(
       (m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid),
     );
 
-    if (playerMatches.length === 0) return null;
+    console.log('📊 [DEBUG] Player matches found:', { 
+      playerId: pid, 
+      matchesCount: playerMatches.length,
+      sampleMatch: playerMatches[0]
+    });
+
+    if (playerMatches.length === 0) {
+      console.log('📊 [DEBUG] No matches found for player');
+      return null;
+    }
 
     let maxWinStreak = 0;
     let maxLoseStreak = 0;
@@ -218,12 +244,12 @@ export default function StatisticheGiocatore({
   // Timeline rating personale
   const timeline = useMemo(() => {
     if (!pid) return [];
+    
+    // Usa i rating computati da props
     const current = new Map(
-      players.map((p) => [
-        p.id,
-        Number(p.baseRating ?? p.startRating ?? p.rating ?? DEFAULT_RATING),
-      ]),
+      players.map((p) => [p.id, p.rating])
     );
+    
     const points = [];
     points.push({
       date: null,
@@ -264,16 +290,15 @@ export default function StatisticheGiocatore({
   const compareTimeline = useMemo(() => {
     if (!comparePlayerId) return [];
     
+    // Usa i rating computati da props
     const current = new Map(
-      players.map((p) => [
-        p.id,
-        Number(p.baseRating ?? p.startRating ?? p.rating ?? DEFAULT_RATING),
-      ]),
+      players.map((p) => [p.id, p.rating])
     );
+    
     const points = [];
     points.push({
       date: null,
-      label: "Start",
+      label: "Start", 
       rating: Math.round(current.get(comparePlayerId) ?? DEFAULT_RATING),
     });
 

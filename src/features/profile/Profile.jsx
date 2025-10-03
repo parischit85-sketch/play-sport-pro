@@ -10,14 +10,71 @@ import {
   getUserProfile,
   saveUserProfile,
   setDisplayName,
-  logout,
 } from "@services/auth";
+import { useAuth } from "@contexts/AuthContext.jsx";
+import { useClub } from "@contexts/ClubContext.jsx";
 import { useUI } from "@contexts/UIContext.jsx";
+import ClubAdminProfile from "./ClubAdminProfile.jsx";
 
 export default function Profile({ T }) {
+  // Profile component rendered
   const user = auth.currentUser;
   const navigate = useNavigate();
   const { darkMode, toggleTheme } = useUI();
+  const { logout, setUserProfile, reloadUserData, userRole, isClubAdmin, userAffiliations, getFirstAdminClub } = useAuth();
+  const { clubId, club } = useClub();
+
+  // Debug: mostra i valori per capire il problema
+  // console.log('🔍 Profile Debug:', { 
+  //   isClubAdmin: typeof isClubAdmin === 'function' ? isClubAdmin(clubId) : isClubAdmin, 
+  //   clubId, 
+  //   club: club ? club.name : 'null',
+  //   userRole,
+  //   user: user ? { uid: user.uid, email: user.email } : 'null',
+  //   userAffiliations: userAffiliations || []
+  // });
+
+  // Check if user is admin of any club and get first admin club
+  const firstAdminClubId = getFirstAdminClub ? getFirstAdminClub() : null;
+  const actualClubId = clubId || firstAdminClubId;
+  const isActuallyAdmin = isClubAdmin(actualClubId);
+  
+  // Debug esteso per capire il problema di admin detection
+  // console.log('🔧 Admin Detection Debug:', {
+  //   firstAdminClubId,
+  //   actualClubId,
+  //   isActuallyAdmin,
+  //   userAffiliationsDetails: userAffiliations.map(a => ({
+  //     clubId: a.clubId,
+  //     role: a.role,
+  //     status: a.status,
+  //     isClubAdmin: a.isClubAdmin
+  //   }))
+  // });
+  
+  // URL parameter to force normal profile
+  const urlParams = new URLSearchParams(window.location.search);
+  const forceNormalProfile = urlParams.get('normal') === 'true';
+  
+  // If user is admin and not forcing normal profile, render admin profile
+  if (isActuallyAdmin && actualClubId && !forceNormalProfile) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl">
+          <div className="text-sm">
+            <strong>👔 Modalità Admin</strong> - Stai visualizzando l'interfaccia di gestione del club
+          </div>
+          <button
+            onClick={() => window.location.href = '/profile?normal=true'}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+          >
+            👤 Profilo Utente
+          </button>
+        </div>
+        <ClubAdminProfile T={T} club={club} clubId={actualClubId} />
+      </div>
+    );
+  }
 
   const [form, setForm] = useState({
     firstName: "",
@@ -60,7 +117,21 @@ export default function Profile({ T }) {
       await saveUserProfile(user.uid, form);
       const name = [form.firstName, form.lastName].filter(Boolean).join(" ");
       if (name) await setDisplayName(user, name);
+      
+      // Ricarica il profilo nell'AuthContext
+      const updatedProfile = await getUserProfile(user.uid);
+      setUserProfile(updatedProfile);
+      
+      // Ricarica anche i dati dell'utente (affiliazioni, ecc.)
+      await reloadUserData();
+      
       alert("Profilo salvato!");
+      
+      // Se il profilo è ora completo, naviga alla dashboard
+      if (updatedProfile.firstName && updatedProfile.phone) {
+        console.log("✅ Profile completed, navigating to dashboard");
+        navigate("/dashboard");
+      }
     } catch (e) {
       alert("Errore salvataggio: " + (e?.message || e));
     } finally {
@@ -71,8 +142,15 @@ export default function Profile({ T }) {
   const handleLogout = async () => {
     if (window.confirm("Sei sicuro di voler uscire?")) {
       try {
+        console.log("🚪 Initiating logout...");
         await logout();
+        console.log("✅ Logout successful, redirecting...");
+        // Forza la navigazione alla home dopo logout
+        navigate("/", { replace: true });
+        // Ricarica la pagina per pulire completamente lo stato
+        window.location.reload();
       } catch (e) {
+        console.error("❌ Logout error:", e);
         alert("Errore durante il logout: " + (e?.message || e));
       }
     }
@@ -142,6 +220,23 @@ export default function Profile({ T }) {
 
   return (
     <div className="space-y-8">
+      {/* Banner per admin che visualizzano profilo normale */}
+      {isActuallyAdmin && forceNormalProfile && (
+        <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700/30 p-4 rounded-xl">
+          <div className="flex justify-between items-center">
+            <div className="text-sm">
+              <strong>👤 Modalità Utente</strong> - Stai visualizzando il profilo come utente normale
+            </div>
+            <button
+              onClick={() => window.location.href = '/profile'}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+            >
+              👔 Torna alla Gestione Club
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Informazioni Account */}
       <Section title="Profilo Utente 👤" T={T}>
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 space-y-6 shadow-2xl">
@@ -299,29 +394,31 @@ export default function Profile({ T }) {
             </div>
           </div>
 
-          {/* Pulsante Extra (Mobile) */}
-          <div className="pt-6 border-t border-white/20 dark:border-gray-600/20">
-            <button
-              type="button"
-              onClick={() => navigate("/extra")}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 backdrop-blur-xl"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          {/* Pulsante Extra (Mobile) - Solo per Admin */}
+          {(userRole === 'super_admin' || (user && user.userProfile?.role === 'admin') || isClubAdmin(clubId)) && (
+            <div className="pt-6 border-t border-white/20 dark:border-gray-600/20">
+              <button
+                type="button"
+                onClick={() => navigate("/extra")}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 backdrop-blur-xl"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              Funzioni Extra
-            </button>
-          </div>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+                Funzioni Extra
+              </button>
+            </div>
+          )}
 
           {/* Pulsante Logout */}
           <div className="pt-6 border-t border-white/20 dark:border-gray-600/20">
