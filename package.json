@@ -1,13 +1,13 @@
 {
   "name": "play-sport-pro",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "dev:host": "vite --host",
     "dev:clean": "rm -rf node_modules/.vite && npm run dev",
-    "build": "vite build",
+    "build": "vite build --force",
     "build:clean": "rm -rf dist && vite build",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
