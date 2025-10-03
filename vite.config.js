@@ -85,7 +85,8 @@ export default defineConfig({
         manualChunks: (id) => {
           // Core vendor libraries
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
+            // Be more specific with React to avoid catching recharts, lucide-react, etc.
+            if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
               return 'vendor';
             }
             if (id.includes('react-router')) {
