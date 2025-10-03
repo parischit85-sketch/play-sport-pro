@@ -15,9 +15,9 @@ export default defineConfig({
       "firebase/auth",
       "firebase/firestore",
     ],
-    force: true, // forza rigenerazione pre-bundle per evitare "Outdated Optimize Dep"
   },
   resolve: {
+    dedupe: ['react', 'react-dom'], // Force single instance of React
     alias: {
       "@app": path.resolve(__dirname, "src/app"),
       "@features": path.resolve(__dirname, "src/features"),
