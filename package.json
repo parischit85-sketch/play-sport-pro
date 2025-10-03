@@ -7,7 +7,7 @@
     "dev": "vite",
     "dev:host": "vite --host",
     "dev:clean": "rm -rf node_modules/.vite && npm run dev",
-    "build": "vite build --force",
+    "build": "rm -rf dist && vite build",
     "build:clean": "rm -rf dist && vite build",
     "preview": "vite preview",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
