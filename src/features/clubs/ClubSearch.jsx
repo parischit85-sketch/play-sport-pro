@@ -6,7 +6,7 @@ import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
 
 const SEARCH_TYPES = {
   TEXT: 'text',
-  LOCATION: 'location'
+  LOCATION: 'location',
 };
 
 const ClubSearch = () => {
@@ -22,7 +22,7 @@ const ClubSearch = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [showCustomSearch, setShowCustomSearch] = useState(false);
   const [debouncedQuery, setDebouncedQuery] = useState('');
-  
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery);
@@ -55,15 +55,15 @@ const ClubSearch = () => {
 
   const affiliatedClubs = useMemo(() => {
     if (!user || !userAffiliations || !allClubs.length) return [];
-    return allClubs.filter(club => 
-      userAffiliations.some(aff => aff.clubId === club.id && aff.status === "approved")
+    return allClubs.filter((club) =>
+      userAffiliations.some((aff) => aff.clubId === club.id && aff.status === 'approved')
     );
   }, [allClubs, userAffiliations, user]);
 
   const nearbyClubs = useMemo(() => {
     if (!allClubs.length) return [];
     return allClubs
-      .filter(club => !affiliatedClubs.some(aff => aff.id === club.id))
+      .filter((club) => !affiliatedClubs.some((aff) => aff.id === club.id))
       .slice(0, 6);
   }, [allClubs, affiliatedClubs]);
 
@@ -83,28 +83,27 @@ const ClubSearch = () => {
     }
   }, []);
 
-  const handleLocationSearch = useCallback(async (radius = 10) => {
-    if (!userLocation) {
-      await getCurrentLocation();
-      return;
-    }
-    setSearchLoading(true);
-    setError(null);
-    setHasSearched(true);
-    try {
-      const results = await searchClubsByLocation(
-        userLocation.lat, 
-        userLocation.lng, 
-        radius
-      );
-      setSearchResults(results);
-    } catch (err) {
-      setError('Errore durante la ricerca per posizione. Riprova.');
-      console.error('Location search error:', err);
-    } finally {
-      setSearchLoading(false);
-    }
-  }, [userLocation]);
+  const handleLocationSearch = useCallback(
+    async (radius = 10) => {
+      if (!userLocation) {
+        await getCurrentLocation();
+        return;
+      }
+      setSearchLoading(true);
+      setError(null);
+      setHasSearched(true);
+      try {
+        const results = await searchClubsByLocation(userLocation.lat, userLocation.lng, radius);
+        setSearchResults(results);
+      } catch (err) {
+        setError('Errore durante la ricerca per posizione. Riprova.');
+        console.error('Location search error:', err);
+      } finally {
+        setSearchLoading(false);
+      }
+    },
+    [userLocation]
+  );
 
   const getCurrentLocation = useCallback(() => {
     if (!navigator.geolocation) {
@@ -116,7 +115,7 @@ const ClubSearch = () => {
       (position) => {
         const location = {
           lat: position.coords.latitude,
-          lng: position.coords.longitude
+          lng: position.coords.longitude,
         };
         setUserLocation(location);
         setSearchLoading(false);
@@ -129,7 +128,7 @@ const ClubSearch = () => {
       {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 300000
+        maximumAge: 300000,
       }
     );
   }, []);
@@ -153,9 +152,7 @@ const ClubSearch = () => {
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
       <div className="text-center">
         <div className="text-6xl mb-4"></div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Trova il tuo Club
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Trova il tuo Club</h1>
         <p className="text-gray-600 dark:text-gray-400">
           Scopri i circoli sportivi e unisciti alla community
         </p>
@@ -171,7 +168,7 @@ const ClubSearch = () => {
             Circoli dove hai un'affiliazione attiva
           </p>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {affiliatedClubs.map(club => (
+            {affiliatedClubs.map((club) => (
               <div key={club.id} className="relative">
                 <ClubCard club={club} userLocation={userLocation} />
                 <div className="absolute top-2 right-2 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-1 rounded-full text-xs font-medium">
@@ -187,13 +184,15 @@ const ClubSearch = () => {
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center gap-2 mb-4">
             <span className="text-2xl"></span>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Circoli Nelle Vicinanze</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              Circoli Nelle Vicinanze
+            </h2>
           </div>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             Altri circoli disponibili per nuove affiliazioni
           </p>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {nearbyClubs.map(club => (
+            {nearbyClubs.map((club) => (
               <ClubCard key={club.id} club={club} userLocation={userLocation} />
             ))}
           </div>
@@ -206,7 +205,7 @@ const ClubSearch = () => {
             onClick={() => setShowCustomSearch(!showCustomSearch)}
             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 text-lg font-medium rounded-lg transition-all inline-flex items-center gap-2"
           >
-             {showCustomSearch ? 'Nascondi Ricerca' : 'Cerca Altri Circoli'}
+            {showCustomSearch ? 'Nascondi Ricerca' : 'Cerca Altri Circoli'}
           </button>
         </div>
 
@@ -214,11 +213,13 @@ const ClubSearch = () => {
           <div className="space-y-6">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl"></span>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Ricerca Personalizzata</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Ricerca Personalizzata
+              </h2>
             </div>
 
             <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1 max-w-md mx-auto">
-                            <button
+              <button
                 onClick={() => setSearchType(SEARCH_TYPES.TEXT)}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                   searchType === SEARCH_TYPES.TEXT
@@ -226,7 +227,7 @@ const ClubSearch = () => {
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
-                 Ricerca per nome
+                Ricerca per nome
               </button>
               <button
                 onClick={() => setSearchType(SEARCH_TYPES.LOCATION)}
@@ -236,7 +237,7 @@ const ClubSearch = () => {
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                 }`}
               >
-                 Cerca nelle vicinanze
+                Cerca nelle vicinanze
               </button>
             </div>
 
@@ -253,9 +254,7 @@ const ClubSearch = () => {
                   <button
                     onClick={clearSearch}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                  >
-                    
-                  </button>
+                  ></button>
                 )}
               </div>
             ) : (
@@ -278,7 +277,7 @@ const ClubSearch = () => {
                 ) : (
                   <div className="space-y-4">
                     <div className="text-green-600 dark:text-green-400 font-medium">
-                       Posizione rilevata
+                      Posizione rilevata
                     </div>
                     <div className="flex justify-center gap-2 flex-wrap">
                       <button
@@ -324,19 +323,14 @@ const ClubSearch = () => {
                 {searchResults.length > 0 ? (
                   <>
                     <div className="text-center text-gray-600 dark:text-gray-400 mb-4">
-                      {searchResults.length === 1 
-                        ? 'Trovato 1 club' 
+                      {searchResults.length === 1
+                        ? 'Trovato 1 club'
                         : `Trovati ${searchResults.length} club`}
-                      {searchType === SEARCH_TYPES.LOCATION && userLocation && 
-                        ' nelle vicinanze'}
+                      {searchType === SEARCH_TYPES.LOCATION && userLocation && ' nelle vicinanze'}
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                      {searchResults.map(club => (
-                        <ClubCard 
-                          key={club.id} 
-                          club={club} 
-                          userLocation={userLocation}
-                        />
+                      {searchResults.map((club) => (
+                        <ClubCard key={club.id} club={club} userLocation={userLocation} />
                       ))}
                     </div>
                   </>

@@ -2,17 +2,17 @@
 // FILE: src/components/booking/UnifiedBookingFlow.jsx
 // Componente per il flusso unificato di prenotazione
 // =============================================
-import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@contexts/AuthContext.jsx";
-import { useClub } from "@contexts/ClubContext.jsx";
-import { getClubs } from "@services/clubs.js";
-import ClubCard from "@features/clubs/ClubCard.jsx";
-import { LoadingSpinner } from "@components/LoadingSpinner.jsx";
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@contexts/AuthContext.jsx';
+import { useClub } from '@contexts/ClubContext.jsx';
+import { getClubs } from '@services/clubs.js';
+import ClubCard from '@features/clubs/ClubCard.jsx';
+import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
 
 const BOOKING_STEPS = {
   CLUB_SELECTION: 'club_selection',
-  BOOKING_TYPE_SELECTION: 'booking_type_selection'
+  BOOKING_TYPE_SELECTION: 'booking_type_selection',
 };
 
 export default function UnifiedBookingFlow() {
@@ -48,8 +48,8 @@ export default function UnifiedBookingFlow() {
   // Get affiliated clubs
   const affiliatedClubs = useMemo(() => {
     if (!user || !userAffiliations || !allClubs.length) return [];
-    return allClubs.filter(club => 
-      userAffiliations.some(aff => aff.clubId === club.id && aff.status === "approved")
+    return allClubs.filter((club) =>
+      userAffiliations.some((aff) => aff.clubId === club.id && aff.status === 'approved')
     );
   }, [allClubs, userAffiliations, user]);
 
@@ -57,7 +57,7 @@ export default function UnifiedBookingFlow() {
   const nearbyClubs = useMemo(() => {
     if (!allClubs.length) return [];
     return allClubs
-      .filter(club => !affiliatedClubs.some(aff => aff.id === club.id))
+      .filter((club) => !affiliatedClubs.some((aff) => aff.id === club.id))
       .slice(0, 6);
   }, [allClubs, affiliatedClubs]);
 
@@ -70,12 +70,13 @@ export default function UnifiedBookingFlow() {
     try {
       // Seleziona il circolo nel contesto
       await selectClub(selectedClub.id);
-      
+
       // Naviga alla pagina appropriata del circolo
-      const path = bookingType === 'campo' 
-        ? `/club/${selectedClub.id}/booking`
-        : `/club/${selectedClub.id}/lessons`;
-      
+      const path =
+        bookingType === 'campo'
+          ? `/club/${selectedClub.id}/booking`
+          : `/club/${selectedClub.id}/lessons`;
+
       navigate(path);
     } catch (error) {
       console.error('Error selecting club:', error);
@@ -107,9 +108,7 @@ export default function UnifiedBookingFlow() {
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Seleziona un Circolo
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Scegli il circolo dove vuoi prenotare
-          </p>
+          <p className="text-gray-600 dark:text-gray-400">Scegli il circolo dove vuoi prenotare</p>
         </div>
 
         {/* Circoli Affiliati */}
@@ -117,14 +116,20 @@ export default function UnifiedBookingFlow() {
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl">🏆</span>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">I Tuoi Circoli</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                I Tuoi Circoli
+              </h2>
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Circoli dove hai un'affiliazione attiva
             </p>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {affiliatedClubs.map(club => (
-                <div key={club.id} className="relative cursor-pointer" onClick={() => handleClubSelect(club)}>
+              {affiliatedClubs.map((club) => (
+                <div
+                  key={club.id}
+                  className="relative cursor-pointer"
+                  onClick={() => handleClubSelect(club)}
+                >
                   <ClubCard club={club} />
                   <div className="absolute top-2 right-2 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-1 rounded-full text-xs font-medium">
                     Affiliato
@@ -141,14 +146,20 @@ export default function UnifiedBookingFlow() {
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl">📍</span>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Circoli Nelle Vicinanze</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Circoli Nelle Vicinanze
+              </h2>
             </div>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Altri circoli disponibili per prenotazioni
             </p>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {nearbyClubs.map(club => (
-                <div key={club.id} className="relative cursor-pointer" onClick={() => handleClubSelect(club)}>
+              {nearbyClubs.map((club) => (
+                <div
+                  key={club.id}
+                  className="relative cursor-pointer"
+                  onClick={() => handleClubSelect(club)}
+                >
                   <ClubCard club={club} />
                   <div className="absolute inset-0 bg-blue-500/10 rounded-lg border-2 border-blue-500/20 hover:border-blue-500/40 transition-colors" />
                 </div>
@@ -172,7 +183,9 @@ export default function UnifiedBookingFlow() {
             <div className="space-y-6">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-2xl">🔍</span>
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Cerca Circolo</h2>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Cerca Circolo
+                </h2>
               </div>
 
               <div className="relative max-w-md mx-auto">
@@ -188,12 +201,17 @@ export default function UnifiedBookingFlow() {
               {searchQuery && (
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {allClubs
-                    .filter(club => 
-                      club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      (club.city && club.city.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .filter(
+                      (club) =>
+                        club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        (club.city && club.city.toLowerCase().includes(searchQuery.toLowerCase()))
                     )
-                    .map(club => (
-                      <div key={club.id} className="relative cursor-pointer" onClick={() => handleClubSelect(club)}>
+                    .map((club) => (
+                      <div
+                        key={club.id}
+                        className="relative cursor-pointer"
+                        onClick={() => handleClubSelect(club)}
+                      >
                         <ClubCard club={club} />
                         <div className="absolute inset-0 bg-blue-500/10 rounded-lg border-2 border-blue-500/20 hover:border-blue-500/40 transition-colors" />
                       </div>
@@ -230,9 +248,7 @@ export default function UnifiedBookingFlow() {
               presso <strong>{selectedClub.name}</strong>
             </p>
             {selectedClub.city && (
-              <p className="text-sm text-gray-500 dark:text-gray-500">
-                {selectedClub.city}
-              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-500">{selectedClub.city}</p>
             )}
           </div>
 

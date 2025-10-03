@@ -16,7 +16,7 @@ import {
   limit,
   serverTimestamp,
   addDoc,
-  deleteDoc
+  deleteDoc,
 } from 'firebase/firestore';
 import { db } from './firebase.js';
 
@@ -46,7 +46,7 @@ export async function getInstructorTimeSlots(clubId, instructorId) {
     querySnapshot.forEach((doc) => {
       timeSlots.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 
@@ -79,7 +79,7 @@ export async function getAvailableTimeSlots(clubId, date) {
     querySnapshot.forEach((doc) => {
       timeSlots.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 
@@ -112,14 +112,14 @@ export async function createTimeSlot(clubId, timeSlotData) {
       price: timeSlotData.price || 0,
       notes: timeSlotData.notes || '',
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     const docRef = await addDoc(timeSlotsRef, newTimeSlot);
 
     return {
       id: docRef.id,
-      ...newTimeSlot
+      ...newTimeSlot,
     };
   } catch (error) {
     console.error('Error creating time slot:', error);
@@ -140,7 +140,7 @@ export async function updateTimeSlot(clubId, timeSlotId, updates) {
 
     const updateData = {
       ...updates,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
 
     await updateDoc(timeSlotRef, updateData);
@@ -149,7 +149,7 @@ export async function updateTimeSlot(clubId, timeSlotId, updates) {
     const updatedDoc = await getDoc(timeSlotRef);
     return {
       id: updatedDoc.id,
-      ...updatedDoc.data()
+      ...updatedDoc.data(),
     };
   } catch (error) {
     console.error('Error updating time slot:', error);
@@ -187,7 +187,7 @@ export async function bookTimeSlot(clubId, timeSlotId, bookingId) {
       isAvailable: false,
       isBooked: true,
       bookingId: bookingId,
-      bookedAt: serverTimestamp()
+      bookedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error booking time slot:', error);
@@ -207,7 +207,7 @@ export async function cancelTimeSlotBooking(clubId, timeSlotId) {
       isAvailable: true,
       isBooked: false,
       bookingId: null,
-      bookedAt: null
+      bookedAt: null,
     });
   } catch (error) {
     console.error('Error canceling time slot booking:', error);
@@ -238,7 +238,7 @@ export async function getTimeSlotsByDateAndCourt(clubId, date, courtId) {
     querySnapshot.forEach((doc) => {
       timeSlots.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       });
     });
 

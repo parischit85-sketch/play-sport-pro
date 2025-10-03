@@ -87,13 +87,13 @@ describe('Database Optimization Library', () => {
 
     it('should respect TTL and expire entries', async () => {
       vi.useFakeTimers();
-      
+
       const { getDocs } = await import('firebase/firestore');
       getDocs.mockResolvedValue({ docs: [] });
 
       // Cache data with short TTL
       await DatabaseOptimizer.query('test-collection');
-      
+
       const result1 = await DatabaseOptimizer.query('test-collection');
       expect(result1.fromCache).toBe(true);
 
@@ -127,14 +127,20 @@ describe('Database Optimization Library', () => {
     it('should build correct Firestore queries', async () => {
       const { collection, query, where, orderBy, limit } = await import('firebase/firestore');
       const { getDocs } = await import('firebase/firestore');
-      
+
       getDocs.mockResolvedValue({ docs: [] });
       collection.mockReturnValue('mock-collection');
       query.mockReturnValue('mock-query');
 
       const queryParams = {
-        where: [['status', '==', 'confirmed'], ['date', '>=', '2025-09-20']],
-        orderBy: [['date', 'asc'], ['time', 'asc']],
+        where: [
+          ['status', '==', 'confirmed'],
+          ['date', '>=', '2025-09-20'],
+        ],
+        orderBy: [
+          ['date', 'asc'],
+          ['time', 'asc'],
+        ],
         limit: 50,
       };
 
@@ -150,10 +156,8 @@ describe('Database Optimization Library', () => {
 
     it('should track query performance', async () => {
       const { getDocs } = await import('firebase/firestore');
-      getDocs.mockImplementation(() => 
-        new Promise(resolve => 
-          setTimeout(() => resolve({ docs: [] }), 100)
-        )
+      getDocs.mockImplementation(
+        () => new Promise((resolve) => setTimeout(() => resolve({ docs: [] }), 100))
       );
 
       const startTime = Date.now();
@@ -166,18 +170,19 @@ describe('Database Optimization Library', () => {
 
     it('should suggest optimizations for slow queries', async () => {
       const { getDocs } = await import('firebase/firestore');
-      getDocs.mockImplementation(() => 
-        new Promise(resolve => 
-          setTimeout(() => resolve({ docs: new Array(1000).fill({}) }), 1500)
-        )
+      getDocs.mockImplementation(
+        () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ docs: new Array(1000).fill({}) }), 1500)
+          )
       );
 
       await DatabaseOptimizer.query('slow-collection');
-      
+
       const suggestions = DatabaseOptimizer.getIndexSuggestions();
       const queryStats = DatabaseOptimizer.getQueryStats();
-      
-      expect(queryStats.some(q => q.avgTime > 1000)).toBe(true);
+
+      expect(queryStats.some((q) => q.avgTime > 1000)).toBe(true);
     });
   });
 
@@ -233,7 +238,7 @@ describe('Database Optimization Library', () => {
 
       DatabaseOptimizer.batchSet('collection', 'doc1', { data: 'test1' });
       DatabaseOptimizer.batchUpdate('collection', 'doc2', { data: 'test2' });
-      
+
       await DatabaseOptimizer.flushBatch();
 
       const stats = DatabaseOptimizer.getBatchStats();
@@ -256,7 +261,7 @@ describe('Database Optimization Library', () => {
       );
 
       expect(typeof unsubscribe).toBe('function');
-      
+
       // Unsubscribe should call the Firebase unsubscribe
       unsubscribe();
       expect(mockUnsubscribe).toHaveBeenCalled();
@@ -279,7 +284,7 @@ describe('Database Optimization Library', () => {
     it('should update cache with real-time data', async () => {
       const { onSnapshot } = await import('firebase/firestore');
       let snapshotCallback;
-      
+
       onSnapshot.mockImplementation((query, callback) => {
         snapshotCallback = callback;
         return vi.fn();
@@ -290,9 +295,7 @@ describe('Database Optimization Library', () => {
 
       // Simulate real-time update
       const mockSnapshot = {
-        docs: [
-          { id: 'doc1', data: () => ({ name: 'Updated' }) },
-        ],
+        docs: [{ id: 'doc1', data: () => ({ name: 'Updated' }) }],
         metadata: { fromCache: false, hasPendingWrites: false },
       };
 
@@ -348,17 +351,15 @@ describe('Database Optimization Library', () => {
     it('should generate performance recommendations', async () => {
       // Generate some poor performance scenarios
       const { getDocs } = await import('firebase/firestore');
-      getDocs.mockImplementation(() => 
-        Promise.resolve({ docs: new Array(2000).fill({}) })
-      );
+      getDocs.mockImplementation(() => Promise.resolve({ docs: new Array(2000).fill({}) }));
 
       // Execute slow query with many results
       await DatabaseOptimizer.query('large-collection');
 
       const recommendations = performanceMonitor.generateRecommendations();
-      
+
       expect(recommendations.length).toBeGreaterThan(0);
-      expect(recommendations.some(r => r.type === 'performance')).toBe(true);
+      expect(recommendations.some((r) => r.type === 'performance')).toBe(true);
     });
   });
 
@@ -367,8 +368,9 @@ describe('Database Optimization Library', () => {
       const { getDocs } = await import('firebase/firestore');
       getDocs.mockRejectedValue(new Error('Permission denied'));
 
-      await expect(DatabaseOptimizer.query('restricted-collection'))
-        .rejects.toThrow('Permission denied');
+      await expect(DatabaseOptimizer.query('restricted-collection')).rejects.toThrow(
+        'Permission denied'
+      );
     });
 
     it('should handle batch operation errors', async () => {
@@ -381,22 +383,21 @@ describe('Database Optimization Library', () => {
 
       DatabaseOptimizer.batchSet('collection', 'doc1', { data: 'test' });
 
-      await expect(DatabaseOptimizer.flushBatch())
-        .rejects.toThrow('Batch failed');
+      await expect(DatabaseOptimizer.flushBatch()).rejects.toThrow('Batch failed');
     });
   });
 
   describe('Memory Management', () => {
     it('should clean up expired cache entries', async () => {
       vi.useFakeTimers();
-      
+
       const { getDocs } = await import('firebase/firestore');
       getDocs.mockResolvedValue({ docs: [] });
 
       // Create cache entries
       await DatabaseOptimizer.query('collection1');
       await DatabaseOptimizer.query('collection2');
-      
+
       expect(DatabaseOptimizer.getCacheStats().size).toBe(2);
 
       // Advance time past TTL
@@ -418,7 +419,7 @@ describe('Database Optimization Library', () => {
 
       // Simulate small cache size for testing
       DatabaseOptimizer.clearCache();
-      
+
       // The actual implementation would need to be modified to accept maxSize
       // For testing purposes, we'll verify the concept
       expect(DatabaseOptimizer.getCacheStats().size).toBe(0);

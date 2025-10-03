@@ -1,29 +1,19 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  useRef,
-} from "react";
-import Section from "@ui/Section.jsx";
-import Badge from "@ui/Badge.jsx";
-import { createDSClasses } from "@lib/design-system.js";
-import { floorToSlot, addMinutes, sameDay, overlaps } from "@lib/date.js";
-import { computePrice, getRateInfo, isCourtBookableAt } from "@lib/pricing.js";
-import { getDefaultBookingConfig } from "@data/seed.js";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import Section from '@ui/Section.jsx';
+import Badge from '@ui/Badge.jsx';
+import { createDSClasses } from '@lib/design-system.js';
+import { floorToSlot, addMinutes, sameDay, overlaps } from '@lib/date.js';
+import { computePrice, getRateInfo, isCourtBookableAt } from '@lib/pricing.js';
+import { getDefaultBookingConfig } from '@data/seed.js';
 // Legacy LeagueContext rimosso: bookingConfig ora proviene da club settings
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useClubSettings } from '@hooks/useClubSettings.js';
-import {
-  useUnifiedBookings,
-  useUserBookings,
-  BOOKING_STATUS,
-} from "@hooks/useUnifiedBookings.js";
+import { useUnifiedBookings, useUserBookings, BOOKING_STATUS } from '@hooks/useUnifiedBookings.js';
 import UnifiedBookingService, {
   wouldCreateHalfHourHole as checkHoleCreation,
   isTimeSlotTrapped as checkSlotTrapped,
-} from "@services/unified-booking-service.js";
-import { trackBooking, trackFunnelStep, ConversionFunnels } from "@lib/analytics.js";
+} from '@services/unified-booking-service.js';
+import { trackBooking, trackFunnelStep, ConversionFunnels } from '@lib/analytics.js';
 
 function ModernBookingInterface({ user, T, state, setState, clubId }) {
   const ds = createDSClasses(T);
@@ -48,34 +38,36 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
   // Configurazione prenotazioni per club (fallback minimale se non pronta)
   const cfg = useMemo(() => {
     const defaults = getDefaultBookingConfig();
-    return bookingConfig ? {
-      ...defaults,
-      ...bookingConfig,
-      addons: {
-        ...defaults.addons,
-        ...bookingConfig.addons
-      }
-    } : defaults;
+    return bookingConfig
+      ? {
+          ...defaults,
+          ...bookingConfig,
+          addons: {
+            ...defaults.addons,
+            ...bookingConfig.addons,
+          },
+        }
+      : defaults;
   }, [bookingConfig]);
   // Courts preferiti dal ClubContext (realtime). Fallback a state.courts legacy se vuoto.
-  const courtsFromState = clubCourts?.length ? clubCourts : (Array.isArray(state?.courts) ? state.courts : []);
+  const courtsFromState = clubCourts?.length
+    ? clubCourts
+    : Array.isArray(state?.courts)
+      ? state.courts
+      : [];
   // Durate consentite dalla configurazione (fallback 60/90/120)
   const allowedDurations = useMemo(() => {
     let list = cfg?.defaultDurations;
-    if (typeof list === "string") {
+    if (typeof list === 'string') {
       list = list
-        .split(",")
+        .split(',')
         .map((x) => parseInt(String(x).trim(), 10))
         .filter((n) => !Number.isNaN(n));
     }
     if (!Array.isArray(list) || list.length === 0) return [60, 90, 120];
     // Normalizza e ordina
     const set = Array.from(
-      new Set(
-        list.filter((n) =>
-          [30, 45, 60, 75, 90, 105, 120, 150].includes(Number(n)),
-        ),
-      ),
+      new Set(list.filter((n) => [30, 45, 60, 75, 90, 105, 120, 150].includes(Number(n))))
     )
       .map(Number)
       .sort((a, b) => a - b);
@@ -87,21 +79,21 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
   const courtSectionRef = useRef(null);
 
   // Stato interfaccia utente
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
   const [selectedCourt, setSelectedCourt] = useState(null);
   const [duration, setDuration] = useState(60);
   const [showOnlyAvailable, setShowOnlyAvailable] = useState(true);
   const [lighting, setLighting] = useState(false);
   const [heating, setHeating] = useState(false);
-  const [userPhone, setUserPhone] = useState("");
-  const [notes, setNotes] = useState("");
+  const [userPhone, setUserPhone] = useState('');
+  const [notes, setNotes] = useState('');
   const [additionalPlayers, setAdditionalPlayers] = useState([]);
-  const [newPlayerName, setNewPlayerName] = useState("");
+  const [newPlayerName, setNewPlayerName] = useState('');
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [showErrorAnimation, setShowErrorAnimation] = useState(false);
-  const [activeCourtFilter, setActiveCourtFilter] = useState("all"); // Filtro per tipologia campo
+  const [activeCourtFilter, setActiveCourtFilter] = useState('all'); // Filtro per tipologia campo
 
   // Stato dati prenotazioni
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -113,7 +105,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       setDuration(allowedDurations[0] || 60);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allowedDurations.join(",")]);
+  }, [allowedDurations.join(',')]);
 
   // Helper function to check slot availability using unified service data
   const isSlotAvailable = useCallback(
@@ -121,9 +113,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       if (!courtId || !date || !time) return false;
 
       const startDateTime = new Date(`${date}T${time}:00`);
-      const endDateTime = new Date(
-        startDateTime.getTime() + checkDuration * 60000,
-      );
+      const endDateTime = new Date(startDateTime.getTime() + checkDuration * 60000);
 
       return !allBookings.some((booking) => {
         if (booking.courtId !== courtId) return false;
@@ -132,12 +122,8 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         const status = booking.status || BOOKING_STATUS.CONFIRMED; // Default to confirmed
         if (status === BOOKING_STATUS.CANCELLED) return false; // Skip cancelled bookings
 
-        const bookingStart = new Date(
-          booking.start || `${booking.date}T${booking.time}:00`,
-        );
-        const bookingEnd = new Date(
-          bookingStart.getTime() + (booking.duration || 60) * 60000,
-        );
+        const bookingStart = new Date(booking.start || `${booking.date}T${booking.time}:00`);
+        const bookingEnd = new Date(bookingStart.getTime() + (booking.duration || 60) * 60000);
 
         return (
           (startDateTime >= bookingStart && startDateTime < bookingEnd) ||
@@ -146,7 +132,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         );
       });
     },
-    [allBookings],
+    [allBookings]
   );
 
   // Hole prevention rule
@@ -157,27 +143,18 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       // Convert allBookings to the format expected by unified service
       const existingBookings = allBookings.map((booking) => ({
         courtId: booking.courtId,
-        date:
-          booking.date || (booking.start ? booking.start.split("T")[0] : ""),
-        time:
-          booking.time ||
-          (booking.start ? booking.start.split("T")[1].substring(0, 5) : ""),
+        date: booking.date || (booking.start ? booking.start.split('T')[0] : ''),
+        time: booking.time || (booking.start ? booking.start.split('T')[1].substring(0, 5) : ''),
         duration: booking.duration || 60,
-        status: booking.status || "confirmed",
+        status: booking.status || 'confirmed',
       }));
 
       // Use the imported hole prevention function
-      const result = checkHoleCreation(
-        courtId,
-        date,
-        time,
-        checkDuration,
-        existingBookings,
-      );
+      const result = checkHoleCreation(courtId, date, time, checkDuration, existingBookings);
 
       return result;
     },
-    [allBookings],
+    [allBookings]
   );
 
   // Wrapper for trapped logic - check if slot is in a trapped state
@@ -188,27 +165,18 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       // Convert allBookings to the format expected by unified service
       const existingBookings = allBookings.map((booking) => ({
         courtId: booking.courtId,
-        date:
-          booking.date || (booking.start ? booking.start.split("T")[0] : ""),
-        time:
-          booking.time ||
-          (booking.start ? booking.start.split("T")[1].substring(0, 5) : ""),
+        date: booking.date || (booking.start ? booking.start.split('T')[0] : ''),
+        time: booking.time || (booking.start ? booking.start.split('T')[1].substring(0, 5) : ''),
         duration: booking.duration || 60,
-        status: booking.status || "confirmed",
+        status: booking.status || 'confirmed',
       }));
 
       // Use the imported trapped slot logic from unified service
-      const result = checkSlotTrapped(
-        courtId,
-        date,
-        time,
-        checkDuration,
-        existingBookings,
-      );
+      const result = checkSlotTrapped(courtId, date, time, checkDuration, existingBookings);
 
       return result;
     },
-    [allBookings],
+    [allBookings]
   );
 
   // Scroll function for better UX
@@ -217,9 +185,9 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       setTimeout(() => {
         if (ref.current) {
           ref.current.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-            inline: "nearest",
+            behavior: 'smooth',
+            block: 'start',
+            inline: 'nearest',
           });
         }
       }, delay); // Delay ridotto per maggiore reattività
@@ -231,8 +199,8 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
     if (!selectedDate) {
       const today = new Date();
       const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, "0");
-      const day = String(today.getDate()).padStart(2, "0");
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
       setSelectedDate(`${year}-${month}-${day}`);
     }
   }, [selectedDate]);
@@ -262,9 +230,9 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       if (!court?.timeSlots?.length) return false;
       const day = startDate.getDay();
       const startMin = startDate.getHours() * 60 + startDate.getMinutes();
-      const toMin = (hhmm = "00:00") => {
+      const toMin = (hhmm = '00:00') => {
         const [h, m] = String(hhmm)
-          .split(":")
+          .split(':')
           .map((n) => +n || 0);
         return h * 60 + m;
       };
@@ -273,13 +241,13 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
           Array.isArray(slot.days) &&
           slot.days.includes(day) &&
           startMin >= toMin(slot.from) &&
-          startMin < toMin(slot.to),
+          startMin < toMin(slot.to)
       );
       if (!active) return false;
       const endMin = startMin + Number(durationMin || 0);
       return endMin <= toMin(active.to);
     },
-    [courtsFromState],
+    [courtsFromState]
   );
 
   // Controlla la disponibilità degli slot temporali
@@ -287,69 +255,72 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
   const checkSlotAvailability = useCallback(
     (courtId, date, time) => {
       // Testa tutte le durate possibili (60, 90, 120)
-      const possibleDurations = [60, 90, 120].filter(d => allowedDurations.includes(d));
-      
-      return possibleDurations.some(testDuration => {
+      const possibleDurations = [60, 90, 120].filter((d) => allowedDurations.includes(d));
+
+      return possibleDurations.some((testDuration) => {
         // Verifica disponibilità base
         if (!isSlotAvailable(courtId, date, time, testDuration)) return false;
-        
+
         // Verifica se è dentro l'orario del campo
         const dt = new Date(`${date}T${time}:00`);
         if (!isDurationWithinSchedule(dt, testDuration, courtId)) return false;
-        
+
         // Controllo sovrapposizione esplicito
         const startDateTime = new Date(`${date}T${time}:00`);
         const endDateTime = new Date(startDateTime.getTime() + testDuration * 60000);
-        
+
         const hasOverlap = allBookings.some((booking) => {
           if (booking.courtId !== courtId) return false;
           const status = booking.status || 'confirmed';
           if (status === 'cancelled') return false;
-          
-          const bookingStart = new Date(
-            booking.start || `${booking.date}T${booking.time}:00`
-          );
-          const bookingEnd = new Date(
-            bookingStart.getTime() + (booking.duration || 60) * 60000
-          );
-          
+
+          const bookingStart = new Date(booking.start || `${booking.date}T${booking.time}:00`);
+          const bookingEnd = new Date(bookingStart.getTime() + (booking.duration || 60) * 60000);
+
           return startDateTime < bookingEnd && endDateTime > bookingStart;
         });
-        
+
         if (hasOverlap) return false;
-        
+
         // Controlla se creerebbe un buco e se è intrappolato
         const hole = wouldCreateHalfHourHole(courtId, date, time, testDuration);
         if (hole) {
           const isTrapped = isTimeSlotTrapped(courtId, date, time, testDuration, allBookings);
           if (!isTrapped) return false;
         }
-        
+
         return true; // Questa durata è prenotabile
       });
     },
-    [allowedDurations, isSlotAvailable, isDurationWithinSchedule, allBookings, wouldCreateHalfHourHole, isTimeSlotTrapped],
+    [
+      allowedDurations,
+      isSlotAvailable,
+      isDurationWithinSchedule,
+      allBookings,
+      wouldCreateHalfHourHole,
+      isTimeSlotTrapped,
+    ]
   );
 
   // Genera i giorni disponibili per la prenotazione
   const availableDays = useMemo(() => {
     const days = [];
-    const daysNames = ["DOM", "LUN", "MAR", "MER", "GIO", "VEN", "SAB"];
+    const daysNames = ['DOM', 'LUN', 'MAR', 'MER', 'GIO', 'VEN', 'SAB'];
 
     for (let i = 0; i < 7; i++) {
       const date = new Date();
       date.setDate(date.getDate() + i);
 
       const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
       const dateStr = `${year}-${month}-${day}`;
 
       days.push({
         date: dateStr,
         dayName: daysNames[date.getDay()],
         dayNumber: date.getDate(),
-        monthName: date.toLocaleDateString("it-IT", { month: "short" }),
+        monthName: date.toLocaleDateString('it-IT', { month: 'short' }),
         isToday: i === 0,
       });
     }
@@ -364,11 +335,11 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
     const step = cfg.slotMinutes || 30;
 
     const now = new Date();
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split('T')[0];
 
     for (let hour = start; hour < end; hour++) {
       for (let minute = 0; minute < 60; minute += step) {
-        const timeStr = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+        const timeStr = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 
         // Salta gli orari passati se si prenota per oggi
         if (selectedDate === today) {
@@ -386,11 +357,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         let availableCourtsCount = 0;
 
         for (const court of courtsFromState) {
-          const scheduleOk = isCourtBookableAt(
-            slotDate,
-            court.id,
-            courtsFromState,
-          );
+          const scheduleOk = isCourtBookableAt(slotDate, court.id, courtsFromState);
           if (!scheduleOk) continue;
           anyScheduleOk = true;
           const free = checkSlotAvailability(court.id, selectedDate, timeStr);
@@ -409,8 +376,8 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         const isAvailable = anyScheduleOk && anyFreeIgnoringHole;
         let reason = null;
         if (!isAvailable) {
-          if (!anyScheduleOk) reason = "out-of-schedule";
-          else if (anyOccupied && !anyFreeIgnoringHole) reason = "occupied";
+          if (!anyScheduleOk) reason = 'out-of-schedule';
+          else if (anyOccupied && !anyFreeIgnoringHole) reason = 'occupied';
         }
 
         // Mostra lo slot se non si filtra o se è disponibile
@@ -447,24 +414,19 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
   const handleBooking = async () => {
     if (!user) {
       setMessage({
-        type: "error",
-        text: "Devi effettuare il login per prenotare un campo",
+        type: 'error',
+        text: 'Devi effettuare il login per prenotare un campo',
       });
       return;
     }
 
     if (!selectedDate || !selectedTime || !selectedCourt) {
-      setMessage({ type: "error", text: "Seleziona data, orario e campo" });
+      setMessage({ type: 'error', text: 'Seleziona data, orario e campo' });
       return;
     }
 
     // Controlla la disponibilità usando unified service
-    const isAvailable = isSlotAvailable(
-      selectedCourt.id,
-      selectedDate,
-      selectedTime,
-      duration,
-    );
+    const isAvailable = isSlotAvailable(selectedCourt.id, selectedDate, selectedTime, duration);
     if (!isAvailable) {
       // Mostra animazione di errore
       setShowErrorAnimation(true);
@@ -478,29 +440,25 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
     // Controllo esplicito di sovrapposizione nel modal di conferma
     const startDateTime = new Date(`${selectedDate}T${selectedTime}:00`);
     const endDateTime = new Date(startDateTime.getTime() + duration * 60000);
-    
+
     const hasOverlap = allBookings.some((booking) => {
       if (booking.courtId !== selectedCourt.id) return false;
-      
+
       // Salta prenotazioni cancellate
       const status = booking.status || 'confirmed';
       if (status === 'cancelled') return false;
-      
+
       // Calcola inizio e fine della prenotazione esistente
-      const bookingStart = new Date(
-        booking.start || `${booking.date}T${booking.time}:00`
-      );
-      const bookingEnd = new Date(
-        bookingStart.getTime() + (booking.duration || 60) * 60000
-      );
-      
+      const bookingStart = new Date(booking.start || `${booking.date}T${booking.time}:00`);
+      const bookingEnd = new Date(bookingStart.getTime() + (booking.duration || 60) * 60000);
+
       // Controlla sovrapposizione
       return startDateTime < bookingEnd && endDateTime > bookingStart;
     });
-    
+
     if (hasOverlap) {
       setMessage({
-        type: "error",
+        type: 'error',
         text: `❌ Prenotazione non consentita: si sovrappone con una prenotazione esistente. Scegli un orario diverso.`,
       });
       // Mostra animazione di errore
@@ -516,11 +474,11 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       selectedCourt.id,
       selectedDate,
       selectedTime,
-      duration,
+      duration
     );
     if (wouldCreateHole) {
       setMessage({
-        type: "error",
+        type: 'error',
         text: `❌ Prenotazione non consentita: creerebbe uno slot di 30 minuti non utilizzabile. Scegli un orario diverso.`,
       });
       // Mostra animazione di errore
@@ -533,7 +491,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
 
     setIsSubmitting(true);
     setMessage(null);
-    
+
     // Track booking attempt
     trackBooking.createAttempt(selectedCourt?.type || 'court');
     trackFunnelStep(ConversionFunnels.BOOKING_FLOW.name, 'booking_confirmation');
@@ -553,19 +511,16 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
           cfg,
           { lighting: !!lighting, heating: !!heating },
           selectedCourt.id,
-          courtsFromState,
+          courtsFromState
         ),
-        userPhone: "",
-        notes: "",
-        players: [
-          user.displayName || user.email,
-          ...additionalPlayers.map((p) => p.name),
-        ],
-        type: "court",
+        userPhone: '',
+        notes: '',
+        players: [user.displayName || user.email, ...additionalPlayers.map((p) => p.name)],
+        type: 'court',
       };
 
-  await createUnifiedBooking({ ...bookingData, clubId: clubId || selectedClub?.id });
-      
+      await createUnifiedBooking({ ...bookingData, clubId: clubId || selectedClub?.id });
+
       // Track successful booking
       trackBooking.createSuccess(
         `booking-${Date.now()}`,
@@ -579,21 +534,19 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         const toAppBooking = {
           id: `booking-${Date.now()}`,
           courtId: bookingData.courtId,
-          start: new Date(
-            `${bookingData.date}T${bookingData.time}:00`,
-          ).toISOString(),
+          start: new Date(`${bookingData.date}T${bookingData.time}:00`).toISOString(),
           duration: bookingData.duration,
           players: [],
           playerNames: additionalPlayers.map((p) => p.name),
           guestNames: additionalPlayers.map((p) => p.name),
           price: bookingData.price,
-          note: bookingData.notes || "",
-          bookedByName: user.displayName || user.email || "",
+          note: bookingData.notes || '',
+          bookedByName: user.displayName || user.email || '',
           addons: {
             lighting: !!bookingData.lighting,
             heating: !!bookingData.heating,
           },
-          status: "booked",
+          status: 'booked',
           createdAt: Date.now(),
         };
 
@@ -608,27 +561,27 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       }, 3000);
 
       // Ripristina il modulo
-      setSelectedTime("");
+      setSelectedTime('');
       setSelectedCourt(null);
       setLighting(false);
       setHeating(false);
-      setUserPhone("");
-      setNotes("");
+      setUserPhone('');
+      setNotes('');
       setAdditionalPlayers([]);
-      setNewPlayerName("");
+      setNewPlayerName('');
       setShowBookingModal(false);
 
       setMessage({
-        type: "success",
-        text: `Prenotazione confermata! Campo ${selectedCourt?.name} il ${new Date(selectedDate).toLocaleDateString("it-IT")} alle ${selectedTime}`,
+        type: 'success',
+        text: `Prenotazione confermata! Campo ${selectedCourt?.name} il ${new Date(selectedDate).toLocaleDateString('it-IT')} alle ${selectedTime}`,
       });
     } catch (error) {
       // Track failed booking
       trackBooking.createFailed(error.message, selectedCourt?.type || 'court');
-      
+
       setMessage({
-        type: "error",
-        text: "Errore durante la prenotazione. Riprova.",
+        type: 'error',
+        text: 'Errore durante la prenotazione. Riprova.',
       });
     } finally {
       setIsSubmitting(false);
@@ -646,26 +599,20 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
     const stillAvailable = courtsFromState.some((court) => {
       const dt = new Date(`${selectedDate}T${timeSlot.time}:00`);
       const scheduleOk = isCourtBookableAt(dt, court.id, courtsFromState);
-      const free = isSlotAvailable(
-        court.id,
-        selectedDate,
-        timeSlot.time,
-        duration,
-        allBookings,
-      );
+      const free = isSlotAvailable(court.id, selectedDate, timeSlot.time, duration, allBookings);
       const hole = wouldCreateHalfHourHole(
         court.id,
         selectedDate,
         timeSlot.time,
         duration,
-        allBookings,
+        allBookings
       );
       const isTrapped = isTimeSlotTrapped(
         court.id,
         selectedDate,
         timeSlot.time,
         duration,
-        allBookings,
+        allBookings
       );
       // Deroga per slot intrappolati: è disponibile anche se crea buco
       return scheduleOk && free && (!hole || isTrapped);
@@ -673,19 +620,19 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
 
     if (!stillAvailable) {
       setMessage({
-        type: "error",
-        text: "Questo orario è appena stato prenotato. Seleziona un altro slot.",
+        type: 'error',
+        text: 'Questo orario è appena stato prenotato. Seleziona un altro slot.',
       });
       return;
     }
 
     // Imposta l'orario selezionato - lo scroll avverrà nel useEffect
     setSelectedTime(timeSlot.time);
-    
+
     // Track time selection in booking funnel
     trackFunnelStep(ConversionFunnels.BOOKING_FLOW.name, 'time_selection', {
       selected_time: timeSlot.time,
-      selected_date: selectedDate
+      selected_date: selectedDate,
     });
 
     // Se c'è solo un campo disponibile, selezionalo automaticamente
@@ -698,14 +645,14 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         selectedDate,
         timeSlot.time,
         duration,
-        allBookings,
+        allBookings
       );
       const isTrapped = isTimeSlotTrapped(
         court.id,
         selectedDate,
         timeSlot.time,
         duration,
-        allBookings,
+        allBookings
       );
       // Deroga per slot intrappolati: è disponibile anche se crea buco
       return scheduleOk && free && (!hole || isTrapped);
@@ -727,7 +674,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
           name: newPlayerName.trim(),
         },
       ]);
-      setNewPlayerName("");
+      setNewPlayerName('');
     }
   };
 
@@ -743,37 +690,25 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
           cfg,
           { lighting, heating },
           selectedCourt.id,
-          courtsFromState,
+          courtsFromState
         )
       : 0;
-
-
 
   // Helper: verifica se una specifica durata è prenotabile per il campo/ora selezionati
   const isDurationOptionBookable = useCallback(
     (dur) => {
       if (!selectedCourt || !selectedDate || !selectedTime) return false;
-      
+
       const dt = new Date(`${selectedDate}T${selectedTime}:00`);
       const scheduleOk = isDurationWithinSchedule(dt, dur, selectedCourt.id);
       if (!scheduleOk) return false;
-      
+
       // Usa isSlotAvailable che già gestisce correttamente le sovrapposizioni
-      const free = isSlotAvailable(
-        selectedCourt.id,
-        selectedDate,
-        selectedTime,
-        dur,
-      );
+      const free = isSlotAvailable(selectedCourt.id, selectedDate, selectedTime, dur);
       if (!free) return false;
-      
-      const hole = wouldCreateHalfHourHole(
-        selectedCourt.id,
-        selectedDate,
-        selectedTime,
-        dur,
-      );
-      
+
+      const hole = wouldCreateHalfHourHole(selectedCourt.id, selectedDate, selectedTime, dur);
+
       // Applica deroga per slot intrappolati: se crea buco ma è intrappolato, è comunque prenotabile
       if (hole) {
         const isTrapped = isTimeSlotTrapped(
@@ -781,7 +716,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
           selectedDate,
           selectedTime,
           dur,
-          allBookings,
+          allBookings
         );
         if (!isTrapped) return false; // Se crea buco e NON è intrappolato, non prenotabile
       }
@@ -796,58 +731,47 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       isSlotAvailable,
       wouldCreateHalfHourHole,
       isTimeSlotTrapped,
-    ],
+    ]
   );
 
   // Elenco durate effettivamente disponibili in base a regole e fascia
   const effectiveAvailableDurations = useMemo(() => {
-    const candidates = [60, 90, 120].filter((d) =>
-      allowedDurations.includes(d),
-    );
+    const candidates = [60, 90, 120].filter((d) => allowedDurations.includes(d));
     if (!selectedCourt || !selectedDate || !selectedTime) return candidates; // niente da filtrare finché non selezionati
     return candidates.filter((d) => isDurationOptionBookable(d));
-  }, [
-    allowedDurations,
-    selectedCourt,
-    selectedDate,
-    selectedTime,
-    isDurationOptionBookable,
-  ]);
+  }, [allowedDurations, selectedCourt, selectedDate, selectedTime, isDurationOptionBookable]);
 
   // Se la durata corrente non è disponibile, auto-seleziona la prima disponibile
   useEffect(() => {
     if (!effectiveAvailableDurations.includes(duration)) {
-      if (effectiveAvailableDurations.length)
-        setDuration(effectiveAvailableDurations[0]);
+      if (effectiveAvailableDurations.length) setDuration(effectiveAvailableDurations[0]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [effectiveAvailableDurations.join(",")]);
+  }, [effectiveAvailableDurations.join(',')]);
 
   // Logica di filtraggio per tipologia campo
   const availableCourtTypes = useMemo(() => {
-    return [...new Set(courtsFromState.map(court => court.courtType).filter(Boolean))];
+    return [...new Set(courtsFromState.map((court) => court.courtType).filter(Boolean))];
   }, [courtsFromState]);
 
   const courtTypeCounts = useMemo(() => {
     return availableCourtTypes.reduce((acc, type) => {
-      acc[type] = courtsFromState.filter(court => court.courtType === type).length;
+      acc[type] = courtsFromState.filter((court) => court.courtType === type).length;
       return acc;
     }, {});
   }, [availableCourtTypes, courtsFromState]);
 
   const filteredCourtsForDisplay = useMemo(() => {
-    return activeCourtFilter === "all" 
-      ? courtsFromState 
-      : courtsFromState.filter(court => court.courtType === activeCourtFilter);
+    return activeCourtFilter === 'all'
+      ? courtsFromState
+      : courtsFromState.filter((court) => court.courtType === activeCourtFilter);
   }, [activeCourtFilter, courtsFromState]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header mobile-friendly */}
       <div className="bg-white dark:bg-gray-800 border-b dark:border-emerald-600 px-4 py-3 sm:hidden">
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Prenota Campo
-        </h1>
+        <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Prenota Campo</h1>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-6">
@@ -855,9 +779,9 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         {message && (
           <div
             className={`mb-6 p-3 sm:p-4 rounded-lg text-sm ${
-              message.type === "error"
-                ? "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
-                : "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800"
+              message.type === 'error'
+                ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800'
+                : 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
             }`}
           >
             {message.text}
@@ -870,36 +794,31 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
             Seleziona il giorno
           </h2>
           <div className="overflow-x-auto scrollbar-hide">
-            <div
-              className="flex gap-2 pb-2"
-              style={{ minWidth: "max-content" }}
-            >
+            <div className="flex gap-2 pb-2" style={{ minWidth: 'max-content' }}>
               {availableDays.slice(0, 10).map((day) => (
                 <button
                   key={day.date}
                   onClick={() => {
                     setSelectedDate(day.date);
-                    setSelectedTime("");
+                    setSelectedTime('');
                     setSelectedCourt(null);
-                    
+
                     // Track date selection in booking funnel
                     trackFunnelStep(ConversionFunnels.BOOKING_FLOW.name, 'court_selection', {
-                      selected_date: day.date
+                      selected_date: day.date,
                     });
-                    
+
                     // Scorri agli orari quando si seleziona un giorno
                     scrollToSection(timeSectionRef, 200);
                   }}
                   className={`flex-shrink-0 p-2 sm:p-3 rounded-lg border-2 text-center transition-all min-w-[60px] sm:min-w-[80px] ${
                     selectedDate === day.date
-                      ? "bg-blue-500 text-white border-blue-500 shadow-md"
-                      : "bg-emerald-50/70 dark:bg-gray-700/50 border-emerald-200 dark:border-gray-600 hover:border-emerald-300 dark:hover:border-gray-500 hover:bg-emerald-100 dark:hover:bg-gray-600 active:bg-emerald-100 dark:active:bg-gray-600 text-gray-900 dark:text-gray-100"
+                      ? 'bg-blue-500 text-white border-blue-500 shadow-md'
+                      : 'bg-emerald-50/70 dark:bg-gray-700/50 border-emerald-200 dark:border-gray-600 hover:border-emerald-300 dark:hover:border-gray-500 hover:bg-emerald-100 dark:hover:bg-gray-600 active:bg-emerald-100 dark:active:bg-gray-600 text-gray-900 dark:text-gray-100'
                   }`}
                 >
                   <div className="text-xs font-medium mb-1">{day.dayName}</div>
-                  <div className="text-base sm:text-lg font-bold">
-                    {day.dayNumber}
-                  </div>
+                  <div className="text-base sm:text-lg font-bold">{day.dayNumber}</div>
                   <div className="text-xs opacity-75">{day.monthName}</div>
                 </button>
               ))}
@@ -924,9 +843,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                   onChange={(e) => setShowOnlyAvailable(e.target.checked)}
                   className="rounded text-blue-500"
                 />
-                <span className="text-gray-600 dark:text-gray-300">
-                  Solo orari disponibili
-                </span>
+                <span className="text-gray-600 dark:text-gray-300">Solo orari disponibili</span>
               </label>
             </div>
 
@@ -938,20 +855,16 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                   disabled={!slot.isAvailable}
                   className={`p-3 sm:p-3 rounded-lg border-2 text-center transition-all relative min-h-[56px] touch-manipulation ${
                     selectedTime === slot.time
-                      ? "bg-blue-500 text-white border-blue-500 shadow-md"
+                      ? 'bg-blue-500 text-white border-blue-500 shadow-md'
                       : slot.isAvailable
-                        ? "bg-emerald-50/70 dark:bg-gray-700/50 border-emerald-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100"
-                        : "bg-gray-100 dark:bg-gray-800 border-emerald-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                        ? 'bg-emerald-50/70 dark:bg-gray-700/50 border-emerald-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100'
+                        : 'bg-gray-100 dark:bg-gray-800 border-emerald-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                   }`}
                 >
-                  <div className="font-medium text-sm sm:text-base">
-                    {slot.time}
-                  </div>
+                  <div className="font-medium text-sm sm:text-base">{slot.time}</div>
                   {!slot.isAvailable && (
                     <div className="text-xs mt-1">
-                      {slot.reason === "out-of-schedule"
-                        ? "Fuori orario disponibile"
-                        : "Occupato"}
+                      {slot.reason === 'out-of-schedule' ? 'Fuori orario disponibile' : 'Occupato'}
                     </div>
                   )}
                 </button>
@@ -961,8 +874,8 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
             {timeSlots.length === 0 && (
               <div className="text-center py-8 text-gray-500">
                 {showOnlyAvailable
-                  ? "Nessun orario disponibile per questo giorno"
-                  : "Nessun orario configurato"}
+                  ? 'Nessun orario disponibile per questo giorno'
+                  : 'Nessun orario configurato'}
               </div>
             )}
           </div>
@@ -985,11 +898,11 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => setActiveCourtFilter("all")}
+                    onClick={() => setActiveCourtFilter('all')}
                     className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
-                      activeCourtFilter === "all"
-                        ? "bg-blue-500 text-white shadow-lg"
-                        : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                      activeCourtFilter === 'all'
+                        ? 'bg-blue-500 text-white shadow-lg'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30'
                     }`}
                   >
                     Tutti ({courtsFromState.length})
@@ -1001,8 +914,8 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       onClick={() => setActiveCourtFilter(type)}
                       className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                         activeCourtFilter === type
-                          ? "bg-blue-500 text-white shadow-lg"
-                          : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                          ? 'bg-blue-500 text-white shadow-lg'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30'
                       }`}
                     >
                       {type} ({courtTypeCounts[type]})
@@ -1013,12 +926,14 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
             </div>
 
             {/* Messaggio quando nessun campo corrisponde al filtro */}
-            {filteredCourtsForDisplay.length === 0 && activeCourtFilter !== "all" && (
+            {filteredCourtsForDisplay.length === 0 && activeCourtFilter !== 'all' && (
               <div className="mb-4 text-center py-4 px-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
-                <div className="text-sm text-gray-600 dark:text-gray-400">Nessun campo di tipo "{activeCourtFilter}" disponibile</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  Nessun campo di tipo "{activeCourtFilter}" disponibile
+                </div>
                 <button
                   type="button"
-                  onClick={() => setActiveCourtFilter("all")}
+                  onClick={() => setActiveCourtFilter('all')}
                   className="mt-2 text-xs text-blue-600 dark:text-blue-400 hover:underline font-medium"
                 >
                   Mostra tutti i campi
@@ -1029,25 +944,12 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
             <div className="space-y-3 sm:space-y-4">
               {filteredCourtsForDisplay.map((court) => {
                 const slotDate = new Date(`${selectedDate}T${selectedTime}:00`);
-                const isWithinSchedule = isCourtBookableAt(
-                  slotDate,
-                  court.id,
-                  courtsFromState,
-                );
-                const free = checkSlotAvailability(
-                  court.id,
-                  selectedDate,
-                  selectedTime,
-                );
+                const isWithinSchedule = isCourtBookableAt(slotDate, court.id, courtsFromState);
+                const free = checkSlotAvailability(court.id, selectedDate, selectedTime);
                 const createsHole =
                   isWithinSchedule &&
                   free &&
-                  wouldCreateHalfHourHole(
-                    court.id,
-                    selectedDate,
-                    selectedTime,
-                    duration,
-                  );
+                  wouldCreateHalfHourHole(court.id, selectedDate, selectedTime, duration);
 
                 // Simplified logic: wouldCreateHalfHourHole already handles 120min exemption internally
                 const isAvailable = isWithinSchedule && free && !createsHole;
@@ -1058,19 +960,19 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       if (isAvailable) {
                         setSelectedCourt(court);
                         setShowBookingModal(true);
-                        
+
                         // Track court selection in booking funnel
                         trackFunnelStep(ConversionFunnels.BOOKING_FLOW.name, 'player_selection', {
                           court_id: court.id,
                           court_name: court.name,
-                          court_type: court.type
+                          court_type: court.type,
                         });
                       }
                     }}
                     className={`border-2 rounded-xl p-4 sm:p-5 transition-all duration-300 touch-manipulation ${
                       isAvailable
-                        ? "bg-emerald-50/70 dark:bg-gray-700/50 border-emerald-200 dark:border-gray-600 hover:shadow-lg hover:shadow-blue-100 dark:hover:shadow-blue-900/20 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 active:bg-blue-100 dark:active:bg-blue-900/20 transform hover:scale-105 hover:-translate-y-1"
-                        : "bg-gray-100 dark:bg-gray-800 border-emerald-300 dark:border-gray-700 cursor-not-allowed opacity-60"
+                        ? 'bg-emerald-50/70 dark:bg-gray-700/50 border-emerald-200 dark:border-gray-600 hover:shadow-lg hover:shadow-blue-100 dark:hover:shadow-blue-900/20 cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 active:bg-blue-100 dark:active:bg-blue-900/20 transform hover:scale-105 hover:-translate-y-1'
+                        : 'bg-gray-100 dark:bg-gray-800 border-emerald-300 dark:border-gray-700 cursor-not-allowed opacity-60'
                     }`}
                   >
                     <div className="flex justify-between items-start">
@@ -1080,8 +982,8 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                             <h3
                               className={`font-bold text-base sm:text-lg ${
                                 isAvailable
-                                  ? "text-gray-900 dark:text-white"
-                                  : "text-gray-500 dark:text-gray-400"
+                                  ? 'text-gray-900 dark:text-white'
+                                  : 'text-gray-500 dark:text-gray-400'
                               }`}
                             >
                               {court.name}
@@ -1100,7 +1002,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                           selectedTime &&
                           hasPromoSlot(
                             court.id,
-                            new Date(`${selectedDate}T${selectedTime}:00`),
+                            new Date(`${selectedDate}T${selectedTime}:00`)
                           ) && (
                             <div className="mb-3">
                               <Badge variant="success" size="sm" T={T}>
@@ -1109,20 +1011,18 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                             </div>
                           )}
 
-                        {isAvailable &&
-                          court.features &&
-                          court.features.length > 0 && (
-                            <div className="flex flex-wrap gap-1.5 mb-3">
-                              {court.features.map((feature, index) => (
-                                <span
-                                  key={index}
-                                  className="px-2.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full border border-blue-200 dark:border-blue-700"
-                                >
-                                  {feature}
-                                </span>
-                              ))}
-                            </div>
-                          )}
+                        {isAvailable && court.features && court.features.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mb-3">
+                            {court.features.map((feature, index) => (
+                              <span
+                                key={index}
+                                className="px-2.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full border border-blue-200 dark:border-blue-700"
+                              >
+                                {feature}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       <div className="text-right flex flex-col items-end">
@@ -1136,27 +1036,25 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                                   cfg,
                                   {},
                                   court.id,
-                                  courtsFromState,
+                                  courtsFromState
                                 )}
                                 €
                               </div>
-                              <div className="text-xs opacity-90">
-                                90 minuti
-                              </div>
+                              <div className="text-xs opacity-90">90 minuti</div>
                             </div>
                             <div className="bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-lg text-xs font-medium">
                               {(
                                 computePrice(
-                                  new Date(
-                                    `${selectedDate}T${selectedTime}:00`,
-                                  ),
+                                  new Date(`${selectedDate}T${selectedTime}:00`),
                                   90,
                                   cfg,
                                   {},
                                   court.id,
-                                  courtsFromState,
+                                  courtsFromState
                                 ) / Math.max(1, court.maxPlayers || 4)
-                              ).toFixed(1).replace('.', ',')}
+                              )
+                                .toFixed(1)
+                                .replace('.', ',')}
                               € x {court.maxPlayers || 4} Giocatori
                             </div>
                           </>
@@ -1166,9 +1064,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                               Non disponibile
                             </div>
                             <div className="text-xs text-red-500 dark:text-red-400">
-                              {!isWithinSchedule
-                                ? "Fuori orario"
-                                : "Già prenotato"}
+                              {!isWithinSchedule ? 'Fuori orario' : 'Già prenotato'}
                             </div>
                           </div>
                         )}
@@ -1220,10 +1116,10 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                   <div className="flex items-center gap-2">
                     <span className="text-blue-500">📅</span>
                     <span>
-                      {new Date(selectedDate).toLocaleDateString("it-IT", {
-                        weekday: "short",
-                        day: "numeric",
-                        month: "short",
+                      {new Date(selectedDate).toLocaleDateString('it-IT', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short',
                       })}
                     </span>
                   </div>
@@ -1251,10 +1147,12 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       cfg,
                       { lighting, heating },
                       selectedCourt.id,
-                      courtsFromState,
+                      courtsFromState
                     );
                     const maxPlayers = selectedCourt?.maxPlayers || 4;
-                    const pricePerPerson = (price / Math.max(1, maxPlayers)).toFixed(1).replace('.', ',');
+                    const pricePerPerson = (price / Math.max(1, maxPlayers))
+                      .toFixed(1)
+                      .replace('.', ',');
                     const isAllowedDuration = allowedDurations.includes(dur);
 
                     // Use the comprehensive booking validation logic
@@ -1267,15 +1165,15 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                         disabled={!isBookableDuration}
                         className={`p-4 rounded-xl border-2 text-center transition-all touch-manipulation ${
                           !isBookableDuration
-                            ? "bg-red-50 dark:bg-red-900/30 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed"
+                            ? 'bg-red-50 dark:bg-red-900/30 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 cursor-not-allowed'
                             : duration === dur
-                              ? "bg-blue-500 text-white border-blue-500 shadow-lg scale-105"
-                              : "bg-white dark:bg-gray-700 border-emerald-200 dark:border-emerald-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100"
+                              ? 'bg-blue-500 text-white border-blue-500 shadow-lg scale-105'
+                              : 'bg-white dark:bg-gray-700 border-emerald-200 dark:border-emerald-600 hover:border-blue-300 dark:hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 active:bg-blue-100 dark:active:bg-blue-900/50 text-gray-900 dark:text-gray-100'
                         }`}
                         title={
                           !isBookableDuration
-                            ? "Questa durata creerebbe un buco di 30 minuti non utilizzabile"
-                            : ""
+                            ? 'Questa durata creerebbe un buco di 30 minuti non utilizzabile'
+                            : ''
                         }
                       >
                         {!isBookableDuration ? (
@@ -1288,9 +1186,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                         ) : (
                           <>
                             <div className="font-bold text-lg">{dur}min</div>
-                            <div className="text-lg font-bold mt-1">
-                              {price}€
-                            </div>
+                            <div className="text-lg font-bold mt-1">{price}€</div>
                             <div className="text-xs opacity-75 mt-1">
                               {pricePerPerson}€/Giocatore
                             </div>
@@ -1328,26 +1224,25 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                         <span className="text-2xl">💡</span>
                       </label>
                     )}
-                    {cfg.addons?.heatingEnabled &&
-                      selectedCourt?.hasHeating && (
-                        <label className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 touch-manipulation">
-                          <input
-                            type="checkbox"
-                            checked={heating}
-                            onChange={(e) => setHeating(e.target.checked)}
-                            className="rounded w-5 h-5 text-blue-500"
-                          />
-                          <div className="flex-1">
-                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                              Riscaldamento
-                            </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">
-                              +{cfg.addons?.heatingFee || 0}€
-                            </div>
+                    {cfg.addons?.heatingEnabled && selectedCourt?.hasHeating && (
+                      <label className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 touch-manipulation">
+                        <input
+                          type="checkbox"
+                          checked={heating}
+                          onChange={(e) => setHeating(e.target.checked)}
+                          className="rounded w-5 h-5 text-blue-500"
+                        />
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            Riscaldamento
                           </div>
-                          <span className="text-2xl">🔥</span>
-                        </label>
-                      )}
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                            +{cfg.addons?.heatingFee || 0}€
+                          </div>
+                        </div>
+                        <span className="text-2xl">🔥</span>
+                      </label>
+                    )}
                   </div>
                 </div>
               )}
@@ -1410,7 +1305,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       type="text"
                       value={newPlayerName}
                       onChange={(e) => setNewPlayerName(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && addPlayer()}
+                      onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
                       placeholder="Nome nuovo giocatore"
                       className="flex-1 p-3 border-2 border-emerald-200 dark:border-emerald-600 rounded-xl text-sm focus:border-blue-500 focus:outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                     />
@@ -1440,7 +1335,10 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                     Costo per giocatore
                   </span>
                   <span className="text-lg font-semibold text-green-600 dark:text-green-400">
-                    {(totalPrice / Math.max(1, selectedCourt?.maxPlayers || 4)).toFixed(1).replace('.', ',')}€ x {selectedCourt?.maxPlayers || 4} Giocatori
+                    {(totalPrice / Math.max(1, selectedCourt?.maxPlayers || 4))
+                      .toFixed(1)
+                      .replace('.', ',')}
+                    € x {selectedCourt?.maxPlayers || 4} Giocatori
                   </span>
                 </div>
                 <div className="mt-2 pt-2 border-t border-green-200 dark:border-green-700">
@@ -1527,12 +1425,12 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                     left: `${20 + i * 10}%`,
                     top: `${15 + (i % 3) * 25}%`,
                     animationDelay: `${i * 0.2}s`,
-                    animationDuration: '2s'
+                    animationDuration: '2s',
                   }}
                 />
               ))}
             </div>
-            
+
             {/* Main content */}
             <div className="relative z-10">
               <div className="mb-6">
@@ -1547,7 +1445,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       style={{
                         strokeDasharray: '24',
                         strokeDashoffset: '0',
-                        animation: 'drawCheck 0.8s ease-in-out'
+                        animation: 'drawCheck 0.8s ease-in-out',
                       }}
                     >
                       <path
@@ -1559,11 +1457,14 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                     </svg>
                     {/* Sparkle effect */}
                     <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
-                    <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-blue-300 rounded-full animate-ping" style={{animationDelay: '0.3s'}}></div>
+                    <div
+                      className="absolute -bottom-1 -left-1 w-2 h-2 bg-blue-300 rounded-full animate-ping"
+                      style={{ animationDelay: '0.3s' }}
+                    ></div>
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white animate-fade-in">
                   🎾 Fantastico!
@@ -1576,16 +1477,18 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                     Il tuo campo è stato riservato con successo
                   </p>
                 </div>
-                
+
                 {/* Campo info recap */}
                 <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl">
                   <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                     <span>📅</span>
-                    <span>{new Date(selectedDate).toLocaleDateString('it-IT', { 
-                      weekday: 'short', 
-                      day: 'numeric', 
-                      month: 'short' 
-                    })}</span>
+                    <span>
+                      {new Date(selectedDate).toLocaleDateString('it-IT', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short',
+                      })}
+                    </span>
                     <span>•</span>
                     <span>🕐 {selectedTime}</span>
                     <span>•</span>
@@ -1593,12 +1496,18 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-6 text-xs text-gray-400 dark:text-gray-500 animate-fade-in">
                 <div className="flex items-center justify-center gap-1">
                   <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse"></div>
-                  <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
-                  <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+                  <div
+                    className="w-1 h-1 bg-gray-400 rounded-full animate-pulse"
+                    style={{ animationDelay: '0.2s' }}
+                  ></div>
+                  <div
+                    className="w-1 h-1 bg-gray-400 rounded-full animate-pulse"
+                    style={{ animationDelay: '0.4s' }}
+                  ></div>
                 </div>
                 <p className="mt-2">Chiusura automatica in corso...</p>
               </div>
@@ -1632,8 +1541,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
               Slot già prenotato! ⚠️
             </h3>
             <p className="text-gray-600 dark:text-gray-300 text-sm">
-              Questo orario è già stato prenotato da qualcun altro. Seleziona un
-              altro orario.
+              Questo orario è già stato prenotato da qualcun altro. Seleziona un altro orario.
             </p>
             <button
               onClick={() => setShowErrorAnimation(false)}

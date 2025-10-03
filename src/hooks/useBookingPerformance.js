@@ -1,8 +1,8 @@
 // =============================================
 // FILE: src/hooks/useBookingPerformance.js
 // =============================================
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { useAuth } from "@contexts/AuthContext.jsx";
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useAuth } from '@contexts/AuthContext.jsx';
 
 // Global cache per evitare duplicati di chiamate
 const bookingCache = new Map();
@@ -27,8 +27,12 @@ export function useUserBookingsFast(options = {}) {
   // Load bookings with deduplication
   const loadBookings = useCallback(
     async (force = false) => {
-      console.log('📖 [useUserBookingsFast] loadBookings called:', { userId: user?.uid, force, cacheKey });
-      
+      console.log('📖 [useUserBookingsFast] loadBookings called:', {
+        userId: user?.uid,
+        force,
+        cacheKey,
+      });
+
       if (!user?.uid) {
         console.log('❌ [useUserBookingsFast] No user ID, returning empty');
         setBookings([]);
@@ -97,7 +101,7 @@ export function useUserBookingsFast(options = {}) {
 
         return result;
       } catch (err) {
-        console.error("❌ [useUserBookingsFast] Error loading user bookings:", err);
+        console.error('❌ [useUserBookingsFast] Error loading user bookings:', err);
         if (mountedRef.current) {
           setError(err);
         }
@@ -109,7 +113,7 @@ export function useUserBookingsFast(options = {}) {
         }
       }
     },
-    [user?.uid, cacheKey],
+    [user?.uid, cacheKey]
   );
 
   // Initial load
@@ -130,7 +134,7 @@ export function useUserBookingsFast(options = {}) {
     if (!enableBackground || !user?.uid) return;
 
     intervalRef.current = setInterval(() => {
-      if (mountedRef.current && document.visibilityState === "visible") {
+      if (mountedRef.current && document.visibilityState === 'visible') {
         loadBookings(true);
       }
     }, refreshInterval);
@@ -146,7 +150,7 @@ export function useUserBookingsFast(options = {}) {
   const activeBookings = bookings;
 
   const todayBookings = useMemo(() => {
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split('T')[0];
     return activeBookings.filter((booking) => booking.date === today);
   }, [activeBookings]);
 
@@ -175,7 +179,7 @@ export function useUserBookingsFast(options = {}) {
  */
 async function loadUserBookingsOptimized(user) {
   console.log('🔍 [loadUserBookingsOptimized] Starting for user:', user?.uid);
-  
+
   if (!user?.uid) {
     console.log('❌ [loadUserBookingsOptimized] No user ID');
     return [];
@@ -190,39 +194,43 @@ async function loadUserBookingsOptimized(user) {
     ]);
 
     console.log('📊 [loadUserBookingsOptimized] Results:', {
-      cloud: cloudBookings.status === 'fulfilled' ? cloudBookings.value.length : `failed: ${cloudBookings.reason}`,
-      local: localBookings.status === 'fulfilled' ? localBookings.value.length : `failed: ${localBookings.reason}`
+      cloud:
+        cloudBookings.status === 'fulfilled'
+          ? cloudBookings.value.length
+          : `failed: ${cloudBookings.reason}`,
+      local:
+        localBookings.status === 'fulfilled'
+          ? localBookings.value.length
+          : `failed: ${localBookings.reason}`,
     });
 
     let allBookings = [];
 
     // Merge results con priorità al cloud
-    if (
-      cloudBookings.status === "fulfilled" &&
-      cloudBookings.value.length > 0
-    ) {
-      console.log('✅ [loadUserBookingsOptimized] Using cloud bookings:', cloudBookings.value.length);
+    if (cloudBookings.status === 'fulfilled' && cloudBookings.value.length > 0) {
+      console.log(
+        '✅ [loadUserBookingsOptimized] Using cloud bookings:',
+        cloudBookings.value.length
+      );
       allBookings = cloudBookings.value;
     }
 
-    if (
-      localBookings.status === "fulfilled" &&
-      localBookings.value.length > 0
-    ) {
+    if (localBookings.status === 'fulfilled' && localBookings.value.length > 0) {
       // Se non abbiamo cloud bookings, usa local
       if (allBookings.length === 0) {
-        console.log('✅ [loadUserBookingsOptimized] Using local bookings (no cloud):', localBookings.value.length);
+        console.log(
+          '✅ [loadUserBookingsOptimized] Using local bookings (no cloud):',
+          localBookings.value.length
+        );
         allBookings = localBookings.value;
       } else {
         // Merge senza duplicati
         const bookingIds = new Set(allBookings.map((b) => b.id));
-        const uniqueLocal = localBookings.value.filter(
-          (b) => !bookingIds.has(b.id),
-        );
+        const uniqueLocal = localBookings.value.filter((b) => !bookingIds.has(b.id));
         console.log('✅ [loadUserBookingsOptimized] Merged cloud + local:', {
           cloud: allBookings.length,
           uniqueLocal: uniqueLocal.length,
-          total: allBookings.length + uniqueLocal.length
+          total: allBookings.length + uniqueLocal.length,
         });
         allBookings = [...allBookings, ...uniqueLocal];
       }
@@ -232,21 +240,21 @@ async function loadUserBookingsOptimized(user) {
     const now = new Date();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const futureBookings = allBookings
       .filter((booking) => {
         const bookingDate = new Date(booking.date);
         const isToday = bookingDate.toDateString() === today.toDateString();
         const isFuture = bookingDate > today;
-        
+
         if (isFuture) return true;
-        
+
         // For today, check if the booking time is still active
         if (isToday && booking.time) {
           const bookingDateTime = new Date(`${booking.date}T${booking.time}`);
           return bookingDateTime > now;
         }
-        
+
         return false;
       })
       .sort((a, b) => {
@@ -254,11 +262,11 @@ async function loadUserBookingsOptimized(user) {
         const dateB = new Date(`${b.date}T${b.time || '00:00'}:00`);
         return dateA - dateB;
       });
-    
+
     console.log('🎯 [loadUserBookingsOptimized] Final future bookings:', futureBookings.length);
     return futureBookings;
   } catch (error) {
-    console.error("❌ [loadUserBookingsOptimized] Error:", error);
+    console.error('❌ [loadUserBookingsOptimized] Error:', error);
     return [];
   }
 }
@@ -269,22 +277,18 @@ async function loadUserBookingsOptimized(user) {
 async function loadFromCloud(userId, userInfo = {}) {
   console.log('☁️ [loadFromCloud] Starting for user:', userId, 'with info:', userInfo);
   try {
-    const { loadActiveUserBookings } = await import(
-      "@services/cloud-bookings.js"
-    );
+    const { loadActiveUserBookings } = await import('@services/cloud-bookings.js');
 
     // Promise con timeout per evitare attese infinite
     const result = await Promise.race([
       loadActiveUserBookings(userId, undefined, userInfo),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Cloud timeout")), 5000),
-      ),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Cloud timeout')), 5000)),
     ]);
-    
+
     console.log('✅ [loadFromCloud] Success:', result.length);
     return result;
   } catch (error) {
-    console.warn("⚠️ [loadFromCloud] Failed:", error.message);
+    console.warn('⚠️ [loadFromCloud] Failed:', error.message);
     return [];
   }
 }
@@ -295,12 +299,12 @@ async function loadFromCloud(userId, userInfo = {}) {
 async function loadFromLocal(user) {
   console.log('💾 [loadFromLocal] Starting for user:', user?.uid);
   try {
-    const { getUserBookings } = await import("@services/bookings.js");
+    const { getUserBookings } = await import('@services/bookings.js');
     const result = await getUserBookings(user, false); // No force full init per velocità
     console.log('✅ [loadFromLocal] Success:', result.length);
     return result;
   } catch (error) {
-    console.warn("⚠️ [loadFromLocal] Failed:", error.message);
+    console.warn('⚠️ [loadFromLocal] Failed:', error.message);
     return [];
   }
 }

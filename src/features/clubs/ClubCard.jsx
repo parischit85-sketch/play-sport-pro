@@ -15,19 +15,20 @@ const ClubCard = ({ club, userLocation }) => {
 
   // Find existing affiliation
   useEffect(() => {
-    const existing = userAffiliations.find(a => a.clubId === club.id);
+    const existing = userAffiliations.find((a) => a.clubId === club.id);
     setUserAffiliation(existing || null);
   }, [userAffiliations, club.id]);
 
   // Calculate distance if user location is available
-  const distance = userLocation && club.location?.coordinates 
-    ? calculateDistance(
-        userLocation.lat, 
-        userLocation.lng,
-        club.location.coordinates.lat,
-        club.location.coordinates.lng
-      )
-    : null;
+  const distance =
+    userLocation && club.location?.coordinates
+      ? calculateDistance(
+          userLocation.lat,
+          userLocation.lng,
+          club.location.coordinates.lat,
+          club.location.coordinates.lng
+        )
+      : null;
 
   // Handle affiliation request
   const handleJoinClub = async () => {
@@ -43,16 +44,16 @@ const ClubCard = ({ club, userLocation }) => {
       await requestAffiliation(club.id, user.uid, '');
       setMessage({
         type: 'success',
-        text: 'Richiesta di affiliazione inviata con successo!'
+        text: 'Richiesta di affiliazione inviata con successo!',
       });
-      
+
       // Reload user affiliations to get the new request
       await loadUserAffiliations();
     } catch (error) {
       console.error('Error requesting affiliation:', error);
       setMessage({
-        type: 'error', 
-        text: error.message || 'Errore durante la richiesta di affiliazione'
+        type: 'error',
+        text: error.message || 'Errore durante la richiesta di affiliazione',
       });
     } finally {
       setIsRequesting(false);
@@ -96,12 +97,14 @@ const ClubCard = ({ club, userLocation }) => {
     switch (userAffiliation.status) {
       case AFFILIATION_STATUS.PENDING:
         return (
-          <div className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 
-                        px-4 py-2 rounded-lg text-center font-medium border border-yellow-200 dark:border-yellow-700">
+          <div
+            className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 
+                        px-4 py-2 rounded-lg text-center font-medium border border-yellow-200 dark:border-yellow-700"
+          >
             ⏳ Richiesta in attesa
           </div>
         );
-      
+
       case AFFILIATION_STATUS.APPROVED:
         return (
           <button
@@ -113,23 +116,27 @@ const ClubCard = ({ club, userLocation }) => {
             ✅ Entra nel Club
           </button>
         );
-      
+
       case AFFILIATION_STATUS.REJECTED:
         return (
-          <div className="flex-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 
-                        px-4 py-2 rounded-lg text-center font-medium border border-red-200 dark:border-red-700">
+          <div
+            className="flex-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 
+                        px-4 py-2 rounded-lg text-center font-medium border border-red-200 dark:border-red-700"
+          >
             ❌ Richiesta rifiutata
           </div>
         );
-      
+
       default:
         return null;
     }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg 
-                  transition-shadow duration-300 overflow-hidden">
+    <div
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg 
+                  transition-shadow duration-300 overflow-hidden"
+    >
       {/* Header with club info */}
       <div className="p-6">
         <div className="flex justify-between items-start mb-4">
@@ -162,15 +169,15 @@ const ClubCard = ({ club, userLocation }) => {
               </p>
             )}
           </div>
-          
+
           {/* Distance badge */}
           {distance !== null && (
             <div className="ml-4 text-right">
-              <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 
-                            px-2 py-1 rounded-lg text-xs font-medium">
-                {distance < 1 
-                  ? `${Math.round(distance * 1000)}m`
-                  : `${distance.toFixed(1)}km`}
+              <div
+                className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 
+                            px-2 py-1 rounded-lg text-xs font-medium"
+              >
+                {distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`}
               </div>
             </div>
           )}
@@ -179,14 +186,10 @@ const ClubCard = ({ club, userLocation }) => {
         {/* Club stats */}
         <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
           {club.stats?.totalCourts && (
-            <div className="flex items-center gap-1">
-              🎾 {club.stats.totalCourts} campi
-            </div>
+            <div className="flex items-center gap-1">🎾 {club.stats.totalCourts} campi</div>
           )}
           {club.stats?.totalMembers && (
-            <div className="flex items-center gap-1">
-              👥 {club.stats.totalMembers} membri
-            </div>
+            <div className="flex items-center gap-1">👥 {club.stats.totalMembers} membri</div>
           )}
         </div>
 
@@ -194,14 +197,10 @@ const ClubCard = ({ club, userLocation }) => {
         {(club.contact?.phone || club.contact?.email) && (
           <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400 mb-4">
             {club.contact.phone && (
-              <div className="flex items-center gap-2">
-                📞 {club.contact.phone}
-              </div>
+              <div className="flex items-center gap-2">📞 {club.contact.phone}</div>
             )}
             {club.contact.email && (
-              <div className="flex items-center gap-2">
-                ✉️ {club.contact.email}
-              </div>
+              <div className="flex items-center gap-2">✉️ {club.contact.email}</div>
             )}
           </div>
         )}
@@ -215,11 +214,13 @@ const ClubCard = ({ club, userLocation }) => {
 
         {/* Message display */}
         {message && (
-          <div className={`mb-4 p-3 rounded-lg text-sm ${
-            message.type === 'success'
-              ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-700'
-              : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-700'
-          }`}>
+          <div
+            className={`mb-4 p-3 rounded-lg text-sm ${
+              message.type === 'success'
+                ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-700'
+                : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-700'
+            }`}
+          >
             {message.text}
           </div>
         )}
@@ -227,7 +228,7 @@ const ClubCard = ({ club, userLocation }) => {
         {/* Action buttons */}
         <div className="flex gap-2">
           {getAffiliationButton()}
-          
+
           {/* Always show "Entra" button - even for non-affiliated users they can view the club */}
           {!userAffiliation || userAffiliation.status !== AFFILIATION_STATUS.APPROVED ? (
             <button
@@ -247,20 +248,26 @@ const ClubCard = ({ club, userLocation }) => {
       <div className="bg-gray-50 dark:bg-gray-700/50 px-6 py-3">
         <div className="flex flex-wrap gap-2 text-xs">
           {club.settings?.allowGuestBookings && (
-            <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 
-                           px-2 py-1 rounded-full">
+            <span
+              className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 
+                           px-2 py-1 rounded-full"
+            >
               Prenotazioni ospiti
             </span>
           )}
           {club.settings?.autoApproveAffiliations && (
-            <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 
-                           px-2 py-1 rounded-full">
+            <span
+              className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 
+                           px-2 py-1 rounded-full"
+            >
               Affiliazione automatica
             </span>
           )}
           {club.subscription?.type === 'premium' && (
-            <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-400 
-                           px-2 py-1 rounded-full">
+            <span
+              className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-400 
+                           px-2 py-1 rounded-full"
+            >
               Premium
             </span>
           )}

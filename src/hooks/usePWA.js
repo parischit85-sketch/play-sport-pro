@@ -1,7 +1,7 @@
 // =============================================
 // FILE: src/hooks/usePWA.js
 // =============================================
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 export function usePWA() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -20,8 +20,7 @@ export function usePWA() {
       const isChrome = /Chrome/.test(userAgent) && !/Edge|Edg/.test(userAgent);
       const isEdge = /Edge|Edg/.test(userAgent);
       const isFirefox = /Firefox/.test(userAgent);
-      const isSafari =
-        /Safari/.test(userAgent) && !/Chrome|CriOS|FxiOS/.test(userAgent);
+      const isSafari = /Safari/.test(userAgent) && !/Chrome|CriOS|FxiOS/.test(userAgent);
       const isOpera = /OPR|Opera/.test(userAgent);
       const isSamsung = /SamsungBrowser/.test(userAgent);
 
@@ -44,23 +43,16 @@ export function usePWA() {
     // Controlla se l'app è già installata
     const checkIfInstalled = () => {
       // Verifica standalone mode (PWA installata)
-      const isInStandaloneMode = window.matchMedia(
-        "(display-mode: standalone)",
-      ).matches;
+      const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
       const isIOSStandalone = window.navigator.standalone === true;
-      const hasFullscreen = window.matchMedia(
-        "(display-mode: fullscreen)",
-      ).matches;
-      const hasMinimalUI = window.matchMedia(
-        "(display-mode: minimal-ui)",
-      ).matches;
+      const hasFullscreen = window.matchMedia('(display-mode: fullscreen)').matches;
+      const hasMinimalUI = window.matchMedia('(display-mode: minimal-ui)').matches;
 
-      const installed =
-        isInStandaloneMode || isIOSStandalone || hasFullscreen || hasMinimalUI;
+      const installed = isInStandaloneMode || isIOSStandalone || hasFullscreen || hasMinimalUI;
       setIsInstalled(installed);
 
       if (installed) {
-        console.log("✅ PWA is already installed");
+        console.log('✅ PWA is already installed');
       }
     };
 
@@ -68,7 +60,7 @@ export function usePWA() {
 
     // Gestisce l'evento beforeinstallprompt (Chrome, Edge, Samsung, Opera)
     const handleBeforeInstallPrompt = (event) => {
-      console.log("🚀 PWA installation prompt ready");
+      console.log('🚀 PWA installation prompt ready');
       event.preventDefault();
       setDeferredPrompt(event);
       setIsInstallable(true);
@@ -76,35 +68,32 @@ export function usePWA() {
 
     // Gestisce l'evento appinstalled
     const handleAppInstalled = () => {
-      console.log("✅ PWA installed successfully");
+      console.log('✅ PWA installed successfully');
       setIsInstalled(true);
       setIsInstallable(false);
       setDeferredPrompt(null);
 
       // Salva stato di installazione nel localStorage
-      localStorage.setItem("pwa_installed", "true");
+      localStorage.setItem('pwa_installed', 'true');
     };
 
     // Ascolta gli eventi solo se il browser li supporta
     if (browserInfo.supportsInstallPrompt) {
-      window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-      window.addEventListener("appinstalled", handleAppInstalled);
+      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.addEventListener('appinstalled', handleAppInstalled);
     }
 
     // Cleanup
     return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt,
-      );
-      window.removeEventListener("appinstalled", handleAppInstalled);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, [browserInfo.supportsInstallPrompt]);
 
   // Funzione per installare l'app
   const installApp = async () => {
     if (!deferredPrompt) {
-      console.warn("⚠️ No deferred prompt available");
+      console.warn('⚠️ No deferred prompt available');
       return false;
     }
 
@@ -115,34 +104,33 @@ export function usePWA() {
       // Aspetta la scelta dell'utente
       const { outcome } = await deferredPrompt.userChoice;
 
-      if (outcome === "accepted") {
-        console.log("✅ User accepted PWA installation");
+      if (outcome === 'accepted') {
+        console.log('✅ User accepted PWA installation');
         setIsInstallable(false);
         setDeferredPrompt(null);
         return true;
       } else {
-        console.log("❌ User declined PWA installation");
+        console.log('❌ User declined PWA installation');
         return false;
       }
     } catch (error) {
-      console.error("❌ PWA installation failed:", error);
+      console.error('❌ PWA installation failed:', error);
       return false;
     }
   };
 
   // Istruzioni specifiche per browser
   const getBrowserSpecificInstructions = () => {
-    const { isIOS, isAndroid, isSafari, isFirefox, isChrome, isEdge } =
-      browserInfo;
+    const { isIOS, isAndroid, isSafari, isFirefox, isChrome, isEdge } = browserInfo;
 
     // iOS Safari
     if (isIOS && isSafari) {
       return {
         show: true,
-        title: "Installa su iPhone/iPad",
-        icon: "📱",
+        title: 'Installa su iPhone/iPad',
+        icon: '📱',
         instructions: [
-          "Tocca il pulsante Condividi in basso",
+          'Tocca il pulsante Condividi in basso',
           'Scorri verso il basso e tocca "Aggiungi alla schermata Home"',
           'Tocca "Aggiungi" nell\'angolo in alto a destra',
           "L'app apparirà nella tua home screen",
@@ -154,11 +142,11 @@ export function usePWA() {
     if (isFirefox) {
       return {
         show: true,
-        title: "Installa con Firefox",
-        icon: "🦊",
+        title: 'Installa con Firefox',
+        icon: '🦊',
         instructions: isAndroid
           ? [
-              "Tocca il menu (3 punti) in alto a destra",
+              'Tocca il menu (3 punti) in alto a destra',
               'Seleziona "Installa"',
               'Conferma toccando "Aggiungi"',
             ]
@@ -174,10 +162,10 @@ export function usePWA() {
     if (isAndroid && (isChrome || isEdge)) {
       return {
         show: true,
-        title: "Installa su Android",
-        icon: "🤖",
+        title: 'Installa su Android',
+        icon: '🤖',
         instructions: [
-          "Tocca il menu (3 punti) in alto a destra",
+          'Tocca il menu (3 punti) in alto a destra',
           'Seleziona "Installa app" o "Aggiungi alla schermata Home"',
           'Conferma toccando "Installa"',
           "L'app verrà aggiunta alla home screen",
@@ -189,8 +177,8 @@ export function usePWA() {
     if (!browserInfo.isMobile && (isChrome || isEdge)) {
       return {
         show: true,
-        title: "Installa sul Desktop",
-        icon: "💻",
+        title: 'Installa sul Desktop',
+        icon: '💻',
         instructions: [
           'Clicca sull\'icona "Installa" nella barra degli indirizzi',
           'Oppure apri il menu (3 punti) → "Installa Paris League"',
@@ -206,10 +194,10 @@ export function usePWA() {
   // Controlla se il browser supporta PWA
   const isPWASupported = () => {
     return (
-      "serviceWorker" in navigator &&
-      "Cache" in window &&
-      "caches" in window &&
-      "PushManager" in window
+      'serviceWorker' in navigator &&
+      'Cache' in window &&
+      'caches' in window &&
+      'PushManager' in window
     );
   };
 

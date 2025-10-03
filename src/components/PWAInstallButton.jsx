@@ -1,10 +1,10 @@
 // =============================================
 // FILE: src/components/PWAInstallButton.jsx
 // =============================================
-import React, { useState } from "react";
-import { usePWA } from "../hooks/usePWA";
+import React, { useState } from 'react';
+import { usePWA } from '../hooks/usePWA';
 
-export default function PWAInstallButton({ className = "" }) {
+export default function PWAInstallButton({ className = '' }) {
   const {
     isInstallable,
     isInstalled,
@@ -18,9 +18,7 @@ export default function PWAInstallButton({ className = "" }) {
   // Non mostrare se già installata
   if (isInstalled) {
     return (
-      <div
-        className={`flex items-center gap-2 text-green-600 text-sm ${className}`}
-      >
+      <div className={`flex items-center gap-2 text-green-600 text-sm ${className}`}>
         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
         </svg>
@@ -32,9 +30,7 @@ export default function PWAInstallButton({ className = "" }) {
   // Non mostrare se PWA non è supportato
   if (!isPWASupported) {
     return (
-      <div className={`text-gray-500 text-sm ${className}`}>
-        Browser non supportato per PWA
-      </div>
+      <div className={`text-gray-500 text-sm ${className}`}>Browser non supportato per PWA</div>
     );
   }
 
@@ -60,7 +56,7 @@ export default function PWAInstallButton({ className = "" }) {
         }
       }
     } catch (error) {
-      console.error("Install failed:", error);
+      console.error('Install failed:', error);
       if (installInstructions.show) {
         setShowInstructionsModal(true);
       }
@@ -69,10 +65,10 @@ export default function PWAInstallButton({ className = "" }) {
 
   // Testo del pulsante basato sul browser
   const getButtonText = () => {
-    if (browserInfo.isIOS) return "📱 Installa su iPhone";
-    if (browserInfo.isAndroid) return "🤖 Installa su Android";
-    if (browserInfo.isFirefox) return "🦊 Installa con Firefox";
-    return "💻 Installa App";
+    if (browserInfo.isIOS) return '📱 Installa su iPhone';
+    if (browserInfo.isAndroid) return '🤖 Installa su Android';
+    if (browserInfo.isFirefox) return '🦊 Installa con Firefox';
+    return '💻 Installa App';
   };
 
   return (
@@ -82,12 +78,7 @@ export default function PWAInstallButton({ className = "" }) {
         onClick={handleInstallClick}
         className={`flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 ${className}`}
       >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -107,9 +98,7 @@ export default function PWAInstallButton({ className = "" }) {
                 <span className="text-3xl">{installInstructions.icon}</span>
               </div>
 
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {installInstructions.title}
-              </h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{installInstructions.title}</h3>
 
               <p className="text-gray-600 mb-6">
                 Segui questi semplici passaggi per installare Paris League:
@@ -122,9 +111,7 @@ export default function PWAInstallButton({ className = "" }) {
                       {index + 1}
                     </div>
                     <div className="flex-1">
-                      <p className="text-gray-700 leading-relaxed">
-                        {instruction}
-                      </p>
+                      <p className="text-gray-700 leading-relaxed">{instruction}</p>
                     </div>
                   </div>
                 ))}
@@ -133,21 +120,21 @@ export default function PWAInstallButton({ className = "" }) {
               {/* Browser info */}
               <div className="bg-gray-50 rounded-lg p-3 mb-6">
                 <p className="text-xs text-gray-600 text-center">
-                  Browser rilevato:{" "}
+                  Browser rilevato:{' '}
                   {browserInfo.isChrome
-                    ? "Chrome"
+                    ? 'Chrome'
                     : browserInfo.isFirefox
-                      ? "Firefox"
+                      ? 'Firefox'
                       : browserInfo.isEdge
-                        ? "Edge"
+                        ? 'Edge'
                         : browserInfo.isSafari
-                          ? "Safari"
+                          ? 'Safari'
                           : browserInfo.isOpera
-                            ? "Opera"
+                            ? 'Opera'
                             : browserInfo.isSamsung
-                              ? "Samsung Internet"
-                              : "Altro"}
-                  {browserInfo.isMobile && " Mobile"}
+                              ? 'Samsung Internet'
+                              : 'Altro'}
+                  {browserInfo.isMobile && ' Mobile'}
                 </p>
               </div>
 

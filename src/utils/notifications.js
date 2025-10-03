@@ -14,43 +14,43 @@
  * Invia notifica di conferma prenotazione
  */
 export async function notifyBookingConfirmed(bookingDetails) {
-  if (Notification.permission !== "granted") {
+  if (Notification.permission !== 'granted') {
     return false;
   }
 
   try {
     const { court, date, time, price, userName } = bookingDetails;
 
-    new Notification("🎾 Prenotazione Confermata!", {
+    new Notification('🎾 Prenotazione Confermata!', {
       body: `Campo ${court} prenotato per ${date} alle ${time} - €${price}`,
-      icon: "/icons/icon.svg",
-      badge: "/icons/icon.svg",
+      icon: '/icons/icon.svg',
+      badge: '/icons/icon.svg',
       tag: `booking-${Date.now()}`,
       data: {
-        url: "/profile?tab=bookings",
-        type: "booking_confirmed",
+        url: '/profile?tab=bookings',
+        type: 'booking_confirmed',
         bookingId: bookingDetails.id,
       },
       actions: [
         {
-          action: "view",
-          title: "Visualizza",
-          icon: "/icons/icon.svg",
+          action: 'view',
+          title: 'Visualizza',
+          icon: '/icons/icon.svg',
         },
         {
-          action: "dismiss",
-          title: "OK",
-          icon: "/icons/icon.svg",
+          action: 'dismiss',
+          title: 'OK',
+          icon: '/icons/icon.svg',
         },
       ],
       requireInteraction: true,
       vibrate: [200, 100, 200, 100, 200],
     });
 
-    console.log("✅ Booking notification sent");
+    console.log('✅ Booking notification sent');
     return true;
   } catch (error) {
-    console.error("❌ Booking notification failed:", error);
+    console.error('❌ Booking notification failed:', error);
     return false;
   }
 }
@@ -59,28 +59,28 @@ export async function notifyBookingConfirmed(bookingDetails) {
  * Invia promemoria partita
  */
 export async function notifyMatchReminder(matchDetails) {
-  if (Notification.permission !== "granted") {
+  if (Notification.permission !== 'granted') {
     return false;
   }
 
   try {
     const { court, time, players, minutesLeft = 30 } = matchDetails;
 
-    new Notification("⏰ Partita in arrivo!", {
+    new Notification('⏰ Partita in arrivo!', {
       body: `La tua partita al Campo ${court} inizia tra ${minutesLeft} minuti`,
-      icon: "/icons/icon.svg",
-      badge: "/icons/icon.svg",
+      icon: '/icons/icon.svg',
+      badge: '/icons/icon.svg',
       tag: `reminder-${matchDetails.id}`,
       data: {
-        url: "/booking",
-        type: "match_reminder",
+        url: '/booking',
+        type: 'match_reminder',
         matchId: matchDetails.id,
       },
       actions: [
         {
-          action: "navigate",
-          title: "Vedi Campo",
-          icon: "/icons/icon.svg",
+          action: 'navigate',
+          title: 'Vedi Campo',
+          icon: '/icons/icon.svg',
         },
       ],
       requireInteraction: true,
@@ -88,10 +88,10 @@ export async function notifyMatchReminder(matchDetails) {
       timestamp: Date.now(),
     });
 
-    console.log("✅ Match reminder sent");
+    console.log('✅ Match reminder sent');
     return true;
   } catch (error) {
-    console.error("❌ Match reminder failed:", error);
+    console.error('❌ Match reminder failed:', error);
     return false;
   }
 }
@@ -100,7 +100,7 @@ export async function notifyMatchReminder(matchDetails) {
  * Invia notifica aggiornamento classifica
  */
 export async function notifyRankingUpdate(rankingData) {
-  if (Notification.permission !== "granted") {
+  if (Notification.permission !== 'granted') {
     return false;
   }
 
@@ -114,29 +114,29 @@ export async function notifyRankingUpdate(rankingData) {
       body += ` (${change} posizioni)`;
     }
 
-    new Notification("📈 Classifica Aggiornata!", {
+    new Notification('📈 Classifica Aggiornata!', {
       body,
-      icon: "/icons/icon.svg",
-      badge: "/icons/icon.svg",
-      tag: "ranking-update",
+      icon: '/icons/icon.svg',
+      badge: '/icons/icon.svg',
+      tag: 'ranking-update',
       data: {
-        url: "/classifica",
-        type: "ranking_update",
+        url: '/classifica',
+        type: 'ranking_update',
       },
       actions: [
         {
-          action: "view_ranking",
-          title: "Vedi Classifica",
-          icon: "/icons/icon.svg",
+          action: 'view_ranking',
+          title: 'Vedi Classifica',
+          icon: '/icons/icon.svg',
         },
       ],
       vibrate: [100, 50, 100],
     });
 
-    console.log("✅ Ranking notification sent");
+    console.log('✅ Ranking notification sent');
     return true;
   } catch (error) {
-    console.error("❌ Ranking notification failed:", error);
+    console.error('❌ Ranking notification failed:', error);
     return false;
   }
 }
@@ -145,42 +145,37 @@ export async function notifyRankingUpdate(rankingData) {
  * Invia notifica torneo
  */
 export async function notifyTournamentUpdate(tournamentData) {
-  if (Notification.permission !== "granted") {
+  if (Notification.permission !== 'granted') {
     return false;
   }
 
   try {
-    const {
-      title,
-      message,
-      tournamentId,
-      actionText = "Vedi Torneo",
-    } = tournamentData;
+    const { title, message, tournamentId, actionText = 'Vedi Torneo' } = tournamentData;
 
     new Notification(`🏆 ${title}`, {
       body: message,
-      icon: "/icons/icon.svg",
-      badge: "/icons/icon.svg",
+      icon: '/icons/icon.svg',
+      badge: '/icons/icon.svg',
       tag: `tournament-${tournamentId}`,
       data: {
-        url: "/tournaments",
-        type: "tournament_update",
+        url: '/tournaments',
+        type: 'tournament_update',
         tournamentId,
       },
       actions: [
         {
-          action: "view_tournament",
+          action: 'view_tournament',
           title: actionText,
-          icon: "/icons/icon.svg",
+          icon: '/icons/icon.svg',
         },
       ],
       vibrate: [150, 100, 150],
     });
 
-    console.log("✅ Tournament notification sent");
+    console.log('✅ Tournament notification sent');
     return true;
   } catch (error) {
-    console.error("❌ Tournament notification failed:", error);
+    console.error('❌ Tournament notification failed:', error);
     return false;
   }
 }
@@ -194,12 +189,11 @@ export async function notifyTournamentUpdate(tournamentData) {
  */
 export function scheduleMatchReminder(matchDetails, minutesBefore = 30) {
   const { startTime } = matchDetails;
-  const reminderTime =
-    new Date(startTime).getTime() - minutesBefore * 60 * 1000;
+  const reminderTime = new Date(startTime).getTime() - minutesBefore * 60 * 1000;
   const now = Date.now();
 
   if (reminderTime <= now) {
-    console.warn("Match reminder time is in the past");
+    console.warn('Match reminder time is in the past');
     return null;
   }
 
@@ -210,9 +204,7 @@ export function scheduleMatchReminder(matchDetails, minutesBefore = 30) {
     });
   }, reminderTime - now);
 
-  console.log(
-    `✅ Match reminder scheduled for ${new Date(reminderTime).toLocaleString()}`,
-  );
+  console.log(`✅ Match reminder scheduled for ${new Date(reminderTime).toLocaleString()}`);
   return timeoutId;
 }
 
@@ -222,7 +214,7 @@ export function scheduleMatchReminder(matchDetails, minutesBefore = 30) {
 export function cancelScheduledReminder(timeoutId) {
   if (timeoutId) {
     clearTimeout(timeoutId);
-    console.log("✅ Scheduled reminder cancelled");
+    console.log('✅ Scheduled reminder cancelled');
   }
 }
 
@@ -230,13 +222,13 @@ export function cancelScheduledReminder(timeoutId) {
 // NOTIFICATION PREFERENCES
 // ============================================
 
-const NOTIFICATION_PREFERENCES_KEY = "paris_league_notification_prefs";
+const NOTIFICATION_PREFERENCES_KEY = 'paris_league_notification_prefs';
 
 export const NotificationTypes = {
-  BOOKING_CONFIRMED: "booking_confirmed",
-  MATCH_REMINDER: "match_reminder",
-  RANKING_UPDATE: "ranking_update",
-  TOURNAMENT_UPDATE: "tournament_update",
+  BOOKING_CONFIRMED: 'booking_confirmed',
+  MATCH_REMINDER: 'match_reminder',
+  RANKING_UPDATE: 'ranking_update',
+  TOURNAMENT_UPDATE: 'tournament_update',
 };
 
 /**
@@ -252,7 +244,7 @@ export function loadNotificationPreferences() {
       };
     }
   } catch (error) {
-    console.error("Error loading notification preferences:", error);
+    console.error('Error loading notification preferences:', error);
   }
 
   return getDefaultPreferences();
@@ -263,14 +255,11 @@ export function loadNotificationPreferences() {
  */
 export function saveNotificationPreferences(preferences) {
   try {
-    localStorage.setItem(
-      NOTIFICATION_PREFERENCES_KEY,
-      JSON.stringify(preferences),
-    );
-    console.log("✅ Notification preferences saved");
+    localStorage.setItem(NOTIFICATION_PREFERENCES_KEY, JSON.stringify(preferences));
+    console.log('✅ Notification preferences saved');
     return true;
   } catch (error) {
-    console.error("Error saving notification preferences:", error);
+    console.error('Error saving notification preferences:', error);
     return false;
   }
 }
@@ -285,8 +274,8 @@ function getDefaultPreferences() {
     [NotificationTypes.RANKING_UPDATE]: true,
     [NotificationTypes.TOURNAMENT_UPDATE]: true,
     reminderMinutes: 30,
-    quietHoursStart: "22:00",
-    quietHoursEnd: "08:00",
+    quietHoursStart: '22:00',
+    quietHoursEnd: '08:00',
     enableVibration: true,
     enableSound: true,
   };
@@ -308,8 +297,8 @@ export function isQuietTime() {
   const now = new Date();
   const currentTime = now.getHours() * 60 + now.getMinutes();
 
-  const [startHour, startMin] = prefs.quietHoursStart.split(":").map(Number);
-  const [endHour, endMin] = prefs.quietHoursEnd.split(":").map(Number);
+  const [startHour, startMin] = prefs.quietHoursStart.split(':').map(Number);
+  const [endHour, endMin] = prefs.quietHoursEnd.split(':').map(Number);
 
   const startTime = startHour * 60 + startMin;
   const endTime = endHour * 60 + endMin;
@@ -334,35 +323,35 @@ export async function sendAllTestNotifications() {
   const tests = [
     () =>
       notifyBookingConfirmed({
-        court: "1",
-        date: "oggi",
-        time: "15:30",
-        price: "25",
-        userName: "Test User",
-        id: "test-booking",
+        court: '1',
+        date: 'oggi',
+        time: '15:30',
+        price: '25',
+        userName: 'Test User',
+        id: 'test-booking',
       }),
 
     () =>
       notifyMatchReminder({
-        court: "2",
-        time: "16:00",
-        players: ["Test User"],
-        id: "test-match",
+        court: '2',
+        time: '16:00',
+        players: ['Test User'],
+        id: 'test-match',
         minutesLeft: 30,
       }),
 
     () =>
       notifyRankingUpdate({
-        playerName: "Test User",
+        playerName: 'Test User',
         newPosition: 5,
         change: 2,
       }),
 
     () =>
       notifyTournamentUpdate({
-        title: "Torneo Test",
-        message: "Nuovi risultati disponibili!",
-        tournamentId: "test-tournament",
+        title: 'Torneo Test',
+        message: 'Nuovi risultati disponibili!',
+        tournamentId: 'test-tournament',
       }),
   ];
 

@@ -3,18 +3,18 @@
 // Sistema CRM completo per la gestione giocatori
 // =============================================
 
-import React, { useMemo, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import Section from "@ui/Section.jsx";
-import Modal from "@ui/Modal.jsx";
-import { uid } from "@lib/ids.js";
-import { byPlayerFirstAlpha } from "@lib/names.js";
-import { createPlayerSchema, PLAYER_CATEGORIES } from "./types/playerTypes.js";
-import PlayerCard from "./components/PlayerCard";
-import PlayerForm from "./components/PlayerForm";
-import PlayerDetails from "./components/PlayerDetails";
-import CRMTools from "./components/CRMTools";
-import { useAuth } from "@contexts/AuthContext.jsx";
+import React, { useMemo, useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import Section from '@ui/Section.jsx';
+import Modal from '@ui/Modal.jsx';
+import { uid } from '@lib/ids.js';
+import { byPlayerFirstAlpha } from '@lib/names.js';
+import { createPlayerSchema, PLAYER_CATEGORIES } from './types/playerTypes.js';
+import PlayerCard from './components/PlayerCard';
+import PlayerForm from './components/PlayerForm';
+import PlayerDetails from './components/PlayerDetails';
+import CRMTools from './components/CRMTools';
+import { useAuth } from '@contexts/AuthContext.jsx';
 
 export default function PlayersCRM({
   state,
@@ -30,8 +30,8 @@ export default function PlayersCRM({
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [showPlayerForm, setShowPlayerForm] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState(null);
-  const [filterCategory, setFilterCategory] = useState("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const [showTools, setShowTools] = useState(false);
 
   const players = Array.isArray(state?.players) ? state.players : [];
@@ -47,7 +47,7 @@ export default function PlayersCRM({
     let filtered = [...players];
 
     // Filtro per categoria
-    if (filterCategory !== "all") {
+    if (filterCategory !== 'all') {
       filtered = filtered.filter((p) => p.category === filterCategory);
     }
 
@@ -60,7 +60,7 @@ export default function PlayersCRM({
           p.email?.toLowerCase().includes(term) ||
           p.phone?.includes(term) ||
           p.firstName?.toLowerCase().includes(term) ||
-          p.lastName?.toLowerCase().includes(term),
+          p.lastName?.toLowerCase().includes(term)
       );
     }
 
@@ -70,9 +70,7 @@ export default function PlayersCRM({
   // Statistiche rapide
   const stats = useMemo(() => {
     const total = players.length;
-    const members = players.filter(
-      (p) => p.category === PLAYER_CATEGORIES.MEMBER,
-    ).length;
+    const members = players.filter((p) => p.category === PLAYER_CATEGORIES.MEMBER).length;
     const active = players.filter((p) => p.isActive !== false).length;
     const withAccount = players.filter((p) => p.isAccountLinked).length;
 
@@ -114,9 +112,7 @@ export default function PlayersCRM({
         return {
           ...(s || { players: [], matches: [] }),
           players: cur.map((p) =>
-            p.id === playerId
-              ? { ...p, ...updates, updatedAt: new Date().toISOString() }
-              : p,
+            p.id === playerId ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
           ),
         };
       });
@@ -130,7 +126,7 @@ export default function PlayersCRM({
       // Fallback to local state if no Firebase function provided
       if (
         !confirm(
-          "Sei sicuro di voler eliminare questo giocatore? Questa azione non può essere annullata.",
+          'Sei sicuro di voler eliminare questo giocatore? Questa azione non può essere annullata.'
         )
       ) {
         return;
@@ -151,10 +147,10 @@ export default function PlayersCRM({
     if (!user) return;
 
     const playerData = {
-      firstName: user.firstName || user.displayName?.split(" ")[0] || "",
-      lastName: user.lastName || user.displayName?.split(" ")[1] || "",
+      firstName: user.firstName || user.displayName?.split(' ')[0] || '',
+      lastName: user.lastName || user.displayName?.split(' ')[1] || '',
       name: user.displayName || `${user.firstName} ${user.lastName}`.trim(),
-      email: user.email || "",
+      email: user.email || '',
       linkedAccountId: user.uid,
       linkedAccountEmail: user.email,
       isAccountLinked: true,
@@ -252,17 +248,13 @@ export default function PlayersCRM({
         {/* Lista giocatori */}
         <div className="space-y-4">
           {filteredPlayers.length === 0 ? (
-            <div
-              className={`text-center py-12 ${T.cardBg} ${T.border} rounded-xl`}
-            >
+            <div className={`text-center py-12 ${T.cardBg} ${T.border} rounded-xl`}>
               <div className="text-6xl mb-4">👥</div>
-              <h3 className={`text-xl font-bold mb-2 ${T.text}`}>
-                Nessun giocatore trovato
-              </h3>
+              <h3 className={`text-xl font-bold mb-2 ${T.text}`}>Nessun giocatore trovato</h3>
               <p className={`${T.subtext} mb-4`}>
-                {searchTerm || filterCategory !== "all"
-                  ? "Prova a modificare i filtri di ricerca"
-                  : "Inizia aggiungendo il primo giocatore al tuo CRM"}
+                {searchTerm || filterCategory !== 'all'
+                  ? 'Prova a modificare i filtri di ricerca'
+                  : 'Inizia aggiungendo il primo giocatore al tuo CRM'}
               </p>
               <button
                 onClick={() => setShowPlayerForm(true)}
@@ -298,14 +290,12 @@ export default function PlayersCRM({
         <Modal
           isOpen={true}
           onClose={() => setSelectedPlayerId(null)}
-          title={`${selectedPlayer.name || "Giocatore"} - Dettagli`}
+          title={`${selectedPlayer.name || 'Giocatore'} - Dettagli`}
           size="large"
         >
           <PlayerDetails
             player={selectedPlayer}
-            onUpdate={(updates) =>
-              handleUpdatePlayer(selectedPlayer.id, updates)
-            }
+            onUpdate={(updates) => handleUpdatePlayer(selectedPlayer.id, updates)}
             onClose={() => setSelectedPlayerId(null)}
             T={T}
           />
@@ -320,7 +310,7 @@ export default function PlayersCRM({
             setShowPlayerForm(false);
             setEditingPlayer(null);
           }}
-          title={editingPlayer ? "Modifica Giocatore" : "Nuovo Giocatore"}
+          title={editingPlayer ? 'Modifica Giocatore' : 'Nuovo Giocatore'}
           size="large"
         >
           <PlayerForm
@@ -345,22 +335,17 @@ export default function PlayersCRM({
 
       {/* Modal strumenti CRM */}
       {showTools && (
-        <Modal
-          isOpen={true}
-          onClose={() => setShowTools(false)}
-          title="Strumenti CRM"
-          size="large"
-        >
+        <Modal isOpen={true} onClose={() => setShowTools(false)} title="Strumenti CRM" size="large">
           <CRMTools
             players={players}
             onClose={() => setShowTools(false)}
             onBulkOperation={(action) => {
               // Implementa le operazioni bulk
-              console.log("Bulk operation:", action);
+              console.log('Bulk operation:', action);
             }}
             onRefreshData={() => {
               // Refresh data se necessario
-              console.log("Refreshing data...");
+              console.log('Refreshing data...');
             }}
             T={T}
           />

@@ -1,14 +1,12 @@
 // =============================================
 // FILE: src/lib/ranking.js
 // =============================================
-import { computeFromSets, calcParisDelta } from "./rpa.js";
-import { DEFAULT_RATING } from "./ids.js";
+import { computeFromSets, calcParisDelta } from './rpa.js';
+import { DEFAULT_RATING } from './ids.js';
 export function recompute(players, matches) {
   const map = new Map(
     players.map((p) => {
-      const start = Number(
-        p.baseRating ?? p.startRating ?? p.rating ?? DEFAULT_RATING,
-      );
+      const start = Number(p.baseRating ?? p.startRating ?? p.rating ?? DEFAULT_RATING);
       return [
         p.id,
         {
@@ -22,13 +20,11 @@ export function recompute(players, matches) {
           trend5Neg: 0,
         },
       ];
-    }),
+    })
   );
   const hist = new Map(players.map((p) => [p.id, []]));
   const enriched = [];
-  const byDate = [...(matches || [])].sort(
-    (a, b) => new Date(a.date) - new Date(b.date),
-  );
+  const byDate = [...(matches || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
   for (const m of byDate) {
     const a1 = map.get(m.teamA[0]),
       a2 = map.get(m.teamA[1]);
@@ -61,7 +57,7 @@ export function recompute(players, matches) {
     if (a2) a2.lastDelta = res.deltaA;
     if (b1) b1.lastDelta = res.deltaB;
     if (b2) b2.lastDelta = res.deltaB;
-    if (rr.winner === "A") {
+    if (rr.winner === 'A') {
       if (a1) a1.rating += res.deltaA;
       if (a2) a2.rating += res.deltaA;
       if (b1) b1.rating += res.deltaB;
@@ -70,7 +66,7 @@ export function recompute(players, matches) {
       if (a2) a2.wins++;
       if (b1) b1.losses++;
       if (b2) b2.losses++;
-    } else if (rr.winner === "B") {
+    } else if (rr.winner === 'B') {
       if (a1) a1.rating += res.deltaA;
       if (a2) a2.rating += res.deltaA;
       if (b1) b1.rating += res.deltaB;
@@ -102,15 +98,11 @@ export function buildPodiumTimeline(players, matches, targetIds) {
   const idToName = new Map(players.map((p) => [p.id, p.name]));
 
   // Prendi solo le ultime 15 partite ordinate per data per avere più contesto
-  const byDate = [...(matches || [])].sort(
-    (a, b) => new Date(a.date) - new Date(b.date),
-  );
+  const byDate = [...(matches || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
   const lastMatches = byDate.slice(-15);
 
   // Usa il rating attuale PRECISO dei giocatori come punto finale di riferimento
-  const currentRatings = new Map(
-    players.map((p) => [p.id, Number(p.rating ?? DEFAULT_RATING)]),
-  );
+  const currentRatings = new Map(players.map((p) => [p.id, Number(p.rating ?? DEFAULT_RATING)]));
 
   // Calcola a ritroso per ottenere i rating all'inizio delle ultime partite
   const startRatings = new Map(currentRatings);
@@ -130,8 +122,7 @@ export function buildPodiumTimeline(players, matches, targetIds) {
       sets: m.sets,
     });
     // Sottrai i delta per tornare indietro nel tempo
-    const subtract = (id, d) =>
-      startRatings.set(id, (startRatings.get(id) ?? DEFAULT_RATING) - d);
+    const subtract = (id, d) => startRatings.set(id, (startRatings.get(id) ?? DEFAULT_RATING) - d);
     subtract(m.teamA[0], res.deltaA);
     subtract(m.teamA[1], res.deltaA);
     subtract(m.teamB[0], res.deltaB);
@@ -143,11 +134,9 @@ export function buildPodiumTimeline(players, matches, targetIds) {
   const pts = [];
 
   // Punto di partenza (prima delle ultime partite)
-  const start = { label: "Inizio periodo" };
+  const start = { label: 'Inizio periodo' };
   for (const id of targetIds) {
-    start[idToName.get(id) || id] = Math.round(
-      timeline.get(id) ?? DEFAULT_RATING,
-    );
+    start[idToName.get(id) || id] = Math.round(timeline.get(id) ?? DEFAULT_RATING);
   }
   pts.push(start);
 
@@ -164,36 +153,31 @@ export function buildPodiumTimeline(players, matches, targetIds) {
       winner: rr.winner,
       sets: m.sets,
     });
-    const add = (id, d) =>
-      timeline.set(id, (timeline.get(id) ?? DEFAULT_RATING) + d);
+    const add = (id, d) => timeline.set(id, (timeline.get(id) ?? DEFAULT_RATING) + d);
     add(m.teamA[0], res.deltaA);
     add(m.teamA[1], res.deltaA);
     add(m.teamB[0], res.deltaB);
     add(m.teamB[1], res.deltaB);
 
     const point = {
-      label: new Date(m.date).toLocaleString("it-IT", {
-        day: "2-digit",
-        month: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
+      label: new Date(m.date).toLocaleString('it-IT', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
       }),
     };
     for (const id of targetIds) {
-      point[idToName.get(id) || id] = Math.round(
-        timeline.get(id) ?? DEFAULT_RATING,
-      );
+      point[idToName.get(id) || id] = Math.round(timeline.get(id) ?? DEFAULT_RATING);
     }
     pts.push(point);
   }
 
   // AGGIUNTO: Punto finale con rating attuali PRECISI dalla classifica
-  const final = { label: "Attuale" };
+  const final = { label: 'Attuale' };
   for (const id of targetIds) {
     // Usa il rating ESATTO dalla classifica, non quello calcolato nel grafico
-    final[idToName.get(id) || id] = Math.round(
-      currentRatings.get(id) ?? DEFAULT_RATING,
-    );
+    final[idToName.get(id) || id] = Math.round(currentRatings.get(id) ?? DEFAULT_RATING);
   }
   pts.push(final);
 
@@ -203,25 +187,23 @@ export function buildPodiumTimeline(players, matches, targetIds) {
 // Nuova funzione per timeline basata sui giorni invece che sui match
 export function buildDailyTimeline(players, matches, targetIds, days = 15) {
   const idToName = new Map(players.map((p) => [p.id, p.name]));
-  
+
   // Calcola la data di inizio (giorni fa)
   const today = new Date();
   const startDate = new Date(today);
   startDate.setDate(today.getDate() - days);
-  
+
   // Filtra le partite negli ultimi X giorni
   const matchesInPeriod = [...(matches || [])]
-    .filter(m => new Date(m.date) >= startDate)
+    .filter((m) => new Date(m.date) >= startDate)
     .sort((a, b) => new Date(a.date) - new Date(b.date));
-  
+
   // Rating attuali come punto di riferimento
-  const currentRatings = new Map(
-    players.map((p) => [p.id, Number(p.rating ?? DEFAULT_RATING)])
-  );
-  
+  const currentRatings = new Map(players.map((p) => [p.id, Number(p.rating ?? DEFAULT_RATING)]));
+
   // Calcola i rating iniziali (all'inizio del periodo)
   const startRatings = new Map(currentRatings);
-  
+
   // Ricostruisce a ritroso per trovare i rating di partenza
   const reversedMatches = [...matchesInPeriod].reverse();
   for (const m of reversedMatches) {
@@ -236,19 +218,18 @@ export function buildDailyTimeline(players, matches, targetIds, days = 15) {
       winner: rr.winner,
       sets: m.sets,
     });
-    
-    const subtract = (id, d) =>
-      startRatings.set(id, (startRatings.get(id) ?? DEFAULT_RATING) - d);
+
+    const subtract = (id, d) => startRatings.set(id, (startRatings.get(id) ?? DEFAULT_RATING) - d);
     subtract(m.teamA[0], res.deltaA);
     subtract(m.teamA[1], res.deltaA);
     subtract(m.teamB[0], res.deltaB);
     subtract(m.teamB[1], res.deltaB);
   }
-  
+
   // Ora genera un punto per ogni giorno
   const timeline = new Map(startRatings);
   const pts = [];
-  
+
   // Raggruppa le partite per giorno
   const matchesByDay = new Map();
   for (const match of matchesInPeriod) {
@@ -258,17 +239,17 @@ export function buildDailyTimeline(players, matches, targetIds, days = 15) {
     }
     matchesByDay.get(dayKey).push(match);
   }
-  
+
   // Genera punti per ogni giorno
   for (let i = 0; i <= days; i++) {
     const currentDate = new Date(startDate);
     currentDate.setDate(startDate.getDate() + i);
     const dayKey = currentDate.toDateString();
-    
+
     // Se ci sono partite in questo giorno, applica i cambiamenti
     if (matchesByDay.has(dayKey)) {
       const dayMatches = matchesByDay.get(dayKey);
-      
+
       for (const m of dayMatches) {
         const rr = computeFromSets(m.sets);
         const res = calcParisDelta({
@@ -281,34 +262,31 @@ export function buildDailyTimeline(players, matches, targetIds, days = 15) {
           winner: rr.winner,
           sets: m.sets,
         });
-        
-        const add = (id, d) =>
-          timeline.set(id, (timeline.get(id) ?? DEFAULT_RATING) + d);
+
+        const add = (id, d) => timeline.set(id, (timeline.get(id) ?? DEFAULT_RATING) + d);
         add(m.teamA[0], res.deltaA);
         add(m.teamA[1], res.deltaA);
         add(m.teamB[0], res.deltaB);
         add(m.teamB[1], res.deltaB);
       }
     }
-    
+
     // Crea il punto per questo giorno
     const point = {
       day: i,
-      label: currentDate.toLocaleDateString("it-IT", {
-        day: "2-digit",
-        month: "2-digit",
+      label: currentDate.toLocaleDateString('it-IT', {
+        day: '2-digit',
+        month: '2-digit',
       }),
       date: currentDate.toISOString().split('T')[0], // formato YYYY-MM-DD
     };
-    
+
     for (const id of targetIds) {
-      point[idToName.get(id) || id] = Math.round(
-        timeline.get(id) ?? DEFAULT_RATING
-      );
+      point[idToName.get(id) || id] = Math.round(timeline.get(id) ?? DEFAULT_RATING);
     }
-    
+
     pts.push(point);
   }
-  
+
   return pts;
 }

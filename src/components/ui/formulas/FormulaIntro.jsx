@@ -1,7 +1,7 @@
 // =============================================
 // FILE: src/components/ui/formulas/FormulaIntro.jsx
 // =============================================
-import React from "react";
+import React from 'react';
 export function FormulaIntro({ sumA, sumB, teamALabel, teamBLabel }) {
   const hasSums = sumA != null && sumB != null;
   const base = hasSums ? (sumA + sumB) / 100 : null;
@@ -17,14 +17,13 @@ export function FormulaIntro({ sumA, sumB, teamALabel, teamBLabel }) {
             Team B (<b>{teamBLabel}</b>) = <b>{Math.round(sumB)}</b>
           </div>
           <div>
-            <b>Base</b> = ({Math.round(sumA)} + {Math.round(sumB)}) / 100 ={" "}
-            <b>{base.toFixed(2)}</b>
+            <b>Base</b> = ({Math.round(sumA)} + {Math.round(sumB)}) / 100 = <b>{base.toFixed(2)}</b>
           </div>
         </div>
       ) : (
         <div className="text-neutral-500">
-          Seleziona i 2 giocatori di <b>Team A</b> e <b>Team B</b> per avere la{" "}
-          <b>Base</b> già calcolata.
+          Seleziona i 2 giocatori di <b>Team A</b> e <b>Team B</b> per avere la <b>Base</b> già
+          calcolata.
         </div>
       )}
       <ol className="list-decimal pl-5 space-y-1">
@@ -35,8 +34,7 @@ export function FormulaIntro({ sumA, sumB, teamALabel, teamBLabel }) {
           Calcola <b>Gap</b> e quindi il <b>Fattore</b>.
         </li>
         <li>
-          Punti finali = (<b>Base</b> + <b>DG</b>) × <b>Fattore</b>,
-          arrotondati.
+          Punti finali = (<b>Base</b> + <b>DG</b>) × <b>Fattore</b>, arrotondati.
         </li>
       </ol>
     </div>

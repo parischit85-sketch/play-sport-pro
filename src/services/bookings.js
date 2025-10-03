@@ -6,84 +6,84 @@
 export const BOOKING_CONFIG = {
   courts: [
     {
-      id: "campo1",
-      name: "Campo 1 - Centrale",
-      type: "terra-rossa",
+      id: 'campo1',
+      name: 'Campo 1 - Centrale',
+      type: 'terra-rossa',
       price60: 45,
       price90: 65,
-      features: ["Terra rossa", "Illuminazione LED", "Riscaldamento"],
+      features: ['Terra rossa', 'Illuminazione LED', 'Riscaldamento'],
       hasLighting: true,
       hasHeating: true,
       isOutdoor: false,
       premium: true,
     },
     {
-      id: "campo2",
-      name: "Campo 2",
-      type: "terra-rossa",
+      id: 'campo2',
+      name: 'Campo 2',
+      type: 'terra-rossa',
       price60: 40,
       price90: 58,
-      features: ["Terra rossa", "Illuminazione", "Riscaldamento"],
+      features: ['Terra rossa', 'Illuminazione', 'Riscaldamento'],
       hasLighting: true,
       hasHeating: true,
       isOutdoor: false,
       premium: false,
     },
     {
-      id: "campo3",
-      name: "Campo 3",
-      type: "cemento",
+      id: 'campo3',
+      name: 'Campo 3',
+      type: 'cemento',
       price60: 35,
       price90: 50,
-      features: ["Cemento", "Illuminazione", "Riscaldamento"],
+      features: ['Cemento', 'Illuminazione', 'Riscaldamento'],
       hasLighting: true,
       hasHeating: true,
       isOutdoor: false,
       premium: false,
     },
     {
-      id: "campo4",
-      name: "Campo 4 - Scoperto",
-      type: "terra-rossa",
+      id: 'campo4',
+      name: 'Campo 4 - Scoperto',
+      type: 'terra-rossa',
       price60: 30,
       price90: 42,
-      features: ["Terra rossa", "Solo diurno"],
+      features: ['Terra rossa', 'Solo diurno'],
       hasLighting: false,
       hasHeating: false,
       isOutdoor: true,
       premium: false,
     },
     {
-      id: "campo5",
-      name: "Campo 5",
-      type: "cemento",
+      id: 'campo5',
+      name: 'Campo 5',
+      type: 'cemento',
       price60: 32,
       price90: 46,
-      features: ["Cemento", "Illuminazione"],
+      features: ['Cemento', 'Illuminazione'],
       hasLighting: true,
       hasHeating: false,
       isOutdoor: false,
       premium: false,
     },
     {
-      id: "campo6",
-      name: "Campo 6 - Padel",
-      type: "padel",
+      id: 'campo6',
+      name: 'Campo 6 - Padel',
+      type: 'padel',
       price60: 25,
       price90: 35,
-      features: ["Padel", "Illuminazione", "Riscaldamento"],
+      features: ['Padel', 'Illuminazione', 'Riscaldamento'],
       hasLighting: true,
       hasHeating: true,
       isOutdoor: false,
       premium: false,
     },
     {
-      id: "campo7",
-      name: "Campo 7 - Calcetto",
-      type: "calcetto",
+      id: 'campo7',
+      name: 'Campo 7 - Calcetto',
+      type: 'calcetto',
       price60: 40,
       price90: 55,
-      features: ["Calcetto", "Illuminazione", "Riscaldamento"],
+      features: ['Calcetto', 'Illuminazione', 'Riscaldamento'],
       hasLighting: true,
       hasHeating: true,
       isOutdoor: false,
@@ -125,14 +125,10 @@ export const BOOKING_CONFIG = {
 // Genera slot temporali disponibili
 export function getTimeSlots() {
   const slots = [];
-  for (
-    let hour = BOOKING_CONFIG.timeSlots.start;
-    hour <= BOOKING_CONFIG.timeSlots.end;
-    hour++
-  ) {
-    slots.push(`${hour.toString().padStart(2, "0")}:00`);
+  for (let hour = BOOKING_CONFIG.timeSlots.start; hour <= BOOKING_CONFIG.timeSlots.end; hour++) {
+    slots.push(`${hour.toString().padStart(2, '0')}:00`);
     if (hour < BOOKING_CONFIG.timeSlots.end) {
-      slots.push(`${hour.toString().padStart(2, "0")}:30`);
+      slots.push(`${hour.toString().padStart(2, '0')}:30`);
     }
   }
   return slots;
@@ -145,16 +141,16 @@ export function getAvailableDays() {
     const date = new Date();
     date.setDate(date.getDate() + i);
     days.push({
-      date: date.toISOString().split("T")[0],
+      date: date.toISOString().split('T')[0],
       label:
         i === 0
-          ? "Oggi"
+          ? 'Oggi'
           : i === 1
-            ? "Domani"
-            : date.toLocaleDateString("it-IT", {
-                weekday: "short",
-                day: "numeric",
-                month: "short",
+            ? 'Domani'
+            : date.toLocaleDateString('it-IT', {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'short',
               }),
     });
   }
@@ -162,14 +158,7 @@ export function getAvailableDays() {
 }
 
 // Verifica se uno slot è disponibile
-export function isSlotAvailable(
-  courtId,
-  date,
-  time,
-  duration,
-  bookings,
-  excludeBookingId = null,
-) {
+export function isSlotAvailable(courtId, date, time, duration, bookings, excludeBookingId = null) {
   const startTime = time;
   const endTime = calculateEndTime(time, duration);
 
@@ -180,12 +169,12 @@ export function isSlotAvailable(
   return !bookings.some((booking) => {
     if (booking.id === excludeBookingId) return false;
     if (booking.courtId !== courtId || booking.date !== date) return false;
-    if (String(booking.status).toLowerCase() === "cancelled") return false;
+    if (String(booking.status).toLowerCase() === 'cancelled') return false;
     if (
       booking.status &&
-      booking.status !== "confirmed" &&
+      booking.status !== 'confirmed' &&
       booking.status !== BOOKING_STATUS.CONFIRMED &&
-      booking.status !== "booked"
+      booking.status !== 'booked'
     )
       return false;
 
@@ -197,8 +186,7 @@ export function isSlotAvailable(
     // Due slot si sovrappongono se:
     // - L'inizio del nuovo slot è prima della fine dell'esistente E
     // - La fine del nuovo slot è dopo l'inizio dell'esistente
-    const overlaps =
-      startMinutes < bookingEndMinutes && endMinutes > bookingStartMinutes;
+    const overlaps = startMinutes < bookingEndMinutes && endMinutes > bookingStartMinutes;
 
     if (overlaps) {
       console.log(`Sovrapposizione rilevata:`, {
@@ -215,28 +203,22 @@ export function isSlotAvailable(
 
 // Calcola orario di fine basato su inizio e durata
 function calculateEndTime(startTime, duration) {
-  const [hours, minutes] = startTime.split(":").map(Number);
+  const [hours, minutes] = startTime.split(':').map(Number);
   const totalMinutes = hours * 60 + minutes + duration;
   const endHours = Math.floor(totalMinutes / 60);
   const endMins = totalMinutes % 60;
-  return `${endHours.toString().padStart(2, "0")}:${endMins.toString().padStart(2, "0")}`;
+  return `${endHours.toString().padStart(2, '0')}:${endMins.toString().padStart(2, '0')}`;
 }
 
 // Converte HH:MM in minuti dalla mezzanotte
 function timeToMinutes(t) {
-  const [h, m] = t.split(":").map(Number);
+  const [h, m] = t.split(':').map(Number);
   return h * 60 + m;
 }
 
 // DEPRECATED - hole prevention rule disabled
 // DEPRECATO: usare UnifiedBookingService.wouldCreateHalfHourHole
-export function wouldCreateHalfHourHole(
-  courtId,
-  date,
-  time,
-  duration,
-  bookings,
-) {
+export function wouldCreateHalfHourHole(courtId, date, time, duration, bookings) {
   // Always return false - hole prevention rule disabled
   return false;
 }
@@ -249,19 +231,12 @@ export function isTimeSlotTrapped(courtId, date, time, duration, bookings) {
 }
 
 // Calcola prezzo totale
-export function calculatePrice(
-  court,
-  duration,
-  lighting = false,
-  heating = false,
-) {
+export function calculatePrice(court, duration, lighting = false, heating = false) {
   if (!court) return 0;
 
   const basePrice = duration === 60 ? court.price60 : court.price90;
-  const lightingCost =
-    lighting && court.hasLighting ? BOOKING_CONFIG.pricing.lighting : 0;
-  const heatingCost =
-    heating && court.hasHeating ? BOOKING_CONFIG.pricing.heating : 0;
+  const lightingCost = lighting && court.hasLighting ? BOOKING_CONFIG.pricing.lighting : 0;
+  const heatingCost = heating && court.hasHeating ? BOOKING_CONFIG.pricing.heating : 0;
 
   return basePrice + lightingCost + heatingCost;
 }
@@ -309,17 +284,14 @@ export function calculateLessonPrice({
 
     // 2. Fallback a tariffa oraria se non c'è un prezzo specifico per il numero di partecipanti
     if (baseTotal === undefined && instructor.instructorData.hourlyRate > 0) {
-      baseTotal =
-        Number(instructor.instructorData.hourlyRate) * (duration / 60);
+      baseTotal = Number(instructor.instructorData.hourlyRate) * (duration / 60);
     }
   }
 
   // 3. Fallback finale a configurazione generale lezione
   if (baseTotal === undefined) {
     baseTotal =
-      duration === 90
-        ? (lessonCfg.basePrice90 ?? lessonCfg.basePrice60)
-        : lessonCfg.basePrice60;
+      duration === 90 ? (lessonCfg.basePrice90 ?? lessonCfg.basePrice60) : lessonCfg.basePrice60;
   }
 
   let total = baseTotal;
@@ -343,13 +315,13 @@ export function validateBooking(booking, bookings, courts) {
   // Controlla campo esistente
   const court = courts.find((c) => c.id === booking.courtId);
   if (!court) {
-    errors.push("Campo non valido");
+    errors.push('Campo non valido');
     return errors;
   }
 
   // Controlla durata
   if (!BOOKING_CONFIG.rules.allowedDurations.includes(booking.duration)) {
-    errors.push("Durata non valida");
+    errors.push('Durata non valida');
   }
 
   // Controlla disponibilità
@@ -360,19 +332,19 @@ export function validateBooking(booking, bookings, courts) {
       booking.time,
       booking.duration,
       bookings,
-      booking.id,
+      booking.id
     )
   ) {
-    errors.push("Slot non disponibile");
+    errors.push('Slot non disponibile');
   }
 
   // Controlla opzioni vs capacità campo
   if (booking.lighting && !court.hasLighting) {
-    errors.push("Illuminazione non disponibile per questo campo");
+    errors.push('Illuminazione non disponibile per questo campo');
   }
 
   if (booking.heating && !court.hasHeating) {
-    errors.push("Riscaldamento non disponibile per questo campo");
+    errors.push('Riscaldamento non disponibile per questo campo');
   }
 
   return errors;
@@ -385,13 +357,13 @@ export function generateBookingId() {
 
 // Stato prenotazione
 export const BOOKING_STATUS = {
-  CONFIRMED: "confirmed",
-  CANCELLED: "cancelled",
-  PENDING: "pending",
+  CONFIRMED: 'confirmed',
+  CANCELLED: 'cancelled',
+  PENDING: 'pending',
 };
 
 // Storage centralizzato - ora con supporto cloud
-const STORAGE_KEY = "ml-field-bookings";
+const STORAGE_KEY = 'ml-field-bookings';
 
 // Importa servizi cloud
 import {
@@ -400,7 +372,7 @@ import {
   updateCloudBooking,
   cancelCloudBooking,
   getPublicBookings as getCloudPublicBookings,
-} from "./cloud-bookings.js";
+} from './cloud-bookings.js';
 
 // Flag per determinare se usare il cloud o localStorage
 let useCloudStorage = false;
@@ -417,10 +389,7 @@ export async function loadBookings() {
     try {
       return await loadPublicBookings();
     } catch (error) {
-      console.warn(
-        "Errore caricamento da cloud, fallback a localStorage:",
-        error,
-      );
+      console.warn('Errore caricamento da cloud, fallback a localStorage:', error);
       return loadBookingsLocal();
     }
   }
@@ -459,18 +428,15 @@ export async function createBooking(bookingData, user) {
   if (useCloudStorage && user) {
     try {
       const created = await createCloudBooking(bookingData, user);
-      return { ...created, _storage: "cloud" };
+      return { ...created, _storage: 'cloud' };
     } catch (error) {
-      console.warn(
-        "Errore creazione nel cloud, fallback a localStorage:",
-        error,
-      );
+      console.warn('Errore creazione nel cloud, fallback a localStorage:', error);
       const localCreated = createBookingLocal(bookingData, user);
-      return { ...localCreated, _storage: "local" };
+      return { ...localCreated, _storage: 'local' };
     }
   }
   const created = createBookingLocal(bookingData, user);
-  return { ...created, _storage: "local" };
+  return { ...created, _storage: 'local' };
 }
 
 function createBookingLocal(bookingData, user) {
@@ -486,11 +452,11 @@ function createBookingLocal(bookingData, user) {
     price: bookingData.price,
 
     // Dati utente (nascosti nella vista pubblica)
-    bookedBy: user?.displayName || user?.email || "Anonimo",
+    bookedBy: user?.displayName || user?.email || 'Anonimo',
     userEmail: user?.email,
-    userPhone: bookingData.userPhone || "",
+    userPhone: bookingData.userPhone || '',
     players: bookingData.players || [],
-    notes: bookingData.notes || "",
+    notes: bookingData.notes || '',
 
     // Metadata
     status: BOOKING_STATUS.CONFIRMED,
@@ -511,10 +477,7 @@ export async function updateBooking(bookingId, updates, user) {
     try {
       return await updateCloudBooking(bookingId, updates, user);
     } catch (error) {
-      console.warn(
-        "Errore aggiornamento nel cloud, fallback a localStorage:",
-        error,
-      );
+      console.warn('Errore aggiornamento nel cloud, fallback a localStorage:', error);
       return updateBookingLocal(bookingId, updates, user);
     }
   }
@@ -547,17 +510,14 @@ export async function cancelBooking(bookingId, user) {
       await cancelCloudBooking(bookingId, user);
       return { status: BOOKING_STATUS.CANCELLED };
     } catch (error) {
-      console.warn(
-        "Errore cancellazione nel cloud, fallback a localStorage:",
-        error,
-      );
+      console.warn('Errore cancellazione nel cloud, fallback a localStorage:', error);
       return updateBookingLocal(
         bookingId,
         {
           status: BOOKING_STATUS.CANCELLED,
           cancelledAt: new Date().toISOString(),
         },
-        user,
+        user
       );
     }
   }
@@ -567,7 +527,7 @@ export async function cancelBooking(bookingId, user) {
       status: BOOKING_STATUS.CANCELLED,
       cancelledAt: new Date().toISOString(),
     },
-    user,
+    user
   );
 }
 
@@ -577,18 +537,13 @@ export async function getPublicBookings() {
     try {
       return await getCloudPublicBookings();
     } catch (error) {
-      if (error?.code === "failed-precondition") {
+      if (error?.code === 'failed-precondition') {
         if (!warnedMissingIndex) {
-          console.warn(
-            "Cloud bookings richiedono un indice: uso dati locali (fallback).",
-          );
+          console.warn('Cloud bookings richiedono un indice: uso dati locali (fallback).');
           warnedMissingIndex = true;
         }
       } else {
-        console.warn(
-          "Errore caricamento pubbliche da cloud, fallback a localStorage:",
-          error,
-        );
+        console.warn('Errore caricamento pubbliche da cloud, fallback a localStorage:', error);
       }
       return getPublicBookingsLocal();
     }
@@ -628,10 +583,7 @@ export async function getAdminBookings() {
     try {
       return await loadPublicBookings(); // Gli admin vedono tutto
     } catch (error) {
-      console.warn(
-        "Errore caricamento admin da cloud, fallback a localStorage:",
-        error,
-      );
+      console.warn('Errore caricamento admin da cloud, fallback a localStorage:', error);
       return loadBookingsLocal();
     }
   }
@@ -653,11 +605,9 @@ export async function ensureBookingsAvailable() {
     }
 
     // Restituisce il massimo tra i due
-    return publicBookings.length > localBookings.length
-      ? publicBookings
-      : localBookings;
+    return publicBookings.length > localBookings.length ? publicBookings : localBookings;
   } catch (error) {
-    console.error("Error ensuring bookings availability:", error);
+    console.error('Error ensuring bookings availability:', error);
     return [];
   }
 }
@@ -674,15 +624,10 @@ export async function initializeBookingSystem(user) {
     // 3. Se c'è un utente, carica i suoi dati specifici dal cloud
     if (user && user.uid) {
       try {
-        const { loadActiveUserBookings } = await import(
-          "@services/cloud-bookings.js"
-        );
+        const { loadActiveUserBookings } = await import('@services/cloud-bookings.js');
         const userCloudBookings = await loadActiveUserBookings(user.uid);
       } catch (cloudError) {
-        console.warn(
-          "initializeBookingSystem: Cloud user data failed:",
-          cloudError,
-        );
+        console.warn('initializeBookingSystem: Cloud user data failed:', cloudError);
       }
     }
 
@@ -691,7 +636,7 @@ export async function initializeBookingSystem(user) {
 
     return true;
   } catch (error) {
-    console.error("initializeBookingSystem: Failed:", error);
+    console.error('initializeBookingSystem: Failed:', error);
     return false;
   }
 }
@@ -706,7 +651,7 @@ export async function syncAllBookings() {
       const publicBookings = await getPublicBookings();
       allBookings = [...publicBookings];
     } catch (error) {
-      console.warn("syncAllBookings: Failed to load public bookings:", error);
+      console.warn('syncAllBookings: Failed to load public bookings:', error);
     }
 
     // Carica anche localStorage separatamente
@@ -718,15 +663,13 @@ export async function syncAllBookings() {
 
       // Prima aggiungi quelli esistenti
       allBookings.forEach((booking) => {
-        const key =
-          booking.id || `${booking.date}-${booking.time}-${booking.courtId}`;
+        const key = booking.id || `${booking.date}-${booking.time}-${booking.courtId}`;
         bookingMap.set(key, booking);
       });
 
       // Poi aggiungi quelli locali che non esistono già
       localBookings.forEach((booking) => {
-        const key =
-          booking.id || `${booking.date}-${booking.time}-${booking.courtId}`;
+        const key = booking.id || `${booking.date}-${booking.time}-${booking.courtId}`;
         if (!bookingMap.has(key)) {
           bookingMap.set(key, booking);
         }
@@ -737,12 +680,12 @@ export async function syncAllBookings() {
       // Aggiorna localStorage con tutti i dati
       await saveBookingsLocal(allBookings);
     } catch (error) {
-      console.warn("syncAllBookings: Failed to sync local storage:", error);
+      console.warn('syncAllBookings: Failed to sync local storage:', error);
     }
 
     return allBookings;
   } catch (error) {
-    console.error("syncAllBookings: Complete failure:", error);
+    console.error('syncAllBookings: Complete failure:', error);
     return [];
   }
 }
@@ -765,28 +708,26 @@ export async function getUserBookings(user, forceFullInit = false) {
     // Prova con il servizio cloud se disponibile
     if (useCloudStorage && user.uid) {
       try {
-        const { loadActiveUserBookings } = await import(
-          "@services/cloud-bookings.js"
-        );
+        const { loadActiveUserBookings } = await import('@services/cloud-bookings.js');
         const cloudBookings = await loadActiveUserBookings(user.uid);
         if (cloudBookings && cloudBookings.length > 0) {
           userBookings = cloudBookings;
         }
       } catch (cloudError) {
-        console.warn("Cloud user bookings not available:", cloudError);
+        console.warn('Cloud user bookings not available:', cloudError);
       }
     }
 
     // Carica sempre anche da localStorage (ora sincronizzato) e unisci i risultati
     try {
       const allBookings = await loadBookings();
-      
+
       // Filtra le prenotazioni dell'utente
       const localUserBookings = allBookings.filter(
         (booking) =>
           booking.userEmail === user.email ||
           booking.email === user.email ||
-          booking.userId === user.uid,
+          booking.userId === user.uid
       );
 
       // Se abbiamo sia cloud che local, unisci eliminando duplicati
@@ -797,14 +738,13 @@ export async function getUserBookings(user, forceFullInit = false) {
         userBookings.forEach((booking) => {
           bookingMap.set(
             booking.id || `${booking.date}-${booking.time}-${booking.courtId}`,
-            booking,
+            booking
           );
         });
 
         // Poi aggiungi i local bookings (senza sovrascrivere)
         localUserBookings.forEach((booking) => {
-          const key =
-            booking.id || `${booking.date}-${booking.time}-${booking.courtId}`;
+          const key = booking.id || `${booking.date}-${booking.time}-${booking.courtId}`;
           if (!bookingMap.has(key)) {
             bookingMap.set(key, booking);
           }
@@ -815,7 +755,7 @@ export async function getUserBookings(user, forceFullInit = false) {
         userBookings = localUserBookings;
       }
     } catch (localError) {
-      console.warn("localStorage user bookings not available:", localError);
+      console.warn('localStorage user bookings not available:', localError);
     }
 
     // Filtra solo prenotazioni future
@@ -834,7 +774,7 @@ export async function getUserBookings(user, forceFullInit = false) {
 
     return activeBookings;
   } catch (error) {
-    console.error("Error loading user bookings:", error);
+    console.error('Error loading user bookings:', error);
     return [];
   }
 }
@@ -843,44 +783,44 @@ export async function getUserBookings(user, forceFullInit = false) {
 export function addTestBookingsWithParticipants(user) {
   const testBookings = [
     {
-      courtId: "court-1",
-      courtName: "Campo 1 (Outdoor)",
-      date: new Date(Date.now() + 86400000).toISOString().split("T")[0], // Domani
-      time: "20:00",
+      courtId: 'court-1',
+      courtName: 'Campo 1 (Outdoor)',
+      date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Domani
+      time: '20:00',
       duration: 90,
       lighting: true,
       price: 32,
       players: [
-        { name: "Marco Rossi", phone: "333-1234567" },
-        { name: "Luca Bianchi", phone: "333-7654321" },
+        { name: 'Marco Rossi', phone: '333-1234567' },
+        { name: 'Luca Bianchi', phone: '333-7654321' },
       ],
-      notes: "Partita settimanale del mercoledì",
+      notes: 'Partita settimanale del mercoledì',
     },
     {
-      courtId: "court-2",
-      courtName: "Campo 2 (Outdoor)",
-      date: new Date(Date.now() + 2 * 86400000).toISOString().split("T")[0], // Dopodomani
-      time: "18:30",
+      courtId: 'court-2',
+      courtName: 'Campo 2 (Outdoor)',
+      date: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0], // Dopodomani
+      time: '18:30',
       duration: 60,
       lighting: false,
       price: 24,
       players: [
-        { name: "Andrea Verdi", phone: "333-1111111" },
-        { name: "Paolo Neri", phone: "333-2222222" },
-        { name: "Giuseppe Conti", phone: "333-3333333" },
+        { name: 'Andrea Verdi', phone: '333-1111111' },
+        { name: 'Paolo Neri', phone: '333-2222222' },
+        { name: 'Giuseppe Conti', phone: '333-3333333' },
       ],
-      notes: "Torneo amichevole",
+      notes: 'Torneo amichevole',
     },
     {
-      courtId: "court-1",
-      courtName: "Campo 1 (Outdoor)",
-      date: new Date().toISOString().split("T")[0], // Oggi
-      time: "21:00",
+      courtId: 'court-1',
+      courtName: 'Campo 1 (Outdoor)',
+      date: new Date().toISOString().split('T')[0], // Oggi
+      time: '21:00',
       duration: 120,
       lighting: true,
       price: 48,
-      players: [{ name: "Marco Rossi", phone: "333-1234567" }],
-      notes: "Allenamento lungo - cerco altri giocatori!",
+      players: [{ name: 'Marco Rossi', phone: '333-1234567' }],
+      notes: 'Allenamento lungo - cerco altri giocatori!',
     },
   ];
 

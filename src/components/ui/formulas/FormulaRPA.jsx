@@ -1,8 +1,8 @@
 // =============================================
 // FILE: src/components/ui/formulas/FormulaRPA.jsx
 // =============================================
-import React from "react";
-import { rpaBracketText, fmtInt, fmt2 } from "@lib/rpa.js";
+import React from 'react';
+import { rpaBracketText, fmtInt, fmt2 } from '@lib/rpa.js';
 function computeFromSets(sets) {
   let setsA = 0,
     setsB = 0,
@@ -11,34 +11,24 @@ function computeFromSets(sets) {
   for (const s of sets || []) {
     const a = Number(s?.a || 0),
       b = Number(s?.b || 0);
-    if (String(a) === "" && String(b) === "") continue;
+    if (String(a) === '' && String(b) === '') continue;
     gamesA += a;
     gamesB += b;
     if (a > b) setsA++;
     else if (b > a) setsB++;
   }
   let winner = null;
-  if (setsA > setsB) winner = "A";
-  else if (setsB > setsA) winner = "B";
+  if (setsA > setsB) winner = 'A';
+  else if (setsB > setsA) winner = 'B';
   return { setsA, setsB, gamesA, gamesB, winner };
 }
 function setsToString(sets) {
   return (sets || [])
-    .filter((s) => String(s?.a ?? "") !== "" || String(s?.b ?? "") !== "")
+    .filter((s) => String(s?.a ?? '') !== '' || String(s?.b ?? '') !== '')
     .map((s) => `${Number(s.a || 0)}-${Number(s.b || 0)}`)
-    .join(", ");
+    .join(', ');
 }
-export function FormulaRPA({
-  sumA,
-  sumB,
-  gap,
-  base,
-  factor,
-  gd,
-  pts,
-  winner,
-  sets,
-}) {
+export function FormulaRPA({ sumA, sumB, gap, base, factor, gd, pts, winner, sets }) {
   const rr = computeFromSets(sets || []);
   const beforeFactor = base + gd;
   const finalPoints = beforeFactor * factor;
@@ -72,11 +62,8 @@ export function FormulaRPA({
           STEP 1: PUNTEGGIO BASE
         </div>
         <div className="text-sm font-mono">
-          Base = (Team A + Team B) ÷ 100 = ({fmtInt(sumA)} + {fmtInt(sumB)}) ÷
-          100 ={" "}
-          <span className="font-bold text-yellow-700 dark:text-yellow-300">
-            {fmt2(base)}
-          </span>
+          Base = (Team A + Team B) ÷ 100 = ({fmtInt(sumA)} + {fmtInt(sumB)}) ÷ 100 ={' '}
+          <span className="font-bold text-yellow-700 dark:text-yellow-300">{fmt2(base)}</span>
         </div>
         <div className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
           Il punteggio base rappresenta il livello medio della partita
@@ -89,17 +76,15 @@ export function FormulaRPA({
           STEP 2: BONUS/MALUS GAMES
         </div>
         <div className="text-sm">
-          DG (Differenza Game) ={" "}
-          <span className="font-bold text-purple-700 dark:text-purple-300">
-            {gd}
-          </span>
+          DG (Differenza Game) ={' '}
+          <span className="font-bold text-purple-700 dark:text-purple-300">{gd}</span>
         </div>
         <div className="text-xs text-purple-600 dark:text-purple-400 mt-1">
           {gd > 0
-            ? "Bonus per aver vinto più games"
+            ? 'Bonus per aver vinto più games'
             : gd < 0
-              ? "Malus per aver vinto meno games"
-              : "Nessun bonus/malus (parità games)"}
+              ? 'Malus per aver vinto meno games'
+              : 'Nessun bonus/malus (parità games)'}
         </div>
       </div>
 
@@ -109,19 +94,16 @@ export function FormulaRPA({
           STEP 3: MOLTIPLICATORE
         </div>
         <div className="text-sm font-mono">
-          Punti = (Base + DG) × Factor = ({fmt2(base)} + {gd}) ×{" "}
-          {factor.toFixed(2)} ={" "}
-          <span className="font-bold text-green-700 dark:text-green-300">
-            {fmt2(finalPoints)}
-          </span>
+          Punti = (Base + DG) × Factor = ({fmt2(base)} + {gd}) × {factor.toFixed(2)} ={' '}
+          <span className="font-bold text-green-700 dark:text-green-300">{fmt2(finalPoints)}</span>
         </div>
         <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-          Factor {factor.toFixed(2)}:{" "}
+          Factor {factor.toFixed(2)}:{' '}
           {factor > 1
-            ? "partita contro avversari più forti"
+            ? 'partita contro avversari più forti'
             : factor < 1
-              ? "partita contro avversari più deboli"
-              : "partita equilibrata"}
+              ? 'partita contro avversari più deboli'
+              : 'partita equilibrata'}
         </div>
       </div>
 

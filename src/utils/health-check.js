@@ -8,15 +8,15 @@
 
 export function checkEnvironmentVariables() {
   const required = [
-    "VITE_FIREBASE_API_KEY",
-    "VITE_FIREBASE_AUTH_DOMAIN",
-    "VITE_FIREBASE_PROJECT_ID",
+    'VITE_FIREBASE_API_KEY',
+    'VITE_FIREBASE_AUTH_DOMAIN',
+    'VITE_FIREBASE_PROJECT_ID',
   ];
 
   const missing = required.filter((key) => !import.meta.env[key]);
 
   if (missing.length > 0) {
-    console.warn("Missing environment variables:", missing);
+    console.warn('Missing environment variables:', missing);
     return false;
   }
 
@@ -25,20 +25,22 @@ export function checkEnvironmentVariables() {
 
 export function checkBrowserCompatibility() {
   const features = {
-    "ES6 Support": () => {
+    'ES6 Support': () => {
       try {
         // Check for ES6 features more safely
-        return typeof Symbol !== 'undefined' && 
-               typeof Map !== 'undefined' && 
-               typeof Set !== 'undefined' &&
-               typeof Promise !== 'undefined';
+        return (
+          typeof Symbol !== 'undefined' &&
+          typeof Map !== 'undefined' &&
+          typeof Set !== 'undefined' &&
+          typeof Promise !== 'undefined'
+        );
       } catch (e) {
         return false;
       }
     },
     LocalStorage: () => {
       try {
-        const test = "__storage_test__";
+        const test = '__storage_test__';
         localStorage.setItem(test, test);
         localStorage.removeItem(test);
         return true;
@@ -46,9 +48,9 @@ export function checkBrowserCompatibility() {
         return false;
       }
     },
-    "Fetch API": () => typeof window.fetch === "function",
-    "History API": () => typeof window.history?.pushState === "function",
-    "Promise Support": () => typeof Promise === "function",
+    'Fetch API': () => typeof window.fetch === 'function',
+    'History API': () => typeof window.history?.pushState === 'function',
+    'Promise Support': () => typeof Promise === 'function',
   };
 
   const results = {};
@@ -61,7 +63,7 @@ export function checkBrowserCompatibility() {
   }
 
   if (!allSupported) {
-    console.warn("Browser compatibility issues:", results);
+    console.warn('Browser compatibility issues:', results);
   }
 
   return { supported: allSupported, details: results };
@@ -72,12 +74,12 @@ export function performHealthCheck() {
     timestamp: new Date().toISOString(),
     environment: checkEnvironmentVariables(),
     browser: checkBrowserCompatibility(),
-    router: typeof window?.history === "object",
-    react: typeof React !== "undefined" || true, // React always available in build
+    router: typeof window?.history === 'object',
+    react: typeof React !== 'undefined' || true, // React always available in build
   };
 
   const overall = Object.values(results).every((result) =>
-    typeof result === "boolean" ? result : result.supported !== false,
+    typeof result === 'boolean' ? result : result.supported !== false
   );
 
   // Health check completed silently in production

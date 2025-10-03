@@ -13,11 +13,11 @@ export async function debugPromoteToClubAdmin(userId, clubId, userEmail) {
     console.warn('Debug functions only available in development mode');
     return false;
   }
-  
+
   try {
     const affiliationId = `${userId}_${clubId}`;
     const affiliationRef = doc(db, 'affiliations', affiliationId);
-    
+
     const affiliationData = {
       userId: userId,
       clubId: clubId,
@@ -27,18 +27,18 @@ export async function debugPromoteToClubAdmin(userId, clubId, userEmail) {
       status: 'approved',
       joinedAt: serverTimestamp(),
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
-    
+
     await setDoc(affiliationRef, affiliationData, { merge: true });
-    
+
     console.log('✅ Debug: User promoted to CLUB_ADMIN', {
       userId,
       clubId,
       userEmail,
-      affiliationId
+      affiliationId,
     });
-    
+
     return true;
   } catch (error) {
     console.error('❌ Debug: Error promoting user', error);

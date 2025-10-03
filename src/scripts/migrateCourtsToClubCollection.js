@@ -16,7 +16,7 @@ export const migrateCourtsToClubCollection = async (clubId) => {
     // 1. Carica tutti i campi legacy
     const legacyCourtsRef = collection(db, 'courts');
     const legacyCourtsSnapshot = await getDocs(legacyCourtsRef);
-    const legacyCourts = legacyCourtsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const legacyCourts = legacyCourtsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     let migratedCount = 0;
     let deletedCount = 0;
@@ -40,7 +40,9 @@ export const migrateCourtsToClubCollection = async (clubId) => {
       }
     }
 
-    console.log(`✅ Migrazione completata: ${migratedCount} campi migrati, ${deletedCount} legacy cancellati.`);
+    console.log(
+      `✅ Migrazione completata: ${migratedCount} campi migrati, ${deletedCount} legacy cancellati.`
+    );
     return { migratedCount, deletedCount };
   } catch (error) {
     console.error('❌ Errore durante la migrazione dei campi:', error);

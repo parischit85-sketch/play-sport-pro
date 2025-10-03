@@ -22,11 +22,8 @@ const UserManagement = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [usersData, clubsData] = await Promise.all([
-        listAllUserProfiles(),
-        getClubsForAdmin()
-      ]);
-      
+      const [usersData, clubsData] = await Promise.all([listAllUserProfiles(), getClubsForAdmin()]);
+
       setUsers(usersData);
       setClubs(clubsData);
     } catch (error) {
@@ -45,7 +42,7 @@ const UserManagement = () => {
       setSelectedUser(null);
     } catch (error) {
       console.error('Error setting user role:', error);
-      alert('Errore nell\'assegnazione del ruolo');
+      alert("Errore nell'assegnazione del ruolo");
     }
   };
 
@@ -108,11 +105,7 @@ const UserManagement = () => {
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-10 w-10">
                         {user.avatar ? (
-                          <img
-                            className="h-10 w-10 rounded-full"
-                            src={user.avatar}
-                            alt=""
-                          />
+                          <img className="h-10 w-10 rounded-full" src={user.avatar} alt="" />
                         ) : (
                           <div className="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
                             <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">
@@ -191,7 +184,7 @@ const RoleManagementModal = ({ user, clubs, onClose, onSetRole, onRemoveRole }) 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedClub || !selectedRole) return;
-    
+
     onSetRole(user.uid, selectedClub, selectedRole);
   };
 

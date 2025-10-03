@@ -4,10 +4,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext.jsx';
-import { getPendingAffiliations, getAllAffiliations, approveAffiliation, rejectAffiliation } from '@services/admin.js';
+import {
+  getPendingAffiliations,
+  getAllAffiliations,
+  approveAffiliation,
+  rejectAffiliation,
+} from '@services/admin.js';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
 
-const AffiliationCard = ({ affiliation, onApprove, onReject, onViewDetails, showActions = true }) => {
+const AffiliationCard = ({
+  affiliation,
+  onApprove,
+  onReject,
+  onViewDetails,
+  showActions = true,
+}) => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'approved':
@@ -40,7 +51,7 @@ const AffiliationCard = ({ affiliation, onApprove, onReject, onViewDetails, show
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -52,23 +63,31 @@ const AffiliationCard = ({ affiliation, onApprove, onReject, onViewDetails, show
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               {affiliation.user?.displayName || affiliation.user?.email || 'Utente sconosciuto'}
             </h3>
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(affiliation.status)}`}>
+            <span
+              className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(affiliation.status)}`}
+            >
               {getStatusText(affiliation.status)}
             </span>
           </div>
-          
+
           <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
             <p>📧 {affiliation.user?.email || 'Email non disponibile'}</p>
-            <p>🏟️ <strong>{affiliation.club?.name || 'Club sconosciuto'}</strong></p>
+            <p>
+              🏟️ <strong>{affiliation.club?.name || 'Club sconosciuto'}</strong>
+            </p>
             {affiliation.club?.location && (
-              <p>📍 {typeof affiliation.club.location === 'string' 
-                ? affiliation.club.location 
-                : affiliation.club.location?.address || affiliation.club.location?.city || 'Posizione non specificata'}
+              <p>
+                📍{' '}
+                {typeof affiliation.club.location === 'string'
+                  ? affiliation.club.location
+                  : affiliation.club.location?.address ||
+                    affiliation.club.location?.city ||
+                    'Posizione non specificata'}
               </p>
             )}
           </div>
         </div>
-        
+
         {showActions && affiliation.status === 'pending' && (
           <div className="flex gap-2 ml-4">
             <button
@@ -87,7 +106,7 @@ const AffiliationCard = ({ affiliation, onApprove, onReject, onViewDetails, show
             </button>
           </div>
         )}
-        
+
         {!showActions && (
           <div className="flex gap-2 ml-4">
             <button
@@ -99,7 +118,7 @@ const AffiliationCard = ({ affiliation, onApprove, onReject, onViewDetails, show
           </div>
         )}
       </div>
-      
+
       {affiliation.notes && (
         <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <p className="text-sm text-gray-700 dark:text-gray-300">
@@ -107,21 +126,20 @@ const AffiliationCard = ({ affiliation, onApprove, onReject, onViewDetails, show
           </p>
         </div>
       )}
-      
+
       <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 space-y-1">
         <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
           <span>Richiesta: {formatDate(affiliation.requestedAt)}</span>
           <span>ID: {affiliation.id}</span>
         </div>
-        
+
         {affiliation.status !== 'pending' && affiliation.processedAt && (
           <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
             <span>
-              {affiliation.status === 'approved' ? 'Approvata' : 'Rifiutata'}: {formatDate(affiliation.processedAt)}
+              {affiliation.status === 'approved' ? 'Approvata' : 'Rifiutata'}:{' '}
+              {formatDate(affiliation.processedAt)}
             </span>
-            {affiliation.processedBy && (
-              <span>da {affiliation.processedBy}</span>
-            )}
+            {affiliation.processedBy && <span>da {affiliation.processedBy}</span>}
           </div>
         )}
       </div>
@@ -134,12 +152,10 @@ const AffiliationFilterBar = ({ filters, onFiltersChange, affiliationsCount }) =
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
       <div className="flex flex-wrap gap-4 items-center">
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Stato:
-          </label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Stato:</label>
           <select
             value={filters.status}
-            onChange={(e) => onFiltersChange({...filters, status: e.target.value})}
+            onChange={(e) => onFiltersChange({ ...filters, status: e.target.value })}
             className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="">Tutti</option>
@@ -148,27 +164,25 @@ const AffiliationFilterBar = ({ filters, onFiltersChange, affiliationsCount }) =
             <option value="rejected">Rifiutate</option>
           </select>
         </div>
-        
+
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Cerca:
-          </label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Cerca:</label>
           <input
             type="text"
             value={filters.search}
-            onChange={(e) => onFiltersChange({...filters, search: e.target.value})}
+            onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
             placeholder="Nome utente o club..."
             className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
           />
         </div>
-        
+
         <div className="flex items-center gap-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
             Ordina per:
           </label>
           <select
             value={filters.sortBy}
-            onChange={(e) => onFiltersChange({...filters, sortBy: e.target.value})}
+            onChange={(e) => onFiltersChange({ ...filters, sortBy: e.target.value })}
             className="border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           >
             <option value="requestedAt">Data Richiesta</option>
@@ -178,13 +192,13 @@ const AffiliationFilterBar = ({ filters, onFiltersChange, affiliationsCount }) =
             <option value="status">Stato</option>
           </select>
         </div>
-        
+
         <div className="ml-auto flex items-center gap-4">
           <span className="text-sm text-gray-600 dark:text-gray-400">
             {affiliationsCount} affiliazioni trovate
           </span>
           <button
-            onClick={() => onFiltersChange({status: '', search: '', sortBy: 'requestedAt'})}
+            onClick={() => onFiltersChange({ status: '', search: '', sortBy: 'requestedAt' })}
             className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
           >
             Reset Filtri
@@ -219,7 +233,7 @@ const StatsOverview = ({ stats, loading }) => {
           </div>
         </div>
       </div>
-      
+
       <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
         <div className="flex items-center gap-3">
           <div className="text-2xl">✅</div>
@@ -231,7 +245,7 @@ const StatsOverview = ({ stats, loading }) => {
           </div>
         </div>
       </div>
-      
+
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
         <div className="flex items-center gap-3">
           <div className="text-2xl">❌</div>
@@ -243,7 +257,7 @@ const StatsOverview = ({ stats, loading }) => {
           </div>
         </div>
       </div>
-      
+
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
         <div className="flex items-center gap-3">
           <div className="text-2xl">📊</div>
@@ -270,7 +284,7 @@ const AdminAffiliationsPage = () => {
   const [filters, setFilters] = useState({
     status: 'pending',
     search: '',
-    sortBy: 'requestedAt'
+    sortBy: 'requestedAt',
   });
 
   useEffect(() => {
@@ -278,7 +292,7 @@ const AdminAffiliationsPage = () => {
       navigate('/');
       return;
     }
-    
+
     loadAffiliations();
   }, [userRole, navigate, showPendingOnly]);
 
@@ -290,7 +304,7 @@ const AdminAffiliationsPage = () => {
   const loadAffiliations = async () => {
     try {
       setLoading(true);
-      const affiliationsData = showPendingOnly 
+      const affiliationsData = showPendingOnly
         ? await getPendingAffiliations()
         : await getAllAffiliations();
       setAffiliations(affiliationsData);
@@ -314,16 +328,18 @@ const AdminAffiliationsPage = () => {
 
     // Filter by status
     if (filters.status) {
-      filtered = filtered.filter(affiliation => affiliation.status === filters.status);
+      filtered = filtered.filter((affiliation) => affiliation.status === filters.status);
     }
 
     // Filter by search
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(affiliation => 
-        (affiliation.user?.displayName && affiliation.user.displayName.toLowerCase().includes(searchLower)) ||
-        (affiliation.user?.email && affiliation.user.email.toLowerCase().includes(searchLower)) ||
-        (affiliation.club?.name && affiliation.club.name.toLowerCase().includes(searchLower))
+      filtered = filtered.filter(
+        (affiliation) =>
+          (affiliation.user?.displayName &&
+            affiliation.user.displayName.toLowerCase().includes(searchLower)) ||
+          (affiliation.user?.email && affiliation.user.email.toLowerCase().includes(searchLower)) ||
+          (affiliation.club?.name && affiliation.club.name.toLowerCase().includes(searchLower))
       );
     }
 
@@ -365,19 +381,19 @@ const AdminAffiliationsPage = () => {
       loadAffiliations(); // Refresh list
     } catch (error) {
       console.error('Error approving affiliation:', error);
-      alert('Errore durante l\'approvazione dell\'affiliazione');
+      alert("Errore durante l'approvazione dell'affiliazione");
     }
   };
 
   const handleReject = async (affiliationId) => {
     const reason = prompt('Inserisci il motivo del rifiuto (opzionale):');
-    
+
     try {
       await rejectAffiliation(affiliationId, reason);
       loadAffiliations(); // Refresh list
     } catch (error) {
       console.error('Error rejecting affiliation:', error);
-      alert('Errore durante il rifiuto dell\'affiliazione');
+      alert("Errore durante il rifiuto dell'affiliazione");
     }
   };
 
@@ -391,7 +407,7 @@ const AdminAffiliationsPage = () => {
     setFilters({
       status: showPendingOnly ? '' : 'pending',
       search: '',
-      sortBy: 'requestedAt'
+      sortBy: 'requestedAt',
     });
   };
 
@@ -428,11 +444,9 @@ const AdminAffiliationsPage = () => {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {!showPendingOnly && (
-          <StatsOverview stats={stats} loading={loading} />
-        )}
-        
-        <AffiliationFilterBar 
+        {!showPendingOnly && <StatsOverview stats={stats} loading={loading} />}
+
+        <AffiliationFilterBar
           filters={filters}
           onFiltersChange={setFilters}
           affiliationsCount={filteredAffiliations.length}
@@ -446,16 +460,16 @@ const AdminAffiliationsPage = () => {
           <div className="text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">📝</div>
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              {affiliations.length === 0 
-                ? (showPendingOnly ? 'Nessuna affiliazione in attesa' : 'Nessuna affiliazione trovata')
-                : 'Nessuna affiliazione corrisponde ai filtri'
-              }
+              {affiliations.length === 0
+                ? showPendingOnly
+                  ? 'Nessuna affiliazione in attesa'
+                  : 'Nessuna affiliazione trovata'
+                : 'Nessuna affiliazione corrisponde ai filtri'}
             </h3>
             <p className="text-gray-500 dark:text-gray-400">
-              {affiliations.length === 0 
+              {affiliations.length === 0
                 ? 'Le richieste di affiliazione compariranno qui quando gli utenti si iscriveranno ai club.'
-                : 'Prova a modificare i filtri di ricerca.'
-              }
+                : 'Prova a modificare i filtri di ricerca.'}
             </p>
           </div>
         ) : (

@@ -1,16 +1,16 @@
 // =============================================
 // FILE: src/pages/DashboardHomePage.jsx
 // =============================================
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { themeTokens } from "@lib/theme.js";
-import { useAuth } from "@contexts/AuthContext.jsx";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { themeTokens } from '@lib/theme.js';
+import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useClubAdminRedirect } from '../hooks/useClubAdminRedirect.js';
-import PWABanner from "../components/ui/PWABanner.jsx";
+import PWABanner from '../components/ui/PWABanner.jsx';
 
 // Lazy load heavy components
-const UserBookingsCard = React.lazy(() => import("@ui/UserBookingsCard.jsx"));
+const UserBookingsCard = React.lazy(() => import('@ui/UserBookingsCard.jsx'));
 
 // Performance optimized quick actions
 const QuickAction = React.memo(({ action, T }) => (
@@ -37,7 +37,7 @@ const QuickAction = React.memo(({ action, T }) => (
   </button>
 ));
 
-QuickAction.displayName = "QuickAction";
+QuickAction.displayName = 'QuickAction';
 
 export default function DashboardHomePage() {
   const navigate = useNavigate();
@@ -52,47 +52,41 @@ export default function DashboardHomePage() {
   const quickActions = React.useMemo(
     () => [
       {
-        title: "Cerca Club",
-        description: "Trova e affiliati a nuovi club",
+        title: 'Cerca Club',
+        description: 'Trova e affiliati a nuovi club',
         icon: (
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" strokeWidth={1.5} />
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              strokeWidth={1.5}
+            />
           </svg>
         ),
-        action: () => navigate("/search-clubs"),
+        action: () => navigate('/search-clubs'),
         iconWrap:
-          "bg-gradient-to-r from-blue-50/80 to-cyan-50/60 dark:from-blue-900/40 dark:to-cyan-900/30 text-blue-600 dark:text-blue-400 border-blue-200/50 dark:border-blue-500/30",
+          'bg-gradient-to-r from-blue-50/80 to-cyan-50/60 dark:from-blue-900/40 dark:to-cyan-900/30 text-blue-600 dark:text-blue-400 border-blue-200/50 dark:border-blue-500/30',
       },
       {
-        title: "Prenota Campo/Lezione",
-        description: "Prenota subito un campo o una lezione",
+        title: 'Prenota Campo/Lezione',
+        description: 'Prenota subito un campo o una lezione',
         icon: (
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <rect x="3" y="5" width="18" height="16" rx="2" strokeWidth={1.5} />
             <path d="M8 3v4M16 3v4M3 9h18" strokeWidth={1.5} />
             <path d="M12 13v6M9 16h6" strokeWidth={1.5} />
           </svg>
         ),
-        action: () => navigate("/prenota"),
+        action: () => navigate('/prenota'),
         iconWrap:
-          "bg-gradient-to-r from-emerald-50/80 to-green-50/60 dark:from-emerald-900/40 dark:to-green-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-500/30",
+          'bg-gradient-to-r from-emerald-50/80 to-green-50/60 dark:from-emerald-900/40 dark:to-green-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-500/30',
       },
     ],
-    [navigate],
+    [navigate]
   );
 
   // Quick loading fallback for immediate UI
-  if (!players) { // simple loading fallback until ClubContext guarantees players array
+  if (!players) {
+    // simple loading fallback until ClubContext guarantees players array
     return (
       <div className="space-y-6 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 p-4">
         <PWABanner />

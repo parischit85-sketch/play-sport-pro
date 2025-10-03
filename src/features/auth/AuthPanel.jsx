@@ -1,9 +1,9 @@
 // =============================================
 // FILE: src/features/auth/AuthPanel.jsx
 // =============================================
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import Section from "@ui/Section.jsx";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import Section from '@ui/Section.jsx';
 import {
   loginWithGoogle,
   loginWithFacebook,
@@ -12,21 +12,20 @@ import {
   logout,
   saveUserProfile,
   setDisplayName,
-} from "@services/auth.jsx";
+} from '@services/auth.jsx';
 
 export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [sending, setSending] = useState(false);
-  const emailLinkEnabled =
-    import.meta.env.VITE_AUTH_EMAIL_LINK_ENABLED === "true";
+  const emailLinkEnabled = import.meta.env.VITE_AUTH_EMAIL_LINK_ENABLED === 'true';
   // method: password | magic
-  const [method, setMethod] = useState(emailLinkEnabled ? "magic" : "password");
+  const [method, setMethod] = useState(emailLinkEnabled ? 'magic' : 'password');
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [profileForm, setProfileForm] = useState({
-    firstName: "",
-    lastName: "",
-    phone: "",
+    firstName: '',
+    lastName: '',
+    phone: '',
   });
   const [savingProfile, setSavingProfile] = useState(false);
 
@@ -40,9 +39,9 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
       if (!isComplete) {
         setShowProfileForm(true);
         setProfileForm({
-          firstName: userProfile.firstName || "",
-          lastName: userProfile.lastName || "",
-          phone: userProfile.phone || "",
+          firstName: userProfile.firstName || '',
+          lastName: userProfile.lastName || '',
+          phone: userProfile.phone || '',
         });
       }
     }
@@ -54,24 +53,21 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
       // Il profilo verrà caricato automaticamente dall'App
       // L'app cambierà automaticamente tab grazie all'effetto in App.jsx
     } catch (e) {
-      console.error("❌ Errore Google login:", e);
+      console.error('❌ Errore Google login:', e);
       let message = e?.message || String(e);
 
       // Messaggi più chiari per errori comuni
-      if (e?.code === "auth/popup-closed-by-user") {
-        message = "Popup chiuso. Riprova il login.";
-      } else if (e?.code === "auth/unauthorized-domain") {
-        message =
-          "Dominio non autorizzato. Controlla la configurazione Firebase Console.";
-      } else if (e?.code === "auth/operation-not-allowed") {
-        message =
-          "Login Google non abilitato. Controlla la configurazione Firebase Console.";
-      } else if (e?.code === "auth/popup-blocked") {
-        message =
-          "Popup bloccato dal browser. Abilita i popup per questo sito.";
+      if (e?.code === 'auth/popup-closed-by-user') {
+        message = 'Popup chiuso. Riprova il login.';
+      } else if (e?.code === 'auth/unauthorized-domain') {
+        message = 'Dominio non autorizzato. Controlla la configurazione Firebase Console.';
+      } else if (e?.code === 'auth/operation-not-allowed') {
+        message = 'Login Google non abilitato. Controlla la configurazione Firebase Console.';
+      } else if (e?.code === 'auth/popup-blocked') {
+        message = 'Popup bloccato dal browser. Abilita i popup per questo sito.';
       }
 
-      alert("Errore Google: " + message);
+      alert('Errore Google: ' + message);
     }
   };
 
@@ -80,7 +76,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
       await loginWithFacebook();
       // Il profilo verrà caricato automaticamente dall'App
     } catch (e) {
-      alert("Errore Facebook: " + (e?.message || e));
+      alert('Errore Facebook: ' + (e?.message || e));
     }
   };
 
@@ -88,11 +84,9 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
     try {
       setSending(true);
       await sendMagicLink(email.trim());
-      alert(
-        "Ti abbiamo inviato un link di accesso via email. Aprilo da questo dispositivo.",
-      );
+      alert('Ti abbiamo inviato un link di accesso via email. Aprilo da questo dispositivo.');
     } catch (e) {
-      alert("Errore invio link: " + (e?.message || e));
+      alert('Errore invio link: ' + (e?.message || e));
     } finally {
       setSending(false);
     }
@@ -102,28 +96,29 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
     try {
       setSending(true);
       // Login
-      console.log("🔐 Attempting login for:", email.trim());
-      const { loginWithEmailPassword } = await import("@services/auth.jsx");
+      console.log('🔐 Attempting login for:', email.trim());
+      const { loginWithEmailPassword } = await import('@services/auth.jsx');
       await loginWithEmailPassword(email.trim(), password);
-      console.log("✅ Login successful");
+      console.log('✅ Login successful');
       // L'app cambierà automaticamente tab grazie all'effetto in App.jsx
     } catch (e) {
-      console.error("❌ Auth error:", e);
+      console.error('❌ Auth error:', e);
       let message = e?.message || String(e);
 
       // Provide more helpful error messages
-      if (e?.code === "auth/user-not-found") {
-        message = "Account non trovato. Hai già un account? Oppure registrati usando il link qui sotto.";
-      } else if (e?.code === "auth/wrong-password") {
-        message = "Password non corretta.";
-      } else if (e?.code === "auth/invalid-email") {
-        message = "Formato email non valido.";
-      } else if (e?.code === "auth/operation-not-allowed") {
+      if (e?.code === 'auth/user-not-found') {
         message =
-          "Accesso con email/password non abilitato. Controlla la configurazione Firebase Console.";
+          'Account non trovato. Hai già un account? Oppure registrati usando il link qui sotto.';
+      } else if (e?.code === 'auth/wrong-password') {
+        message = 'Password non corretta.';
+      } else if (e?.code === 'auth/invalid-email') {
+        message = 'Formato email non valido.';
+      } else if (e?.code === 'auth/operation-not-allowed') {
+        message =
+          'Accesso con email/password non abilitato. Controlla la configurazione Firebase Console.';
       }
 
-      alert("Errore accesso: " + message);
+      alert('Errore accesso: ' + message);
     } finally {
       setSending(false);
     }
@@ -131,21 +126,21 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
 
   const handleResetPassword = async () => {
     try {
-      const { sendResetPassword } = await import("@services/auth.jsx");
+      const { sendResetPassword } = await import('@services/auth.jsx');
       await sendResetPassword(email.trim());
-      alert("Email per il reset inviata (se l’account esiste).");
+      alert('Email per il reset inviata (se l’account esiste).');
     } catch (e) {
-      alert("Errore reset password: " + (e?.message || e));
+      alert('Errore reset password: ' + (e?.message || e));
     }
   };
 
   const handleSaveProfile = async () => {
     if (!profileForm.firstName.trim()) {
-      alert("Il nome è obbligatorio");
+      alert('Il nome è obbligatorio');
       return;
     }
     if (!profileForm.phone.trim()) {
-      alert("Il numero di telefono è obbligatorio");
+      alert('Il numero di telefono è obbligatorio');
       return;
     }
 
@@ -163,9 +158,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
       await saveUserProfile(user.uid, updatedProfile);
 
       // Aggiorna il display name
-      const displayName = [profileForm.firstName, profileForm.lastName]
-        .filter(Boolean)
-        .join(" ");
+      const displayName = [profileForm.firstName, profileForm.lastName].filter(Boolean).join(' ');
       if (displayName) {
         await setDisplayName(user, displayName);
       }
@@ -173,7 +166,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
       setUserProfile(updatedProfile);
       setShowProfileForm(false);
     } catch (e) {
-      alert("Errore salvataggio profilo: " + (e?.message || e));
+      alert('Errore salvataggio profilo: ' + (e?.message || e));
     } finally {
       setSavingProfile(false);
     }
@@ -187,8 +180,8 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
             <div className="text-center space-y-2">
               <h2 className="text-xl font-bold">Accedi o Registrati</h2>
               <p className={`text-sm ${T.subtext}`}>
-                Per accedere alla piattaforma è necessario registrarsi con
-                email, nome e numero di telefono
+                Per accedere alla piattaforma è necessario registrarsi con email, nome e numero di
+                telefono
               </p>
             </div>
 
@@ -224,11 +217,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
                 className={`${T.btnGhost} flex items-center justify-center gap-2`}
                 onClick={handleFacebookLogin}
               >
-                <svg
-                  className="w-5 h-5"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
                 Continua con Facebook
@@ -247,11 +236,9 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
             <div className="space-y-3">
               {/* Accesso con informazioni sulla registrazione */}
               <div className="text-center space-y-2">
-                <p className={`text-sm ${T.subtext}`}>
-                  Hai già un account? Accedi qui sotto
-                </p>
+                <p className={`text-sm ${T.subtext}`}>Hai già un account? Accedi qui sotto</p>
                 <p className={`text-xs ${T.subtext}`}>
-                  Non hai un account?{" "}
+                  Non hai un account?{' '}
                   <Link
                     to="/register"
                     className={`font-medium ${T.text} hover:${T.neonText} transition-colors duration-200`}
@@ -266,15 +253,15 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
                 <div className="flex gap-2 text-sm justify-center">
                   <button
                     type="button"
-                    className={`${T.btnGhost} ${method === "password" ? "opacity-100" : "opacity-60"}`}
-                    onClick={() => setMethod("password")}
+                    className={`${T.btnGhost} ${method === 'password' ? 'opacity-100' : 'opacity-60'}`}
+                    onClick={() => setMethod('password')}
                   >
                     Email + Password
                   </button>
                   <button
                     type="button"
-                    className={`${T.btnGhost} ${method === "magic" ? "opacity-100" : "opacity-60"}`}
-                    onClick={() => setMethod("magic")}
+                    className={`${T.btnGhost} ${method === 'magic' ? 'opacity-100' : 'opacity-60'}`}
+                    onClick={() => setMethod('magic')}
                   >
                     Email link
                   </button>
@@ -283,10 +270,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
 
               {/* Campi e azioni */}
               <div>
-                <label
-                  htmlFor="auth-email"
-                  className={`text-sm font-medium ${T.subtext}`}
-                >
+                <label htmlFor="auth-email" className={`text-sm font-medium ${T.subtext}`}>
                   Email
                 </label>
                 <input
@@ -299,13 +283,10 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
                 />
               </div>
 
-              {method === "password" && (
+              {method === 'password' && (
                 <>
                   <div>
-                    <label
-                      htmlFor="auth-password"
-                      className={`text-sm font-medium ${T.subtext}`}
-                    >
+                    <label htmlFor="auth-password" className={`text-sm font-medium ${T.subtext}`}>
                       Password
                     </label>
                     <input
@@ -339,7 +320,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
                 </>
               )}
 
-              {method === "magic" && emailLinkEnabled && (
+              {method === 'magic' && emailLinkEnabled && (
                 <>
                   <button
                     type="button"
@@ -347,11 +328,11 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
                     disabled={!email || sending}
                     onClick={handleSendMagicLink}
                   >
-                    {sending ? "Invio in corso..." : "Invia link di accesso"}
+                    {sending ? 'Invio in corso...' : 'Invia link di accesso'}
                   </button>
                   <p className={`text-xs ${T.subtext}`}>
-                    Ti invieremo un link di accesso via email. Aprilo da questo
-                    dispositivo per completare l’accesso.
+                    Ti invieremo un link di accesso via email. Aprilo da questo dispositivo per
+                    completare l’accesso.
                   </p>
                 </>
               )}
@@ -368,9 +349,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
         <Section title="Completa la Registrazione" T={T}>
           <div className={`rounded-2xl ${T.cardBg} ${T.border} p-6 space-y-4`}>
             <div className="text-center space-y-2">
-              <h2 className="text-xl font-bold">
-                Ciao {user.displayName || user.email}!
-              </h2>
+              <h2 className="text-xl font-bold">Ciao {user.displayName || user.email}!</h2>
               <p className={`text-sm ${T.subtext}`}>
                 Per completare la registrazione, inserisci i tuoi dati:
               </p>
@@ -378,73 +357,55 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
 
             <div className="grid gap-4">
               <div>
-                <label
-                  htmlFor="profile-firstname"
-                  className={`text-sm font-medium ${T.subtext}`}
-                >
+                <label htmlFor="profile-firstname" className={`text-sm font-medium ${T.subtext}`}>
                   Nome *
                 </label>
                 <input
                   id="profile-firstname"
                   type="text"
                   value={profileForm.firstName}
-                  onChange={(e) =>
-                    setProfileForm((f) => ({ ...f, firstName: e.target.value }))
-                  }
+                  onChange={(e) => setProfileForm((f) => ({ ...f, firstName: e.target.value }))}
                   className={`${T.input} w-full mt-1`}
                   placeholder="Inserisci il tuo nome"
                 />
               </div>
 
               <div>
-                <label
-                  htmlFor="profile-lastname"
-                  className={`text-sm font-medium ${T.subtext}`}
-                >
+                <label htmlFor="profile-lastname" className={`text-sm font-medium ${T.subtext}`}>
                   Cognome
                 </label>
                 <input
                   id="profile-lastname"
                   type="text"
                   value={profileForm.lastName}
-                  onChange={(e) =>
-                    setProfileForm((f) => ({ ...f, lastName: e.target.value }))
-                  }
+                  onChange={(e) => setProfileForm((f) => ({ ...f, lastName: e.target.value }))}
                   className={`${T.input} w-full mt-1`}
                   placeholder="Inserisci il tuo cognome"
                 />
               </div>
 
               <div>
-                <label
-                  htmlFor="profile-phone"
-                  className={`text-sm font-medium ${T.subtext}`}
-                >
+                <label htmlFor="profile-phone" className={`text-sm font-medium ${T.subtext}`}>
                   Numero di Telefono *
                 </label>
                 <input
                   id="profile-phone"
                   type="tel"
                   value={profileForm.phone}
-                  onChange={(e) =>
-                    setProfileForm((f) => ({ ...f, phone: e.target.value }))
-                  }
+                  onChange={(e) => setProfileForm((f) => ({ ...f, phone: e.target.value }))}
                   className={`${T.input} w-full mt-1`}
                   placeholder="+39 123 456 7890"
                 />
               </div>
 
               <div>
-                <label
-                  htmlFor="profile-email"
-                  className={`text-sm font-medium ${T.subtext}`}
-                >
+                <label htmlFor="profile-email" className={`text-sm font-medium ${T.subtext}`}>
                   Email
                 </label>
                 <input
                   id="profile-email"
                   type="email"
-                  value={user.email || ""}
+                  value={user.email || ''}
                   disabled
                   className={`${T.input} w-full mt-1 opacity-50 cursor-not-allowed`}
                 />
@@ -458,7 +419,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
                 onClick={handleSaveProfile}
                 disabled={savingProfile}
               >
-                {savingProfile ? "Salvando..." : "Completa Registrazione"}
+                {savingProfile ? 'Salvando...' : 'Completa Registrazione'}
               </button>
 
               <button

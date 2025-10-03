@@ -41,15 +41,21 @@ export function useClubSettings({ clubId, autoSubscribe = true } = {}) {
     };
   }, [clubId, autoSubscribe]);
 
-  const updateBooking = useCallback(async (patch, meta) => {
-    if (!clubId) throw new Error('clubId mancante in updateBooking');
-    await patchBookingConfig(clubId, patch, meta);
-  }, [clubId]);
+  const updateBooking = useCallback(
+    async (patch, meta) => {
+      if (!clubId) throw new Error('clubId mancante in updateBooking');
+      await patchBookingConfig(clubId, patch, meta);
+    },
+    [clubId]
+  );
 
-  const updateLesson = useCallback(async (patch, meta) => {
-    if (!clubId) throw new Error('clubId mancante in updateLesson');
-    await patchLessonConfig(clubId, patch, meta);
-  }, [clubId]);
+  const updateLesson = useCallback(
+    async (patch, meta) => {
+      if (!clubId) throw new Error('clubId mancante in updateLesson');
+      await patchLessonConfig(clubId, patch, meta);
+    },
+    [clubId]
+  );
 
   return {
     bookingConfig: settings?.bookingConfig || null,

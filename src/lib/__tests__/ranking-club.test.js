@@ -27,19 +27,19 @@ describe('computeClubRanking', () => {
   it('filters players and matches for a specific club', () => {
     const res = computeClubRanking(players, matches, 'clubA');
     // Should exclude p3 (clubB) and legacy1 (no club) because clubA is not legacy id
-    expect(res.players.every(p => p.clubId === 'clubA')).toBe(true);
+    expect(res.players.every((p) => p.clubId === 'clubA')).toBe(true);
   });
 
   it('includes legacy players when club is default-club (legacy mode)', () => {
     const res = computeClubRanking(players, matches, 'default-club');
-    const ids = res.players.map(p => p.id);
+    const ids = res.players.map((p) => p.id);
     expect(ids).toContain('legacy1');
   });
 
   it('ensures matches only with club players appear', () => {
     const res = computeClubRanking(players, matches, 'clubB');
     // m2 has p3 (clubB) so allowed; m1 is clubA; m3 legacy but should not include because no clubB players in both sides
-    const matchIds = res.matches.map(m => m.id);
+    const matchIds = res.matches.map((m) => m.id);
     expect(matchIds).toContain('m2');
     expect(matchIds).not.toContain('m1');
   });

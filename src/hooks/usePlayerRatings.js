@@ -18,8 +18,8 @@ export const usePlayerRatings = (clubId, playerIds) => {
     const fetchRatings = async () => {
       try {
         // Filter out empty player IDs
-        const validPlayerIds = playerIds.filter(id => id && id.trim());
-        
+        const validPlayerIds = playerIds.filter((id) => id && id.trim());
+
         if (!clubId || validPlayerIds.length === 0) {
           setRatings({});
           setLoading(false);
@@ -31,7 +31,7 @@ export const usePlayerRatings = (clubId, playerIds) => {
         setError(null);
 
         const fetchedRatings = await getPlayersCurrentRatings(clubId, validPlayerIds);
-        
+
         console.log('✅ Ratings updated:', fetchedRatings);
         setRatings(fetchedRatings);
       } catch (err) {
@@ -39,7 +39,7 @@ export const usePlayerRatings = (clubId, playerIds) => {
         setError(err);
         // Set default ratings on error
         const defaultRatings = {};
-        playerIds.forEach(id => {
+        playerIds.forEach((id) => {
           if (id) defaultRatings[id] = DEFAULT_RATING;
         });
         setRatings(defaultRatings);
@@ -64,7 +64,7 @@ export const usePlayerRatings = (clubId, playerIds) => {
    */
   const getAllRatings = () => {
     const result = {};
-    playerIds.forEach(id => {
+    playerIds.forEach((id) => {
       if (id) {
         result[id] = ratings[id] ?? DEFAULT_RATING;
       }
@@ -76,8 +76,8 @@ export const usePlayerRatings = (clubId, playerIds) => {
    * Force refresh ratings
    */
   const refreshRatings = async () => {
-    const validPlayerIds = playerIds.filter(id => id && id.trim());
-    
+    const validPlayerIds = playerIds.filter((id) => id && id.trim());
+
     if (!clubId || validPlayerIds.length === 0) return;
 
     try {
@@ -98,7 +98,7 @@ export const usePlayerRatings = (clubId, playerIds) => {
     error,
     getRating,
     getAllRatings,
-    refreshRatings
+    refreshRatings,
   };
 };
 

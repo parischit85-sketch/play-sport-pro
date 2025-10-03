@@ -2,10 +2,10 @@
 // FILE: src/pages/LandingPage.jsx
 // Landing page moderna e accattivante per Play-Sport.pro
 // =============================================
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { themeTokens, LOGO_URL } from "@lib/theme.js";
-import { useAuth } from "@contexts/AuthContext.jsx";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { themeTokens, LOGO_URL } from '@lib/theme.js';
+import { useAuth } from '@contexts/AuthContext.jsx';
 import {
   Users,
   Calendar,
@@ -20,8 +20,8 @@ import {
   ChevronRight,
   Play,
   UserPlus,
-  Building2
-} from "lucide-react";
+  Building2,
+} from 'lucide-react';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -31,48 +31,49 @@ export default function LandingPage() {
   // Se l'utente è già autenticato, reindirizza alla dashboard
   React.useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      navigate('/dashboard');
     }
   }, [user, navigate]);
 
   const features = [
     {
       icon: <Calendar className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
-      title: "Prenotazioni Facili",
-      description: "Prenota campi sportivi in pochi click. Scegli il tuo sport, orario e conferma."
+      title: 'Prenotazioni Facili',
+      description: 'Prenota campi sportivi in pochi click. Scegli il tuo sport, orario e conferma.',
     },
     {
       icon: <Users className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
-      title: "Lezioni con Maestri",
-      description: "Impara dai migliori istruttori. Lezioni individuali o di gruppo per tutti i livelli."
+      title: 'Lezioni con Maestri',
+      description:
+        'Impara dai migliori istruttori. Lezioni individuali o di gruppo per tutti i livelli.',
     },
     {
       icon: <Trophy className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
-      title: "Tornei e Competizioni",
-      description: "Partecipa a tornei locali e nazionali. Scala le classifiche e vinci premi."
+      title: 'Tornei e Competizioni',
+      description: 'Partecipa a tornei locali e nazionali. Scala le classifiche e vinci premi.',
     },
     {
       icon: <MapPin className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
-      title: "Trova il Tuo Circolo",
-      description: "Scopri circoli sportivi vicino a te con mappe interattive e recensioni."
+      title: 'Trova il Tuo Circolo',
+      description: 'Scopri circoli sportivi vicino a te con mappe interattive e recensioni.',
     },
     {
       icon: <Smartphone className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
-      title: "App Mobile",
-      description: "Gestisci tutto dal tuo smartphone. Disponibile per iOS e Android."
+      title: 'App Mobile',
+      description: 'Gestisci tutto dal tuo smartphone. Disponibile per iOS e Android.',
     },
     {
       icon: <Shield className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
-      title: "Pagamenti Sicuri",
-      description: "Transazioni protette e gestione sicura delle tue prenotazioni."
-    }
+      title: 'Pagamenti Sicuri',
+      description: 'Transazioni protette e gestione sicura delle tue prenotazioni.',
+    },
   ];
 
   const stats = [
-    { number: "500+", label: "Circoli Sportivi" },
-    { number: "10K+", label: "Utenti Attivi" },
-    { number: "50K+", label: "Prenotazioni" },
-    { number: "100+", label: "Sport Diversi" }
+    { number: '500+', label: 'Circoli Sportivi' },
+    { number: '10K+', label: 'Utenti Attivi' },
+    { number: '50K+', label: 'Prenotazioni' },
+    { number: '100+', label: 'Sport Diversi' },
   ];
 
   return (
@@ -122,8 +123,8 @@ export default function LandingPage() {
               La Tua <span className="text-emerald-600 dark:text-blue-400">Passione</span>
             </h1>
             <p className="text-xl text-neutral-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-              Connetti con i migliori circoli sportivi, prenota campi, partecipa a tornei e
-              migliora le tue abilità con lezioni professionali. Tutto in un'unica piattaforma.
+              Connetti con i migliori circoli sportivi, prenota campi, partecipa a tornei e migliora
+              le tue abilità con lezioni professionali. Tutto in un'unica piattaforma.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -134,7 +135,9 @@ export default function LandingPage() {
                 Inizia Ora - È Gratuito
               </Link>
               <button
-                onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}
+                onClick={() =>
+                  document.getElementById('features').scrollIntoView({ behavior: 'smooth' })
+                }
                 className="border-2 border-emerald-600 dark:border-blue-400 text-emerald-600 dark:text-blue-400 hover:bg-emerald-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <Play className="w-5 h-5" />
@@ -159,9 +162,7 @@ export default function LandingPage() {
                 <div className="text-3xl lg:text-4xl font-bold text-emerald-600 dark:text-blue-400 mb-2">
                   {stat.number}
                 </div>
-                <div className="text-neutral-600 dark:text-gray-300 font-medium">
-                  {stat.label}
-                </div>
+                <div className="text-neutral-600 dark:text-gray-300 font-medium">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -190,9 +191,7 @@ export default function LandingPage() {
                 <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-neutral-600 dark:text-gray-300">
-                  {feature.description}
-                </p>
+                <p className="text-neutral-600 dark:text-gray-300">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -379,8 +378,8 @@ export default function LandingPage() {
                 <span className="text-xl font-bold">Play-Sport.pro</span>
               </div>
               <p className="text-gray-300 mb-4">
-                La piattaforma definitiva per connettere atleti, circoli sportivi e appassionati di sport.
-                Prenota, gioca, migliora.
+                La piattaforma definitiva per connettere atleti, circoli sportivi e appassionati di
+                sport. Prenota, gioca, migliora.
               </p>
               <div className="flex gap-4">
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">
@@ -398,10 +397,26 @@ export default function LandingPage() {
             <div>
               <h4 className="font-semibold mb-4">Piattaforma</h4>
               <ul className="space-y-2 text-gray-300">
-                <li><a href="#" className="hover:text-white transition-colors">Come Funziona</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Prezzi</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Sicurezza</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Supporto</a></li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Come Funziona
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Prezzi
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Sicurezza
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white transition-colors">
+                    Supporto
+                  </a>
+                </li>
               </ul>
             </div>
 

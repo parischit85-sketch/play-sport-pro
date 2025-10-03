@@ -2,12 +2,12 @@
 // FILE: src/features/classifica/Classifica.jsx
 // FUTURISTIC REDESIGN: Glassmorphism design with dark mode support
 // =============================================
-import React, { useMemo, useRef, useState } from "react";
-import Section from "@ui/Section.jsx";
-import { TrendArrow } from "@ui/TrendArrow.jsx";
-import ModernAreaChart from "@ui/charts/ModernAreaChart.jsx";
-import ShareButtons from "@ui/ShareButtons.jsx";
-import { buildPodiumTimeline, buildDailyTimeline } from "@lib/ranking.js";
+import React, { useMemo, useRef, useState } from 'react';
+import Section from '@ui/Section.jsx';
+import { TrendArrow } from '@ui/TrendArrow.jsx';
+import ModernAreaChart from '@ui/charts/ModernAreaChart.jsx';
+import ShareButtons from '@ui/ShareButtons.jsx';
+import { buildPodiumTimeline, buildDailyTimeline } from '@lib/ranking.js';
 
 export default function Classifica({ players, matches, onOpenStats, T }) {
   const classificaRef = useRef(null);
@@ -26,7 +26,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
               : 0,
         }))
         .sort((a, b) => b.rating - a.rating),
-    [players],
+    [players]
   );
 
   // Classifica Coppie - Algoritmo corretto per coppie reali
@@ -50,7 +50,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
 
       // Determina il vincitore
       let winner = null;
-      if (match.winner === "A" || match.winner === "B") {
+      if (match.winner === 'A' || match.winner === 'B') {
         winner = match.winner;
       } else if (match.sets && match.sets.length > 0) {
         const aSets = match.sets.reduce((acc, s) => {
@@ -63,32 +63,32 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
           const b = Number(s?.b || 0);
           return acc + (b > a ? 1 : 0);
         }, 0);
-        
-        if (aSets > bSets) winner = "A";
-        else if (bSets > aSets) winner = "B";
+
+        if (aSets > bSets) winner = 'A';
+        else if (bSets > aSets) winner = 'B';
       }
-      
+
       if (!winner) continue;
 
       // Crea le chiavi per le due coppie (sempre ordinate)
-      const coupleA = [...match.teamA].sort().join("_");
-      const coupleB = [...match.teamB].sort().join("_");
+      const coupleA = [...match.teamA].sort().join('_');
+      const coupleB = [...match.teamB].sort().join('_');
 
       // Inizializza le coppie se non esistono
       [coupleA, coupleB].forEach((coupleKey, index) => {
         if (!coupleResults.has(coupleKey)) {
-          const teamIds = coupleKey.split("_");
-          const player1 = players.find(p => p.id === teamIds[0]);
-          const player2 = players.find(p => p.id === teamIds[1]);
-          
+          const teamIds = coupleKey.split('_');
+          const player1 = players.find((p) => p.id === teamIds[0]);
+          const player2 = players.find((p) => p.id === teamIds[1]);
+
           coupleResults.set(coupleKey, {
             player1: {
               id: teamIds[0],
-              name: player1?.name || "Unknown"
+              name: player1?.name || 'Unknown',
             },
             player2: {
-              id: teamIds[1], 
-              name: player2?.name || "Unknown"
+              id: teamIds[1],
+              name: player2?.name || 'Unknown',
             },
             wins: 0,
             losses: 0,
@@ -96,7 +96,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
             gamesWon: 0,
             gamesLost: 0,
             setsWon: 0,
-            setsLost: 0
+            setsLost: 0,
           });
         }
       });
@@ -122,14 +122,14 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
       statsA.matches++;
       statsB.matches++;
 
-      if (winner === "A") {
+      if (winner === 'A') {
         // Coppia A vince
         statsA.wins++;
         statsA.gamesWon += totalGamesA;
         statsA.gamesLost += totalGamesB;
         statsA.setsWon += totalSetsA;
         statsA.setsLost += totalSetsB;
-        
+
         // Coppia B perde
         statsB.losses++;
         statsB.gamesWon += totalGamesB;
@@ -143,7 +143,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
         statsB.gamesLost += totalGamesA;
         statsB.setsWon += totalSetsB;
         statsB.setsLost += totalSetsA;
-        
+
         // Coppia A perde
         statsA.losses++;
         statsA.gamesWon += totalGamesA;
@@ -156,12 +156,14 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
     // Step 2: Converte in array e calcola le metriche finali
     const couplesArray = Array.from(coupleResults.entries()).map(([coupleKey, stats]) => {
       const winRate = stats.matches > 0 ? (stats.wins / stats.matches) * 100 : 0;
-      const gameEfficiency = (stats.gamesWon + stats.gamesLost) > 0 
-        ? (stats.gamesWon / (stats.gamesWon + stats.gamesLost)) * 100 
-        : 0;
-      const setEfficiency = (stats.setsWon + stats.setsLost) > 0
-        ? (stats.setsWon / (stats.setsWon + stats.setsLost)) * 100
-        : 0;
+      const gameEfficiency =
+        stats.gamesWon + stats.gamesLost > 0
+          ? (stats.gamesWon / (stats.gamesWon + stats.gamesLost)) * 100
+          : 0;
+      const setEfficiency =
+        stats.setsWon + stats.setsLost > 0
+          ? (stats.setsWon / (stats.setsWon + stats.setsLost)) * 100
+          : 0;
 
       return {
         key: coupleKey,
@@ -176,42 +178,41 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
         gamesWon: stats.gamesWon,
         gamesLost: stats.gamesLost,
         setsWon: stats.setsWon,
-        setsLost: stats.setsLost
+        setsLost: stats.setsLost,
       };
     });
 
     // Step 3: Filtra e ordina
-    const filteredCouples = couplesArray.filter(couple => couple.matches >= MIN_MATCHES);
-    
+    const filteredCouples = couplesArray.filter((couple) => couple.matches >= MIN_MATCHES);
+
     // Log per debug - mostra il numero totale di coppie
     console.log(`🔍 DEBUG Coppie:
     - Coppie totali trovate: ${couplesArray.length}
     - Coppie con ≥${MIN_MATCHES} partite: ${filteredCouples.length}
     - Coppie filtrate da mostrare: ${Math.min(15, filteredCouples.length)}`);
-    
-    return filteredCouples
-      .sort((a, b) => {
-        // 1. Prima per win rate (percentuale vittorie)
-        if (Math.abs(b.winRate - a.winRate) > 0.1) {
-          return b.winRate - a.winRate;
-        }
-        // 2. A parità di win rate, per numero vittorie assolute
-        if (b.wins !== a.wins) {
-          return b.wins - a.wins;
-        }
-        // 3. A parità di vittorie, per game efficiency
-        if (Math.abs(b.gameEfficiency - a.gameEfficiency) > 0.1) {
-          return b.gameEfficiency - a.gameEfficiency;
-        }
-        // 4. A parità, per numero partite giocate (più esperienza)
-        if (b.matches !== a.matches) {
-          return b.matches - a.matches;
-        }
-        // 5. Ordine alfabetico per consistenza
-        const nameA = `${a.players[0]} & ${a.players[1]}`.toLowerCase();
-        const nameB = `${b.players[0]} & ${b.players[1]}`.toLowerCase();
-        return nameA.localeCompare(nameB);
-      });
+
+    return filteredCouples.sort((a, b) => {
+      // 1. Prima per win rate (percentuale vittorie)
+      if (Math.abs(b.winRate - a.winRate) > 0.1) {
+        return b.winRate - a.winRate;
+      }
+      // 2. A parità di win rate, per numero vittorie assolute
+      if (b.wins !== a.wins) {
+        return b.wins - a.wins;
+      }
+      // 3. A parità di vittorie, per game efficiency
+      if (Math.abs(b.gameEfficiency - a.gameEfficiency) > 0.1) {
+        return b.gameEfficiency - a.gameEfficiency;
+      }
+      // 4. A parità, per numero partite giocate (più esperienza)
+      if (b.matches !== a.matches) {
+        return b.matches - a.matches;
+      }
+      // 5. Ordine alfabetico per consistenza
+      const nameA = `${a.players[0]} & ${a.players[1]}`.toLowerCase();
+      const nameB = `${b.players[0]} & ${b.players[1]}`.toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
   }, [players, matches]);
 
   // Classifica Efficienza
@@ -220,14 +221,8 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
 
     matches.forEach((match) => {
       const allPlayers = [...match.teamA, ...match.teamB];
-      const teamAWins = match.sets.reduce(
-        (acc, set) => acc + (set.a > set.b ? 1 : 0),
-        0,
-      );
-      const teamBWins = match.sets.reduce(
-        (acc, set) => acc + (set.b > set.a ? 1 : 0),
-        0,
-      );
+      const teamAWins = match.sets.reduce((acc, set) => acc + (set.a > set.b ? 1 : 0), 0);
+      const teamBWins = match.sets.reduce((acc, set) => acc + (set.b > set.a ? 1 : 0), 0);
 
       const winningTeam = teamAWins > teamBWins ? match.teamA : match.teamB;
       const losingTeam = teamAWins > teamBWins ? match.teamB : match.teamA;
@@ -242,7 +237,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
           const player = players.find((p) => p.id === playerId);
           playerStats.set(playerId, {
             id: playerId,
-            name: player?.name || "Unknown",
+            name: player?.name || 'Unknown',
             wins: 0,
             losses: 0,
             gamesWon: 0,
@@ -268,7 +263,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
           const player = players.find((p) => p.id === playerId);
           playerStats.set(playerId, {
             id: playerId,
-            name: player?.name || "Unknown",
+            name: player?.name || 'Unknown',
             wins: 0,
             losses: 0,
             gamesWon: 0,
@@ -295,8 +290,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
       .map((player) => ({
         ...player,
         winRate: (player.wins / player.matches) * 100,
-        gameEfficiency:
-          (player.gamesWon / (player.gamesWon + player.gamesLost)) * 100,
+        gameEfficiency: (player.gamesWon / (player.gamesWon + player.gamesLost)) * 100,
         efficiency:
           ((player.wins / player.matches) * 0.7 +
             (player.gamesWon / (player.gamesWon + player.gamesLost)) * 0.3) *
@@ -310,19 +304,11 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
     const playerStreaks = new Map();
 
     // Ordina le partite per data
-    const sortedMatches = [...matches].sort(
-      (a, b) => new Date(a.date) - new Date(b.date),
-    );
+    const sortedMatches = [...matches].sort((a, b) => new Date(a.date) - new Date(b.date));
 
     sortedMatches.forEach((match) => {
-      const teamAWins = match.sets.reduce(
-        (acc, set) => acc + (set.a > set.b ? 1 : 0),
-        0,
-      );
-      const teamBWins = match.sets.reduce(
-        (acc, set) => acc + (set.b > set.a ? 1 : 0),
-        0,
-      );
+      const teamAWins = match.sets.reduce((acc, set) => acc + (set.a > set.b ? 1 : 0), 0);
+      const teamBWins = match.sets.reduce((acc, set) => acc + (set.b > set.a ? 1 : 0), 0);
 
       const winners = teamAWins > teamBWins ? match.teamA : match.teamB;
       const losers = teamAWins > teamBWins ? match.teamB : match.teamA;
@@ -332,11 +318,11 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
           const player = players.find((p) => p.id === playerId);
           playerStreaks.set(playerId, {
             id: playerId,
-            name: player?.name || "Unknown",
+            name: player?.name || 'Unknown',
             currentStreak: 0,
             bestWinStreak: 0,
             worstLossStreak: 0,
-            streakType: "none", // 'win', 'loss', 'none'
+            streakType: 'none', // 'win', 'loss', 'none'
             isActive: true,
             totalWins: 0,
             totalLosses: 0,
@@ -350,22 +336,22 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
 
         if (isWinner) {
           playerData.totalWins++;
-          if (playerData.streakType === "win") {
+          if (playerData.streakType === 'win') {
             playerData.currentStreak++;
           } else {
             playerData.currentStreak = 1;
-            playerData.streakType = "win";
+            playerData.streakType = 'win';
           }
           if (playerData.currentStreak > playerData.bestWinStreak) {
             playerData.bestWinStreak = playerData.currentStreak;
           }
         } else {
           playerData.totalLosses++;
-          if (playerData.streakType === "loss") {
+          if (playerData.streakType === 'loss') {
             playerData.currentStreak++;
           } else {
             playerData.currentStreak = 1;
-            playerData.streakType = "loss";
+            playerData.streakType = 'loss';
           }
           if (playerData.currentStreak > playerData.worstLossStreak) {
             playerData.worstLossStreak = playerData.currentStreak;
@@ -377,10 +363,9 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
     const positiveStreaks = Array.from(playerStreaks.values())
       .filter((player) => player.bestWinStreak > 0)
       .sort((a, b) => {
-        if (b.bestWinStreak !== a.bestWinStreak)
-          return b.bestWinStreak - a.bestWinStreak;
-        if (a.streakType === "win" && b.streakType !== "win") return -1;
-        if (b.streakType === "win" && a.streakType !== "win") return 1;
+        if (b.bestWinStreak !== a.bestWinStreak) return b.bestWinStreak - a.bestWinStreak;
+        if (a.streakType === 'win' && b.streakType !== 'win') return -1;
+        if (b.streakType === 'win' && a.streakType !== 'win') return 1;
         return b.currentStreak - a.currentStreak;
       });
 
@@ -389,14 +374,8 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
       .filter((player) => player.totalMatches >= 3) // Minimo 3 partite
       .map((player) => ({
         ...player,
-        lossRatio:
-          player.totalMatches > 0
-            ? (player.totalLosses / player.totalMatches) * 100
-            : 0,
-        winRate:
-          player.totalMatches > 0
-            ? (player.totalWins / player.totalMatches) * 100
-            : 0,
+        lossRatio: player.totalMatches > 0 ? (player.totalLosses / player.totalMatches) * 100 : 0,
+        winRate: player.totalMatches > 0 ? (player.totalWins / player.totalMatches) * 100 : 0,
       }))
       .sort((a, b) => {
         // Ordina per minor rapporto sconfitte (migliori primi)
@@ -440,18 +419,16 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
 
   const buildCaption = () => {
     const lines = [
-      "Classifica Sporting Cat",
-      ...topPlayers.map(
-        (p, i) => `${i + 1}. ${p.name} — ${Math.round(p.rating)} pt`,
-      ),
-      "#SportingCat #Padel",
+      'Classifica Sporting Cat',
+      ...topPlayers.map((p, i) => `${i + 1}. ${p.name} — ${Math.round(p.rating)} pt`),
+      '#SportingCat #Padel',
     ];
-    return lines.join("\n");
+    return lines.join('\n');
   };
   const shareUrl =
-    typeof window !== "undefined"
+    typeof window !== 'undefined'
       ? `${window.location.origin}${window.location.pathname}#classifica`
-      : "";
+      : '';
 
   return (
     <Section
@@ -486,11 +463,11 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                 onClick={() => setShowAllPlayers(!showAllPlayers)}
                 className={`px-4 py-2 text-sm rounded-xl border backdrop-blur-sm transition-all duration-300 transform hover:scale-105 ${
                   showAllPlayers
-                    ? "bg-blue-500/20 border-blue-300/50 text-blue-700 dark:bg-blue-500/30 dark:border-blue-400/50 dark:text-blue-300 shadow-lg shadow-blue-500/20"
-                    : "bg-white/50 border-gray-200/50 text-gray-700 dark:bg-gray-700/50 dark:border-gray-600/50 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-600/70 shadow-lg"
+                    ? 'bg-blue-500/20 border-blue-300/50 text-blue-700 dark:bg-blue-500/30 dark:border-blue-400/50 dark:text-blue-300 shadow-lg shadow-blue-500/20'
+                    : 'bg-white/50 border-gray-200/50 text-gray-700 dark:bg-gray-700/50 dark:border-gray-600/50 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-600/70 shadow-lg'
                 }`}
               >
-                {showAllPlayers ? "📊 Mostra Top 10" : "📋 Mostra Tutti"}
+                {showAllPlayers ? '📊 Mostra Top 10' : '📋 Mostra Tutti'}
               </button>
             </div>
 
@@ -525,11 +502,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                       </td>
                       <td className="py-3 pr-3 font-bold text-gray-900 dark:text-white">
                         {p.rating.toFixed(2)}
-                        <TrendArrow
-                          total={p.trend5Total}
-                          pos={p.trend5Pos}
-                          neg={p.trend5Neg}
-                        />
+                        <TrendArrow total={p.trend5Total} pos={p.trend5Pos} neg={p.trend5Neg} />
                       </td>
                       <td className="py-3 pr-3 text-green-600 dark:text-green-400 font-semibold">
                         {p.wins || 0}
@@ -579,14 +552,14 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
             </div>
             {/* Usa il nuovo grafico per l'andamento del ranking */}
             {chartData.length > 0 ? (
-              <ModernAreaChart 
+              <ModernAreaChart
                 data={chartData}
                 xKey="matchNumber"
                 yKey="rating"
                 title={`Evoluzione del Ranking Top ${selectedTopCount}`}
                 gradient={{
-                  from: "rgba(59, 130, 246, 0.8)",
-                  to: "rgba(147, 51, 234, 0.1)"
+                  from: 'rgba(59, 130, 246, 0.8)',
+                  to: 'rgba(147, 51, 234, 0.1)',
                 }}
                 color="#3B82F6"
                 multiPlayer={true}
@@ -642,8 +615,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                         #{idx + 1}
                       </span>
                       <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {couple.players[0].split(" ").pop()} &{" "}
-                        {couple.players[1].split(" ").pop()}
+                        {couple.players[0].split(' ').pop()} & {couple.players[1].split(' ').pop()}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
@@ -858,7 +830,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                       </button>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      {player.streakType === "win" ? (
+                      {player.streakType === 'win' ? (
                         <span className="text-green-600 dark:text-green-400 font-semibold">
                           🔥{player.currentStreak}
                         </span>
@@ -905,7 +877,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                           {player.bestWinStreak}
                         </td>
                         <td className="py-3 pr-3">
-                          {player.streakType === "win" ? (
+                          {player.streakType === 'win' ? (
                             <span className="text-sm text-green-600 dark:text-green-400 font-semibold">
                               🔥 +{player.currentStreak}
                             </span>

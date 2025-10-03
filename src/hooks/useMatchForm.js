@@ -17,8 +17,8 @@ export const useMatchForm = (players = [], onSubmit) => {
     sets: [
       { a: '', b: '' },
       { a: '', b: '' },
-      { a: '', b: '' }
-    ]
+      { a: '', b: '' },
+    ],
   });
 
   // UI state
@@ -41,14 +41,17 @@ export const useMatchForm = (players = [], onSubmit) => {
   }, [validation.progress, lastValidation]);
 
   // Player management
-  const getDisabledPlayerIds = useCallback((currentField) => {
-    const selected = new Set();
-    if (formData.a1 && formData.a1 !== currentField) selected.add(formData.a1);
-    if (formData.a2 && formData.a2 !== currentField) selected.add(formData.a2);
-    if (formData.b1 && formData.b1 !== currentField) selected.add(formData.b1);
-    if (formData.b2 && formData.b2 !== currentField) selected.add(formData.b2);
-    return selected;
-  }, [formData]);
+  const getDisabledPlayerIds = useCallback(
+    (currentField) => {
+      const selected = new Set();
+      if (formData.a1 && formData.a1 !== currentField) selected.add(formData.a1);
+      if (formData.a2 && formData.a2 !== currentField) selected.add(formData.a2);
+      if (formData.b1 && formData.b1 !== currentField) selected.add(formData.b1);
+      if (formData.b2 && formData.b2 !== currentField) selected.add(formData.b2);
+      return selected;
+    },
+    [formData]
+  );
 
   // Players by ID lookup
   const playersById = useMemo(() => {
@@ -59,31 +62,32 @@ export const useMatchForm = (players = [], onSubmit) => {
   }, [players]);
 
   // Form field updaters
-  const updatePlayer = useCallback((field, playerId) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: playerId
-    }));
+  const updatePlayer = useCallback(
+    (field, playerId) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: playerId,
+      }));
 
-    // Track player selection analytics
-    analyticsModule.trackEvent('match_form', { 
-      action: 'player_selected',
-      field,
-      playerSelected: !!playerId,
-      totalSelected: Object.values({...formData, [field]: playerId}).filter(Boolean).length
-    });
-  }, [formData]);
+      // Track player selection analytics
+      analyticsModule.trackEvent('match_form', {
+        action: 'player_selected',
+        field,
+        playerSelected: !!playerId,
+        totalSelected: Object.values({ ...formData, [field]: playerId }).filter(Boolean).length,
+      });
+    },
+    [formData]
+  );
 
   const updateSet = useCallback((setIndex, team, value) => {
     const numValue = value === '' ? '' : parseInt(value, 10);
-    
-    setFormData(prev => ({
+
+    setFormData((prev) => ({
       ...prev,
-      sets: prev.sets.map((set, index) => 
-        index === setIndex 
-          ? { ...set, [team]: numValue }
-          : set
-      )
+      sets: prev.sets.map((set, index) =>
+        index === setIndex ? { ...set, [team]: numValue } : set
+      ),
     }));
 
     // Track set input analytics
@@ -91,14 +95,14 @@ export const useMatchForm = (players = [], onSubmit) => {
       action: 'set_input',
       setIndex,
       team,
-      hasValue: value !== ''
+      hasValue: value !== '',
     });
   }, []);
 
   const updateDate = useCallback((date) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      data: date
+      data: date,
     }));
   }, []);
 
@@ -114,7 +118,7 @@ export const useMatchForm = (players = [], onSubmit) => {
   // Form submission
   const handleSubmit = useCallback(async () => {
     console.log('🚀 handleSubmit called', { canSubmit: validation.canSubmit, isSubmitting });
-    
+
     if (!validation.canSubmit || isSubmitting) {
       console.log('❌ handleSubmit blocked', { canSubmit: validation.canSubmit, isSubmitting });
       return;
@@ -122,28 +126,28 @@ export const useMatchForm = (players = [], onSubmit) => {
 
     console.log('✅ handleSubmit proceeding with submission...');
     setIsSubmitting(true);
-    
+
     try {
       // Track submission attempt
       analyticsModule.trackEvent('match_form', {
         action: 'submit_attempt',
         progress: validation.progress,
         hasWinner: validation.summary.hasWinner,
-        playersSelected: validation.summary.playersSelected
+        playersSelected: validation.summary.playersSelected,
       });
 
       await onSubmit(formData, validation.result);
-      
+
       // Track successful submission
       analyticsModule.trackEvent('match_form', {
         action: 'submit_success',
         progress: validation.progress,
         winner: validation.result?.winner,
-        setsPlayed: validation.summary.setsCompleted
+        setsPlayed: validation.summary.setsCompleted,
       });
 
       showToast('Partita salvata con successo!', 'success');
-      
+
       // Reset form
       setFormData({
         a1: '',
@@ -154,18 +158,17 @@ export const useMatchForm = (players = [], onSubmit) => {
         sets: [
           { a: '', b: '' },
           { a: '', b: '' },
-          { a: '', b: '' }
-        ]
+          { a: '', b: '' },
+        ],
       });
-
     } catch (error) {
       console.error('Error submitting match:', error);
-      
+
       // Track submission error
       analyticsModule.trackEvent('match_form', {
         action: 'submit_error',
         error: error.message,
-        progress: validation.progress
+        progress: validation.progress,
       });
 
       showToast('Errore nel salvare la partita. Riprova.', 'error');
@@ -185,35 +188,48 @@ export const useMatchForm = (players = [], onSubmit) => {
       sets: [
         { a: '', b: '' },
         { a: '', b: '' },
-        { a: '', b: '' }
-      ]
+        { a: '', b: '' },
+      ],
     });
     setToast(null);
-    
+
     analyticsModule.trackEvent('match_form', { action: 'reset' });
   }, []);
 
   // Validation helpers
-  const getFieldError = useCallback((field) => {
-    return validation.errors[field];
-  }, [validation.errors]);
+  const getFieldError = useCallback(
+    (field) => {
+      return validation.errors[field];
+    },
+    [validation.errors]
+  );
 
-  const getFieldWarning = useCallback((field) => {
-    return validation.warnings[field];
-  }, [validation.warnings]);
+  const getFieldWarning = useCallback(
+    (field) => {
+      return validation.warnings[field];
+    },
+    [validation.warnings]
+  );
 
-  const hasFieldIssue = useCallback((field) => {
-    return !!(validation.errors[field] || validation.warnings[field]);
-  }, [validation.errors, validation.warnings]);
+  const hasFieldIssue = useCallback(
+    (field) => {
+      return !!(validation.errors[field] || validation.warnings[field]);
+    },
+    [validation.errors, validation.warnings]
+  );
 
   // Auto-save draft (localStorage)
   useEffect(() => {
     const saveDraft = () => {
-      if (validation.progress > 10) { // Only save if form has meaningful progress
-        localStorage.setItem('matchFormDraft', JSON.stringify({
-          formData,
-          timestamp: Date.now()
-        }));
+      if (validation.progress > 10) {
+        // Only save if form has meaningful progress
+        localStorage.setItem(
+          'matchFormDraft',
+          JSON.stringify({
+            formData,
+            timestamp: Date.now(),
+          })
+        );
       }
     };
 
@@ -228,7 +244,7 @@ export const useMatchForm = (players = [], onSubmit) => {
       if (draft) {
         const parsed = JSON.parse(draft);
         const age = Date.now() - parsed.timestamp;
-        
+
         // Only restore if draft is less than 1 hour old
         if (age < 60 * 60 * 1000) {
           setFormData(parsed.formData);
@@ -249,32 +265,32 @@ export const useMatchForm = (players = [], onSubmit) => {
     validation,
     isSubmitting,
     toast,
-    
+
     // Computed values
     playersById,
-    
+
     // Form actions
     updatePlayer,
     updateSet,
     updateDate,
     handleSubmit,
     resetForm,
-    
+
     // Player management
     getDisabledPlayerIds,
-    
+
     // Validation helpers
     getFieldError,
     getFieldWarning,
     hasFieldIssue,
-    
+
     // Toast management
     showToast,
     hideToast,
-    
+
     // Utilities
     canSubmit: validation.canSubmit && !isSubmitting,
     progress: validation.progress,
-    summary: validation.summary
+    summary: validation.summary,
   };
 };

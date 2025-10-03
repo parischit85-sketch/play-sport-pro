@@ -13,12 +13,8 @@ export function preventRoutingLoop(targetPath) {
   const now = Date.now();
 
   // Prevent rapid consecutive navigations to the same path
-  if (
-    isNavigating &&
-    lastNavigation === targetPath &&
-    now - lastNavigation < 100
-  ) {
-    console.warn("🔄 Preventing potential routing loop to:", targetPath);
+  if (isNavigating && lastNavigation === targetPath && now - lastNavigation < 100) {
+    console.warn('🔄 Preventing potential routing loop to:', targetPath);
     return false;
   }
 
@@ -51,18 +47,18 @@ export function getRedirectPath(location, isAuthenticated) {
   const currentPath = location.pathname;
 
   if (!isAuthenticated) {
-    return currentPath === "/login" ? null : "/login";
+    return currentPath === '/login' ? null : '/login';
   }
 
   // If authenticated and on login page, redirect to intended destination
-  if (currentPath === "/login") {
+  if (currentPath === '/login') {
     const from = location.state?.from?.pathname;
-    return from && from !== "/login" ? from : "/dashboard";
+    return from && from !== '/login' ? from : '/dashboard';
   }
 
   // Allow authenticated users to stay on landing page (/) - don't redirect to dashboard
   // This allows logged-in users to view the landing page if they want to
-  if (currentPath === "/") {
+  if (currentPath === '/') {
     return null; // Don't redirect
   }
 

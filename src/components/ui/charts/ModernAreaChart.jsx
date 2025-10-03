@@ -1,7 +1,7 @@
 // =============================================
 // FILE: src/components/ui/charts/ModernAreaChart.jsx
 // =============================================
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   AreaChart,
   Area,
@@ -10,49 +10,49 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-} from "recharts";
+} from 'recharts';
 
 const UNIFIED_COLORS = {
-  primary: "#3b82f6", // blue-500
-  success: "#10b981", // emerald-500
-  warning: "#f59e0b", // amber-500
-  danger: "#ef4444", // red-500
-  purple: "#8b5cf6", // violet-500
-  indigo: "#6366f1", // indigo-500
-  cyan: "#06b6d4", // cyan-500
-  orange: "#f97316", // orange-500
+  primary: '#3b82f6', // blue-500
+  success: '#10b981', // emerald-500
+  warning: '#f59e0b', // amber-500
+  danger: '#ef4444', // red-500
+  purple: '#8b5cf6', // violet-500
+  indigo: '#6366f1', // indigo-500
+  cyan: '#06b6d4', // cyan-500
+  orange: '#f97316', // orange-500
 };
 
 export default function ModernAreaChart({
   data,
-  dataKey = "rating",
+  dataKey = 'rating',
   compareDataKey = null,
   comparePlayerName = null,
-  chartId = "modern-area",
-  color = "success",
-  title = "Trend ultime 10 partite",
+  chartId = 'modern-area',
+  color = 'success',
+  title = 'Trend ultime 10 partite',
   showGrid = true,
   multiPlayer = false,
   top5Players = [],
-  xKey = "matchNumber",
-  yKey = "rating",
+  xKey = 'matchNumber',
+  yKey = 'rating',
 }) {
   const areaColor = UNIFIED_COLORS[color] || UNIFIED_COLORS.success;
-  const compareColor = "#8B5CF6"; // Colore viola per il confronto
+  const compareColor = '#8B5CF6'; // Colore viola per il confronto
 
   // Prendi solo le ultime 10 entries (o tutti i dati se multiPlayer)
   const chartData = multiPlayer ? data : data.slice(-10);
 
   // Genera colori per i top 5 players
   const playerColors = (top5Players || []).map((_, index) => {
-    const colors = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"];
+    const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
     return colors[index % colors.length];
   });
 
   // Stato per la visibilità dei giocatori nel multiPlayer
   const [visiblePlayers, setVisiblePlayers] = useState(() => {
     // Di default tutti i giocatori sono visibili
-    return new Set((top5Players || []).map(player => player.id));
+    return new Set((top5Players || []).map((player) => player.id));
   });
 
   // Stato per il popup mobile
@@ -61,13 +61,13 @@ export default function ModernAreaChart({
   // Aggiorna lo stato quando cambiano i top5Players
   useEffect(() => {
     if (multiPlayer && top5Players && top5Players.length > 0) {
-      setVisiblePlayers(new Set(top5Players.map(player => player.id)));
+      setVisiblePlayers(new Set(top5Players.map((player) => player.id)));
     }
   }, [top5Players, multiPlayer]);
 
   // Funzione per toggle della visibilità di un giocatore
   const togglePlayerVisibility = (playerId) => {
-    setVisiblePlayers(prev => {
+    setVisiblePlayers((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(playerId)) {
         newSet.delete(playerId);
@@ -80,13 +80,13 @@ export default function ModernAreaChart({
 
   // Funzione per mostrare/nascondere tutti i giocatori
   const toggleAllPlayers = () => {
-    const allVisible = (top5Players || []).every(player => visiblePlayers.has(player.id));
+    const allVisible = (top5Players || []).every((player) => visiblePlayers.has(player.id));
     if (allVisible) {
       // Se tutti sono visibili, nascondi tutti
       setVisiblePlayers(new Set());
     } else {
       // Altrimenti, mostra tutti
-      setVisiblePlayers(new Set((top5Players || []).map(player => player.id)));
+      setVisiblePlayers(new Set((top5Players || []).map((player) => player.id)));
     }
   };
 
@@ -103,7 +103,7 @@ export default function ModernAreaChart({
 
   // Calcola il range dell'asse Y basato sui dati visibili
   const yAxisDomain = useMemo(() => {
-    if (chartData.length === 0) return ["auto", "auto"];
+    if (chartData.length === 0) return ['auto', 'auto'];
 
     let minValue = Infinity;
     let maxValue = -Infinity;
@@ -112,11 +112,11 @@ export default function ModernAreaChart({
       // Per multiPlayer, controlla solo i valori dei giocatori visibili
       chartData.forEach((point) => {
         top5Players
-          .filter(player => visiblePlayers.has(player.id))
+          .filter((player) => visiblePlayers.has(player.id))
           .forEach((player) => {
             const dataKey = yKey === 'rating' ? player.name : `${player.name}_${yKey}`;
             const playerValue = point[dataKey];
-            if (typeof playerValue === "number") {
+            if (typeof playerValue === 'number') {
               minValue = Math.min(minValue, playerValue);
               maxValue = Math.max(maxValue, playerValue);
             }
@@ -127,107 +127,114 @@ export default function ModernAreaChart({
       chartData.forEach((point) => {
         // Controlla il valore principale
         const value = point[dataKey];
-        if (typeof value === "number") {
+        if (typeof value === 'number') {
           minValue = Math.min(minValue, value);
           maxValue = Math.max(maxValue, value);
         }
-        
+
         // Controlla il valore di confronto se presente
-        if (compareDataKey && typeof point[compareDataKey] === "number") {
+        if (compareDataKey && typeof point[compareDataKey] === 'number') {
           minValue = Math.min(minValue, point[compareDataKey]);
           maxValue = Math.max(maxValue, point[compareDataKey]);
         }
       });
     }
 
-    if (minValue === Infinity) return ["auto", "auto"];
+    if (minValue === Infinity) return ['auto', 'auto'];
 
     // Aggiungi un buffer del 8% sopra e sotto per dare più respiro al grafico
     const range = maxValue - minValue;
     const buffer = range * 0.08;
 
-    return [
-      Math.max(0, Math.floor(minValue - buffer)),
-      Math.ceil(maxValue + buffer),
-    ];
-  }, [chartData, dataKey, compareDataKey, multiPlayer, top5Players, yKey, multiPlayer ? visiblePlayers : null]);
+    return [Math.max(0, Math.floor(minValue - buffer)), Math.ceil(maxValue + buffer)];
+  }, [
+    chartData,
+    dataKey,
+    compareDataKey,
+    multiPlayer,
+    top5Players,
+    yKey,
+    multiPlayer ? visiblePlayers : null,
+  ]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       // Estrai la data dal payload se disponibile
       const dataPoint = payload[0]?.payload;
       const displayLabel = dataPoint?.label || `Giorno ${label}`;
-      
+
       return (
         <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-4">
           <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
             {displayLabel}
           </p>
-          {multiPlayer ? (
-            // Tooltip per multiPlayer - mostra solo giocatori visibili
-            top5Players
-              .filter(player => visiblePlayers.has(player.id))
-              .map((player, filteredIndex) => {
-                const originalIndex = top5Players.findIndex(p => p.id === player.id);
-                const dataKey = yKey === 'rating' ? player.name : `${player.name}_${yKey}`;
-                const playerValue = dataPoint?.[dataKey];
-                if (playerValue !== undefined) {
-                  const suffix = yKey === 'rating' ? ' pt' : '%';
-                  const displayValue = yKey === 'rating' ? Math.round(playerValue) : playerValue?.toFixed(1);
-                  
-                  return (
-                    <div key={player.id} className="flex items-center gap-2 mb-1">
-                      <div 
-                        className="w-3 h-3 rounded-full" 
-                        style={{ backgroundColor: playerColors[originalIndex] }}
-                      ></div>
-                      <span className="text-sm text-gray-700 dark:text-gray-300">
-                        {player.name}: {displayValue}{suffix}
-                      </span>
-                    </div>
-                  );
+          {multiPlayer
+            ? // Tooltip per multiPlayer - mostra solo giocatori visibili
+              top5Players
+                .filter((player) => visiblePlayers.has(player.id))
+                .map((player, filteredIndex) => {
+                  const originalIndex = top5Players.findIndex((p) => p.id === player.id);
+                  const dataKey = yKey === 'rating' ? player.name : `${player.name}_${yKey}`;
+                  const playerValue = dataPoint?.[dataKey];
+                  if (playerValue !== undefined) {
+                    const suffix = yKey === 'rating' ? ' pt' : '%';
+                    const displayValue =
+                      yKey === 'rating' ? Math.round(playerValue) : playerValue?.toFixed(1);
+
+                    return (
+                      <div key={player.id} className="flex items-center gap-2 mb-1">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: playerColors[originalIndex] }}
+                        ></div>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                          {player.name}: {displayValue}
+                          {suffix}
+                        </span>
+                      </div>
+                    );
+                  }
+                  return null;
+                })
+            : // Tooltip originale per single player
+              payload.map((entry, index) => {
+                // Determina se il valore è un rating (non dovrebbe avere %)
+                const isRating =
+                  entry.name === 'rating' ||
+                  entry.name === 'playerRating' ||
+                  entry.name === 'compareRating' ||
+                  entry.name === dataKey ||
+                  entry.name === compareDataKey;
+
+                // Formatta il valore
+                let displayValue = entry.value;
+                if (typeof displayValue === 'number') {
+                  displayValue = isRating ? Math.round(displayValue) : displayValue.toFixed(1);
                 }
-                return null;
-              })
-          ) : (
-            // Tooltip originale per single player
-            payload.map((entry, index) => {
-              // Determina se il valore è un rating (non dovrebbe avere %)
-              const isRating = entry.name === 'rating' || 
-                              entry.name === 'playerRating' || 
-                              entry.name === 'compareRating' ||
-                              entry.name === dataKey ||
-                              entry.name === compareDataKey;
-              
-              // Formatta il valore
-              let displayValue = entry.value;
-              if (typeof displayValue === 'number') {
-                displayValue = isRating ? Math.round(displayValue) : displayValue.toFixed(1);
-              }
-              
-              // Determina il nome da mostrare
-              let displayName = entry.name;
-              if (entry.name === compareDataKey && comparePlayerName) {
-                displayName = comparePlayerName;
-              } else if (entry.name === 'playerRating') {
-                displayName = 'Ranking';
-              } else if (entry.name === 'compareRating') {
-                displayName = 'Confronto';
-              }
-              
-              return (
-                <div key={index} className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: entry.color }}
-                  ></div>
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    {displayName}: {displayValue}{isRating ? ' pt' : ''}
-                  </span>
-                </div>
-              );
-            })
-          )}
+
+                // Determina il nome da mostrare
+                let displayName = entry.name;
+                if (entry.name === compareDataKey && comparePlayerName) {
+                  displayName = comparePlayerName;
+                } else if (entry.name === 'playerRating') {
+                  displayName = 'Ranking';
+                } else if (entry.name === 'compareRating') {
+                  displayName = 'Confronto';
+                }
+
+                return (
+                  <div key={index} className="flex items-center gap-2">
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: entry.color }}
+                    ></div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                      {displayName}: {displayValue}
+                      {isRating ? ' pt' : ''}
+                    </span>
+                  </div>
+                );
+              })}
         </div>
       );
     }
@@ -237,15 +244,15 @@ export default function ModernAreaChart({
   // Calcola la tendenza
   const trend = useMemo(() => {
     if (last10Data.length <= 1) return 0;
-    
+
     if (multiPlayer && top5Players && top5Players.length > 0) {
       // Per multiPlayer, calcola la tendenza del primo giocatore come riferimento
       const firstPlayer = top5Players[0];
       const playerKey = yKey === 'rating' ? firstPlayer.name : `${firstPlayer.name}_${yKey}`;
       const firstValue = last10Data[0][playerKey];
       const lastValue = last10Data[last10Data.length - 1][playerKey];
-      return typeof firstValue === 'number' && typeof lastValue === 'number' 
-        ? lastValue - firstValue 
+      return typeof firstValue === 'number' && typeof lastValue === 'number'
+        ? lastValue - firstValue
         : 0;
     } else {
       // Logica originale per single player
@@ -256,56 +263,42 @@ export default function ModernAreaChart({
         : 0;
     }
   }, [last10Data, multiPlayer, top5Players, yKey, dataKey]);
-  
-  const trendColor = trend > 0 ? "#10b981" : trend < 0 ? "#ef4444" : "#6b7280";
-  const trendIcon = trend > 0 ? "↗" : trend < 0 ? "↘" : "→";
+
+  const trendColor = trend > 0 ? '#10b981' : trend < 0 ? '#ef4444' : '#6b7280';
+  const trendIcon = trend > 0 ? '↗' : trend < 0 ? '↘' : '→';
 
   return (
     <div className="h-64 sm:h-80 mb-8 md:mb-12">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={chartData}
-          margin={{ left: 10, right: 10, top: 20, bottom: 20 }}
-        >
+        <AreaChart data={chartData} margin={{ left: 10, right: 10, top: 20, bottom: 20 }}>
           <defs>
-            <linearGradient
-              id={`modernGradient-${chartId}`}
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
+            <linearGradient id={`modernGradient-${chartId}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={areaColor} stopOpacity={0.4} />
               <stop offset="50%" stopColor={areaColor} stopOpacity={0.2} />
               <stop offset="100%" stopColor={areaColor} stopOpacity={0.05} />
             </linearGradient>
             {compareDataKey && (
-              <linearGradient
-                id={`compareGradient-${chartId}`}
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
+              <linearGradient id={`compareGradient-${chartId}`} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={compareColor} stopOpacity={0.3} />
                 <stop offset="50%" stopColor={compareColor} stopOpacity={0.15} />
                 <stop offset="100%" stopColor={compareColor} stopOpacity={0.03} />
               </linearGradient>
             )}
-            {multiPlayer && (top5Players || []).map((player, index) => (
-              <linearGradient
-                key={player.id}
-                id={`player-${index}-gradient-${chartId}`}
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop offset="0%" stopColor={playerColors[index]} stopOpacity={0.3} />
-                <stop offset="50%" stopColor={playerColors[index]} stopOpacity={0.15} />
-                <stop offset="100%" stopColor={playerColors[index]} stopOpacity={0.03} />
-              </linearGradient>
-            ))}
+            {multiPlayer &&
+              (top5Players || []).map((player, index) => (
+                <linearGradient
+                  key={player.id}
+                  id={`player-${index}-gradient-${chartId}`}
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="0%" stopColor={playerColors[index]} stopOpacity={0.3} />
+                  <stop offset="50%" stopColor={playerColors[index]} stopOpacity={0.15} />
+                  <stop offset="100%" stopColor={playerColors[index]} stopOpacity={0.03} />
+                </linearGradient>
+              ))}
             <filter id={`glow-${chartId}`}>
               <feGaussianBlur stdDeviation="3" result="coloredBlur" />
               <feMerge>
@@ -325,21 +318,25 @@ export default function ModernAreaChart({
           )}
 
           <XAxis
-            dataKey={multiPlayer ? xKey : "label"}
-            tick={{ fontSize: 11, fill: "#6b7280" }}
+            dataKey={multiPlayer ? xKey : 'label'}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
             axisLine={false}
             tickLine={false}
-            interval={!multiPlayer && chartData.length > 8 ? Math.ceil(chartData.length / 5) - 1 : "preserveStartEnd"}
+            interval={
+              !multiPlayer && chartData.length > 8
+                ? Math.ceil(chartData.length / 5) - 1
+                : 'preserveStartEnd'
+            }
             tickFormatter={(value, index) => {
               // Se stiamo usando il sistema basato sui giorni, mostra solo alcune etichette
-              if (multiPlayer && xKey === "day" && chartData) {
+              if (multiPlayer && xKey === 'day' && chartData) {
                 const dataPoint = chartData[index];
                 if (dataPoint?.label) {
                   // Mostra l'etichetta solo ogni 3 giorni per evitare sovrapposizioni
                   return value % 3 === 0 ? dataPoint.label : '';
                 }
               }
-              
+
               // Per le statistiche (single player), abbrevia le etichette lunghe
               if (!multiPlayer && typeof value === 'string') {
                 // Se l'etichetta contiene data e ora, estrai solo la data
@@ -348,7 +345,7 @@ export default function ModernAreaChart({
                   return value.split(',')[0];
                 }
                 // Se è "Start", mantieni come tale
-                if (value === "Start") {
+                if (value === 'Start') {
                   return value;
                 }
                 // Se è troppo lunga, tronca
@@ -356,13 +353,13 @@ export default function ModernAreaChart({
                   return value.substring(0, 8);
                 }
               }
-              
+
               return value;
             }}
           />
 
           <YAxis
-            tick={{ fontSize: 11, fill: "#6b7280" }}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
             axisLine={false}
             tickLine={false}
             width={50}
@@ -375,14 +372,14 @@ export default function ModernAreaChart({
           {multiPlayer ? (
             // Render multiple areas for top 5 players
             top5Players
-              .filter(player => visiblePlayers.has(player.id))
+              .filter((player) => visiblePlayers.has(player.id))
               .map((player, index) => {
                 // Trova l'indice originale per mantenere i colori consistenti
-                const originalIndex = top5Players.findIndex(p => p.id === player.id);
-                
+                const originalIndex = top5Players.findIndex((p) => p.id === player.id);
+
                 // Usa player.name direttamente per i dati del ranking, altrimenti usa il formato completo
                 const dataKey = yKey === 'rating' ? player.name : `${player.name}_${yKey}`;
-                
+
                 return (
                   <Area
                     key={player.id}
@@ -394,13 +391,13 @@ export default function ModernAreaChart({
                     dot={{
                       r: 2,
                       fill: playerColors[originalIndex],
-                      stroke: "white",
+                      stroke: 'white',
                       strokeWidth: 1,
                     }}
                     activeDot={{
                       r: 4,
                       fill: playerColors[originalIndex],
-                      stroke: "white",
+                      stroke: 'white',
                       strokeWidth: 2,
                     }}
                     className="drop-shadow-sm"
@@ -420,20 +417,20 @@ export default function ModernAreaChart({
                 dot={{
                   r: 3,
                   fill: areaColor,
-                  stroke: "white",
+                  stroke: 'white',
                   strokeWidth: 2,
                   filter: `url(#glow-${chartId})`,
                 }}
                 activeDot={{
                   r: 6,
                   fill: areaColor,
-                  stroke: "white",
+                  stroke: 'white',
                   strokeWidth: 3,
-                  className: "drop-shadow-lg animate-pulse",
+                  className: 'drop-shadow-lg animate-pulse',
                 }}
                 className="drop-shadow-sm"
               />
-              
+
               {/* Linea di confronto se presente */}
               {compareDataKey && (
                 <Area
@@ -445,50 +442,48 @@ export default function ModernAreaChart({
                   dot={{
                     r: 2,
                     fill: compareColor,
-                    stroke: "white",
+                    stroke: 'white',
                     strokeWidth: 1,
                   }}
                   activeDot={{
                     r: 5,
                     fill: compareColor,
-                    stroke: "white",
+                    stroke: 'white',
                     strokeWidth: 2,
-                    className: "drop-shadow-lg",
+                    className: 'drop-shadow-lg',
                   }}
                   className="drop-shadow-sm"
                 />
               )}
             </>
           )}
-            <Area
-              type="monotone"
-              dataKey={compareDataKey}
-              stroke={compareColor}
-              strokeWidth={2}
-              strokeDasharray="5 5"
-              fill={`url(#compareGradient-${chartId})`}
-              dot={{
-                r: 2,
-                fill: compareColor,
-                stroke: "white",
-                strokeWidth: 1,
-              }}
-              activeDot={{
-                r: 5,
-                fill: compareColor,
-                stroke: "white",
-                strokeWidth: 2,
-                className: "drop-shadow-lg",
-              }}
-              className="drop-shadow-sm"
-            />
+          <Area
+            type="monotone"
+            dataKey={compareDataKey}
+            stroke={compareColor}
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            fill={`url(#compareGradient-${chartId})`}
+            dot={{
+              r: 2,
+              fill: compareColor,
+              stroke: 'white',
+              strokeWidth: 1,
+            }}
+            activeDot={{
+              r: 5,
+              fill: compareColor,
+              stroke: 'white',
+              strokeWidth: 2,
+              className: 'drop-shadow-lg',
+            }}
+            className="drop-shadow-sm"
+          />
         </AreaChart>
       </ResponsiveContainer>
 
       <div className="flex justify-between items-center mt-3 px-2">
-        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-          {title}
-        </span>
+        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{title}</span>
         <div className="flex items-center gap-2">
           {chartData.length > 1 && (
             <div className="flex items-center gap-1">
@@ -497,12 +492,10 @@ export default function ModernAreaChart({
               </span>
             </div>
           )}
-          <span className="text-xs text-gray-500">
-            {last10Data.length} partite
-          </span>
+          <span className="text-xs text-gray-500">{last10Data.length} partite</span>
         </div>
       </div>
-      
+
       {/* Legenda per il confronto */}
       {compareDataKey && comparePlayerName && !multiPlayer && (
         <div className="flex justify-center gap-4 mt-2 px-2">
@@ -511,12 +504,15 @@ export default function ModernAreaChart({
             <span className="text-xs text-gray-600 dark:text-gray-400">Giocatore principale</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-0.5 border-b-2 border-dashed" style={{ borderColor: compareColor }}></div>
+            <div
+              className="w-3 h-0.5 border-b-2 border-dashed"
+              style={{ borderColor: compareColor }}
+            ></div>
             <span className="text-xs text-gray-600 dark:text-gray-400">{comparePlayerName}</span>
           </div>
         </div>
       )}
-      
+
       {/* Legenda per multiPlayer - Responsive */}
       {multiPlayer && top5Players && top5Players.length > 0 && (
         <div className="mt-4 mb-6 md:mt-8 md:mb-20 px-2">
@@ -551,25 +547,23 @@ export default function ModernAreaChart({
                     key={player.id}
                     onClick={() => togglePlayerVisibility(player.id)}
                     className={`flex items-center gap-2 px-2 py-1 rounded-lg transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                      isVisible 
-                        ? 'opacity-100' 
-                        : 'opacity-50 hover:opacity-75'
+                      isVisible ? 'opacity-100' : 'opacity-50 hover:opacity-75'
                     }`}
                     title={isVisible ? `Nascondi ${player.name}` : `Mostra ${player.name}`}
                   >
-                    <div 
+                    <div
                       className={`w-3 h-3 rounded-full transition-all duration-200 ${
                         isVisible ? 'scale-100' : 'scale-75'
                       }`}
-                      style={{ 
+                      style={{
                         backgroundColor: isVisible ? playerColors[index] : '#d1d5db',
-                        border: isVisible ? 'none' : `2px solid ${playerColors[index]}`
+                        border: isVisible ? 'none' : `2px solid ${playerColors[index]}`,
                       }}
                     ></div>
-                    <span 
+                    <span
                       className={`text-xs transition-colors duration-200 ${
-                        isVisible 
-                          ? 'text-gray-600 dark:text-gray-400' 
+                        isVisible
+                          ? 'text-gray-600 dark:text-gray-400'
                           : 'text-gray-400 dark:text-gray-500'
                       }`}
                     >
@@ -585,7 +579,9 @@ export default function ModernAreaChart({
                   onClick={toggleAllPlayers}
                   className="text-xs text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200 px-2 py-1 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20"
                 >
-                  {top5Players.every(player => visiblePlayers.has(player.id)) ? 'Nascondi tutti' : 'Mostra tutti'}
+                  {top5Players.every((player) => visiblePlayers.has(player.id))
+                    ? 'Nascondi tutti'
+                    : 'Mostra tutti'}
                 </button>
               </div>
               <div>
@@ -600,7 +596,7 @@ export default function ModernAreaChart({
 
       {/* Popup Mobile per selezione giocatori */}
       {showMobilePopup && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-end justify-center p-4 bg-black/50 backdrop-blur-sm pb-8 animate-fade-in"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
@@ -631,7 +627,9 @@ export default function ModernAreaChart({
                   onClick={toggleAllPlayers}
                   className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
                 >
-                  {top5Players.every(player => visiblePlayers.has(player.id)) ? 'Nascondi tutti' : 'Mostra tutti'}
+                  {top5Players.every((player) => visiblePlayers.has(player.id))
+                    ? 'Nascondi tutti'
+                    : 'Mostra tutti'}
                 </button>
               </div>
 
@@ -649,23 +647,21 @@ export default function ModernAreaChart({
                           : 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-700/50'
                       }`}
                     >
-                      <div 
+                      <div
                         className={`w-4 h-4 rounded-full flex items-center justify-center transition-all duration-200 ${
                           isVisible ? 'scale-100' : 'scale-75'
                         }`}
-                        style={{ 
+                        style={{
                           backgroundColor: isVisible ? playerColors[index] : '#d1d5db',
-                          border: isVisible ? 'none' : `2px solid ${playerColors[index]}`
+                          border: isVisible ? 'none' : `2px solid ${playerColors[index]}`,
                         }}
                       >
-                        {isVisible && (
-                          <span className="text-white text-xs">✓</span>
-                        )}
+                        {isVisible && <span className="text-white text-xs">✓</span>}
                       </div>
-                      <span 
+                      <span
                         className={`text-sm font-medium transition-colors duration-200 ${
-                          isVisible 
-                            ? 'text-blue-900 dark:text-blue-100' 
+                          isVisible
+                            ? 'text-blue-900 dark:text-blue-100'
                             : 'text-gray-500 dark:text-gray-400'
                         }`}
                       >

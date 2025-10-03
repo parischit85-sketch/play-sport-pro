@@ -1,25 +1,25 @@
 // =============================================
 // FILE: src/contexts/AuthContext.jsx
 // =============================================
-import React, { createContext, useContext, useEffect, useState, useRef } from "react";
-import { onAuth, getUserProfile, logout } from "@services/auth.jsx";
-import { setSentryUser, clearSentryUser, trackError, trackUserAction } from "../lib/sentry.js";
-import { trackAuth, setUserId, setUserProperties } from "../lib/analytics.js";
-import { initialize as initializeBookingService } from "@services/unified-booking-service.js";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { onAuth, getUserProfile, logout } from '@services/auth.jsx';
+// import { setSentryUser, clearSentryUser, trackError, trackUserAction } from "../lib/sentry.js";
+import { trackAuth, setUserId, setUserProperties } from '../lib/analytics.js';
+import { initialize as initializeBookingService } from '@services/unified-booking-service.js';
 
 // Constants for user roles
 export const USER_ROLES = {
-  SUPER_ADMIN: 'super_admin',   // Super Admin (tu - fornitore servizio PlaySport)
-  CLUB_ADMIN: 'club_admin',     // Amministratore di circolo (gestore club)
-  INSTRUCTOR: 'instructor',     // Istruttore/Maestro
-  USER: 'user'                  // Utente finale (giocatori/clienti)
+  SUPER_ADMIN: 'super_admin', // Super Admin (tu - fornitore servizio PlaySport)
+  CLUB_ADMIN: 'club_admin', // Amministratore di circolo (gestore club)
+  INSTRUCTOR: 'instructor', // Istruttore/Maestro
+  USER: 'user', // Utente finale (giocatori/clienti)
 };
 
 // Constants for affiliation status
 export const AFFILIATION_STATUS = {
   PENDING: 'pending',
   APPROVED: 'approved',
-  REJECTED: 'rejected'
+  REJECTED: 'rejected',
 };
 
 const AuthContext = createContext(null);
@@ -27,7 +27,7 @@ const AuthContext = createContext(null);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
@@ -37,7 +37,7 @@ export function AuthProvider({ children }) {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Multi-tenant state
   const [currentClub, setCurrentClub] = useState(null);
   const [userAffiliations, setUserAffiliations] = useState([]);
@@ -50,21 +50,21 @@ export function AuthProvider({ children }) {
     if (firebaseUser?.isSpecialAdmin || profile?.isSpecialAdmin) {
       return USER_ROLES.SUPER_ADMIN;
     }
-    
+
     // Check profile role for Super Admin
     if (profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN') {
       return USER_ROLES.SUPER_ADMIN;
     }
-    
+
     // Check custom claims
     if (customClaims.role === 'club_admin') {
       return USER_ROLES.CLUB_ADMIN;
     }
-    
+
     if (customClaims.role === 'instructor') {
       return USER_ROLES.INSTRUCTOR;
     }
-    
+
     // Default to user
     return USER_ROLES.USER;
   };
@@ -76,12 +76,12 @@ export function AuthProvider({ children }) {
     try {
       // 🆕 NEW: Load clubs where user is a member instead of affiliations
       const { getUserClubMemberships } = await import('@services/club-users.js');
-      
+
       let memberships = [];
       try {
         console.log('📞 [AuthContext] Calling getUserClubMemberships...');
         // This would load all clubs where the user is in the users collection
-        memberships = await getUserClubMemberships(userId) || [];
+        memberships = (await getUserClubMemberships(userId)) || [];
         console.log('✅ [AuthContext] Memberships loaded:', memberships);
         setUserAffiliations(memberships); // Keep same state name for compatibility
       } catch (e) {
@@ -92,7 +92,7 @@ export function AuthProvider({ children }) {
 
       // Extract club roles from memberships
       let clubRoles = {};
-      memberships.forEach(membership => {
+      memberships.forEach((membership) => {
         if (membership.role && membership.status === 'active') {
           clubRoles[membership.clubId] = membership.role;
         }
@@ -101,20 +101,24 @@ export function AuthProvider({ children }) {
       setUserClubRoles(clubRoles || {});
 
       // Auto-set club for CLUB_ADMIN users
-      const clubAdminRoles = Object.entries(clubRoles || {}).filter(([clubId, role]) => role === 'club_admin');
+      const clubAdminRoles = Object.entries(clubRoles || {}).filter(
+        ([_clubId, role]) => role === 'club_admin'
+      );
       console.log('🏛️ [AuthContext] Club admin roles found:', clubAdminRoles);
-      
+
       if (clubAdminRoles.length === 1) {
         // Se l'utente è CLUB_ADMIN di un solo club, impostalo automaticamente
-        const [clubId] = clubAdminRoles[0];
-        setCurrentClub(clubId);
-        localStorage.setItem('currentClub', clubId);
+        const [_clubId] = clubAdminRoles[0];
+        setCurrentClub(_clubId);
+        localStorage.setItem('currentClub', _clubId);
       } else {
         // No single club admin role found, checking localStorage
         // Restore current club da localStorage se valido
         const savedClubId = localStorage.getItem('currentClub');
         if (savedClubId) {
-          const validMembership = memberships.find(m => m.clubId === savedClubId && m.status === 'active');
+          const validMembership = memberships.find(
+            (m) => m.clubId === savedClubId && m.status === 'active'
+          );
           if (validMembership) {
             setCurrentClub(savedClubId);
           } else {
@@ -131,12 +135,10 @@ export function AuthProvider({ children }) {
 
   // Switch to a specific club
   const switchToClub = async (clubId) => {
-    const membership = userAffiliations.find(m => 
-      m.clubId === clubId && m.status === 'active'
-    );
-    
+    const membership = userAffiliations.find((m) => m.clubId === clubId && m.status === 'active');
+
     if (!membership) {
-      throw new Error("Non sei membro di questo club o la membership non è attiva");
+      throw new Error('Non sei membro di questo club o la membership non è attiva');
     }
 
     setCurrentClub(clubId);
@@ -150,58 +152,69 @@ export function AuthProvider({ children }) {
   };
 
   // Check if user has permission for specific role in current club
-  const hasRole = React.useCallback((role, clubId = currentClub) => {
-    if (userRole === USER_ROLES.SUPER_ADMIN) return true; // Super admin has all permissions
-    if (userRole === role) return true; // User has global role
-    
-    // Check club-specific roles from userClubRoles
-    if (clubId && userClubRoles[clubId] === role) return true;
-    
-    // For club admin role, also check memberships
-    if (role === USER_ROLES.CLUB_ADMIN && clubId) {
-      // Check if user has admin membership for this club
-      const adminMembership = userAffiliations.find(m => 
-        m.clubId === clubId && 
-        m.status === 'active' &&
-        (m.role === 'admin' || m.role === 'club_admin')
-      );
-      if (adminMembership) return true;
-    }
-    
-    return false;
-  }, [userRole, userClubRoles, userAffiliations, currentClub]);
+  const hasRole = React.useCallback(
+    (role, clubId = currentClub) => {
+      if (userRole === USER_ROLES.SUPER_ADMIN) return true; // Super admin has all permissions
+      if (userRole === role) return true; // User has global role
+
+      // Check club-specific roles from userClubRoles
+      if (clubId && userClubRoles[clubId] === role) return true;
+
+      // For club admin role, also check memberships
+      if (role === USER_ROLES.CLUB_ADMIN && clubId) {
+        // Check if user has admin membership for this club
+        const adminMembership = userAffiliations.find(
+          (m) =>
+            m.clubId === clubId &&
+            m.status === 'active' &&
+            (m.role === 'admin' || m.role === 'club_admin')
+        );
+        if (adminMembership) return true;
+      }
+
+      return false;
+    },
+    [userRole, userClubRoles, userAffiliations, currentClub]
+  );
 
   // Check if user is club admin for specific club
-  const isClubAdmin = React.useCallback((clubId = currentClub) => {
-    if (userRole === USER_ROLES.SUPER_ADMIN) {
-      return true; // Super admin is always club admin
-    }
-    
-    // Check userClubRoles first
-    if (clubId && userClubRoles[clubId] === USER_ROLES.CLUB_ADMIN) {
-      return true;
-    }
-    
-    // Check memberships for admin role
-    if (clubId) {
-      const adminMembership = userAffiliations.find(m => 
-        m.clubId === clubId && 
-        m.status === 'active' &&
-        (m.role === 'club_admin' || m.role === 'admin')
-      );
-      
-      if (adminMembership) {
+  const isClubAdmin = React.useCallback(
+    (clubId = currentClub) => {
+      if (userRole === USER_ROLES.SUPER_ADMIN) {
+        return true; // Super admin is always club admin
+      }
+
+      // Check userClubRoles first
+      if (clubId && userClubRoles[clubId] === USER_ROLES.CLUB_ADMIN) {
         return true;
       }
-    }
-    
-    return false;
-  }, [userRole, userClubRoles, userAffiliations, currentClub]);
+
+      // Check memberships for admin role
+      if (clubId) {
+        const adminMembership = userAffiliations.find(
+          (m) =>
+            m.clubId === clubId &&
+            m.status === 'active' &&
+            (m.role === 'club_admin' || m.role === 'admin')
+        );
+
+        if (adminMembership) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    [userRole, userClubRoles, userAffiliations, currentClub]
+  );
 
   // Check if user is instructor for specific club
-  const isInstructor = React.useCallback((clubId = currentClub) => {
-    return hasRole(USER_ROLES.INSTRUCTOR, clubId);
-  }, [hasRole, currentClub]);
+  const isInstructor = React.useCallback(
+    (clubId = currentClub) => {
+      return hasRole(USER_ROLES.INSTRUCTOR, clubId);
+    },
+    [hasRole, currentClub]
+  );
 
   // Get user role for specific club
   const getRoleForClub = (clubId = currentClub) => {
@@ -212,9 +225,7 @@ export function AuthProvider({ children }) {
 
   // Check if user is member of a specific club
   const isAffiliatedTo = (clubId) => {
-    return userAffiliations.some(m => 
-      m.clubId === clubId && m.status === 'active'
-    );
+    return userAffiliations.some((m) => m.clubId === clubId && m.status === 'active');
   };
 
   // Force super admin role (for development/testing)
@@ -226,17 +237,17 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuth(async (firebaseUser) => {
       try {
         // Debug log removed
-        
+
         setLoading(true);
         setError(null);
-        
+
         // Se c'è un firebaseUser, usa quello
         if (firebaseUser) {
           // Processing Firebase user
-          
+
           // Handle special admin login
           if (firebaseUser?.isSpecialAdmin) {
-            console.log("✅ AuthContext: Admin user detected, setting up admin context");
+            console.log('✅ AuthContext: Admin user detected, setting up admin context');
             // Save admin session to localStorage
             localStorage.setItem('adminSession', JSON.stringify(firebaseUser));
             setUser(firebaseUser);
@@ -244,8 +255,8 @@ export function AuthProvider({ children }) {
               const profile = await getUserProfile(firebaseUser.uid);
               setUserProfile(profile);
             } catch (error) {
-              console.warn("Errore nel recuperare profilo admin:", error);
-              trackError(error, { operation: 'admin_profile_fetch', userId: firebaseUser.uid });
+              console.warn('Errore nel recuperare profilo admin:', error);
+              console.error(error, { operation: 'admin_profile_fetch', userId: firebaseUser.uid });
               setUserProfile({});
             }
             setUserRole(USER_ROLES.SUPER_ADMIN);
@@ -254,26 +265,29 @@ export function AuthProvider({ children }) {
             setCurrentClub(null);
             setError(null);
             setLoading(false);
-            
+
             // Initialize booking service with cloud storage for admin
             try {
               initializeBookingService({ cloudEnabled: true, user: firebaseUser });
             } catch (error) {
-              console.warn('⚠️ [AuthContext] Failed to initialize booking service for admin:', error);
+              console.warn(
+                '⚠️ [AuthContext] Failed to initialize booking service for admin:',
+                error
+              );
             }
-            
+
             // Set Sentry user context for admin
-            setSentryUser(firebaseUser);
-            
+            console.log(firebaseUser);
+
             // Set Google Analytics user context for admin
             setUserId(firebaseUser.uid);
             setUserProperties({
               user_type: 'admin',
-              email: firebaseUser.email
+              email: firebaseUser.email,
             });
             trackAuth.loginSuccess('admin', firebaseUser.uid);
-            
-            trackUserAction('admin_context_setup', { userId: firebaseUser.uid });
+
+            console.log('admin_context_setup', { userId: firebaseUser.uid });
             return;
           }
 
@@ -282,67 +296,74 @@ export function AuthProvider({ children }) {
           let profile = {};
           try {
             // Tenta di ottenere il profilo esistente o crearne uno nuovo
-            const { createUserProfileIfNeeded } = await import("@services/auth.jsx");
+            const { createUserProfileIfNeeded } = await import('@services/auth.jsx');
             profile = await createUserProfileIfNeeded(firebaseUser);
             setUserProfile(profile);
-            
+
             // Set Sentry user context
-            setSentryUser(firebaseUser);
-            
+            console.log(firebaseUser);
+
             // Set Google Analytics user context
             setUserId(firebaseUser.uid);
             setUserProperties({
               user_type: userRole,
               email: firebaseUser.email,
-              has_profile: !!profile?.firstName
+              has_profile: !!profile?.firstName,
             });
             trackAuth.loginSuccess('auto', firebaseUser.uid);
-            
-            trackUserAction('user_profile_loaded', { userId: firebaseUser.uid });
+
+            console.log('user_profile_loaded', { userId: firebaseUser.uid });
           } catch (error) {
-            console.warn("Errore nel recuperare/creare profilo utente:", error);
-            trackError(error, { 
-              operation: 'user_profile_creation', 
+            console.warn('Errore nel recuperare/creare profilo utente:', error);
+            console.error(error, {
+              operation: 'user_profile_creation',
               userId: firebaseUser.uid,
-              email: firebaseUser.email 
+              email: firebaseUser.email,
             });
-            
+
             // In caso di errore, crea un profilo di base dall'utente Firebase
             const fallbackProfile = {
               email: firebaseUser.email,
               firstName: firebaseUser.displayName?.split(' ')?.[0] || '',
               lastName: firebaseUser.displayName?.split(' ')?.[1] || '',
-              needsCompletion: true
+              needsCompletion: true,
             };
             setUserProfile(fallbackProfile);
-            
+
             // Still set Sentry user context even with fallback profile
-            setSentryUser(firebaseUser);
-            
+            console.log(firebaseUser);
+
             // Set Google Analytics user context for fallback
             setUserId(firebaseUser.uid);
             setUserProperties({
               user_type: 'user',
               email: firebaseUser.email,
-              fallback_profile: true
+              fallback_profile: true,
             });
-            
-            trackUserAction('fallback_profile_created', { userId: firebaseUser.uid });
+
+            console.log('fallback_profile_created', { userId: firebaseUser.uid });
           }
-          
+
           // Determine user role
           const customClaims = firebaseUser.customClaims || {};
           const role = determineUserRole(profile, customClaims, firebaseUser);
-          console.log('🎭 [AuthContext] User role determined:', role, 'from profile:', profile, 'claims:', customClaims);
+          console.log(
+            '🎭 [AuthContext] User role determined:',
+            role,
+            'from profile:',
+            profile,
+            'claims:',
+            customClaims
+          );
           setUserRole(role);
-          
+
           // Initialize booking service with cloud storage enabled for authenticated users
           try {
             initializeBookingService({ cloudEnabled: true, user: firebaseUser });
           } catch (error) {
             console.warn('⚠️ [AuthContext] Failed to initialize booking service:', error);
           }
-          
+
           // Load memberships for non-super-admin users
           if (role !== USER_ROLES.SUPER_ADMIN) {
             console.log('📋 [AuthContext] Loading memberships for non-super-admin user');
@@ -351,89 +372,92 @@ export function AuthProvider({ children }) {
             console.log('🌟 [AuthContext] User is super admin, skipping membership loading');
           }
         } else {
-          console.log("❌ No Firebase user, clearing any stale sessions");
-          
+          console.log('❌ No Firebase user, clearing any stale sessions');
+
           // Clear Sentry user context
-          clearSentryUser();
-          
+          console.log();
+
           // Track logout in Google Analytics
           trackAuth.logout();
-          trackUserAction('user_logged_out');
-          
+          console.log('user_logged_out');
+
           // Pulisci sempre le sessioni non valide quando non c'è un utente Firebase
           let hadStaleSession = false;
           try {
             const savedAdminSession = localStorage.getItem('adminSession');
             if (savedAdminSession) {
-              console.log("🧹 Clearing stale admin session from localStorage");
+              console.log('🧹 Clearing stale admin session from localStorage');
               localStorage.removeItem('adminSession');
               hadStaleSession = true;
             }
             const currentClub = localStorage.getItem('currentClub');
             if (currentClub) {
-              console.log("🧹 Clearing stale club selection from localStorage");
+              console.log('🧹 Clearing stale club selection from localStorage');
               localStorage.removeItem('currentClub');
               hadStaleSession = true;
             }
           } catch (e) {
-            console.log("Error clearing stale session:", e);
-            trackError(e, { operation: 'clear_stale_session' });
+            console.log('Error clearing stale session:', e);
+            console.error(e, { operation: 'clear_stale_session' });
           }
-          
+
           // Se avevamo sessioni non valide, forza un refresh per evitare stati inconsistenti
           if (hadStaleSession) {
-            console.log("🔄 Forcing page refresh due to stale session cleanup");
+            console.log('🔄 Forcing page refresh due to stale session cleanup');
             window.location.reload();
             return;
           }
-          
+
           // No user found, clear state
-          console.log("❌ No user and no admin session, clearing state");
+          console.log('❌ No user and no admin session, clearing state');
           setUser(null);
           setUserProfile(null);
           setUserRole(USER_ROLES.USER);
           setUserAffiliations([]);
           setUserClubRoles({});
           setCurrentClub(null);
-          
+
           // Disable cloud storage when user logs out
           try {
             initializeBookingService({ cloudEnabled: false, user: null });
           } catch (error) {
-            console.warn('⚠️ [AuthContext] Failed to disable booking service cloud storage:', error);
+            console.warn(
+              '⚠️ [AuthContext] Failed to disable booking service cloud storage:',
+              error
+            );
           }
         }
 
         setError(null);
         setLoading(false);
       } catch (err) {
-        console.error("Auth error:", err);
-        trackError(err, { 
+        console.error('Auth error:', err);
+        console.error(err, {
           operation: 'auth_state_change',
           hasUser: !!firebaseUser,
-          userEmail: firebaseUser?.email 
+          userEmail: firebaseUser?.email,
         });
-        
+
         setError(err);
         setUserProfile(null);
         setUserRole(USER_ROLES.USER);
         setUserAffiliations([]);
         setUserClubRoles({});
         setCurrentClub(null);
-        
+
         // Clear Sentry user context on error
-        clearSentryUser();
-        
+        console.log();
+
         // Track auth error in Google Analytics
         trackAuth.loginFailed('auto', err.code || 'unknown_error');
-        
+
         // Pulisci le sessioni non valide anche in caso di errore
         try {
           localStorage.removeItem('adminSession');
           localStorage.removeItem('currentClub');
         } catch (e) {
-          console.log("Error clearing localStorage on auth error:", e);
-          trackError(e, { operation: 'clear_storage_on_error' });
+          console.log('Error clearing localStorage on auth error:', e);
+          console.error(e, { operation: 'clear_storage_on_error' });
         }
       } finally {
         setLoading(false);
@@ -447,14 +471,14 @@ export function AuthProvider({ children }) {
 
   const isAuthenticated = !!user;
   const isProfileComplete = userProfile?.firstName && userProfile?.phone;
-  
+
   // Debug: log when isProfileComplete changes
   React.useEffect(() => {
-    console.log("🔍 AuthContext: isProfileComplete changed", {
+    console.log('🔍 AuthContext: isProfileComplete changed', {
       isProfileComplete,
       userProfile,
       firstName: userProfile?.firstName,
-      phone: userProfile?.phone
+      phone: userProfile?.phone,
     });
   }, [isProfileComplete, userProfile]);
 
@@ -467,7 +491,7 @@ export function AuthProvider({ children }) {
     error,
     isAuthenticated,
     isProfileComplete,
-    
+
     // Multi-tenant functionality
     currentClub,
     setCurrentClub,
@@ -475,14 +499,14 @@ export function AuthProvider({ children }) {
     setUserAffiliations,
     userRole,
     userClubRoles,
-    
+
     // Actions
     switchToClub,
     exitClub,
     logout,
     loadUserAffiliations: () => loadUserAffiliations(user?.uid), // Keep name for compatibility
     forceAdminRole, // For development/testing
-    
+
     // Helper functions
     hasRole,
     isClubAdmin,
@@ -490,32 +514,32 @@ export function AuthProvider({ children }) {
     isAffiliatedTo,
     getRoleForClub,
     getFirstAdminClub: React.useCallback(() => {
-      const adminMembership = userAffiliations.find(m => 
-        m.status === 'active' && (m.role === 'admin' || m.role === 'club_admin')
+      const adminMembership = userAffiliations.find(
+        (m) => m.status === 'active' && (m.role === 'admin' || m.role === 'club_admin')
       );
       return adminMembership ? adminMembership.clubId : null;
     }, [userAffiliations]),
-    
+
     // Force reload user data (useful after promotion/demotion)
     reloadUserData: async () => {
       if (user?.uid) {
-        console.log("🔄 Reloading user data for", user.uid);
-        
+        console.log('🔄 Reloading user data for', user.uid);
+
         // Reload memberships
         await loadUserAffiliations(user.uid);
-        
+
         // Reload user profile with forced cache bypass
         try {
-          const { getUserProfile } = await import("@services/auth.jsx");
+          const { getUserProfile } = await import('@services/auth.jsx');
           const freshProfile = await getUserProfile(user.uid, true); // Force cache bypass
           setUserProfile(freshProfile);
-          console.log("✅ User profile reloaded:", freshProfile);
+          console.log('✅ User profile reloaded:', freshProfile);
         } catch (error) {
-          console.error("❌ Error reloading user profile:", error);
+          console.error('❌ Error reloading user profile:', error);
         }
       }
     },
-    
+
     // Constants for easy access
     USER_ROLES,
     AFFILIATION_STATUS,

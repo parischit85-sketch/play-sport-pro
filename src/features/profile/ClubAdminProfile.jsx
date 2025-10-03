@@ -2,15 +2,15 @@
 // FILE: src/features/profile/ClubAdminProfile.jsx
 // PROFILO COMPLETO DEL CIRCOLO PER ADMIN
 // =============================================
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import Section from "@ui/Section.jsx";
-import { useAuth } from "@contexts/AuthContext.jsx";
-import { useUI } from "@contexts/UIContext.jsx";
-import { loadAdminDashboardData } from "@services/adminDashboard.js";
-import { useClubSettings } from "@hooks/useClubSettings.js";
-import { db } from "@services/firebase.js";
-import { doc, updateDoc } from "firebase/firestore";
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Section from '@ui/Section.jsx';
+import { useAuth } from '@contexts/AuthContext.jsx';
+import { useUI } from '@contexts/UIContext.jsx';
+import { loadAdminDashboardData } from '@services/adminDashboard.js';
+import { useClubSettings } from '@hooks/useClubSettings.js';
+import { db } from '@services/firebase.js';
+import { doc, updateDoc } from 'firebase/firestore';
 
 export default function ClubAdminProfile({ T, club, clubId }) {
   const navigate = useNavigate();
@@ -26,10 +26,10 @@ export default function ClubAdminProfile({ T, club, clubId }) {
   // ClubAdminProfile component initialized
   // Inizializza il componente
   // console.log('🏛️ ClubAdminProfile initialized with:', { clubId, clubName });
-  
+
   const [clubData, setClubData] = useState(club);
   const [loadingClub, setLoadingClub] = useState(!club);
-  
+
   const [clubStats, setClubStats] = useState({
     totalMembers: 0,
     activeInstructors: 0,
@@ -37,22 +37,22 @@ export default function ClubAdminProfile({ T, club, clubId }) {
     monthlyRevenue: 0,
     weeklyBookings: 0,
     activeTimeSlots: 0,
-    loading: true
+    loading: true,
   });
 
   const [clubSettings, setClubSettings] = useState({
-    name: clubData?.name || "",
-    description: clubData?.description || "",
-    address: clubData?.address || "",
-    phone: clubData?.phone || "",
-    email: clubData?.email || "",
-    website: clubData?.website || "",
-    logoUrl: clubData?.logoUrl || "",
-    openingHours: clubData?.openingHours || "",
+    name: clubData?.name || '',
+    description: clubData?.description || '',
+    address: clubData?.address || '',
+    phone: clubData?.phone || '',
+    email: clubData?.email || '',
+    website: clubData?.website || '',
+    logoUrl: clubData?.logoUrl || '',
+    openingHours: clubData?.openingHours || '',
     facilities: clubData?.facilities || [],
     pricing: clubData?.pricing || {},
-    courtTypes: clubData?.courtTypes || ["Indoor", "Outdoor", "Covered"],
-    loading: false
+    courtTypes: clubData?.courtTypes || ['Indoor', 'Outdoor', 'Covered'],
+    loading: false,
   });
 
   useEffect(() => {
@@ -65,30 +65,30 @@ export default function ClubAdminProfile({ T, club, clubId }) {
   // Load club data if not provided
   const loadClubData = async () => {
     if (clubData || !clubId) return; // Already have data or no clubId
-    
+
     try {
       setLoadingClub(true);
       console.log('🔄 Loading club data for:', clubId);
-      
+
       // Import clubs service dynamically
       const { getClub } = await import('@services/clubs.js');
       const club = await getClub(clubId);
-      
+
       if (club) {
         setClubData(club);
         setClubSettings({
-          name: club.name || "",
-          description: club.description || "",
-          address: club.address || "",
-          phone: club.phone || "",
-          email: club.email || "",
-          website: club.website || "",
-          logoUrl: club.logoUrl || "",
-          openingHours: club.openingHours || "",
+          name: club.name || '',
+          description: club.description || '',
+          address: club.address || '',
+          phone: club.phone || '',
+          email: club.email || '',
+          website: club.website || '',
+          logoUrl: club.logoUrl || '',
+          openingHours: club.openingHours || '',
           facilities: club.facilities || [],
           pricing: club.pricing || {},
-          courtTypes: club.courtTypes || ["Indoor", "Outdoor", "Covered"],
-          loading: false
+          courtTypes: club.courtTypes || ['Indoor', 'Outdoor', 'Covered'],
+          loading: false,
         });
         console.log('✅ Club data loaded:', club.name);
       } else {
@@ -104,7 +104,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
           website: '',
           openingHours: '',
           facilities: [],
-          pricing: {}
+          pricing: {},
         };
         setClubData(fallbackClub);
         setClubSettings({
@@ -114,12 +114,12 @@ export default function ClubAdminProfile({ T, club, clubId }) {
           phone: fallbackClub.phone,
           email: fallbackClub.email,
           website: fallbackClub.website,
-          logoUrl: fallbackClub.logoUrl || "",
+          logoUrl: fallbackClub.logoUrl || '',
           openingHours: fallbackClub.openingHours,
           facilities: fallbackClub.facilities,
           pricing: fallbackClub.pricing,
-          courtTypes: ["Indoor", "Outdoor", "Covered"],
-          loading: false
+          courtTypes: ['Indoor', 'Outdoor', 'Covered'],
+          loading: false,
         });
         console.log('✅ Using fallback club data');
       }
@@ -133,75 +133,75 @@ export default function ClubAdminProfile({ T, club, clubId }) {
   const loadClubStats = async () => {
     if (!clubId) {
       console.warn('ClubId non disponibile per caricare le statistiche');
-      setClubStats(prev => ({ ...prev, loading: false }));
+      setClubStats((prev) => ({ ...prev, loading: false }));
       return;
     }
     try {
       const data = await loadAdminDashboardData(clubId);
-      
+
       // Calcola statistiche mensili e settimanali basate sui dati reali
       const todayRevenue = data.stats?.todayRevenue || 0;
       const estimatedMonthlyRevenue = todayRevenue * 30; // Stima mensile basata su oggi
       const weeklyBookings = data.stats?.weeklyBookings || 0;
-      
+
       setClubStats({
         totalMembers: data.stats?.memberCount || 0,
         activeInstructors: data.availableInstructors?.length || 0,
         totalCourts: data.courts?.length || 0,
         monthlyRevenue: estimatedMonthlyRevenue,
         weeklyBookings: weeklyBookings,
-        activeTimeSlots: lessonConfig?.timeSlots?.filter(slot => slot.isActive)?.length || 0,
+        activeTimeSlots: lessonConfig?.timeSlots?.filter((slot) => slot.isActive)?.length || 0,
         // Aggiungiamo nuove statistiche più dettagliate
         todayBookings: data.stats?.todayBookingsCount || 0,
         todayLessons: data.stats?.todayLessonsCount || 0,
         todayRevenue: todayRevenue,
         courtUtilization: data.stats?.courtUtilization || 0,
-        loading: false
+        loading: false,
       });
       // Stats updated successfully
     } catch (error) {
-      console.error("❌ Errore nel caricamento statistiche:", error);
-      setClubStats(prev => ({ ...prev, loading: false }));
+      console.error('❌ Errore nel caricamento statistiche:', error);
+      setClubStats((prev) => ({ ...prev, loading: false }));
     }
   };
 
   const handleLogout = async () => {
-    if (window.confirm("Sei sicuro di voler uscire?")) {
+    if (window.confirm('Sei sicuro di voler uscire?')) {
       await logout();
-      navigate("/", { replace: true });
+      navigate('/', { replace: true });
       window.location.reload();
     }
   };
 
   const handleSaveCourtTypes = async () => {
     if (!clubId) {
-      alert("ID circolo non disponibile");
+      alert('ID circolo non disponibile');
       return;
     }
 
     try {
-      setClubSettings(prev => ({ ...prev, loading: true }));
+      setClubSettings((prev) => ({ ...prev, loading: true }));
 
       // Import updateClub dynamically
       const { updateClub } = await import('@services/clubs.js');
 
       // Save only courtTypes to Firebase
       await updateClub(clubId, {
-        courtTypes: clubSettings.courtTypes || []
+        courtTypes: clubSettings.courtTypes || [],
       });
 
       // Update local clubData to reflect changes
-      setClubData(prev => ({
+      setClubData((prev) => ({
         ...prev,
-        courtTypes: clubSettings.courtTypes || []
+        courtTypes: clubSettings.courtTypes || [],
       }));
 
-      alert("Tipologie campo salvate con successo!");
+      alert('Tipologie campo salvate con successo!');
     } catch (error) {
-      console.error("Errore nel salvataggio delle tipologie:", error);
-      alert("Errore nel salvataggio delle tipologie. Riprova.");
+      console.error('Errore nel salvataggio delle tipologie:', error);
+      alert('Errore nel salvataggio delle tipologie. Riprova.');
     } finally {
-      setClubSettings(prev => ({ ...prev, loading: false }));
+      setClubSettings((prev) => ({ ...prev, loading: false }));
     }
   };
 
@@ -209,38 +209,35 @@ export default function ClubAdminProfile({ T, club, clubId }) {
   const uploadLogo = async (file) => {
     try {
       setUploading(true);
-      
+
       const cloudName = 'dlmi2epev';
       const uploadPreset = 'club_logos'; // Preset creato su Cloudinary
-      
+
       // Crea FormData per l'upload
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', uploadPreset);
       formData.append('folder', `playsport/logos/${clubId}`);
       formData.append('public_id', `logo_${Date.now()}`);
-      
+
       // Upload su Cloudinary
       console.log('📤 Uploading logo to Cloudinary...');
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        {
-          method: 'POST',
-          body: formData
-        }
-      );
-      
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
       if (!response.ok) {
         const error = await response.json();
         console.error('Upload error details:', error);
         throw new Error(error.error?.message || 'Upload failed');
       }
-      
+
       const data = await response.json();
       const imageUrl = data.secure_url;
-      
+
       console.log('✅ Logo caricato con successo su Cloudinary:', imageUrl);
-      
+
       // Elimina il vecchio logo da Cloudinary se esiste
       if (clubSettings.logoUrl && clubSettings.logoUrl.includes('cloudinary.com')) {
         try {
@@ -251,10 +248,10 @@ export default function ClubAdminProfile({ T, club, clubId }) {
           console.log('⚠️ Impossibile eliminare il vecchio logo:', error);
         }
       }
-      
+
       return imageUrl;
     } catch (error) {
-      console.error('❌ Errore durante l\'upload del logo:', error);
+      console.error("❌ Errore durante l'upload del logo:", error);
       alert('Errore upload: ' + error.message);
       throw error;
     } finally {
@@ -270,19 +267,19 @@ export default function ClubAdminProfile({ T, club, clubId }) {
         alert('Per favore seleziona un file immagine');
         return;
       }
-      
+
       // Verifica dimensione (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('Il file è troppo grande. Dimensione massima: 5MB');
         return;
       }
-      
+
       setLogoFile(file);
-      
+
       // Crea anteprima
       const reader = new FileReader();
       reader.onload = (e) => {
-        setClubSettings(prev => ({ ...prev, logoUrl: e.target.result }));
+        setClubSettings((prev) => ({ ...prev, logoUrl: e.target.result }));
       };
       reader.readAsDataURL(file);
     }
@@ -290,7 +287,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
 
   const handleRemoveLogo = () => {
     setLogoFile(null);
-    setClubSettings(prev => ({ ...prev, logoUrl: clubData?.logoUrl || '' }));
+    setClubSettings((prev) => ({ ...prev, logoUrl: clubData?.logoUrl || '' }));
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -298,7 +295,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
 
   const handleSaveLogo = async () => {
     if (!clubId) {
-      alert("ID circolo non disponibile");
+      alert('ID circolo non disponibile');
       return;
     }
 
@@ -308,32 +305,34 @@ export default function ClubAdminProfile({ T, club, clubId }) {
     }
 
     try {
-      setClubSettings(prev => ({ ...prev, loading: true }));
+      setClubSettings((prev) => ({ ...prev, loading: true }));
 
       // Upload del logo
       const logoUrl = await uploadLogo(logoFile);
 
       // Salva l'URL nel database
       await updateDoc(doc(db, 'clubs', clubId), {
-        logoUrl: logoUrl
+        logoUrl: logoUrl,
       });
 
       // Aggiorna lo stato locale
-      setClubSettings(prev => ({ ...prev, logoUrl }));
-      setClubData(prev => ({ ...prev, logoUrl }));
+      setClubSettings((prev) => ({ ...prev, logoUrl }));
+      setClubData((prev) => ({ ...prev, logoUrl }));
       setLogoFile(null);
 
-      alert("Logo caricato con successo!");
+      alert('Logo caricato con successo!');
     } catch (error) {
-      console.error("Errore nel salvataggio del logo:", error);
-      alert("Errore nel salvataggio del logo: " + error.message);
+      console.error('Errore nel salvataggio del logo:', error);
+      alert('Errore nel salvataggio del logo: ' + error.message);
     } finally {
-      setClubSettings(prev => ({ ...prev, loading: false }));
+      setClubSettings((prev) => ({ ...prev, loading: false }));
     }
   };
 
   const StatCard = ({ title, value, icon, color, description }) => (
-    <div className={`bg-gradient-to-r ${color} rounded-2xl p-6 border border-white/20 dark:border-gray-700/20 shadow-xl`}>
+    <div
+      className={`bg-gradient-to-r ${color} rounded-2xl p-6 border border-white/20 dark:border-gray-700/20 shadow-xl`}
+    >
       <div className="flex items-center justify-between mb-3">
         <div className="text-3xl">{icon}</div>
         <div className="text-right">
@@ -341,9 +340,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
           <div className="text-white/80 text-sm">{title}</div>
         </div>
       </div>
-      {description && (
-        <div className="text-white/70 text-xs">{description}</div>
-      )}
+      {description && <div className="text-white/70 text-xs">{description}</div>}
     </div>
   );
 
@@ -364,9 +361,9 @@ export default function ClubAdminProfile({ T, club, clubId }) {
       <Section title="Profilo Circolo" T={T}>
         <div className={`rounded-2xl ${T.cardBg} ${T.border} p-4`}>
           <div className="text-sm text-red-500">
-            ❌ Errore nel caricamento dei dati del circolo. 
-            <button 
-              onClick={() => window.location.reload()} 
+            ❌ Errore nel caricamento dei dati del circolo.
+            <button
+              onClick={() => window.location.reload()}
               className="ml-2 text-blue-500 underline"
             >
               Riprova
@@ -392,7 +389,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 {clubData?.name || 'Club Admin'}
               </h3>
               <p className="text-green-600 dark:text-green-400 text-lg truncate mb-2">
-                {clubData?.address || "Indirizzo non specificato"}
+                {clubData?.address || 'Indirizzo non specificato'}
               </p>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1 bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1 rounded-full">
@@ -418,14 +415,12 @@ export default function ClubAdminProfile({ T, club, clubId }) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
-                  {darkMode ? "🌙" : "☀️"}
+                  {darkMode ? '🌙' : '☀️'}
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">
-                    Tema dell'App
-                  </h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">Tema dell'App</h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {darkMode ? "Modalità scura attiva" : "Modalità chiara attiva"}
+                    {darkMode ? 'Modalità scura attiva' : 'Modalità chiara attiva'}
                   </p>
                 </div>
               </div>
@@ -433,13 +428,13 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 onClick={toggleTheme}
                 className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
                   darkMode
-                    ? "bg-gradient-to-r from-purple-500 to-pink-500"
-                    : "bg-gray-200 dark:bg-gray-600"
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500'
+                    : 'bg-gray-200 dark:bg-gray-600'
                 }`}
               >
                 <span
                   className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
-                    darkMode ? "translate-x-7" : "translate-x-1"
+                    darkMode ? 'translate-x-7' : 'translate-x-1'
                   }`}
                 />
               </button>
@@ -538,7 +533,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 <input
                   className="w-full px-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-xl border border-gray-200/50 dark:border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   value={clubSettings.name}
-                  onChange={(e) => setClubSettings(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) => setClubSettings((prev) => ({ ...prev, name: e.target.value }))}
                   placeholder="Nome del circolo"
                 />
               </div>
@@ -549,7 +544,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 <input
                   className="w-full px-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-xl border border-gray-200/50 dark:border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   value={clubSettings.phone}
-                  onChange={(e) => setClubSettings(prev => ({ ...prev, phone: e.target.value }))}
+                  onChange={(e) => setClubSettings((prev) => ({ ...prev, phone: e.target.value }))}
                   placeholder="+39 123 456 7890"
                 />
               </div>
@@ -561,7 +556,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                   type="email"
                   className="w-full px-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-xl border border-gray-200/50 dark:border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   value={clubSettings.email}
-                  onChange={(e) => setClubSettings(prev => ({ ...prev, email: e.target.value }))}
+                  onChange={(e) => setClubSettings((prev) => ({ ...prev, email: e.target.value }))}
                   placeholder="info@circolo.it"
                 />
               </div>
@@ -572,7 +567,9 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 <input
                   className="w-full px-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-xl border border-gray-200/50 dark:border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   value={clubSettings.website}
-                  onChange={(e) => setClubSettings(prev => ({ ...prev, website: e.target.value }))}
+                  onChange={(e) =>
+                    setClubSettings((prev) => ({ ...prev, website: e.target.value }))
+                  }
                   placeholder="https://www.circolo.it"
                 />
               </div>
@@ -583,7 +580,9 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 <input
                   className="w-full px-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-xl border border-gray-200/50 dark:border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   value={clubSettings.address}
-                  onChange={(e) => setClubSettings(prev => ({ ...prev, address: e.target.value }))}
+                  onChange={(e) =>
+                    setClubSettings((prev) => ({ ...prev, address: e.target.value }))
+                  }
                   placeholder="Via Roma 123, 00100 Roma (RM)"
                 />
               </div>
@@ -595,26 +594,28 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                   rows={3}
                   className="w-full px-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-xl border border-gray-200/50 dark:border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
                   value={clubSettings.description}
-                  onChange={(e) => setClubSettings(prev => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setClubSettings((prev) => ({ ...prev, description: e.target.value }))
+                  }
                   placeholder="Descrizione del circolo, servizi offerti, orari..."
                 />
               </div>
-              
+
               {/* Sezione Upload Logo */}
               <div className="md:col-span-2 space-y-4">
                 <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 block">
                   🎨 Logo del Circolo
                 </label>
-                
+
                 <div className="flex flex-col md:flex-row gap-6 items-start">
                   {/* Anteprima Logo */}
                   <div className="flex-shrink-0">
                     {clubSettings.logoUrl ? (
                       <div className="relative group">
                         <div className="w-40 h-40 border-2 border-gray-300 dark:border-gray-600 rounded-2xl overflow-hidden bg-gray-50 dark:bg-gray-900 flex items-center justify-center shadow-lg">
-                          <img 
-                            src={clubSettings.logoUrl} 
-                            alt="Logo circolo" 
+                          <img
+                            src={clubSettings.logoUrl}
+                            alt="Logo circolo"
                             className="max-w-full max-h-full object-contain"
                           />
                         </div>
@@ -625,22 +626,42 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                             className="absolute -top-2 -right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg"
                             title="Rimuovi logo"
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
                             </svg>
                           </button>
                         )}
                       </div>
                     ) : (
                       <div className="w-40 h-40 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center text-gray-400">
-                        <svg className="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <svg
+                          className="w-12 h-12 mb-2"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
                         </svg>
                         <span className="text-sm">Nessun logo</span>
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Controlli Upload */}
                   <div className="flex-1 space-y-4">
                     <div className="flex flex-wrap items-center gap-3">
@@ -657,12 +678,22 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                         disabled={uploading || clubSettings.loading}
                         className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                          />
                         </svg>
                         <span>{uploading ? 'Caricamento...' : 'Seleziona Logo'}</span>
                       </button>
-                      
+
                       {logoFile && (
                         <button
                           type="button"
@@ -670,25 +701,47 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                           disabled={uploading || clubSettings.loading}
                           className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
                           </svg>
                           <span>Salva Logo</span>
                         </button>
                       )}
                     </div>
-                    
+
                     {logoFile && (
                       <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-xl p-3">
                         <p className="text-sm text-green-700 dark:text-green-400 flex items-center space-x-2">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
                           </svg>
-                          <span>Nuovo logo selezionato: <strong>{logoFile.name}</strong></span>
+                          <span>
+                            Nuovo logo selezionato: <strong>{logoFile.name}</strong>
+                          </span>
                         </p>
                       </div>
                     )}
-                    
+
                     <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-4">
                       <p className="text-xs font-semibold text-blue-800 dark:text-blue-300 mb-2">
                         💡 Suggerimenti per il logo:
@@ -711,7 +764,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
                 disabled={clubSettings.loading}
               >
-                {clubSettings.loading ? "Salvando..." : "Salva Impostazioni"}
+                {clubSettings.loading ? 'Salvando...' : 'Salva Impostazioni'}
               </button>
             </div>
           </div>
@@ -728,25 +781,30 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                   Gestione Tipologie Campo
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Definisci le tipologie di campo disponibili nel tuo circolo (es. Indoor, Outdoor, Covered)
+                  Definisci le tipologie di campo disponibili nel tuo circolo (es. Indoor, Outdoor,
+                  Covered)
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => {
-                  const newType = prompt("Nome della nuova tipologia:");
+                  const newType = prompt('Nome della nuova tipologia:');
                   if (newType && newType.trim()) {
                     const trimmedType = newType.trim();
-                    setClubSettings(prev => {
+                    setClubSettings((prev) => {
                       const currentTypes = prev.courtTypes || [];
                       // Check if type already exists (case-insensitive)
-                      if (currentTypes.some(type => type.toLowerCase() === trimmedType.toLowerCase())) {
+                      if (
+                        currentTypes.some(
+                          (type) => type.toLowerCase() === trimmedType.toLowerCase()
+                        )
+                      ) {
                         alert(`La tipologia "${trimmedType}" esiste già!`);
                         return prev;
                       }
                       return {
                         ...prev,
-                        courtTypes: [...currentTypes, trimmedType]
+                        courtTypes: [...currentTypes, trimmedType],
                       };
                     });
                   }
@@ -763,16 +821,14 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                   key={index}
                   className="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 p-3 rounded-xl border border-blue-200/30 dark:border-blue-700/30"
                 >
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    {type}
-                  </span>
+                  <span className="font-medium text-gray-900 dark:text-white">{type}</span>
                   <button
                     type="button"
                     onClick={() => {
                       if (confirm(`Rimuovere la tipologia "${type}"?`)) {
-                        setClubSettings(prev => ({
+                        setClubSettings((prev) => ({
                           ...prev,
-                          courtTypes: prev.courtTypes.filter((_, i) => i !== index)
+                          courtTypes: prev.courtTypes.filter((_, i) => i !== index),
                         }));
                       }
                     }}
@@ -789,7 +845,9 @@ export default function ClubAdminProfile({ T, club, clubId }) {
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 <div className="text-2xl mb-2">🏓</div>
                 <div>Nessuna tipologia definita</div>
-                <div className="text-sm">Aggiungi almeno una tipologia per classificare i tuoi campi</div>
+                <div className="text-sm">
+                  Aggiungi almeno una tipologia per classificare i tuoi campi
+                </div>
               </div>
             )}
 
@@ -800,7 +858,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
                 disabled={clubSettings.loading}
               >
-                {clubSettings.loading ? "💾 Salvando..." : "💾 Salva Tipologie"}
+                {clubSettings.loading ? '💾 Salvando...' : '💾 Salva Tipologie'}
               </button>
             </div>
           </div>
@@ -816,46 +874,58 @@ export default function ClubAdminProfile({ T, club, clubId }) {
               className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-2xl border border-blue-200/30 dark:border-blue-700/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
             >
               <div className="text-2xl mb-2">📅</div>
-              <div className="font-semibold text-gray-900 dark:text-white">Gestione Prenotazioni</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Gestisci le prenotazioni dei campi</div>
+              <div className="font-semibold text-gray-900 dark:text-white">
+                Gestione Prenotazioni
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Gestisci le prenotazioni dei campi
+              </div>
             </button>
-            
+
             <button
               onClick={() => navigate(`/club/${clubId}/admin/lessons`)}
               className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 rounded-2xl border border-green-200/30 dark:border-green-700/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
             >
               <div className="text-2xl mb-2">🎾</div>
               <div className="font-semibold text-gray-900 dark:text-white">Lezioni e Maestri</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Gestisci lezioni e istruttori</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Gestisci lezioni e istruttori
+              </div>
             </button>
-            
+
             <button
               onClick={() => navigate(`/club/${clubId}/admin/members`)}
               className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 rounded-2xl border border-purple-200/30 dark:border-purple-700/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
             >
               <div className="text-2xl mb-2">👥</div>
               <div className="font-semibold text-gray-900 dark:text-white">Membri</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Gestisci i membri del circolo</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Gestisci i membri del circolo
+              </div>
             </button>
-            
+
             <button
               onClick={() => navigate(`/club/${clubId}/admin/courts`)}
               className="p-4 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 rounded-2xl border border-orange-200/30 dark:border-orange-700/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
             >
               <div className="text-2xl mb-2">🏟️</div>
               <div className="font-semibold text-gray-900 dark:text-white">Campi</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Gestisci i campi da padel</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Gestisci i campi da padel
+              </div>
             </button>
-            
+
             <button
               onClick={() => navigate(`/club/${clubId}/admin/settings`)}
               className="p-4 bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/30 dark:to-amber-900/30 rounded-2xl border border-yellow-200/30 dark:border-yellow-700/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
             >
               <div className="text-2xl mb-2">⚙️</div>
               <div className="font-semibold text-gray-900 dark:text-white">Impostazioni</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Configura tariffe e orari</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Configura tariffe e orari
+              </div>
             </button>
-            
+
             <button
               onClick={() => navigate(`/club/${clubId}/admin/reports`)}
               className="p-4 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-900/30 dark:to-cyan-900/30 rounded-2xl border border-teal-200/30 dark:border-teal-700/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"

@@ -28,7 +28,7 @@ export const initializeGA = () => {
 
     // Initialize gtag
     window.dataLayer = window.dataLayer || [];
-    window.gtag = function() {
+    window.gtag = function () {
       window.dataLayer.push(arguments);
     };
 
@@ -39,7 +39,7 @@ export const initializeGA = () => {
       send_page_view: false, // We'll handle page views manually
       anonymize_ip: true,
       allow_google_signals: false, // GDPR compliance
-      cookie_flags: 'SameSite=None;Secure'
+      cookie_flags: 'SameSite=None;Secure',
     });
 
     if (DEBUG_MODE) {
@@ -61,7 +61,7 @@ export const trackPageView = (page_title, page_location) => {
       page_title,
       page_location,
       page_referrer: document.referrer,
-      engagement_time_msec: 100
+      engagement_time_msec: 100,
     });
 
     if (DEBUG_MODE) {
@@ -81,7 +81,7 @@ export const trackEvent = (event_name, parameters = {}) => {
   try {
     window.gtag('event', event_name, {
       ...parameters,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     if (DEBUG_MODE) {
@@ -100,7 +100,7 @@ export const setUserProperties = (properties) => {
 
   try {
     window.gtag('config', GA_MEASUREMENT_ID, {
-      user_properties: properties
+      user_properties: properties,
     });
 
     if (DEBUG_MODE) {
@@ -119,7 +119,7 @@ export const setUserId = (userId) => {
 
   try {
     window.gtag('config', GA_MEASUREMENT_ID, {
-      user_id: userId
+      user_id: userId,
     });
 
     if (DEBUG_MODE) {
@@ -149,7 +149,7 @@ export const trackAuth = {
   signupSuccess: (method, userId) => {
     trackEvent('sign_up', { method });
     setUserId(userId);
-  }
+  },
 };
 
 /**
@@ -157,19 +157,19 @@ export const trackAuth = {
  */
 export const trackBooking = {
   createAttempt: (court_type) => trackEvent('booking_create_attempt', { court_type }),
-  createSuccess: (booking_id, court_type, duration, cost) => 
-    trackEvent('booking_created', { 
-      booking_id, 
-      court_type, 
+  createSuccess: (booking_id, court_type, duration, cost) =>
+    trackEvent('booking_created', {
+      booking_id,
+      court_type,
       duration_minutes: duration,
       value: cost,
-      currency: 'EUR'
+      currency: 'EUR',
     }),
-  createFailed: (error_reason, court_type) => 
+  createFailed: (error_reason, court_type) =>
     trackEvent('booking_create_failed', { error_reason, court_type }),
   cancel: (booking_id, reason) => trackEvent('booking_cancelled', { booking_id, reason }),
   view: (booking_id) => trackEvent('booking_viewed', { booking_id }),
-  edit: (booking_id) => trackEvent('booking_edited', { booking_id })
+  edit: (booking_id) => trackEvent('booking_edited', { booking_id }),
 };
 
 /**
@@ -178,10 +178,10 @@ export const trackBooking = {
 export const trackNavigation = {
   menuClick: (menu_item) => trackEvent('menu_click', { menu_item }),
   tabChange: (tab_name, section) => trackEvent('tab_change', { tab_name, section }),
-  searchPerformed: (search_term, results_count) => 
+  searchPerformed: (search_term, results_count) =>
     trackEvent('search', { search_term, results_count }),
-  filterApplied: (filter_type, filter_value) => 
-    trackEvent('filter_applied', { filter_type, filter_value })
+  filterApplied: (filter_type, filter_value) =>
+    trackEvent('filter_applied', { filter_type, filter_value }),
 };
 
 /**
@@ -195,31 +195,30 @@ export const trackAdmin = {
   },
   actionPerformed: (action, target) => trackEvent('admin_action', { action, target }),
   reportGenerated: (report_type) => trackEvent('admin_report_generated', { report_type }),
-  settingChanged: (setting_name, new_value) => 
-    trackEvent('admin_setting_changed', { setting_name, new_value })
+  settingChanged: (setting_name, new_value) =>
+    trackEvent('admin_setting_changed', { setting_name, new_value }),
 };
 
 /**
  * Performance Events
  */
 export const trackPerformance = {
-  pageLoadTime: (page, load_time_ms) => 
-    trackEvent('page_performance', { page, load_time_ms }),
+  pageLoadTime: (page, load_time_ms) => trackEvent('page_performance', { page, load_time_ms }),
   apiResponse: (endpoint, response_time_ms, status_code) =>
     trackEvent('api_performance', { endpoint, response_time_ms, status_code }),
   errorOccurred: (error_type, error_message, page) =>
-    trackEvent('error_occurred', { error_type, error_message, page })
+    trackEvent('error_occurred', { error_type, error_message, page }),
 };
 
 /**
  * User Engagement Events
  */
 export const trackEngagement = {
-  timeOnPage: (page, time_seconds) => 
+  timeOnPage: (page, time_seconds) =>
     trackEvent('page_engagement', { page, engagement_time: time_seconds }),
   buttonClick: (button_name, page) => trackEvent('button_click', { button_name, page }),
   formSubmit: (form_name, success) => trackEvent('form_submit', { form_name, success }),
-  fileDownload: (file_name, file_type) => trackEvent('file_download', { file_name, file_type })
+  fileDownload: (file_name, file_type) => trackEvent('file_download', { file_name, file_type }),
 };
 
 /**
@@ -229,16 +228,16 @@ export const trackBusiness = {
   courtUtilization: (court_id, utilization_percent, time_period) =>
     trackEvent('court_utilization', { court_id, utilization_percent, time_period }),
   revenueGenerated: (amount, source, period) =>
-    trackEvent('revenue_generated', { 
-      value: amount, 
-      currency: 'EUR', 
-      source, 
-      period 
+    trackEvent('revenue_generated', {
+      value: amount,
+      currency: 'EUR',
+      source,
+      period,
     }),
   userRetention: (user_id, days_since_last_visit) =>
     trackEvent('user_retention', { user_id, days_since_last_visit }),
   conversionFunnel: (step, funnel_name, success) =>
-    trackEvent('conversion_step', { step, funnel_name, success })
+    trackEvent('conversion_step', { step, funnel_name, success }),
 };
 
 // =============================================================================
@@ -255,7 +254,7 @@ export const useGAPageTracking = () => {
   try {
     const currentPath = window.location.pathname;
     const currentTitle = document.title || 'PlaySport';
-    
+
     trackPageView(currentTitle, currentPath);
   } catch (error) {
     console.error('❌ GA4 page tracking failed:', error);
@@ -287,21 +286,15 @@ export const ConversionFunnels = {
     name: 'booking_flow',
     steps: [
       'court_selection',
-      'time_selection', 
+      'time_selection',
       'player_selection',
       'payment_info',
-      'booking_confirmation'
-    ]
+      'booking_confirmation',
+    ],
   },
   USER_ONBOARDING: {
     name: 'user_onboarding',
-    steps: [
-      'landing_page',
-      'signup_form',
-      'email_verification',
-      'profile_setup',
-      'first_booking'
-    ]
+    steps: ['landing_page', 'signup_form', 'email_verification', 'profile_setup', 'first_booking'],
   },
   ADMIN_WORKFLOW: {
     name: 'admin_workflow',
@@ -310,9 +303,9 @@ export const ConversionFunnels = {
       'dashboard_view',
       'action_selection',
       'data_modification',
-      'changes_saved'
-    ]
-  }
+      'changes_saved',
+    ],
+  },
 };
 
 /**
@@ -322,7 +315,7 @@ export const trackFunnelStep = (funnelName, stepName, additionalData = {}) => {
   trackEvent('funnel_step', {
     funnel_name: funnelName,
     step_name: stepName,
-    ...additionalData
+    ...additionalData,
   });
 };
 
@@ -333,7 +326,7 @@ export const trackFunnelCompletion = (funnelName, totalSteps, completionTime) =>
   trackEvent('funnel_completed', {
     funnel_name: funnelName,
     total_steps: totalSteps,
-    completion_time_seconds: completionTime
+    completion_time_seconds: completionTime,
   });
 };
 
@@ -353,14 +346,14 @@ export const hasAnalyticsConsent = () => {
  */
 export const setAnalyticsConsent = (consent) => {
   localStorage.setItem('analytics_consent', consent.toString());
-  
+
   if (consent) {
     initializeGA();
   } else {
     // Disable analytics
     if (window.gtag) {
       window.gtag('consent', 'update', {
-        analytics_storage: 'denied'
+        analytics_storage: 'denied',
       });
     }
   }
@@ -388,5 +381,5 @@ export default {
   trackFunnelStep,
   trackFunnelCompletion,
   hasAnalyticsConsent,
-  setAnalyticsConsent
+  setAnalyticsConsent,
 };

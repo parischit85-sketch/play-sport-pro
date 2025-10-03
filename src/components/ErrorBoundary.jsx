@@ -1,9 +1,9 @@
 // =============================================
 // FILE: src/components/ErrorBoundary.jsx
 // =============================================
-import React from "react";
-import * as Sentry from '@sentry/react';
-import { trackError } from '../lib/sentry';
+import React from 'react';
+// import * as Sentry from '@sentry/react';
+// import { trackError } from '../lib/sentry';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -11,7 +11,7 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_error) {
     return { hasError: true };
   }
 
@@ -23,23 +23,22 @@ class ErrorBoundary extends React.Component {
 
     // Log error to console in development
     if (import.meta.env.DEV) {
-      console.error("ErrorBoundary caught an error:", error, errorInfo);
+      console.error('ErrorBoundary caught an error:', error, errorInfo);
     }
 
-    // Track error with Sentry
-    trackError(error, {
+    // Track error with console
+    console.error('ErrorBoundary caught an error:', error, {
       errorInfo,
       component: 'ErrorBoundary',
       componentStack: errorInfo.componentStack,
-      errorBoundary: true
+      errorBoundary: true,
     });
 
-    // Set additional context for this error
-    Sentry.withScope((scope) => {
-      scope.setTag('error_boundary', true);
-      scope.setLevel('error');
-      scope.setContext('errorInfo', errorInfo);
-      Sentry.captureException(error);
+    // Log additional context for this error
+    console.error('Error context:', {
+      error_boundary: true,
+      level: 'error',
+      errorInfo,
     });
   }
 
@@ -51,9 +50,7 @@ class ErrorBoundary extends React.Component {
         return (
           <Fallback
             error={this.state.error}
-            resetError={() =>
-              this.setState({ hasError: false, error: null, errorInfo: null })
-            }
+            resetError={() => this.setState({ hasError: false, error: null, errorInfo: null })}
           />
         );
       }
@@ -87,8 +84,7 @@ class ErrorBoundary extends React.Component {
 
             <div className="mb-4">
               <p className="text-sm text-gray-600">
-                Si è verificato un errore imprevisto. Prova a ricaricare la
-                pagina.
+                Si è verificato un errore imprevisto. Prova a ricaricare la pagina.
               </p>
 
               {import.meta.env.DEV && this.state.error && (

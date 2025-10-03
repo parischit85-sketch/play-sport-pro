@@ -12,7 +12,7 @@ export async function getInstructors(clubId) {
   try {
     // Mock data - sostituire con chiamata API reale
     const today = new Date().toISOString().split('T')[0];
-    
+
     const mockInstructors = [
       {
         id: '1',
@@ -25,9 +25,9 @@ export async function getInstructors(clubId) {
         experience: 8,
         hourlyRate: 45,
         availability: {
-          [today]: ['09:00-12:00', '14:00-18:00']
+          [today]: ['09:00-12:00', '14:00-18:00'],
         },
-        bio: 'Ex giocatore professionista, ora dedicato all\'insegnamento'
+        bio: "Ex giocatore professionista, ora dedicato all'insegnamento",
       },
       {
         id: '2',
@@ -40,9 +40,9 @@ export async function getInstructors(clubId) {
         experience: 5,
         hourlyRate: 35,
         availability: {
-          [today]: ['10:00-13:00', '15:00-19:00']
+          [today]: ['10:00-13:00', '15:00-19:00'],
         },
-        bio: 'Specializzata nell\'insegnamento ai giovani atleti'
+        bio: "Specializzata nell'insegnamento ai giovani atleti",
       },
       {
         id: '3',
@@ -55,15 +55,15 @@ export async function getInstructors(clubId) {
         experience: 3,
         hourlyRate: 30,
         availability: {
-          [today]: ['08:00-12:00', '16:00-20:00']
+          [today]: ['08:00-12:00', '16:00-20:00'],
         },
-        bio: 'Appassionato dell\'insegnamento base del tennis'
-      }
+        bio: "Appassionato dell'insegnamento base del tennis",
+      },
     ];
 
     // Simula una chiamata async
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     return mockInstructors;
   } catch (error) {
     console.error('Error loading instructors:', error);
@@ -85,7 +85,7 @@ export async function createInstructor(clubId, instructorData) {
       clubId,
       ...instructorData,
       createdAt: new Date().toISOString(),
-      availability: {}
+      availability: {},
     };
 
     console.log('Mock: Creating instructor', newInstructor);
@@ -110,7 +110,7 @@ export async function updateInstructor(clubId, instructorId, updates) {
       id: instructorId,
       clubId,
       ...updates,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     console.log('Mock: Updating instructor', updatedInstructor);

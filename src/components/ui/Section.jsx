@@ -1,15 +1,9 @@
 // =============================================
 // FILE: src/components/ui/Section.jsx
 // =============================================
-import React from "react";
+import React from 'react';
 
-export default function Section({
-  title,
-  right,
-  children,
-  T,
-  variant = "default",
-}) {
+export default function Section({ title, right, children, T, variant = 'default' }) {
   // Varianti per diversi tipi di sezioni
   const variants = {
     default: T.card,

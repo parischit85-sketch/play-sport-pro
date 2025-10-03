@@ -1,22 +1,17 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import Section from "@ui/Section.jsx";
-import Badge from "@ui/Badge.jsx";
-import { createDSClasses } from "@lib/design-system.js";
-import { floorToSlot, addMinutes, sameDay, overlaps } from "@lib/date.js";
-import { computePrice } from "@lib/pricing.js";
-import {
-  useUnifiedBookings,
-  useUserBookings,
-} from "@hooks/useUnifiedBookings.js";
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import Section from '@ui/Section.jsx';
+import Badge from '@ui/Badge.jsx';
+import { createDSClasses } from '@lib/design-system.js';
+import { floorToSlot, addMinutes, sameDay, overlaps } from '@lib/date.js';
+import { computePrice } from '@lib/pricing.js';
+import { useUnifiedBookings, useUserBookings } from '@hooks/useUnifiedBookings.js';
 import {
   wouldCreateHalfHourHole,
   isDurationBookable,
   isSlotAvailable as baseIsSlotAvailable,
-} from "@services/unified-booking-service.js";
+} from '@services/unified-booking-service.js';
 
 function BookingField({ user, T, state, setState }) {
-
-
   const ds = createDSClasses(T);
 
   // Use unified booking service with ALL bookings (court + lesson) for availability checks
@@ -28,8 +23,6 @@ function BookingField({ user, T, state, setState }) {
     autoLoadUser: false,
     autoLoadLessons: true,
   });
-
-
 
   const { userBookings, activeUserBookings } = useUserBookings();
 
@@ -43,18 +36,18 @@ function BookingField({ user, T, state, setState }) {
   const courts = Array.isArray(state?.courts) ? state.courts : [];
 
   // UI State
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
   const [selectedCourt, setSelectedCourt] = useState(null);
   const [duration, setDuration] = useState(() =>
-    cfg.defaultDurations?.includes(90) ? 90 : cfg.defaultDurations?.[0] || 60,
+    cfg.defaultDurations?.includes(90) ? 90 : cfg.defaultDurations?.[0] || 60
   );
   const [lighting, setLighting] = useState(false);
   const [heating, setHeating] = useState(false);
-  const [userPhone, setUserPhone] = useState("");
-  const [notes, setNotes] = useState("");
+  const [userPhone, setUserPhone] = useState('');
+  const [notes, setNotes] = useState('');
   const [additionalPlayers, setAdditionalPlayers] = useState([]);
-  const [newPlayerName, setNewPlayerName] = useState("");
+  const [newPlayerName, setNewPlayerName] = useState('');
   const [expandedBookings, setExpandedBookings] = useState(false);
   const [selectedBookingDetails, setSelectedBookingDetails] = useState(null);
   const [showPastBookings, setShowPastBookings] = useState(false);
@@ -67,45 +60,32 @@ function BookingField({ user, T, state, setState }) {
       if (!date || !time || !courtId) return false;
 
       console.log(
-        `🏟️ [BOOKING FIELD] Checking slot availability: ${courtId} on ${date} at ${time} for ${checkDuration}min`,
+        `🏟️ [BOOKING FIELD] Checking slot availability: ${courtId} on ${date} at ${time} for ${checkDuration}min`
       );
 
       // Convert ALL bookings (court + lesson) to the format expected by unified service
       const existingBookings = allBookings.map((booking) => ({
         courtId: booking.courtId,
-        date:
-          booking.date || (booking.start ? booking.start.split("T")[0] : ""),
-        time:
-          booking.time ||
-          (booking.start ? booking.start.split("T")[1].substring(0, 5) : ""),
+        date: booking.date || (booking.start ? booking.start.split('T')[0] : ''),
+        time: booking.time || (booking.start ? booking.start.split('T')[1].substring(0, 5) : ''),
         duration: booking.duration || 60,
-        status: booking.status || "confirmed",
+        status: booking.status || 'confirmed',
       }));
 
       console.log(
-        `📊 [BOOKING FIELD] Total allBookings: ${allBookings.length}, converted: ${existingBookings.length}`,
+        `📊 [BOOKING FIELD] Total allBookings: ${allBookings.length}, converted: ${existingBookings.length}`
       );
-      console.log(
-        `📋 [BOOKING FIELD] Existing bookings (including lessons):`,
-        existingBookings,
-      );
+      console.log(`📋 [BOOKING FIELD] Existing bookings (including lessons):`, existingBookings);
 
       // Use unified service with hole prevention enabled for user bookings
-      const result = isDurationBookable(
-        courtId,
-        date,
-        time,
-        checkDuration,
-        existingBookings,
-        true,
-      );
+      const result = isDurationBookable(courtId, date, time, checkDuration, existingBookings, true);
       console.log(
-        `🎯 [BOOKING FIELD] Slot ${courtId} ${date} ${time} (${checkDuration}min) → ${result ? "✅ AVAILABLE" : "❌ BLOCKED"}`,
+        `🎯 [BOOKING FIELD] Slot ${courtId} ${date} ${time} (${checkDuration}min) → ${result ? '✅ AVAILABLE' : '❌ BLOCKED'}`
       );
 
       return result;
     },
-    [allBookings],
+    [allBookings]
   );
 
   // Helper function to check if a duration is bookable (checks hole prevention)
@@ -113,25 +93,22 @@ function BookingField({ user, T, state, setState }) {
     (dur) => {
       if (!selectedDate || !selectedTime || !selectedCourt) {
         console.log(
-          `⏳ [DURATION CHECK] Skipping duration check for ${dur}min - missing selection`,
+          `⏳ [DURATION CHECK] Skipping duration check for ${dur}min - missing selection`
         );
         return true;
       }
 
       console.log(
-        `🕐 [DURATION CHECK] Checking duration ${dur}min for ${selectedCourt.id} on ${selectedDate} at ${selectedTime}`,
+        `🕐 [DURATION CHECK] Checking duration ${dur}min for ${selectedCourt.id} on ${selectedDate} at ${selectedTime}`
       );
 
       // Convert ALL bookings (court + lesson) to the format expected by unified service
       const existingBookings = allBookings.map((booking) => ({
         courtId: booking.courtId,
-        date:
-          booking.date || (booking.start ? booking.start.split("T")[0] : ""),
-        time:
-          booking.time ||
-          (booking.start ? booking.start.split("T")[1].substring(0, 5) : ""),
+        date: booking.date || (booking.start ? booking.start.split('T')[0] : ''),
+        time: booking.time || (booking.start ? booking.start.split('T')[1].substring(0, 5) : ''),
         duration: booking.duration || 60,
-        status: booking.status || "confirmed",
+        status: booking.status || 'confirmed',
       }));
 
       // Use unified service with hole prevention enabled for user bookings
@@ -141,50 +118,44 @@ function BookingField({ user, T, state, setState }) {
         selectedTime,
         dur,
         existingBookings,
-        true,
+        true
       );
       console.log(
-        `🎯 [DURATION CHECK] Duration ${dur}min → ${result ? "✅ AVAILABLE" : "❌ BLOCKED"}`,
+        `🎯 [DURATION CHECK] Duration ${dur}min → ${result ? '✅ AVAILABLE' : '❌ BLOCKED'}`
       );
 
       return result;
     },
-    [selectedDate, selectedTime, selectedCourt, allBookings],
+    [selectedDate, selectedTime, selectedCourt, allBookings]
   );
 
   // Auto-adjust duration if current selection becomes unavailable
   useEffect(() => {
     if (selectedDate && selectedTime && selectedCourt) {
       console.log(
-        `🎯 [BOOKING FIELD] Selection changed - Date: ${selectedDate}, Time: ${selectedTime}, Court: ${selectedCourt.id}, Duration: ${duration}min`,
+        `🎯 [BOOKING FIELD] Selection changed - Date: ${selectedDate}, Time: ${selectedTime}, Court: ${selectedCourt.id}, Duration: ${duration}min`
       );
 
       const isCurrentDurationAvailable = isDurationAvailable(duration);
       if (!isCurrentDurationAvailable) {
         console.log(
-          `⚠️ [BOOKING FIELD] Current duration ${duration}min is not available, searching for alternatives...`,
+          `⚠️ [BOOKING FIELD] Current duration ${duration}min is not available, searching for alternatives...`
         );
 
         // Find first available duration
-        const availableDurations = (
-          cfg.defaultDurations || [60, 90, 120]
-        ).filter(isDurationAvailable);
-        console.log(
-          `🔍 [BOOKING FIELD] Available durations: [${availableDurations.join(", ")}]`,
+        const availableDurations = (cfg.defaultDurations || [60, 90, 120]).filter(
+          isDurationAvailable
         );
+        console.log(`🔍 [BOOKING FIELD] Available durations: [${availableDurations.join(', ')}]`);
 
         if (availableDurations.length > 0) {
-          console.log(
-            `✅ [BOOKING FIELD] Auto-selecting duration: ${availableDurations[0]}min`,
-          );
+          console.log(`✅ [BOOKING FIELD] Auto-selecting duration: ${availableDurations[0]}min`);
           setDuration(availableDurations[0]);
         } else {
           console.log(`❌ [BOOKING FIELD] No available durations found!`);
         }
       } else {
-        console.log(
-          `✅ [BOOKING FIELD] Current duration ${duration}min is available`,
-        );
+        console.log(`✅ [BOOKING FIELD] Current duration ${duration}min is available`);
       }
     }
   }, [
@@ -201,8 +172,8 @@ function BookingField({ user, T, state, setState }) {
     if (!selectedDate) {
       const today = new Date();
       const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, "0");
-      const day = String(today.getDate()).padStart(2, "0");
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
       setSelectedDate(`${year}-${month}-${day}`);
     }
   }, [selectedDate]);
@@ -215,12 +186,12 @@ function BookingField({ user, T, state, setState }) {
     const startHour = cfg.dayStartHour || 8;
     const endHour = cfg.dayEndHour || 23;
     const slotMinutes = cfg.slotMinutes || 30;
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split('T')[0];
     const now = new Date();
 
     for (let hour = startHour; hour < endHour; hour++) {
       for (let minute = 0; minute < 60; minute += slotMinutes) {
-        const timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 
         // Skip past times if booking for today
         if (selectedDate === today) {
@@ -228,12 +199,7 @@ function BookingField({ user, T, state, setState }) {
           if (slotDateTime <= now) continue;
         }
 
-        const available = isSlotAvailable(
-          selectedDate,
-          timeString,
-          selectedCourt.id,
-          duration,
-        );
+        const available = isSlotAvailable(selectedDate, timeString, selectedCourt.id, duration);
 
         slots.push({
           time: timeString,
@@ -253,21 +219,21 @@ function BookingField({ user, T, state, setState }) {
       const d = new Date();
       d.setDate(d.getDate() + i);
       const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
       const localDateStr = `${year}-${month}-${day}`;
 
       out.push({
         date: localDateStr,
         label:
           i === 0
-            ? "Oggi"
+            ? 'Oggi'
             : i === 1
-              ? "Domani"
-              : d.toLocaleDateString("it-IT", {
-                  weekday: "short",
-                  day: "numeric",
-                  month: "short",
+              ? 'Domani'
+              : d.toLocaleDateString('it-IT', {
+                  weekday: 'short',
+                  day: 'numeric',
+                  month: 'short',
                 }),
       });
     }
@@ -281,24 +247,22 @@ function BookingField({ user, T, state, setState }) {
 
       if (!user) {
         setMessage({
-          type: "error",
-          text: "Devi essere autenticato per prenotare.",
+          type: 'error',
+          text: 'Devi essere autenticato per prenotare.',
         });
         return;
       }
 
       if (!selectedDate || !selectedTime || !selectedCourt) {
         setMessage({
-          type: "error",
-          text: "Compila tutti i campi obbligatori.",
+          type: 'error',
+          text: 'Compila tutti i campi obbligatori.',
         });
         return;
       }
 
-      if (
-        !isSlotAvailable(selectedDate, selectedTime, selectedCourt.id, duration)
-      ) {
-        setMessage({ type: "error", text: "Slot non disponibile." });
+      if (!isSlotAvailable(selectedDate, selectedTime, selectedCourt.id, duration)) {
+        setMessage({ type: 'error', text: 'Slot non disponibile.' });
         return;
       }
 
@@ -313,7 +277,7 @@ function BookingField({ user, T, state, setState }) {
           cfg,
           { lighting, heating },
           selectedCourt.id,
-          courts,
+          courts
         );
 
         const bookingData = {
@@ -325,38 +289,35 @@ function BookingField({ user, T, state, setState }) {
           lighting,
           heating,
           price,
-          players: [
-            user.displayName || user.email,
-            ...additionalPlayers.map((p) => p.name || p),
-          ],
+          players: [user.displayName || user.email, ...additionalPlayers.map((p) => p.name || p)],
           notes: notes.trim(),
           userPhone: userPhone.trim(),
-          type: "court",
+          type: 'court',
         };
 
         await createUnifiedBooking(bookingData);
 
         setMessage({
-          type: "success",
-          text: "Prenotazione creata con successo!",
+          type: 'success',
+          text: 'Prenotazione creata con successo!',
         });
 
         // Reset form
-        setSelectedTime("");
+        setSelectedTime('');
         setSelectedCourt(null);
         setLighting(false);
         setHeating(false);
-        setNotes("");
+        setNotes('');
         setAdditionalPlayers([]);
-        setNewPlayerName("");
+        setNewPlayerName('');
 
         // Clear message after 3 seconds
         setTimeout(() => setMessage(null), 3000);
       } catch (error) {
-        console.error("Error creating booking:", error);
+        console.error('Error creating booking:', error);
         setMessage({
-          type: "error",
-          text: "Errore durante la creazione della prenotazione.",
+          type: 'error',
+          text: 'Errore durante la creazione della prenotazione.',
         });
       } finally {
         setIsSubmitting(false);
@@ -377,7 +338,7 @@ function BookingField({ user, T, state, setState }) {
       createUnifiedBooking,
       cfg,
       courts,
-    ],
+    ]
   );
 
   // Handle adding additional players
@@ -385,7 +346,7 @@ function BookingField({ user, T, state, setState }) {
     if (newPlayerName.trim() && additionalPlayers.length < 3) {
       const newPlayer = { id: Date.now(), name: newPlayerName.trim() };
       setAdditionalPlayers((prev) => [...prev, newPlayer]);
-      setNewPlayerName("");
+      setNewPlayerName('');
     }
   }, [newPlayerName, additionalPlayers]);
 
@@ -403,7 +364,7 @@ function BookingField({ user, T, state, setState }) {
           cfg,
           { lighting, heating },
           selectedCourt.id,
-          courts,
+          courts
         )
       : 0;
 
@@ -417,7 +378,7 @@ function BookingField({ user, T, state, setState }) {
 
     setSelectedBookingDetails({
       ...booking,
-      courtName: court?.name || booking.courtName || "Campo",
+      courtName: court?.name || booking.courtName || 'Campo',
       courtFeatures: court?.features || [],
       canCancel,
       hoursUntil,
@@ -432,10 +393,7 @@ function BookingField({ user, T, state, setState }) {
         const bookingStart = new Date(`${booking.date}T${booking.time}:00`);
         return bookingStart < now;
       })
-      .sort(
-        (a, b) =>
-          new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`),
-      );
+      .sort((a, b) => new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`));
   }, [userBookings]);
 
   if (bookingsLoading) {
@@ -454,8 +412,8 @@ function BookingField({ user, T, state, setState }) {
       {/* Debug Mode Indicator */}
       {import.meta.env.DEV && (
         <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-md text-sm">
-          🔍 <strong>Debug Mode Attivo</strong> - Regola prevenzione buchi 30min
-          attiva. Controlla la console del browser per log dettagliati.
+          🔍 <strong>Debug Mode Attivo</strong> - Regola prevenzione buchi 30min attiva. Controlla
+          la console del browser per log dettagliati.
         </div>
       )}
 
@@ -489,7 +447,7 @@ function BookingField({ user, T, state, setState }) {
                     onClick={() => setExpandedBookings(!expandedBookings)}
                     className={`text-sm px-3 py-1 rounded-md transition-all ${T.primaryBg} ${T.primaryText}`}
                   >
-                    {expandedBookings ? "Mostra meno" : "Mostra tutte"}
+                    {expandedBookings ? 'Mostra meno' : 'Mostra tutte'}
                   </button>
                 )}
               </div>
@@ -497,9 +455,7 @@ function BookingField({ user, T, state, setState }) {
 
             {activeUserBookings.length === 0 ? (
               <div className="text-center py-4">
-                <p className="text-gray-600 text-sm mb-2">
-                  Non hai prenotazioni attive
-                </p>
+                <p className="text-gray-600 text-sm mb-2">Non hai prenotazioni attive</p>
                 {pastUserBookings.length > 0 && (
                   <button
                     onClick={() => setShowPastBookings(true)}
@@ -511,71 +467,60 @@ function BookingField({ user, T, state, setState }) {
               </div>
             ) : (
               <div className="space-y-2">
-                {(expandedBookings
-                  ? activeUserBookings
-                  : activeUserBookings.slice(0, 3)
-                ).map((booking) => {
-                  const court = courts.find((c) => c.id === booking.courtId);
+                {(expandedBookings ? activeUserBookings : activeUserBookings.slice(0, 3)).map(
+                  (booking) => {
+                    const court = courts.find((c) => c.id === booking.courtId);
 
-                  return (
-                    <div
-                      key={booking.id}
-                      className={`${T.cardBg} ${T.border} p-3 rounded-md cursor-pointer hover:shadow-md transition-all`}
-                      onClick={() => showBookingDetails(booking)}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-sm">
-                              {court?.name || booking.courtName || "Campo"}
-                            </span>
-                            <Badge variant="primary" size="xs" T={T}>
-                              {booking.players?.length || 1} giocatori
-                            </Badge>
-                          </div>
-                          <div className="text-xs text-gray-600">
-                            {new Date(booking.date).toLocaleDateString(
-                              "it-IT",
-                              {
-                                weekday: "short",
-                                day: "numeric",
-                                month: "short",
-                              },
-                            )}{" "}
-                            alle {booking.time} • {booking.duration}min •{" "}
-                            {booking.price}€
-                          </div>
-                          {booking.players && booking.players.length > 1 && (
-                            <div className="text-xs text-gray-500 mt-1">
-                              Con:{" "}
-                              {booking.players
-                                .filter(
-                                  (p) =>
-                                    p !== user.email && p !== user.displayName,
-                                )
-                                .slice(0, 2)
-                                .join(", ")}
-                              {booking.players.length > 3 && "..."}
+                    return (
+                      <div
+                        key={booking.id}
+                        className={`${T.cardBg} ${T.border} p-3 rounded-md cursor-pointer hover:shadow-md transition-all`}
+                        onClick={() => showBookingDetails(booking)}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-medium text-sm">
+                                {court?.name || booking.courtName || 'Campo'}
+                              </span>
+                              <Badge variant="primary" size="xs" T={T}>
+                                {booking.players?.length || 1} giocatori
+                              </Badge>
                             </div>
-                          )}
+                            <div className="text-xs text-gray-600">
+                              {new Date(booking.date).toLocaleDateString('it-IT', {
+                                weekday: 'short',
+                                day: 'numeric',
+                                month: 'short',
+                              })}{' '}
+                              alle {booking.time} • {booking.duration}min • {booking.price}€
+                            </div>
+                            {booking.players && booking.players.length > 1 && (
+                              <div className="text-xs text-gray-500 mt-1">
+                                Con:{' '}
+                                {booking.players
+                                  .filter((p) => p !== user.email && p !== user.displayName)
+                                  .slice(0, 2)
+                                  .join(', ')}
+                                {booking.players.length > 3 && '...'}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  }
+                )}
               </div>
             )}
           </div>
         ) : (
-          <div
-            className={`${T.cardBg} ${T.border} ${T.borderMd} p-4 mb-6 text-center`}
-          >
+          <div className={`${T.cardBg} ${T.border} ${T.borderMd} p-4 mb-6 text-center`}>
             <p className="text-gray-600 text-sm mb-3">
               Accedi per vedere le tue prenotazioni e prenotare nuovi campi
             </p>
             <p className="text-xs text-gray-500">
-              Le prenotazioni possono essere cancellate fino a 24 ore prima
-              dell'orario prenotato
+              Le prenotazioni possono essere cancellate fino a 24 ore prima dell'orario prenotato
             </p>
           </div>
         )}
@@ -585,9 +530,9 @@ function BookingField({ user, T, state, setState }) {
       {message && (
         <div
           className={`p-4 rounded-lg ${
-            message.type === "error"
-              ? "bg-red-100 text-red-800 border border-red-200"
-              : "bg-emerald-100 text-emerald-800 border border-emerald-200"
+            message.type === 'error'
+              ? 'bg-red-100 text-red-800 border border-red-200'
+              : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
           }`}
         >
           {message.text}
@@ -602,12 +547,12 @@ function BookingField({ user, T, state, setState }) {
               key={day.date}
               onClick={() => {
                 setSelectedDate(day.date);
-                setSelectedTime("");
+                setSelectedTime('');
                 setSelectedCourt(null);
               }}
               className={`p-3 rounded-lg border text-center transition-all ${
                 selectedDate === day.date
-                  ? "bg-emerald-100 text-emerald-800 border-emerald-300 shadow-sm font-medium"
+                  ? 'bg-emerald-100 text-emerald-800 border-emerald-300 shadow-sm font-medium'
                   : `${T.cardBg} ${T.border} hover:bg-gray-50`
               }`}
             >
@@ -623,8 +568,7 @@ function BookingField({ user, T, state, setState }) {
           <div className="grid gap-3">
             {courts.length === 0 && (
               <div className={`p-4 ${T.cardBg} ${T.border} ${T.borderMd}`}>
-                Nessun campo configurato. Aggiungi campi nella configurazione
-                della lega.
+                Nessun campo configurato. Aggiungi campi nella configurazione della lega.
               </div>
             )}
 
@@ -637,7 +581,7 @@ function BookingField({ user, T, state, setState }) {
                   className={`${T.cardBg} ${T.border} ${T.borderMd} transition-all ${
                     isSelected
                       ? `${T.primaryBorder} ring-2 ${T.primaryRing}`
-                      : "hover:shadow-md cursor-pointer"
+                      : 'hover:shadow-md cursor-pointer'
                   }`}
                   onClick={() => setSelectedCourt(court)}
                 >
@@ -657,21 +601,15 @@ function BookingField({ user, T, state, setState }) {
                             </Badge>
                           )}
                         </h3>
-                        {Array.isArray(court.features) &&
-                          court.features.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mb-2">
-                              {court.features.map((feature, index) => (
-                                <Badge
-                                  key={index}
-                                  variant="default"
-                                  size="xs"
-                                  T={T}
-                                >
-                                  {feature}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
+                        {Array.isArray(court.features) && court.features.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {court.features.map((feature, index) => (
+                              <Badge key={index} variant="default" size="xs" T={T}>
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       {selectedDate && (
                         <div className="text-right">
@@ -682,7 +620,7 @@ function BookingField({ user, T, state, setState }) {
                               cfg,
                               { lighting: false, heating: false },
                               court.id,
-                              courts,
+                              courts
                             )}
                             €/60min
                           </div>
@@ -708,10 +646,10 @@ function BookingField({ user, T, state, setState }) {
                 disabled={!slot.available}
                 className={`p-2 rounded text-sm transition-colors ${
                   selectedTime === slot.time
-                    ? "bg-blue-600 text-white"
+                    ? 'bg-blue-600 text-white'
                     : slot.available
-                      ? "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
-                      : "bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                      ? 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100'
+                      : 'bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                 }`}
               >
                 {slot.time}
@@ -724,9 +662,7 @@ function BookingField({ user, T, state, setState }) {
       {/* Booking Configuration */}
       {selectedDate && selectedTime && selectedCourt && (
         <Section title="Configura Prenotazione" variant="minimal" T={T}>
-          <div
-            className={`${T.cardBg} ${T.border} ${T.borderMd} p-6 space-y-6`}
-          >
+          <div className={`${T.cardBg} ${T.border} ${T.borderMd} p-6 space-y-6`}>
             {/* Duration */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -740,7 +676,7 @@ function BookingField({ user, T, state, setState }) {
                     cfg,
                     { lighting, heating },
                     selectedCourt.id,
-                    courts,
+                    courts
                   );
                   const isAvailable = isDurationAvailable(dur);
                   return (
@@ -750,23 +686,21 @@ function BookingField({ user, T, state, setState }) {
                       disabled={!isAvailable}
                       className={`p-2 rounded-md border text-center transition-all text-sm ${
                         duration === dur
-                          ? "bg-emerald-100 text-emerald-800 border-emerald-300 shadow-sm font-medium"
+                          ? 'bg-emerald-100 text-emerald-800 border-emerald-300 shadow-sm font-medium'
                           : isAvailable
                             ? `${T.cardBg} ${T.border} hover:bg-emerald-50`
-                            : "bg-gray-50 text-gray-400 cursor-not-allowed border-gray-200"
+                            : 'bg-gray-50 text-gray-400 cursor-not-allowed border-gray-200'
                       }`}
                       title={
                         !isAvailable
-                          ? "Non disponibile - creerebbe uno slot di 30min inutilizzabile"
-                          : ""
+                          ? 'Non disponibile - creerebbe uno slot di 30min inutilizzabile'
+                          : ''
                       }
                     >
                       <div className="font-medium">{dur}min</div>
                       <div className="text-xs text-gray-500">{price}€</div>
                       {!isAvailable && (
-                        <div className="text-xs text-red-500 mt-1">
-                          Non disponibile
-                        </div>
+                        <div className="text-xs text-red-500 mt-1">Non disponibile</div>
                       )}
                     </button>
                   );
@@ -795,9 +729,7 @@ function BookingField({ user, T, state, setState }) {
                         onChange={(e) => setLighting(e.target.checked)}
                         className="rounded text-sm"
                       />
-                      <span className="text-sm">
-                        Luci (+{cfg.addons?.lightingFee || 0}€)
-                      </span>
+                      <span className="text-sm">Luci (+{cfg.addons?.lightingFee || 0}€)</span>
                     </label>
                   )}
                   {cfg.addons?.heatingEnabled && (
@@ -836,7 +768,7 @@ function BookingField({ user, T, state, setState }) {
                 >
                   <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
                   <span className="text-sm font-medium">
-                    {user?.displayName || user?.email || "Tu"}
+                    {user?.displayName || user?.email || 'Tu'}
                   </span>
                   <Badge variant="primary" size="xs" T={T}>
                     Organizzatore
@@ -873,7 +805,7 @@ function BookingField({ user, T, state, setState }) {
                     type="text"
                     value={newPlayerName}
                     onChange={(e) => setNewPlayerName(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && addPlayer()}
+                    onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
                     placeholder="Nome giocatore"
                     className={`flex-1 p-2 text-sm ${T.cardBg} ${T.border} rounded-md focus:outline-none focus:ring-1 ${T.primaryRing}`}
                   />
@@ -891,9 +823,7 @@ function BookingField({ user, T, state, setState }) {
             {/* Optional fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefono
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Telefono</label>
                 <input
                   type="tel"
                   value={userPhone}
@@ -903,9 +833,7 @@ function BookingField({ user, T, state, setState }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Note
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Note</label>
                 <input
                   type="text"
                   value={notes}
@@ -923,9 +851,9 @@ function BookingField({ user, T, state, setState }) {
                   <div>
                     <span className="text-gray-600">Data:</span>
                     <span className="ml-1 font-medium">
-                      {new Date(selectedDate).toLocaleDateString("it-IT", {
-                        day: "numeric",
-                        month: "short",
+                      {new Date(selectedDate).toLocaleDateString('it-IT', {
+                        day: 'numeric',
+                        month: 'short',
                       })}
                     </span>
                   </div>
@@ -939,19 +867,15 @@ function BookingField({ user, T, state, setState }) {
                   </div>
                   <div>
                     <span className="text-gray-600">Giocatori:</span>
-                    <span className="ml-1 font-medium">
-                      {1 + additionalPlayers.length}
-                    </span>
+                    <span className="ml-1 font-medium">{1 + additionalPlayers.length}</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-bold text-emerald-600">
-                    {totalPrice}€
-                  </div>
+                  <div className="text-lg font-bold text-emerald-600">{totalPrice}€</div>
                   {(lighting || heating) && (
                     <div className="text-xs text-gray-500">
-                      {lighting && "Luci "}
-                      {heating && "Riscald."} inclusi
+                      {lighting && 'Luci '}
+                      {heating && 'Riscald.'} inclusi
                     </div>
                   )}
                 </div>
@@ -963,10 +887,10 @@ function BookingField({ user, T, state, setState }) {
                 className={`w-full ${T.btnPrimary} text-center py-3 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all`}
               >
                 {isSubmitting
-                  ? "Prenotazione in corso..."
+                  ? 'Prenotazione in corso...'
                   : user
                     ? `Conferma Prenotazione - ${totalPrice}€`
-                    : "Accedi per Prenotare"}
+                    : 'Accedi per Prenotare'}
               </button>
             </div>
           </div>
@@ -1000,11 +924,8 @@ function BookingField({ user, T, state, setState }) {
               <div className="space-y-2">
                 {pastUserBookings.map((booking) => {
                   const court = courts.find((c) => c.id === booking.courtId);
-                  const bookingDate = new Date(
-                    `${booking.date}T${booking.time}:00`,
-                  );
-                  const isRecent =
-                    (new Date() - bookingDate) / (1000 * 60 * 60 * 24) <= 7;
+                  const bookingDate = new Date(`${booking.date}T${booking.time}:00`);
+                  const isRecent = (new Date() - bookingDate) / (1000 * 60 * 60 * 24) <= 7;
 
                   return (
                     <div
@@ -1016,7 +937,7 @@ function BookingField({ user, T, state, setState }) {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="font-medium text-sm">
-                              {court?.name || booking.courtName || "Campo"}
+                              {court?.name || booking.courtName || 'Campo'}
                             </span>
                             <Badge variant="default" size="xs" T={T}>
                               {booking.players?.length || 1} giocatori
@@ -1031,21 +952,17 @@ function BookingField({ user, T, state, setState }) {
                             )}
                           </div>
                           <div className="text-xs text-gray-600 dark:text-gray-400">
-                            {bookingDate.toLocaleDateString("it-IT", {
-                              weekday: "short",
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })}{" "}
-                            alle {booking.time} • {booking.duration}min •{" "}
-                            {booking.price}€
+                            {bookingDate.toLocaleDateString('it-IT', {
+                              weekday: 'short',
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                            })}{' '}
+                            alle {booking.time} • {booking.duration}min • {booking.price}€
                           </div>
                         </div>
                         <div className="text-xs text-gray-400 px-2 py-1">
-                          {Math.ceil(
-                            (new Date() - bookingDate) / (1000 * 60 * 60 * 24),
-                          )}{" "}
-                          giorni fa
+                          {Math.ceil((new Date() - bookingDate) / (1000 * 60 * 60 * 24))} giorni fa
                         </div>
                       </div>
                     </div>
@@ -1083,46 +1000,29 @@ function BookingField({ user, T, state, setState }) {
             <div className="space-y-4">
               {/* Main info */}
               <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-500 p-4 rounded-md">
-                <h4 className={`${ds.h6} mb-2`}>
-                  {selectedBookingDetails.courtName}
-                </h4>
+                <h4 className={`${ds.h6} mb-2`}>{selectedBookingDetails.courtName}</h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Data:
-                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">Data:</span>
                     <div className="font-medium">
-                      {new Date(selectedBookingDetails.date).toLocaleDateString(
-                        "it-IT",
-                        {
-                          weekday: "long",
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        },
-                      )}
+                      {new Date(selectedBookingDetails.date).toLocaleDateString('it-IT', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })}
                     </div>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Orario:
-                    </span>
-                    <div className="font-medium">
-                      {selectedBookingDetails.time}
-                    </div>
+                    <span className="text-gray-600 dark:text-gray-400">Orario:</span>
+                    <div className="font-medium">{selectedBookingDetails.time}</div>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Durata:
-                    </span>
-                    <div className="font-medium">
-                      {selectedBookingDetails.duration} minuti
-                    </div>
+                    <span className="text-gray-600 dark:text-gray-400">Durata:</span>
+                    <div className="font-medium">{selectedBookingDetails.duration} minuti</div>
                   </div>
                   <div>
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Prezzo:
-                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">Prezzo:</span>
                     <div className="font-medium text-emerald-600">
                       {selectedBookingDetails.price}€
                     </div>
@@ -1137,38 +1037,35 @@ function BookingField({ user, T, state, setState }) {
               </div>
 
               {/* Players */}
-              {selectedBookingDetails.players &&
-                selectedBookingDetails.players.length > 0 && (
-                  <div>
-                    <h5 className={`${ds.h6} mb-2`}>
-                      Giocatori ({selectedBookingDetails.players.length})
-                    </h5>
-                    <div className="space-y-1">
-                      {selectedBookingDetails.players.map((player, index) => (
+              {selectedBookingDetails.players && selectedBookingDetails.players.length > 0 && (
+                <div>
+                  <h5 className={`${ds.h6} mb-2`}>
+                    Giocatori ({selectedBookingDetails.players.length})
+                  </h5>
+                  <div className="space-y-1">
+                    {selectedBookingDetails.players.map((player, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-500 rounded-md"
+                      >
                         <div
-                          key={index}
-                          className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-500 rounded-md"
-                        >
-                          <div
-                            className={`w-2 h-2 rounded-full ${
-                              player === user?.email ||
-                              player === user?.displayName
-                                ? "bg-emerald-500"
-                                : "bg-blue-500"
-                            }`}
-                          ></div>
-                          <span className="text-sm">{player}</span>
-                          {(player === user?.email ||
-                            player === user?.displayName) && (
-                            <Badge variant="primary" size="xs" T={T}>
-                              Tu
-                            </Badge>
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                          className={`w-2 h-2 rounded-full ${
+                            player === user?.email || player === user?.displayName
+                              ? 'bg-emerald-500'
+                              : 'bg-blue-500'
+                          }`}
+                        ></div>
+                        <span className="text-sm">{player}</span>
+                        {(player === user?.email || player === user?.displayName) && (
+                          <Badge variant="primary" size="xs" T={T}>
+                            Tu
+                          </Badge>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
 
               {/* Notes */}
               {selectedBookingDetails.notes && (

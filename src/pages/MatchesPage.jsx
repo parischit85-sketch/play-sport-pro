@@ -1,48 +1,41 @@
 // =============================================
 // FILE: src/pages/MatchesPage.jsx
 // =============================================
-import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { themeTokens } from "@lib/theme.js";
+import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { themeTokens } from '@lib/theme.js';
 // Removed legacy LeagueContext in favour of ClubContext + per-club loaders
 import { useClub } from '@contexts/ClubContext.jsx';
 import { createClubMatch, deleteClubMatch } from '@services/club-matches.js';
-import { useUI } from "@contexts/UIContext.jsx";
-import { useAuth } from "@contexts/AuthContext.jsx";
+import { useUI } from '@contexts/UIContext.jsx';
+import { useAuth } from '@contexts/AuthContext.jsx';
 import { computeClubRanking } from '@lib/ranking-club.js';
-import CreaPartita from "@features/crea/CreaPartita.jsx";
+import CreaPartita from '@features/crea/CreaPartita.jsx';
 
 export default function MatchesPage() {
-  const { clubId, loadPlayers, players, playersLoaded, loadMatches, matches, matchesLoaded } = useClub();
+  const { clubId, loadPlayers, players, playersLoaded, loadMatches, matches, matchesLoaded } =
+    useClub();
   const { clubMode } = useUI();
   const { userRole, user, isClubAdmin } = useAuth();
   const T = React.useMemo(() => themeTokens(), []);
 
   // Gli admin di club possono sempre accedere, anche senza clubMode attivato
   const canAccessMatches = clubMode || isClubAdmin(clubId);
-  const [formulaText, setFormulaText] = useState("");
+  const [formulaText, setFormulaText] = useState('');
   const navigate = useNavigate();
 
   if (!canAccessMatches) {
     return (
-      <div
-        className={`text-center py-12 ${T.cardBg} ${T.border} rounded-xl m-4`}
-      >
+      <div className={`text-center py-12 ${T.cardBg} ${T.border} rounded-xl m-4`}>
         <div className="text-6xl mb-4">🔒</div>
-        <h3 className={`text-xl font-bold mb-2 ${T.text}`}>
-          Modalità Club Richiesta
-        </h3>
+        <h3 className={`text-xl font-bold mb-2 ${T.text}`}>Modalità Club Richiesta</h3>
         <p className={`${T.subtext} mb-4`}>
-          {(userRole === 'super_admin' || (user && user.userProfile?.role === 'admin')) 
-            ? "Per accedere alla creazione partite, devi prima sbloccare la modalità club nella sezione Extra."
-            : "Per accedere alla creazione partite, è necessario avere privilegi di amministratore del club."
-          }
+          {userRole === 'super_admin' || (user && user.userProfile?.role === 'admin')
+            ? 'Per accedere alla creazione partite, devi prima sbloccare la modalità club nella sezione Extra.'
+            : 'Per accedere alla creazione partite, è necessario avere privilegi di amministratore del club.'}
         </p>
         {(userRole === 'super_admin' || (user && user.userProfile?.role === 'admin')) && (
-          <button
-            onClick={() => navigate("/extra")}
-            className={`${T.btnPrimary} px-6 py-3`}
-          >
+          <button onClick={() => navigate('/extra')} className={`${T.btnPrimary} px-6 py-3`}>
             Vai a Extra per sbloccare
           </button>
         )}
@@ -51,9 +44,17 @@ export default function MatchesPage() {
   }
 
   // Prepara playersById derivato lato client
-  const playersById = React.useMemo(() => Object.fromEntries(players.map(p=>[p.id,p])), [players]);
+  const playersById = React.useMemo(
+    () => Object.fromEntries(players.map((p) => [p.id, p])),
+    [players]
+  );
 
-  React.useEffect(()=>{ if (clubId) { if (!playersLoaded) loadPlayers(); if (!matchesLoaded) loadMatches(); }}, [clubId, playersLoaded, matchesLoaded, loadPlayers, loadMatches]);
+  React.useEffect(() => {
+    if (clubId) {
+      if (!playersLoaded) loadPlayers();
+      if (!matchesLoaded) loadMatches();
+    }
+  }, [clubId, playersLoaded, matchesLoaded, loadPlayers, loadMatches]);
 
   // Calcola ranking data con rating computati come in StatsPage
   const rankingData = useMemo(() => {
@@ -63,8 +64,8 @@ export default function MatchesPage() {
     return computeClubRanking(players, matches, clubId);
   }, [players, matches, clubId]);
 
-  const stateLike = React.useMemo(()=>({ players }), [players]);
-  const derivedLike = React.useMemo(()=>({ matches }), [matches]);
+  const stateLike = React.useMemo(() => ({ players }), [players]);
+  const derivedLike = React.useMemo(() => ({ matches }), [matches]);
 
   // DEBUG MIRATO: Verifica cosa passa a CreaPartita
   // console.log('🎾 MATCHES DEBUG:', {
@@ -81,7 +82,9 @@ export default function MatchesPage() {
         T={T}
         clubId={clubId}
         state={stateLike}
-        setState={()=>{ /* legacy no-op: add match handled separately */ }}
+        setState={() => {
+          /* legacy no-op: add match handled separately */
+        }}
         playersById={playersById}
         onShowFormula={setFormulaText}
         derivedMatches={derivedLike.matches}
@@ -101,7 +104,7 @@ export default function MatchesPage() {
                   Formula calcolo punti (RPA) – Spiegazione
                 </h3>
                 <button
-                  onClick={() => setFormulaText("")}
+                  onClick={() => setFormulaText('')}
                   className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   ×

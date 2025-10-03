@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../services/firebase.js';
-import { 
-  collection, 
-  getDocs, 
-  doc, 
+import {
+  collection,
+  getDocs,
+  doc,
   updateDoc,
   setDoc,
   addDoc,
   query,
-  orderBy 
+  orderBy,
 } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import {
@@ -26,7 +26,7 @@ import {
   Edit,
   UserX,
   Phone,
-  FileText
+  FileText,
 } from 'lucide-react';
 
 const UsersManagement = () => {
@@ -45,7 +45,7 @@ const UsersManagement = () => {
     email: '',
     phone: '',
     isActive: true,
-    notes: ''
+    notes: '',
   });
 
   useEffect(() => {
@@ -55,12 +55,12 @@ const UsersManagement = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      
+
       // Carica tutti i circoli
       const clubsSnap = await getDocs(collection(db, 'clubs'));
-      const clubsData = clubsSnap.docs.map(doc => ({
+      const clubsData = clubsSnap.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setClubs(clubsData);
 
@@ -71,30 +71,31 @@ const UsersManagement = () => {
       for (const club of clubsData) {
         try {
           const profilesSnap = await getDocs(collection(db, 'clubs', club.id, 'profiles'));
-          
+
           for (const profileDoc of profilesSnap.docs) {
             const profileData = profileDoc.data();
             const userId = profileDoc.id;
-            
+
             if (!userMap.has(userId)) {
               // Carica le affiliazioni dell'utente
               const affiliationsSnap = await getDocs(
                 query(collection(db, 'clubs', club.id, 'affiliations'))
               );
-              
+
               const userAffiliations = affiliationsSnap.docs
-                .filter(doc => doc.data().userId === userId)
-                .map(doc => ({
+                .filter((doc) => doc.data().userId === userId)
+                .map((doc) => ({
                   clubId: club.id,
                   clubName: club.name,
-                  ...doc.data()
+                  ...doc.data(),
                 }));
 
               // Controlla se l'utente è admin di questo club
-              const isClubAdmin = profileData.role === 'admin' || 
-                                profileData.isClubAdmin === true ||
-                                userAffiliations.some(aff => aff.role === 'admin' || aff.isClubAdmin === true) ||
-                                club.managers?.includes(userId);
+              const isClubAdmin =
+                profileData.role === 'admin' ||
+                profileData.isClubAdmin === true ||
+                userAffiliations.some((aff) => aff.role === 'admin' || aff.isClubAdmin === true) ||
+                club.managers?.includes(userId);
 
               const adminClubs = isClubAdmin ? [club.id] : [];
 
@@ -106,7 +107,7 @@ const UsersManagement = () => {
                 lastLogin: profileData._updatedAt,
                 clubs: userAffiliations,
                 isAdmin: isClubAdmin,
-                adminClubs: adminClubs
+                adminClubs: adminClubs,
               };
 
               userMap.set(userId, userData);
@@ -116,24 +117,25 @@ const UsersManagement = () => {
               const affiliationsSnap = await getDocs(
                 query(collection(db, 'clubs', club.id, 'affiliations'))
               );
-              
+
               const clubAffiliations = affiliationsSnap.docs
-                .filter(doc => doc.data().userId === userId)
-                .map(doc => ({
+                .filter((doc) => doc.data().userId === userId)
+                .map((doc) => ({
                   clubId: club.id,
                   clubName: club.name,
-                  ...doc.data()
+                  ...doc.data(),
                 }));
 
               existingUser.clubs.push(...clubAffiliations);
-              
+
               // Controlla se è admin anche di questo club
               const profileData = profileDoc.data();
-              const isClubAdmin = profileData.role === 'admin' || 
-                                profileData.isClubAdmin === true ||
-                                clubAffiliations.some(aff => aff.role === 'admin' || aff.isClubAdmin === true) ||
-                                club.managers?.includes(userId);
-              
+              const isClubAdmin =
+                profileData.role === 'admin' ||
+                profileData.isClubAdmin === true ||
+                clubAffiliations.some((aff) => aff.role === 'admin' || aff.isClubAdmin === true) ||
+                club.managers?.includes(userId);
+
               if (isClubAdmin) {
                 existingUser.isAdmin = true;
                 if (!existingUser.adminClubs.includes(club.id)) {
@@ -157,7 +159,7 @@ const UsersManagement = () => {
 
   const handlePromoteToAdmin = async (user, clubId) => {
     try {
-      const club = clubs.find(c => c.id === clubId);
+      const club = clubs.find((c) => c.id === clubId);
       if (!club) {
         alert('Circolo non trovato');
         return;
@@ -169,13 +171,13 @@ const UsersManagement = () => {
         role: 'admin',
         isClubAdmin: true,
         promotedToAdminAt: new Date().toISOString(),
-        _updatedAt: new Date().toISOString()
+        _updatedAt: new Date().toISOString(),
       });
 
       // 2. Aggiorna/crea l'affiliazione dell'utente nel circolo (collezione globale)
       const affiliationId = `${user.id}_${clubId}`;
       const affiliationRef = doc(db, 'affiliations', affiliationId);
-      
+
       try {
         // Tenta di aggiornare l'affiliazione esistente
         await updateDoc(affiliationRef, {
@@ -183,7 +185,7 @@ const UsersManagement = () => {
           isClubAdmin: true,
           status: 'approved',
           promotedToAdminAt: new Date().toISOString(),
-          _updatedAt: new Date().toISOString()
+          _updatedAt: new Date().toISOString(),
         });
       } catch (error) {
         // Se non esiste, crea una nuova affiliazione
@@ -196,7 +198,7 @@ const UsersManagement = () => {
           joinedAt: new Date().toISOString(),
           promotedToAdminAt: new Date().toISOString(),
           _createdAt: new Date().toISOString(),
-          _updatedAt: new Date().toISOString()
+          _updatedAt: new Date().toISOString(),
         });
       }
 
@@ -206,20 +208,20 @@ const UsersManagement = () => {
       if (!currentManagers.includes(user.id)) {
         await updateDoc(clubRef, {
           managers: [...currentManagers, user.id],
-          _updatedAt: new Date().toISOString()
+          _updatedAt: new Date().toISOString(),
         });
       }
 
       alert(`✅ ${user.displayName} è stato promosso ad amministratore del circolo "${club.name}"`);
-      
+
       // Ricarica i dati per mostrare i cambiamenti
       await loadData();
-      
+
       // Se l'utente promosso è l'utente corrente, ricarica i suoi dati di autorizzazione
       if (currentUser && currentUser.uid === user.id) {
         await reloadUserData();
       }
-      
+
       setShowPromoteModal(false);
       setSelectedUser(null);
     } catch (error) {
@@ -230,7 +232,7 @@ const UsersManagement = () => {
 
   const handleDemoteFromAdmin = async (user, clubId) => {
     try {
-      const club = clubs.find(c => c.id === clubId);
+      const club = clubs.find((c) => c.id === clubId);
       if (!club) {
         alert('Circolo non trovato');
         return;
@@ -242,40 +244,42 @@ const UsersManagement = () => {
         role: 'member',
         isClubAdmin: false,
         demotedFromAdminAt: new Date().toISOString(),
-        _updatedAt: new Date().toISOString()
+        _updatedAt: new Date().toISOString(),
       });
 
       // 2. Aggiorna l'affiliazione dell'utente nel circolo (collezione globale)
       const affiliationId = `${user.id}_${clubId}`;
       const affiliationRef = doc(db, 'affiliations', affiliationId);
-      
+
       try {
         await updateDoc(affiliationRef, {
           role: 'member',
           isClubAdmin: false,
           demotedFromAdminAt: new Date().toISOString(),
-          _updatedAt: new Date().toISOString()
+          _updatedAt: new Date().toISOString(),
         });
       } catch (error) {
-        console.error('Errore nell\'aggiornamento dell\'affiliazione:', error);
+        console.error("Errore nell'aggiornamento dell'affiliazione:", error);
         // Continua anche se l'affiliazione non esiste
       }
 
       // 3. Rimuovi l'utente dalla lista dei manager del circolo
       const clubRef = doc(db, 'clubs', clubId);
       const currentManagers = club.managers || [];
-      const updatedManagers = currentManagers.filter(managerId => managerId !== user.id);
-      
+      const updatedManagers = currentManagers.filter((managerId) => managerId !== user.id);
+
       await updateDoc(clubRef, {
         managers: updatedManagers,
-        _updatedAt: new Date().toISOString()
+        _updatedAt: new Date().toISOString(),
       });
 
-      alert(`✅ ${user.displayName} è stato retrocesso da amministratore del circolo "${club.name}"`);
-      
+      alert(
+        `✅ ${user.displayName} è stato retrocesso da amministratore del circolo "${club.name}"`
+      );
+
       // Ricarica i dati per mostrare i cambiamenti
       await loadData();
-      
+
       // Se l'utente retrocesso è l'utente corrente, ricarica i suoi dati di autorizzazione
       if (currentUser && currentUser.uid === user.id) {
         await reloadUserData();
@@ -293,7 +297,7 @@ const UsersManagement = () => {
       email: user.email || '',
       phone: user.phone || '',
       isActive: user.isActive !== false,
-      notes: user.notes || ''
+      notes: user.notes || '',
     });
     setShowEditModal(true);
   };
@@ -311,7 +315,7 @@ const UsersManagement = () => {
           phone: editFormData.phone,
           isActive: editFormData.isActive,
           notes: editFormData.notes,
-          _updatedAt: new Date().toISOString()
+          _updatedAt: new Date().toISOString(),
         });
       }
 
@@ -320,8 +324,8 @@ const UsersManagement = () => {
       setShowEditModal(false);
       setSelectedUser(null);
     } catch (error) {
-      console.error('Errore nell\'aggiornare l\'utente:', error);
-      alert('Errore nell\'aggiornare l\'utente');
+      console.error("Errore nell'aggiornare l'utente:", error);
+      alert("Errore nell'aggiornare l'utente");
     }
   };
 
@@ -337,7 +341,7 @@ const UsersManagement = () => {
         await updateDoc(profileRef, {
           isActive: false,
           deactivatedAt: new Date().toISOString(),
-          _updatedAt: new Date().toISOString()
+          _updatedAt: new Date().toISOString(),
         });
       }
 
@@ -345,31 +349,33 @@ const UsersManagement = () => {
       loadData();
     } catch (error) {
       console.error('Errore nella disattivazione:', error);
-      alert('Errore nella disattivazione dell\'utente');
+      alert("Errore nella disattivazione dell'utente");
     }
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = 
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
       user.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     if (selectedClub === 'all') return matchesSearch;
-    
-    return matchesSearch && user.clubs.some(club => club.clubId === selectedClub);
+
+    return matchesSearch && user.clubs.some((club) => club.clubId === selectedClub);
   });
 
   const UserCard = ({ user }) => (
     <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center space-x-3">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold relative ${
-            user.isAdmin ? 'bg-gradient-to-r from-yellow-500 to-orange-600' : 'bg-gradient-to-r from-blue-500 to-purple-600'
-          }`}>
+          <div
+            className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold relative ${
+              user.isAdmin
+                ? 'bg-gradient-to-r from-yellow-500 to-orange-600'
+                : 'bg-gradient-to-r from-blue-500 to-purple-600'
+            }`}
+          >
             {user.displayName?.charAt(0)?.toUpperCase() || 'U'}
-            {user.isAdmin && (
-              <Crown className="absolute -top-1 -right-1 w-4 h-4 text-yellow-300" />
-            )}
+            {user.isAdmin && <Crown className="absolute -top-1 -right-1 w-4 h-4 text-yellow-300" />}
           </div>
           <div>
             <div className="flex items-center space-x-2">
@@ -416,7 +422,8 @@ const UsersManagement = () => {
         <div className="flex items-center space-x-2 text-sm text-gray-600">
           <Calendar className="w-4 h-4" />
           <span>
-            Registrato: {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Data sconosciuta'}
+            Registrato:{' '}
+            {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Data sconosciuta'}
           </span>
         </div>
         <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -441,16 +448,23 @@ const UsersManagement = () => {
               <div key={index} className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">{club.clubName}</span>
                 <div className="flex items-center space-x-1">
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    club.status === 'approved' ? 'bg-green-100 text-green-800' :
-                    club.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {club.status === 'approved' ? 'Approvato' :
-                     club.status === 'pending' ? 'In attesa' : 'Sconosciuto'}
+                  <span
+                    className={`px-2 py-1 text-xs rounded-full ${
+                      club.status === 'approved'
+                        ? 'bg-green-100 text-green-800'
+                        : club.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {club.status === 'approved'
+                      ? 'Approvato'
+                      : club.status === 'pending'
+                        ? 'In attesa'
+                        : 'Sconosciuto'}
                   </span>
-                  {(user.adminClubs?.includes(club.clubId) || 
-                    club.role === 'admin' || 
+                  {(user.adminClubs?.includes(club.clubId) ||
+                    club.role === 'admin' ||
                     club.isClubAdmin === true) && (
                     <Crown className="w-3 h-3 text-yellow-500" title="Amministratore" />
                   )}
@@ -458,9 +472,7 @@ const UsersManagement = () => {
               </div>
             ))}
             {user.clubs.length > 3 && (
-              <p className="text-sm text-gray-500">
-                +{user.clubs.length - 3} altri circoli
-              </p>
+              <p className="text-sm text-gray-500">+{user.clubs.length - 3} altri circoli</p>
             )}
           </div>
         )}
@@ -522,8 +534,10 @@ const UsersManagement = () => {
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">Tutti i circoli</option>
-              {clubs.map(club => (
-                <option key={club.id} value={club.id}>{club.name}</option>
+              {clubs.map((club) => (
+                <option key={club.id} value={club.id}>
+                  {club.name}
+                </option>
               ))}
             </select>
           </div>
@@ -539,13 +553,16 @@ const UsersManagement = () => {
             </div>
             <div>
               <p className="text-2xl font-bold text-green-600">
-                {users.filter(user => user.clubs.some(club => club.status === 'approved')).length}
+                {
+                  users.filter((user) => user.clubs.some((club) => club.status === 'approved'))
+                    .length
+                }
               </p>
               <p className="text-sm text-gray-600">Utenti Attivi</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-yellow-600">
-                {users.filter(user => user.adminClubs?.length > 0).length}
+                {users.filter((user) => user.adminClubs?.length > 0).length}
               </p>
               <p className="text-sm text-gray-600">Amministratori Circoli</p>
             </div>
@@ -560,10 +577,9 @@ const UsersManagement = () => {
               {searchTerm ? 'Nessun utente trovato' : 'Nessun utente presente'}
             </p>
             <p className="text-gray-400">
-              {searchTerm 
-                ? 'Prova a modificare i termini di ricerca' 
-                : 'Gli utenti appariranno qui quando si registreranno'
-              }
+              {searchTerm
+                ? 'Prova a modificare i termini di ricerca'
+                : 'Gli utenti appariranno qui quando si registreranno'}
             </p>
           </div>
         ) : (
@@ -604,33 +620,31 @@ const UsersManagement = () => {
                 <input
                   type="text"
                   value={editFormData.displayName}
-                  onChange={(e) => setEditFormData({...editFormData, displayName: e.target.value})}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, displayName: e.target.value })
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input
                   type="email"
                   value={editFormData.email}
-                  onChange={(e) => setEditFormData({...editFormData, email: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               {/* Telefono */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Telefono
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Telefono</label>
                 <input
                   type="tel"
                   value={editFormData.phone}
-                  onChange={(e) => setEditFormData({...editFormData, phone: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="+39 123 456 7890"
                 />
@@ -642,7 +656,9 @@ const UsersManagement = () => {
                   <input
                     type="checkbox"
                     checked={editFormData.isActive}
-                    onChange={(e) => setEditFormData({...editFormData, isActive: e.target.checked})}
+                    onChange={(e) =>
+                      setEditFormData({ ...editFormData, isActive: e.target.checked })
+                    }
                     className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                   />
                   <span className="text-sm text-gray-700">Account Attivo</span>
@@ -657,7 +673,7 @@ const UsersManagement = () => {
                 <textarea
                   rows="4"
                   value={editFormData.notes}
-                  onChange={(e) => setEditFormData({...editFormData, notes: e.target.value})}
+                  onChange={(e) => setEditFormData({ ...editFormData, notes: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Note interne per l'amministrazione..."
                 />
@@ -669,12 +685,19 @@ const UsersManagement = () => {
               <h4 className="text-lg font-medium text-gray-900 mb-4">Affiliazioni Attuali</h4>
               <div className="space-y-3">
                 {selectedUser.clubs.map((club, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
                     <div>
                       <p className="font-medium">{club.clubName}</p>
                       <p className="text-sm text-gray-600">
-                        Status: {club.status === 'approved' ? 'Approvato' : 
-                                club.status === 'pending' ? 'In attesa' : 'Sconosciuto'}
+                        Status:{' '}
+                        {club.status === 'approved'
+                          ? 'Approvato'
+                          : club.status === 'pending'
+                            ? 'In attesa'
+                            : 'Sconosciuto'}
                       </p>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -683,13 +706,20 @@ const UsersManagement = () => {
                           Admin
                         </span>
                       )}
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        club.status === 'approved' ? 'bg-green-100 text-green-800' :
-                        club.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {club.status === 'approved' ? 'Attivo' :
-                         club.status === 'pending' ? 'Pendente' : 'Inattivo'}
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full ${
+                          club.status === 'approved'
+                            ? 'bg-green-100 text-green-800'
+                            : club.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {club.status === 'approved'
+                          ? 'Attivo'
+                          : club.status === 'pending'
+                            ? 'Pendente'
+                            : 'Inattivo'}
                       </span>
                     </div>
                   </div>
@@ -730,21 +760,24 @@ const UsersManagement = () => {
               <UserCog className="w-5 h-5" />
               <span>Gestisci Ruoli - {selectedUser.displayName}</span>
             </h3>
-            
+
             <div className="space-y-4">
-              <p className="text-gray-600">
-                Gestisci i ruoli di amministratore per questo utente:
-              </p>
-              
-              {clubs.map(club => {
-                const isAdminOfThisClub = selectedUser.adminClubs?.includes(club.id) || 
-                                         selectedUser.clubs.some(userClub => 
-                                           userClub.clubId === club.id && 
-                                           (userClub.role === 'admin' || userClub.isClubAdmin === true)
-                                         );
-                
+              <p className="text-gray-600">Gestisci i ruoli di amministratore per questo utente:</p>
+
+              {clubs.map((club) => {
+                const isAdminOfThisClub =
+                  selectedUser.adminClubs?.includes(club.id) ||
+                  selectedUser.clubs.some(
+                    (userClub) =>
+                      userClub.clubId === club.id &&
+                      (userClub.role === 'admin' || userClub.isClubAdmin === true)
+                  );
+
                 return (
-                  <div key={club.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                  <div
+                    key={club.id}
+                    className="flex items-center justify-between p-3 border border-gray-200 rounded-lg"
+                  >
                     <div>
                       <p className="font-medium">{club.name}</p>
                       <p className="text-sm text-gray-600">{club.city}</p>
@@ -775,7 +808,7 @@ const UsersManagement = () => {
                 );
               })}
             </div>
-            
+
             <div className="flex space-x-3 mt-6">
               <button
                 onClick={() => {

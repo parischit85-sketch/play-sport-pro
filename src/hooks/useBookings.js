@@ -1,14 +1,14 @@
 // =============================================
 // FILE: src/hooks/useBookings.js
 // =============================================
-import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "@contexts/AuthContext.jsx";
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '@contexts/AuthContext.jsx';
 import {
   createBooking,
   getPublicBookings,
   getUserBookings,
   cancelBooking,
-} from "@services/cloud-bookings.js";
+} from '@services/cloud-bookings.js';
 
 // Per evitare conflitti con il nuovo hook performante, questo rimane per compatibilità
 // ma con ottimizzazioni per ridurre le chiamate multiple
@@ -24,7 +24,7 @@ export function useBookings() {
 
   // Load public bookings with simple cache
   const loadPublicBookings = useCallback(async () => {
-    const cacheKey = "public-bookings";
+    const cacheKey = 'public-bookings';
     const cached = requestCache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < 30000) {
@@ -41,7 +41,7 @@ export function useBookings() {
       setError(null);
       return bookings;
     } catch (err) {
-      console.error("Error loading public bookings:", err);
+      console.error('Error loading public bookings:', err);
       setError(err);
     } finally {
       setLoading(false);
@@ -72,7 +72,7 @@ export function useBookings() {
       setError(null);
       return bookings;
     } catch (err) {
-      console.error("Error loading user bookings:", err);
+      console.error('Error loading user bookings:', err);
       setError(err);
     } finally {
       setLoading(false);
@@ -82,7 +82,7 @@ export function useBookings() {
   // Create booking
   const createBookingMutation = useCallback(
     async (bookingData) => {
-      if (!user) throw new Error("User must be authenticated");
+      if (!user) throw new Error('User must be authenticated');
 
       try {
         setLoading(true);
@@ -96,20 +96,20 @@ export function useBookings() {
         setError(null);
         return newBooking;
       } catch (err) {
-        console.error("Error creating booking:", err);
+        console.error('Error creating booking:', err);
         setError(err);
         throw err;
       } finally {
         setLoading(false);
       }
     },
-  [user, loadPublicBookings, loadUserBookings],
+    [user, loadPublicBookings, loadUserBookings]
   );
 
   // Cancel booking
   const cancelBookingMutation = useCallback(
     async (bookingId) => {
-      if (!user) throw new Error("User must be authenticated");
+      if (!user) throw new Error('User must be authenticated');
 
       try {
         setLoading(true);
@@ -122,14 +122,14 @@ export function useBookings() {
 
         setError(null);
       } catch (err) {
-        console.error("Error canceling booking:", err);
+        console.error('Error canceling booking:', err);
         setError(err);
         throw err;
       } finally {
         setLoading(false);
       }
     },
-  [user, loadPublicBookings, loadUserBookings],
+    [user, loadPublicBookings, loadUserBookings]
   );
 
   // Load initial data con throttling

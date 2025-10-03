@@ -14,39 +14,58 @@
  */
 export const sanitizeHTML = (input) => {
   if (typeof input !== 'string') return '';
-  
+
   // Create a temporary element to decode HTML entities
   const temp = document.createElement('div');
   temp.innerHTML = input;
-  
+
   // Remove dangerous tags and attributes
-  const dangerousTags = ['script', 'iframe', 'object', 'embed', 'form', 'input', 'textarea', 'button', 'select'];
-  const dangerousAttributes = ['onclick', 'onload', 'onerror', 'onmouseover', 'onfocus', 'onblur', 'onchange', 'onsubmit'];
-  
+  const dangerousTags = [
+    'script',
+    'iframe',
+    'object',
+    'embed',
+    'form',
+    'input',
+    'textarea',
+    'button',
+    'select',
+  ];
+  const dangerousAttributes = [
+    'onclick',
+    'onload',
+    'onerror',
+    'onmouseover',
+    'onfocus',
+    'onblur',
+    'onchange',
+    'onsubmit',
+  ];
+
   // Remove dangerous tags
-  dangerousTags.forEach(tag => {
+  dangerousTags.forEach((tag) => {
     const elements = temp.getElementsByTagName(tag);
     for (let i = elements.length - 1; i >= 0; i--) {
       elements[i].parentNode.removeChild(elements[i]);
     }
   });
-  
+
   // Remove dangerous attributes from all elements
   const allElements = temp.getElementsByTagName('*');
   for (let i = 0; i < allElements.length; i++) {
     const element = allElements[i];
-    dangerousAttributes.forEach(attr => {
+    dangerousAttributes.forEach((attr) => {
       element.removeAttribute(attr);
     });
     // Remove javascript: and data: URLs
-    ['href', 'src', 'action'].forEach(attr => {
+    ['href', 'src', 'action'].forEach((attr) => {
       const value = element.getAttribute(attr);
       if (value && (value.startsWith('javascript:') || value.startsWith('data:'))) {
         element.removeAttribute(attr);
       }
     });
   }
-  
+
   return temp.innerHTML;
 };
 
@@ -57,7 +76,7 @@ export const sanitizeHTML = (input) => {
  */
 export const sanitizeText = (input) => {
   if (typeof input !== 'string') return '';
-  
+
   return input
     .replace(/[<>]/g, '') // Remove angle brackets
     .replace(/javascript:/gi, '') // Remove javascript protocol
@@ -72,7 +91,7 @@ export const sanitizeText = (input) => {
  */
 export const sanitizeEmail = (email) => {
   if (typeof email !== 'string') return '';
-  
+
   return email
     .toLowerCase()
     .trim()
@@ -86,7 +105,7 @@ export const sanitizeEmail = (email) => {
  */
 export const sanitizePhone = (phone) => {
   if (typeof phone !== 'string') return '';
-  
+
   return phone.replace(/[^0-9+\-\s()]/g, '').trim();
 };
 
@@ -97,7 +116,7 @@ export const sanitizePhone = (phone) => {
  */
 export const sanitizeURL = (url) => {
   if (typeof url !== 'string') return '';
-  
+
   try {
     const urlObj = new URL(url);
     // Only allow http and https protocols
@@ -133,19 +152,19 @@ export const validatePassword = (password) => {
   if (typeof password !== 'string') {
     return { isValid: false, score: 0, requirements: [] };
   }
-  
+
   const requirements = {
     length: password.length >= 8,
     uppercase: /[A-Z]/.test(password),
     lowercase: /[a-z]/.test(password),
     number: /\d/.test(password),
     special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-    noCommon: !isCommonPassword(password)
+    noCommon: !isCommonPassword(password),
   };
-  
+
   const score = Object.values(requirements).filter(Boolean).length;
   const isValid = score >= 4 && requirements.length && requirements.noCommon;
-  
+
   return {
     isValid,
     score,
@@ -155,8 +174,8 @@ export const validatePassword = (password) => {
       'One lowercase letter': requirements.lowercase,
       'One number': requirements.number,
       'One special character': requirements.special,
-      'Not a common password': requirements.noCommon
-    }
+      'Not a common password': requirements.noCommon,
+    },
   };
 };
 
@@ -167,9 +186,21 @@ export const validatePassword = (password) => {
  */
 const isCommonPassword = (password) => {
   const commonPasswords = [
-    'password', '123456', '123456789', 'qwerty', 'abc123',
-    'password123', 'admin', 'letmein', 'welcome', 'monkey',
-    'dragon', 'master', 'shadow', 'football', 'baseball'
+    'password',
+    '123456',
+    '123456789',
+    'qwerty',
+    'abc123',
+    'password123',
+    'admin',
+    'letmein',
+    'welcome',
+    'monkey',
+    'dragon',
+    'master',
+    'shadow',
+    'football',
+    'baseball',
   ];
   return commonPasswords.includes(password.toLowerCase());
 };
@@ -191,7 +222,7 @@ export const isValidPhone = (phone) => {
  */
 export const isValidFiscalCode = (fiscalCode) => {
   if (typeof fiscalCode !== 'string') return false;
-  
+
   const fcRegex = /^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$/;
   return fcRegex.test(fiscalCode.toUpperCase());
 };
@@ -205,7 +236,7 @@ class RateLimiter {
     this.requests = new Map();
     this.cleanup();
   }
-  
+
   /**
    * Check if request is allowed
    * @param {string} key - Unique identifier for the requester
@@ -216,27 +247,27 @@ class RateLimiter {
   isAllowed(key, maxRequests = 10, windowMs = 60000) {
     const now = Date.now();
     const windowStart = now - windowMs;
-    
+
     if (!this.requests.has(key)) {
       this.requests.set(key, []);
     }
-    
+
     const requestTimes = this.requests.get(key);
-    
+
     // Remove old requests outside the window
-    const validRequests = requestTimes.filter(time => time > windowStart);
-    
+    const validRequests = requestTimes.filter((time) => time > windowStart);
+
     if (validRequests.length >= maxRequests) {
       return false;
     }
-    
+
     // Add current request
     validRequests.push(now);
     this.requests.set(key, validRequests);
-    
+
     return true;
   }
-  
+
   /**
    * Get remaining requests for a key
    * @param {string} key - Unique identifier
@@ -247,17 +278,17 @@ class RateLimiter {
   getRemaining(key, maxRequests = 10, windowMs = 60000) {
     const now = Date.now();
     const windowStart = now - windowMs;
-    
+
     if (!this.requests.has(key)) {
       return maxRequests;
     }
-    
+
     const requestTimes = this.requests.get(key);
-    const validRequests = requestTimes.filter(time => time > windowStart);
-    
+    const validRequests = requestTimes.filter((time) => time > windowStart);
+
     return Math.max(0, maxRequests - validRequests.length);
   }
-  
+
   /**
    * Clean up old entries periodically
    */
@@ -265,9 +296,9 @@ class RateLimiter {
     setInterval(() => {
       const now = Date.now();
       const maxAge = 3600000; // 1 hour
-      
+
       for (const [key, requests] of this.requests.entries()) {
-        const validRequests = requests.filter(time => time > now - maxAge);
+        const validRequests = requests.filter((time) => time > now - maxAge);
         if (validRequests.length === 0) {
           this.requests.delete(key);
         } else {
@@ -292,7 +323,7 @@ export const rateLimiter = new RateLimiter();
 export const generateCSRFToken = () => {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
 };
 
 /**
@@ -331,13 +362,13 @@ export const validateCSRFToken = (token) => {
  */
 export const getSecurityHeaders = () => {
   const csrfToken = getCSRFToken();
-  
+
   return {
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
     ...(csrfToken && { 'X-CSRF-Token': csrfToken }),
     'Cache-Control': 'no-cache, no-store, must-revalidate',
-    'Pragma': 'no-cache'
+    Pragma: 'no-cache',
   };
 };
 
@@ -353,14 +384,14 @@ export class SecureSession {
     this.sessionTimeout = 30 * 60 * 1000; // 30 minutes
     this.warningTime = 5 * 60 * 1000; // 5 minutes before timeout
     this.checkInterval = 60 * 1000; // Check every minute
-    
+
     this.lastActivity = Date.now();
     this.timeoutWarningShown = false;
-    
+
     this.startActivityTracking();
     this.startSessionCheck();
   }
-  
+
   /**
    * Update last activity time
    */
@@ -368,7 +399,7 @@ export class SecureSession {
     this.lastActivity = Date.now();
     this.timeoutWarningShown = false;
   }
-  
+
   /**
    * Check if session is expired
    * @returns {boolean} True if session is expired
@@ -376,7 +407,7 @@ export class SecureSession {
   isExpired() {
     return Date.now() - this.lastActivity > this.sessionTimeout;
   }
-  
+
   /**
    * Get time until session expires
    * @returns {number} Milliseconds until expiration
@@ -384,51 +415,53 @@ export class SecureSession {
   getTimeUntilExpiry() {
     return this.sessionTimeout - (Date.now() - this.lastActivity);
   }
-  
+
   /**
    * Start tracking user activity
    */
   startActivityTracking() {
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-    
-    events.forEach(event => {
+
+    events.forEach((event) => {
       document.addEventListener(event, () => this.updateActivity(), true);
     });
   }
-  
+
   /**
    * Start periodic session checks
    */
   startSessionCheck() {
     setInterval(() => {
       const timeUntilExpiry = this.getTimeUntilExpiry();
-      
+
       // Show warning if close to expiry and warning not shown
       if (timeUntilExpiry <= this.warningTime && !this.timeoutWarningShown) {
         this.showTimeoutWarning(timeUntilExpiry);
         this.timeoutWarningShown = true;
       }
-      
+
       // Logout if expired
       if (this.isExpired()) {
         this.handleSessionExpiry();
       }
     }, this.checkInterval);
   }
-  
+
   /**
    * Show timeout warning to user
    * @param {number} timeRemaining - Time remaining in milliseconds
    */
   showTimeoutWarning(timeRemaining) {
     const minutes = Math.ceil(timeRemaining / 60000);
-    
+
     // Dispatch custom event for UI to handle
-    window.dispatchEvent(new CustomEvent('sessionTimeout', {
-      detail: { timeRemaining: minutes }
-    }));
+    window.dispatchEvent(
+      new CustomEvent('sessionTimeout', {
+        detail: { timeRemaining: minutes },
+      })
+    );
   }
-  
+
   /**
    * Handle session expiry
    */
@@ -436,11 +469,11 @@ export class SecureSession {
     // Clear local data
     sessionStorage.clear();
     localStorage.removeItem('auth_token');
-    
+
     // Dispatch logout event
     window.dispatchEvent(new CustomEvent('sessionExpired'));
   }
-  
+
   /**
    * Extend session
    */
@@ -476,8 +509,10 @@ export const setupCSP = () => {
       connect-src 'self' https://*.firebaseapp.com https://*.googleapis.com https://www.google-analytics.com https://apis.google.com;
       frame-src 'self' https://accounts.google.com;
       object-src 'none';
-    `.replace(/\s+/g, ' ').trim();
-    
+    `
+      .replace(/\s+/g, ' ')
+      .trim();
+
     document.head.appendChild(meta);
   }
 };
@@ -495,34 +530,35 @@ export const performSecurityAudit = () => {
     timestamp: new Date().toISOString(),
     checks: {},
     score: 0,
-    recommendations: []
+    recommendations: [],
   };
-  
+
   // Check HTTPS
   results.checks.https = location.protocol === 'https:';
   if (!results.checks.https) {
     results.recommendations.push('Use HTTPS in production');
   }
-  
+
   // Check for CSP
   results.checks.csp = !!document.querySelector('meta[http-equiv="Content-Security-Policy"]');
   if (!results.checks.csp) {
     results.recommendations.push('Implement Content Security Policy');
   }
-  
+
   // Check session storage security
-  results.checks.secureStorage = !localStorage.getItem('password') && !sessionStorage.getItem('password');
+  results.checks.secureStorage =
+    !localStorage.getItem('password') && !sessionStorage.getItem('password');
   if (!results.checks.secureStorage) {
     results.recommendations.push('Never store passwords in browser storage');
   }
-  
+
   // Check for secure cookies (if any)
   results.checks.secureCookies = !document.cookie.includes('Secure=false');
-  
+
   // Calculate score
   const passedChecks = Object.values(results.checks).filter(Boolean).length;
   results.score = Math.round((passedChecks / Object.keys(results.checks).length) * 100);
-  
+
   return results;
 };
 
@@ -537,31 +573,31 @@ export default {
   sanitizeEmail,
   sanitizePhone,
   sanitizeURL,
-  
+
   // Validation
   isValidEmail,
   validatePassword,
   isValidPhone,
   isValidFiscalCode,
-  
+
   // Rate limiting
   rateLimiter,
-  
+
   // CSRF protection
   generateCSRFToken,
   storeCSRFToken,
   getCSRFToken,
   validateCSRFToken,
-  
+
   // Security headers
   getSecurityHeaders,
-  
+
   // Session security
   SecureSession,
-  
+
   // CSP
   setupCSP,
-  
+
   // Security audit
-  performSecurityAudit
+  performSecurityAudit,
 };

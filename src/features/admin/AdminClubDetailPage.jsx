@@ -11,7 +11,7 @@ const AdminClubDetailPage = () => {
   const navigate = useNavigate();
   const { clubId } = useParams();
   const { userRole, USER_ROLES } = useAuth();
-  
+
   const [loading, setLoading] = useState(true);
   const [club, setClub] = useState(null);
 
@@ -43,7 +43,9 @@ const AdminClubDetailPage = () => {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Sei sicuro di voler eliminare questo club? Questa azione non può essere annullata.')) {
+    if (
+      !confirm('Sei sicuro di voler eliminare questo club? Questa azione non può essere annullata.')
+    ) {
       return;
     }
 
@@ -53,7 +55,7 @@ const AdminClubDetailPage = () => {
       navigate('/admin/clubs');
     } catch (error) {
       console.error('Error deleting club:', error);
-      alert('Errore durante l\'eliminazione del club');
+      alert("Errore durante l'eliminazione del club");
     }
   };
 
@@ -128,9 +130,7 @@ const AdminClubDetailPage = () => {
               >
                 ← Gestione Club
               </button>
-              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Dettagli Club
-              </h1>
+              <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Dettagli Club</h1>
             </div>
             <div className="flex gap-2">
               <button
@@ -160,19 +160,17 @@ const AdminClubDetailPage = () => {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   {club.name}
                 </h2>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(club.status)}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(club.status)}`}
+                >
                   {getStatusText(club.status)}
                 </span>
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                ID: {club.id}
-              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">ID: {club.id}</div>
             </div>
-            
+
             {club.description && (
-              <p className="text-gray-600 dark:text-gray-400 mt-4">
-                {club.description}
-              </p>
+              <p className="text-gray-600 dark:text-gray-400 mt-4">{club.description}</p>
             )}
           </div>
 
@@ -186,25 +184,19 @@ const AdminClubDetailPage = () => {
                 <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {club.stats?.totalMembers || 0}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Membri Totali
-                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Membri Totali</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {club.stats?.totalCourts || 0}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Campi
-                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Campi</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                   {club.stats?.monthlyBookings || 0}
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  Prenotazioni/Mese
-                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">Prenotazioni/Mese</div>
               </div>
             </div>
           </div>
@@ -244,26 +236,32 @@ const AdminClubDetailPage = () => {
               <div className="space-y-2 text-gray-600 dark:text-gray-400">
                 {club.contact.email && (
                   <div>
-                    <span className="font-medium">Email:</span> 
-                    <a href={`mailto:${club.contact.email}`} className="text-blue-600 dark:text-blue-400 ml-2">
+                    <span className="font-medium">Email:</span>
+                    <a
+                      href={`mailto:${club.contact.email}`}
+                      className="text-blue-600 dark:text-blue-400 ml-2"
+                    >
                       {club.contact.email}
                     </a>
                   </div>
                 )}
                 {club.contact.phone && (
                   <div>
-                    <span className="font-medium">Telefono:</span> 
-                    <a href={`tel:${club.contact.phone}`} className="text-blue-600 dark:text-blue-400 ml-2">
+                    <span className="font-medium">Telefono:</span>
+                    <a
+                      href={`tel:${club.contact.phone}`}
+                      className="text-blue-600 dark:text-blue-400 ml-2"
+                    >
                       {club.contact.phone}
                     </a>
                   </div>
                 )}
                 {club.contact.website && (
                   <div>
-                    <span className="font-medium">Sito Web:</span> 
-                    <a 
-                      href={club.contact.website} 
-                      target="_blank" 
+                    <span className="font-medium">Sito Web:</span>
+                    <a
+                      href={club.contact.website}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 dark:text-blue-400 ml-2"
                     >
@@ -283,26 +281,32 @@ const AdminClubDetailPage = () => {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-gray-600 dark:text-gray-400">Prenotazioni pubbliche:</span>
-                <span className={`px-2 py-1 rounded text-sm ${
-                  club.settings?.allowPublicBookings 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                }`}>
+                <span
+                  className={`px-2 py-1 rounded text-sm ${
+                    club.settings?.allowPublicBookings
+                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                  }`}
+                >
                   {club.settings?.allowPublicBookings ? 'Abilitate' : 'Disabilitate'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-gray-600 dark:text-gray-400">Approvazione richiesta:</span>
-                <span className={`px-2 py-1 rounded text-sm ${
-                  club.settings?.requireApproval 
-                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' 
-                    : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                }`}>
+                <span
+                  className={`px-2 py-1 rounded text-sm ${
+                    club.settings?.requireApproval
+                      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                      : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                  }`}
+                >
                   {club.settings?.requireApproval ? 'Sì' : 'No'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Max prenotazioni per utente:</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Max prenotazioni per utente:
+                </span>
                 <span className="px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded text-sm">
                   {club.settings?.maxBookingsPerUser || 10}
                 </span>
@@ -317,12 +321,14 @@ const AdminClubDetailPage = () => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-400">
               <div>
-                <span className="font-medium">Creato il:</span><br />
+                <span className="font-medium">Creato il:</span>
+                <br />
                 {new Date(club.createdAt).toLocaleString('it-IT')}
               </div>
               {club.updatedAt && (
                 <div>
-                  <span className="font-medium">Ultimo aggiornamento:</span><br />
+                  <span className="font-medium">Ultimo aggiornamento:</span>
+                  <br />
                   {new Date(club.updatedAt).toLocaleString('it-IT')}
                 </div>
               )}

@@ -1,10 +1,10 @@
 // FILE: src/pages/LoginPage.jsx
 // =============================================
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { themeTokens, LOGO_URL } from "@lib/theme.js";
-import AuthPanel from "@features/auth/AuthPanel.jsx";
-import { useAuth } from "@contexts/AuthContext.jsx";
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { themeTokens, LOGO_URL } from '@lib/theme.js';
+import AuthPanel from '@features/auth/AuthPanel.jsx';
+import { useAuth } from '@contexts/AuthContext.jsx';
 
 export default function LoginPage() {
   const { user, userProfile, setUserProfile, isAuthenticated } = useAuth();
@@ -40,12 +40,7 @@ export default function LoginPage() {
         </div>
       </header>
       <main className="max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-6">
-        <AuthPanel
-          T={T}
-          user={user}
-          userProfile={userProfile}
-          setUserProfile={setUserProfile}
-        />
+        <AuthPanel T={T} user={user} userProfile={userProfile} setUserProfile={setUserProfile} />
       </main>
     </div>
   );

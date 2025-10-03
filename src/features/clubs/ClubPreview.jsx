@@ -12,13 +12,13 @@ const ClubPreview = () => {
   const clubId = params.clubId;
   const navigate = useNavigate();
   const { user, userAffiliations, loadUserAffiliations, AFFILIATION_STATUS } = useAuth();
-  
+
   console.log('👁️ [ClubPreview] Component mounting/updating:', {
     params,
     clubId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
-  
+
   const [club, setClub] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,7 +33,7 @@ const ClubPreview = () => {
 
   useEffect(() => {
     // Check existing affiliation
-    const existing = userAffiliations.find(a => a.clubId === clubId);
+    const existing = userAffiliations.find((a) => a.clubId === clubId);
     setUserAffiliation(existing || null);
   }, [userAffiliations, clubId]);
 
@@ -67,16 +67,16 @@ const ClubPreview = () => {
       await requestAffiliation(clubId, user.uid, '');
       setMessage({
         type: 'success',
-        text: 'Richiesta di affiliazione inviata con successo!'
+        text: 'Richiesta di affiliazione inviata con successo!',
       });
-      
+
       // Reload user affiliations
       await loadUserAffiliations();
     } catch (error) {
       console.error('Error requesting affiliation:', error);
       setMessage({
         type: 'error',
-        text: error.message || 'Errore durante la richiesta di affiliazione'
+        text: error.message || 'Errore durante la richiesta di affiliazione',
       });
     } finally {
       setIsRequesting(false);
@@ -108,12 +108,14 @@ const ClubPreview = () => {
     switch (userAffiliation.status) {
       case AFFILIATION_STATUS.PENDING:
         return (
-          <div className="w-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 
-                        px-6 py-3 rounded-lg text-center font-medium border border-yellow-200 dark:border-yellow-700">
+          <div
+            className="w-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 
+                        px-6 py-3 rounded-lg text-center font-medium border border-yellow-200 dark:border-yellow-700"
+          >
             ⏳ Richiesta in attesa di approvazione
           </div>
         );
-      
+
       case AFFILIATION_STATUS.APPROVED:
         return (
           <button
@@ -124,20 +126,20 @@ const ClubPreview = () => {
             ✅ Entra nel Club
           </button>
         );
-      
+
       case AFFILIATION_STATUS.REJECTED:
         return (
-          <div className="w-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 
-                        px-6 py-3 rounded-lg text-center font-medium border border-red-200 dark:border-red-700">
+          <div
+            className="w-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 
+                        px-6 py-3 rounded-lg text-center font-medium border border-red-200 dark:border-red-700"
+          >
             ❌ Richiesta rifiutata
             {userAffiliation.adminNotes && (
-              <div className="text-sm mt-1 opacity-75">
-                {userAffiliation.adminNotes}
-              </div>
+              <div className="text-sm mt-1 opacity-75">{userAffiliation.adminNotes}</div>
             )}
           </div>
         );
-      
+
       default:
         return null;
     }
@@ -186,8 +188,10 @@ const ClubPreview = () => {
             >
               ← Indietro
             </button>
-            <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 
-                           px-3 py-1 rounded-full text-sm font-medium">
+            <span
+              className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 
+                           px-3 py-1 rounded-full text-sm font-medium"
+            >
               Anteprima Club
             </span>
           </div>
@@ -208,28 +212,26 @@ const ClubPreview = () => {
                   📍 {club.location?.city}, {club.location?.region}
                 </p>
               </div>
-              
+
               {/* Club Logo Placeholder */}
               <div className="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center">
-                <span className="text-white text-2xl font-bold">
-                  {club.name.charAt(0)}
-                </span>
+                <span className="text-white text-2xl font-bold">{club.name.charAt(0)}</span>
               </div>
             </div>
 
             {club.description && (
-              <p className="text-gray-700 dark:text-gray-300 text-lg mb-6">
-                {club.description}
-              </p>
+              <p className="text-gray-700 dark:text-gray-300 text-lg mb-6">{club.description}</p>
             )}
 
             {/* Message */}
             {message && (
-              <div className={`mb-6 p-4 rounded-lg ${
-                message.type === 'success'
-                  ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-700'
-                  : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-700'
-              }`}>
+              <div
+                className={`mb-6 p-4 rounded-lg ${
+                  message.type === 'success'
+                    ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-700'
+                    : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-700'
+                }`}
+              >
                 {message.text}
               </div>
             )}
@@ -270,38 +272,30 @@ const ClubPreview = () => {
 
           {/* Contact Info */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-              Contatti
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Contatti</h2>
             <div className="space-y-3">
               {club.location?.address && (
                 <div className="flex items-start gap-3">
                   <span className="text-gray-400 mt-0.5">📍</span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {club.location.address}
-                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">{club.location.address}</span>
                 </div>
               )}
               {club.contact?.phone && (
                 <div className="flex items-center gap-3">
                   <span className="text-gray-400">📞</span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {club.contact.phone}
-                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">{club.contact.phone}</span>
                 </div>
               )}
               {club.contact?.email && (
                 <div className="flex items-center gap-3">
                   <span className="text-gray-400">✉️</span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {club.contact.email}
-                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">{club.contact.email}</span>
                 </div>
               )}
               {club.contact?.website && (
                 <div className="flex items-center gap-3">
                   <span className="text-gray-400">🌐</span>
-                  <a 
+                  <a
                     href={club.contact.website}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -347,9 +341,7 @@ const ClubPreview = () => {
             )}
             <div className="text-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
               <div className="text-2xl mb-1">🏆</div>
-              <div className="text-sm font-medium text-gray-800 dark:text-gray-400">
-                Tornei
-              </div>
+              <div className="text-sm font-medium text-gray-800 dark:text-gray-400">Tornei</div>
             </div>
           </div>
         </div>

@@ -1,17 +1,27 @@
 // =============================================
 // FILE: src/pages/PlayersPage.jsx
 // =============================================
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { themeTokens } from "@lib/theme.js";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { themeTokens } from '@lib/theme.js';
 import { useClub } from '@contexts/ClubContext.jsx';
-import { useUI } from "@contexts/UIContext.jsx";
-import { useAuth } from "@contexts/AuthContext.jsx";
-import PlayersCRM from "@features/players/PlayersCRM.jsx";
+import { useUI } from '@contexts/UIContext.jsx';
+import { useAuth } from '@contexts/AuthContext.jsx';
+import PlayersCRM from '@features/players/PlayersCRM.jsx';
 
 export default function PlayersPage() {
   const navigate = useNavigate();
-  const { players, playersById, clubId, playersLoaded, loadPlayers, addPlayer, updatePlayer, deletePlayer, loadingStates } = useClub();
+  const {
+    players,
+    playersById,
+    clubId,
+    playersLoaded,
+    loadPlayers,
+    addPlayer,
+    updatePlayer,
+    deletePlayer,
+    loadingStates,
+  } = useClub();
   const { clubMode } = useUI();
   const { userRole, user, isClubAdmin } = useAuth();
   const T = React.useMemo(() => themeTokens(), []);
@@ -34,24 +44,16 @@ export default function PlayersPage() {
 
   if (!canAccessPlayers) {
     return (
-      <div
-        className={`text-center py-12 ${T.cardBg} ${T.border} rounded-xl m-4`}
-      >
+      <div className={`text-center py-12 ${T.cardBg} ${T.border} rounded-xl m-4`}>
         <div className="text-6xl mb-4">🔒</div>
-        <h3 className={`text-xl font-bold mb-2 ${T.text}`}>
-          Modalità Club Richiesta
-        </h3>
+        <h3 className={`text-xl font-bold mb-2 ${T.text}`}>Modalità Club Richiesta</h3>
         <p className={`${T.subtext} mb-4`}>
-          {(userRole === 'super_admin' || (user && user.userProfile?.role === 'admin')) 
-            ? "Per accedere al CRM giocatori, devi prima sbloccare la modalità club nella sezione Extra."
-            : "Per accedere al CRM giocatori, è necessario avere privilegi di amministratore del club."
-          }
+          {userRole === 'super_admin' || (user && user.userProfile?.role === 'admin')
+            ? 'Per accedere al CRM giocatori, devi prima sbloccare la modalità club nella sezione Extra.'
+            : 'Per accedere al CRM giocatori, è necessario avere privilegi di amministratore del club.'}
         </p>
         {(userRole === 'super_admin' || (user && user.userProfile?.role === 'admin')) && (
-          <button
-            onClick={() => navigate("/extra")}
-            className={`${T.btnPrimary} px-6 py-3`}
-          >
+          <button onClick={() => navigate('/extra')} className={`${T.btnPrimary} px-6 py-3`}>
             Vai a Extra per sbloccare
           </button>
         )}
@@ -64,12 +66,8 @@ export default function PlayersPage() {
     return (
       <div className={`text-center py-12 ${T.cardBg} ${T.border} rounded-xl m-4`}>
         <div className="text-6xl mb-4">⏳</div>
-        <h3 className={`text-xl font-bold mb-2 ${T.text}`}>
-          Caricamento Giocatori...
-        </h3>
-        <p className={`${T.subtext}`}>
-          Sto caricando la lista dei giocatori del club
-        </p>
+        <h3 className={`text-xl font-bold mb-2 ${T.text}`}>Caricamento Giocatori...</h3>
+        <p className={`${T.subtext}`}>Sto caricando la lista dei giocatori del club</p>
       </div>
     );
   }
@@ -79,7 +77,7 @@ export default function PlayersPage() {
       await addPlayer(playerData);
     } catch (error) {
       console.error('Error adding player:', error);
-      alert('Errore durante l\'aggiunta del giocatore: ' + error.message);
+      alert("Errore durante l'aggiunta del giocatore: " + error.message);
     }
   };
 
@@ -88,18 +86,22 @@ export default function PlayersPage() {
       await updatePlayer(playerId, updates);
     } catch (error) {
       console.error('Error updating player:', error);
-      alert('Errore durante l\'aggiornamento del giocatore: ' + error.message);
+      alert("Errore durante l'aggiornamento del giocatore: " + error.message);
     }
   };
 
   const handleDeletePlayer = async (playerId) => {
     try {
-      if (confirm('Sei sicuro di voler eliminare questo giocatore? Questa azione non può essere annullata.')) {
+      if (
+        confirm(
+          'Sei sicuro di voler eliminare questo giocatore? Questa azione non può essere annullata.'
+        )
+      ) {
         await deletePlayer(playerId);
       }
     } catch (error) {
       console.error('Error deleting player:', error);
-      alert('Errore durante l\'eliminazione del giocatore: ' + error.message);
+      alert("Errore durante l'eliminazione del giocatore: " + error.message);
     }
   };
 
@@ -107,7 +109,9 @@ export default function PlayersPage() {
     <PlayersCRM
       T={T}
       state={{ players }}
-      setState={() => { /* Legacy prop - now using direct Firebase functions */ }}
+      setState={() => {
+        /* Legacy prop - now using direct Firebase functions */
+      }}
       onOpenStats={handleOpenStats}
       playersById={playersById}
       onAddPlayer={handleAddPlayer}

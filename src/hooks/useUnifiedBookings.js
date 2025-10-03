@@ -2,9 +2,9 @@
 // FILE: src/hooks/useUnifiedBookings.js
 // HOOK REACT PER IL SERVIZIO UNIFICATO
 // =============================================
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { useAuth } from "@contexts/AuthContext.jsx";
-import UnifiedBookingService from "@services/unified-booking-service.js";
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useAuth } from '@contexts/AuthContext.jsx';
+import UnifiedBookingService from '@services/unified-booking-service.js';
 
 const { BOOKING_STATUS } = UnifiedBookingService.CONSTANTS;
 
@@ -52,8 +52,7 @@ export function useUnifiedBookings(options = {}) {
 
         // Load user-specific bookings if user is available
         if (user && autoLoadUser) {
-          const userBookingData =
-            await UnifiedBookingService.getUserBookings(user, { clubId });
+          const userBookingData = await UnifiedBookingService.getUserBookings(user, { clubId });
           setUserBookings(userBookingData);
         }
 
@@ -63,13 +62,13 @@ export function useUnifiedBookings(options = {}) {
           setLessonBookings(lessonData);
         }
       } catch (err) {
-        console.error("Error loading bookings:", err);
+        console.error('Error loading bookings:', err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     },
-    [user, autoLoadUser, autoLoadLessons, clubId],
+    [user, autoLoadUser, autoLoadLessons, clubId]
   );
 
   // Load bookings on mount and user change
@@ -81,29 +80,26 @@ export function useUnifiedBookings(options = {}) {
   useEffect(() => {
     if (!enableRealtime) return;
 
-    const subKeyPrefix = `public|${clubId||'all'}`;
-    const unsubscribeUpdated = UnifiedBookingService.addEventListener(
-      "bookingsUpdated",
-      (data) => {
-        if (!data?.type || !data.type.startsWith(subKeyPrefix)) return; // ignora altri club
-        setBookings(data.bookings);
-      },
-    );
+    const subKeyPrefix = `public|${clubId || 'all'}`;
+    const unsubscribeUpdated = UnifiedBookingService.addEventListener('bookingsUpdated', (data) => {
+      if (!data?.type || !data.type.startsWith(subKeyPrefix)) return; // ignora altri club
+      setBookings(data.bookings);
+    });
 
     const unsubscribeCreated = UnifiedBookingService.addEventListener(
-      "bookingCreated",
+      'bookingCreated',
       (booking) => {
         loadBookings(true); // Refresh all data
-      },
+      }
     );
 
     const unsubscribeDeleted = UnifiedBookingService.addEventListener(
-      "bookingDeleted",
+      'bookingDeleted',
       ({ id }) => {
         setBookings((prev) => prev.filter((b) => b.id !== id));
         setUserBookings((prev) => prev.filter((b) => b.id !== id));
         setLessonBookings((prev) => prev.filter((b) => b.id !== id));
-      },
+      }
     );
 
     return () => {
@@ -121,7 +117,7 @@ export function useUnifiedBookings(options = {}) {
         const result = await UnifiedBookingService.createBooking(
           { ...bookingData, clubId: clubId || bookingData.clubId },
           user,
-          { clubId },
+          { clubId }
         );
 
         // Refresh data
@@ -135,27 +131,19 @@ export function useUnifiedBookings(options = {}) {
         setLoading(false);
       }
     },
-    [user, loadBookings, clubId],
+    [user, loadBookings, clubId]
   );
 
   const updateBooking = useCallback(
     async (bookingId, updates) => {
       try {
-        const result = await UnifiedBookingService.updateBooking(
-          bookingId,
-          updates,
-          user,
-        );
+        const result = await UnifiedBookingService.updateBooking(bookingId, updates, user);
 
         // Update local state optimistically
-        setBookings((prev) =>
-          prev.map((b) => (b.id === bookingId ? { ...b, ...updates } : b)),
-        );
-        setUserBookings((prev) =>
-          prev.map((b) => (b.id === bookingId ? { ...b, ...updates } : b)),
-        );
+        setBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, ...updates } : b)));
+        setUserBookings((prev) => prev.map((b) => (b.id === bookingId ? { ...b, ...updates } : b)));
         setLessonBookings((prev) =>
-          prev.map((b) => (b.id === bookingId ? { ...b, ...updates } : b)),
+          prev.map((b) => (b.id === bookingId ? { ...b, ...updates } : b))
         );
 
         return result;
@@ -164,36 +152,27 @@ export function useUnifiedBookings(options = {}) {
         throw err;
       }
     },
-    [user],
+    [user]
   );
 
   const cancelBooking = useCallback(
     async (bookingId) => {
       try {
-        const result = await UnifiedBookingService.cancelBooking(
-          bookingId,
-          user,
-        );
+        const result = await UnifiedBookingService.cancelBooking(bookingId, user);
 
         // Update local state
         const updatedBooking = {
-          status: "cancelled",
+          status: 'cancelled',
           cancelledAt: new Date().toISOString(),
         };
         setBookings((prev) =>
-          prev.map((b) =>
-            b.id === bookingId ? { ...b, ...updatedBooking } : b,
-          ),
+          prev.map((b) => (b.id === bookingId ? { ...b, ...updatedBooking } : b))
         );
         setUserBookings((prev) =>
-          prev.map((b) =>
-            b.id === bookingId ? { ...b, ...updatedBooking } : b,
-          ),
+          prev.map((b) => (b.id === bookingId ? { ...b, ...updatedBooking } : b))
         );
         setLessonBookings((prev) =>
-          prev.map((b) =>
-            b.id === bookingId ? { ...b, ...updatedBooking } : b,
-          ),
+          prev.map((b) => (b.id === bookingId ? { ...b, ...updatedBooking } : b))
         );
 
         return result;
@@ -202,7 +181,7 @@ export function useUnifiedBookings(options = {}) {
         throw err;
       }
     },
-    [user],
+    [user]
   );
 
   const deleteBooking = useCallback(
@@ -219,29 +198,26 @@ export function useUnifiedBookings(options = {}) {
         throw err;
       }
     },
-    [user],
+    [user]
   );
 
   // Computed values
   const activeBookings = useMemo(
-    () => bookings.filter((b) => b.status === "confirmed"),
-    [bookings],
+    () => bookings.filter((b) => b.status === 'confirmed'),
+    [bookings]
   );
 
   const activeUserBookings = useMemo(
-    () => userBookings.filter((b) => b.status === "confirmed"),
-    [userBookings],
+    () => userBookings.filter((b) => b.status === 'confirmed'),
+    [userBookings]
   );
 
   const activeLessonBookings = useMemo(
-    () => lessonBookings.filter((b) => b.status === "confirmed"),
-    [lessonBookings],
+    () => lessonBookings.filter((b) => b.status === 'confirmed'),
+    [lessonBookings]
   );
 
-  const courtBookings = useMemo(
-    () => bookings.filter((b) => !b.isLessonBooking),
-    [bookings],
-  );
+  const courtBookings = useMemo(() => bookings.filter((b) => !b.isLessonBooking), [bookings]);
 
   return {
     // Data
@@ -273,21 +249,20 @@ export function useUnifiedBookings(options = {}) {
  * Hook for court bookings only
  */
 export function useCourtBookings() {
-  const { courtBookings, loading, error, createBooking, refresh } =
-    useUnifiedBookings({
-      autoLoadUser: false,
-      autoLoadLessons: false,
-    });
+  const { courtBookings, loading, error, createBooking, refresh } = useUnifiedBookings({
+    autoLoadUser: false,
+    autoLoadLessons: false,
+  });
 
   const createCourtBooking = useCallback(
     async (bookingData) => {
       return createBooking({
         ...bookingData,
-        type: "court",
+        type: 'court',
         isLessonBooking: false,
       });
     },
-    [createBooking],
+    [createBooking]
   );
 
   return {
@@ -305,25 +280,19 @@ export function useCourtBookings() {
 export function useLessonBookings(options = {}) {
   const { user } = useAuth(); // Aggiungi il context dell'utente
   const { clubId = null } = options;
-  const {
-    lessonBookings,
-    loading,
-    error,
-    createBooking,
-    cancelBooking,
-    refresh,
-  } = useUnifiedBookings({
-    autoLoadUser: true,
-    autoLoadLessons: true,
-    clubId, // Passa il clubId al servizio unificato
-  });
+  const { lessonBookings, loading, error, createBooking, cancelBooking, refresh } =
+    useUnifiedBookings({
+      autoLoadUser: true,
+      autoLoadLessons: true,
+      clubId, // Passa il clubId al servizio unificato
+    });
 
   const createLessonBooking = useCallback(
     async (lessonData) => {
       // First create the lesson booking
       const lessonBooking = await createBooking({
         ...lessonData,
-        type: "lesson",
+        type: 'lesson',
         isLessonBooking: true,
       });
 
@@ -331,9 +300,9 @@ export function useLessonBookings(options = {}) {
       if (lessonData.createCourtBooking !== false) {
         const courtBooking = await createBooking({
           ...lessonData,
-          type: "court",
+          type: 'court',
           isLessonBooking: true,
-          notes: `Lezione con ${lessonData.instructorName || "istruttore"}`,
+          notes: `Lezione con ${lessonData.instructorName || 'istruttore'}`,
           courtBookingId: lessonBooking.id, // Link them
         });
 
@@ -343,7 +312,7 @@ export function useLessonBookings(options = {}) {
 
       return lessonBooking;
     },
-    [createBooking],
+    [createBooking]
   );
 
   const clearAllLessons = useCallback(async () => {
@@ -356,13 +325,10 @@ export function useLessonBookings(options = {}) {
 
         // Delete associated court booking if exists
         if (lesson.courtBookingId) {
-          await UnifiedBookingService.deleteBooking(
-            lesson.courtBookingId,
-            user,
-          );
+          await UnifiedBookingService.deleteBooking(lesson.courtBookingId, user);
         }
       } catch (error) {
-        console.warn("Error deleting lesson:", lesson.id, error);
+        console.warn('Error deleting lesson:', lesson.id, error);
       }
     }
 
@@ -387,11 +353,10 @@ export function useLessonBookings(options = {}) {
  * Hook for user bookings (both court and lesson)
  */
 export function useUserBookings() {
-  const { userBookings, activeUserBookings, loading, error, refresh } =
-    useUnifiedBookings({
-      autoLoadUser: true,
-      autoLoadLessons: false,
-    });
+  const { userBookings, activeUserBookings, loading, error, refresh } = useUnifiedBookings({
+    autoLoadUser: true,
+    autoLoadLessons: false,
+  });
 
   return {
     userBookings,

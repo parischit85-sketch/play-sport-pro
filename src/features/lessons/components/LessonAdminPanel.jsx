@@ -2,16 +2,16 @@
 // FILE: src/features/lessons/components/LessonAdminPanel.jsx
 // Pannello amministrazione per la gestione delle lezioni
 // =============================================
-import React, { useState, useMemo, useEffect } from "react";
-import Section from "@ui/Section.jsx";
-import Badge from "@ui/Badge.jsx";
-import Modal from "@ui/Modal.jsx";
-import { uid } from "@lib/ids.js";
+import React, { useState, useMemo, useEffect } from 'react';
+import Section from '@ui/Section.jsx';
+import Badge from '@ui/Badge.jsx';
+import Modal from '@ui/Modal.jsx';
+import { uid } from '@lib/ids.js';
 import {
   createLessonTimeSlotSchema,
   PLAYER_CATEGORIES,
-} from "@features/players/types/playerTypes.js";
-import { useClub } from "@contexts/ClubContext.jsx";
+} from '@features/players/types/playerTypes.js';
+import { useClub } from '@contexts/ClubContext.jsx';
 
 export default function LessonAdminPanel({
   T,
@@ -25,16 +25,16 @@ export default function LessonAdminPanel({
   lessonBookingsCount,
 }) {
   const { updatePlayer } = useClub();
-  const [activeSection, setActiveSection] = useState("config");
-  
+  const [activeSection, setActiveSection] = useState('config');
+
   // Debug logging per vedere i dati caricati
-  console.log("📚 === LESSON ADMIN PANEL - DATI CARICATI ===");
-  console.log("🎯 lessonConfig:", JSON.stringify(lessonConfig, null, 2));
-  console.log("👨‍🏫 instructors:", JSON.stringify(instructors, null, 2));
-  console.log("🎾 courts:", JSON.stringify(courts, null, 2));
-  
+  console.log('📚 === LESSON ADMIN PANEL - DATI CARICATI ===');
+  console.log('🎯 lessonConfig:', JSON.stringify(lessonConfig, null, 2));
+  console.log('👨‍🏫 instructors:', JSON.stringify(instructors, null, 2));
+  console.log('🎾 courts:', JSON.stringify(courts, null, 2));
+
   if (lessonConfig?.timeSlots) {
-    console.log("⏰ FASCE ORARIE ESISTENTI:");
+    console.log('⏰ FASCE ORARIE ESISTENTI:');
     lessonConfig.timeSlots.forEach((slot, index) => {
       console.log(`📋 FASCIA ${index + 1}:`, {
         id: slot.id,
@@ -47,7 +47,7 @@ export default function LessonAdminPanel({
         endTime: slot.endTime,
         isActive: slot.isActive,
         selectedDates: slot.selectedDates,
-        allFields: Object.keys(slot)
+        allFields: Object.keys(slot),
       });
     });
   }
@@ -55,23 +55,21 @@ export default function LessonAdminPanel({
   const [editingTimeSlot, setEditingTimeSlot] = useState(null);
   const [showInstructorModal, setShowInstructorModal] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState(null);
-  const [instructorSearch, setInstructorSearch] = useState("");
+  const [instructorSearch, setInstructorSearch] = useState('');
 
   const weekDays = [
-    { value: 0, label: "Domenica" },
-    { value: 1, label: "Lunedì" },
-    { value: 2, label: "Martedì" },
-    { value: 3, label: "Mercoledì" },
-    { value: 4, label: "Giovedì" },
-    { value: 5, label: "Venerdì" },
-    { value: 6, label: "Sabato" },
+    { value: 0, label: 'Domenica' },
+    { value: 1, label: 'Lunedì' },
+    { value: 2, label: 'Martedì' },
+    { value: 3, label: 'Mercoledì' },
+    { value: 4, label: 'Giovedì' },
+    { value: 5, label: 'Venerdì' },
+    { value: 6, label: 'Sabato' },
   ];
 
   // Potential instructors (non-instructor players who can become instructors)
   const potentialInstructors = useMemo(() => {
-    return (players || []).filter(
-      (player) => player.category !== PLAYER_CATEGORIES.INSTRUCTOR,
-    );
+    return (players || []).filter((player) => player.category !== PLAYER_CATEGORIES.INSTRUCTOR);
   }, [players]);
 
   // Filtered potential instructors based on search
@@ -79,11 +77,12 @@ export default function LessonAdminPanel({
     if (!instructorSearch.trim()) {
       return potentialInstructors;
     }
-    
+
     const searchTerm = instructorSearch.toLowerCase().trim();
-    return potentialInstructors.filter((player) => 
-      player.name?.toLowerCase().includes(searchTerm) ||
-      player.email?.toLowerCase().includes(searchTerm)
+    return potentialInstructors.filter(
+      (player) =>
+        player.name?.toLowerCase().includes(searchTerm) ||
+        player.email?.toLowerCase().includes(searchTerm)
     );
   }, [potentialInstructors, instructorSearch]);
 
@@ -91,18 +90,16 @@ export default function LessonAdminPanel({
   const isTimeSlotExpired = (slot) => {
     if (!slot.selectedDates || slot.selectedDates.length === 0) return false;
     if (!slot.endTime) return false; // Se non c'è orario di fine, non può essere scaduta
-    
-    const latestDate = slot.selectedDates
-      .map(date => new Date(date))
-      .sort((a, b) => b - a)[0]; // Get the latest date
-    
+
+    const latestDate = slot.selectedDates.map((date) => new Date(date)).sort((a, b) => b - a)[0]; // Get the latest date
+
     const now = new Date();
-    
+
     // Combina la data più recente con l'orario di fine
     const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
     const endDateTime = new Date(latestDate);
     endDateTime.setHours(endHours, endMinutes, 0, 0);
-    
+
     // La fascia è scaduta solo se l'orario di fine è già passato
     return endDateTime < now;
   };
@@ -110,19 +107,17 @@ export default function LessonAdminPanel({
   const isTimeSlotExpiredForWeek = (slot) => {
     if (!slot.selectedDates || slot.selectedDates.length === 0) return false;
     if (!slot.endTime) return false;
-    
-    const latestDate = slot.selectedDates
-      .map(date => new Date(date))
-      .sort((a, b) => b - a)[0];
-    
+
+    const latestDate = slot.selectedDates.map((date) => new Date(date)).sort((a, b) => b - a)[0];
+
     const now = new Date();
     const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    
+
     // Combina la data più recente con l'orario di fine
     const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
     const endDateTime = new Date(latestDate);
     endDateTime.setHours(endHours, endMinutes, 0, 0);
-    
+
     // La fascia è scaduta da più di una settimana se l'orario di fine è passato da più di 7 giorni
     return endDateTime < oneWeekAgo;
   };
@@ -133,12 +128,12 @@ export default function LessonAdminPanel({
         if (!slot.selectedDates || slot.selectedDates.length === 0) {
           return new Date('2099-12-31'); // Put slots without dates at the end
         }
-        return new Date(Math.min(...slot.selectedDates.map(date => new Date(date))));
+        return new Date(Math.min(...slot.selectedDates.map((date) => new Date(date))));
       };
-      
+
       const dateA = getEarliestDate(a);
       const dateB = getEarliestDate(b);
-      
+
       return dateA - dateB;
     });
   };
@@ -146,14 +141,16 @@ export default function LessonAdminPanel({
   // Clean expired time slots automatically
   useEffect(() => {
     if (!lessonConfig.timeSlots || lessonConfig.timeSlots.length === 0) return;
-    
+
     const expiredSlots = lessonConfig.timeSlots.filter(isTimeSlotExpiredForWeek);
-    
+
     if (expiredSlots.length > 0) {
       console.log(`🗑️ Auto-removing ${expiredSlots.length} expired time slots:`, expiredSlots);
-      
-      const cleanedTimeSlots = lessonConfig.timeSlots.filter(slot => !isTimeSlotExpiredForWeek(slot));
-      
+
+      const cleanedTimeSlots = lessonConfig.timeSlots.filter(
+        (slot) => !isTimeSlotExpiredForWeek(slot)
+      );
+
       updateLessonConfig({
         ...lessonConfig,
         timeSlots: cleanedTimeSlots,
@@ -164,10 +161,12 @@ export default function LessonAdminPanel({
   // Separate and sort time slots
   const { activeTimeSlots, expiredTimeSlots } = useMemo(() => {
     const allSlots = lessonConfig.timeSlots || [];
-    
-    const active = allSlots.filter(slot => !isTimeSlotExpired(slot));
-    const expired = allSlots.filter(slot => isTimeSlotExpired(slot) && !isTimeSlotExpiredForWeek(slot));
-    
+
+    const active = allSlots.filter((slot) => !isTimeSlotExpired(slot));
+    const expired = allSlots.filter(
+      (slot) => isTimeSlotExpired(slot) && !isTimeSlotExpiredForWeek(slot)
+    );
+
     return {
       activeTimeSlots: sortTimeSlotsByDate(active),
       expiredTimeSlots: sortTimeSlotsByDate(expired),
@@ -184,24 +183,30 @@ export default function LessonAdminPanel({
 
   // Handle time slot management
   const handleSaveTimeSlot = (timeSlotData) => {
-    console.log("� === SALVATAGGIO FASCIA ORARIA ===");
-    console.log("🔧 handleSaveTimeSlot - INPUT timeSlotData:", JSON.stringify(timeSlotData, null, 2));
-    console.log("🔧 handleSaveTimeSlot - courtIds:", timeSlotData.courtIds);
-    console.log("🔧 handleSaveTimeSlot - instructorId:", timeSlotData.instructorId);
-    console.log("🔧 handleSaveTimeSlot - instructor:", timeSlotData.instructor);
-    console.log("🔧 handleSaveTimeSlot - ALL FIELDS:", Object.keys(timeSlotData));
-    
+    console.log('� === SALVATAGGIO FASCIA ORARIA ===');
+    console.log(
+      '🔧 handleSaveTimeSlot - INPUT timeSlotData:',
+      JSON.stringify(timeSlotData, null, 2)
+    );
+    console.log('🔧 handleSaveTimeSlot - courtIds:', timeSlotData.courtIds);
+    console.log('🔧 handleSaveTimeSlot - instructorId:', timeSlotData.instructorId);
+    console.log('🔧 handleSaveTimeSlot - instructor:', timeSlotData.instructor);
+    console.log('🔧 handleSaveTimeSlot - ALL FIELDS:', Object.keys(timeSlotData));
+
     const updatedTimeSlots = editingTimeSlot
       ? (lessonConfig.timeSlots || []).map((slot) =>
-          slot.id === editingTimeSlot.id ? { ...slot, ...timeSlotData } : slot,
+          slot.id === editingTimeSlot.id ? { ...slot, ...timeSlotData } : slot
         )
       : [
           ...(lessonConfig.timeSlots || []),
           { ...createLessonTimeSlotSchema(), ...timeSlotData, id: uid() },
         ];
 
-    console.log("🔧 handleSaveTimeSlot - FINAL updatedTimeSlots:", JSON.stringify(updatedTimeSlots, null, 2));
-    
+    console.log(
+      '🔧 handleSaveTimeSlot - FINAL updatedTimeSlots:',
+      JSON.stringify(updatedTimeSlots, null, 2)
+    );
+
     // Log della struttura completa di ogni fascia oraria salvata
     updatedTimeSlots.forEach((slot, index) => {
       console.log(`📋 SLOT ${index + 1}:`, {
@@ -213,7 +218,7 @@ export default function LessonAdminPanel({
         court: slot.court,
         startTime: slot.startTime,
         endTime: slot.endTime,
-        allFields: Object.keys(slot)
+        allFields: Object.keys(slot),
       });
     });
 
@@ -227,12 +232,10 @@ export default function LessonAdminPanel({
   };
 
   const handleDeleteTimeSlot = (timeSlotId) => {
-    if (confirm("Sei sicuro di voler eliminare questa fascia oraria?")) {
+    if (confirm('Sei sicuro di voler eliminare questa fascia oraria?')) {
       updateLessonConfig({
         ...lessonConfig,
-        timeSlots: (lessonConfig.timeSlots || []).filter(
-          (slot) => slot.id !== timeSlotId,
-        ),
+        timeSlots: (lessonConfig.timeSlots || []).filter((slot) => slot.id !== timeSlotId),
       });
     }
   };
@@ -245,7 +248,9 @@ export default function LessonAdminPanel({
       // Prepara i dati dell'istruttore aggiornati
       const updatedPlayerData = {
         ...editingPlayer,
-        category: instructorData.isInstructor ? PLAYER_CATEGORIES.INSTRUCTOR : editingPlayer.category,
+        category: instructorData.isInstructor
+          ? PLAYER_CATEGORIES.INSTRUCTOR
+          : editingPlayer.category,
         instructorData: {
           ...editingPlayer.instructorData,
           ...instructorData,
@@ -254,56 +259,57 @@ export default function LessonAdminPanel({
 
       // Salva su Firebase tramite ClubContext
       if (!updatePlayer) {
-        throw new Error("updatePlayer non disponibile - impossibile salvare su Firebase");
+        throw new Error('updatePlayer non disponibile - impossibile salvare su Firebase');
       }
-      
+
       await updatePlayer(editingPlayer.id, updatedPlayerData);
-      console.log("✅ Istruttore aggiornato su Firebase:", updatedPlayerData);
+      console.log('✅ Istruttore aggiornato su Firebase:', updatedPlayerData);
 
       setShowInstructorModal(false);
       setEditingPlayer(null);
     } catch (error) {
       console.error("❌ Errore durante l'aggiornamento dell'istruttore:", error);
-      alert("Errore durante il salvataggio delle modifiche. Riprova.");
+      alert('Errore durante il salvataggio delle modifiche. Riprova.');
     }
   };
 
   const handleActivateAllInstructors = async () => {
     const inactiveInstructors = (players || []).filter(
-      p => p.category === PLAYER_CATEGORIES.INSTRUCTOR && 
-      (p.instructorData?.isInstructor === false || !p.instructorData?.isInstructor)
+      (p) =>
+        p.category === PLAYER_CATEGORIES.INSTRUCTOR &&
+        (p.instructorData?.isInstructor === false || !p.instructorData?.isInstructor)
     );
-    
+
     if (inactiveInstructors.length === 0) {
-      alert("Tutti gli istruttori sono già attivi!");
+      alert('Tutti gli istruttori sono già attivi!');
       return;
     }
-    
+
     if (confirm(`Vuoi attivare ${inactiveInstructors.length} istruttore/i inattivo/i?`)) {
       try {
         // Attiva ogni istruttore su Firebase
         if (!updatePlayer) {
-          throw new Error("updatePlayer non disponibile - impossibile salvare su Firebase");
+          throw new Error('updatePlayer non disponibile - impossibile salvare su Firebase');
         }
-        
+
         for (const instructor of inactiveInstructors) {
           const updatedInstructorData = {
             ...instructor,
             instructorData: {
               isInstructor: true,
-              color: "#3B82F6",
+              color: '#3B82F6',
               specialties: [],
               hourlyRate: 0,
               priceSingle: 0,
               priceCouple: 0,
               priceThree: 0,
               priceMatchLesson: 0,
-              bio: "",
+              bio: '',
               certifications: [],
               ...instructor.instructorData, // Mantieni i dati esistenti se ci sono
             },
           };
-          
+
           await updatePlayer(instructor.id, updatedInstructorData);
         }
         alert(`${inactiveInstructors.length} istruttore/i attivato/i con successo!`);
@@ -315,11 +321,9 @@ export default function LessonAdminPanel({
   };
 
   const handleRemoveInstructor = async (playerId) => {
-    if (
-      confirm("Sei sicuro di voler rimuovere questo giocatore come istruttore?")
-    ) {
+    if (confirm('Sei sicuro di voler rimuovere questo giocatore come istruttore?')) {
       try {
-        const playerToUpdate = (players || []).find(p => p.id === playerId);
+        const playerToUpdate = (players || []).find((p) => p.id === playerId);
         if (!playerToUpdate) return;
 
         const updatedPlayerData = {
@@ -333,11 +337,11 @@ export default function LessonAdminPanel({
 
         // Salva su Firebase tramite ClubContext
         if (!updatePlayer) {
-          throw new Error("updatePlayer non disponibile - impossibile salvare su Firebase");
+          throw new Error('updatePlayer non disponibile - impossibile salvare su Firebase');
         }
-        
+
         await updatePlayer(playerId, updatedPlayerData);
-        console.log("✅ Istruttore rimosso su Firebase:", updatedPlayerData);
+        console.log('✅ Istruttore rimosso su Firebase:', updatedPlayerData);
       } catch (error) {
         console.error("❌ Errore durante la rimozione dell'istruttore:", error);
         alert("Errore durante la rimozione dell'istruttore. Riprova.");
@@ -352,24 +356,24 @@ export default function LessonAdminPanel({
         <nav className="flex space-x-8 overflow-x-auto px-6 py-2">
           {[
             {
-              id: "config",
-              label: "Configurazione Generale",
-              icon: "⚙️",
-              color: "blue",
+              id: 'config',
+              label: 'Configurazione Generale',
+              icon: '⚙️',
+              color: 'blue',
             },
             {
-              id: "timeslots",
-              label: "Fasce Orarie",
-              icon: "⏰",
-              color: "green",
+              id: 'timeslots',
+              label: 'Fasce Orarie',
+              icon: '⏰',
+              color: 'green',
             },
             {
-              id: "instructors",
-              label: "Gestione Istruttori",
-              icon: "👨‍🏫",
-              color: "purple",
+              id: 'instructors',
+              label: 'Gestione Istruttori',
+              icon: '👨‍🏫',
+              color: 'purple',
             },
-            { id: "cleanup", label: "Pulizia Dati", icon: "🗑️", color: "red" },
+            { id: 'cleanup', label: 'Pulizia Dati', icon: '🗑️', color: 'red' },
           ].map((section) => (
             <button
               key={section.id}
@@ -377,7 +381,7 @@ export default function LessonAdminPanel({
               className={`py-3 px-4 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-2 ${
                 activeSection === section.id
                   ? `border-${section.color}-500 text-${section.color}-600 dark:text-${section.color}-400 bg-${section.color}-50 dark:bg-${section.color}-900/20 rounded-t-lg`
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-t-lg"
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-t-lg'
               }`}
             >
               <span className="text-base">{section.icon}</span>
@@ -388,13 +392,9 @@ export default function LessonAdminPanel({
       </div>
 
       {/* General Configuration */}
-      {activeSection === "config" && (
+      {activeSection === 'config' && (
         <div className="space-y-6">
-          <Section
-            title="Configurazione Sistema Lezioni"
-            variant="minimal"
-            T={T}
-          >
+          <Section title="Configurazione Sistema Lezioni" variant="minimal" T={T}>
             <div className="space-y-4">
               {/* Enable/Disable System */}
               <div className="flex items-center justify-between p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 shadow-sm">
@@ -406,19 +406,19 @@ export default function LessonAdminPanel({
                   </h3>
                   <p className={`text-sm ${T.subtext} max-w-md`}>
                     {lessonConfig.isEnabled
-                      ? "✅ Il sistema di prenotazione lezioni è attivo e funzionante"
-                      : "❌ Il sistema di prenotazione lezioni è disattivato"}
+                      ? '✅ Il sistema di prenotazione lezioni è attivo e funzionante'
+                      : '❌ Il sistema di prenotazione lezioni è disattivato'}
                   </p>
                 </div>
                 <button
                   onClick={toggleLessonSystem}
                   className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg ${
                     lessonConfig.isEnabled
-                      ? "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/60 border border-red-300 dark:border-red-700"
-                      : "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/60 border border-green-300 dark:border-green-700"
+                      ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/60 border border-red-300 dark:border-red-700'
+                      : 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/60 border border-green-300 dark:border-green-700'
                   }`}
                 >
-                  {lessonConfig.isEnabled ? "🛑 Disattiva" : "🚀 Attiva"}
+                  {lessonConfig.isEnabled ? '🛑 Disattiva' : '🚀 Attiva'}
                 </button>
               </div>
 
@@ -478,7 +478,7 @@ export default function LessonAdminPanel({
       )}
 
       {/* Time Slots Management */}
-      {activeSection === "timeslots" && (
+      {activeSection === 'timeslots' && (
         <div className="space-y-6">
           <Section title="Gestione Fasce Orarie" variant="minimal" T={T}>
             <div className="space-y-4">
@@ -488,12 +488,11 @@ export default function LessonAdminPanel({
                 className="px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600"
               >
                 + Aggiungi Fascia Oraria
-              </button>{" "}
+              </button>{' '}
               {/* Time Slots List */}
               {activeTimeSlots.length === 0 && expiredTimeSlots.length === 0 ? (
                 <div className={`text-center py-8 ${T.subtext}`}>
-                  Nessuna fascia oraria configurata. Crea la prima fascia per
-                  iniziare.
+                  Nessuna fascia oraria configurata. Crea la prima fascia per iniziare.
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -505,133 +504,131 @@ export default function LessonAdminPanel({
                       </h3>
                       <div className="space-y-3">
                         {activeTimeSlots.map((slot) => {
-                    // Support both old format (dayOfWeek) and new format (selectedDates)
-                    let displayTitle = "";
-                    let dateInfo = "";
+                          // Support both old format (dayOfWeek) and new format (selectedDates)
+                          let displayTitle = '';
+                          let dateInfo = '';
 
-                    if (slot.selectedDates && slot.selectedDates.length > 0) {
-                      // New format: specific dates
-                      const sortedDates = [...slot.selectedDates].sort();
-                      if (sortedDates.length === 1) {
-                        displayTitle = new Date(
-                          sortedDates[0],
-                        ).toLocaleDateString("it-IT", {
-                          weekday: "long",
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        });
-                      } else {
-                        displayTitle = `${sortedDates.length} date selezionate`;
-                        dateInfo = sortedDates
-                          .slice(0, 3)
-                          .map((date) =>
-                            new Date(date).toLocaleDateString("it-IT"),
-                          )
-                          .join(", ");
-                        if (sortedDates.length > 3) {
-                          dateInfo += ` +${sortedDates.length - 3} altre...`;
-                        }
-                      }
-                    } else if (slot.dayOfWeek) {
-                      // Old format: day of week (for backward compatibility)
-                      const dayName =
-                        weekDays.find((d) => d.value === slot.dayOfWeek)
-                          ?.label || "Sconosciuto";
-                      displayTitle = dayName;
-                      dateInfo = "Ogni settimana";
-                    } else {
-                      displayTitle = "Configurazione non valida";
-                    }
+                          if (slot.selectedDates && slot.selectedDates.length > 0) {
+                            // New format: specific dates
+                            const sortedDates = [...slot.selectedDates].sort();
+                            if (sortedDates.length === 1) {
+                              displayTitle = new Date(sortedDates[0]).toLocaleDateString('it-IT', {
+                                weekday: 'long',
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                              });
+                            } else {
+                              displayTitle = `${sortedDates.length} date selezionate`;
+                              dateInfo = sortedDates
+                                .slice(0, 3)
+                                .map((date) => new Date(date).toLocaleDateString('it-IT'))
+                                .join(', ');
+                              if (sortedDates.length > 3) {
+                                dateInfo += ` +${sortedDates.length - 3} altre...`;
+                              }
+                            }
+                          } else if (slot.dayOfWeek) {
+                            // Old format: day of week (for backward compatibility)
+                            const dayName =
+                              weekDays.find((d) => d.value === slot.dayOfWeek)?.label ||
+                              'Sconosciuto';
+                            displayTitle = dayName;
+                            dateInfo = 'Ogni settimana';
+                          } else {
+                            displayTitle = 'Configurazione non valida';
+                          }
 
-                    const availableInstructors = (instructors || []).filter(
-                      (i) => slot.instructorIds.includes(i.id),
-                    );
+                          const availableInstructors = (instructors || []).filter((i) =>
+                            slot.instructorIds.includes(i.id)
+                          );
 
-                    return (
-                      <div
-                        key={slot.id}
-                        className={`${T.cardBg} ${T.border} ${T.borderMd} p-4`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-2">
-                              <h4 className={`${ds.h6} font-medium`}>
-                                {displayTitle} • {slot.startTime} -{" "}
-                                {slot.endTime}
-                              </h4>
-                              <Badge
-                                variant={slot.isActive ? "success" : "default"}
-                                size="sm"
-                                T={T}
-                              >
-                                {slot.isActive ? "Attiva" : "Inattiva"}
-                              </Badge>
-                            </div>
-
-                            {dateInfo && (
-                              <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                {dateInfo}
-                              </div>
-                            )}
-
-                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                              <span>Max prenotazioni: {slot.maxBookings}</span>
-                              <span>
-                                Istruttori: {availableInstructors.length}
-                              </span>
-                              <span>
-                                Campi: {(slot.courtIds || []).length > 0 ? 
-                                  (courts || []).filter(court => (slot.courtIds || []).includes(court.id)).map(court => court.name).join(', ') || 
-                                  `${(slot.courtIds || []).length} selezionati`
-                                  : 'Nessuno'}
-                              </span>
-                            </div>
-
-                            {availableInstructors.length > 0 && (
-                              <div className="mt-2">
-                                <div className="flex flex-wrap gap-1">
-                                  {availableInstructors.map((instructor) => (
-                                    <div
-                                      key={instructor.id}
-                                      className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs text-gray-700 dark:text-gray-300"
+                          return (
+                            <div
+                              key={slot.id}
+                              className={`${T.cardBg} ${T.border} ${T.borderMd} p-4`}
+                            >
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-3 mb-2">
+                                    <h4 className={`${ds.h6} font-medium`}>
+                                      {displayTitle} • {slot.startTime} - {slot.endTime}
+                                    </h4>
+                                    <Badge
+                                      variant={slot.isActive ? 'success' : 'default'}
+                                      size="sm"
+                                      T={T}
                                     >
-                                      <div
-                                        className="w-3 h-3 rounded-full"
-                                        style={{
-                                          backgroundColor:
-                                            instructor.instructorData?.color,
-                                        }}
-                                      ></div>
-                                      {instructor.name}
+                                      {slot.isActive ? 'Attiva' : 'Inattiva'}
+                                    </Badge>
+                                  </div>
+
+                                  {dateInfo && (
+                                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                      {dateInfo}
                                     </div>
-                                  ))}
+                                  )}
+
+                                  <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                    <span>Max prenotazioni: {slot.maxBookings}</span>
+                                    <span>Istruttori: {availableInstructors.length}</span>
+                                    <span>
+                                      Campi:{' '}
+                                      {(slot.courtIds || []).length > 0
+                                        ? (courts || [])
+                                            .filter((court) =>
+                                              (slot.courtIds || []).includes(court.id)
+                                            )
+                                            .map((court) => court.name)
+                                            .join(', ') ||
+                                          `${(slot.courtIds || []).length} selezionati`
+                                        : 'Nessuno'}
+                                    </span>
+                                  </div>
+
+                                  {availableInstructors.length > 0 && (
+                                    <div className="mt-2">
+                                      <div className="flex flex-wrap gap-1">
+                                        {availableInstructors.map((instructor) => (
+                                          <div
+                                            key={instructor.id}
+                                            className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs text-gray-700 dark:text-gray-300"
+                                          >
+                                            <div
+                                              className="w-3 h-3 rounded-full"
+                                              style={{
+                                                backgroundColor: instructor.instructorData?.color,
+                                              }}
+                                            ></div>
+                                            {instructor.name}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => {
+                                      setEditingTimeSlot(slot);
+                                      setShowTimeSlotModal(true);
+                                    }}
+                                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                                  >
+                                    Modifica
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteTimeSlot(slot.id)}
+                                    className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                                  >
+                                    Elimina
+                                  </button>
                                 </div>
                               </div>
-                            )}
-                          </div>
-
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => {
-                                setEditingTimeSlot(slot);
-                                setShowTimeSlotModal(true);
-                              }}
-                              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
-                            >
-                              Modifica
-                            </button>
-                            <button
-                              onClick={() => handleDeleteTimeSlot(slot.id)}
-                              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-                            >
-                              Elimina
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -649,29 +646,28 @@ export default function LessonAdminPanel({
                         <div className="space-y-3">
                           {expiredTimeSlots.map((slot) => {
                             // Support both old format (dayOfWeek) and new format (selectedDates)
-                            let displayTitle = "";
-                            let dateInfo = "";
+                            let displayTitle = '';
+                            let dateInfo = '';
 
                             if (slot.selectedDates && slot.selectedDates.length > 0) {
                               // New format: specific dates
                               const sortedDates = [...slot.selectedDates].sort();
                               if (sortedDates.length === 1) {
-                                displayTitle = new Date(
-                                  sortedDates[0],
-                                ).toLocaleDateString("it-IT", {
-                                  weekday: "long",
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                });
+                                displayTitle = new Date(sortedDates[0]).toLocaleDateString(
+                                  'it-IT',
+                                  {
+                                    weekday: 'long',
+                                    day: 'numeric',
+                                    month: 'long',
+                                    year: 'numeric',
+                                  }
+                                );
                               } else {
                                 displayTitle = `${sortedDates.length} date selezionate`;
                                 dateInfo = sortedDates
                                   .slice(0, 3)
-                                  .map((date) =>
-                                    new Date(date).toLocaleDateString("it-IT"),
-                                  )
-                                  .join(", ");
+                                  .map((date) => new Date(date).toLocaleDateString('it-IT'))
+                                  .join(', ');
                                 if (sortedDates.length > 3) {
                                   dateInfo += ` +${sortedDates.length - 3} altre...`;
                                 }
@@ -679,16 +675,16 @@ export default function LessonAdminPanel({
                             } else if (slot.dayOfWeek) {
                               // Old format: day of week (for backward compatibility)
                               const dayName =
-                                weekDays.find((d) => d.value === slot.dayOfWeek)
-                                  ?.label || "Sconosciuto";
+                                weekDays.find((d) => d.value === slot.dayOfWeek)?.label ||
+                                'Sconosciuto';
                               displayTitle = dayName;
-                              dateInfo = "Ogni settimana";
+                              dateInfo = 'Ogni settimana';
                             } else {
-                              displayTitle = "Configurazione non valida";
+                              displayTitle = 'Configurazione non valida';
                             }
 
-                            const availableInstructors = (instructors || []).filter(
-                              (i) => slot.instructorIds.includes(i.id),
+                            const availableInstructors = (instructors || []).filter((i) =>
+                              slot.instructorIds.includes(i.id)
                             );
 
                             return (
@@ -701,21 +697,23 @@ export default function LessonAdminPanel({
                                     Scaduta
                                   </span>
                                 </div>
-                                
+
                                 <div className="flex justify-between items-start">
                                   <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
-                                      <h4 className={`${ds.h6} font-medium text-gray-600 dark:text-gray-400`}>
+                                      <h4
+                                        className={`${ds.h6} font-medium text-gray-600 dark:text-gray-400`}
+                                      >
                                         {displayTitle}
                                       </h4>
                                       <div
                                         className={`px-2 py-1 rounded text-xs font-medium ${
                                           slot.isActive
-                                            ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
-                                            : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                                         }`}
                                       >
-                                        {slot.isActive ? "Attiva" : "Disattiva"}
+                                        {slot.isActive ? 'Attiva' : 'Disattiva'}
                                       </div>
                                     </div>
 
@@ -731,10 +729,10 @@ export default function LessonAdminPanel({
                                       </span>
                                       <span>📊 Max {slot.maxBookings} prenotazioni</span>
                                       <span>
-                                        👨‍🏫{" "}
+                                        👨‍🏫{' '}
                                         {availableInstructors.length > 0
-                                          ? availableInstructors.map((i) => i.name).join(", ")
-                                          : "Nessun istruttore"}
+                                          ? availableInstructors.map((i) => i.name).join(', ')
+                                          : 'Nessun istruttore'}
                                       </span>
                                     </div>
                                   </div>
@@ -764,7 +762,7 @@ export default function LessonAdminPanel({
       )}
 
       {/* Instructors Management */}
-      {activeSection === "instructors" && (
+      {activeSection === 'instructors' && (
         <div className="space-y-6">
           <Section title="Gestione Istruttori" variant="minimal" T={T}>
             <div className="space-y-6">
@@ -772,11 +770,32 @@ export default function LessonAdminPanel({
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h3 className={`${ds.h6} font-medium`}>
-                    Tutti gli Istruttori ({(players || []).filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR && (p.instructorData?.isInstructor !== false)).length} attivi, {(players || []).filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR && (p.instructorData?.isInstructor === false || !p.instructorData?.isInstructor)).length} disattivati)
+                    Tutti gli Istruttori (
+                    {
+                      (players || []).filter(
+                        (p) =>
+                          p.category === PLAYER_CATEGORIES.INSTRUCTOR &&
+                          p.instructorData?.isInstructor !== false
+                      ).length
+                    }{' '}
+                    attivi,{' '}
+                    {
+                      (players || []).filter(
+                        (p) =>
+                          p.category === PLAYER_CATEGORIES.INSTRUCTOR &&
+                          (p.instructorData?.isInstructor === false ||
+                            !p.instructorData?.isInstructor)
+                      ).length
+                    }{' '}
+                    disattivati)
                   </h3>
-                  
+
                   {/* Pulsante per attivare tutti gli istruttori inattivi */}
-                  {(players || []).filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR && (p.instructorData?.isInstructor === false || !p.instructorData?.isInstructor)).length > 0 && (
+                  {(players || []).filter(
+                    (p) =>
+                      p.category === PLAYER_CATEGORIES.INSTRUCTOR &&
+                      (p.instructorData?.isInstructor === false || !p.instructorData?.isInstructor)
+                  ).length > 0 && (
                     <button
                       onClick={handleActivateAllInstructors}
                       className="px-3 py-1.5 text-green-600 dark:text-green-400 hover:text-white hover:bg-green-600 dark:hover:bg-green-500 border border-green-600 dark:border-green-400 rounded-lg transition-all duration-200 font-medium text-sm"
@@ -787,137 +806,121 @@ export default function LessonAdminPanel({
                 </div>
 
                 {/* Mostra tutti gli istruttori, sia attivi che disattivati */}
-                {(players || []).filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR).length === 0 ? (
+                {(players || []).filter((p) => p.category === PLAYER_CATEGORIES.INSTRUCTOR)
+                  .length === 0 ? (
                   <div className={`text-center py-6 ${T.subtext}`}>
                     Nessun istruttore configurato
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {(players || [])
-                      .filter(p => p.category === PLAYER_CATEGORIES.INSTRUCTOR)
+                      .filter((p) => p.category === PLAYER_CATEGORIES.INSTRUCTOR)
                       .map((instructor) => {
                         const isActive = instructor.instructorData?.isInstructor !== false;
                         return (
-                      <div
-                        key={instructor.id}
-                        className={`${T.cardBg} ${T.border} rounded-lg p-4 hover:shadow-lg dark:hover:shadow-gray-700/50 transition-all duration-200 ${
-                          !isActive ? 'opacity-60 border-dashed' : ''
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            {!isActive && (
-                              <div className="absolute top-2 right-2 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-2 py-1 rounded-full text-xs font-medium">
-                                🚫 Disattivato
-                              </div>
-                            )}
-                            <div
-                              className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md ${
-                                !isActive ? 'grayscale' : ''
-                              }`}
-                              style={{
-                                backgroundColor: instructor.instructorData?.color,
-                              }}
-                            >
-                              {instructor.name?.charAt(0) || "?"}
-                            </div>
-                            <div>
-                              <h4
-                                className={`${ds.h6} font-medium ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}
-                              >
-                                {instructor.name}
-                                {isActive && <span className="ml-2 text-green-500">🟢</span>}
-                              </h4>
-                              <div className="flex flex-col gap-2 text-sm">
-                                {/* Prezzi lezioni con design migliorato */}
-                                <div className="flex flex-wrap gap-1.5">
-                                  {instructor.instructorData?.priceSingle >
-                                    0 && (
-                                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium border border-blue-200 dark:border-blue-700">
-                                      💼 €
-                                      {instructor.instructorData.priceSingle}
-                                    </span>
-                                  )}
-                                  {instructor.instructorData?.priceCouple >
-                                    0 && (
-                                    <span className="px-2 py-1 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 rounded-full text-xs font-medium border border-green-200 dark:border-green-700">
-                                      👥 €
-                                      {instructor.instructorData.priceCouple}
-                                    </span>
-                                  )}
-                                  {instructor.instructorData?.priceThree >
-                                    0 && (
-                                    <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium border border-purple-200 dark:border-purple-700">
-                                      👥👤 €
-                                      {instructor.instructorData.priceThree}
-                                    </span>
-                                  )}
-                                  {instructor.instructorData?.priceMatchLesson >
-                                    0 && (
-                                    <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-200 rounded-full text-xs font-medium border border-orange-200 dark:border-orange-700">
-                                      🏆 €
-                                      {
-                                        instructor.instructorData
-                                          .priceMatchLesson
-                                      }
-                                    </span>
-                                  )}
-                                  {/* Fallback alla tariffa oraria se non ci sono prezzi specifici */}
-                                  {!instructor.instructorData?.priceSingle &&
-                                    !instructor.instructorData?.priceCouple &&
-                                    !instructor.instructorData?.priceThree &&
-                                    !instructor.instructorData
-                                      ?.priceMatchLesson &&
-                                    instructor.instructorData?.hourlyRate >
-                                      0 && (
-                                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full text-xs font-medium border border-gray-200 dark:border-gray-600">
-                                        ⏰ €
-                                        {instructor.instructorData.hourlyRate}
-                                        /ora
-                                      </span>
-                                    )}
-                                </div>
-                                {/* Specialità con design migliorato */}
-                                {instructor.instructorData?.specialties
-                                  ?.length > 0 && (
-                                  <div className="flex flex-wrap gap-1">
-                                    {instructor.instructorData.specialties.map(
-                                      (specialty, idx) => (
-                                        <span
-                                          key={idx}
-                                          className="px-2 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded text-xs border border-indigo-200 dark:border-indigo-700"
-                                        >
-                                          ⭐ {specialty}
-                                        </span>
-                                      ),
-                                    )}
+                          <div
+                            key={instructor.id}
+                            className={`${T.cardBg} ${T.border} rounded-lg p-4 hover:shadow-lg dark:hover:shadow-gray-700/50 transition-all duration-200 ${
+                              !isActive ? 'opacity-60 border-dashed' : ''
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                {!isActive && (
+                                  <div className="absolute top-2 right-2 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 px-2 py-1 rounded-full text-xs font-medium">
+                                    🚫 Disattivato
                                   </div>
                                 )}
+                                <div
+                                  className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md ${
+                                    !isActive ? 'grayscale' : ''
+                                  }`}
+                                  style={{
+                                    backgroundColor: instructor.instructorData?.color,
+                                  }}
+                                >
+                                  {instructor.name?.charAt(0) || '?'}
+                                </div>
+                                <div>
+                                  <h4
+                                    className={`${ds.h6} font-medium ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}`}
+                                  >
+                                    {instructor.name}
+                                    {isActive && <span className="ml-2 text-green-500">🟢</span>}
+                                  </h4>
+                                  <div className="flex flex-col gap-2 text-sm">
+                                    {/* Prezzi lezioni con design migliorato */}
+                                    <div className="flex flex-wrap gap-1.5">
+                                      {instructor.instructorData?.priceSingle > 0 && (
+                                        <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 rounded-full text-xs font-medium border border-blue-200 dark:border-blue-700">
+                                          💼 €{instructor.instructorData.priceSingle}
+                                        </span>
+                                      )}
+                                      {instructor.instructorData?.priceCouple > 0 && (
+                                        <span className="px-2 py-1 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 rounded-full text-xs font-medium border border-green-200 dark:border-green-700">
+                                          👥 €{instructor.instructorData.priceCouple}
+                                        </span>
+                                      )}
+                                      {instructor.instructorData?.priceThree > 0 && (
+                                        <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200 rounded-full text-xs font-medium border border-purple-200 dark:border-purple-700">
+                                          👥👤 €{instructor.instructorData.priceThree}
+                                        </span>
+                                      )}
+                                      {instructor.instructorData?.priceMatchLesson > 0 && (
+                                        <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-200 rounded-full text-xs font-medium border border-orange-200 dark:border-orange-700">
+                                          🏆 €{instructor.instructorData.priceMatchLesson}
+                                        </span>
+                                      )}
+                                      {/* Fallback alla tariffa oraria se non ci sono prezzi specifici */}
+                                      {!instructor.instructorData?.priceSingle &&
+                                        !instructor.instructorData?.priceCouple &&
+                                        !instructor.instructorData?.priceThree &&
+                                        !instructor.instructorData?.priceMatchLesson &&
+                                        instructor.instructorData?.hourlyRate > 0 && (
+                                          <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full text-xs font-medium border border-gray-200 dark:border-gray-600">
+                                            ⏰ €{instructor.instructorData.hourlyRate}
+                                            /ora
+                                          </span>
+                                        )}
+                                    </div>
+                                    {/* Specialità con design migliorato */}
+                                    {instructor.instructorData?.specialties?.length > 0 && (
+                                      <div className="flex flex-wrap gap-1">
+                                        {instructor.instructorData.specialties.map(
+                                          (specialty, idx) => (
+                                            <span
+                                              key={idx}
+                                              className="px-2 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded text-xs border border-indigo-200 dark:border-indigo-700"
+                                            >
+                                              ⭐ {specialty}
+                                            </span>
+                                          )
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => {
+                                    setEditingPlayer(instructor);
+                                    setShowInstructorModal(true);
+                                  }}
+                                  className="px-3 py-1.5 text-blue-600 dark:text-blue-400 hover:text-white hover:bg-blue-600 dark:hover:bg-blue-500 border border-blue-600 dark:border-blue-400 rounded-lg transition-all duration-200 font-medium text-sm"
+                                >
+                                  ✏️ Modifica
+                                </button>
+                                <button
+                                  onClick={() => handleRemoveInstructor(instructor.id)}
+                                  className="px-3 py-1.5 text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 dark:hover:bg-red-500 border border-red-600 dark:border-red-400 rounded-lg transition-all duration-200 font-medium text-sm"
+                                >
+                                  🗑️ Rimuovi
+                                </button>
                               </div>
                             </div>
                           </div>
-
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => {
-                                setEditingPlayer(instructor);
-                                setShowInstructorModal(true);
-                              }}
-                              className="px-3 py-1.5 text-blue-600 dark:text-blue-400 hover:text-white hover:bg-blue-600 dark:hover:bg-blue-500 border border-blue-600 dark:border-blue-400 rounded-lg transition-all duration-200 font-medium text-sm"
-                            >
-                              ✏️ Modifica
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleRemoveInstructor(instructor.id)
-                              }
-                              className="px-3 py-1.5 text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 dark:hover:bg-red-500 border border-red-600 dark:border-red-400 rounded-lg transition-all duration-200 font-medium text-sm"
-                            >
-                              🗑️ Rimuovi
-                            </button>
-                          </div>
-                        </div>
-                      </div>
                         );
                       })}
                   </div>
@@ -926,9 +929,7 @@ export default function LessonAdminPanel({
 
               {/* Add Instructor */}
               <div>
-                <h3 className={`${ds.h6} font-medium mb-3`}>
-                  Aggiungi Istruttore
-                </h3>
+                <h3 className={`${ds.h6} font-medium mb-3`}>Aggiungi Istruttore</h3>
 
                 {/* Search field for instructors */}
                 <div className="mb-4">
@@ -945,7 +946,7 @@ export default function LessonAdminPanel({
                     </div>
                     {instructorSearch && (
                       <button
-                        onClick={() => setInstructorSearch("")}
+                        onClick={() => setInstructorSearch('')}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                       >
                         ✕
@@ -954,17 +955,18 @@ export default function LessonAdminPanel({
                   </div>
                   {instructorSearch && (
                     <p className={`text-sm ${T.subtext} mt-2`}>
-                      {filteredPotentialInstructors.length} risultat{filteredPotentialInstructors.length === 1 ? 'o' : 'i'} trovato/i per "{instructorSearch}"
+                      {filteredPotentialInstructors.length} risultat
+                      {filteredPotentialInstructors.length === 1 ? 'o' : 'i'} trovato/i per "
+                      {instructorSearch}"
                     </p>
                   )}
                 </div>
 
                 {filteredPotentialInstructors.length === 0 ? (
                   <div className={`text-center py-6 ${T.subtext}`}>
-                    {instructorSearch ? 
-                      `Nessun giocatore trovato per "${instructorSearch}"` :
-                      "Tutti i giocatori sono già istruttori o non ci sono giocatori disponibili"
-                    }
+                    {instructorSearch
+                      ? `Nessun giocatore trovato per "${instructorSearch}"`
+                      : 'Tutti i giocatori sono già istruttori o non ci sono giocatori disponibili'}
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -976,17 +978,13 @@ export default function LessonAdminPanel({
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gradient-to-r from-gray-400 to-gray-600 dark:from-gray-600 dark:to-gray-800 flex items-center justify-center text-white font-bold shadow-md">
-                              {player.name?.charAt(0) || "?"}
+                              {player.name?.charAt(0) || '?'}
                             </div>
                             <div>
-                              <h4
-                                className={`${ds.h6} font-medium text-gray-900 dark:text-white`}
-                              >
+                              <h4 className={`${ds.h6} font-medium text-gray-900 dark:text-white`}>
                                 {player.name}
                               </h4>
-                              <p
-                                className={`text-sm ${T.subtext} flex items-center gap-2`}
-                              >
+                              <p className={`text-sm ${T.subtext} flex items-center gap-2`}>
                                 <span>📧 {player.email}</span>
                                 <span>•</span>
                                 <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-xs font-medium">
@@ -1016,7 +1014,7 @@ export default function LessonAdminPanel({
       )}
 
       {/* Data Cleanup Section */}
-      {activeSection === "cleanup" && (
+      {activeSection === 'cleanup' && (
         <div className="space-y-6">
           <Section title="Pulizia Dati di Test" variant="minimal" T={T}>
             <div className="space-y-4">
@@ -1026,25 +1024,20 @@ export default function LessonAdminPanel({
                   <h3 className="font-semibold">Attenzione</h3>
                 </div>
                 <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                  Questa sezione permette di cancellare tutte le prenotazioni di
-                  lezione di test. Le prenotazioni dei campi associate verranno
-                  anche cancellate automaticamente.
+                  Questa sezione permette di cancellare tutte le prenotazioni di lezione di test. Le
+                  prenotazioni dei campi associate verranno anche cancellate automaticamente.
                 </p>
               </div>
 
-              <div
-                className={`${T.cardBg} ${T.border} ${T.borderMd} p-6 rounded-lg`}
-              >
+              <div className={`${T.cardBg} ${T.border} ${T.borderMd} p-6 rounded-lg`}>
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className={`${ds.h6} font-medium`}>
-                      Prenotazioni Lezioni Presenti
-                    </h3>
+                    <h3 className={`${ds.h6} font-medium`}>Prenotazioni Lezioni Presenti</h3>
                     <p className={`text-sm ${T.subtext}`}>
                       {lessonBookingsCount === 0
-                        ? "Nessuna prenotazione di lezione presente"
+                        ? 'Nessuna prenotazione di lezione presente'
                         : lessonBookingsCount === 1
-                          ? "1 prenotazione di lezione presente"
+                          ? '1 prenotazione di lezione presente'
                           : `${lessonBookingsCount} prenotazioni di lezione presenti`}
                     </p>
                   </div>
@@ -1078,22 +1071,13 @@ export default function LessonAdminPanel({
                 )}
               </div>
 
-              <div
-                className={`${T.cardBg} ${T.border} ${T.borderMd} p-4 rounded-lg`}
-              >
-                <h4 className={`${ds.h6} font-medium mb-2`}>
-                  Come funziona la pulizia:
-                </h4>
+              <div className={`${T.cardBg} ${T.border} ${T.borderMd} p-4 rounded-lg`}>
+                <h4 className={`${ds.h6} font-medium mb-2`}>Come funziona la pulizia:</h4>
                 <ul className={`text-sm space-y-1 ${T.subtext}`}>
-                  <li>
-                    • Cancella tutte le prenotazioni di lezione dal localStorage
-                  </li>
+                  <li>• Cancella tutte le prenotazioni di lezione dal localStorage</li>
                   <li>• Cancella i corrispondenti slot prenotati nei campi</li>
                   <li>• Aggiorna automaticamente la vista "Gestione Campi"</li>
-                  <li>
-                    • Non tocca le configurazioni degli istruttori o le fasce
-                    orarie
-                  </li>
+                  <li>• Non tocca le configurazioni degli istruttori o le fasce orarie</li>
                 </ul>
               </div>
             </div>
@@ -1150,10 +1134,10 @@ function TimeSlotModal({
   ds,
 }) {
   const [formData, setFormData] = useState({
-    selectedDate: "", // Data specifica selezionata
-    instructorId: "", // Un solo istruttore
-    startTime: "14:00",
-    endTime: "15:00",
+    selectedDate: '', // Data specifica selezionata
+    instructorId: '', // Un solo istruttore
+    startTime: '14:00',
+    endTime: '15:00',
     maxBookings: 5,
     courtIds: [], // Tutti i campi selezionati di default
     isActive: true,
@@ -1166,7 +1150,7 @@ function TimeSlotModal({
   useEffect(() => {
     if (timeSlot) {
       // For editing existing time slot
-      let selectedDate = "";
+      let selectedDate = '';
       if (timeSlot.selectedDates && timeSlot.selectedDates.length > 0) {
         selectedDate = timeSlot.selectedDates[0];
       } else if (timeSlot.dayOfWeek !== undefined) {
@@ -1178,25 +1162,25 @@ function TimeSlotModal({
         targetDate.setDate(today.getDate() + diff + (diff < 0 ? 7 : 0)); // Next occurrence of this day
         selectedDate = targetDate.toISOString().split('T')[0];
       }
-      
+
       setFormData({
         selectedDate,
-        instructorId: timeSlot.instructorIds?.[0] || "",
-        startTime: timeSlot.startTime || "14:00",
-        endTime: timeSlot.endTime || "15:00",
+        instructorId: timeSlot.instructorIds?.[0] || '',
+        startTime: timeSlot.startTime || '14:00',
+        endTime: timeSlot.endTime || '15:00',
         maxBookings: timeSlot.maxBookings || 5,
-        courtIds: timeSlot.courtIds || (courts ? courts.map(c => c.id) : []),
+        courtIds: timeSlot.courtIds || (courts ? courts.map((c) => c.id) : []),
         isActive: timeSlot.isActive !== undefined ? timeSlot.isActive : true,
       });
     } else {
       // Reset form for new time slot - default all courts selected
       setFormData({
-        selectedDate: "",
-        instructorId: "",
-        startTime: "14:00",
-        endTime: "15:00",
+        selectedDate: '',
+        instructorId: '',
+        startTime: '14:00',
+        endTime: '15:00',
         maxBookings: 5,
-        courtIds: courts ? courts.map(c => c.id) : [],
+        courtIds: courts ? courts.map((c) => c.id) : [],
         isActive: true,
       });
     }
@@ -1219,7 +1203,7 @@ function TimeSlotModal({
 
     // Add all days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
       days.push({
         day,
         dateStr,
@@ -1242,19 +1226,27 @@ function TimeSlotModal({
   };
 
   const monthNames = [
-    "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
-    "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
+    'Gennaio',
+    'Febbraio',
+    'Marzo',
+    'Aprile',
+    'Maggio',
+    'Giugno',
+    'Luglio',
+    'Agosto',
+    'Settembre',
+    'Ottobre',
+    'Novembre',
+    'Dicembre',
   ];
 
-  const dayNames = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
-
-
+  const dayNames = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!formData.startTime || !formData.endTime) {
-      alert("Inserisci orario di inizio e fine");
+      alert('Inserisci orario di inizio e fine');
       return;
     }
 
@@ -1264,17 +1256,17 @@ function TimeSlotModal({
     }
 
     if (!formData.selectedDate) {
-      alert("Seleziona una data dal calendario");
+      alert('Seleziona una data dal calendario');
       return;
     }
 
     if (!formData.instructorId) {
-      alert("Seleziona un istruttore");
+      alert('Seleziona un istruttore');
       return;
     }
 
     if (formData.courtIds.length === 0) {
-      alert("Seleziona almeno un campo");
+      alert('Seleziona almeno un campo');
       return;
     }
 
@@ -1286,12 +1278,12 @@ function TimeSlotModal({
       dayOfWeek: selectedDateObj.getDay(), // Convert date to day of week (0=Sunday, 1=Monday, etc.)
       selectedDates: [formData.selectedDate], // Keep for backward compatibility
     };
-    
+
     // Remove the single instructorId as we now have instructorIds array
     delete timeSlotData.instructorId;
     delete timeSlotData.selectedDate;
 
-    console.log("🔧 DEBUG TimeSlotModal - Converted data:", timeSlotData);
+    console.log('🔧 DEBUG TimeSlotModal - Converted data:', timeSlotData);
     onSave(timeSlotData);
   };
 
@@ -1299,7 +1291,7 @@ function TimeSlotModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={timeSlot ? "Modifica Fascia Oraria" : "Aggiungi Fascia Oraria"}
+      title={timeSlot ? 'Modifica Fascia Oraria' : 'Aggiungi Fascia Oraria'}
       size="extraLarge"
       T={T}
     >
@@ -1310,8 +1302,12 @@ function TimeSlotModal({
           <div className="space-y-4">
             {/* Date Calendar Selector */}
             <div>
-              <label className={`block ${ds.label} mb-3 text-lg font-semibold`}>📅 Seleziona Data *</label>
-              <div className={`border-2 rounded-lg p-4 ${T.border} bg-white dark:bg-gray-900 shadow-sm`}>
+              <label className={`block ${ds.label} mb-3 text-lg font-semibold`}>
+                📅 Seleziona Data *
+              </label>
+              <div
+                className={`border-2 rounded-lg p-4 ${T.border} bg-white dark:bg-gray-900 shadow-sm`}
+              >
                 {/* Calendar Header */}
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
                   <button
@@ -1362,15 +1358,15 @@ function TimeSlotModal({
                           p-3 text-sm rounded-lg border-2 transition-all duration-200 font-semibold min-h-[2.5rem] flex items-center justify-center
                           ${
                             dayData.isPast
-                              ? "text-gray-400 dark:text-gray-600 cursor-not-allowed bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                              : "hover:shadow-md cursor-pointer transform hover:scale-105"
+                              ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+                              : 'hover:shadow-md cursor-pointer transform hover:scale-105'
                           }
                           ${
                             dayData.isSelected
-                              ? "bg-blue-600 dark:bg-blue-500 text-white border-blue-600 dark:border-blue-500 shadow-lg shadow-blue-500/30"
-                              : dayData.isPast 
-                                ? "" 
-                                : "border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-500"
+                              ? 'bg-blue-600 dark:bg-blue-500 text-white border-blue-600 dark:border-blue-500 shadow-lg shadow-blue-500/30'
+                              : dayData.isPast
+                                ? ''
+                                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:border-blue-300 dark:hover:border-blue-500'
                           }
                         `}
                       >
@@ -1384,7 +1380,8 @@ function TimeSlotModal({
                 {formData.selectedDate && (
                   <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
                     <p className="text-sm font-bold text-blue-800 dark:text-blue-200">
-                      📅 Data selezionata: {new Date(formData.selectedDate).toLocaleDateString("it-IT")}
+                      📅 Data selezionata:{' '}
+                      {new Date(formData.selectedDate).toLocaleDateString('it-IT')}
                     </p>
                   </div>
                 )}
@@ -1393,7 +1390,9 @@ function TimeSlotModal({
 
             {/* Instructor Selection */}
             <div>
-              <label className={`block ${ds.label} mb-3 text-lg font-semibold`}>👨‍🏫 Istruttore *</label>
+              <label className={`block ${ds.label} mb-3 text-lg font-semibold`}>
+                👨‍🏫 Istruttore *
+              </label>
               <select
                 value={formData.instructorId}
                 onChange={(e) => setFormData({ ...formData, instructorId: e.target.value })}
@@ -1426,8 +1425,13 @@ function TimeSlotModal({
                         value={formData.startTime ? formData.startTime.split(':')[0] : ''}
                         onChange={(e) => {
                           const hour = e.target.value;
-                          const currentMinutes = formData.startTime ? formData.startTime.split(':')[1] : '00';
-                          setFormData({ ...formData, startTime: hour ? `${hour}:${currentMinutes}` : '' });
+                          const currentMinutes = formData.startTime
+                            ? formData.startTime.split(':')[1]
+                            : '00';
+                          setFormData({
+                            ...formData,
+                            startTime: hour ? `${hour}:${currentMinutes}` : '',
+                          });
                         }}
                         className={`w-16 p-2 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${T.text} font-medium text-sm`}
                       >
@@ -1445,8 +1449,13 @@ function TimeSlotModal({
                         value={formData.startTime ? formData.startTime.split(':')[1] : ''}
                         onChange={(e) => {
                           const minutes = e.target.value;
-                          const currentHour = formData.startTime ? formData.startTime.split(':')[0] : '';
-                          setFormData({ ...formData, startTime: currentHour ? `${currentHour}:${minutes}` : '' });
+                          const currentHour = formData.startTime
+                            ? formData.startTime.split(':')[0]
+                            : '';
+                          setFormData({
+                            ...formData,
+                            startTime: currentHour ? `${currentHour}:${minutes}` : '',
+                          });
                         }}
                         className={`w-16 p-2 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${T.text} font-medium text-sm`}
                       >
@@ -1467,8 +1476,13 @@ function TimeSlotModal({
                         value={formData.endTime ? formData.endTime.split(':')[0] : ''}
                         onChange={(e) => {
                           const hour = e.target.value;
-                          const currentMinutes = formData.endTime ? formData.endTime.split(':')[1] : '00';
-                          setFormData({ ...formData, endTime: hour ? `${hour}:${currentMinutes}` : '' });
+                          const currentMinutes = formData.endTime
+                            ? formData.endTime.split(':')[1]
+                            : '00';
+                          setFormData({
+                            ...formData,
+                            endTime: hour ? `${hour}:${currentMinutes}` : '',
+                          });
                         }}
                         className={`w-16 p-2 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${T.text} font-medium text-sm`}
                       >
@@ -1486,8 +1500,13 @@ function TimeSlotModal({
                         value={formData.endTime ? formData.endTime.split(':')[1] : ''}
                         onChange={(e) => {
                           const minutes = e.target.value;
-                          const currentHour = formData.endTime ? formData.endTime.split(':')[0] : '';
-                          setFormData({ ...formData, endTime: currentHour ? `${currentHour}:${minutes}` : '' });
+                          const currentHour = formData.endTime
+                            ? formData.endTime.split(':')[0]
+                            : '';
+                          setFormData({
+                            ...formData,
+                            endTime: currentHour ? `${currentHour}:${minutes}` : '',
+                          });
                         }}
                         className={`w-16 p-2 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${T.text} font-medium text-sm`}
                       >
@@ -1503,9 +1522,7 @@ function TimeSlotModal({
 
             {/* Max Bookings */}
             <div>
-              <label className={`block ${ds.label} mb-2`}>
-                📊 Numero Massimo Prenotazioni
-              </label>
+              <label className={`block ${ds.label} mb-2`}>📊 Numero Massimo Prenotazioni</label>
               <input
                 type="number"
                 min="1"
@@ -1528,12 +1545,13 @@ function TimeSlotModal({
                   type="checkbox"
                   id="isActive"
                   checked={formData.isActive}
-                  onChange={(e) =>
-                    setFormData({ ...formData, isActive: e.target.checked })
-                  }
+                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                   className="rounded text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400 w-5 h-5"
                 />
-                <label htmlFor="isActive" className="font-semibold text-green-700 dark:text-green-300">
+                <label
+                  htmlFor="isActive"
+                  className="font-semibold text-green-700 dark:text-green-300"
+                >
                   ✅ Fascia oraria attiva
                 </label>
               </div>
@@ -1547,54 +1565,55 @@ function TimeSlotModal({
               <div
                 className={`space-y-2 border-2 rounded-lg p-3 ${T.border} bg-white dark:bg-gray-900 shadow-sm`}
               >
-              {courts &&
-                courts.map((court) => (
-                  <label key={court.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={formData.courtIds.includes(court.id)}
-                      onChange={(e) => {
-                        const { checked } = e.target;
-                        setFormData({
-                          ...formData,
-                          courtIds: checked
-                            ? [...formData.courtIds, court.id]
-                            : formData.courtIds.filter((id) => id !== court.id),
-                        });
-                      }}
-                      className="rounded text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400 w-4 h-4"
-                    />
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-6 h-6 rounded border-2 border-white dark:border-gray-700 shadow-sm"
-                        style={{
-                          backgroundColor: court.surface?.color || "#e5e7eb",
+                {courts &&
+                  courts.map((court) => (
+                    <label
+                      key={court.id}
+                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={formData.courtIds.includes(court.id)}
+                        onChange={(e) => {
+                          const { checked } = e.target;
+                          setFormData({
+                            ...formData,
+                            courtIds: checked
+                              ? [...formData.courtIds, court.id]
+                              : formData.courtIds.filter((id) => id !== court.id),
+                          });
                         }}
-                      ></div>
-                      <div className="flex flex-col">
-                        <span className="font-medium text-gray-900 dark:text-gray-100">
-                          {court.name || `Campo ${court.id}`}
-                        </span>
-                        {court.surface?.type && (
-                          <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded mt-1 self-start">
-                            {court.surface.type}
+                        className="rounded text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400 w-4 h-4"
+                      />
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-6 h-6 rounded border-2 border-white dark:border-gray-700 shadow-sm"
+                          style={{
+                            backgroundColor: court.surface?.color || '#e5e7eb',
+                          }}
+                        ></div>
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
+                            {court.name || `Campo ${court.id}`}
                           </span>
-                        )}
+                          {court.surface?.type && (
+                            <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded mt-1 self-start">
+                              {court.surface.type}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </label>
-                ))}
-            </div>
-            {(!courts || courts.length === 0) && (
-              <p className={`text-sm ${T.subtext} mt-1`}>
-                Nessun campo configurato. Vai alla sezione Campi per aggiungerne.
-              </p>
-            )}
+                    </label>
+                  ))}
+              </div>
+              {(!courts || courts.length === 0) && (
+                <p className={`text-sm ${T.subtext} mt-1`}>
+                  Nessun campo configurato. Vai alla sezione Campi per aggiungerne.
+                </p>
+              )}
             </div>
           </div>
         </div>
-
-
 
         {/* Actions */}
         <div className="flex gap-4 pt-6 border-t border-gray-200 dark:border-gray-600 mt-6">
@@ -1609,7 +1628,7 @@ function TimeSlotModal({
             type="submit"
             className="flex-1 py-3 px-6 bg-blue-600 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 font-semibold transition-colors text-lg shadow-lg"
           >
-            {timeSlot ? "✏️ Aggiorna" : "➕ Crea"} Fascia Oraria
+            {timeSlot ? '✏️ Aggiorna' : '➕ Crea'} Fascia Oraria
           </button>
         </div>
       </form>
@@ -1620,34 +1639,34 @@ function TimeSlotModal({
 // Instructor Management Modal
 function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
   const [formData, setFormData] = useState(() => ({
-    color: "#3B82F6",
+    color: '#3B82F6',
     hourlyRate: 0, // Mantengo per retrocompatibilità
     priceSingle: 0,
     priceCouple: 0,
     priceThree: 0,
     priceMatchLesson: 0,
     specialties: [],
-    bio: "",
+    bio: '',
     certifications: [],
     isInstructor: true, // Default attivo per nuovi istruttori
     ...player.instructorData,
   }));
 
-  const [newSpecialty, setNewSpecialty] = useState("");
-  const [newCertification, setNewCertification] = useState("");
+  const [newSpecialty, setNewSpecialty] = useState('');
+  const [newCertification, setNewCertification] = useState('');
 
-  const commonSpecialties = ["Padel", "Tennis", "Fitness"];
+  const commonSpecialties = ['Padel', 'Tennis', 'Fitness'];
   const predefinedColors = [
-    "#3B82F6",
-    "#EF4444",
-    "#10B981",
-    "#F59E0B",
-    "#8B5CF6",
-    "#EC4899",
-    "#06B6D4",
-    "#84CC16",
-    "#F97316",
-    "#6366F1",
+    '#3B82F6',
+    '#EF4444',
+    '#10B981',
+    '#F59E0B',
+    '#8B5CF6',
+    '#EC4899',
+    '#06B6D4',
+    '#84CC16',
+    '#F97316',
+    '#6366F1',
   ];
 
   const handleSubmit = (e) => {
@@ -1656,15 +1675,12 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
   };
 
   const addSpecialty = () => {
-    if (
-      newSpecialty.trim() &&
-      !formData.specialties.includes(newSpecialty.trim())
-    ) {
+    if (newSpecialty.trim() && !formData.specialties.includes(newSpecialty.trim())) {
       setFormData({
         ...formData,
         specialties: [...formData.specialties, newSpecialty.trim()],
       });
-      setNewSpecialty("");
+      setNewSpecialty('');
     }
   };
 
@@ -1676,24 +1692,19 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
   };
 
   const addCertification = () => {
-    if (
-      newCertification.trim() &&
-      !formData.certifications.includes(newCertification.trim())
-    ) {
+    if (newCertification.trim() && !formData.certifications.includes(newCertification.trim())) {
       setFormData({
         ...formData,
         certifications: [...formData.certifications, newCertification.trim()],
       });
-      setNewCertification("");
+      setNewCertification('');
     }
   };
 
   const removeCertification = (certification) => {
     setFormData({
       ...formData,
-      certifications: formData.certifications.filter(
-        (c) => c !== certification,
-      ),
+      certifications: formData.certifications.filter((c) => c !== certification),
     });
   };
 
@@ -1717,15 +1728,13 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
                 onClick={() => setFormData({ ...formData, color })}
                 className={`w-8 h-8 rounded-full border-2 transition-all duration-200 hover:scale-110 ${
                   formData.color === color
-                    ? "border-gray-800 dark:border-white scale-110 shadow-lg"
-                    : "border-gray-300 dark:border-gray-600 hover:border-gray-500 dark:hover:border-gray-400"
+                    ? 'border-gray-800 dark:border-white scale-110 shadow-lg'
+                    : 'border-gray-300 dark:border-gray-600 hover:border-gray-500 dark:hover:border-gray-400'
                 }`}
                 style={{ backgroundColor: color }}
                 title={`Seleziona colore ${color}`}
               >
-                {formData.color === color && (
-                  <span className="text-white text-xs">✓</span>
-                )}
+                {formData.color === color && <span className="text-white text-xs">✓</span>}
               </button>
             ))}
           </div>
@@ -1733,9 +1742,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
             <input
               type="color"
               value={formData.color}
-              onChange={(e) =>
-                setFormData({ ...formData, color: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, color: e.target.value })}
               className="w-12 h-8 rounded border cursor-pointer"
               title="Colore personalizzato"
             />
@@ -1752,32 +1759,29 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
               <input
                 type="checkbox"
                 checked={formData.isInstructor}
-                onChange={(e) =>
-                  setFormData({ ...formData, isInstructor: e.target.checked })
-                }
+                onChange={(e) => setFormData({ ...formData, isInstructor: e.target.checked })}
                 className="sr-only"
               />
               <div
                 className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${
                   formData.isInstructor
-                    ? "bg-emerald-600 border-emerald-600 shadow-lg"
-                    : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 group-hover:border-emerald-400"
+                    ? 'bg-emerald-600 border-emerald-600 shadow-lg'
+                    : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 group-hover:border-emerald-400'
                 }`}
               >
-                {formData.isInstructor && (
-                  <span className="text-white text-sm font-bold">✓</span>
-                )}
+                {formData.isInstructor && <span className="text-white text-sm font-bold">✓</span>}
               </div>
             </div>
             <div>
-              <span className={`${ds.label} font-semibold ${formData.isInstructor ? 'text-emerald-700 dark:text-emerald-300' : ''}`}>
+              <span
+                className={`${ds.label} font-semibold ${formData.isInstructor ? 'text-emerald-700 dark:text-emerald-300' : ''}`}
+              >
                 🎯 Attiva Istruttore
               </span>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {formData.isInstructor 
-                  ? "L'istruttore è attivo e può ricevere prenotazioni" 
-                  : "L'istruttore è disattivato e non comparirà nelle prenotazioni"
-                }
+                {formData.isInstructor
+                  ? "L'istruttore è attivo e può ricevere prenotazioni"
+                  : "L'istruttore è disattivato e non comparirà nelle prenotazioni"}
               </p>
             </div>
           </label>
@@ -1887,10 +1891,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
               <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
                 <span className="text-base">💡</span>
                 <span className="font-medium">Neural Tip:</span>
-                <span>
-                  Prezzi per ora di lezione. Impostare a 0 per disabilitare la
-                  tipologia.
-                </span>
+                <span>Prezzi per ora di lezione. Impostare a 0 per disabilitare la tipologia.</span>
               </div>
             </div>
           </div>
@@ -1914,8 +1915,8 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
                   }}
                   className={`p-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isSelected
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
                   {specialty}
@@ -1932,9 +1933,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
               onChange={(e) => setNewSpecialty(e.target.value)}
               className={`flex-1 ${ds.input}`}
               placeholder="Specialità personalizzata..."
-              onKeyPress={(e) =>
-                e.key === "Enter" && (e.preventDefault(), addSpecialty())
-              }
+              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSpecialty())}
             />
             <button
               type="button"
@@ -1949,9 +1948,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
 
         {/* Bio */}
         <div>
-          <label className={`block ${ds.label} mb-2`}>
-            Biografia Istruttore
-          </label>
+          <label className={`block ${ds.label} mb-2`}>Biografia Istruttore</label>
           <textarea
             value={formData.bio}
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
@@ -1965,9 +1962,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
               {formData.bio.length}/500 caratteri
             </span>
             {formData.bio.length > 450 && (
-              <span className="text-xs text-orange-500">
-                Limite quasi raggiunto
-              </span>
+              <span className="text-xs text-orange-500">Limite quasi raggiunto</span>
             )}
           </div>
         </div>

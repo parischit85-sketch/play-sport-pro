@@ -2,16 +2,16 @@
 // FILE: src/features/stats/StatisticheGiocatore.jsx
 // FUTURISTIC DESIGN - Modern UI with glassmorphism
 // =============================================
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import Section from "@ui/Section.jsx";
-import StatsCard from "@ui/StatsCard.jsx";
-import ShareButtons from "@ui/ShareButtons.jsx";
-import ModernAreaChart from "@ui/charts/ModernAreaChart.jsx";
-import Modal from "@ui/Modal.jsx";
-import { byPlayerFirstAlpha, surnameOf, IT_COLLATOR } from "@lib/names.js";
-import { DEFAULT_RATING } from "@lib/ids.js";
-import { computeFromSets, rpaFactor, rpaBracketText } from "@lib/rpa.js";
-import { FormulaRPA } from "@ui/formulas/FormulaRPA.jsx";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Section from '@ui/Section.jsx';
+import StatsCard from '@ui/StatsCard.jsx';
+import ShareButtons from '@ui/ShareButtons.jsx';
+import ModernAreaChart from '@ui/charts/ModernAreaChart.jsx';
+import Modal from '@ui/Modal.jsx';
+import { byPlayerFirstAlpha, surnameOf, IT_COLLATOR } from '@lib/names.js';
+import { DEFAULT_RATING } from '@lib/ids.js';
+import { computeFromSets, rpaFactor, rpaBracketText } from '@lib/rpa.js';
+import { FormulaRPA } from '@ui/formulas/FormulaRPA.jsx';
 
 export default function StatisticheGiocatore({
   players,
@@ -22,10 +22,10 @@ export default function StatisticheGiocatore({
   T,
 }) {
   const statsRef = useRef(null);
-  const [pid, setPid] = useState(selectedPlayerId || players[0]?.id || "");
-  const [comparePlayerId, setComparePlayerId] = useState("");
+  const [pid, setPid] = useState(selectedPlayerId || players[0]?.id || '');
+  const [comparePlayerId, setComparePlayerId] = useState('');
   // Filtri periodo richiesti: 1w, 2w, 30d, 3m, 6m, all
-  const [timeFilter, setTimeFilter] = useState("all");
+  const [timeFilter, setTimeFilter] = useState('all');
   // Match espanso nello storico
   const [expandedMatchId, setExpandedMatchId] = useState(null);
   // Modal RPA formula
@@ -42,23 +42,23 @@ export default function StatisticheGiocatore({
 
   // Filtro temporale per le partite
   const filteredMatches = useMemo(() => {
-    if (timeFilter === "all") return matches;
+    if (timeFilter === 'all') return matches;
     const now = new Date();
     const from = new Date();
     switch (timeFilter) {
-      case "1w":
+      case '1w':
         from.setDate(now.getDate() - 7);
         break;
-      case "2w":
+      case '2w':
         from.setDate(now.getDate() - 14);
         break;
-      case "30d":
+      case '30d':
         from.setDate(now.getDate() - 30);
         break;
-      case "3m":
+      case '3m':
         from.setMonth(now.getMonth() - 3);
         break;
-      case "6m":
+      case '6m':
         from.setMonth(now.getMonth() - 6);
         break;
       default:
@@ -67,47 +67,43 @@ export default function StatisticheGiocatore({
     return (matches || []).filter((m) => new Date(m.date) >= from);
   }, [matches, timeFilter]);
 
-  console.log('📊 [DEBUG] Filtered matches:', { 
-    originalCount: matches?.length || 0, 
-    filteredCount: filteredMatches?.length || 0, 
+  console.log('📊 [DEBUG] Filtered matches:', {
+    originalCount: matches?.length || 0,
+    filteredCount: filteredMatches?.length || 0,
     timeFilter,
-    sampleMatch: filteredMatches?.[0] 
+    sampleMatch: filteredMatches?.[0],
   });
 
   const sortedByRating = useMemo(() => {
     return [...players]
-      .map(p => ({
+      .map((p) => ({
         ...p,
-        liveRating: p.rating
+        liveRating: p.rating,
       }))
       .sort((a, b) => b.liveRating - a.liveRating);
   }, [players]);
-  
-  const position = player
-    ? sortedByRating.findIndex((p) => p.id === player.id) + 1
-    : null;
+
+  const position = player ? sortedByRating.findIndex((p) => p.id === player.id) + 1 : null;
   const totalPlayed = (player?.wins || 0) + (player?.losses || 0);
-  const winPct = totalPlayed
-    ? Math.round((player.wins / totalPlayed) * 100)
-    : 0;
+  const winPct = totalPlayed ? Math.round((player.wins / totalPlayed) * 100) : 0;
 
   // Statistiche avanzate del giocatore (usa filteredMatches)
   const advancedStats = useMemo(() => {
     console.log('📊 [DEBUG] Computing advanced stats for player:', pid);
-    
+
     if (!pid) {
       console.log('📊 [DEBUG] No player ID selected');
       return null;
     }
 
     const playerMatches = (filteredMatches || []).filter(
-      (m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid),
+      (m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid)
     );
 
-    console.log('📊 [DEBUG] Player matches found:', { 
-      playerId: pid, 
+    console.log('📊 [DEBUG] Player matches found:', {
+      playerId: pid,
       matchesCount: playerMatches.length,
-      sampleMatch: playerMatches[0]
+      sampleMatch: playerMatches[0],
     });
 
     if (playerMatches.length === 0) {
@@ -127,13 +123,11 @@ export default function StatisticheGiocatore({
     let closeMatches = 0; // 2-1 o 1-2
     let dominantWins = 0; // 2-0
 
-    const sortedMatches = [...playerMatches].sort(
-      (a, b) => new Date(a.date) - new Date(b.date),
-    );
+    const sortedMatches = [...playerMatches].sort((a, b) => new Date(a.date) - new Date(b.date));
 
     sortedMatches.forEach((m) => {
       const isA = (m.teamA || []).includes(pid);
-      const won = (isA && m.winner === "A") || (!isA && m.winner === "B");
+      const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
       const delta = isA ? m.deltaA || 0 : m.deltaB || 0;
 
       totalDelta += delta;
@@ -144,10 +138,7 @@ export default function StatisticheGiocatore({
         currentLoseStreak = 0;
         maxWinStreak = Math.max(maxWinStreak, currentWinStreak);
 
-        if (
-          (isA && m.setsA === 2 && m.setsB === 0) ||
-          (!isA && m.setsB === 2 && m.setsA === 0)
-        ) {
+        if ((isA && m.setsA === 2 && m.setsB === 0) || (!isA && m.setsB === 2 && m.setsA === 0)) {
           dominantWins++;
         }
       } else {
@@ -158,10 +149,7 @@ export default function StatisticheGiocatore({
       }
 
       // Calcola close matches (2-1 o 1-2)
-      if (
-        (m.setsA === 2 && m.setsB === 1) ||
-        (m.setsA === 1 && m.setsB === 2)
-      ) {
+      if ((m.setsA === 2 && m.setsB === 1) || (m.setsA === 1 && m.setsB === 2)) {
         closeMatches++;
       }
 
@@ -181,7 +169,7 @@ export default function StatisticheGiocatore({
     for (let i = sortedMatches.length - 1; i >= 0; i--) {
       const m = sortedMatches[i];
       const isA = (m.teamA || []).includes(pid);
-      const won = (isA && m.winner === "A") || (!isA && m.winner === "B");
+      const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
       if (lastResult === null) {
         lastResult = won;
         currentStreakCount = 1;
@@ -193,22 +181,16 @@ export default function StatisticheGiocatore({
     }
 
     const avgDelta = totalDelta / playerMatches.length;
-    const gameEfficiency =
-      gamesWon + gamesLost > 0 ? (gamesWon / (gamesWon + gamesLost)) * 100 : 0;
+    const gameEfficiency = gamesWon + gamesLost > 0 ? (gamesWon / (gamesWon + gamesLost)) * 100 : 0;
     const dominanceRate = wins > 0 ? (dominantWins / wins) * 100 : 0;
-    const clutchRate =
-      closeMatches > 0 ? ((wins - dominantWins) / closeMatches) * 100 : 0;
+    const clutchRate = closeMatches > 0 ? ((wins - dominantWins) / closeMatches) * 100 : 0;
 
     return {
       wins,
       losses,
       winRate: wins + losses > 0 ? (wins / (wins + losses)) * 100 : 0,
       currentStreak:
-        lastResult === null
-          ? 0
-          : lastResult
-            ? currentStreakCount
-            : -currentStreakCount,
+        lastResult === null ? 0 : lastResult ? currentStreakCount : -currentStreakCount,
       maxWinStreak,
       maxLoseStreak,
       avgDelta: Math.round(avgDelta * 10) / 10,
@@ -224,7 +206,7 @@ export default function StatisticheGiocatore({
   // Nessun radar o barre: design semplificato come richiesto
 
   // Usa il nuovo componente StatsCard unificato
-  const StatCard = ({ label, value, sub, trend, color = "default" }) => (
+  const StatCard = ({ label, value, sub, trend, color = 'default' }) => (
     <StatsCard
       label={label}
       value={value}
@@ -236,34 +218,26 @@ export default function StatisticheGiocatore({
     />
   );
 
-  const playersAlpha = useMemo(
-    () => [...players].sort(byPlayerFirstAlpha),
-    [players],
-  );
+  const playersAlpha = useMemo(() => [...players].sort(byPlayerFirstAlpha), [players]);
 
   // Timeline rating personale
   const timeline = useMemo(() => {
     if (!pid) return [];
-    
+
     // Usa i rating computati da props
-    const current = new Map(
-      players.map((p) => [p.id, p.rating])
-    );
-    
+    const current = new Map(players.map((p) => [p.id, p.rating]));
+
     const points = [];
     points.push({
       date: null,
-      label: "Start",
+      label: 'Start',
       rating: Math.round(current.get(pid) ?? DEFAULT_RATING),
     });
 
-    const byDate = [...(filteredMatches || [])].sort(
-      (a, b) => new Date(a.date) - new Date(b.date),
-    );
+    const byDate = [...(filteredMatches || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
     for (const m of byDate) {
       const rr = computeFromSets(m.sets);
-      const add = (id, d) =>
-        current.set(id, (current.get(id) ?? DEFAULT_RATING) + d);
+      const add = (id, d) => current.set(id, (current.get(id) ?? DEFAULT_RATING) + d);
       const deltaA = m.deltaA ?? 0,
         deltaB = m.deltaB ?? 0;
       add(m.teamA[0], deltaA);
@@ -273,11 +247,11 @@ export default function StatisticheGiocatore({
       if (m.teamA.includes(pid) || m.teamB.includes(pid)) {
         points.push({
           date: new Date(m.date),
-          label: new Date(m.date).toLocaleString("it-IT", {
-            day: "2-digit",
-            month: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
+          label: new Date(m.date).toLocaleString('it-IT', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
           }),
           rating: Math.round(current.get(pid) ?? DEFAULT_RATING),
         });
@@ -289,42 +263,37 @@ export default function StatisticheGiocatore({
   // Timeline per il giocatore di confronto
   const compareTimeline = useMemo(() => {
     if (!comparePlayerId) return [];
-    
+
     // Usa i rating computati da props
-    const current = new Map(
-      players.map((p) => [p.id, p.rating])
-    );
-    
+    const current = new Map(players.map((p) => [p.id, p.rating]));
+
     const points = [];
     points.push({
       date: null,
-      label: "Start", 
+      label: 'Start',
       rating: Math.round(current.get(comparePlayerId) ?? DEFAULT_RATING),
     });
 
-    const byDate = [...(filteredMatches || [])].sort(
-      (a, b) => new Date(a.date) - new Date(b.date),
-    );
-    
+    const byDate = [...(filteredMatches || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+
     for (const m of byDate) {
       const rr = computeFromSets(m.sets);
-      const add = (id, d) =>
-        current.set(id, (current.get(id) ?? DEFAULT_RATING) + d);
+      const add = (id, d) => current.set(id, (current.get(id) ?? DEFAULT_RATING) + d);
       const deltaA = m.deltaA ?? 0,
         deltaB = m.deltaB ?? 0;
       add(m.teamA[0], deltaA);
       add(m.teamA[1], deltaA);
       add(m.teamB[0], deltaB);
       add(m.teamB[1], deltaB);
-      
+
       if (m.teamA.includes(comparePlayerId) || m.teamB.includes(comparePlayerId)) {
         points.push({
           date: new Date(m.date),
-          label: new Date(m.date).toLocaleString("it-IT", {
-            day: "2-digit",
-            month: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
+          label: new Date(m.date).toLocaleString('it-IT', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
           }),
           rating: Math.round(current.get(comparePlayerId) ?? DEFAULT_RATING),
         });
@@ -335,71 +304,76 @@ export default function StatisticheGiocatore({
 
   // Timeline combinata per il grafico di confronto
   const combinedTimeline = useMemo(() => {
-    if (!comparePlayerId) return timeline.map(point => ({ ...point, playerRating: point.rating }));
-    
+    if (!comparePlayerId)
+      return timeline.map((point) => ({ ...point, playerRating: point.rating }));
+
     // Crea un array di tutte le date uniche
     const allDates = new Set();
-    timeline.forEach(point => {
+    timeline.forEach((point) => {
       if (point.date) allDates.add(point.date.getTime());
     });
-    compareTimeline.forEach(point => {
+    compareTimeline.forEach((point) => {
       if (point.date) allDates.add(point.date.getTime());
     });
-    
+
     // Ordina le date
     const sortedDates = Array.from(allDates).sort();
-    
+
     // Mappa per tracking dei rating correnti
     let playerRating = timeline[0]?.rating ?? DEFAULT_RATING;
     let compareRating = compareTimeline[0]?.rating ?? DEFAULT_RATING;
-    
+
     const combined = [];
-    
+
     // Punto iniziale
     combined.push({
       date: null,
-      label: "Start",
+      label: 'Start',
       playerRating: playerRating,
       compareRating: compareRating,
-      rating: playerRating // Per compatibilità
+      rating: playerRating, // Per compatibilità
     });
-    
+
     let playerIndex = 1; // Skip del punto iniziale
     let compareIndex = 1; // Skip del punto iniziale
-    
+
     for (const dateTime of sortedDates) {
       const date = new Date(dateTime);
-      
+
       // Aggiorna rating del player principale se c'è un punto in questa data
-      while (playerIndex < timeline.length && 
-             timeline[playerIndex].date && 
-             timeline[playerIndex].date.getTime() <= dateTime) {
+      while (
+        playerIndex < timeline.length &&
+        timeline[playerIndex].date &&
+        timeline[playerIndex].date.getTime() <= dateTime
+      ) {
         playerRating = timeline[playerIndex].rating;
         playerIndex++;
       }
-      
-      // Aggiorna rating del player di confronto se c'è un punto in questa data  
-      while (compareIndex < compareTimeline.length && 
-             compareTimeline[compareIndex].date && 
-             compareTimeline[compareIndex].date.getTime() <= dateTime) {
+
+      // Aggiorna rating del player di confronto se c'è un punto in questa data
+      while (
+        compareIndex < compareTimeline.length &&
+        compareTimeline[compareIndex].date &&
+        compareTimeline[compareIndex].date.getTime() <= dateTime
+      ) {
         compareRating = compareTimeline[compareIndex].rating;
         compareIndex++;
       }
-      
+
       combined.push({
         date: date,
-        label: date.toLocaleString("it-IT", {
-          day: "2-digit",
-          month: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
+        label: date.toLocaleString('it-IT', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
         }),
         playerRating: playerRating,
         compareRating: compareRating,
-        rating: playerRating // Per compatibilità con la linea principale
+        rating: playerRating, // Per compatibilità con la linea principale
       });
     }
-    
+
     return combined;
   }, [timeline, compareTimeline, comparePlayerId]);
 
@@ -414,7 +388,7 @@ export default function StatisticheGiocatore({
         worstOpps: [],
       };
     const played = (filteredMatches || []).filter(
-      (m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid),
+      (m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid)
     );
     const matesMap = new Map();
     const oppsMap = new Map();
@@ -429,7 +403,7 @@ export default function StatisticheGiocatore({
 
     for (const m of played) {
       const isA = (m.teamA || []).includes(pid);
-      const won = (isA && m.winner === "A") || (!isA && m.winner === "B");
+      const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
       const mate = isA
         ? (m.teamA || []).find((x) => x !== pid)
         : (m.teamB || []).find((x) => x !== pid);
@@ -453,10 +427,7 @@ export default function StatisticheGiocatore({
           };
         })
         .sort(
-          (a, b) =>
-            b.total - a.total ||
-            b.winPct - a.winPct ||
-            IT_COLLATOR.compare(a.name, b.name),
+          (a, b) => b.total - a.total || b.winPct - a.winPct || IT_COLLATOR.compare(a.name, b.name)
         );
 
     const mates = toArr(matesMap);
@@ -494,9 +465,7 @@ export default function StatisticheGiocatore({
   };
 
   const PersonRow = ({ item }) => (
-    <div
-      className={`rounded-xl ${T.cardBg} ${T.border} p-3 flex items-center gap-3`}
-    >
+    <div className={`rounded-xl ${T.cardBg} ${T.border} p-3 flex items-center gap-3`}>
       <div className="min-w-0 flex-1">
         <div className="font-medium truncate">{item.name}</div>
         <div className={`text-xs ${T.subtext}`}>
@@ -518,18 +487,18 @@ export default function StatisticheGiocatore({
 
   const buildCaption = () => {
     const lines = [
-      `Statistiche — ${player ? player.name : ""}`,
-      `Ranking: ${player ? Math.round(player.rating) : "-"}`,
+      `Statistiche — ${player ? player.name : ''}`,
+      `Ranking: ${player ? Math.round(player.rating) : '-'}`,
       `Record: ${advancedStats?.wins || 0}–${advancedStats?.losses || 0} (${Math.round(advancedStats?.winRate || 0)}%)`,
       `Game Eff.: ${advancedStats ? advancedStats.gameEfficiency : 0}% • Δ medio: ${advancedStats ? advancedStats.avgDelta : 0}`,
-      "#SportingCat #Padel",
+      '#SportingCat #Padel',
     ];
-    return lines.join("\n");
+    return lines.join('\n');
   };
   const shareUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}${window.location.pathname}#stats-${pid || ""}`
-      : "";
+    typeof window !== 'undefined'
+      ? `${window.location.origin}${window.location.pathname}#stats-${pid || ''}`
+      : '';
 
   // Componente Modal RPA
   const RPAModal = () => {
@@ -537,14 +506,10 @@ export default function StatisticheGiocatore({
     if (!match) return null;
 
     const isA = (match.teamA || []).includes(pid);
-    const won = (isA && match.winner === "A") || (!isA && match.winner === "B");
+    const won = (isA && match.winner === 'A') || (!isA && match.winner === 'B');
     const delta = isA ? (match.deltaA ?? 0) : (match.deltaB ?? 0);
-    const selfTeamNames = (isA ? match.teamA : match.teamB).map((id) =>
-      nameById(id),
-    );
-    const oppTeamNames = (isA ? match.teamB : match.teamA).map((id) =>
-      nameById(id),
-    );
+    const selfTeamNames = (isA ? match.teamA : match.teamB).map((id) => nameById(id));
+    const oppTeamNames = (isA ? match.teamB : match.teamA).map((id) => nameById(id));
 
     // Calcola i dettagli per questa partita specifica
     const teamARating = Math.round(match.sumA || 0);
@@ -573,10 +538,9 @@ export default function StatisticheGiocatore({
               🎯 Cos'è il Sistema RPA?
             </h4>
             <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed mb-3">
-              Il <strong>Ranking Points Algorithm (RPA)</strong> è un sistema di
-              punteggio dinamico che assegna punti in base alla differenza di
-              livello tra le squadre e al risultato della partita. Più forte è
-              l'avversario sconfitto, più punti si guadagnano!
+              Il <strong>Ranking Points Algorithm (RPA)</strong> è un sistema di punteggio dinamico
+              che assegna punti in base alla differenza di livello tra le squadre e al risultato
+              della partita. Più forte è l'avversario sconfitto, più punti si guadagnano!
             </p>
 
             {/* Formula Base */}
@@ -592,8 +556,7 @@ export default function StatisticheGiocatore({
                   <strong>DG</strong> = Differenza Game tra vincitori e perdenti
                 </div>
                 <div>
-                  <strong>Factor</strong> = Moltiplicatore basato sul Gap di
-                  ranking
+                  <strong>Factor</strong> = Moltiplicatore basato sul Gap di ranking
                 </div>
               </div>
             </div>
@@ -611,18 +574,14 @@ export default function StatisticheGiocatore({
                 <div className="text-[10px] text-red-700">Molto più debole</div>
               </div>
               <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded border text-center">
-                <div className="font-mono text-yellow-700 font-bold">
-                  -300~+300
-                </div>
+                <div className="font-mono text-yellow-700 font-bold">-300~+300</div>
                 <div className="text-yellow-700 font-semibold">0.9-1.1</div>
                 <div className="text-[10px] text-yellow-800">Equilibrato</div>
               </div>
               <div className="bg-green-50 dark:bg-green-900/20 p-2 rounded border text-center">
                 <div className="font-mono text-green-600 font-bold">≥+1500</div>
                 <div className="text-green-600 font-semibold">1.25-1.6</div>
-                <div className="text-[10px] text-green-700">
-                  Molto più forte
-                </div>
+                <div className="text-[10px] text-green-700">Molto più forte</div>
               </div>
             </div>
           </div>
@@ -634,33 +593,25 @@ export default function StatisticheGiocatore({
             </h4>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div
-                className={`p-3 rounded-lg ${won && isA ? "bg-green-100 dark:bg-green-900/30 border-2 border-green-300" : !won && !isA ? "bg-green-100 dark:bg-green-900/30 border-2 border-green-300" : "bg-gray-100 dark:bg-gray-700 border-2 border-gray-300"}`}
+                className={`p-3 rounded-lg ${won && isA ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-300' : !won && !isA ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-300' : 'bg-gray-100 dark:bg-gray-700 border-2 border-gray-300'}`}
               >
-                <div className="font-semibold text-gray-900 dark:text-gray-100">
-                  Team A
-                </div>
+                <div className="font-semibold text-gray-900 dark:text-gray-100">Team A</div>
                 <div className="text-xs text-gray-600 dark:text-gray-300 mb-1">
-                  {match.teamA?.map((id) => nameById(id)).join(" & ")}
+                  {match.teamA?.map((id) => nameById(id)).join(' & ')}
                 </div>
-                <div className="text-lg font-bold text-blue-600">
-                  Rating: {teamARating}
-                </div>
+                <div className="text-lg font-bold text-blue-600">Rating: {teamARating}</div>
                 <div className="text-xs">
                   Sets: {match.setsA} • Games: {match.gamesA}
                 </div>
               </div>
               <div
-                className={`p-3 rounded-lg ${won && !isA ? "bg-green-100 dark:bg-green-900/30 border-2 border-green-300" : !won && isA ? "bg-green-100 dark:bg-green-900/30 border-2 border-green-300" : "bg-gray-100 dark:bg-gray-700 border-2 border-gray-300"}`}
+                className={`p-3 rounded-lg ${won && !isA ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-300' : !won && isA ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-300' : 'bg-gray-100 dark:bg-gray-700 border-2 border-gray-300'}`}
               >
-                <div className="font-semibold text-gray-900 dark:text-gray-100">
-                  Team B
-                </div>
+                <div className="font-semibold text-gray-900 dark:text-gray-100">Team B</div>
                 <div className="text-xs text-gray-600 dark:text-gray-300 mb-1">
-                  {match.teamB?.map((id) => nameById(id)).join(" & ")}
+                  {match.teamB?.map((id) => nameById(id)).join(' & ')}
                 </div>
-                <div className="text-lg font-bold text-blue-600">
-                  Rating: {teamBRating}
-                </div>
+                <div className="text-lg font-bold text-blue-600">Rating: {teamBRating}</div>
                 <div className="text-xs">
                   Sets: {match.setsB} • Games: {match.gamesB}
                 </div>
@@ -668,14 +619,14 @@ export default function StatisticheGiocatore({
             </div>
             {match.date && (
               <div className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-                📅{" "}
-                {new Date(match.date).toLocaleDateString("it-IT", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
+                📅{' '}
+                {new Date(match.date).toLocaleDateString('it-IT', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
                 })}
               </div>
             )}
@@ -688,26 +639,26 @@ export default function StatisticheGiocatore({
             </h4>
             <div className="text-center">
               <div className="text-sm text-purple-700 dark:text-purple-300 mb-1">
-                {won ? "🏆 Vittoria!" : "💔 Sconfitta"}
+                {won ? '🏆 Vittoria!' : '💔 Sconfitta'}
               </div>
               <div
-                className={`text-3xl font-bold ${delta >= 0 ? "text-green-600" : "text-red-600"} mb-2`}
+                className={`text-3xl font-bold ${delta >= 0 ? 'text-green-600' : 'text-red-600'} mb-2`}
               >
-                {delta >= 0 ? "+" : ""}
+                {delta >= 0 ? '+' : ''}
                 {Math.round(delta)} punti
               </div>
               <div className="text-xs text-purple-600 dark:text-purple-400 bg-white dark:bg-purple-900/20 p-2 rounded">
                 {won
                   ? gap > 300
-                    ? "🚀 Ottima vittoria contro avversari più forti!"
+                    ? '🚀 Ottima vittoria contro avversari più forti!'
                     : gap < -300
-                      ? "⚠️ Vittoria facile, pochi punti guadagnati"
-                      : "✅ Vittoria equilibrata, punti standard"
+                      ? '⚠️ Vittoria facile, pochi punti guadagnati'
+                      : '✅ Vittoria equilibrata, punti standard'
                   : gap > 300
-                    ? "😓 Sconfitta comprensibile contro avversari forti"
+                    ? '😓 Sconfitta comprensibile contro avversari forti'
                     : gap < -300
-                      ? "😱 Brutta sconfitta, molti punti persi!"
-                      : "📉 Sconfitta equilibrata, punti standard persi"}
+                      ? '😱 Brutta sconfitta, molti punti persi!'
+                      : '📉 Sconfitta equilibrata, punti standard persi'}
               </div>
             </div>
           </div>
@@ -719,14 +670,13 @@ export default function StatisticheGiocatore({
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <div>
-                • <strong>Battere i forti</strong>: Factor {">"} 1.0 = Più punti
+                • <strong>Battere i forti</strong>: Factor {'>'} 1.0 = Più punti
               </div>
               <div>
                 • <strong>Vittorie nette</strong>: DG alta = Bonus punti
               </div>
               <div>
-                • <strong>Avversari deboli</strong>: Factor {"<"} 1.0 = Meno
-                punti
+                • <strong>Avversari deboli</strong>: Factor {'<'} 1.0 = Meno punti
               </div>
               <div>
                 • <strong>Perdere</strong>: Stessi punti ma negativi
@@ -744,7 +694,7 @@ export default function StatisticheGiocatore({
       right={
         <ShareButtons
           size="sm"
-          title={`Statistiche — ${player ? player.name : ""}`}
+          title={`Statistiche — ${player ? player.name : ''}`}
           url={shareUrl}
           captureRef={statsRef}
           captionBuilder={buildCaption}
@@ -824,7 +774,7 @@ export default function StatisticheGiocatore({
               </span>
             </div>
             <div className="text-xl sm:text-3xl font-bold text-blue-600 dark:text-blue-400">
-              {position ?? "-"}
+              {position ?? '-'}
             </div>
           </div>
 
@@ -850,7 +800,7 @@ export default function StatisticheGiocatore({
               </span>
             </div>
             <div className="text-xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400">
-              {player ? Math.round(player.rating) : "-"}
+              {player ? Math.round(player.rating) : '-'}
             </div>
           </div>
 
@@ -939,8 +889,8 @@ export default function StatisticheGiocatore({
               <div
                 className={`text-lg sm:text-2xl font-bold ${
                   advancedStats.avgDelta > 0
-                    ? "text-emerald-600 dark:text-emerald-400"
-                    : "text-red-600 dark:text-red-400"
+                    ? 'text-emerald-600 dark:text-emerald-400'
+                    : 'text-red-600 dark:text-red-400'
                 }`}
               >
                 {advancedStats.avgDelta > 0
@@ -1005,21 +955,21 @@ export default function StatisticheGiocatore({
               <div
                 className={`text-2xl font-bold ${
                   advancedStats.currentStreak > 0
-                    ? "text-emerald-600 dark:text-emerald-400"
+                    ? 'text-emerald-600 dark:text-emerald-400'
                     : advancedStats.currentStreak < 0
-                      ? "text-red-600 dark:text-red-400"
-                      : "text-gray-600 dark:text-gray-400"
+                      ? 'text-red-600 dark:text-red-400'
+                      : 'text-gray-600 dark:text-gray-400'
                 }`}
               >
-                {advancedStats.currentStreak > 0 && "+"}
+                {advancedStats.currentStreak > 0 && '+'}
                 {advancedStats.currentStreak}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {advancedStats.currentStreak > 0
-                  ? "vittorie consecutive (attuale)"
+                  ? 'vittorie consecutive (attuale)'
                   : advancedStats.currentStreak < 0
-                    ? "sconfitte consecutive (attuale)"
-                    : "nessuna striscia attiva"}
+                    ? 'sconfitte consecutive (attuale)'
+                    : 'nessuna striscia attiva'}
               </div>
             </div>
           </div>
@@ -1047,16 +997,16 @@ export default function StatisticheGiocatore({
               Andamento Ranking
             </h3>
             <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
-              {timeFilter === "all"
-                ? "Tutte le partite"
-                : "Periodo selezionato"}
+              {timeFilter === 'all' ? 'Tutte le partite' : 'Periodo selezionato'}
             </span>
           </div>
           <ModernAreaChart
             data={combinedTimeline}
             dataKey="playerRating"
-            compareDataKey={comparePlayerId ? "compareRating" : null}
-            comparePlayerName={comparePlayerId ? players.find(p => p.id === comparePlayerId)?.name : null}
+            compareDataKey={comparePlayerId ? 'compareRating' : null}
+            comparePlayerName={
+              comparePlayerId ? players.find((p) => p.id === comparePlayerId)?.name : null
+            }
             chartId={`player-${pid}`}
             color="success"
             title="Evoluzione del rating"
@@ -1092,9 +1042,7 @@ export default function StatisticheGiocatore({
               const cp = players.find((p) => p.id === comparePlayerId);
               // Calcola advanced per compare usando gli stessi filtri
               const cmpMatches = (filteredMatches || []).filter(
-                (m) =>
-                  (m.teamA || []).includes(cp.id) ||
-                  (m.teamB || []).includes(cp.id),
+                (m) => (m.teamA || []).includes(cp.id) || (m.teamB || []).includes(cp.id)
               );
               let cWins = 0,
                 cLosses = 0,
@@ -1105,13 +1053,10 @@ export default function StatisticheGiocatore({
                 cMaxLose = 0,
                 cCurWin = 0,
                 cCurLose = 0;
-              const cmpSorted = [...cmpMatches].sort(
-                (a, b) => new Date(a.date) - new Date(b.date),
-              );
+              const cmpSorted = [...cmpMatches].sort((a, b) => new Date(a.date) - new Date(b.date));
               cmpSorted.forEach((m) => {
                 const isA = (m.teamA || []).includes(cp.id);
-                const won =
-                  (isA && m.winner === "A") || (!isA && m.winner === "B");
+                const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
                 const delta = isA ? m.deltaA || 0 : m.deltaB || 0;
                 if (won) {
                   cWins++;
@@ -1138,8 +1083,7 @@ export default function StatisticheGiocatore({
               for (let i = cmpSorted.length - 1; i >= 0; i--) {
                 const m = cmpSorted[i];
                 const isA = (m.teamA || []).includes(cp.id);
-                const won =
-                  (isA && m.winner === "A") || (!isA && m.winner === "B");
+                const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
                 if (last === null) {
                   last = won;
                   cCurrentStreak = 1;
@@ -1147,52 +1091,43 @@ export default function StatisticheGiocatore({
                   cCurrentStreak++;
                 } else break;
               }
-              cCurrentStreak =
-                last === null ? 0 : last ? cCurrentStreak : -cCurrentStreak;
+              cCurrentStreak = last === null ? 0 : last ? cCurrentStreak : -cCurrentStreak;
               const cWinRate =
-                cWins + cLosses > 0
-                  ? Math.round((cWins / (cWins + cLosses)) * 100)
-                  : 0;
+                cWins + cLosses > 0 ? Math.round((cWins / (cWins + cLosses)) * 100) : 0;
               const cGameEff =
                 cGamesWon + cGamesLost > 0
-                  ? Math.round((cGamesWon / (cGamesWon + cGamesLost)) * 1000) /
-                    10
+                  ? Math.round((cGamesWon / (cGamesWon + cGamesLost)) * 1000) / 10
                   : 0;
               const cAvgDelta =
-                cWins + cLosses > 0
-                  ? Math.round((cTotalDelta / (cWins + cLosses)) * 10) / 10
-                  : 0;
+                cWins + cLosses > 0 ? Math.round((cTotalDelta / (cWins + cLosses)) * 10) / 10 : 0;
 
               const compareData = [
                 {
-                  metric: "Ranking",
-                  player1: player ? Math.round(player.rating) : "-",
-                  player2: cp ? Math.round(cp.rating) : "-",
-                  diff:
-                    player && cp ? Math.round(player.rating - cp.rating) : "-",
+                  metric: 'Ranking',
+                  player1: player ? Math.round(player.rating) : '-',
+                  player2: cp ? Math.round(cp.rating) : '-',
+                  diff: player && cp ? Math.round(player.rating - cp.rating) : '-',
                 },
                 {
-                  metric: "Win Rate",
+                  metric: 'Win Rate',
                   player1: `${advancedStats ? Math.round(advancedStats.winRate) : 0}%`,
                   player2: `${cWinRate}%`,
                   diff: `${advancedStats ? Math.round(advancedStats.winRate - cWinRate) : 0}%`,
                 },
                 {
-                  metric: "Partite",
+                  metric: 'Partite',
                   player1: advancedStats ? advancedStats.totalMatches : 0,
                   player2: cWins + cLosses,
-                  diff: advancedStats
-                    ? advancedStats.totalMatches - (cWins + cLosses)
-                    : 0,
+                  diff: advancedStats ? advancedStats.totalMatches - (cWins + cLosses) : 0,
                 },
                 {
-                  metric: "Eff. game",
+                  metric: 'Eff. game',
                   player1: `${advancedStats ? advancedStats.gameEfficiency : 0}%`,
                   player2: `${cGameEff}%`,
                   diff: `${advancedStats ? Math.round((advancedStats.gameEfficiency - cGameEff) * 10) / 10 : 0}%`,
                 },
                 {
-                  metric: "Δ medio",
+                  metric: 'Δ medio',
                   player1: advancedStats ? advancedStats.avgDelta : 0,
                   player2: cAvgDelta,
                   diff: advancedStats
@@ -1206,30 +1141,19 @@ export default function StatisticheGiocatore({
                   {/* Mobile Card Layout */}
                   <div className="space-y-3 sm:hidden">
                     {compareData.map((row, index) => (
-                      <div
-                        key={index}
-                        className={`rounded-lg p-3 ${T.cardBg} border ${T.border}`}
-                      >
-                        <div className="font-medium text-sm mb-2">
-                          {row.metric}
-                        </div>
+                      <div key={index} className={`rounded-lg p-3 ${T.cardBg} border ${T.border}`}>
+                        <div className="font-medium text-sm mb-2">{row.metric}</div>
                         <div className="grid grid-cols-3 gap-2 text-center text-sm">
                           <div>
                             <div className="font-semibold">{row.player1}</div>
-                            <div className="text-xs text-gray-500 truncate">
-                              {player?.name}
-                            </div>
+                            <div className="text-xs text-gray-500 truncate">{player?.name}</div>
                           </div>
                           <div>
                             <div className="font-semibold">{row.player2}</div>
-                            <div className="text-xs text-gray-500 truncate">
-                              {cp?.name}
-                            </div>
+                            <div className="text-xs text-gray-500 truncate">{cp?.name}</div>
                           </div>
                           <div>
-                            <div className="font-semibold text-blue-600">
-                              {row.diff}
-                            </div>
+                            <div className="font-semibold text-blue-600">{row.diff}</div>
                             <div className="text-xs text-gray-500">Diff</div>
                           </div>
                         </div>
@@ -1241,16 +1165,10 @@ export default function StatisticheGiocatore({
                   <div className="hidden sm:block overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr
-                          className={`border-b ${T.border} ${T.tableHeadText}`}
-                        >
+                        <tr className={`border-b ${T.border} ${T.tableHeadText}`}>
                           <th className="text-left py-2">Metrica</th>
-                          <th className="text-center py-2">
-                            {player?.name || "-"}
-                          </th>
-                          <th className="text-center py-2">
-                            {cp?.name || "-"}
-                          </th>
+                          <th className="text-center py-2">{player?.name || '-'}</th>
+                          <th className="text-center py-2">{cp?.name || '-'}</th>
                           <th className="text-center py-2">Diff</th>
                         </tr>
                       </thead>
@@ -1288,27 +1206,22 @@ export default function StatisticheGiocatore({
               <div className={`rounded-xl ${T.cardBg} ${T.border} p-3 sm:p-4`}>
                 <div className="space-y-3">
                   {partnerAndOppStats.topMates.map((mate, index) => (
-                    <div
-                      key={mate.id}
-                      className="flex items-center justify-between"
-                    >
+                    <div key={mate.id} className="flex items-center justify-between">
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <div
                           className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                             index === 0
-                              ? "bg-yellow-100 text-yellow-600"
+                              ? 'bg-yellow-100 text-yellow-600'
                               : index === 1
-                                ? "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                                ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                                 : index === 2
-                                  ? "bg-orange-100 text-orange-600"
-                                  : "bg-gray-50 text-gray-500"
+                                  ? 'bg-orange-100 text-orange-600'
+                                  : 'bg-gray-50 text-gray-500'
                           }`}
                         >
                           {index + 1}
                         </div>
-                        <span className="font-medium text-sm truncate">
-                          {mate.name}
-                        </span>
+                        <span className="font-medium text-sm truncate">{mate.name}</span>
                       </div>
                       <div className="text-right shrink-0">
                         <div className="font-bold text-emerald-600 text-sm">
@@ -1339,27 +1252,22 @@ export default function StatisticheGiocatore({
               <div className={`rounded-xl ${T.cardBg} ${T.border} p-3 sm:p-4`}>
                 <div className="space-y-3">
                   {partnerAndOppStats.worstMates.map((mate, index) => (
-                    <div
-                      key={mate.id}
-                      className="flex items-center justify-between"
-                    >
+                    <div key={mate.id} className="flex items-center justify-between">
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <div
                           className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                             index === 0
-                              ? "bg-red-100 text-red-600"
+                              ? 'bg-red-100 text-red-600'
                               : index === 1
-                                ? "bg-orange-100 text-orange-600"
+                                ? 'bg-orange-100 text-orange-600'
                                 : index === 2
-                                  ? "bg-yellow-100 text-yellow-600"
-                                  : "bg-gray-50 text-gray-500"
+                                  ? 'bg-yellow-100 text-yellow-600'
+                                  : 'bg-gray-50 text-gray-500'
                           }`}
                         >
                           {index + 1}
                         </div>
-                        <span className="font-medium text-sm truncate">
-                          {mate.name}
-                        </span>
+                        <span className="font-medium text-sm truncate">{mate.name}</span>
                       </div>
                       <div className="text-right shrink-0">
                         <div className="font-bold text-rose-600 text-sm">
@@ -1390,27 +1298,22 @@ export default function StatisticheGiocatore({
               <div className={`rounded-xl ${T.cardBg} ${T.border} p-3 sm:p-4`}>
                 <div className="space-y-3">
                   {partnerAndOppStats.topOpps.map((opp, index) => (
-                    <div
-                      key={opp.id}
-                      className="flex items-center justify-between"
-                    >
+                    <div key={opp.id} className="flex items-center justify-between">
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <div
                           className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                             index === 0
-                              ? "bg-yellow-100 text-yellow-600"
+                              ? 'bg-yellow-100 text-yellow-600'
                               : index === 1
-                                ? "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                                ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                                 : index === 2
-                                  ? "bg-orange-100 text-orange-600"
-                                  : "bg-gray-50 text-gray-500"
+                                  ? 'bg-orange-100 text-orange-600'
+                                  : 'bg-gray-50 text-gray-500'
                           }`}
                         >
                           {index + 1}
                         </div>
-                        <span className="font-medium text-sm truncate">
-                          {opp.name}
-                        </span>
+                        <span className="font-medium text-sm truncate">{opp.name}</span>
                       </div>
                       <div className="text-right shrink-0">
                         <div className="font-bold text-emerald-600 text-sm">
@@ -1441,27 +1344,22 @@ export default function StatisticheGiocatore({
               <div className={`rounded-xl ${T.cardBg} ${T.border} p-3 sm:p-4`}>
                 <div className="space-y-3">
                   {partnerAndOppStats.worstOpps.map((opp, index) => (
-                    <div
-                      key={opp.id}
-                      className="flex items-center justify-between"
-                    >
+                    <div key={opp.id} className="flex items-center justify-between">
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <div
                           className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                             index === 0
-                              ? "bg-red-100 text-red-600"
+                              ? 'bg-red-100 text-red-600'
                               : index === 1
-                                ? "bg-orange-100 text-orange-600"
+                                ? 'bg-orange-100 text-orange-600'
                                 : index === 2
-                                  ? "bg-yellow-100 text-yellow-600"
-                                  : "bg-gray-50 text-gray-500"
+                                  ? 'bg-yellow-100 text-yellow-600'
+                                  : 'bg-gray-50 text-gray-500'
                           }`}
                         >
                           {index + 1}
                         </div>
-                        <span className="font-medium text-sm truncate">
-                          {opp.name}
-                        </span>
+                        <span className="font-medium text-sm truncate">{opp.name}</span>
                       </div>
                       <div className="text-right shrink-0">
                         <div className="font-bold text-rose-600 text-sm">
@@ -1502,57 +1400,48 @@ export default function StatisticheGiocatore({
                   />
                 </svg>
               </div>
-              Storico Partite {timeFilter !== "all" ? "(periodo filtrato)" : ""}
+              Storico Partite {timeFilter !== 'all' ? '(periodo filtrato)' : ''}
             </h3>
             <div className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-3 py-1 rounded-full text-sm font-medium">
               {
                 (filteredMatches || []).filter(
-                  (m) =>
-                    (m.teamA || []).includes(pid) ||
-                    (m.teamB || []).includes(pid),
+                  (m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid)
                 ).length
-              }{" "}
+              }{' '}
               partite
             </div>
           </div>
           <div className="space-y-4">
             {(filteredMatches || [])
-              .filter(
-                (m) =>
-                  (m.teamA || []).includes(pid) ||
-                  (m.teamB || []).includes(pid),
-              )
+              .filter((m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid))
               .slice()
               .sort((a, b) => new Date(b.date) - new Date(a.date))
               .map((m) => {
                 const isA = (m.teamA || []).includes(pid);
                 const delta = isA ? (m.deltaA ?? 0) : (m.deltaB ?? 0);
-                const won =
-                  (isA && m.winner === "A") || (!isA && m.winner === "B");
+                const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
                 const selfTeam = (isA ? m.teamA : m.teamB)
                   .map((id) => surnameOf(nameById(id)))
-                  .join(" & ");
+                  .join(' & ');
                 const oppTeam = (isA ? m.teamB : m.teamA)
                   .map((id) => surnameOf(nameById(id)))
-                  .join(" & ");
+                  .join(' & ');
                 const selfTeamFull = (isA ? m.teamA : m.teamB)
                   .map((id) => nameById(id))
-                  .join(" & ");
-                const oppTeamFull = (isA ? m.teamB : m.teamA)
-                  .map((id) => nameById(id))
-                  .join(" & ");
+                  .join(' & ');
+                const oppTeamFull = (isA ? m.teamB : m.teamA).map((id) => nameById(id)).join(' & ');
                 const selfCls = won
-                  ? "text-emerald-600 font-semibold"
-                  : "text-rose-600 font-semibold";
+                  ? 'text-emerald-600 font-semibold'
+                  : 'text-rose-600 font-semibold';
                 const oppCls = won
-                  ? "text-rose-600 font-semibold"
-                  : "text-emerald-600 font-semibold";
+                  ? 'text-rose-600 font-semibold'
+                  : 'text-emerald-600 font-semibold';
                 const isExpanded = expandedMatchId === m.id;
 
                 return (
                   <div
                     key={m.id}
-                    className={`relative rounded-3xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 ${isExpanded ? "ring-2 ring-blue-500/60 shadow-blue-500/20" : ""}`}
+                    className={`relative rounded-3xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 ${isExpanded ? 'ring-2 ring-blue-500/60 shadow-blue-500/20' : ''}`}
                   >
                     {/* Subtle gradient overlay */}
                     <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
@@ -1562,15 +1451,11 @@ export default function StatisticheGiocatore({
                       className="relative p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-gradient-to-r hover:from-white/10 hover:to-transparent transition-all duration-300"
                       role="button"
                       tabIndex={0}
-                      onClick={() =>
-                        setExpandedMatchId(isExpanded ? null : m.id)
-                      }
+                      onClick={() => setExpandedMatchId(isExpanded ? null : m.id)}
                       onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
+                        if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault();
-                          setExpandedMatchId((prev) =>
-                            prev === m.id ? null : m.id,
-                          );
+                          setExpandedMatchId((prev) => (prev === m.id ? null : m.id));
                         }
                       }}
                       aria-expanded={isExpanded}
@@ -1580,18 +1465,18 @@ export default function StatisticheGiocatore({
                           <span
                             className={`px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm border ${
                               won
-                                ? "bg-emerald-500/20 border-emerald-400/30 text-emerald-700 dark:text-emerald-300"
-                                : "bg-rose-500/20 border-rose-400/30 text-rose-700 dark:text-rose-300"
+                                ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-700 dark:text-emerald-300'
+                                : 'bg-rose-500/20 border-rose-400/30 text-rose-700 dark:text-rose-300'
                             }`}
                           >
-                            {won ? "✨ Vittoria" : "❌ Sconfitta"}
+                            {won ? '✨ Vittoria' : '❌ Sconfitta'}
                           </span>
                           {m.date && (
                             <span className="text-xs text-gray-600 dark:text-gray-400 bg-gray-100/50 dark:bg-gray-700/50 px-2 py-1 rounded-lg backdrop-blur-sm">
-                              {new Date(m.date).toLocaleDateString("it-IT", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "2-digit",
+                              {new Date(m.date).toLocaleDateString('it-IT', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: '2-digit',
                               })}
                             </span>
                           )}
@@ -1614,10 +1499,8 @@ export default function StatisticheGiocatore({
                           </div>
                         </div>
                         <div className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50/50 dark:bg-gray-700/30 px-3 py-1.5 rounded-xl backdrop-blur-sm">
-                          Sets {isA ? m.setsA : m.setsB}–
-                          {isA ? m.setsB : m.setsA} • Games{" "}
-                          {isA ? m.gamesA : m.gamesB}–
-                          {isA ? m.gamesB : m.gamesA}
+                          Sets {isA ? m.setsA : m.setsB}–{isA ? m.setsB : m.setsA} • Games{' '}
+                          {isA ? m.gamesA : m.gamesB}–{isA ? m.gamesB : m.gamesA}
                         </div>
                       </div>
                       <div className="shrink-0 text-right flex items-center gap-3">
@@ -1625,11 +1508,11 @@ export default function StatisticheGiocatore({
                           <div
                             className={`text-lg font-bold bg-gradient-to-r ${
                               delta >= 0
-                                ? "from-emerald-500 to-green-600 text-transparent bg-clip-text"
-                                : "from-rose-500 to-red-600 text-transparent bg-clip-text"
+                                ? 'from-emerald-500 to-green-600 text-transparent bg-clip-text'
+                                : 'from-rose-500 to-red-600 text-transparent bg-clip-text'
                             }`}
                           >
-                            {delta >= 0 ? "+" : ""}
+                            {delta >= 0 ? '+' : ''}
                             {Math.round(delta)}
                           </div>
                           <div className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">
@@ -1648,7 +1531,7 @@ export default function StatisticheGiocatore({
                           ?
                         </button>
                         <div
-                          className={`text-gray-400 dark:text-gray-300 text-sm transition-transform duration-300 ${isExpanded ? "rotate-180" : ""}`}
+                          className={`text-gray-400 dark:text-gray-300 text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
                         >
                           ▼
                         </div>
@@ -1664,37 +1547,31 @@ export default function StatisticheGiocatore({
                             <div
                               className={`p-4 rounded-2xl border backdrop-blur-sm ${
                                 won
-                                  ? "border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/40 dark:to-emerald-800/30"
-                                  : "border-gray-300/30 bg-gradient-to-br from-white/60 to-gray-50/40 dark:from-gray-700/40 dark:to-gray-800/30"
+                                  ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/40 dark:to-emerald-800/30'
+                                  : 'border-gray-300/30 bg-gradient-to-br from-white/60 to-gray-50/40 dark:from-gray-700/40 dark:to-gray-800/30'
                               }`}
                             >
                               <div className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                                {won && (
-                                  <span className="text-emerald-500">👑</span>
-                                )}
+                                {won && <span className="text-emerald-500">👑</span>}
                                 {selfTeamFull}
                               </div>
                               <div className="text-xs text-gray-700 dark:text-gray-300 bg-white/40 dark:bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                                Sets: {isA ? m.setsA : m.setsB} • Games:{" "}
-                                {isA ? m.gamesA : m.gamesB}
+                                Sets: {isA ? m.setsA : m.setsB} • Games: {isA ? m.gamesA : m.gamesB}
                               </div>
                             </div>
                             <div
                               className={`p-4 rounded-2xl border backdrop-blur-sm ${
                                 !won
-                                  ? "border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/40 dark:to-emerald-800/30"
-                                  : "border-gray-300/30 bg-gradient-to-br from-white/60 to-gray-50/40 dark:from-gray-700/40 dark:to-gray-800/30"
+                                  ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/40 dark:to-emerald-800/30'
+                                  : 'border-gray-300/30 bg-gradient-to-br from-white/60 to-gray-50/40 dark:from-gray-700/40 dark:to-gray-800/30'
                               }`}
                             >
                               <div className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                                {!won && (
-                                  <span className="text-emerald-500">👑</span>
-                                )}
+                                {!won && <span className="text-emerald-500">👑</span>}
                                 {oppTeamFull}
                               </div>
                               <div className="text-xs text-gray-700 dark:text-gray-300 bg-white/40 dark:bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                                Sets: {isA ? m.setsB : m.setsA} • Games:{" "}
-                                {isA ? m.gamesB : m.gamesA}
+                                Sets: {isA ? m.setsB : m.setsA} • Games: {isA ? m.gamesB : m.gamesA}
                               </div>
                             </div>
                           </div>
@@ -1740,31 +1617,29 @@ export default function StatisticheGiocatore({
                               <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/60 dark:from-blue-900/20 dark:to-indigo-900/20 p-3 rounded-2xl border border-blue-200/30 dark:border-blue-700/30 backdrop-blur-sm">
                                 <strong className="text-blue-700 dark:text-blue-300">
                                   Rating:
-                                </strong>{" "}
+                                </strong>{' '}
                                 A={Math.round(m.sumA || 0)} vs B=
-                                {Math.round(m.sumB || 0)} (Gap:{" "}
-                                {Math.round(m.gap || 0)})
+                                {Math.round(m.sumB || 0)} (Gap: {Math.round(m.gap || 0)})
                               </div>
                               <div className="bg-gradient-to-r from-purple-50/80 to-violet-50/60 dark:from-purple-900/20 dark:to-violet-900/20 p-3 rounded-2xl border border-purple-200/30 dark:border-purple-700/30 backdrop-blur-sm">
                                 <strong className="text-purple-700 dark:text-purple-300">
                                   Calcolo:
-                                </strong>{" "}
-                                Base: {(m.base || 0).toFixed(1)} • DG:{" "}
-                                {m.gd || 0} • Factor:{" "}
+                                </strong>{' '}
+                                Base: {(m.base || 0).toFixed(1)} • DG: {m.gd || 0} • Factor:{' '}
                                 {(m.factor || 1).toFixed(2)}
                               </div>
                               <div className="bg-gradient-to-r from-emerald-50/80 to-green-50/60 dark:from-emerald-900/20 dark:to-green-900/20 p-3 rounded-2xl border border-emerald-200/30 dark:border-emerald-700/30 backdrop-blur-sm">
                                 <strong className="text-emerald-700 dark:text-emerald-300">
                                   Risultato:
-                                </strong>{" "}
+                                </strong>{' '}
                                 <span
                                   className={`font-bold text-lg ${
                                     delta >= 0
-                                      ? "bg-gradient-to-r from-emerald-600 to-green-600 text-transparent bg-clip-text"
-                                      : "bg-gradient-to-r from-rose-600 to-red-600 text-transparent bg-clip-text"
+                                      ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-transparent bg-clip-text'
+                                      : 'bg-gradient-to-r from-rose-600 to-red-600 text-transparent bg-clip-text'
                                   }`}
                                 >
-                                  {delta >= 0 ? "+" : ""}
+                                  {delta >= 0 ? '+' : ''}
                                   {Math.round(delta)} punti
                                 </span>
                               </div>

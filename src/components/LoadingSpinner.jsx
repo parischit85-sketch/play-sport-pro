@@ -1,14 +1,14 @@
 // =============================================
 // FILE: src/components/LoadingSpinner.jsx
 // =============================================
-import React from "react";
+import React from 'react';
 
-export function LoadingSpinner({ size = "md", className = "" }) {
+export function LoadingSpinner({ size = 'md', className = '' }) {
   const sizeClasses = {
-    sm: "h-4 w-4",
-    md: "h-8 w-8",
-    lg: "h-12 w-12",
-    xl: "h-16 w-16",
+    sm: 'h-4 w-4',
+    md: 'h-8 w-8',
+    lg: 'h-12 w-12',
+    xl: 'h-16 w-16',
   };
 
   return (
@@ -18,7 +18,7 @@ export function LoadingSpinner({ size = "md", className = "" }) {
   );
 }
 
-export function LoadingPage({ message = "Caricamento..." }) {
+export function LoadingPage({ message = 'Caricamento...' }) {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <div className="text-center">
@@ -29,7 +29,7 @@ export function LoadingPage({ message = "Caricamento..." }) {
   );
 }
 
-export function LoadingOverlay({ message = "Caricamento...", visible = true }) {
+export function LoadingOverlay({ message = 'Caricamento...', visible = true }) {
   if (!visible) return null;
 
   return (

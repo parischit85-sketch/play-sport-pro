@@ -1,16 +1,10 @@
 // =============================================
 // FILE: src/lib/pricing.js
 // =============================================
-import {
-  isWeekend,
-  isPeakHour,
-  minutesSinceMidnight,
-  hmToMinutes,
-  addMinutes,
-} from "./date.js";
-const toMin = (hhmm = "00:00") => {
+import { isWeekend, isPeakHour, minutesSinceMidnight, hmToMinutes, addMinutes } from './date.js';
+const toMin = (hhmm = '00:00') => {
   const [h, m] = String(hhmm)
-    .split(":")
+    .split(':')
     .map((n) => +n || 0);
   return h * 60 + m;
 };
@@ -21,13 +15,9 @@ function ruleMatches(date, rule, courtId) {
   if (!rule) return false;
   const t = timeOf(date);
   const inTime = t >= toMin(rule.from) && t < toMin(rule.to);
-  const inDay = Array.isArray(rule.days)
-    ? rule.days.includes(dayOf(date))
-    : true;
+  const inDay = Array.isArray(rule.days) ? rule.days.includes(dayOf(date)) : true;
   const inCourt =
-    Array.isArray(rule.courts) && rule.courts.length
-      ? rule.courts.includes(courtId)
-      : true; // vuoto = tutti i campi
+    Array.isArray(rule.courts) && rule.courts.length ? rule.courts.includes(courtId) : true; // vuoto = tutti i campi
   return inTime && inDay && inCourt;
 }
 
@@ -80,7 +70,7 @@ export function getRateInfo(date, cfg, courtId, courts = null) {
   if (activeSlot) {
     return {
       rate: Number(activeSlot.eurPerHour || activeSlot.price) || 0,
-      source: "court-slot",
+      source: 'court-slot',
       slot: activeSlot,
       isPromo: !!activeSlot.isPromo,
     };
@@ -88,13 +78,11 @@ export function getRateInfo(date, cfg, courtId, courts = null) {
 
   // Fallback: sistema legacy (se presente)
   const pricing = cfg?.pricing || {};
-  const disc = (pricing.discounted || []).find((r) =>
-    ruleMatches(date, r, courtId),
-  );
+  const disc = (pricing.discounted || []).find((r) => ruleMatches(date, r, courtId));
   if (disc)
     return {
       rate: Number(disc.eurPerHour) || 0,
-      source: "legacy",
+      source: 'legacy',
       rule: disc,
       isPromo: false,
     };
@@ -102,7 +90,7 @@ export function getRateInfo(date, cfg, courtId, courts = null) {
   if (full)
     return {
       rate: Number(full.eurPerHour) || 0,
-      source: "legacy",
+      source: 'legacy',
       rule: full,
       isPromo: false,
     };
@@ -110,8 +98,7 @@ export function getRateInfo(date, cfg, courtId, courts = null) {
   // Ultimo fallback: calcolo base basato su orario e giorno
   const hour = date.getHours();
   const isWeekendDay = date.getDay() === 0 || date.getDay() === 6;
-  const isPeakTime =
-    hour >= (cfg?.peakStartHour || 17) && hour < (cfg?.peakEndHour || 22);
+  const isPeakTime = hour >= (cfg?.peakStartHour || 17) && hour < (cfg?.peakEndHour || 22);
 
   let baseRate = cfg?.baseRateWeekday || 20;
   if (isWeekendDay) {
@@ -120,20 +107,13 @@ export function getRateInfo(date, cfg, courtId, courts = null) {
     baseRate = cfg?.baseRatePeak || 28;
   }
 
-  return { rate: baseRate, source: "base", rule: null, isPromo: false };
+  return { rate: baseRate, source: 'base', rule: null, isPromo: false };
 }
 
 /**
  * Calcola il prezzo totale su intervallo (in minuti) tenendo conto dei time slots per-campo
  */
-export function computePrice(
-  startDate,
-  durationMin,
-  cfg,
-  addons = {},
-  courtId,
-  courts = null,
-) {
+export function computePrice(startDate, durationMin, cfg, addons = {}, courtId, courts = null) {
   const slot = Math.max(5, Number(cfg?.slotMinutes) || 30);
   const steps = Math.ceil(durationMin / slot);
   let d = new Date(startDate);

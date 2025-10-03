@@ -2,22 +2,21 @@
 // FILE: src/pages/StatsPage.jsx
 // FUTURISTIC DESIGN - Modern glassmorphism UI
 // =============================================
-import React, { useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { themeTokens } from "@lib/theme.js";
+import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { themeTokens } from '@lib/theme.js';
 import { useClub } from '@contexts/ClubContext.jsx';
-import { computeClubRanking } from "@lib/ranking-club.js";
-import StatisticheGiocatore from "@features/stats/StatisticheGiocatore.jsx";
+import { computeClubRanking } from '@lib/ranking-club.js';
+import StatisticheGiocatore from '@features/stats/StatisticheGiocatore.jsx';
 
 export default function StatsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { players, matches, clubId, playersLoaded, loadPlayers, matchesLoaded, loadMatches } = useClub();
+  const { players, matches, clubId, playersLoaded, loadPlayers, matchesLoaded, loadMatches } =
+    useClub();
   const T = React.useMemo(() => themeTokens(), []);
 
-  const [selectedPlayerId, setSelectedPlayerId] = useState(
-    searchParams.get("player") || "",
-  );
-  const [formulaText, setFormulaText] = useState("");
+  const [selectedPlayerId, setSelectedPlayerId] = useState(searchParams.get('player') || '');
+  const [formulaText, setFormulaText] = useState('');
 
   // I dati si caricano automaticamente nel ClubContext quando cambia clubId
 
@@ -76,15 +75,10 @@ export default function StatsPage() {
                     Formula calcolo punti (RPA)
                   </h3>
                   <button
-                    onClick={() => setFormulaText("")}
+                    onClick={() => setFormulaText('')}
                     className="w-10 h-10 bg-red-500/20 hover:bg-red-500/30 text-red-600 dark:text-red-400 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center"
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"

@@ -71,7 +71,7 @@ describe('Analytics Library', () => {
         booking_id: 'BK123456',
         court_id: 'CT001',
         duration: 90,
-        amount: 50.00,
+        amount: 50.0,
         payment_method: 'card',
       });
 
@@ -80,7 +80,7 @@ describe('Analytics Library', () => {
         booking_id: 'BK123456',
         court_id: 'CT001',
         duration: 90,
-        value: 50.00,
+        value: 50.0,
         payment_method: 'card',
         timestamp: expect.any(Number),
       });
@@ -320,30 +320,34 @@ describe('Analytics Library', () => {
     it('should track purchase events', () => {
       const purchaseData = {
         transaction_id: 'TXN123456',
-        value: 50.00,
+        value: 50.0,
         currency: 'EUR',
-        items: [{
-          item_id: 'court_booking',
-          item_name: 'Court Booking',
-          category: 'sports',
-          quantity: 1,
-          price: 50.00,
-        }],
+        items: [
+          {
+            item_id: 'court_booking',
+            item_name: 'Court Booking',
+            category: 'sports',
+            quantity: 1,
+            price: 50.0,
+          },
+        ],
       };
 
       analytics.trackPurchase(purchaseData);
 
       expect(mockGtag).toHaveBeenCalledWith('event', 'purchase', {
         transaction_id: 'TXN123456',
-        value: 50.00,
+        value: 50.0,
         currency: 'EUR',
-        items: [{
-          item_id: 'court_booking',
-          item_name: 'Court Booking',
-          category: 'sports',
-          quantity: 1,
-          price: 50.00,
-        }],
+        items: [
+          {
+            item_id: 'court_booking',
+            item_name: 'Court Booking',
+            category: 'sports',
+            quantity: 1,
+            price: 50.0,
+          },
+        ],
         timestamp: expect.any(Number),
       });
     });
@@ -353,7 +357,7 @@ describe('Analytics Library', () => {
         item_id: 'court_slot_123',
         item_name: 'Tennis Court - 14:00-15:30',
         category: 'court_booking',
-        price: 45.00,
+        price: 45.0,
         currency: 'EUR',
       };
 
@@ -361,7 +365,7 @@ describe('Analytics Library', () => {
 
       expect(mockGtag).toHaveBeenCalledWith('event', 'add_to_cart', {
         currency: 'EUR',
-        value: 45.00,
+        value: 45.0,
         items: [item],
         timestamp: expect.any(Number),
       });
@@ -371,7 +375,7 @@ describe('Analytics Library', () => {
   describe('Conversion Tracking', () => {
     it('should track conversion events', () => {
       analytics.trackConversion('booking_completion', {
-        value: 50.00,
+        value: 50.0,
         currency: 'EUR',
         booking_type: 'tennis',
         conversion_label: 'premium_booking',
@@ -379,7 +383,7 @@ describe('Analytics Library', () => {
 
       expect(mockGtag).toHaveBeenCalledWith('event', 'conversion', {
         send_to: 'AW-CONVERSION_ID/booking_completion',
-        value: 50.00,
+        value: 50.0,
         currency: 'EUR',
         booking_type: 'tennis',
         conversion_label: 'premium_booking',
@@ -426,12 +430,12 @@ describe('Analytics Library', () => {
     it('should track session end with duration', () => {
       vi.useFakeTimers();
       const startTime = Date.now();
-      
+
       analytics.startSession();
-      
+
       // Advance time by 30 minutes
       vi.advanceTimersByTime(30 * 60 * 1000);
-      
+
       analytics.endSession();
 
       expect(mockGtag).toHaveBeenCalledWith('event', 'session_end', {
@@ -462,16 +466,16 @@ describe('Analytics Library', () => {
 
     it('should enable/disable tracking based on consent', () => {
       analytics.setTrackingEnabled(false);
-      
+
       trackEvent('test_event');
-      
+
       // Should not call gtag when tracking is disabled
       expect(mockGtag).not.toHaveBeenCalled();
 
       analytics.setTrackingEnabled(true);
-      
+
       trackEvent('test_event');
-      
+
       // Should call gtag when tracking is enabled
       expect(mockGtag).toHaveBeenCalled();
     });
@@ -487,9 +491,7 @@ describe('Analytics Library', () => {
         validParameter: 'value',
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Invalid event name')
-      );
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Invalid event name'));
 
       consoleSpy.mockRestore();
     });
@@ -553,7 +555,7 @@ describe('Analytics Library', () => {
       expect(mockGtag).not.toHaveBeenCalled();
 
       // Wait for batch to be sent
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       // Should have sent all events in a batch
       expect(mockGtag).toHaveBeenCalledTimes(3);

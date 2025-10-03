@@ -1,8 +1,8 @@
 // =============================================
 // FILE: src/components/NotificationSystem.jsx
 // =============================================
-import React from "react";
-import { useUI } from "@contexts/UIContext.jsx";
+import React from 'react';
+import { useUI } from '@contexts/UIContext.jsx';
 
 export default function NotificationSystem() {
   const { notifications, removeNotification } = useUI();
@@ -23,20 +23,20 @@ export default function NotificationSystem() {
 }
 
 function NotificationItem({ notification, onRemove }) {
-  const { id, type = "info", title, message, autoClose = true } = notification;
+  const { id, type = 'info', title, message, autoClose = true } = notification;
 
   const typeStyles = {
-    success: "bg-green-500 text-white",
-    error: "bg-red-500 text-white",
-    warning: "bg-yellow-500 text-black",
-    info: "bg-blue-500 text-white",
+    success: 'bg-green-500 text-white',
+    error: 'bg-red-500 text-white',
+    warning: 'bg-yellow-500 text-black',
+    info: 'bg-blue-500 text-white',
   };
 
   const icons = {
-    success: "✅",
-    error: "❌",
-    warning: "⚠️",
-    info: "ℹ️",
+    success: '✅',
+    error: '❌',
+    warning: '⚠️',
+    info: 'ℹ️',
   };
 
   React.useEffect(() => {

@@ -18,11 +18,11 @@ export const getPlayerCurrentRating = async (clubId, playerId) => {
 
     const playerRef = doc(db, `clubs/${clubId}/players/${playerId}`);
     const playerSnap = await getDoc(playerRef);
-    
+
     if (playerSnap.exists()) {
       const playerData = playerSnap.data();
       const rating = playerData.rating ?? DEFAULT_RATING;
-      
+
       console.log(`🎾 Player ${playerId} current rating:`, rating);
       return rating;
     } else {
@@ -46,8 +46,8 @@ export const getPlayersCurrentRatings = async (clubId, playerIds) => {
     }
 
     // Filter out empty/null player IDs
-    const validPlayerIds = playerIds.filter(id => id && id.trim());
-    
+    const validPlayerIds = playerIds.filter((id) => id && id.trim());
+
     if (validPlayerIds.length === 0) {
       return {};
     }
@@ -61,7 +61,7 @@ export const getPlayersCurrentRatings = async (clubId, playerIds) => {
     });
 
     const results = await Promise.all(ratingPromises);
-    
+
     // Convert to object map
     const ratingsMap = {};
     results.forEach(({ playerId, rating }) => {
@@ -88,18 +88,18 @@ const CACHE_DURATION = 30000; // 30 seconds
 export const getPlayerRatingCached = async (clubId, playerId) => {
   const cacheKey = `${clubId}:${playerId}`;
   const cached = ratingCache.get(cacheKey);
-  
-  if (cached && (Date.now() - cached.timestamp) < CACHE_DURATION) {
+
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
     console.log(`💾 Using cached rating for ${playerId}:`, cached.rating);
     return cached.rating;
   }
 
   const rating = await getPlayerCurrentRating(clubId, playerId);
-  
+
   // Cache the result
   ratingCache.set(cacheKey, {
     rating,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   });
 
   return rating;
@@ -117,5 +117,5 @@ export default {
   getPlayerCurrentRating,
   getPlayersCurrentRatings,
   getPlayerRatingCached,
-  clearRatingCache
+  clearRatingCache,
 };

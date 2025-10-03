@@ -1,7 +1,7 @@
 // =============================================
 // FILE: src/hooks/useOptimizedLoad.js
 // =============================================
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from 'react';
 
 /**
  * Hook ottimizzato per il caricamento dei dati con cache e debounce
@@ -80,7 +80,7 @@ export function useOptimizedLoad(loadFn, deps = [], options = {}) {
           setCache(cacheKey, result);
         }
       } catch (err) {
-        console.error("useOptimizedLoad error:", err);
+        console.error('useOptimizedLoad error:', err);
         setError(err);
       } finally {
         setLoading(false);
@@ -114,7 +114,7 @@ export function useUserBookingsLoad(user) {
   const loadBookings = async () => {
     if (!user) return [];
 
-    const { getUserBookings } = await import("@services/bookings.js");
+    const { getUserBookings } = await import('@services/bookings.js');
     return getUserBookings(user, true);
   };
 
@@ -126,6 +126,6 @@ export function useUserBookingsLoad(user) {
       debounceMs: 200,
       ttlMs: 2 * 60 * 1000, // 2 minutes for bookings
       enableCache: true,
-    },
+    }
   );
 }

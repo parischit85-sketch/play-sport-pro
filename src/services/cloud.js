@@ -1,8 +1,8 @@
 // =============================================
 // FILE: src/services/cloud.js
 // =============================================
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import {
   initializeFirestore,
   doc,
@@ -11,7 +11,7 @@ import {
   onSnapshot,
   collection,
   getDocs,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -24,8 +24,7 @@ export const auth = getAuth(app);
 // Firestore with long-polling fallback to avoid QUIC errors
 export const db = initializeFirestore(app, {
   experimentalAutoDetectLongPolling: true,
-  experimentalForceLongPolling:
-    import.meta.env.VITE_FIRESTORE_FORCE_LONG_POLLING === "true",
+  experimentalForceLongPolling: import.meta.env.VITE_FIRESTORE_FORCE_LONG_POLLING === 'true',
   useFetchStreams: false,
 });
 
@@ -41,29 +40,29 @@ export async function loadLeague(leagueId) {
     if (adminUser) {
       const parsed = JSON.parse(adminUser);
       if (parsed?.isSpecialAdmin) {
-        console.log("🔑 Admin bypass: Returning mock league data");
+        console.log('🔑 Admin bypass: Returning mock league data');
         return {
-          name: "Admin Test League",
+          name: 'Admin Test League',
           players: {},
           matches: {},
           tournaments: {},
           bookings: {},
           _createdAt: Date.now(),
-          _updatedAt: Date.now()
+          _updatedAt: Date.now(),
         };
       }
     }
   } catch (e) {
     // Ignore localStorage errors
   }
-  
-  const snap = await getDoc(doc(db, "leagues", leagueId));
+
+  const snap = await getDoc(doc(db, 'leagues', leagueId));
   return snap.exists() ? snap.data() : null;
 }
 
 export async function listLeagues() {
   try {
-    const querySnapshot = await getDocs(collection(db, "leagues"));
+    const querySnapshot = await getDocs(collection(db, 'leagues'));
     const leagues = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
@@ -72,15 +71,13 @@ export async function listLeagues() {
         name: data.name || doc.id,
         players: data.players?.length || 0,
         matches: data.matches?.length || 0,
-        lastUpdated: data._updatedAt
-          ? new Date(data._updatedAt).toLocaleString()
-          : "N/A",
+        lastUpdated: data._updatedAt ? new Date(data._updatedAt).toLocaleString() : 'N/A',
         courts: data.courts?.length || 0,
       });
     });
     return leagues.sort((a, b) => (b._updatedAt || 0) - (a._updatedAt || 0));
   } catch (error) {
-    console.error("Errore nel recupero della lista backup:", error);
+    console.error('Errore nel recupero della lista backup:', error);
     return [];
   }
 }
@@ -89,12 +86,12 @@ export async function saveLeague(leagueId, data) {
   // 🛡️ PROTEZIONE ANTI-SOVRASCRITTURA
   // Permetti ripristino manuale se ha flag _restored
   if (data._restored) {
-    console.log("🔥 Ripristino manuale autorizzato - bypassando protezioni");
+    console.log('🔥 Ripristino manuale autorizzato - bypassando protezioni');
   } else if (data.players && data.players.length < 5) {
     console.warn(
-      "🚨 PROTEZIONE ATTIVA: Rifiutato salvataggio di dati con pochi giocatori (possibili seed data)",
+      '🚨 PROTEZIONE ATTIVA: Rifiutato salvataggio di dati con pochi giocatori (possibili seed data)'
     );
-    console.warn("Dati non salvati:", {
+    console.warn('Dati non salvati:', {
       players: data.players?.length,
       matches: data.matches?.length,
     });
@@ -108,27 +105,20 @@ export async function saveLeague(leagueId, data) {
   // Backup automatico prima di salvare
   try {
     const existing = await loadLeague(leagueId);
-    if (
-      existing &&
-      existing.players &&
-      existing.players.length > (data.players?.length || 0)
-    ) {
+    if (existing && existing.players && existing.players.length > (data.players?.length || 0)) {
       const backupKey = `firebase-backup-${Date.now()}`;
       localStorage.setItem(
         backupKey,
         JSON.stringify({
           timestamp: new Date().toISOString(),
           data: existing,
-          reason: "Auto-backup before potential data loss",
-        }),
+          reason: 'Auto-backup before potential data loss',
+        })
       );
-      console.log(
-        "🔒 Backup automatico creato prima del salvataggio:",
-        backupKey,
-      );
+      console.log('🔒 Backup automatico creato prima del salvataggio:', backupKey);
     }
   } catch (e) {
-    console.warn("Impossibile creare backup automatico:", e);
+    console.warn('Impossibile creare backup automatico:', e);
   }
 
   // Add ownership information for new leagues
@@ -139,8 +129,8 @@ export async function saveLeague(leagueId, data) {
   }
 
   // merge per non sovrascrivere tutto
-  await setDoc(doc(db, "leagues", leagueId), dataToSave, { merge: true });
-  console.log("✅ Dati salvati nel cloud:", {
+  await setDoc(doc(db, 'leagues', leagueId), dataToSave, { merge: true });
+  console.log('✅ Dati salvati nel cloud:', {
     players: dataToSave.players?.length,
     matches: dataToSave.matches?.length,
   });
@@ -153,7 +143,7 @@ export function subscribeLeague(leagueId, cb) {
     if (adminUser) {
       const parsed = JSON.parse(adminUser);
       if (parsed?.isSpecialAdmin) {
-        console.log("🔑 Admin bypass: Skipping Firebase subscription");
+        console.log('🔑 Admin bypass: Skipping Firebase subscription');
         // Return a dummy unsubscribe function
         return () => {};
       }
@@ -161,9 +151,9 @@ export function subscribeLeague(leagueId, cb) {
   } catch (e) {
     // Ignore localStorage errors
   }
-  
+
   // ritorna l'unsubscribe usato già dal tuo App.jsx
-  return onSnapshot(doc(db, "leagues", leagueId), (snap) => {
+  return onSnapshot(doc(db, 'leagues', leagueId), (snap) => {
     if (snap.exists()) cb(snap.data());
   });
 }

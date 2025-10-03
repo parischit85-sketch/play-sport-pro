@@ -25,7 +25,7 @@ export function overlaps(aStart, aEnd, bStart, bEnd) {
   return aStart < bEnd && bStart < aEnd;
 }
 export function hmToMinutes(hm) {
-  const [h, m] = (hm || "00:00").split(":").map(Number);
+  const [h, m] = (hm || '00:00').split(':').map(Number);
   return h * 60 + (m || 0);
 }
 export function minutesSinceMidnight(d) {

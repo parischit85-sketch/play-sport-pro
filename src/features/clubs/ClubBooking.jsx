@@ -23,21 +23,21 @@ const ClubBooking = ({ clubId, club }) => {
 
     try {
       const data = await loadLeague('default'); // Default league ID
-      
+
       // Filter data to only include club-specific items
       let filteredData = {
         ...data,
-        courts: data.courts?.filter(court => court.clubId === clubId) || [],
-        bookings: data.bookings?.filter(booking => booking.clubId === clubId) || [],
+        courts: data.courts?.filter((court) => court.clubId === clubId) || [],
+        bookings: data.bookings?.filter((booking) => booking.clubId === clubId) || [],
         // Keep all profiles but booking component will handle filtering
         profiles: data.profiles || [],
-        players: data.players || []
+        players: data.players || [],
       };
 
       // 🔧 FALLBACK: Se non ci sono campi del club, mostra campi non associati
       if (filteredData.courts.length === 0 && data.courts?.length > 0) {
-        filteredData.courts = data.courts.filter(court => !court.clubId) || [];
-        filteredData.bookings = data.bookings?.filter(booking => !booking.clubId) || [];
+        filteredData.courts = data.courts.filter((court) => !court.clubId) || [];
+        filteredData.bookings = data.bookings?.filter((booking) => !booking.clubId) || [];
       }
 
       setClubData(filteredData);
@@ -65,7 +65,7 @@ const ClubBooking = ({ clubId, club }) => {
           Errore nel caricamento
         </h3>
         <p className="text-gray-600 dark:text-gray-400">{error}</p>
-        <button 
+        <button
           onClick={loadClubBookingData}
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
@@ -100,11 +100,7 @@ const ClubBooking = ({ clubId, club }) => {
         </p>
       </div>
 
-      <ModernBookingInterface 
-        data={clubData} 
-        clubFilter={clubId}
-        clubContext={club}
-      />
+      <ModernBookingInterface data={clubData} clubFilter={clubId} clubContext={club} />
     </div>
   );
 };

@@ -45,7 +45,9 @@ async function migrateCourtsArrayFromLeagues() {
         migratedAt: new Date().toISOString(),
       });
       migrated++;
-      console.log(`✅ Migrato campo da array league: ${court.name} (${court.id}) in lega ${leagueDoc.id}`);
+      console.log(
+        `✅ Migrato campo da array league: ${court.name} (${court.id}) in lega ${leagueDoc.id}`
+      );
     }
     // Rimuovi l'array courts dal documento league
     await updateDoc(leagueDoc.ref, { courts: [] });
@@ -60,7 +62,9 @@ async function migrateCourtsArrayFromLeagues() {
     const clubId = 'sporting-cat';
     const migratedClub = await migrateCourtsArrayFromClub(clubId);
     const migratedLeagues = await migrateCourtsArrayFromLeagues();
-    console.log(`\n--- Migrazione completata ---\nCampi migrati da club: ${migratedClub}\nCampi migrati da leagues: ${migratedLeagues}`);
+    console.log(
+      `\n--- Migrazione completata ---\nCampi migrati da club: ${migratedClub}\nCampi migrati da leagues: ${migratedLeagues}`
+    );
   } catch (error) {
     console.error('❌ Errore durante la migrazione degli array courts:', error);
   }

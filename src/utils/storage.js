@@ -12,24 +12,30 @@ export function lsGet(key, { clubId, parse = true } = {}) {
   try {
     const raw = localStorage.getItem(buildKey(key, clubId));
     if (!raw) return null;
-    
+
     // Se non dobbiamo fare parsing, restituisci raw
     if (!parse) return raw;
-    
+
     // Se sembra JSON (inizia con { o [), prova il parsing
-    if (raw.startsWith('{') || raw.startsWith('[') || raw === 'null' || raw === 'true' || raw === 'false') {
+    if (
+      raw.startsWith('{') ||
+      raw.startsWith('[') ||
+      raw === 'null' ||
+      raw === 'true' ||
+      raw === 'false'
+    ) {
       return JSON.parse(raw);
     }
-    
+
     // Se è un numero, convertilo
     if (!isNaN(raw) && !isNaN(parseFloat(raw))) {
       return parseFloat(raw);
     }
-    
+
     // Altrimenti restituisci la stringa così com'è
     return raw;
   } catch (e) {
-    console.warn('lsGet error', key, e); 
+    console.warn('lsGet error', key, e);
     // In caso di errore, restituisci la stringa raw senza parsing
     const raw = localStorage.getItem(buildKey(key, clubId));
     return raw || null;
@@ -46,7 +52,9 @@ export function lsSet(key, value, { clubId } = {}) {
 }
 
 export function lsRemove(key, { clubId } = {}) {
-  try { localStorage.removeItem(buildKey(key, clubId)); } catch (_) {}
+  try {
+    localStorage.removeItem(buildKey(key, clubId));
+  } catch (_) {}
 }
 
 // Migrazione basica di chiavi legacy -> namespaced (una sola volta)
@@ -62,9 +70,9 @@ export function runLocalStorageMigration(currentClubId) {
       'padel-bookings',
       'unified-bookings',
       'lessonBookings',
-      'lesson-bookings'
+      'lesson-bookings',
     ];
-    legacyKeys.forEach(k => {
+    legacyKeys.forEach((k) => {
       const v = localStorage.getItem(k);
       if (v != null) {
         // Manteniamo valore come global se non ha club esplicito.

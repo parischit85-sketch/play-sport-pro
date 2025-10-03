@@ -3,21 +3,19 @@
 // Gestione wallet e transazioni del giocatore
 // =============================================
 
-import React, { useState } from "react";
-import { uid } from "@lib/ids.js";
-import { createTransactionSchema } from "../types/playerTypes.js";
-import { useUI } from "@contexts/UIContext.jsx";
+import React, { useState } from 'react';
+import { uid } from '@lib/ids.js';
+import { createTransactionSchema } from '../types/playerTypes.js';
+import { useUI } from '@contexts/UIContext.jsx';
 
 export default function PlayerWallet({ player, onUpdate, T }) {
   const [showAddTransaction, setShowAddTransaction] = useState(false);
-  const [transactionData, setTransactionData] = useState(
-    createTransactionSchema(),
-  );
+  const [transactionData, setTransactionData] = useState(createTransactionSchema());
   const { addNotification } = useUI();
 
   const wallet = player.wallet || {
     balance: 0,
-    currency: "EUR",
+    currency: 'EUR',
     transactions: [],
   };
   const transactions = wallet.transactions || [];
@@ -26,10 +24,9 @@ export default function PlayerWallet({ player, onUpdate, T }) {
     // Alert specifically when description is missing
     if (!transactionData.description || !transactionData.description.trim()) {
       addNotification({
-        type: "warning",
-        title: "Descrizione mancante",
-        message:
-          "Aggiungi una breve descrizione del movimento prima di continuare.",
+        type: 'warning',
+        title: 'Descrizione mancante',
+        message: 'Aggiungi una breve descrizione del movimento prima di continuare.',
       });
       return;
     }
@@ -41,11 +38,11 @@ export default function PlayerWallet({ player, onUpdate, T }) {
       ...transactionData,
       id: uid(),
       createdAt: new Date().toISOString(),
-      createdBy: "current-user", // In futuro userà l'ID utente corrente
+      createdBy: 'current-user', // In futuro userà l'ID utente corrente
     };
 
     const newBalance =
-      transactionData.type === "credit"
+      transactionData.type === 'credit'
         ? wallet.balance + Math.abs(transactionData.amount)
         : wallet.balance - Math.abs(transactionData.amount);
 
@@ -67,52 +64,51 @@ export default function PlayerWallet({ player, onUpdate, T }) {
 
   const getTransactionIcon = (type) => {
     switch (type) {
-      case "credit":
-        return "💰";
-      case "debit":
-        return "💸";
-      case "refund":
-        return "↩️";
-      case "bonus":
-        return "🎁";
+      case 'credit':
+        return '💰';
+      case 'debit':
+        return '💸';
+      case 'refund':
+        return '↩️';
+      case 'bonus':
+        return '🎁';
       default:
-        return "💱";
+        return '💱';
     }
   };
 
   const getTransactionTypeLabel = (type) => {
     switch (type) {
-      case "credit":
-        return "Ricarica";
-      case "debit":
-        return "Addebito";
-      case "refund":
-        return "Rimborso";
-      case "bonus":
-        return "Bonus";
+      case 'credit':
+        return 'Ricarica';
+      case 'debit':
+        return 'Addebito';
+      case 'refund':
+        return 'Rimborso';
+      case 'bonus':
+        return 'Bonus';
       default:
-        return "Transazione";
+        return 'Transazione';
     }
   };
 
   const getTransactionColor = (type) => {
     switch (type) {
-      case "credit":
-        return "text-green-600 dark:text-green-400";
-      case "debit":
-        return "text-red-600 dark:text-red-400";
-      case "refund":
-        return "text-blue-600 dark:text-blue-400";
-      case "bonus":
-        return "text-purple-600 dark:text-purple-400";
+      case 'credit':
+        return 'text-green-600 dark:text-green-400';
+      case 'debit':
+        return 'text-red-600 dark:text-red-400';
+      case 'refund':
+        return 'text-blue-600 dark:text-blue-400';
+      case 'bonus':
+        return 'text-purple-600 dark:text-purple-400';
       default:
         return T.text;
     }
   };
 
   const formatAmount = (amount, type) => {
-    const sign =
-      type === "credit" || type === "refund" || type === "bonus" ? "+" : "-";
+    const sign = type === 'credit' || type === 'refund' || type === 'bonus' ? '+' : '-';
     return `${sign}€${Math.abs(amount).toFixed(2)}`;
   };
 
@@ -123,15 +119,13 @@ export default function PlayerWallet({ player, onUpdate, T }) {
         <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">
           €{wallet.balance.toFixed(2)}
         </div>
-        <div className={`text-sm ${T.subtext} mb-4`}>
-          Saldo Disponibile • {wallet.currency}
-        </div>
+        <div className={`text-sm ${T.subtext} mb-4`}>Saldo Disponibile • {wallet.currency}</div>
         <div className="flex justify-center gap-3">
           <button
             onClick={() => {
               setTransactionData({
                 ...createTransactionSchema(),
-                type: "credit",
+                type: 'credit',
               });
               setShowAddTransaction(true);
             }}
@@ -143,7 +137,7 @@ export default function PlayerWallet({ player, onUpdate, T }) {
             onClick={() => {
               setTransactionData({
                 ...createTransactionSchema(),
-                type: "debit",
+                type: 'debit',
               });
               setShowAddTransaction(true);
             }}
@@ -162,9 +156,7 @@ export default function PlayerWallet({ player, onUpdate, T }) {
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                  Tipo
-                </label>
+                <label className={`block text-sm font-medium ${T.text} mb-1`}>Tipo</label>
                 <select
                   value={transactionData.type}
                   onChange={(e) =>
@@ -183,12 +175,10 @@ export default function PlayerWallet({ player, onUpdate, T }) {
               </div>
 
               <div>
-                <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                  Importo (€)
-                </label>
+                <label className={`block text-sm font-medium ${T.text} mb-1`}>Importo (€)</label>
                 <input
                   type="number"
-                  value={transactionData.amount || ""}
+                  value={transactionData.amount || ''}
                   onChange={(e) =>
                     setTransactionData((prev) => ({
                       ...prev,
@@ -204,9 +194,7 @@ export default function PlayerWallet({ player, onUpdate, T }) {
             </div>
 
             <div>
-              <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                Descrizione
-              </label>
+              <label className={`block text-sm font-medium ${T.text} mb-1`}>Descrizione</label>
               <input
                 type="text"
                 value={transactionData.description}
@@ -249,10 +237,7 @@ export default function PlayerWallet({ player, onUpdate, T }) {
               >
                 Annulla
               </button>
-              <button
-                onClick={handleAddTransaction}
-                className={`${T.btnPrimary} px-4 py-2`}
-              >
+              <button onClick={handleAddTransaction} className={`${T.btnPrimary} px-4 py-2`}>
                 Aggiungi Transazione
               </button>
             </div>
@@ -273,10 +258,7 @@ export default function PlayerWallet({ player, onUpdate, T }) {
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">
             {
               transactions.filter(
-                (t) =>
-                  t.type === "credit" ||
-                  t.type === "refund" ||
-                  t.type === "bonus",
+                (t) => t.type === 'credit' || t.type === 'refund' || t.type === 'bonus'
               ).length
             }
           </div>
@@ -285,7 +267,7 @@ export default function PlayerWallet({ player, onUpdate, T }) {
 
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
           <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-            {transactions.filter((t) => t.type === "debit").length}
+            {transactions.filter((t) => t.type === 'debit').length}
           </div>
           <div className={`text-xs ${T.subtext}`}>Uscite</div>
         </div>
@@ -295,9 +277,7 @@ export default function PlayerWallet({ player, onUpdate, T }) {
             €
             {transactions
               .reduce((sum, t) => {
-                return t.type === "credit" ||
-                  t.type === "refund" ||
-                  t.type === "bonus"
+                return t.type === 'credit' || t.type === 'refund' || t.type === 'bonus'
                   ? sum + t.amount
                   : sum - t.amount;
               }, 0)
@@ -314,18 +294,14 @@ export default function PlayerWallet({ player, onUpdate, T }) {
         </h4>
 
         {transactions.length === 0 ? (
-          <div
-            className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}
-          >
+          <div className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}>
             <div className="text-4xl mb-2">💳</div>
-            <div className={`${T.subtext} mb-4`}>
-              Nessuna transazione presente
-            </div>
+            <div className={`${T.subtext} mb-4`}>Nessuna transazione presente</div>
             <button
               onClick={() => {
                 setTransactionData({
                   ...createTransactionSchema(),
-                  type: "credit",
+                  type: 'credit',
                 });
                 setShowAddTransaction(true);
               }}
@@ -339,21 +315,14 @@ export default function PlayerWallet({ player, onUpdate, T }) {
             {transactions
               .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
               .map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className={`${T.cardBg} ${T.border} rounded-xl p-4`}
-                >
+                <div key={transaction.id} className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-3 flex-1">
-                      <div className="text-2xl">
-                        {getTransactionIcon(transaction.type)}
-                      </div>
+                      <div className="text-2xl">{getTransactionIcon(transaction.type)}</div>
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className={`font-medium ${T.text}`}>
-                            {transaction.description}
-                          </span>
+                          <span className={`font-medium ${T.text}`}>{transaction.description}</span>
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 ${T.subtext}`}
                           >
@@ -363,23 +332,16 @@ export default function PlayerWallet({ player, onUpdate, T }) {
 
                         <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                           <span>
-                            📅{" "}
-                            {new Date(transaction.createdAt).toLocaleDateString(
-                              "it-IT",
-                            )}
+                            📅 {new Date(transaction.createdAt).toLocaleDateString('it-IT')}
                           </span>
-                          {transaction.reference && (
-                            <span>🔗 {transaction.reference}</span>
-                          )}
-                          <span>👤 {transaction.createdBy || "Sistema"}</span>
+                          {transaction.reference && <span>🔗 {transaction.reference}</span>}
+                          <span>👤 {transaction.createdBy || 'Sistema'}</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <div
-                        className={`text-lg font-bold ${getTransactionColor(transaction.type)}`}
-                      >
+                      <div className={`text-lg font-bold ${getTransactionColor(transaction.type)}`}>
                         {formatAmount(transaction.amount, transaction.type)}
                       </div>
                     </div>

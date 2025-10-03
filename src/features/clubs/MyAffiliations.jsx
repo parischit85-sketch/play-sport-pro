@@ -15,22 +15,28 @@ const AffiliationCard = ({ affiliation, onEnterClub }) => {
     switch (affiliation.status) {
       case AFFILIATION_STATUS.PENDING:
         return (
-          <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 
-                         px-3 py-1 rounded-full text-sm font-medium">
+          <span
+            className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 
+                         px-3 py-1 rounded-full text-sm font-medium"
+          >
             ⏳ In attesa
           </span>
         );
       case AFFILIATION_STATUS.APPROVED:
         return (
-          <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 
-                         px-3 py-1 rounded-full text-sm font-medium">
+          <span
+            className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 
+                         px-3 py-1 rounded-full text-sm font-medium"
+          >
             ✅ Approvata
           </span>
         );
       case AFFILIATION_STATUS.REJECTED:
         return (
-          <span className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 
-                         px-3 py-1 rounded-full text-sm font-medium">
+          <span
+            className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 
+                         px-3 py-1 rounded-full text-sm font-medium"
+          >
             ❌ Rifiutata
           </span>
         );
@@ -45,8 +51,10 @@ const AffiliationCard = ({ affiliation, onEnterClub }) => {
         // Gli admin club non hanno bisogno del bottone "Entra nel Club" - sono già nel loro club
         if (isClubAdmin(affiliation.clubId)) {
           return (
-            <span className="text-blue-600 dark:text-blue-400 px-4 py-2 rounded-lg
-                           font-medium text-sm">
+            <span
+              className="text-blue-600 dark:text-blue-400 px-4 py-2 rounded-lg
+                           font-medium text-sm"
+            >
               👑 Amministratore
             </span>
           );
@@ -74,9 +82,7 @@ const AffiliationCard = ({ affiliation, onEnterClub }) => {
       case AFFILIATION_STATUS.REJECTED:
         return (
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            {affiliation.adminNotes && (
-              <p className="italic">"{affiliation.adminNotes}"</p>
-            )}
+            {affiliation.adminNotes && <p className="italic">"{affiliation.adminNotes}"</p>}
           </div>
         );
       default:
@@ -89,8 +95,8 @@ const AffiliationCard = ({ affiliation, onEnterClub }) => {
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     return date.toLocaleDateString('it-IT', {
       day: 'numeric',
-      month: 'long', 
-      year: 'numeric'
+      month: 'long',
+      year: 'numeric',
     });
   };
 
@@ -125,9 +131,7 @@ const AffiliationCard = ({ affiliation, onEnterClub }) => {
       {/* Request details */}
       <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
         <div>Richiesta inviata: {formatDate(affiliation.requestedAt)}</div>
-        {affiliation.approvedAt && (
-          <div>Approvata: {formatDate(affiliation.approvedAt)}</div>
-        )}
+        {affiliation.approvedAt && <div>Approvata: {formatDate(affiliation.approvedAt)}</div>}
         {affiliation.notes && (
           <div className="mt-2">
             <span className="font-medium">Nota:</span> {affiliation.notes}
@@ -135,9 +139,7 @@ const AffiliationCard = ({ affiliation, onEnterClub }) => {
         )}
       </div>
 
-      <div className="flex justify-end">
-        {getActionButton()}
-      </div>
+      <div className="flex justify-end">{getActionButton()}</div>
     </div>
   );
 };
@@ -180,9 +182,9 @@ const MyAffiliations = () => {
   };
 
   const groupedAffiliations = {
-    approved: userAffiliations.filter(a => a.status === 'approved'),
-    pending: userAffiliations.filter(a => a.status === 'pending'),
-    rejected: userAffiliations.filter(a => a.status === 'rejected')
+    approved: userAffiliations.filter((a) => a.status === 'approved'),
+    pending: userAffiliations.filter((a) => a.status === 'pending'),
+    rejected: userAffiliations.filter((a) => a.status === 'rejected'),
   };
 
   if (loading) {
@@ -230,8 +232,10 @@ const MyAffiliations = () => {
 
       {/* Error */}
       {error && (
-        <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
-                      rounded-lg p-4 text-red-700 dark:text-red-400">
+        <div
+          className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 
+                      rounded-lg p-4 text-red-700 dark:text-red-400"
+        >
           {error}
         </div>
       )}
@@ -263,7 +267,7 @@ const MyAffiliations = () => {
             Club Attivi ({groupedAffiliations.approved.length})
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
-            {groupedAffiliations.approved.map(affiliation => (
+            {groupedAffiliations.approved.map((affiliation) => (
               <AffiliationCard
                 key={affiliation.id}
                 affiliation={affiliation}
@@ -281,7 +285,7 @@ const MyAffiliations = () => {
             Richieste in Attesa ({groupedAffiliations.pending.length})
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
-            {groupedAffiliations.pending.map(affiliation => (
+            {groupedAffiliations.pending.map((affiliation) => (
               <AffiliationCard
                 key={affiliation.id}
                 affiliation={affiliation}
@@ -299,7 +303,7 @@ const MyAffiliations = () => {
             Richieste Rifiutate ({groupedAffiliations.rejected.length})
           </h2>
           <div className="grid gap-4 md:grid-cols-2">
-            {groupedAffiliations.rejected.map(affiliation => (
+            {groupedAffiliations.rejected.map((affiliation) => (
               <AffiliationCard
                 key={affiliation.id}
                 affiliation={affiliation}

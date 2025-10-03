@@ -3,9 +3,9 @@
  * Wrapper around Firebase Auth with enhanced security features
  */
 
-import { rateLimiter, sanitizeEmail, isValidEmail, generateCSRFToken } from '../lib/security';
+import { rateLimiter, sanitizeEmail, isValidEmail } from '../lib/security';
 import analyticsModule from '../lib/analytics';
-import { trackFirebaseError } from '../lib/sentry';
+// import { trackFirebaseError } from '../lib/sentry';
 import * as authService from './auth.jsx';
 
 // Rate limiting configurations
@@ -13,14 +13,14 @@ const RATE_LIMITS = {
   login: { maxAttempts: 5, windowMs: 900000 }, // 5 attempts per 15 minutes
   signup: { maxAttempts: 3, windowMs: 3600000 }, // 3 attempts per hour
   passwordReset: { maxAttempts: 3, windowMs: 3600000 }, // 3 attempts per hour
-  socialLogin: { maxAttempts: 10, windowMs: 900000 } // 10 attempts per 15 minutes
+  socialLogin: { maxAttempts: 10, windowMs: 900000 }, // 10 attempts per 15 minutes
 };
 
 // Suspicious activity patterns
 const SUSPICIOUS_PATTERNS = {
   rapidRequests: 10, // More than 10 auth requests in 5 minutes
   multipleFailures: 5, // More than 5 consecutive failures
-  unusualEmail: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i // Basic email validation
+  unusualEmail: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i, // Basic email validation
 };
 
 class SecureAuthService {
@@ -40,9 +40,9 @@ class SecureAuthService {
       navigator.userAgent.substring(0, 50),
       navigator.language,
       screen.width + 'x' + screen.height,
-      new Date().getTimezoneOffset()
+      new Date().getTimezoneOffset(),
     ].join('|');
-    
+
     return btoa(fingerprint).substring(0, 32);
   }
 
@@ -74,10 +74,10 @@ class SecureAuthService {
     if (!this.requestHistory.has(key)) {
       this.requestHistory.set(key, []);
     }
-    
+
     const history = this.requestHistory.get(key);
     history.push({ timestamp: now, success });
-    
+
     // Keep only last 20 requests
     if (history.length > 20) {
       history.splice(0, history.length - 20);
@@ -87,13 +87,13 @@ class SecureAuthService {
     if (!success) {
       const currentFailures = this.failureCount.get(key) || 0;
       this.failureCount.set(key, currentFailures + 1);
-      
+
       // Check for suspicious activity
       if (currentFailures >= SUSPICIOUS_PATTERNS.multipleFailures) {
         this.reportSuspiciousActivity('multiple_auth_failures', {
           operation,
           failures: currentFailures + 1,
-          identifier
+          identifier,
         });
       }
     } else {
@@ -101,12 +101,12 @@ class SecureAuthService {
     }
 
     // Check for rapid requests
-    const recentRequests = history.filter(req => now - req.timestamp < 300000); // 5 minutes
+    const recentRequests = history.filter((req) => now - req.timestamp < 300000); // 5 minutes
     if (recentRequests.length >= SUSPICIOUS_PATTERNS.rapidRequests) {
       this.reportSuspiciousActivity('rapid_auth_requests', {
         operation,
         requestCount: recentRequests.length,
-        identifier
+        identifier,
       });
     }
 
@@ -115,7 +115,7 @@ class SecureAuthService {
       operation,
       success,
       timestamp: now,
-      consecutive_failures: this.failureCount.get(key) || 0
+      consecutive_failures: this.failureCount.get(key) || 0,
     });
   }
 
@@ -126,16 +126,18 @@ class SecureAuthService {
    */
   reportSuspiciousActivity(type, metadata) {
     console.warn('🚨 Suspicious authentication activity detected:', type, metadata);
-    
+
     // Dispatch event for SecurityContext to handle
-    window.dispatchEvent(new CustomEvent('suspiciousAuthActivity', {
-      detail: { type, metadata, timestamp: Date.now() }
-    }));
+    window.dispatchEvent(
+      new CustomEvent('suspiciousAuthActivity', {
+        detail: { type, metadata, timestamp: Date.now() },
+      })
+    );
 
     analyticsModule.trackEvent('security_auth_threat', {
       type,
       metadata,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 
@@ -147,21 +149,21 @@ class SecureAuthService {
   validateEmailInput(email) {
     const sanitized = sanitizeEmail(email);
     const isValid = isValidEmail(sanitized);
-    
+
     // Check for suspicious email patterns
     const isSuspicious = !SUSPICIOUS_PATTERNS.unusualEmail.test(sanitized);
-    
+
     if (isSuspicious) {
-      this.reportSuspiciousActivity('suspicious_email', { 
+      this.reportSuspiciousActivity('suspicious_email', {
         originalEmail: email,
-        sanitizedEmail: sanitized
+        sanitizedEmail: sanitized,
       });
     }
 
     return {
       email: sanitized,
       isValid,
-      isSuspicious
+      isSuspicious,
     };
   }
 
@@ -173,7 +175,7 @@ class SecureAuthService {
    */
   async secureEmailLogin(email, password) {
     const clientId = this.getClientId();
-    
+
     try {
       // Rate limiting check
       if (!this.checkRateLimit('login', clientId)) {
@@ -191,25 +193,21 @@ class SecureAuthService {
       }
 
       // Call original auth service
-      const result = await authService.signInWithEmailAndPassword(
-        emailValidation.email, 
-        password
-      );
+      const result = await authService.signInWithEmailAndPassword(emailValidation.email, password);
 
       // Track successful authentication
       this.trackAuthRequest('login', clientId, true);
 
       return result;
-
     } catch (error) {
       // Track failed authentication
       this.trackAuthRequest('login', clientId, false);
-      
+
       // Enhanced error tracking
-      trackFirebaseError(error, 'secure_email_login', {
+      console.error('Secure email login error:', error, {
         clientId,
         emailProvided: !!email,
-        passwordProvided: !!password
+        passwordProvided: !!password,
       });
 
       throw error;
@@ -225,7 +223,7 @@ class SecureAuthService {
    */
   async secureEmailRegistration(email, password, additionalData = {}) {
     const clientId = this.getClientId();
-    
+
     try {
       // Rate limiting check
       if (!this.checkRateLimit('signup', clientId)) {
@@ -245,7 +243,7 @@ class SecureAuthService {
 
       // Call original auth service
       const result = await authService.createUserWithEmailAndPassword(
-        emailValidation.email, 
+        emailValidation.email,
         password,
         additionalData
       );
@@ -254,14 +252,13 @@ class SecureAuthService {
       this.trackAuthRequest('signup', clientId, true);
 
       return result;
-
     } catch (error) {
       // Track failed registration
       this.trackAuthRequest('signup', clientId, false);
-      
-      trackFirebaseError(error, 'secure_email_registration', {
+
+      console.error('Secure email registration error:', error, {
         clientId,
-        emailProvided: !!email
+        emailProvided: !!email,
       });
 
       throw error;
@@ -275,7 +272,7 @@ class SecureAuthService {
    */
   async secureSocialLogin(provider) {
     const clientId = this.getClientId();
-    
+
     try {
       // Rate limiting check
       if (!this.checkRateLimit('socialLogin', clientId)) {
@@ -298,14 +295,13 @@ class SecureAuthService {
       this.trackAuthRequest('socialLogin', clientId, true);
 
       return result;
-
     } catch (error) {
       // Track failed social login
       this.trackAuthRequest('socialLogin', clientId, false);
-      
-      trackFirebaseError(error, 'secure_social_login', {
+
+      console.error('Secure social login error:', error, {
         provider,
-        clientId
+        clientId,
       });
 
       throw error;
@@ -319,7 +315,7 @@ class SecureAuthService {
    */
   async securePasswordReset(email) {
     const clientId = this.getClientId();
-    
+
     try {
       // Rate limiting check
       if (!this.checkRateLimit('passwordReset', clientId)) {
@@ -339,14 +335,13 @@ class SecureAuthService {
       this.trackAuthRequest('passwordReset', clientId, true);
 
       return result;
-
     } catch (error) {
       // Track failed password reset
       this.trackAuthRequest('passwordReset', clientId, false);
-      
-      trackFirebaseError(error, 'secure_password_reset', {
+
+      console.error('Secure password reset error:', error, {
         clientId,
-        emailProvided: !!email
+        emailProvided: !!email,
       });
 
       throw error;
@@ -359,7 +354,7 @@ class SecureAuthService {
    */
   async secureLogout() {
     const clientId = this.getClientId();
-    
+
     try {
       // Clear security state
       this.failureCount.delete(`login_${clientId}`);
@@ -371,13 +366,12 @@ class SecureAuthService {
 
       analyticsModule.trackEvent('auth_logout', {
         secure: true,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       return result;
-
     } catch (error) {
-      trackFirebaseError(error, 'secure_logout', { clientId });
+      console.error('Secure logout error:', error, { clientId });
       throw error;
     }
   }
@@ -388,20 +382,20 @@ class SecureAuthService {
    */
   getSecurityMetrics() {
     const clientId = this.getClientId();
-    
+
     return {
       failureCount: this.failureCount.get(`login_${clientId}`) || 0,
       requestHistory: this.requestHistory.get(`login_${clientId}`) || [],
       remainingLoginAttempts: rateLimiter.getRemaining(
-        `auth_login_${clientId}`, 
-        RATE_LIMITS.login.maxAttempts, 
+        `auth_login_${clientId}`,
+        RATE_LIMITS.login.maxAttempts,
         RATE_LIMITS.login.windowMs
       ),
       remainingSignupAttempts: rateLimiter.getRemaining(
-        `auth_signup_${clientId}`, 
-        RATE_LIMITS.signup.maxAttempts, 
+        `auth_signup_${clientId}`,
+        RATE_LIMITS.signup.maxAttempts,
         RATE_LIMITS.signup.windowMs
-      )
+      ),
     };
   }
 
@@ -421,7 +415,7 @@ class SecureAuthService {
 
       // Clean up old request history
       for (const [key, history] of this.requestHistory.entries()) {
-        const recentHistory = history.filter(req => now - req.timestamp < maxAge);
+        const recentHistory = history.filter((req) => now - req.timestamp < maxAge);
         if (recentHistory.length === 0) {
           this.requestHistory.delete(key);
         } else {

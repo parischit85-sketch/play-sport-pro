@@ -3,21 +3,21 @@
 // Vista dettagliata del giocatore con tab multiple
 // =============================================
 
-import React, { useMemo, useState } from "react";
-import { listAllUserProfiles } from "@services/auth.jsx";
+import React, { useMemo, useState } from 'react';
+import { listAllUserProfiles } from '@services/auth.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
-import { DEFAULT_RATING } from "@lib/ids.js";
-import { PLAYER_CATEGORIES } from "../types/playerTypes.js";
-import PlayerNotes from "./PlayerNotes";
-import PlayerWallet from "./PlayerWallet";
-import PlayerCommunications from "./PlayerCommunications";
-import PlayerBookingHistory from "./PlayerBookingHistory";
+import { DEFAULT_RATING } from '@lib/ids.js';
+import { PLAYER_CATEGORIES } from '../types/playerTypes.js';
+import PlayerNotes from './PlayerNotes';
+import PlayerWallet from './PlayerWallet';
+import PlayerCommunications from './PlayerCommunications';
+import PlayerBookingHistory from './PlayerBookingHistory';
 
 export default function PlayerDetails({ player, onUpdate, onClose, T }) {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState('overview');
   const [linking, setLinking] = useState(false);
-  const [linkEmail, setLinkEmail] = useState("");
-  const [accountSearch, setAccountSearch] = useState("");
+  const [linkEmail, setLinkEmail] = useState('');
+  const [accountSearch, setAccountSearch] = useState('');
   const [accounts, setAccounts] = useState([]);
   const [loadingAccounts, setLoadingAccounts] = useState(false);
   const { players: clubPlayers } = useClub();
@@ -25,33 +25,27 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
   const linkedEmailsSet = useMemo(
     () =>
       new Set(
-  (clubPlayers || [])
-          .filter(
-            (p) =>
-              p.id !== player.id && (p.isAccountLinked || p.linkedAccountEmail),
-          )
-          .map((p) => (p.linkedAccountEmail || "").toLowerCase())
-          .filter(Boolean),
+        (clubPlayers || [])
+          .filter((p) => p.id !== player.id && (p.isAccountLinked || p.linkedAccountEmail))
+          .map((p) => (p.linkedAccountEmail || '').toLowerCase())
+          .filter(Boolean)
       ),
-  [clubPlayers, player.id],
+    [clubPlayers, player.id]
   );
   const linkedIdsSet = useMemo(
     () =>
       new Set(
-  (clubPlayers || [])
-          .filter(
-            (p) =>
-              p.id !== player.id && (p.isAccountLinked || p.linkedAccountId),
-          )
+        (clubPlayers || [])
+          .filter((p) => p.id !== player.id && (p.isAccountLinked || p.linkedAccountId))
           .map((p) => p.linkedAccountId)
-          .filter(Boolean),
+          .filter(Boolean)
       ),
-  [clubPlayers, player.id],
+    [clubPlayers, player.id]
   );
 
   const unlinkedAccounts = useMemo(() => {
     return (accounts || []).filter((acc) => {
-      const email = (acc.email || "").toLowerCase();
+      const email = (acc.email || '').toLowerCase();
       const uid = acc.uid;
       if (!email) return false;
       if (uid && linkedIdsSet.has(uid)) return false;
@@ -64,9 +58,9 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
     if (!q) return unlinkedAccounts;
     return unlinkedAccounts.filter((acc) => {
       return (
-        (acc.email || "").toLowerCase().includes(q) ||
-        (acc.firstName || "").toLowerCase().includes(q) ||
-        (acc.lastName || "").toLowerCase().includes(q)
+        (acc.email || '').toLowerCase().includes(q) ||
+        (acc.firstName || '').toLowerCase().includes(q) ||
+        (acc.lastName || '').toLowerCase().includes(q)
       );
     });
   }, [unlinkedAccounts, accountSearch]);
@@ -76,7 +70,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
       setLoadingAccounts(true);
       const res = await listAllUserProfiles(500);
       setAccounts(res || []);
-      setAccountSearch("");
+      setAccountSearch('');
       setLinking(true);
     } finally {
       setLoadingAccounts(false);
@@ -86,28 +80,28 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
   const getCategoryLabel = (category) => {
     switch (category) {
       case PLAYER_CATEGORIES.MEMBER:
-        return "Membro";
+        return 'Membro';
       case PLAYER_CATEGORIES.VIP:
-        return "VIP";
+        return 'VIP';
       case PLAYER_CATEGORIES.GUEST:
-        return "Ospite";
+        return 'Ospite';
       case PLAYER_CATEGORIES.NON_MEMBER:
-        return "Non Membro";
+        return 'Non Membro';
       default:
-        return "N/A";
+        return 'N/A';
     }
   };
 
   const getCategoryColor = (category) => {
     switch (category) {
       case PLAYER_CATEGORIES.MEMBER:
-        return "text-green-600 dark:text-green-400";
+        return 'text-green-600 dark:text-green-400';
       case PLAYER_CATEGORIES.VIP:
-        return "text-purple-600 dark:text-purple-400";
+        return 'text-purple-600 dark:text-purple-400';
       case PLAYER_CATEGORIES.GUEST:
-        return "text-blue-600 dark:text-blue-400";
+        return 'text-blue-600 dark:text-blue-400';
       default:
-        return "text-gray-600 dark:text-gray-400";
+        return 'text-gray-600 dark:text-gray-400';
     }
   };
 
@@ -121,13 +115,11 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
     });
 
     setLinking(false);
-    setLinkEmail("");
+    setLinkEmail('');
   };
 
   const handleUnlinkAccount = () => {
-    if (
-      !confirm("Sei sicuro di voler scollegare l'account da questo giocatore?")
-    ) {
+    if (!confirm("Sei sicuro di voler scollegare l'account da questo giocatore?")) {
       return;
     }
 
@@ -147,13 +139,13 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("it-IT", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('it-IT', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -163,21 +155,18 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
     const birth = new Date(birthDate);
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birth.getDate())
-    ) {
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
       age--;
     }
     return age;
   };
 
   const tabs = [
-    { id: "overview", label: "👤 Panoramica", icon: "👤" },
-    { id: "notes", label: "📝 Note", icon: "📝" },
-    { id: "wallet", label: "💰 Wallet", icon: "💰" },
-    { id: "bookings", label: "📅 Prenotazioni", icon: "📅" },
-    { id: "communications", label: "✉️ Comunicazioni", icon: "✉️" },
+    { id: 'overview', label: '👤 Panoramica', icon: '👤' },
+    { id: 'notes', label: '📝 Note', icon: '📝' },
+    { id: 'wallet', label: '💰 Wallet', icon: '💰' },
+    { id: 'bookings', label: '📅 Prenotazioni', icon: '📅' },
+    { id: 'communications', label: '✉️ Comunicazioni', icon: '✉️' },
   ];
 
   return (
@@ -188,14 +177,14 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
           {/* Avatar e info base */}
           <div className="flex items-start gap-4">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
-              {player.name ? player.name.charAt(0).toUpperCase() : "?"}
+              {player.name ? player.name.charAt(0).toUpperCase() : '?'}
             </div>
 
             <div>
               <h2 className={`text-2xl font-bold ${T.text} mb-2`}>
                 {player.name ||
-                  `${player.firstName || ""} ${player.lastName || ""}`.trim() ||
-                  "Nome non disponibile"}
+                  `${player.firstName || ''} ${player.lastName || ''}`.trim() ||
+                  'Nome non disponibile'}
               </h2>
 
               <div className="flex items-center gap-3 mb-2">
@@ -229,7 +218,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                   <div className="flex items-center gap-2">
                     <span>🎂</span>
                     <span>
-                      {new Date(player.dateOfBirth).toLocaleDateString("it-IT")}
+                      {new Date(player.dateOfBirth).toLocaleDateString('it-IT')}
                       {calculateAge(player.dateOfBirth) &&
                         ` (${calculateAge(player.dateOfBirth)} anni)`}
                     </span>
@@ -270,11 +259,11 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                 onClick={toggleActiveStatus}
                 className={`px-3 py-1 text-sm rounded ${
                   player.isActive
-                    ? "bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400"
-                    : "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400"
+                    ? 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
+                    : 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400'
                 }`}
               >
-                {player.isActive ? "⏸️ Disattiva" : "▶️ Attiva"}
+                {player.isActive ? '⏸️ Disattiva' : '▶️ Attiva'}
               </button>
             </div>
           </div>
@@ -284,9 +273,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
         <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <span className={`text-sm font-medium ${T.text}`}>
-                Account Collegato:
-              </span>
+              <span className={`text-sm font-medium ${T.text}`}>Account Collegato:</span>
               {player.isAccountLinked ? (
                 <div className="flex items-center gap-2">
                   <span className="text-green-500">🔗</span>
@@ -301,9 +288,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                   </button>
                 </div>
               ) : (
-                <span className="text-sm text-gray-500">
-                  Nessun account collegato
-                </span>
+                <span className="text-sm text-gray-500">Nessun account collegato</span>
               )}
             </div>
 
@@ -316,7 +301,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                       className={`${T.btnSecondary} px-4 py-2 text-sm`}
                       disabled={loadingAccounts}
                     >
-                      {loadingAccounts ? "Carico…" : "🔎 Cerca account"}
+                      {loadingAccounts ? 'Carico…' : '🔎 Cerca account'}
                     </button>
                     <button
                       onClick={() => setLinking(true)}
@@ -355,27 +340,20 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                           ) : (
                             <ul className="divide-y divide-gray-200 dark:divide-gray-700">
                               {filteredAccounts.map((acc) => (
-                                <li
-                                  key={acc.uid}
-                                  className="p-3 flex items-center justify-between"
-                                >
+                                <li key={acc.uid} className="p-3 flex items-center justify-between">
                                   <div className="min-w-0">
-                                    <div
-                                      className={`${T.text} font-medium truncate`}
-                                    >
+                                    <div className={`${T.text} font-medium truncate`}>
                                       {acc.firstName || acc.lastName
-                                        ? `${acc.firstName || ""} ${acc.lastName || ""}`.trim()
-                                        : acc.email || "Senza nome"}
+                                        ? `${acc.firstName || ''} ${acc.lastName || ''}`.trim()
+                                        : acc.email || 'Senza nome'}
                                     </div>
-                                    <div
-                                      className={`text-xs ${T.subtext} truncate`}
-                                    >
+                                    <div className={`text-xs ${T.subtext} truncate`}>
                                       {acc.email}
                                     </div>
                                   </div>
                                   <button
                                     onClick={() => {
-                                      const email = acc.email || "";
+                                      const email = acc.email || '';
                                       if (!email) return;
                                       onUpdate({
                                         linkedAccountId: acc.uid,
@@ -385,8 +363,8 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                                       });
                                       setLinking(false);
                                       setAccounts([]);
-                                      setAccountSearch("");
-                                      setLinkEmail("");
+                                      setAccountSearch('');
+                                      setLinkEmail('');
                                     }}
                                     className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded ml-3 flex-shrink-0"
                                   >
@@ -416,7 +394,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                         <button
                           onClick={() => {
                             setLinking(false);
-                            setLinkEmail("");
+                            setLinkEmail('');
                           }}
                           className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded"
                         >
@@ -441,8 +419,8 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
               onClick={() => setActiveTab(tab.id)}
               className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               <span className="hidden sm:inline">{tab.label}</span>
@@ -454,13 +432,11 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
 
       {/* Tab Content */}
       <div className="min-h-[400px]">
-        {activeTab === "overview" && (
+        {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Dati anagrafici */}
             <div className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
-              <h3
-                className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}
-              >
+              <h3 className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}>
                 📋 Dati Anagrafici
               </h3>
 
@@ -470,13 +446,13 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                   <span className={T.text}>
                     {player.firstName && player.lastName
                       ? `${player.firstName} ${player.lastName}`
-                      : player.name || "N/A"}
+                      : player.name || 'N/A'}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
                   <span className={T.subtext}>Codice fiscale:</span>
-                  <span className={T.text}>{player.fiscalCode || "N/A"}</span>
+                  <span className={T.text}>{player.fiscalCode || 'N/A'}</span>
                 </div>
 
                 {player.address && (
@@ -490,7 +466,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                         player.address.postalCode,
                       ]
                         .filter(Boolean)
-                        .join(", ") || "N/A"}
+                        .join(', ') || 'N/A'}
                     </span>
                   </div>
                 )}
@@ -509,18 +485,14 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
 
             {/* Dati sportivi */}
             <div className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
-              <h3
-                className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}
-              >
+              <h3 className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}>
                 🏃 Dati Sportivi
               </h3>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className={T.subtext}>Rating base:</span>
-                  <span className={T.text}>
-                    {player.baseRating || DEFAULT_RATING}
-                  </span>
+                  <span className={T.text}>{player.baseRating || DEFAULT_RATING}</span>
                 </div>
 
                 <div className="flex justify-between">
@@ -535,45 +507,35 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                   <span
                     className={
                       player.isActive
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-red-600 dark:text-red-400"
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-red-600 dark:text-red-400'
                     }
                   >
-                    {player.isActive ? "Attivo" : "Inattivo"}
+                    {player.isActive ? 'Attivo' : 'Inattivo'}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
                   <span className={T.subtext}>Partite giocate:</span>
-                  <span className={T.text}>
-                    {player.matchHistory?.length || 0}
-                  </span>
+                  <span className={T.text}>{player.matchHistory?.length || 0}</span>
                 </div>
 
                 <div className="flex justify-between">
                   <span className={T.subtext}>Ultima attività:</span>
-                  <span className={T.text}>
-                    {formatDate(player.lastActivity)}
-                  </span>
+                  <span className={T.text}>{formatDate(player.lastActivity)}</span>
                 </div>
               </div>
             </div>
 
             {/* Tag e note rapide */}
-            <div
-              className={`${T.cardBg} ${T.border} rounded-xl p-4 lg:col-span-2`}
-            >
-              <h3
-                className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}
-              >
+            <div className={`${T.cardBg} ${T.border} rounded-xl p-4 lg:col-span-2`}>
+              <h3 className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}>
                 🏷️ Tag e Informazioni Rapide
               </h3>
 
               <div className="space-y-4">
                 <div>
-                  <span className={`text-sm ${T.subtext} block mb-2`}>
-                    Tag:
-                  </span>
+                  <span className={`text-sm ${T.subtext} block mb-2`}>Tag:</span>
                   <div className="flex flex-wrap gap-2">
                     {player.tags && player.tags.length > 0 ? (
                       player.tags.map((tag, index) => (
@@ -585,9 +547,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                         </span>
                       ))
                     ) : (
-                      <span className={`text-sm ${T.subtext}`}>
-                        Nessun tag assegnato
-                      </span>
+                      <span className={`text-sm ${T.subtext}`}>Nessun tag assegnato</span>
                     )}
                   </div>
                 </div>
@@ -598,22 +558,19 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                   </span>
                   <div className="flex flex-wrap gap-4 text-sm">
                     <span
-                      className={`flex items-center gap-1 ${player.communicationPreferences?.email ? "text-green-600 dark:text-green-400" : T.subtext}`}
+                      className={`flex items-center gap-1 ${player.communicationPreferences?.email ? 'text-green-600 dark:text-green-400' : T.subtext}`}
                     >
-                      📧 Email:{" "}
-                      {player.communicationPreferences?.email ? "Sì" : "No"}
+                      📧 Email: {player.communicationPreferences?.email ? 'Sì' : 'No'}
                     </span>
                     <span
-                      className={`flex items-center gap-1 ${player.communicationPreferences?.sms ? "text-green-600 dark:text-green-400" : T.subtext}`}
+                      className={`flex items-center gap-1 ${player.communicationPreferences?.sms ? 'text-green-600 dark:text-green-400' : T.subtext}`}
                     >
-                      📱 SMS:{" "}
-                      {player.communicationPreferences?.sms ? "Sì" : "No"}
+                      📱 SMS: {player.communicationPreferences?.sms ? 'Sì' : 'No'}
                     </span>
                     <span
-                      className={`flex items-center gap-1 ${player.communicationPreferences?.whatsapp ? "text-green-600 dark:text-green-400" : T.subtext}`}
+                      className={`flex items-center gap-1 ${player.communicationPreferences?.whatsapp ? 'text-green-600 dark:text-green-400' : T.subtext}`}
                     >
-                      📞 WhatsApp:{" "}
-                      {player.communicationPreferences?.whatsapp ? "Sì" : "No"}
+                      📞 WhatsApp: {player.communicationPreferences?.whatsapp ? 'Sì' : 'No'}
                     </span>
                   </div>
                 </div>
@@ -622,19 +579,13 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
           </div>
         )}
 
-        {activeTab === "notes" && (
-          <PlayerNotes player={player} onUpdate={onUpdate} T={T} />
-        )}
+        {activeTab === 'notes' && <PlayerNotes player={player} onUpdate={onUpdate} T={T} />}
 
-        {activeTab === "wallet" && (
-          <PlayerWallet player={player} onUpdate={onUpdate} T={T} />
-        )}
+        {activeTab === 'wallet' && <PlayerWallet player={player} onUpdate={onUpdate} T={T} />}
 
-        {activeTab === "bookings" && (
-          <PlayerBookingHistory player={player} T={T} />
-        )}
+        {activeTab === 'bookings' && <PlayerBookingHistory player={player} T={T} />}
 
-        {activeTab === "communications" && (
+        {activeTab === 'communications' && (
           <PlayerCommunications player={player} onUpdate={onUpdate} T={T} />
         )}
       </div>

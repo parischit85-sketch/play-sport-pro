@@ -25,51 +25,58 @@ export const useOptimizedBookings = (options = {}) => {
   } = options;
 
   // Load user bookings with performance tracking
-  const loadBookings = useCallback(async (userId = null) => {
-    if (!userId && !user?.uid) return;
-    
-    setLoading(true);
-    setError(null);
+  const loadBookings = useCallback(
+    async (userId = null) => {
+      if (!userId && !user?.uid) return;
 
-    try {
-      const result = await optimizedBookingService.getUserBookings(
-        userId || user.uid,
-        { includeHistory, includeCancelled, limit }
-      );
+      setLoading(true);
+      setError(null);
 
-      setBookings(result.bookings);
-      setPerformance(result.performance);
-    } catch (err) {
-      setError(err.message);
-      console.error('Failed to load bookings:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.uid, includeHistory, includeCancelled, limit]);
+      try {
+        const result = await optimizedBookingService.getUserBookings(userId || user.uid, {
+          includeHistory,
+          includeCancelled,
+          limit,
+        });
+
+        setBookings(result.bookings);
+        setPerformance(result.performance);
+      } catch (err) {
+        setError(err.message);
+        console.error('Failed to load bookings:', err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user?.uid, includeHistory, includeCancelled, limit]
+  );
 
   // Create booking with optimizations
-  const createBooking = useCallback(async (bookingData) => {
-    setLoading(true);
-    setError(null);
+  const createBooking = useCallback(
+    async (bookingData) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const result = await optimizedBookingService.createBooking({
-        ...bookingData,
-        createdBy: user?.uid,
-        userEmail: user?.email,
-      });
+      try {
+        const result = await optimizedBookingService.createBooking({
+          ...bookingData,
+          createdBy: user?.uid,
+          userEmail: user?.email,
+        });
 
-      // Optimistically update local state
-      setBookings(prev => [result, ...prev]);
+        // Optimistically update local state
+        setBookings((prev) => [result, ...prev]);
 
-      return result;
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+        return result;
+      } catch (err) {
+        setError(err.message);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [user]
+  );
 
   // Update booking
   const updateBooking = useCallback(async (bookingId, updates) => {
@@ -80,12 +87,8 @@ export const useOptimizedBookings = (options = {}) => {
       const result = await optimizedBookingService.updateBooking(bookingId, updates);
 
       // Update local state
-      setBookings(prev => 
-        prev.map(booking => 
-          booking.id === bookingId 
-            ? { ...booking, ...updates }
-            : booking
-        )
+      setBookings((prev) =>
+        prev.map((booking) => (booking.id === bookingId ? { ...booking, ...updates } : booking))
       );
 
       return result;
@@ -106,9 +109,9 @@ export const useOptimizedBookings = (options = {}) => {
       const result = await optimizedBookingService.cancelBooking(bookingId, reason);
 
       // Update local state
-      setBookings(prev => 
-        prev.map(booking => 
-          booking.id === bookingId 
+      setBookings((prev) =>
+        prev.map((booking) =>
+          booking.id === bookingId
             ? { ...booking, status: 'cancelled', cancelledAt: new Date() }
             : booking
         )
@@ -157,7 +160,7 @@ export const useOptimizedBookings = (options = {}) => {
       user.uid,
       (result) => {
         setBookings(result.bookings);
-        setPerformance(prev => ({
+        setPerformance((prev) => ({
           ...prev,
           fromCache: result.fromCache,
           isRealTime: true,
@@ -224,12 +227,7 @@ export const useActiveBookings = (options = {}) => {
   const [error, setError] = useState(null);
   const subscriptionRef = useRef(null);
 
-  const {
-    realTimeUpdates = true,
-    courtType = null,
-    date = null,
-    limit = 100,
-  } = options;
+  const { realTimeUpdates = true, courtType = null, date = null, limit = 100 } = options;
 
   const loadActiveBookings = useCallback(async () => {
     setLoading(true);
@@ -294,33 +292,36 @@ export const useBookingHistory = (userId, options = {}) => {
 
   const { limit = 20 } = options;
 
-  const loadHistory = useCallback(async (pageNum = 0, append = false) => {
-    if (!userId) return;
+  const loadHistory = useCallback(
+    async (pageNum = 0, append = false) => {
+      if (!userId) return;
 
-    setLoading(true);
-    setError(null);
+      setLoading(true);
+      setError(null);
 
-    try {
-      const result = await optimizedBookingService.getBookingHistory(userId, {
-        limit,
-        page: pageNum,
-      });
+      try {
+        const result = await optimizedBookingService.getBookingHistory(userId, {
+          limit,
+          page: pageNum,
+        });
 
-      if (append) {
-        setHistory(prev => [...prev, ...result.data]);
-      } else {
-        setHistory(result.data);
+        if (append) {
+          setHistory((prev) => [...prev, ...result.data]);
+        } else {
+          setHistory(result.data);
+        }
+
+        setHasMore(result.data.length === limit);
+        setPage(pageNum);
+      } catch (err) {
+        setError(err.message);
+        console.error('Failed to load booking history:', err);
+      } finally {
+        setLoading(false);
       }
-
-      setHasMore(result.data.length === limit);
-      setPage(pageNum);
-    } catch (err) {
-      setError(err.message);
-      console.error('Failed to load booking history:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [userId, limit]);
+    },
+    [userId, limit]
+  );
 
   const loadMore = useCallback(() => {
     if (!loading && hasMore) {

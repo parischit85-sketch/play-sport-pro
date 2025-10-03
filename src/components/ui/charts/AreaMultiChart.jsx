@@ -1,7 +1,7 @@
 // =============================================
 // FILE: src/components/ui/charts/AreaMultiChart.jsx
 // =============================================
-import React from "react";
+import React from 'react';
 import {
   AreaChart,
   Area,
@@ -12,54 +12,36 @@ import {
   CartesianGrid,
   Legend,
   Brush,
-} from "recharts";
+} from 'recharts';
 
 // Colori unificati del design system
 const UNIFIED_CHART_COLORS = [
-  "#10b981", // emerald-500
-  "#3b82f6", // blue-500
-  "#f59e0b", // amber-500
-  "#ef4444", // red-500
-  "#8b5cf6", // violet-500
-  "#06b6d4", // cyan-500
-  "#f97316", // orange-500
-  "#84cc16", // lime-500
+  '#10b981', // emerald-500
+  '#3b82f6', // blue-500
+  '#f59e0b', // amber-500
+  '#ef4444', // red-500
+  '#8b5cf6', // violet-500
+  '#06b6d4', // cyan-500
+  '#f97316', // orange-500
+  '#84cc16', // lime-500
 ];
 
-export default function AreaMultiChart({
-  data,
-  seriesKeys = [],
-  chartId = "multi",
-}) {
+export default function AreaMultiChart({ data, seriesKeys = [], chartId = 'multi' }) {
   return (
     <div className="h-56 sm:h-72">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={data}
-          margin={{ left: 6, right: 6, top: 8, bottom: 8 }}
-        >
+        <AreaChart data={data} margin={{ left: 6, right: 6, top: 8, bottom: 8 }}>
           <defs>
             {seriesKeys.map((k, i) => (
-              <linearGradient
-                key={k}
-                id={`grad-${chartId}-${i}`}
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
+              <linearGradient key={k} id={`grad-${chartId}-${i}`} x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="0%"
-                  stopColor={
-                    UNIFIED_CHART_COLORS[i % UNIFIED_CHART_COLORS.length]
-                  }
+                  stopColor={UNIFIED_CHART_COLORS[i % UNIFIED_CHART_COLORS.length]}
                   stopOpacity={0.45}
                 />
                 <stop
                   offset="100%"
-                  stopColor={
-                    UNIFIED_CHART_COLORS[i % UNIFIED_CHART_COLORS.length]
-                  }
+                  stopColor={UNIFIED_CHART_COLORS[i % UNIFIED_CHART_COLORS.length]}
                   stopOpacity={0.05}
                 />
               </linearGradient>

@@ -14,7 +14,7 @@ import {
   LogOut,
   Plus,
   UserCog,
-  Shield
+  Shield,
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -29,28 +29,26 @@ const AdminDashboard = () => {
     clubGrowth: [],
     usersByClub: [],
     bookingsByMonth: [],
-    topClubs: []
+    topClubs: [],
   });
 
   useEffect(() => {
     // Track admin dashboard page view
     trackPageView('Admin Dashboard', '/admin/dashboard');
-    
+
     loadDashboardData();
   }, []);
 
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      
+
       // Carica statistiche generali
-      const [clubsSnap] = await Promise.all([
-        getDocs(collection(db, 'clubs'))
-      ]);
+      const [clubsSnap] = await Promise.all([getDocs(collection(db, 'clubs'))]);
 
       // Conta i circoli
       const totalClubs = clubsSnap.size;
-      
+
       // Per gli utenti, contiamo i profili in tutti i club
       let totalUsers = 0;
       let totalMatches = 0;
@@ -62,7 +60,7 @@ const AdminDashboard = () => {
       for (const clubDoc of clubsSnap.docs) {
         const clubId = clubDoc.id;
         const clubData = clubDoc.data();
-        
+
         let clubUsers = 0;
         let clubMatches = 0;
         let clubBookings = 0;
@@ -101,12 +99,12 @@ const AdminDashboard = () => {
           users: clubUsers,
           matches: clubMatches,
           bookings: clubBookings,
-          total: clubUsers + clubMatches + clubBookings
+          total: clubUsers + clubMatches + clubBookings,
         });
 
         usersByClub.push({
           club: clubData.name || `Circolo ${clubId}`,
-          users: clubUsers
+          users: clubUsers,
         });
 
         // Simula attività recente
@@ -116,15 +114,13 @@ const AdminDashboard = () => {
             type: 'new_users',
             club: clubData.name,
             count: clubUsers,
-            timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000)
+            timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000),
           });
         }
       }
 
       // Ordina i club per attività totale
-      const topClubs = clubsData
-        .sort((a, b) => b.total - a.total)
-        .slice(0, 5);
+      const topClubs = clubsData.sort((a, b) => b.total - a.total).slice(0, 5);
 
       // Simula crescita club negli ultimi 6 mesi
       const clubGrowth = [];
@@ -133,7 +129,7 @@ const AdminDashboard = () => {
         const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
         clubGrowth.push({
           month: month.toLocaleDateString('it-IT', { month: 'short', year: 'numeric' }),
-          clubs: Math.max(1, totalClubs - Math.floor(Math.random() * 3))
+          clubs: Math.max(1, totalClubs - Math.floor(Math.random() * 3)),
         });
       }
 
@@ -143,7 +139,8 @@ const AdminDashboard = () => {
         const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
         bookingsByMonth.push({
           month: month.toLocaleDateString('it-IT', { month: 'short' }),
-          bookings: Math.floor(Math.random() * totalBookings / 6) + Math.floor(totalBookings / 12)
+          bookings:
+            Math.floor((Math.random() * totalBookings) / 6) + Math.floor(totalBookings / 12),
         });
       }
 
@@ -156,9 +153,8 @@ const AdminDashboard = () => {
         clubGrowth,
         usersByClub: usersByClub.slice(0, 5),
         bookingsByMonth,
-        topClubs
+        topClubs,
       });
-
     } catch (error) {
       console.error('Errore nel caricare i dati dashboard:', error);
     } finally {
@@ -176,7 +172,7 @@ const AdminDashboard = () => {
   };
 
   const StatCard = ({ title, value, icon: Icon, color, onClick, trend }) => (
-    <div 
+    <div
       className={`bg-white rounded-xl shadow-lg p-6 ${onClick ? 'cursor-pointer hover:shadow-xl transition-shadow' : ''}`}
       onClick={onClick}
     >
@@ -187,9 +183,11 @@ const AdminDashboard = () => {
             {loading ? '...' : value.toLocaleString()}
           </p>
           {trend && (
-            <div className={`flex items-center space-x-1 mt-2 text-sm ${
-              trend > 0 ? 'text-green-600' : trend < 0 ? 'text-red-600' : 'text-gray-600'
-            }`}>
+            <div
+              className={`flex items-center space-x-1 mt-2 text-sm ${
+                trend > 0 ? 'text-green-600' : trend < 0 ? 'text-red-600' : 'text-gray-600'
+              }`}
+            >
               <TrendingUp className={`w-4 h-4 ${trend < 0 ? 'rotate-180' : ''}`} />
               <span>{Math.abs(trend)}% questo mese</span>
             </div>
@@ -202,14 +200,14 @@ const AdminDashboard = () => {
     </div>
   );
 
-  const SimpleChart = ({ data, title, dataKey, color = "bg-blue-500" }) => (
+  const SimpleChart = ({ data, title, dataKey, color = 'bg-blue-500' }) => (
     <div className="bg-white rounded-xl shadow-lg p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
       <div className="space-y-3">
         {data.map((item, index) => {
-          const maxValue = Math.max(...data.map(d => d[dataKey]));
+          const maxValue = Math.max(...data.map((d) => d[dataKey]));
           const percentage = maxValue > 0 ? (item[dataKey] / maxValue) * 100 : 0;
-          
+
           return (
             <div key={index}>
               <div className="flex justify-between text-sm mb-1">
@@ -252,11 +250,9 @@ const AdminDashboard = () => {
               <Shield className="w-8 h-8 text-blue-600" />
               <h1 className="text-xl font-bold text-gray-900">PlaySport Admin</h1>
             </div>
-            
+
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                {auth.currentUser?.email}
-              </span>
+              <span className="text-sm text-gray-600">{auth.currentUser?.email}</span>
               <button
                 onClick={handleLogout}
                 className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -273,9 +269,7 @@ const AdminDashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Benvenuto nel Portale Admin
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Benvenuto nel Portale Admin</h2>
           <p className="text-gray-600">
             Gestisci circoli, utenti e configurazioni del sistema PlaySport
           </p>
@@ -345,11 +339,17 @@ const AdminDashboard = () => {
               {stats.topClubs.map((club, index) => (
                 <div key={club.id} className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold ${
-                      index === 0 ? 'bg-yellow-500' :
-                      index === 1 ? 'bg-gray-400' :
-                      index === 2 ? 'bg-orange-400' : 'bg-blue-500'
-                    }`}>
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold ${
+                        index === 0
+                          ? 'bg-yellow-500'
+                          : index === 1
+                            ? 'bg-gray-400'
+                            : index === 2
+                              ? 'bg-orange-400'
+                              : 'bg-blue-500'
+                      }`}
+                    >
                       {index + 1}
                     </div>
                     <div>
@@ -460,25 +460,30 @@ const AdminDashboard = () => {
           {stats.recentActivity.length > 0 ? (
             <div className="space-y-4">
               {stats.recentActivity.map((activity, index) => (
-                <div key={activity.id} className="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg">
+                <div
+                  key={activity.id}
+                  className="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg"
+                >
                   <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                     <Users className="w-5 h-5 text-blue-600" />
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium text-gray-900">
-                      {activity.count} nuovi utenti in <span className="font-semibold">{activity.club}</span>
+                      {activity.count} nuovi utenti in{' '}
+                      <span className="font-semibold">{activity.club}</span>
                     </p>
                     <p className="text-xs text-gray-600">
-                      {activity.timestamp.toLocaleDateString('it-IT', { 
-                        day: 'numeric', 
-                        month: 'short', 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
+                      {activity.timestamp.toLocaleDateString('it-IT', {
+                        day: 'numeric',
+                        month: 'short',
+                        hour: '2-digit',
+                        minute: '2-digit',
                       })}
                     </p>
                   </div>
                   <div className="text-xs text-gray-400">
-                    {Math.floor((new Date() - activity.timestamp) / (1000 * 60 * 60 * 24))} giorni fa
+                    {Math.floor((new Date() - activity.timestamp) / (1000 * 60 * 60 * 24))} giorni
+                    fa
                   </div>
                 </div>
               ))}
@@ -487,7 +492,9 @@ const AdminDashboard = () => {
             <div className="text-center py-8 text-gray-500">
               <Activity className="w-12 h-12 mx-auto mb-4 text-gray-300" />
               <p>Nessuna attività recente</p>
-              <p className="text-sm mt-2">Le attività appariranno qui quando ci saranno nuove registrazioni</p>
+              <p className="text-sm mt-2">
+                Le attività appariranno qui quando ci saranno nuove registrazioni
+              </p>
             </div>
           )}
         </div>

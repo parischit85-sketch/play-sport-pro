@@ -1,7 +1,7 @@
 // =============================================
 // FILE: src/services/firebase-backup.js
 // =============================================
-import { db } from "./firebase.js";
+import { db } from './firebase.js';
 import {
   collection,
   doc,
@@ -12,32 +12,32 @@ import {
   query,
   orderBy,
   limit,
-} from "firebase/firestore";
+} from 'firebase/firestore';
 
 // Backup automatico Firebase
 export async function createFirebaseBackup() {
   try {
     const backupData = {
       timestamp: new Date().toISOString(),
-      version: "2.1.0",
-      type: "automatic",
+      version: '2.1.0',
+      type: 'automatic',
       data: {},
     };
 
     // Backup di tutte le leghe
-    const leaguesSnapshot = await getDocs(collection(db, "leagues"));
+    const leaguesSnapshot = await getDocs(collection(db, 'leagues'));
     leaguesSnapshot.forEach((doc) => {
       backupData.data[doc.id] = doc.data();
     });
 
     // Salva il backup nella collection "backups"
     const backupId = `auto-backup-${Date.now()}`;
-    await setDoc(doc(db, "backups", backupId), backupData);
+    await setDoc(doc(db, 'backups', backupId), backupData);
 
-    console.log("🔥✅ Backup Firebase creato:", backupId);
+    console.log('🔥✅ Backup Firebase creato:', backupId);
     return { success: true, backupId, data: backupData };
   } catch (error) {
-    console.error("❌ Errore backup Firebase:", error);
+    console.error('❌ Errore backup Firebase:', error);
     return { success: false, error: error.message };
   }
 }
@@ -45,17 +45,17 @@ export async function createFirebaseBackup() {
 // Ripristina da backup Firebase
 export async function restoreFromFirebaseBackup(backupId) {
   try {
-    const backupDoc = await getDoc(doc(db, "backups", backupId));
+    const backupDoc = await getDoc(doc(db, 'backups', backupId));
 
     if (!backupDoc.exists()) {
-      throw new Error("Backup non trovato");
+      throw new Error('Backup non trovato');
     }
 
     const backup = backupDoc.data();
 
     // Ripristina ogni lega
     for (const [leagueId, leagueData] of Object.entries(backup.data)) {
-      await setDoc(doc(db, "leagues", leagueId), {
+      await setDoc(doc(db, 'leagues', leagueId), {
         ...leagueData,
         _restored: true,
         _restoredAt: new Date().toISOString(),
@@ -63,10 +63,10 @@ export async function restoreFromFirebaseBackup(backupId) {
       });
     }
 
-    console.log("🔥✅ Ripristino Firebase completato");
+    console.log('🔥✅ Ripristino Firebase completato');
     return { success: true };
   } catch (error) {
-    console.error("❌ Errore ripristino Firebase:", error);
+    console.error('❌ Errore ripristino Firebase:', error);
     return { success: false, error: error.message };
   }
 }
@@ -74,11 +74,7 @@ export async function restoreFromFirebaseBackup(backupId) {
 // Lista backup disponibili
 export async function getFirebaseBackups() {
   try {
-    const q = query(
-      collection(db, "backups"),
-      orderBy("timestamp", "desc"),
-      limit(10),
-    );
+    const q = query(collection(db, 'backups'), orderBy('timestamp', 'desc'), limit(10));
     const snapshot = await getDocs(q);
 
     const backups = [];
@@ -91,7 +87,7 @@ export async function getFirebaseBackups() {
 
     return { success: true, backups };
   } catch (error) {
-    console.error("❌ Errore lista backup:", error);
+    console.error('❌ Errore lista backup:', error);
     return { success: false, error: error.message };
   }
 }
@@ -100,7 +96,7 @@ export async function getFirebaseBackups() {
 export async function cleanupOldBackups() {
   try {
     const allBackups = await getDocs(
-      query(collection(db, "backups"), orderBy("timestamp", "desc")),
+      query(collection(db, 'backups'), orderBy('timestamp', 'desc'))
     );
 
     const toDelete = [];
@@ -114,7 +110,7 @@ export async function cleanupOldBackups() {
     console.log(`🧹 Eliminati ${toDelete.length} backup vecchi`);
     return { success: true, deleted: toDelete.length };
   } catch (error) {
-    console.error("❌ Errore cleanup:", error);
+    console.error('❌ Errore cleanup:', error);
     return { success: false, error: error.message };
   }
 }
@@ -142,7 +138,7 @@ export function startAutomaticFirebaseBackup(intervalHours = 24) {
         }
       }
     },
-    intervalHours * 60 * 60 * 1000,
+    intervalHours * 60 * 60 * 1000
   );
 
   console.log(`🔄 Backup automatico Firebase avviato (ogni ${intervalHours}h)`);
@@ -153,6 +149,6 @@ export function stopAutomaticFirebaseBackup() {
   if (backupInterval) {
     clearInterval(backupInterval);
     backupInterval = null;
-    console.log("⏹️ Backup automatico Firebase fermato");
+    console.log('⏹️ Backup automatico Firebase fermato');
   }
 }

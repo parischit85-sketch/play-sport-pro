@@ -1,5 +1,5 @@
 // Development Connection Status Component
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 export default function DevConnectionStatus() {
   const [wsConnected, setWsConnected] = useState(true);
@@ -11,12 +11,12 @@ export default function DevConnectionStatus() {
       let reconnectAttempts = 0;
       const maxAttempts = 3;
 
-      const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+      const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
       // Usa la stessa porta dell'app (location.port) oppure variabile di override
-      const defaultPort = window.location.port || "5173";
+      const defaultPort = window.location.port || '5173';
       const overridePort = import.meta.env.VITE_DEV_WS_PORT;
       const wsPort = overridePort || defaultPort;
-      const host = window.location.hostname || "localhost";
+      const host = window.location.hostname || 'localhost';
 
       const wsUrl = `${protocol}://${host}:${wsPort}`;
 
@@ -66,14 +66,10 @@ export default function DevConnectionStatus() {
       <div className="flex items-center gap-2">
         <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
         <div className="text-sm">
-          <div className="font-medium text-yellow-800 dark:text-yellow-200">
-            🔄 HMR Disconnesso
-          </div>
+          <div className="font-medium text-yellow-800 dark:text-yellow-200">🔄 HMR Disconnesso</div>
           <div className="text-yellow-700 dark:text-yellow-300 text-xs">
-            Usa{" "}
-            <kbd className="px-1 py-0.5 bg-yellow-200 dark:bg-yellow-800 rounded text-xs">
-              F5
-            </kbd>{" "}
+            Usa{' '}
+            <kbd className="px-1 py-0.5 bg-yellow-200 dark:bg-yellow-800 rounded text-xs">F5</kbd>{' '}
             per refresh manuale
           </div>
         </div>

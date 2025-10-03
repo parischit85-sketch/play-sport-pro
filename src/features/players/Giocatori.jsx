@@ -1,24 +1,15 @@
-import React, { useMemo, useState } from "react";
-import Section from "@ui/Section.jsx";
-import { DEFAULT_RATING, uid } from "@lib/ids.js";
-import { byPlayerFirstAlpha } from "@lib/names.js";
+import React, { useMemo, useState } from 'react';
+import Section from '@ui/Section.jsx';
+import { DEFAULT_RATING, uid } from '@lib/ids.js';
+import { byPlayerFirstAlpha } from '@lib/names.js';
 
-export default function Giocatori({
-  state,
-  setState,
-  onOpenStats,
-  playersById,
-  T,
-}) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+export default function Giocatori({ state, setState, onOpenStats, playersById, T }) {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [startRank, setStartRank] = useState(String(DEFAULT_RATING));
 
   const players = Array.isArray(state?.players) ? state.players : [];
-  const playersAlpha = useMemo(
-    () => [...players].sort(byPlayerFirstAlpha),
-    [players],
-  );
+  const playersAlpha = useMemo(() => [...players].sort(byPlayerFirstAlpha), [players]);
 
   const add = () => {
     const fn = firstName.trim();
@@ -31,20 +22,17 @@ export default function Giocatori({
       const cur = Array.isArray(s?.players) ? s.players : [];
       return {
         ...(s || { players: [], matches: [] }),
-        players: [
-          ...cur,
-          { id: uid(), name: n, baseRating: start, rating: start },
-        ],
+        players: [...cur, { id: uid(), name: n, baseRating: start, rating: start }],
       };
     });
 
-    setFirstName("");
-    setLastName("");
+    setFirstName('');
+    setLastName('');
     setStartRank(String(DEFAULT_RATING));
   };
 
   const remove = (id) => {
-    if (!confirm("Rimuovere il giocatore?")) return;
+    if (!confirm('Rimuovere il giocatore?')) return;
     setState((s) => {
       const cur = Array.isArray(s?.players) ? s.players : [];
       return {
@@ -86,9 +74,7 @@ export default function Giocatori({
         </div>
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex flex-col flex-1">
-            <label className={`text-xs ${T.subtext} mb-1`}>
-              Ranking iniziale
-            </label>
+            <label className={`text-xs ${T.subtext} mb-1`}>Ranking iniziale</label>
             <input
               type="number"
               value={startRank}
@@ -97,10 +83,7 @@ export default function Giocatori({
             />
           </div>
           <div className="flex items-end">
-            <button
-              type="submit"
-              className={`${T.btnPrimary} w-full sm:w-auto px-6`}
-            >
+            <button type="submit" className={`${T.btnPrimary} w-full sm:w-auto px-6`}>
               Aggiungi Giocatore
             </button>
           </div>
@@ -110,13 +93,9 @@ export default function Giocatori({
       {/* Lista giocatori - mobile optimized */}
       <div className="space-y-3">
         {playersAlpha.length === 0 ? (
-          <div
-            className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}
-          >
+          <div className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}>
             <div className="text-4xl mb-2">👥</div>
-            <div className={`text-sm ${T.subtext}`}>
-              Nessun giocatore presente.
-            </div>
+            <div className={`text-sm ${T.subtext}`}>Nessun giocatore presente.</div>
             <div className={`text-xs ${T.subtext} mt-1`}>
               Aggiungi il primo giocatore sopra per iniziare
             </div>
@@ -126,13 +105,9 @@ export default function Giocatori({
             {/* Mobile cards (hidden on larger screens) */}
             <div className="block lg:hidden space-y-3">
               {playersAlpha.map((p) => {
-                const liveRating =
-                  playersById?.[p.id]?.rating ?? p.rating ?? DEFAULT_RATING;
+                const liveRating = playersById?.[p.id]?.rating ?? p.rating ?? DEFAULT_RATING;
                 return (
-                  <div
-                    key={p.id}
-                    className={`rounded-xl ${T.cardBg} ${T.border} p-4`}
-                  >
+                  <div key={p.id} className={`rounded-xl ${T.cardBg} ${T.border} p-4`}>
                     <div className="flex items-center justify-between mb-3">
                       <button
                         type="button"
@@ -172,8 +147,7 @@ export default function Giocatori({
             {/* Desktop grid (hidden on mobile) */}
             <div className="hidden lg:grid lg:grid-cols-2 gap-3">
               {playersAlpha.map((p) => {
-                const liveRating =
-                  playersById?.[p.id]?.rating ?? p.rating ?? DEFAULT_RATING;
+                const liveRating = playersById?.[p.id]?.rating ?? p.rating ?? DEFAULT_RATING;
                 return (
                   <div
                     key={p.id}
@@ -192,11 +166,7 @@ export default function Giocatori({
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => onOpenStats?.(p.id)}
-                        className={T.link}
-                      >
+                      <button type="button" onClick={() => onOpenStats?.(p.id)} className={T.link}>
                         Statistiche
                       </button>
                       <button
@@ -215,8 +185,7 @@ export default function Giocatori({
             {/* Stats summary for mobile */}
             <div className="block lg:hidden mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className={`text-center text-sm ${T.subtext}`}>
-                📊 Totale giocatori:{" "}
-                <span className="font-semibold">{playersAlpha.length}</span>
+                📊 Totale giocatori: <span className="font-semibold">{playersAlpha.length}</span>
               </div>
             </div>
           </>

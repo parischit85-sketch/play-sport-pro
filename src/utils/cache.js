@@ -108,7 +108,7 @@ export function memoize(fn, maxSize = 50) {
 // Cached version of theme tokens
 export const getCachedThemeTokens = memoize(() => {
   // Import theme tokens function
-  const { themeTokens } = require("../lib/theme.js");
+  const { themeTokens } = require('../lib/theme.js');
   return themeTokens();
 });
 

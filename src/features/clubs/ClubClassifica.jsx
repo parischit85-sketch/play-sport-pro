@@ -25,24 +25,29 @@ const ClubClassifica = ({ clubId, club }) => {
     try {
       // Load cloud data and filter by club
       const data = await loadLeague('default'); // Default league ID
-      
+
       // Filter players affiliated to this club
-      let clubPlayers = data.players?.filter(player => 
-        player.clubId === clubId || 
-        player.affiliations?.some(aff => aff.clubId === clubId && aff.status === 'approved')
-      ) || [];
+      let clubPlayers =
+        data.players?.filter(
+          (player) =>
+            player.clubId === clubId ||
+            player.affiliations?.some((aff) => aff.clubId === clubId && aff.status === 'approved')
+        ) || [];
 
       // Filter matches that involve club players or are hosted by the club
-      let clubMatches = data.matches?.filter(match => {
-        const allPlayerIds = [...(match.teamA || []), ...(match.teamB || [])];
-        return match.clubId === clubId || 
-               allPlayerIds.some(playerId => clubPlayers.some(p => p.id === playerId));
-      }) || [];
+      let clubMatches =
+        data.matches?.filter((match) => {
+          const allPlayerIds = [...(match.teamA || []), ...(match.teamB || [])];
+          return (
+            match.clubId === clubId ||
+            allPlayerIds.some((playerId) => clubPlayers.some((p) => p.id === playerId))
+          );
+        }) || [];
 
       // 🔧 FALLBACK: Se non ci sono dati del club, mostra tutti i dati non associati
       if (clubPlayers.length === 0 && data.players?.length > 0) {
-        clubPlayers = data.players.filter(player => !player.clubId) || [];
-        clubMatches = data.matches?.filter(match => !match.clubId) || [];
+        clubPlayers = data.players.filter((player) => !player.clubId) || [];
+        clubMatches = data.matches?.filter((match) => !match.clubId) || [];
       }
 
       setPlayers(clubPlayers);
@@ -85,13 +90,8 @@ const ClubClassifica = ({ clubId, club }) => {
           Classifiche e statistiche dei giocatori del club
         </p>
       </div>
-      
-      <Classifica 
-        players={players} 
-        matches={matches} 
-        onOpenStats={() => {}} 
-        T="light" 
-      />
+
+      <Classifica players={players} matches={matches} onOpenStats={() => {}} T="light" />
     </div>
   );
 };

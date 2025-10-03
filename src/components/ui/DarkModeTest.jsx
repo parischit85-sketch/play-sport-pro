@@ -2,9 +2,9 @@
 // FILE: src/components/ui/DarkModeTest.jsx
 // Componente per testare il dark mode
 // =============================================
-import React from "react";
-import { themeTokens } from "@lib/theme.js";
-import { createDSClasses } from "@lib/design-system.js";
+import React from 'react';
+import { themeTokens } from '@lib/theme.js';
+import { createDSClasses } from '@lib/design-system.js';
 
 export default function DarkModeTest() {
   const T = React.useMemo(() => themeTokens(), []);
@@ -18,9 +18,8 @@ export default function DarkModeTest() {
           <div className="p-6 rounded-lg">
             <h1 className={ds.h1}>Test Dark Mode</h1>
             <p className={ds.bodySm}>
-              Questo componente testa l'aspetto del sito in modalità chiara e
-              scura. Cambia le impostazioni del browser per vedere la
-              differenza.
+              Questo componente testa l'aspetto del sito in modalità chiara e scura. Cambia le
+              impostazioni del browser per vedere la differenza.
             </p>
           </div>
         </div>
@@ -29,9 +28,7 @@ export default function DarkModeTest() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className={T.card}>
             <h2 className={ds.h2}>Card Standard</h2>
-            <p className={ds.body}>
-              Questo è il contenuto di una card normale.
-            </p>
+            <p className={ds.body}>Questo è il contenuto di una card normale.</p>
             <div className="mt-4 space-y-2">
               <div className={`${ds.bgSecondary} p-3 rounded`}>
                 <span className={ds.textSecondary}>Sfondo secondario</span>
@@ -46,15 +43,9 @@ export default function DarkModeTest() {
             <h2 className={ds.h2}>Card Hover</h2>
             <p className={ds.body}>Questa card ha effetti hover.</p>
             <div className="mt-4 flex gap-2">
-              <span className={`px-3 py-1 rounded-full ${ds.success}`}>
-                Success
-              </span>
-              <span className={`px-3 py-1 rounded-full ${ds.error}`}>
-                Error
-              </span>
-              <span className={`px-3 py-1 rounded-full ${ds.warning}`}>
-                Warning
-              </span>
+              <span className={`px-3 py-1 rounded-full ${ds.success}`}>Success</span>
+              <span className={`px-3 py-1 rounded-full ${ds.error}`}>Error</span>
+              <span className={`px-3 py-1 rounded-full ${ds.warning}`}>Warning</span>
             </div>
           </div>
         </div>
@@ -77,19 +68,11 @@ export default function DarkModeTest() {
           <div className="space-y-4">
             <div>
               <label className={ds.label}>Nome</label>
-              <input
-                type="text"
-                placeholder="Inserisci il nome"
-                className={T.input}
-              />
+              <input type="text" placeholder="Inserisci il nome" className={T.input} />
             </div>
             <div>
               <label className={ds.label}>Email</label>
-              <input
-                type="email"
-                placeholder="Inserisci l'email"
-                className={T.input}
-              />
+              <input type="email" placeholder="Inserisci l'email" className={T.input} />
             </div>
           </div>
         </div>
@@ -101,8 +84,8 @@ export default function DarkModeTest() {
             <h2 className={ds.h2}>Heading 2</h2>
             <h3 className={ds.h3}>Heading 3</h3>
             <p className={ds.body}>
-              Questo è un paragrafo normale con testo body. Il colore dovrebbe
-              adattarsi automaticamente al tema del browser.
+              Questo è un paragrafo normale con testo body. Il colore dovrebbe adattarsi
+              automaticamente al tema del browser.
             </p>
             <p className={ds.bodySm}>
               Questo è testo più piccolo (bodySm) per informazioni secondarie.
@@ -115,18 +98,10 @@ export default function DarkModeTest() {
         <div className={T.card}>
           <h2 className={ds.h2}>Test Colori</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            <div className={`${ds.textPrimary} p-3 border rounded`}>
-              Testo Primario
-            </div>
-            <div className={`${ds.textSecondary} p-3 border rounded`}>
-              Testo Secondario
-            </div>
-            <div className={`${ds.textMuted} p-3 border rounded`}>
-              Testo Muted
-            </div>
-            <div className={`${ds.textAccent} p-3 border rounded`}>
-              Testo Accent
-            </div>
+            <div className={`${ds.textPrimary} p-3 border rounded`}>Testo Primario</div>
+            <div className={`${ds.textSecondary} p-3 border rounded`}>Testo Secondario</div>
+            <div className={`${ds.textMuted} p-3 border rounded`}>Testo Muted</div>
+            <div className={`${ds.textAccent} p-3 border rounded`}>Testo Accent</div>
           </div>
         </div>
 
@@ -134,17 +109,15 @@ export default function DarkModeTest() {
         <div className={`${T.card} text-center`}>
           <h3 className={ds.h3}>Info Browser</h3>
           <p className={ds.bodySm}>
-            Modalità Preferita:{" "}
+            Modalità Preferita:{' '}
             <span className="font-mono dark:text-yellow-400">
-              {window.matchMedia &&
-              window.matchMedia("(prefers-color-scheme: dark)").matches
-                ? "DARK"
-                : "LIGHT"}
+              {window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'DARK'
+                : 'LIGHT'}
             </span>
           </p>
           <p className={ds.bodySm}>
-            Per testare: vai nelle impostazioni del browser/sistema e cambia il
-            tema.
+            Per testare: vai nelle impostazioni del browser/sistema e cambia il tema.
           </p>
         </div>
       </div>

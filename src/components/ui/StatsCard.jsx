@@ -1,22 +1,22 @@
 // =============================================
 // FILE: src/components/ui/StatsCard.jsx
 // =============================================
-import React from "react";
+import React from 'react';
 
 const STAT_COLORS = {
-  default: "",
-  success: "text-emerald-500 dark:text-emerald-400",
-  danger: "text-rose-500 dark:text-rose-400",
-  warning: "text-amber-500 dark:text-amber-400",
-  info: "text-blue-500 dark:text-blue-400",
-  primary: "text-emerald-600 dark:text-emerald-400",
+  default: '',
+  success: 'text-emerald-500 dark:text-emerald-400',
+  danger: 'text-rose-500 dark:text-rose-400',
+  warning: 'text-amber-500 dark:text-amber-400',
+  info: 'text-blue-500 dark:text-blue-400',
+  primary: 'text-emerald-600 dark:text-emerald-400',
 };
 
 const STAT_SIZES = {
-  sm: "text-xl",
-  md: "text-2xl",
-  lg: "text-3xl",
-  xl: "text-4xl",
+  sm: 'text-xl',
+  md: 'text-2xl',
+  lg: 'text-3xl',
+  xl: 'text-4xl',
 };
 
 export default function StatsCard({
@@ -24,9 +24,9 @@ export default function StatsCard({
   value,
   subtitle,
   trend,
-  color = "default",
-  size = "lg",
-  variant = "default",
+  color = 'default',
+  size = 'lg',
+  variant = 'default',
   icon,
   T,
 }) {
@@ -34,15 +34,15 @@ export default function StatsCard({
   const sizeClass = STAT_SIZES[size] || STAT_SIZES.lg;
 
   const getTrendIcon = (trend) => {
-    if (trend > 0) return "↗";
-    if (trend < 0) return "↘";
-    return "→";
+    if (trend > 0) return '↗';
+    if (trend < 0) return '↘';
+    return '→';
   };
 
   const getTrendColor = (trend) => {
-    if (trend > 0) return "text-emerald-500";
-    if (trend < 0) return "text-rose-500";
-    return "text-gray-500";
+    if (trend > 0) return 'text-emerald-500';
+    if (trend < 0) return 'text-rose-500';
+    return 'text-gray-500';
   };
 
   // Varianti di card
@@ -60,24 +60,16 @@ export default function StatsCard({
         </div>
       )}
 
-      <div
-        className={`text-xs uppercase tracking-wide font-medium ${T.subtext} mb-1`}
-      >
-        {label}
-      </div>
+      <div className={`text-xs uppercase tracking-wide font-medium ${T.subtext} mb-1`}>{label}</div>
 
       <div className={`${sizeClass} font-bold leading-tight ${colorClass}`}>
         {value}
         {trend !== undefined && (
-          <span className={`text-xs ml-1 ${getTrendColor(trend)}`}>
-            {getTrendIcon(trend)}
-          </span>
+          <span className={`text-xs ml-1 ${getTrendColor(trend)}`}>{getTrendIcon(trend)}</span>
         )}
       </div>
 
-      {subtitle && (
-        <div className={`text-xs ${T.subtext} mt-1`}>{subtitle}</div>
-      )}
+      {subtitle && <div className={`text-xs ${T.subtext} mt-1`}>{subtitle}</div>}
     </div>
   );
 }

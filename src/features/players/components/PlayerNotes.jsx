@@ -3,9 +3,9 @@
 // Gestione note del giocatore
 // =============================================
 
-import React, { useState } from "react";
-import { uid } from "@lib/ids.js";
-import { createNoteSchema, NOTE_TYPES } from "../types/playerTypes.js";
+import React, { useState } from 'react';
+import { uid } from '@lib/ids.js';
+import { createNoteSchema, NOTE_TYPES } from '../types/playerTypes.js';
 
 export default function PlayerNotes({ player, onUpdate, T }) {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -22,7 +22,7 @@ export default function PlayerNotes({ player, onUpdate, T }) {
       id: editingNote?.id || uid(),
       createdAt: editingNote?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      createdBy: "current-user", // In futuro userà l'ID utente corrente
+      createdBy: 'current-user', // In futuro userà l'ID utente corrente
     };
 
     const updatedNotes = editingNote
@@ -46,7 +46,7 @@ export default function PlayerNotes({ player, onUpdate, T }) {
   };
 
   const handleDeleteNote = (noteId) => {
-    if (!confirm("Sei sicuro di voler eliminare questa nota?")) return;
+    if (!confirm('Sei sicuro di voler eliminare questa nota?')) return;
 
     const updatedNotes = notes.filter((n) => n.id !== noteId);
     onUpdate({
@@ -58,32 +58,32 @@ export default function PlayerNotes({ player, onUpdate, T }) {
   const getNoteTypeLabel = (type) => {
     switch (type) {
       case NOTE_TYPES.GENERAL:
-        return "📝 Generale";
+        return '📝 Generale';
       case NOTE_TYPES.BOOKING:
-        return "📅 Prenotazione";
+        return '📅 Prenotazione';
       case NOTE_TYPES.PAYMENT:
-        return "💰 Pagamento";
+        return '💰 Pagamento';
       case NOTE_TYPES.DISCIPLINARY:
-        return "⚠️ Disciplinare";
+        return '⚠️ Disciplinare';
       case NOTE_TYPES.MEDICAL:
-        return "🏥 Medica";
+        return '🏥 Medica';
       default:
-        return "📝 Generale";
+        return '📝 Generale';
     }
   };
 
   const getNoteTypeColor = (type) => {
     switch (type) {
       case NOTE_TYPES.BOOKING:
-        return "bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400";
+        return 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400';
       case NOTE_TYPES.PAYMENT:
-        return "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400";
+        return 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400';
       case NOTE_TYPES.DISCIPLINARY:
-        return "bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400";
+        return 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400';
       case NOTE_TYPES.MEDICAL:
-        return "bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400";
+        return 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400';
       default:
-        return "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400";
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400';
     }
   };
 
@@ -91,9 +91,7 @@ export default function PlayerNotes({ player, onUpdate, T }) {
     <div className="space-y-6">
       {/* Header con azione */}
       <div className="flex justify-between items-center">
-        <h3 className={`text-lg font-semibold ${T.text}`}>
-          Note Giocatore ({notes.length})
-        </h3>
+        <h3 className={`text-lg font-semibold ${T.text}`}>Note Giocatore ({notes.length})</h3>
         <button
           onClick={() => {
             setFormData(createNoteSchema());
@@ -110,35 +108,27 @@ export default function PlayerNotes({ player, onUpdate, T }) {
       {showAddForm && (
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
           <h4 className={`font-medium ${T.text} mb-4`}>
-            {editingNote ? "Modifica Nota" : "Nuova Nota"}
+            {editingNote ? 'Modifica Nota' : 'Nuova Nota'}
           </h4>
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                  Titolo
-                </label>
+                <label className={`block text-sm font-medium ${T.text} mb-1`}>Titolo</label>
                 <input
                   type="text"
                   value={formData.title}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, title: e.target.value }))
-                  }
+                  onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
                   className={`${T.input} w-full`}
                   placeholder="Titolo della nota"
                 />
               </div>
 
               <div>
-                <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                  Tipo
-                </label>
+                <label className={`block text-sm font-medium ${T.text} mb-1`}>Tipo</label>
                 <select
                   value={formData.type}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, type: e.target.value }))
-                  }
+                  onChange={(e) => setFormData((prev) => ({ ...prev, type: e.target.value }))}
                   className={`${T.input} w-full`}
                 >
                   {Object.values(NOTE_TYPES).map((type) => (
@@ -151,14 +141,10 @@ export default function PlayerNotes({ player, onUpdate, T }) {
             </div>
 
             <div>
-              <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                Contenuto
-              </label>
+              <label className={`block text-sm font-medium ${T.text} mb-1`}>Contenuto</label>
               <textarea
                 value={formData.content}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, content: e.target.value }))
-                }
+                onChange={(e) => setFormData((prev) => ({ ...prev, content: e.target.value }))}
                 className={`${T.input} w-full`}
                 rows={4}
                 placeholder="Descrizione dettagliata..."
@@ -188,12 +174,12 @@ export default function PlayerNotes({ player, onUpdate, T }) {
               </label>
               <input
                 type="text"
-                value={formData.tags?.join(", ") || ""}
+                value={formData.tags?.join(', ') || ''}
                 onChange={(e) =>
                   setFormData((prev) => ({
                     ...prev,
                     tags: e.target.value
-                      .split(",")
+                      .split(',')
                       .map((t) => t.trim())
                       .filter(Boolean),
                   }))
@@ -214,11 +200,8 @@ export default function PlayerNotes({ player, onUpdate, T }) {
               >
                 Annulla
               </button>
-              <button
-                onClick={handleSaveNote}
-                className={`${T.btnPrimary} px-4 py-2`}
-              >
-                {editingNote ? "Aggiorna" : "Salva"} Nota
+              <button onClick={handleSaveNote} className={`${T.btnPrimary} px-4 py-2`}>
+                {editingNote ? 'Aggiorna' : 'Salva'} Nota
               </button>
             </div>
           </div>
@@ -228,9 +211,7 @@ export default function PlayerNotes({ player, onUpdate, T }) {
       {/* Lista note */}
       <div className="space-y-4">
         {notes.length === 0 ? (
-          <div
-            className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}
-          >
+          <div className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}>
             <div className="text-4xl mb-2">📝</div>
             <div className={`${T.subtext} mb-4`}>Nessuna nota presente</div>
             <button
@@ -248,10 +229,7 @@ export default function PlayerNotes({ player, onUpdate, T }) {
           notes
             .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
             .map((note) => (
-              <div
-                key={note.id}
-                className={`${T.cardBg} ${T.border} rounded-xl p-4`}
-              >
+              <div key={note.id} className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex items-center gap-3">
                     <h4 className={`font-semibold ${T.text}`}>{note.title}</h4>
@@ -285,16 +263,12 @@ export default function PlayerNotes({ player, onUpdate, T }) {
                   </div>
                 </div>
 
-                <div className={`${T.text} mb-3 whitespace-pre-wrap`}>
-                  {note.content}
-                </div>
+                <div className={`${T.text} mb-3 whitespace-pre-wrap`}>{note.content}</div>
 
                 <div className="flex flex-wrap items-center justify-between gap-4 text-xs text-gray-500 dark:text-gray-400">
                   <div className="flex items-center gap-4">
-                    <span>
-                      📅 {new Date(note.createdAt).toLocaleDateString("it-IT")}
-                    </span>
-                    <span>👤 {note.createdBy || "Sistema"}</span>
+                    <span>📅 {new Date(note.createdAt).toLocaleDateString('it-IT')}</span>
+                    <span>👤 {note.createdBy || 'Sistema'}</span>
                   </div>
 
                   {note.tags && note.tags.length > 0 && (

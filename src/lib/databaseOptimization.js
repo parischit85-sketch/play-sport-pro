@@ -19,15 +19,16 @@ import {
   runTransaction,
   enableNetwork,
   disableNetwork,
-} from "firebase/firestore";
-import { db } from "../services/firebase.js";
+} from 'firebase/firestore';
+import { db } from '../services/firebase.js';
 
 // =============================================
 // CACHING LAYER
 // =============================================
 
 class DatabaseCache {
-  constructor(maxSize = 1000, ttl = 5 * 60 * 1000) { // 5 minutes default TTL
+  constructor(maxSize = 1000, ttl = 5 * 60 * 1000) {
+    // 5 minutes default TTL
     this.cache = new Map();
     this.metadata = new Map(); // Store timestamps and hit counts
     this.maxSize = maxSize;
@@ -47,17 +48,17 @@ class DatabaseCache {
   generateKey(collection, queryParams = {}) {
     const sortedParams = Object.keys(queryParams)
       .sort()
-      .map(key => `${key}:${JSON.stringify(queryParams[key])}`)
+      .map((key) => `${key}:${JSON.stringify(queryParams[key])}`)
       .join('|');
     return `${collection}|${sortedParams}`;
   }
 
   set(key, value, customTtl = null) {
     this.cleanup();
-    
+
     const now = Date.now();
     const expiry = now + (customTtl || this.ttl);
-    
+
     this.cache.set(key, value);
     this.metadata.set(key, {
       timestamp: now,
@@ -67,7 +68,7 @@ class DatabaseCache {
     });
 
     this.metrics.writes++;
-    
+
     // Evict oldest if over size limit
     if (this.cache.size > this.maxSize) {
       this.evictOldest();
@@ -77,7 +78,7 @@ class DatabaseCache {
   get(key) {
     const value = this.cache.get(key);
     const meta = this.metadata.get(key);
-    
+
     if (!value || !meta) {
       this.missCount++;
       this.metrics.cacheMisses++;
@@ -98,7 +99,7 @@ class DatabaseCache {
     this.hitCount++;
     this.metrics.cacheHits++;
     this.metrics.reads++;
-    
+
     return value;
   }
 
@@ -111,47 +112,47 @@ class DatabaseCache {
         keysToDelete.push(key);
       }
     }
-    
-    keysToDelete.forEach(key => {
+
+    keysToDelete.forEach((key) => {
       this.cache.delete(key);
       this.metadata.delete(key);
     });
-    
+
     return keysToDelete.length;
   }
 
   cleanup() {
     const now = Date.now();
-    
+
     // Only cleanup every 30 seconds to avoid overhead
     if (now - this.metrics.lastCleanup < 30000) return;
-    
+
     const expiredKeys = [];
     for (const [key, meta] of this.metadata.entries()) {
       if (now > meta.expiry) {
         expiredKeys.push(key);
       }
     }
-    
-    expiredKeys.forEach(key => {
+
+    expiredKeys.forEach((key) => {
       this.cache.delete(key);
       this.metadata.delete(key);
     });
-    
+
     this.metrics.lastCleanup = now;
   }
 
   evictOldest() {
     let oldestKey = null;
     let oldestTime = Date.now();
-    
+
     for (const [key, meta] of this.metadata.entries()) {
       if (meta.timestamp < oldestTime) {
         oldestTime = meta.timestamp;
         oldestKey = key;
       }
     }
-    
+
     if (oldestKey) {
       this.cache.delete(oldestKey);
       this.metadata.delete(oldestKey);
@@ -160,8 +161,8 @@ class DatabaseCache {
 
   getStats() {
     const totalRequests = this.hitCount + this.missCount;
-    const hitRate = totalRequests > 0 ? (this.hitCount / totalRequests * 100).toFixed(2) : 0;
-    
+    const hitRate = totalRequests > 0 ? ((this.hitCount / totalRequests) * 100).toFixed(2) : 0;
+
     return {
       size: this.cache.size,
       hitRate: `${hitRate}%`,
@@ -196,7 +197,7 @@ class QueryOptimizer {
   async executeOptimizedQuery(collectionPath, queryParams = {}) {
     const startTime = Date.now();
     const cacheKey = dbCache.generateKey(collectionPath, queryParams);
-    
+
     // Try cache first
     const cached = dbCache.get(cacheKey);
     if (cached) {
@@ -210,26 +211,26 @@ class QueryOptimizer {
     try {
       // Build Firestore query
       let firestoreQuery = collection(db, collectionPath);
-      
+
       // Apply filters
       if (queryParams.where) {
         queryParams.where.forEach(([field, operator, value]) => {
           firestoreQuery = query(firestoreQuery, where(field, operator, value));
         });
       }
-      
+
       // Apply ordering
       if (queryParams.orderBy) {
         queryParams.orderBy.forEach(([field, direction = 'asc']) => {
           firestoreQuery = query(firestoreQuery, orderBy(field, direction));
         });
       }
-      
+
       // Apply limit
       if (queryParams.limit) {
         firestoreQuery = query(firestoreQuery, limit(queryParams.limit));
       }
-      
+
       // Apply pagination
       if (queryParams.startAfter) {
         firestoreQuery = query(firestoreQuery, startAfter(queryParams.startAfter));
@@ -237,20 +238,20 @@ class QueryOptimizer {
 
       dbCache.metrics.networkRequests++;
       const snapshot = await getDocs(firestoreQuery);
-      const data = snapshot.docs.map(doc => ({
+      const data = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
       const executionTime = Date.now() - startTime;
-      
+
       // Cache the results
       const cacheTtl = this.calculateCacheTtl(collectionPath, queryParams);
       dbCache.set(cacheKey, data, cacheTtl);
-      
+
       // Track query performance
       this.trackQueryPerformance(collectionPath, queryParams, executionTime);
-      
+
       return {
         data,
         fromCache: false,
@@ -269,19 +270,19 @@ class QueryOptimizer {
       // Booking data changes frequently
       return queryParams.where?.some(([field]) => field === 'date') ? 1 * 60 * 1000 : 5 * 60 * 1000;
     }
-    
+
     if (collectionPath.includes('users') || collectionPath.includes('profiles')) {
       // User data changes less frequently
       return 15 * 60 * 1000; // 15 minutes
     }
-    
+
     // Default TTL
     return 5 * 60 * 1000; // 5 minutes
   }
 
   trackQueryPerformance(collectionPath, queryParams, executionTime) {
     const queryKey = `${collectionPath}|${JSON.stringify(queryParams)}`;
-    
+
     if (!this.queryMetrics.has(queryKey)) {
       this.queryMetrics.set(queryKey, {
         count: 0,
@@ -290,12 +291,12 @@ class QueryOptimizer {
         slowQueries: 0,
       });
     }
-    
+
     const metrics = this.queryMetrics.get(queryKey);
     metrics.count++;
     metrics.totalTime += executionTime;
     metrics.avgTime = metrics.totalTime / metrics.count;
-    
+
     if (executionTime > this.slowQueryThreshold) {
       metrics.slowQueries++;
       this.suggestOptimization(collectionPath, queryParams, executionTime);
@@ -316,7 +317,9 @@ class QueryOptimizer {
         ...queryParams.where.map(([field]) => field),
         ...queryParams.orderBy.map(([field]) => field),
       ];
-      suggestion.suggestions.push(`Consider creating composite index for fields: ${fields.join(', ')}`);
+      suggestion.suggestions.push(
+        `Consider creating composite index for fields: ${fields.join(', ')}`
+      );
     }
 
     // Suggest pagination for large result sets
@@ -325,7 +328,9 @@ class QueryOptimizer {
     }
 
     // Suggest caching for frequently accessed data
-    suggestion.suggestions.push('Consider implementing client-side caching for frequently accessed data');
+    suggestion.suggestions.push(
+      'Consider implementing client-side caching for frequently accessed data'
+    );
 
     this.indexSuggestions.add(JSON.stringify(suggestion));
   }
@@ -341,20 +346,25 @@ class QueryOptimizer {
 
   suggestIndex(collectionPath, queryParams) {
     const fields = [];
-    
+
     if (queryParams.where) {
-      fields.push(...queryParams.where.map(([field]) => `{ "fieldPath": "${field}", "order": "ASCENDING" }`));
+      fields.push(
+        ...queryParams.where.map(([field]) => `{ "fieldPath": "${field}", "order": "ASCENDING" }`)
+      );
     }
-    
+
     if (queryParams.orderBy) {
-      fields.push(...queryParams.orderBy.map(([field, dir]) => 
-        `{ "fieldPath": "${field}", "order": "${dir?.toUpperCase() || 'ASCENDING'}" }`
-      ));
+      fields.push(
+        ...queryParams.orderBy.map(
+          ([field, dir]) =>
+            `{ "fieldPath": "${field}", "order": "${dir?.toUpperCase() || 'ASCENDING'}" }`
+        )
+      );
     }
 
     const indexSuggestion = {
       collectionGroup: collectionPath.split('/').pop(),
-      queryScope: "COLLECTION",
+      queryScope: 'COLLECTION',
       fields: fields,
     };
 
@@ -367,15 +377,16 @@ class QueryOptimizer {
       stats.push({
         query,
         ...metrics,
-        slowQueryPercentage: metrics.count > 0 ? (metrics.slowQueries / metrics.count * 100).toFixed(2) : 0,
+        slowQueryPercentage:
+          metrics.count > 0 ? ((metrics.slowQueries / metrics.count) * 100).toFixed(2) : 0,
       });
     }
-    
+
     return stats.sort((a, b) => b.avgTime - a.avgTime);
   }
 
   getIndexSuggestions() {
-    return Array.from(this.indexSuggestions).map(s => JSON.parse(s));
+    return Array.from(this.indexSuggestions).map((s) => JSON.parse(s));
   }
 }
 
@@ -400,7 +411,7 @@ class BatchOperationManager {
 
   addOperation(type, docRef, data = null) {
     this.pendingOperations.push({ type, docRef, data });
-    
+
     // Auto-execute when batch is full
     if (this.pendingOperations.length >= this.batchSize) {
       this.executeBatch();
@@ -413,10 +424,10 @@ class BatchOperationManager {
 
   async executeBatch() {
     if (this.pendingOperations.length === 0) return;
-    
+
     const operations = [...this.pendingOperations];
     this.pendingOperations = [];
-    
+
     if (this.batchTimeout) {
       clearTimeout(this.batchTimeout);
       this.batchTimeout = null;
@@ -424,7 +435,7 @@ class BatchOperationManager {
 
     try {
       const batch = writeBatch(db);
-      
+
       operations.forEach(({ type, docRef, data }) => {
         switch (type) {
           case 'set':
@@ -440,16 +451,15 @@ class BatchOperationManager {
       });
 
       await batch.commit();
-      
+
       this.metrics.batchesExecuted++;
       this.metrics.operationsExecuted += operations.length;
-      
+
       // Invalidate relevant cache entries
       operations.forEach(({ docRef }) => {
         const collection = docRef.path.split('/')[0];
         dbCache.invalidate(collection);
       });
-      
     } catch (error) {
       this.metrics.errors++;
       console.error('Batch operation failed:', error);
@@ -489,7 +499,7 @@ class SubscriptionManager {
 
   subscribe(collectionPath, queryParams, callback, options = {}) {
     const key = dbCache.generateKey(collectionPath, queryParams);
-    
+
     // Prevent duplicate subscriptions
     if (this.subscriptions.has(key)) {
       console.warn(`Subscription already exists for ${key}`);
@@ -498,20 +508,20 @@ class SubscriptionManager {
 
     try {
       let firestoreQuery = collection(db, collectionPath);
-      
+
       // Apply query parameters
       if (queryParams.where) {
         queryParams.where.forEach(([field, operator, value]) => {
           firestoreQuery = query(firestoreQuery, where(field, operator, value));
         });
       }
-      
+
       if (queryParams.orderBy) {
         queryParams.orderBy.forEach(([field, direction = 'asc']) => {
           firestoreQuery = query(firestoreQuery, orderBy(field, direction));
         });
       }
-      
+
       if (queryParams.limit) {
         firestoreQuery = query(firestoreQuery, limit(queryParams.limit));
       }
@@ -520,16 +530,16 @@ class SubscriptionManager {
         firestoreQuery,
         (snapshot) => {
           this.metrics.totalMessages++;
-          
-          const data = snapshot.docs.map(doc => ({
+
+          const data = snapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }));
-          
+
           // Update cache with real-time data
           const cacheTtl = queryOptimizer.calculateCacheTtl(collectionPath, queryParams);
           dbCache.set(key, data, cacheTtl);
-          
+
           callback({
             data,
             metadata: {
@@ -551,9 +561,9 @@ class SubscriptionManager {
         queryParams,
         createdAt: Date.now(),
       });
-      
+
       this.metrics.activeSubscriptions++;
-      
+
       return () => this.unsubscribe(key);
     } catch (error) {
       console.error(`Failed to create subscription for ${key}:`, error);
@@ -619,7 +629,7 @@ export const DatabaseOptimizer = {
 
   async getDocument(collectionPath, docId, useCache = true) {
     const cacheKey = `${collectionPath}/${docId}`;
-    
+
     if (useCache) {
       const cached = dbCache.get(cacheKey);
       if (cached) return { data: cached, fromCache: true };
@@ -628,13 +638,13 @@ export const DatabaseOptimizer = {
     try {
       dbCache.metrics.networkRequests++;
       const docSnap = await getDoc(doc(db, collectionPath, docId));
-      
+
       if (docSnap.exists()) {
         const data = { id: docSnap.id, ...docSnap.data() };
         dbCache.set(cacheKey, data);
         return { data, fromCache: false };
       }
-      
+
       return { data: null, fromCache: false };
     } catch (error) {
       console.error(`Failed to get document ${collectionPath}/${docId}:`, error);
@@ -749,7 +759,7 @@ export class DatabasePerformanceMonitor {
 
     const now = Date.now();
     const uptime = now - this.startTime;
-    
+
     const currentMetrics = {
       timestamp: now,
       uptime,
@@ -757,7 +767,7 @@ export class DatabasePerformanceMonitor {
       queries: {
         total: queryStats.length,
         averageTime: queryStats.reduce((sum, q) => sum + q.avgTime, 0) / (queryStats.length || 1),
-        slowQueries: queryStats.filter(q => q.avgTime > 1000).length,
+        slowQueries: queryStats.filter((q) => q.avgTime > 1000).length,
       },
       batch: batchStats,
       subscriptions: subscriptionStats,
@@ -765,7 +775,7 @@ export class DatabasePerformanceMonitor {
     };
 
     this.metricsHistory.push(currentMetrics);
-    
+
     // Keep only last hour of metrics (assuming collection every minute)
     if (this.metricsHistory.length > 60) {
       this.metricsHistory.shift();
@@ -776,7 +786,7 @@ export class DatabasePerformanceMonitor {
 
   getPerformanceReport() {
     const latest = this.collectMetrics();
-    
+
     return {
       summary: {
         uptime: latest.uptime,
@@ -807,7 +817,7 @@ export class DatabasePerformanceMonitor {
     }
 
     // Query performance recommendations
-    const slowQueries = queryStats.filter(q => q.avgTime > 1000);
+    const slowQueries = queryStats.filter((q) => q.avgTime > 1000);
     if (slowQueries.length > 0) {
       recommendations.push({
         type: 'performance',

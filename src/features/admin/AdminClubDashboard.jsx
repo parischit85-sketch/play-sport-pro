@@ -23,7 +23,7 @@ const AdminClubDashboard = () => {
 
   // State per slide-out panel fasce orarie
   const [showTimeSlotsPanel, setShowTimeSlotsPanel] = useState(false);
-  
+
   // Hook per gestire configurazioni club
   const { lessonConfig, updateLessonConfig } = useClubSettings({ clubId });
 
@@ -41,31 +41,31 @@ const AdminClubDashboard = () => {
       todayRevenue: 0,
       weeklyBookings: 0,
       memberCount: 0,
-      courtUtilization: 0
+      courtUtilization: 0,
     },
     loading: true,
     error: null,
-    lastUpdate: null
+    lastUpdate: null,
   });
 
   // Nuovi stati per la creazione della fascia oraria
   const [newSlotModalOpen, setNewSlotModalOpen] = useState(false);
-  const [newSlotDate, setNewSlotDate] = useState("");
-  const [newSlotStartTime, setNewSlotStartTime] = useState("08:00");
-  const [newSlotEndTime, setNewSlotEndTime] = useState("09:00");
-  const [newSlotInstructorId, setNewSlotInstructorId] = useState("");
+  const [newSlotDate, setNewSlotDate] = useState('');
+  const [newSlotStartTime, setNewSlotStartTime] = useState('08:00');
+  const [newSlotEndTime, setNewSlotEndTime] = useState('09:00');
+  const [newSlotInstructorId, setNewSlotInstructorId] = useState('');
   const [newSlotCourtIds, setNewSlotCourtIds] = useState([]);
   const [newSlotIsActive, setNewSlotIsActive] = useState(false);
 
   const handleToggleTimeSlot = async (slot) => {
     try {
-      const updatedTimeSlots = (lessonConfig?.timeSlots || []).map(s => 
+      const updatedTimeSlots = (lessonConfig?.timeSlots || []).map((s) =>
         s.id === slot.id ? { ...s, isActive: !slot.isActive } : s
       );
       // Filter out undefined values to prevent Firebase errors
-      const cleanTimeSlots = updatedTimeSlots.map(s => {
+      const cleanTimeSlots = updatedTimeSlots.map((s) => {
         const cleanSlot = {};
-        Object.keys(s).forEach(key => {
+        Object.keys(s).forEach((key) => {
           if (s[key] !== undefined) {
             cleanSlot[key] = s[key];
           }
@@ -74,13 +74,13 @@ const AdminClubDashboard = () => {
       });
       const updatedLessonConfig = {
         ...lessonConfig,
-        timeSlots: cleanTimeSlots
+        timeSlots: cleanTimeSlots,
       };
       await updateLessonConfig(updatedLessonConfig);
       console.log(`🔄 Fascia oraria ${!slot.isActive ? 'attivata' : 'disattivata'}:`, slot.id);
     } catch (error) {
-      console.error("Errore nel toggle della fascia oraria:", error);
-      alert("Errore nel cambiamento dello stato della fascia oraria");
+      console.error('Errore nel toggle della fascia oraria:', error);
+      alert('Errore nel cambiamento dello stato della fascia oraria');
     }
   };
 
@@ -88,18 +88,23 @@ const AdminClubDashboard = () => {
     try {
       let updatedTimeSlots;
       if (timeSlot.delete) {
-        updatedTimeSlots = (lessonConfig?.timeSlots || []).filter(slot => slot.id !== timeSlot.id);
+        updatedTimeSlots = (lessonConfig?.timeSlots || []).filter(
+          (slot) => slot.id !== timeSlot.id
+        );
       } else {
-        updatedTimeSlots = (lessonConfig?.timeSlots || []).map(slot => 
+        updatedTimeSlots = (lessonConfig?.timeSlots || []).map((slot) =>
           slot.id === timeSlot.id ? { ...slot, ...timeSlot } : slot
         );
       }
       const updatedLessonConfig = {
         ...lessonConfig,
-        timeSlots: updatedTimeSlots
+        timeSlots: updatedTimeSlots,
       };
       updateLessonConfig(updatedLessonConfig);
-      console.log(timeSlot.delete ? '🗑️ Fascia oraria eliminata:' : '💾 Fascia oraria aggiornata:', timeSlot);
+      console.log(
+        timeSlot.delete ? '🗑️ Fascia oraria eliminata:' : '💾 Fascia oraria aggiornata:',
+        timeSlot
+      );
     } catch (error) {
       console.error('Errore nel salvataggio/cancellazione della fascia oraria:', error);
       alert('Errore nel salvataggio/cancellazione della fascia oraria');
@@ -111,14 +116,14 @@ const AdminClubDashboard = () => {
   };
 
   const handleToggleCourt = (courtId) => {
-    setNewSlotCourtIds(prev => prev.includes(courtId)
-      ? prev.filter(id => id !== courtId)
-      : [...prev, courtId]);
+    setNewSlotCourtIds((prev) =>
+      prev.includes(courtId) ? prev.filter((id) => id !== courtId) : [...prev, courtId]
+    );
   };
 
   const handleConfirmCreateTimeSlot = async () => {
     if (!newSlotDate || !newSlotInstructorId || newSlotCourtIds.length === 0) {
-      alert("Seleziona data, istruttore e almeno un campo");
+      alert('Seleziona data, istruttore e almeno un campo');
       return;
     }
     try {
@@ -134,14 +139,14 @@ const AdminClubDashboard = () => {
       const updatedTimeSlots = [...(lessonConfig?.timeSlots || []), newTimeSlot];
       const updatedLessonConfig = {
         ...lessonConfig,
-        timeSlots: updatedTimeSlots
+        timeSlots: updatedTimeSlots,
       };
       await updateLessonConfig(updatedLessonConfig);
       setNewSlotModalOpen(false);
-      setNewSlotDate("");
-      setNewSlotStartTime("08:00");
-      setNewSlotEndTime("09:00");
-      setNewSlotInstructorId("");
+      setNewSlotDate('');
+      setNewSlotStartTime('08:00');
+      setNewSlotEndTime('09:00');
+      setNewSlotInstructorId('');
       setNewSlotCourtIds([]);
       setNewSlotIsActive(false);
       alert('✅ Fascia oraria creata con successo! Puoi ora modificarla e attivarla.');
@@ -158,31 +163,33 @@ const AdminClubDashboard = () => {
         ...timeSlot,
         id: `timeslot_${Date.now()}`,
         isActive: false, // Inizialmente disattivata
-        selectedDates: [] // Rimuovi le date per permettere la selezione di nuove date
+        selectedDates: [], // Rimuovi le date per permettere la selezione di nuove date
       };
 
       const updatedTimeSlots = [...(lessonConfig?.timeSlots || []), newTimeSlot];
-      
+
       const updatedLessonConfig = {
         ...lessonConfig,
-        timeSlots: updatedTimeSlots
+        timeSlots: updatedTimeSlots,
       };
-      
+
       await updateLessonConfig(updatedLessonConfig);
-      
-      alert(`✅ Fascia oraria duplicata con successo!\n\nLa nuova fascia è stata creata e disattivata.\nPuoi attivarla e configurare le date nella sezione "Lezioni".`);
-      
+
+      alert(
+        `✅ Fascia oraria duplicata con successo!\n\nLa nuova fascia è stata creata e disattivata.\nPuoi attivarla e configurare le date nella sezione "Lezioni".`
+      );
+
       console.log(`📋 Fascia oraria duplicata:`, newTimeSlot);
     } catch (error) {
-      console.error("Errore nella duplicazione della fascia oraria:", error);
-      alert("Errore nella duplicazione della fascia oraria");
+      console.error('Errore nella duplicazione della fascia oraria:', error);
+      alert('Errore nella duplicazione della fascia oraria');
     }
   };
 
   // Verifica che l'utente sia admin del club
   useEffect(() => {
     if (!clubId || !user) return;
-    
+
     const isAdmin = isClubAdmin(clubId);
     if (!isAdmin) {
       navigate('/dashboard');
@@ -193,66 +200,68 @@ const AdminClubDashboard = () => {
   // Carica i dati della dashboard
   useEffect(() => {
     if (!clubId || !club) return;
-    
+
     loadDashboardData();
-    
+
     // Imposta un refresh automatico ogni 2 minuti per mantenere i dati sincronizzati
-    const refreshInterval = setInterval(() => {
-      // Auto-refreshing dashboard data
-      loadDashboardData();
-    }, 2 * 60 * 1000); // 2 minuti
+    const refreshInterval = setInterval(
+      () => {
+        // Auto-refreshing dashboard data
+        loadDashboardData();
+      },
+      2 * 60 * 1000
+    ); // 2 minuti
 
     // Aggiorna la dashboard quando la tab diventa visibile
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
+      if (document.visibilityState === 'visible') {
         loadDashboardData();
       }
     };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       clearInterval(refreshInterval);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [clubId, club]);
 
   const loadDashboardData = async () => {
     try {
-      setDashboardData(prev => ({ ...prev, loading: true, error: null }));
+      setDashboardData((prev) => ({ ...prev, loading: true, error: null }));
 
       // Loading real dashboard data for club
-      
+
       // Inizializza il sistema unificato di prenotazioni
       UnifiedBookingService.initialize({
         cloudEnabled: true, // Usa sempre Firebase per dati consistenti
-        user: user
+        user: user,
       });
-      
+
       // Migra i dati vecchi se necessario
       await UnifiedBookingService.migrateOldData();
-      
+
       // Usa il nuovo servizio per caricare dati reali da Firebase
       const realData = await loadAdminDashboardData(clubId);
-      
+
       // Debug dettagliato: dashboard data received - logs removed
-      
+
       // Aggiorna il conteggio membri dal ClubContext se disponibile
       if (players && players.length > 0) {
         realData.stats.memberCount = players.length;
       }
-      
+
       // Aggiungi il timestamp dell'ultimo aggiornamento
       realData.lastUpdate = new Date().toLocaleTimeString('it-IT');
-      
+
       setDashboardData(realData);
       // Real dashboard data loaded successfully
-
     } catch (error) {
       console.error('❌ Error loading dashboard data:', error);
-      setDashboardData(prev => ({
+      setDashboardData((prev) => ({
         ...prev,
         loading: false,
-        error: 'Errore nel caricamento dei dati reali'
+        error: 'Errore nel caricamento dei dati reali',
       }));
     }
   };
@@ -260,32 +269,36 @@ const AdminClubDashboard = () => {
   // Funzione helper per contare le fasce orarie attive e non passate
   const getActiveAvailableTimeSlotsCount = () => {
     if (!lessonConfig?.timeSlots || lessonConfig.timeSlots.length === 0) return 0;
-    
+
     const now = new Date();
     const today = now.getDay();
     const currentTime = now.getHours() * 60 + now.getMinutes();
     const currentDateStr = now.toISOString().split('T')[0];
-    
-    return lessonConfig.timeSlots.filter(slot => {
+
+    return lessonConfig.timeSlots.filter((slot) => {
       // Deve essere attiva
       if (!slot.isActive) return false;
-      
+
       // Caso 1: Fascia con date specifiche
-      if (slot.selectedDates && Array.isArray(slot.selectedDates) && slot.selectedDates.length > 0) {
-        const hasFutureDate = slot.selectedDates.some(dateStr => {
+      if (
+        slot.selectedDates &&
+        Array.isArray(slot.selectedDates) &&
+        slot.selectedDates.length > 0
+      ) {
+        const hasFutureDate = slot.selectedDates.some((dateStr) => {
           const slotDateStr = new Date(dateStr).toISOString().split('T')[0];
-          
+
           if (slotDateStr > currentDateStr) return true;
-          
+
           if (slotDateStr === currentDateStr && slot.endTime) {
             const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
             const slotEndTime = endHours * 60 + endMinutes;
             return slotEndTime > currentTime;
           }
-          
+
           return false;
         });
-        
+
         return hasFutureDate;
       }
       // Caso 2: Fascia ricorrente
@@ -294,7 +307,7 @@ const AdminClubDashboard = () => {
         const slotEndTime = endHours * 60 + endMinutes;
         return slotEndTime > currentTime;
       }
-      
+
       // Fasce ricorrenti di altri giorni sono sempre valide
       return true;
     }).length;
@@ -302,7 +315,7 @@ const AdminClubDashboard = () => {
 
   // Componente per le statistiche rapide
   const StatCard = ({ title, value, subtitle, icon, color, onClick }) => (
-    <div 
+    <div
       className={`${T.cardBg} ${T.border} rounded-xl p-6 cursor-pointer transform transition-all duration-200 hover:scale-105 hover:shadow-lg`}
       onClick={onClick}
     >
@@ -321,40 +334,46 @@ const AdminClubDashboard = () => {
   const TodayBookingsCard = () => {
     // Le prenotazioni di oggi sono già filtrate dal servizio
     const todayBookings = dashboardData?.todayBookings || [];
-    
+
     // Filtriamo solo le prossime prenotazioni dall'orario attuale
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes(); // minuti dall'inizio giornata
-    
-    const upcomingBookings = todayBookings.filter(booking => {
-      if (!booking.time) return true; // Se non c'è orario, mostra comunque
-      // Assumiamo che booking.time sia in formato "HH:MM"
-      const [hours, minutes] = booking.time.split(':').map(Number);
-      const bookingTime = hours * 60 + minutes;
-      return bookingTime >= currentTime;
-    }).slice(0, 3); // Solo le prossime 3
+
+    const upcomingBookings = todayBookings
+      .filter((booking) => {
+        if (!booking.time) return true; // Se non c'è orario, mostra comunque
+        // Assumiamo che booking.time sia in formato "HH:MM"
+        const [hours, minutes] = booking.time.split(':').map(Number);
+        const bookingTime = hours * 60 + minutes;
+        return bookingTime >= currentTime;
+      })
+      .slice(0, 3); // Solo le prossime 3
 
     return (
       <div className={`${T.cardBg} ${T.border} rounded-xl p-6`}>
         <div className="flex items-center justify-between mb-4">
           <h3 className={`text-lg font-semibold ${T.text}`}>Prossime Prenotazioni Oggi</h3>
-          <button 
-            onClick={() => navigate(`/club/${clubId}/admin/bookings?date=${new Date().toISOString().split('T')[0]}`)}
+          <button
+            onClick={() =>
+              navigate(
+                `/club/${clubId}/admin/bookings?date=${new Date().toISOString().split('T')[0]}`
+              )
+            }
             className={`text-blue-500 hover:text-blue-600 text-sm font-medium`}
           >
             Gestisci →
           </button>
         </div>
-        
+
         {todayBookings.length === 0 ? (
           <div className={`text-center py-8 ${T.subtext}`}>
             <div className="text-4xl mb-2">📅</div>
             <div>Nessuna prenotazione per oggi</div>
             <div className="text-xs mt-2 opacity-75">
-              {new Date().toLocaleDateString('it-IT', { 
-                weekday: 'long', 
-                day: 'numeric', 
-                month: 'long' 
+              {new Date().toLocaleDateString('it-IT', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
               })}
             </div>
           </div>
@@ -369,8 +388,8 @@ const AdminClubDashboard = () => {
         ) : (
           <div className="space-y-3 max-h-64 overflow-y-auto">
             {upcomingBookings.map((booking, index) => (
-              <div 
-                key={booking.id || index} 
+              <div
+                key={booking.id || index}
                 className={`flex items-center justify-between p-3 ${T.border} rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors`}
                 onClick={() => navigate(`/club/${clubId}/admin/bookings?edit=${booking.id}`)}
                 title="Clicca per modificare la prenotazione"
@@ -380,13 +399,29 @@ const AdminClubDashboard = () => {
                     Campo {booking.courtName || booking.courtId || booking.court}
                   </div>
                   <div className={`text-sm ${T.subtext}`}>
-                    {booking.time} - {booking.player?.name || booking.playerName || booking.players?.[0] || 'Cliente'}
+                    {booking.time} -{' '}
+                    {booking.player?.name ||
+                      booking.playerName ||
+                      booking.players?.[0] ||
+                      'Cliente'}
                   </div>
                 </div>
-                <div className={`text-sm font-medium ${booking.status === 'confirmed' ? 'text-green-600' : 'text-yellow-600'} flex items-center gap-2`}>
+                <div
+                  className={`text-sm font-medium ${booking.status === 'confirmed' ? 'text-green-600' : 'text-yellow-600'} flex items-center gap-2`}
+                >
                   €{booking.price || 0}
-                  <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-4 h-4 opacity-50"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -401,40 +436,42 @@ const AdminClubDashboard = () => {
   const TodayLessonsCard = () => {
     // Le lezioni di oggi sono già filtrate dal servizio
     const todayLessons = dashboardData?.todayLessons || [];
-    
+
     // Filtriamo solo le prossime lezioni dall'orario attuale
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes(); // minuti dall'inizio giornata
-    
-    const upcomingLessons = todayLessons.filter(lesson => {
-      if (!lesson.time) return true; // Se non c'è orario, mostra comunque
-      // Assumiamo che lesson.time sia in formato "HH:MM"
-      const [hours, minutes] = lesson.time.split(':').map(Number);
-      const lessonTime = hours * 60 + minutes;
-      return lessonTime >= currentTime;
-    }).slice(0, 3); // Solo le prossime 3
+
+    const upcomingLessons = todayLessons
+      .filter((lesson) => {
+        if (!lesson.time) return true; // Se non c'è orario, mostra comunque
+        // Assumiamo che lesson.time sia in formato "HH:MM"
+        const [hours, minutes] = lesson.time.split(':').map(Number);
+        const lessonTime = hours * 60 + minutes;
+        return lessonTime >= currentTime;
+      })
+      .slice(0, 3); // Solo le prossime 3
 
     return (
       <div className={`${T.cardBg} ${T.border} rounded-xl p-6`}>
         <div className="flex items-center justify-between mb-4">
           <h3 className={`text-lg font-semibold ${T.text}`}>Prossime Lezioni Oggi</h3>
-          <button 
+          <button
             onClick={() => navigate(`/club/${clubId}/admin/bookings?filter=lessons`)}
             className={`text-blue-500 hover:text-blue-600 text-sm font-medium`}
           >
             Gestisci →
           </button>
         </div>
-        
+
         {todayLessons.length === 0 ? (
           <div className={`text-center py-8 ${T.subtext}`}>
             <div className="text-4xl mb-2">🎾</div>
             <div>Nessuna lezione per oggi</div>
             <div className="text-xs mt-2 opacity-75">
-              {new Date().toLocaleDateString('it-IT', { 
-                weekday: 'long', 
-                day: 'numeric', 
-                month: 'long' 
+              {new Date().toLocaleDateString('it-IT', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
               })}
             </div>
           </div>
@@ -449,15 +486,17 @@ const AdminClubDashboard = () => {
         ) : (
           <div className="space-y-3 max-h-64 overflow-y-auto">
             {upcomingLessons.map((lesson, index) => (
-              <div 
-                key={lesson.id || index} 
+              <div
+                key={lesson.id || index}
                 className={`flex items-center justify-between p-3 ${T.border} rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors`}
                 onClick={() => navigate(`/club/${clubId}/admin/bookings?edit=${lesson.id}`)}
                 title="Clicca per modificare la lezione"
               >
                 <div>
                   <div className={`font-medium ${T.text}`}>
-                    {lesson.bookedBy || lesson.student?.name || lesson.studentName || 'Cliente'} ({lesson.participants || 1} partecipanti) - {lesson.instructor?.name || lesson.instructorName || 'Maestro'}
+                    {lesson.bookedBy || lesson.student?.name || lesson.studentName || 'Cliente'} (
+                    {lesson.participants || 1} partecipanti) -{' '}
+                    {lesson.instructor?.name || lesson.instructorName || 'Maestro'}
                   </div>
                   <div className={`text-sm ${T.subtext}`}>
                     {lesson.time} - {lesson.type || lesson.lessonType || 'Lezione individuale'}
@@ -465,8 +504,18 @@ const AdminClubDashboard = () => {
                 </div>
                 <div className={`text-sm font-medium text-green-600 flex items-center gap-2`}>
                   €{lesson.price || 0}
-                  <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-4 h-4 opacity-50"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -486,7 +535,7 @@ const AdminClubDashboard = () => {
           {dashboardData.availableInstructors.length} disponibili
         </span>
       </div>
-      
+
       {dashboardData.availableInstructors.length === 0 ? (
         <div className={`text-center py-6 ${T.subtext}`}>
           <div className="text-3xl mb-2">👨‍🏫</div>
@@ -495,7 +544,10 @@ const AdminClubDashboard = () => {
       ) : (
         <div className="space-y-3">
           {dashboardData.availableInstructors.slice(0, 4).map((instructor, index) => (
-            <div key={instructor.id || index} className={`p-3 rounded-lg border ${T.border} hover:bg-gray-50 dark:hover:bg-gray-700`}>
+            <div
+              key={instructor.id || index}
+              className={`p-3 rounded-lg border ${T.border} hover:bg-gray-50 dark:hover:bg-gray-700`}
+            >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
@@ -512,11 +564,14 @@ const AdminClubDashboard = () => {
                   {instructor.availableSlots?.length || 0} slot
                 </div>
               </div>
-              
+
               {instructor.availableSlots && instructor.availableSlots.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-2">
                   {instructor.availableSlots.slice(0, 6).map((slot, slotIndex) => (
-                    <span key={slotIndex} className="text-xs px-2 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded border border-green-200 dark:border-green-700">
+                    <span
+                      key={slotIndex}
+                      className="text-xs px-2 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded border border-green-200 dark:border-green-700"
+                    >
                       {slot.time}
                     </span>
                   ))}
@@ -552,10 +607,7 @@ const AdminClubDashboard = () => {
           <div className="text-4xl mb-4">❌</div>
           <div className={`text-lg ${T.text} mb-2`}>Errore nel caricamento</div>
           <div className={`text-sm ${T.subtext} mb-4`}>{dashboardData.error}</div>
-          <button 
-            onClick={loadDashboardData}
-            className={`${T.btnPrimary} px-6 py-2`}
-          >
+          <button onClick={loadDashboardData} className={`${T.btnPrimary} px-6 py-2`}>
             Riprova
           </button>
         </div>
@@ -564,19 +616,15 @@ const AdminClubDashboard = () => {
   }
 
   return (
-  <div className="p-4 space-y-6 w-full">
+    <div className="p-4 space-y-6 w-full">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={`text-2xl font-bold ${T.text}`}>
-            Dashboard Admin - {club?.name}
-          </h1>
+          <h1 className={`text-2xl font-bold ${T.text}`}>Dashboard Admin - {club?.name}</h1>
           <p className={`${T.subtext} mt-1`}>
             Panoramica delle attività del {new Date().toLocaleDateString('it-IT')}
             {dashboardData.lastUpdate && (
-              <span className="ml-3 text-xs">
-                Ultimo aggiornamento: {dashboardData.lastUpdate}
-              </span>
+              <span className="ml-3 text-xs">Ultimo aggiornamento: {dashboardData.lastUpdate}</span>
             )}
           </p>
         </div>
@@ -588,7 +636,12 @@ const AdminClubDashboard = () => {
             title="Gestione rapida disponibilità lezioni"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             Disponibilità Lezioni
             {lessonConfig?.timeSlots && lessonConfig.timeSlots.length > 0 && (
@@ -599,7 +652,7 @@ const AdminClubDashboard = () => {
           </button>
 
           {/* Pulsante Aggiorna */}
-          <button 
+          <button
             onClick={() => {
               console.log('🔄 Manual refresh triggered');
               loadDashboardData();
@@ -621,7 +674,11 @@ const AdminClubDashboard = () => {
           subtitle="confermate"
           icon="📅"
           color="text-blue-600 dark:text-blue-400"
-          onClick={() => navigate(`/club/${clubId}/admin/bookings?date=${new Date().toISOString().split('T')[0]}`)}
+          onClick={() =>
+            navigate(
+              `/club/${clubId}/admin/bookings?date=${new Date().toISOString().split('T')[0]}`
+            )
+          }
         />
         <StatCard
           title="Prenotazioni Domani"
@@ -641,7 +698,9 @@ const AdminClubDashboard = () => {
           subtitle="programmate"
           icon="🎓"
           color="text-orange-600 dark:text-orange-400"
-          onClick={() => navigate(`/club/${clubId}/admin/lessons?date=${new Date().toISOString().split('T')[0]}`)}
+          onClick={() =>
+            navigate(`/club/${clubId}/admin/lessons?date=${new Date().toISOString().split('T')[0]}`)
+          }
         />
         <StatCard
           title="Lezioni Domani"
@@ -661,7 +720,11 @@ const AdminClubDashboard = () => {
           subtitle="oggi"
           icon="�️"
           color="text-red-600 dark:text-red-400"
-          onClick={() => navigate(`/club/${clubId}/admin/bookings?date=${new Date().toISOString().split('T')[0]}`)}
+          onClick={() =>
+            navigate(
+              `/club/${clubId}/admin/bookings?date=${new Date().toISOString().split('T')[0]}`
+            )
+          }
         />
       </div>
 
@@ -674,26 +737,26 @@ const AdminClubDashboard = () => {
       {/* Sezione maestri e azioni rapide */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <InstructorsCard />
-        
+
         {/* Azioni Rapide */}
         <div className={`${T.cardBg} ${T.border} rounded-xl p-6`}>
           <h3 className={`text-lg font-semibold ${T.text} mb-4`}>Azioni Rapide</h3>
           <div className="space-y-3">
-            <button 
+            <button
               onClick={() => navigate(`/club/${clubId}/admin/bookings`)}
               className={`w-full ${T.btnPrimary} flex items-center justify-center space-x-2`}
             >
               <span>📅</span>
               <span>Gestione Campi</span>
             </button>
-            <button 
+            <button
               onClick={() => navigate(`/club/${clubId}/players`)}
               className={`w-full ${T.btnSecondary} flex items-center justify-center space-x-2`}
             >
               <span>👥</span>
               <span>Gestione Giocatori</span>
             </button>
-            <button 
+            <button
               onClick={() => navigate(`/club/${clubId}/matches/create`)}
               className={`w-full ${T.btnSecondary} flex items-center justify-center space-x-2`}
             >
@@ -709,9 +772,7 @@ const AdminClubDashboard = () => {
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
               <span className="text-gray-400">🏟️</span>
-              <span className={`text-sm ${T.text}`}>
-                {courts ? courts.length : 0} Campi
-              </span>
+              <span className={`text-sm ${T.text}`}>{courts ? courts.length : 0} Campi</span>
             </div>
             <div className="flex items-center space-x-3">
               <span className="text-gray-400">📍</span>
@@ -738,7 +799,7 @@ const AdminClubDashboard = () => {
         onEditTimeSlot={handleEditTimeSlot}
         onCreateTimeSlot={handleCreateTimeSlot}
         onDuplicateTimeSlot={handleDuplicateTimeSlot}
-        instructors={players?.filter(p => p.category === 'instructor') || []}
+        instructors={players?.filter((p) => p.category === 'instructor') || []}
         courts={courts || []}
         T={T}
       />
@@ -747,72 +808,154 @@ const AdminClubDashboard = () => {
       {newSlotModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/70 backdrop-blur-sm">
           <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-gray-700">
-            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Crea nuova fascia oraria</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+              Crea nuova fascia oraria
+            </h2>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Data</label>
-              <input type="date" value={newSlotDate} onChange={e => {
-                setNewSlotDate(e.target.value);
-              }} className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+              <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                Data
+              </label>
+              <input
+                type="date"
+                value={newSlotDate}
+                onChange={(e) => {
+                  setNewSlotDate(e.target.value);
+                }}
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              />
             </div>
             <div className="mb-4 flex gap-2">
               <div className="flex-1">
-                <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Orario Inizio</label>
+                <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                  Orario Inizio
+                </label>
                 <div className="flex gap-2">
-                  <select value={newSlotStartTime.split(':')[0]} onChange={e => setNewSlotStartTime(`${e.target.value}:${newSlotStartTime.split(':')[1]}`)} className="border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-                    {[...Array(24).keys()].map(h => (
-                      <option key={h} value={h.toString().padStart(2, '0')}>{h.toString().padStart(2, '0')}</option>
+                  <select
+                    value={newSlotStartTime.split(':')[0]}
+                    onChange={(e) =>
+                      setNewSlotStartTime(`${e.target.value}:${newSlotStartTime.split(':')[1]}`)
+                    }
+                    className="border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  >
+                    {[...Array(24).keys()].map((h) => (
+                      <option key={h} value={h.toString().padStart(2, '0')}>
+                        {h.toString().padStart(2, '0')}
+                      </option>
                     ))}
                   </select>
-                  <select value={newSlotStartTime.split(':')[1]} onChange={e => setNewSlotStartTime(`${newSlotStartTime.split(':')[0]}:${e.target.value}`)} className="border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-                    {["00", "30"].map(m => (
-                      <option key={m} value={m}>{m}</option>
+                  <select
+                    value={newSlotStartTime.split(':')[1]}
+                    onChange={(e) =>
+                      setNewSlotStartTime(`${newSlotStartTime.split(':')[0]}:${e.target.value}`)
+                    }
+                    className="border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  >
+                    {['00', '30'].map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
                     ))}
                   </select>
                 </div>
               </div>
               <div className="flex-1">
-                <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Orario Fine</label>
+                <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                  Orario Fine
+                </label>
                 <div className="flex gap-2">
-                  <select value={newSlotEndTime.split(':')[0]} onChange={e => setNewSlotEndTime(`${e.target.value}:${newSlotEndTime.split(':')[1]}`)} className="border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-                    {[...Array(24).keys()].map(h => (
-                      <option key={h} value={h.toString().padStart(2, '0')}>{h.toString().padStart(2, '0')}</option>
+                  <select
+                    value={newSlotEndTime.split(':')[0]}
+                    onChange={(e) =>
+                      setNewSlotEndTime(`${e.target.value}:${newSlotEndTime.split(':')[1]}`)
+                    }
+                    className="border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  >
+                    {[...Array(24).keys()].map((h) => (
+                      <option key={h} value={h.toString().padStart(2, '0')}>
+                        {h.toString().padStart(2, '0')}
+                      </option>
                     ))}
                   </select>
-                  <select value={newSlotEndTime.split(':')[1]} onChange={e => setNewSlotEndTime(`${newSlotEndTime.split(':')[0]}:${e.target.value}`)} className="border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
-                    {["00", "30"].map(m => (
-                      <option key={m} value={m}>{m}</option>
+                  <select
+                    value={newSlotEndTime.split(':')[1]}
+                    onChange={(e) =>
+                      setNewSlotEndTime(`${newSlotEndTime.split(':')[0]}:${e.target.value}`)
+                    }
+                    className="border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  >
+                    {['00', '30'].map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
                     ))}
                   </select>
                 </div>
               </div>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Istruttore</label>
-              <select value={newSlotInstructorId} onChange={e => setNewSlotInstructorId(e.target.value)} className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+              <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                Istruttore
+              </label>
+              <select
+                value={newSlotInstructorId}
+                onChange={(e) => setNewSlotInstructorId(e.target.value)}
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              >
                 <option value="">Seleziona...</option>
-                {players?.filter(p => p.category === 'instructor').map(inst => (
-                  <option key={inst.id} value={inst.id}>{inst.name}</option>
-                ))}
+                {players
+                  ?.filter((p) => p.category === 'instructor')
+                  .map((inst) => (
+                    <option key={inst.id} value={inst.id}>
+                      {inst.name}
+                    </option>
+                  ))}
               </select>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Campi</label>
+              <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                Campi
+              </label>
               <div className="flex flex-wrap gap-2">
-                {courts?.map(court => (
-                  <label key={court.id} className="flex items-center gap-1 text-gray-800 dark:text-gray-200">
-                    <input type="checkbox" checked={newSlotCourtIds.includes(court.id)} onChange={() => handleToggleCourt(court.id)} className="accent-green-600 dark:accent-green-400" />
+                {courts?.map((court) => (
+                  <label
+                    key={court.id}
+                    className="flex items-center gap-1 text-gray-800 dark:text-gray-200"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={newSlotCourtIds.includes(court.id)}
+                      onChange={() => handleToggleCourt(court.id)}
+                      className="accent-green-600 dark:accent-green-400"
+                    />
                     <span>{court.name}</span>
                   </label>
                 ))}
               </div>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">Attiva</label>
-              <input type="checkbox" checked={newSlotIsActive} onChange={e => setNewSlotIsActive(e.target.checked)} className="accent-blue-600 dark:accent-blue-400" />
+              <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                Attiva
+              </label>
+              <input
+                type="checkbox"
+                checked={newSlotIsActive}
+                onChange={(e) => setNewSlotIsActive(e.target.checked)}
+                className="accent-blue-600 dark:accent-blue-400"
+              />
             </div>
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setNewSlotModalOpen(false)} className={`${T.btnSecondary} px-4 py-2 rounded-lg`}>Annulla</button>
-              <button onClick={handleConfirmCreateTimeSlot} className={`${T.btnPrimary} px-4 py-2 rounded-lg`}>Crea</button>
+              <button
+                onClick={() => setNewSlotModalOpen(false)}
+                className={`${T.btnSecondary} px-4 py-2 rounded-lg`}
+              >
+                Annulla
+              </button>
+              <button
+                onClick={handleConfirmCreateTimeSlot}
+                className={`${T.btnPrimary} px-4 py-2 rounded-lg`}
+              >
+                Crea
+              </button>
             </div>
           </div>
         </div>

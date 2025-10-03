@@ -29,10 +29,10 @@ export async function updatePlayerRatingsAfterMatch(clubId, players, matchId) {
     try {
       // Reference to player document in club
       const playerRef = doc(db, 'clubs', clubId, 'players', player.id);
-      
+
       // Get current player data
       const playerSnap = await getDoc(playerRef);
-      
+
       if (!playerSnap.exists()) {
         console.warn(`Player ${player.id} not found in club ${clubId}, skipping rating update`);
         continue;
@@ -48,20 +48,21 @@ export async function updatePlayerRatingsAfterMatch(clubId, players, matchId) {
         baseRating: newRating, // Keep baseRating in sync
         'stats.rpaPoints': newRating,
         lastMatchId: matchId,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
       await updateDoc(playerRef, updateData);
 
-      console.log(`✅ Updated rating for ${player.id}: ${currentRating} → ${newRating} (${player.delta >= 0 ? '+' : ''}${player.delta})`);
-      
+      console.log(
+        `✅ Updated rating for ${player.id}: ${currentRating} → ${newRating} (${player.delta >= 0 ? '+' : ''}${player.delta})`
+      );
+
       updates.push({
         playerId: player.id,
         oldRating: currentRating,
         newRating: newRating,
-        delta: player.delta
+        delta: player.delta,
       });
-
     } catch (error) {
       console.error(`❌ Error updating rating for player ${player.id}:`, error);
       // Don't throw, continue with other players
@@ -88,26 +89,26 @@ export async function updatePlayerRatingsAfterMatch(clubId, players, matchId) {
  */
 export function calculatePlayerDeltas(match) {
   const players = [];
-  
+
   // Team A players get deltaA
   if (match.teamA && Array.isArray(match.teamA)) {
-    match.teamA.forEach(playerId => {
+    match.teamA.forEach((playerId) => {
       if (playerId) {
         players.push({
           id: playerId,
-          delta: match.deltaA || 0
+          delta: match.deltaA || 0,
         });
       }
     });
   }
 
-  // Team B players get deltaB  
+  // Team B players get deltaB
   if (match.teamB && Array.isArray(match.teamB)) {
-    match.teamB.forEach(playerId => {
+    match.teamB.forEach((playerId) => {
       if (playerId) {
         players.push({
           id: playerId,
-          delta: match.deltaB || 0
+          delta: match.deltaB || 0,
         });
       }
     });
@@ -118,5 +119,5 @@ export function calculatePlayerDeltas(match) {
 
 export default {
   updatePlayerRatingsAfterMatch,
-  calculatePlayerDeltas
+  calculatePlayerDeltas,
 };

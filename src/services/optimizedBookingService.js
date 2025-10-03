@@ -47,23 +47,26 @@ class OptimizedBookingService {
 
     const today = new Date().toISOString().split('T')[0];
     const filters = [['createdBy', '==', userId]];
-    
+
     if (!includeCancelled) {
       filters.push(['status', 'in', [BOOKING_STATUS.CONFIRMED, BOOKING_STATUS.PENDING]]);
     }
-    
+
     if (!includeHistory) {
       filters.push(['date', '>=', today]);
     }
 
     const queryParams = {
       where: filters,
-      orderBy: [['date', includeHistory ? 'desc' : 'asc'], ['time', 'asc']],
+      orderBy: [
+        ['date', includeHistory ? 'desc' : 'asc'],
+        ['time', 'asc'],
+      ],
       limit,
     };
 
     const result = await DatabaseOptimizer.query(COLLECTIONS.BOOKINGS, queryParams);
-    
+
     return {
       bookings: result.data,
       fromCache: result.fromCache,
@@ -77,19 +80,22 @@ class OptimizedBookingService {
   async getActiveBookings(options = {}) {
     const { limit = 100, courtType = null, date = null } = options;
     const today = new Date().toISOString().split('T')[0];
-    
+
     const filters = [
       ['status', '==', BOOKING_STATUS.CONFIRMED],
       ['date', '>=', date || today],
     ];
-    
+
     if (courtType) {
       filters.push(['courtType', '==', courtType]);
     }
 
     const queryParams = {
       where: filters,
-      orderBy: [['date', 'asc'], ['time', 'asc']],
+      orderBy: [
+        ['date', 'asc'],
+        ['time', 'asc'],
+      ],
       limit,
     };
 
@@ -105,7 +111,10 @@ class OptimizedBookingService {
         ['createdBy', '==', userId],
         ['date', '<', today],
       ],
-      orderBy: [['date', 'desc'], ['time', 'desc']],
+      orderBy: [
+        ['date', 'desc'],
+        ['time', 'desc'],
+      ],
       limit,
     };
 
@@ -121,18 +130,18 @@ class OptimizedBookingService {
 
   async searchBookings(searchParams = {}) {
     const { userId, email, playerName, date, courtType, status } = searchParams;
-    
+
     // Build dynamic query based on available parameters
     const queries = [];
-    
+
     if (userId) {
       queries.push(this._buildSearchQuery([['createdBy', '==', userId]], searchParams));
     }
-    
+
     if (email) {
       queries.push(this._buildSearchQuery([['userEmail', '==', email]], searchParams));
     }
-    
+
     if (playerName) {
       // Note: Firestore doesn't support full-text search natively
       // This would need to be handled differently in production
@@ -141,40 +150,43 @@ class OptimizedBookingService {
 
     // Execute all queries in parallel
     const results = await Promise.all(queries);
-    
+
     // Merge and deduplicate results
     const bookingsMap = new Map();
-    results.forEach(result => {
-      result.data.forEach(booking => {
+    results.forEach((result) => {
+      result.data.forEach((booking) => {
         bookingsMap.set(booking.id, booking);
       });
     });
 
     return {
       data: Array.from(bookingsMap.values()),
-      fromCache: results.some(r => r.fromCache),
+      fromCache: results.some((r) => r.fromCache),
       totalQueries: queries.length,
     };
   }
 
   _buildSearchQuery(baseFilters, additionalParams) {
     const filters = [...baseFilters];
-    
+
     if (additionalParams.date) {
       filters.push(['date', '==', additionalParams.date]);
     }
-    
+
     if (additionalParams.status) {
       filters.push(['status', '==', additionalParams.status]);
     }
-    
+
     if (additionalParams.courtType) {
       filters.push(['courtType', '==', additionalParams.courtType]);
     }
 
     return DatabaseOptimizer.query(COLLECTIONS.BOOKINGS, {
       where: filters,
-      orderBy: [['date', 'desc'], ['time', 'desc']],
+      orderBy: [
+        ['date', 'desc'],
+        ['time', 'desc'],
+      ],
       limit: 50,
     });
   }
@@ -185,7 +197,7 @@ class OptimizedBookingService {
 
   async createBooking(bookingData) {
     const bookingId = `booking_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const booking = {
       ...bookingData,
       id: bookingId,
@@ -196,13 +208,13 @@ class OptimizedBookingService {
 
     // Use batch operation for better performance
     DatabaseOptimizer.batchSet(COLLECTIONS.BOOKINGS, bookingId, booking);
-    
+
     // Optionally flush immediately for critical operations
     await DatabaseOptimizer.flushBatch();
-    
+
     // Invalidate relevant cache entries
     DatabaseOptimizer.invalidateCache(COLLECTIONS.BOOKINGS);
-    
+
     return { id: bookingId, ...booking };
   }
 
@@ -214,10 +226,10 @@ class OptimizedBookingService {
 
     DatabaseOptimizer.batchUpdate(COLLECTIONS.BOOKINGS, bookingId, updateData);
     await DatabaseOptimizer.flushBatch();
-    
+
     // Invalidate cache
     DatabaseOptimizer.invalidateCache(COLLECTIONS.BOOKINGS);
-    
+
     return updateData;
   }
 
@@ -231,9 +243,9 @@ class OptimizedBookingService {
 
     DatabaseOptimizer.batchUpdate(COLLECTIONS.BOOKINGS, bookingId, updates);
     await DatabaseOptimizer.flushBatch();
-    
+
     DatabaseOptimizer.invalidateCache(COLLECTIONS.BOOKINGS);
-    
+
     return updates;
   }
 
@@ -244,13 +256,13 @@ class OptimizedBookingService {
     };
 
     // Use batch operations for bulk updates
-    bookingIds.forEach(id => {
+    bookingIds.forEach((id) => {
       DatabaseOptimizer.batchUpdate(COLLECTIONS.BOOKINGS, id, updateData);
     });
 
     await DatabaseOptimizer.flushBatch();
     DatabaseOptimizer.invalidateCache(COLLECTIONS.BOOKINGS);
-    
+
     return { updated: bookingIds.length };
   }
 
@@ -260,7 +272,7 @@ class OptimizedBookingService {
 
   subscribeToUserBookings(userId, callback, options = {}) {
     const subscriptionKey = `user_bookings_${userId}`;
-    
+
     // Prevent duplicate subscriptions
     if (this.subscriptions.has(subscriptionKey)) {
       return this.subscriptions.get(subscriptionKey);
@@ -268,7 +280,10 @@ class OptimizedBookingService {
 
     const queryParams = {
       where: [['createdBy', '==', userId]],
-      orderBy: [['date', 'desc'], ['time', 'desc']],
+      orderBy: [
+        ['date', 'desc'],
+        ['time', 'desc'],
+      ],
       limit: options.limit || 50,
     };
 
@@ -296,7 +311,7 @@ class OptimizedBookingService {
 
   subscribeToActiveBookings(callback, options = {}) {
     const subscriptionKey = 'active_bookings';
-    
+
     if (this.subscriptions.has(subscriptionKey)) {
       return this.subscriptions.get(subscriptionKey);
     }
@@ -307,7 +322,10 @@ class OptimizedBookingService {
         ['status', '==', BOOKING_STATUS.CONFIRMED],
         ['date', '>=', today],
       ],
-      orderBy: [['date', 'asc'], ['time', 'asc']],
+      orderBy: [
+        ['date', 'asc'],
+        ['time', 'asc'],
+      ],
       limit: options.limit || 100,
     };
 
@@ -325,7 +343,7 @@ class OptimizedBookingService {
   unsubscribeFromUserBookings(userId) {
     const subscriptionKey = `user_bookings_${userId}`;
     const unsubscribe = this.subscriptions.get(subscriptionKey);
-    
+
     if (unsubscribe) {
       unsubscribe();
       this.subscriptions.delete(subscriptionKey);
@@ -352,10 +370,10 @@ class OptimizedBookingService {
 
     try {
       const results = await Promise.all(preloadPromises);
-      
+
       this.preloadedData.set(`user_recent_${userId}`, results[0]);
       this.preloadedData.set('today_active', results[1]);
-      
+
       return {
         success: true,
         preloadedItems: preloadPromises.length,
@@ -380,8 +398,8 @@ class OptimizedBookingService {
     return {
       indexes: DatabaseOptimizer.getIndexSuggestions(),
       queries: DatabaseOptimizer.getQueryStats()
-        .filter(q => q.avgTime > 1000)
-        .map(q => ({
+        .filter((q) => q.avgTime > 1000)
+        .map((q) => ({
           query: q.query,
           avgTime: q.avgTime,
           suggestion: 'Consider adding composite index or implementing pagination',
@@ -395,7 +413,7 @@ class OptimizedBookingService {
 
   async checkAvailability(date, time, courtType = null, duration = 60) {
     const endTime = this._addMinutes(time, duration);
-    
+
     const queryParams = {
       where: [
         ['date', '==', date],
@@ -411,7 +429,7 @@ class OptimizedBookingService {
     }
 
     const result = await DatabaseOptimizer.query(COLLECTIONS.BOOKINGS, queryParams);
-    
+
     return {
       available: result.data.length === 0,
       conflictingBookings: result.data,

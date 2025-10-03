@@ -1,27 +1,23 @@
 // =============================================
 // FILE: src/features/prenota/RulesEditor.jsx
 // =============================================
-import React from "react";
-import { euro2 } from "@lib/format.js";
+import React from 'react';
+import { euro2 } from '@lib/format.js';
 
-const pad2 = (n) => String(n).padStart(2, "0");
-const toTime = (s = "09:00") => {
+const pad2 = (n) => String(n).padStart(2, '0');
+const toTime = (s = '09:00') => {
   const m = /^(\d{1,2}):(\d{2})$/.exec(String(s).trim());
-  if (!m) return "09:00";
+  if (!m) return '09:00';
   const hh = Math.min(23, Math.max(0, Number(m[1] || 0)));
   const mm = Math.min(59, Math.max(0, Number(m[2] || 0)));
   return `${pad2(hh)}:${pad2(mm)}`;
 };
 
 function DayToggles({ value = [], onChange, T }) {
-  const days = ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"];
+  const days = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
   const toggle = (idx) => {
     const has = value.includes(idx);
-    onChange(
-      has
-        ? value.filter((d) => d !== idx)
-        : [...value, idx].sort((a, b) => a - b),
-    );
+    onChange(has ? value.filter((d) => d !== idx) : [...value, idx].sort((a, b) => a - b));
   };
   return (
     <div className="flex flex-wrap gap-1">
@@ -32,7 +28,7 @@ function DayToggles({ value = [], onChange, T }) {
           onClick={() => toggle(i)}
           className={`px-2 h-6 rounded-md text-xs ring-1 ${
             value.includes(i)
-              ? "bg-emerald-500 text-black dark:text-white ring-emerald-500/60"
+              ? 'bg-emerald-500 text-black dark:text-white ring-emerald-500/60'
               : `${T.ghostRing} ${T.cardBg}`
           }`}
         >
@@ -55,9 +51,7 @@ function CourtsPicker({ courts = [], value = [], onChange, T }) {
       </div>
       <div className="mt-1 max-h-40 overflow-auto pr-1 rounded-md">
         {courts.length === 0 ? (
-          <div className={`text-xs ${T.subtext}`}>
-            Nessun campo configurato.
-          </div>
+          <div className={`text-xs ${T.subtext}`}>Nessun campo configurato.</div>
         ) : (
           <div className="space-y-1">
             {courts.map((c) => (
@@ -86,11 +80,7 @@ function CourtsPicker({ courts = [], value = [], onChange, T }) {
         >
           Seleziona tutti
         </button>
-        <button
-          type="button"
-          className={T.btnGhost}
-          onClick={() => onChange([])}
-        >
+        <button type="button" className={T.btnGhost} onClick={() => onChange([])}>
           Pulisci
         </button>
       </div>
@@ -98,13 +88,7 @@ function CourtsPicker({ courts = [], value = [], onChange, T }) {
   );
 }
 
-export default function RulesEditor({
-  title,
-  list = [],
-  onChange,
-  courts = [],
-  T,
-}) {
+export default function RulesEditor({ title, list = [], onChange, courts = [], T }) {
   const update = (idx, patch) => {
     const next = list.map((r, i) => (i === idx ? { ...r, ...patch } : r));
     onChange(next);
@@ -114,10 +98,10 @@ export default function RulesEditor({
     onChange([
       ...list,
       {
-        label: "Nuova fascia",
+        label: 'Nuova fascia',
         eurPerHour: 20,
-        from: "08:00",
-        to: "11:00",
+        from: '08:00',
+        to: '11:00',
         days: [1, 2, 3, 4, 5], // Lun–Ven
         courts: [], // vuoto = tutti i campi
       },
@@ -143,9 +127,9 @@ export default function RulesEditor({
           <div
             key={i}
             className={`relative rounded-xl p-3 ${
-              T.name === "dark"
+              T.name === 'dark'
                 ? `${T.cardBg} ${T.border}`
-                : "bg-emerald-50 ring-2 ring-emerald-500/70"
+                : 'bg-emerald-50 ring-2 ring-emerald-500/70'
             }`}
           >
             {/* X rimuovi */}
@@ -165,7 +149,7 @@ export default function RulesEditor({
                   <div className="flex flex-col">
                     <label className={`text-xs ${T.subtext}`}>Etichetta</label>
                     <input
-                      value={r.label || ""}
+                      value={r.label || ''}
                       onChange={(e) => update(i, { label: e.target.value })}
                       className={T.input}
                     />
@@ -176,9 +160,7 @@ export default function RulesEditor({
                     <input
                       type="number"
                       value={r.eurPerHour ?? 0}
-                      onChange={(e) =>
-                        update(i, { eurPerHour: Number(e.target.value) || 0 })
-                      }
+                      onChange={(e) => update(i, { eurPerHour: Number(e.target.value) || 0 })}
                       className={T.input}
                     />
                   </div>
@@ -190,9 +172,7 @@ export default function RulesEditor({
                     <input
                       type="time"
                       value={toTime(r.from)}
-                      onChange={(e) =>
-                        update(i, { from: toTime(e.target.value) })
-                      }
+                      onChange={(e) => update(i, { from: toTime(e.target.value) })}
                       className={T.input}
                     />
                   </div>
@@ -202,9 +182,7 @@ export default function RulesEditor({
                     <input
                       type="time"
                       value={toTime(r.to)}
-                      onChange={(e) =>
-                        update(i, { to: toTime(e.target.value) })
-                      }
+                      onChange={(e) => update(i, { to: toTime(e.target.value) })}
                       className={T.input}
                     />
                   </div>
@@ -231,7 +209,7 @@ export default function RulesEditor({
               <div className="flex lg:justify-end">
                 <div
                   className="flex-shrink-0 px-3 py-2 rounded-lg ring-1 bg-emerald-50/50 dark:bg-emerald-900/20"
-                  style={{ borderColor: "rgba(16,185,129,0.45)" }}
+                  style={{ borderColor: 'rgba(16,185,129,0.45)' }}
                 >
                   <div className="text-center">
                     <div className="text-xs font-medium text-emerald-700 dark:text-emerald-300 mb-1">

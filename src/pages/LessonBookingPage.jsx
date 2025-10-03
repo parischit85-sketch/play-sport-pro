@@ -2,13 +2,13 @@
 // FILE: src/pages/LessonBookingPage.jsx
 // Page per la prenotazione delle lezioni
 // =============================================
-import React from "react";
-import { themeTokens } from "@lib/theme.js";
-import { useAuth } from "@contexts/AuthContext.jsx";
-import { useClub } from "@contexts/ClubContext.jsx";
-import { useUI } from "@contexts/UIContext.jsx";
-import LessonBookingInterface from "@features/lessons/LessonBookingInterface.jsx";
-import ClubSelectionForBooking from "@components/booking/ClubSelectionForBooking.jsx";
+import React from 'react';
+import { themeTokens } from '@lib/theme.js';
+import { useAuth } from '@contexts/AuthContext.jsx';
+import { useClub } from '@contexts/ClubContext.jsx';
+import { useUI } from '@contexts/UIContext.jsx';
+import LessonBookingInterface from '@features/lessons/LessonBookingInterface.jsx';
+import ClubSelectionForBooking from '@components/booking/ClubSelectionForBooking.jsx';
 
 export default function LessonBookingPage() {
   const { user, isClubAdmin } = useAuth();
@@ -26,6 +26,13 @@ export default function LessonBookingPage() {
 
   // Se c'è un circolo selezionato, mostra l'interfaccia di prenotazione normale
   return (
-    <LessonBookingInterface T={T} user={user} state={null} setState={()=>{}} clubMode={effectiveClubMode} clubId={clubId} />
+    <LessonBookingInterface
+      T={T}
+      user={user}
+      state={null}
+      setState={() => {}}
+      clubMode={effectiveClubMode}
+      clubId={clubId}
+    />
   );
 }

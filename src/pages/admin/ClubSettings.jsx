@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { db } from '../../services/firebase.js';
-import { 
-  doc, 
-  getDoc, 
-  updateDoc, 
+import {
+  doc,
+  getDoc,
+  updateDoc,
   serverTimestamp,
   collection,
   getDocs,
   deleteDoc,
-  addDoc
+  addDoc,
 } from 'firebase/firestore';
 import {
   ArrowLeft,
@@ -27,7 +27,7 @@ import {
   Palette,
   Upload,
   X,
-  Image as ImageIcon
+  Image as ImageIcon,
 } from 'lucide-react';
 
 const ClubSettings = () => {
@@ -40,7 +40,7 @@ const ClubSettings = () => {
   const [uploading, setUploading] = useState(false);
   const [logoFile, setLogoFile] = useState(null);
   const fileInputRef = useRef(null);
-  
+
   // Form data state
   const [settings, setSettings] = useState({
     // Impostazioni generali
@@ -51,18 +51,18 @@ const ClubSettings = () => {
     phone: '',
     email: '',
     website: '',
-    
+
     // Configurazioni struttura
     courts: 1,
     openingTime: '08:00',
     closingTime: '22:00',
     slotDuration: 60,
-    
+
     // Prezzi
     weekdayPrice: 25,
     weekendPrice: 30,
     memberDiscount: 10,
-    
+
     // Regole di prenotazione
     maxAdvanceBookingDays: 7,
     minBookingDuration: 60,
@@ -70,20 +70,20 @@ const ClubSettings = () => {
     allowMultipleBookings: true,
     requireDeposit: false,
     depositAmount: 0,
-    
+
     // Notifiche
     emailNotifications: true,
     smsNotifications: false,
     reminderHours: 24,
-    
+
     // Aspetto
     primaryColor: '#3B82F6',
     logoUrl: '',
-    
+
     // Sicurezza
     autoApproveMembers: false,
     requireMembershipApproval: true,
-    allowGuestBookings: false
+    allowGuestBookings: false,
   });
 
   useEffect(() => {
@@ -94,15 +94,15 @@ const ClubSettings = () => {
     try {
       setLoading(true);
       const clubDoc = await getDoc(doc(db, 'clubs', clubId));
-      
+
       if (clubDoc.exists()) {
         const clubData = clubDoc.data();
         setClub({ id: clubDoc.id, ...clubData });
-        
+
         // Popola i settings con i dati esistenti
-        setSettings(prevSettings => ({
+        setSettings((prevSettings) => ({
           ...prevSettings,
-          ...clubData
+          ...clubData,
         }));
       } else {
         alert('Circolo non trovato');
@@ -119,25 +119,25 @@ const ClubSettings = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-      
+
       // Se c'è un nuovo logo da uploadare, caricalo prima
       let finalLogoUrl = settings.logoUrl;
       if (logoFile) {
         finalLogoUrl = await uploadLogo(logoFile);
       }
-      
+
       const updateData = {
         ...settings,
         logoUrl: finalLogoUrl,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       };
 
       await updateDoc(doc(db, 'clubs', clubId), updateData);
-      
+
       // Aggiorna lo stato locale
-      setSettings(prev => ({ ...prev, logoUrl: finalLogoUrl }));
+      setSettings((prev) => ({ ...prev, logoUrl: finalLogoUrl }));
       setLogoFile(null);
-      
+
       alert('Configurazioni salvate con successo!');
     } catch (error) {
       console.error('Errore nel salvare le configurazioni:', error);
@@ -150,40 +150,37 @@ const ClubSettings = () => {
   const uploadLogo = async (file) => {
     try {
       setUploading(true);
-      
+
       const cloudName = 'dlmi2epev';
       const uploadPreset = 'club_logos';
-      
+
       // Crea FormData per l'upload
       const formData = new FormData();
       formData.append('file', file);
       formData.append('upload_preset', uploadPreset);
       formData.append('folder', `playsport/logos/${clubId}`);
       formData.append('public_id', `logo_${Date.now()}`);
-      
+
       // Upload su Cloudinary
       console.log('📤 Uploading logo to Cloudinary...');
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-        {
-          method: 'POST',
-          body: formData
-        }
-      );
-      
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
       if (!response.ok) {
         const error = await response.json();
         console.error('Upload error details:', error);
         throw new Error(error.error?.message || 'Upload failed');
       }
-      
+
       const data = await response.json();
       const imageUrl = data.secure_url;
-      
+
       console.log('✅ Logo caricato con successo su Cloudinary:', imageUrl);
       return imageUrl;
     } catch (error) {
-      console.error('❌ Errore durante l\'upload del logo:', error);
+      console.error("❌ Errore durante l'upload del logo:", error);
       throw error;
     } finally {
       setUploading(false);
@@ -198,19 +195,19 @@ const ClubSettings = () => {
         alert('Per favore seleziona un file immagine');
         return;
       }
-      
+
       // Verifica dimensione (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('Il file è troppo grande. Dimensione massima: 5MB');
         return;
       }
-      
+
       setLogoFile(file);
-      
+
       // Crea anteprima
       const reader = new FileReader();
       reader.onload = (e) => {
-        setSettings(prev => ({ ...prev, logoUrl: e.target.result }));
+        setSettings((prev) => ({ ...prev, logoUrl: e.target.result }));
       };
       reader.readAsDataURL(file);
     }
@@ -218,7 +215,7 @@ const ClubSettings = () => {
 
   const handleRemoveLogo = () => {
     setLogoFile(null);
-    setSettings(prev => ({ ...prev, logoUrl: '' }));
+    setSettings((prev) => ({ ...prev, logoUrl: '' }));
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -231,7 +228,7 @@ const ClubSettings = () => {
     { id: 'booking', label: 'Prenotazioni', icon: Calendar },
     { id: 'notifications', label: 'Notifiche', icon: Bell },
     { id: 'appearance', label: 'Aspetto', icon: Palette },
-    { id: 'security', label: 'Sicurezza', icon: Shield }
+    { id: 'security', label: 'Sicurezza', icon: Shield },
   ];
 
   if (loading) {
@@ -266,7 +263,7 @@ const ClubSettings = () => {
                 </div>
               </div>
             </div>
-            
+
             <button
               onClick={handleSave}
               disabled={saving}
@@ -320,7 +317,7 @@ const ClubSettings = () => {
                       <input
                         type="text"
                         value={settings.name}
-                        onChange={(e) => setSettings({...settings, name: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, name: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -331,7 +328,7 @@ const ClubSettings = () => {
                       <input
                         type="url"
                         value={settings.website || ''}
-                        onChange={(e) => setSettings({...settings, website: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, website: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="https://..."
                       />
@@ -343,18 +340,16 @@ const ClubSettings = () => {
                       <input
                         type="text"
                         value={settings.address}
-                        onChange={(e) => setSettings({...settings, address: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, address: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Città
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Città</label>
                       <input
                         type="text"
                         value={settings.city}
-                        onChange={(e) => setSettings({...settings, city: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, city: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -365,18 +360,16 @@ const ClubSettings = () => {
                       <input
                         type="tel"
                         value={settings.phone}
-                        onChange={(e) => setSettings({...settings, phone: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                       <input
                         type="email"
                         value={settings.email}
-                        onChange={(e) => setSettings({...settings, email: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, email: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -387,7 +380,7 @@ const ClubSettings = () => {
                       <textarea
                         rows="4"
                         value={settings.description}
-                        onChange={(e) => setSettings({...settings, description: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, description: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -407,7 +400,9 @@ const ClubSettings = () => {
                         type="number"
                         min="1"
                         value={settings.courts}
-                        onChange={(e) => setSettings({...settings, courts: parseInt(e.target.value)})}
+                        onChange={(e) =>
+                          setSettings({ ...settings, courts: parseInt(e.target.value) })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -417,7 +412,9 @@ const ClubSettings = () => {
                       </label>
                       <select
                         value={settings.slotDuration}
-                        onChange={(e) => setSettings({...settings, slotDuration: parseInt(e.target.value)})}
+                        onChange={(e) =>
+                          setSettings({ ...settings, slotDuration: parseInt(e.target.value) })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value={30}>30 minuti</option>
@@ -433,7 +430,7 @@ const ClubSettings = () => {
                       <input
                         type="time"
                         value={settings.openingTime}
-                        onChange={(e) => setSettings({...settings, openingTime: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, openingTime: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -444,7 +441,7 @@ const ClubSettings = () => {
                       <input
                         type="time"
                         value={settings.closingTime}
-                        onChange={(e) => setSettings({...settings, closingTime: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, closingTime: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -465,7 +462,9 @@ const ClubSettings = () => {
                         min="0"
                         step="0.50"
                         value={settings.weekdayPrice}
-                        onChange={(e) => setSettings({...settings, weekdayPrice: parseFloat(e.target.value)})}
+                        onChange={(e) =>
+                          setSettings({ ...settings, weekdayPrice: parseFloat(e.target.value) })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -478,7 +477,9 @@ const ClubSettings = () => {
                         min="0"
                         step="0.50"
                         value={settings.weekendPrice}
-                        onChange={(e) => setSettings({...settings, weekendPrice: parseFloat(e.target.value)})}
+                        onChange={(e) =>
+                          setSettings({ ...settings, weekendPrice: parseFloat(e.target.value) })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -491,7 +492,9 @@ const ClubSettings = () => {
                         min="0"
                         max="100"
                         value={settings.memberDiscount}
-                        onChange={(e) => setSettings({...settings, memberDiscount: parseInt(e.target.value)})}
+                        onChange={(e) =>
+                          setSettings({ ...settings, memberDiscount: parseInt(e.target.value) })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -504,7 +507,9 @@ const ClubSettings = () => {
                         min="0"
                         step="0.50"
                         value={settings.depositAmount}
-                        onChange={(e) => setSettings({...settings, depositAmount: parseFloat(e.target.value)})}
+                        onChange={(e) =>
+                          setSettings({ ...settings, depositAmount: parseFloat(e.target.value) })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -513,10 +518,14 @@ const ClubSettings = () => {
                         <input
                           type="checkbox"
                           checked={settings.requireDeposit}
-                          onChange={(e) => setSettings({...settings, requireDeposit: e.target.checked})}
+                          onChange={(e) =>
+                            setSettings({ ...settings, requireDeposit: e.target.checked })
+                          }
                           className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                         />
-                        <span className="text-sm text-gray-700">Richiedi caparra per le prenotazioni</span>
+                        <span className="text-sm text-gray-700">
+                          Richiedi caparra per le prenotazioni
+                        </span>
                       </label>
                     </div>
                   </div>
@@ -536,7 +545,12 @@ const ClubSettings = () => {
                         min="1"
                         max="365"
                         value={settings.maxAdvanceBookingDays}
-                        onChange={(e) => setSettings({...settings, maxAdvanceBookingDays: parseInt(e.target.value)})}
+                        onChange={(e) =>
+                          setSettings({
+                            ...settings,
+                            maxAdvanceBookingDays: parseInt(e.target.value),
+                          })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -546,7 +560,9 @@ const ClubSettings = () => {
                       </label>
                       <select
                         value={settings.minBookingDuration}
-                        onChange={(e) => setSettings({...settings, minBookingDuration: parseInt(e.target.value)})}
+                        onChange={(e) =>
+                          setSettings({ ...settings, minBookingDuration: parseInt(e.target.value) })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value={30}>30 minuti</option>
@@ -560,7 +576,9 @@ const ClubSettings = () => {
                       </label>
                       <select
                         value={settings.maxBookingDuration}
-                        onChange={(e) => setSettings({...settings, maxBookingDuration: parseInt(e.target.value)})}
+                        onChange={(e) =>
+                          setSettings({ ...settings, maxBookingDuration: parseInt(e.target.value) })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value={60}>60 minuti</option>
@@ -574,16 +592,22 @@ const ClubSettings = () => {
                         <input
                           type="checkbox"
                           checked={settings.allowMultipleBookings}
-                          onChange={(e) => setSettings({...settings, allowMultipleBookings: e.target.checked})}
+                          onChange={(e) =>
+                            setSettings({ ...settings, allowMultipleBookings: e.target.checked })
+                          }
                           className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                         />
-                        <span className="text-sm text-gray-700">Consenti prenotazioni multiple</span>
+                        <span className="text-sm text-gray-700">
+                          Consenti prenotazioni multiple
+                        </span>
                       </label>
                       <label className="flex items-center space-x-2">
                         <input
                           type="checkbox"
                           checked={settings.allowGuestBookings}
-                          onChange={(e) => setSettings({...settings, allowGuestBookings: e.target.checked})}
+                          onChange={(e) =>
+                            setSettings({ ...settings, allowGuestBookings: e.target.checked })
+                          }
                           className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                         />
                         <span className="text-sm text-gray-700">Consenti prenotazioni ospiti</span>
@@ -604,7 +628,9 @@ const ClubSettings = () => {
                         </label>
                         <select
                           value={settings.reminderHours}
-                          onChange={(e) => setSettings({...settings, reminderHours: parseInt(e.target.value)})}
+                          onChange={(e) =>
+                            setSettings({ ...settings, reminderHours: parseInt(e.target.value) })
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                           <option value={1}>1 ora</option>
@@ -620,7 +646,9 @@ const ClubSettings = () => {
                         <input
                           type="checkbox"
                           checked={settings.emailNotifications}
-                          onChange={(e) => setSettings({...settings, emailNotifications: e.target.checked})}
+                          onChange={(e) =>
+                            setSettings({ ...settings, emailNotifications: e.target.checked })
+                          }
                           className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                         />
                         <span className="text-sm text-gray-700">Notifiche Email</span>
@@ -629,7 +657,9 @@ const ClubSettings = () => {
                         <input
                           type="checkbox"
                           checked={settings.smsNotifications}
-                          onChange={(e) => setSettings({...settings, smsNotifications: e.target.checked})}
+                          onChange={(e) =>
+                            setSettings({ ...settings, smsNotifications: e.target.checked })
+                          }
                           className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                         />
                         <span className="text-sm text-gray-700">Notifiche SMS</span>
@@ -648,15 +678,15 @@ const ClubSettings = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-4">
                         Logo del Circolo
                       </label>
-                      
+
                       <div className="flex flex-col space-y-4">
                         {/* Anteprima Logo */}
                         {settings.logoUrl ? (
                           <div className="relative inline-block">
                             <div className="w-48 h-48 border-2 border-gray-300 rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center">
-                              <img 
-                                src={settings.logoUrl} 
-                                alt="Logo circolo" 
+                              <img
+                                src={settings.logoUrl}
+                                alt="Logo circolo"
                                 className="max-w-full max-h-full object-contain"
                               />
                             </div>
@@ -675,7 +705,7 @@ const ClubSettings = () => {
                             <span className="text-sm">Nessun logo</span>
                           </div>
                         )}
-                        
+
                         {/* Pulsante Upload */}
                         <div className="flex items-center space-x-3">
                           <input
@@ -696,14 +726,24 @@ const ClubSettings = () => {
                           </button>
                           {logoFile && (
                             <span className="text-sm text-green-600 flex items-center space-x-1">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M5 13l4 4L19 7"
+                                />
                               </svg>
                               <span>Nuovo logo selezionato</span>
                             </span>
                           )}
                         </div>
-                        
+
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                           <p className="text-xs text-blue-800">
                             <strong>💡 Suggerimenti:</strong>
@@ -717,7 +757,7 @@ const ClubSettings = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Colore Primario */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -727,13 +767,17 @@ const ClubSettings = () => {
                         <input
                           type="color"
                           value={settings.primaryColor}
-                          onChange={(e) => setSettings({...settings, primaryColor: e.target.value})}
+                          onChange={(e) =>
+                            setSettings({ ...settings, primaryColor: e.target.value })
+                          }
                           className="w-16 h-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
                         />
                         <input
                           type="text"
                           value={settings.primaryColor}
-                          onChange={(e) => setSettings({...settings, primaryColor: e.target.value})}
+                          onChange={(e) =>
+                            setSettings({ ...settings, primaryColor: e.target.value })
+                          }
                           className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
                           placeholder="#3B82F6"
                         />
@@ -751,19 +795,27 @@ const ClubSettings = () => {
                       <input
                         type="checkbox"
                         checked={settings.autoApproveMembers}
-                        onChange={(e) => setSettings({...settings, autoApproveMembers: e.target.checked})}
+                        onChange={(e) =>
+                          setSettings({ ...settings, autoApproveMembers: e.target.checked })
+                        }
                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                       />
-                      <span className="text-sm text-gray-700">Approva automaticamente nuovi membri</span>
+                      <span className="text-sm text-gray-700">
+                        Approva automaticamente nuovi membri
+                      </span>
                     </label>
                     <label className="flex items-center space-x-2">
                       <input
                         type="checkbox"
                         checked={settings.requireMembershipApproval}
-                        onChange={(e) => setSettings({...settings, requireMembershipApproval: e.target.checked})}
+                        onChange={(e) =>
+                          setSettings({ ...settings, requireMembershipApproval: e.target.checked })
+                        }
                         className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                       />
-                      <span className="text-sm text-gray-700">Richiedi approvazione per iscrizioni</span>
+                      <span className="text-sm text-gray-700">
+                        Richiedi approvazione per iscrizioni
+                      </span>
                     </label>
                   </div>
                 </div>

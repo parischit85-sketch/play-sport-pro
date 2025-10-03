@@ -17,7 +17,6 @@ import {
 } from '../security.js';
 
 describe('Security Library', () => {
-  
   describe('Input Sanitization', () => {
     describe('sanitizeHTML', () => {
       it('should remove script tags', () => {
@@ -80,7 +79,7 @@ describe('Security Library', () => {
           'test123@test-domain.com',
         ];
 
-        validEmails.forEach(email => {
+        validEmails.forEach((email) => {
           expect(validateEmail(email)).toBe(true);
         });
       });
@@ -97,7 +96,7 @@ describe('Security Library', () => {
           undefined,
         ];
 
-        invalidEmails.forEach(email => {
+        invalidEmails.forEach((email) => {
           expect(validateEmail(email)).toBe(false);
         });
       });
@@ -105,13 +104,9 @@ describe('Security Library', () => {
 
     describe('validatePassword', () => {
       it('should accept strong passwords', () => {
-        const strongPasswords = [
-          'StrongPass123!',
-          'MySecure#Password2024',
-          'Complex$Pass9',
-        ];
+        const strongPasswords = ['StrongPass123!', 'MySecure#Password2024', 'Complex$Pass9'];
 
-        strongPasswords.forEach(password => {
+        strongPasswords.forEach((password) => {
           const result = validatePassword(password);
           expect(result.isValid).toBe(true);
           expect(result.strength).toBeGreaterThanOrEqual(80);
@@ -119,15 +114,9 @@ describe('Security Library', () => {
       });
 
       it('should reject weak passwords', () => {
-        const weakPasswords = [
-          'weak',
-          '12345678',
-          'password',
-          'PASSWORD',
-          'Pass123',
-        ];
+        const weakPasswords = ['weak', '12345678', 'password', 'PASSWORD', 'Pass123'];
 
-        weakPasswords.forEach(password => {
+        weakPasswords.forEach((password) => {
           const result = validatePassword(password);
           expect(result.isValid).toBe(false);
           expect(result.strength).toBeLessThan(70);
@@ -152,22 +141,15 @@ describe('Security Library', () => {
           '+86 138 0013 8000',
         ];
 
-        validNumbers.forEach(number => {
+        validNumbers.forEach((number) => {
           expect(validatePhoneNumber(number)).toBe(true);
         });
       });
 
       it('should reject invalid phone numbers', () => {
-        const invalidNumbers = [
-          '123',
-          'not-a-number',
-          '+',
-          '+123',
-          '',
-          null,
-        ];
+        const invalidNumbers = ['123', 'not-a-number', '+', '+123', '', null];
 
-        invalidNumbers.forEach(number => {
+        invalidNumbers.forEach((number) => {
           expect(validatePhoneNumber(number)).toBe(false);
         });
       });
@@ -188,7 +170,7 @@ describe('Security Library', () => {
 
     it('should allow requests within limit', () => {
       const key = 'test-user';
-      
+
       for (let i = 0; i < 5; i++) {
         expect(rateLimiter.isAllowed(key)).toBe(true);
       }
@@ -196,40 +178,40 @@ describe('Security Library', () => {
 
     it('should block requests exceeding limit', () => {
       const key = 'test-user';
-      
+
       // Use up the limit
       for (let i = 0; i < 5; i++) {
         rateLimiter.isAllowed(key);
       }
-      
+
       // Next request should be blocked
       expect(rateLimiter.isAllowed(key)).toBe(false);
     });
 
     it('should reset after time window', () => {
       const key = 'test-user';
-      
+
       // Use up the limit
       for (let i = 0; i < 5; i++) {
         rateLimiter.isAllowed(key);
       }
-      
+
       expect(rateLimiter.isAllowed(key)).toBe(false);
-      
+
       // Advance time past the window
       vi.advanceTimersByTime(61000);
-      
+
       expect(rateLimiter.isAllowed(key)).toBe(true);
     });
 
     it('should track remaining requests', () => {
       const key = 'test-user';
-      
+
       expect(rateLimiter.getRemainingRequests(key)).toBe(5);
-      
+
       rateLimiter.isAllowed(key);
       expect(rateLimiter.getRemainingRequests(key)).toBe(4);
-      
+
       rateLimiter.isAllowed(key);
       expect(rateLimiter.getRemainingRequests(key)).toBe(3);
     });
@@ -237,13 +219,13 @@ describe('Security Library', () => {
     it('should clean up old entries', () => {
       const key = 'test-user';
       rateLimiter.isAllowed(key);
-      
+
       expect(rateLimiter.requests.has(key)).toBe(true);
-      
+
       // Advance time and trigger cleanup
       vi.advanceTimersByTime(61000);
       rateLimiter.cleanup();
-      
+
       expect(rateLimiter.requests.has(key)).toBe(false);
     });
   });
@@ -275,22 +257,22 @@ describe('Security Library', () => {
 
     it('should reject expired tokens', () => {
       vi.useFakeTimers();
-      
+
       const token = csrfProtection.generateToken();
       expect(csrfProtection.validateToken(token)).toBe(true);
-      
+
       // Advance time past expiration
       vi.advanceTimersByTime(16 * 60 * 1000); // 16 minutes
-      
+
       expect(csrfProtection.validateToken(token)).toBe(false);
-      
+
       vi.useRealTimers();
     });
 
     it('should store and retrieve tokens', () => {
       const token = csrfProtection.generateToken();
       csrfProtection.storeToken(token);
-      
+
       const retrieved = csrfProtection.getStoredToken();
       expect(retrieved).toBe(token);
     });
@@ -311,37 +293,37 @@ describe('Security Library', () => {
     it('should start and track session', () => {
       const sessionData = { userId: 'test-123' };
       secureSession.startSession(sessionData);
-      
+
       expect(secureSession.isActive()).toBe(true);
       expect(secureSession.getSessionData()).toEqual(sessionData);
     });
 
     it('should detect timeout', () => {
       secureSession.startSession({ userId: 'test-123' });
-      
+
       expect(secureSession.isActive()).toBe(true);
       expect(secureSession.isNearTimeout()).toBe(false);
-      
+
       // Advance time to near timeout
       vi.advanceTimersByTime(25 * 60 * 1000); // 25 minutes
-      
+
       expect(secureSession.isNearTimeout()).toBe(true);
       expect(secureSession.isActive()).toBe(true);
-      
+
       // Advance to timeout
       vi.advanceTimersByTime(6 * 60 * 1000); // 6 more minutes
-      
+
       expect(secureSession.isActive()).toBe(false);
     });
 
     it('should extend session on activity', () => {
       secureSession.startSession({ userId: 'test-123' });
-      
+
       // Advance time
       vi.advanceTimersByTime(20 * 60 * 1000); // 20 minutes
-      
+
       secureSession.updateActivity();
-      
+
       // Should not be near timeout anymore
       expect(secureSession.isNearTimeout()).toBe(false);
     });
@@ -349,7 +331,7 @@ describe('Security Library', () => {
     it('should end session properly', () => {
       secureSession.startSession({ userId: 'test-123' });
       expect(secureSession.isActive()).toBe(true);
-      
+
       secureSession.endSession();
       expect(secureSession.isActive()).toBe(false);
       expect(secureSession.getSessionData()).toBeNull();
@@ -363,7 +345,7 @@ describe('Security Library', () => {
         getAttribute: vi.fn(),
         getElementsByTagName: vi.fn(() => []),
       };
-      
+
       global.document = {
         body: mockElement,
         getElementsByTagName: vi.fn(() => []),
@@ -372,7 +354,7 @@ describe('Security Library', () => {
       };
 
       const auditResult = performSecurityAudit();
-      
+
       expect(auditResult).toHaveProperty('score');
       expect(auditResult).toHaveProperty('issues');
       expect(auditResult).toHaveProperty('recommendations');
@@ -400,7 +382,7 @@ describe('Security Library', () => {
       };
 
       const auditResult = performSecurityAudit();
-      
+
       expect(auditResult.score).toBeLessThan(90);
       expect(auditResult.issues.length).toBeGreaterThan(0);
       expect(auditResult.recommendations.length).toBeGreaterThan(0);

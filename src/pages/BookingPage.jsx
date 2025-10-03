@@ -1,12 +1,12 @@
 // =============================================
 // FILE: src/pages/BookingPage.jsx
 // =============================================
-import React from "react";
-import { themeTokens } from "@lib/theme.js";
-import { useAuth } from "@contexts/AuthContext.jsx";
-import { useClub } from "@contexts/ClubContext.jsx";
-import ModernBookingInterface from "@features/booking/ModernBookingInterface.jsx";
-import ClubSelectionForBooking from "@components/booking/ClubSelectionForBooking.jsx";
+import React from 'react';
+import { themeTokens } from '@lib/theme.js';
+import { useAuth } from '@contexts/AuthContext.jsx';
+import { useClub } from '@contexts/ClubContext.jsx';
+import ModernBookingInterface from '@features/booking/ModernBookingInterface.jsx';
+import ClubSelectionForBooking from '@components/booking/ClubSelectionForBooking.jsx';
 
 export default function BookingPage() {
   const { user } = useAuth();

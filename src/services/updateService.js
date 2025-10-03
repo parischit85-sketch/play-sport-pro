@@ -5,33 +5,27 @@
 
 class UpdateService {
   constructor() {
-    this.currentVersion = "1.8.0";
+    this.currentVersion = '1.8.0';
     this.swRegistration = null;
     this.updateCheckInterval = null;
   }
 
   // Inizializza il service worker e controlla aggiornamenti
   async init() {
-    if ("serviceWorker" in navigator) {
+    if ('serviceWorker' in navigator) {
       try {
-        this.swRegistration = await navigator.serviceWorker.register("/sw.js", {
-          scope: "/",
-          updateViaCache: "none", // Forza check aggiornamenti SW
+        this.swRegistration = await navigator.serviceWorker.register('/sw.js', {
+          scope: '/',
+          updateViaCache: 'none', // Forza check aggiornamenti SW
         });
 
-        console.log(
-          "[UpdateService] Service Worker registrato:",
-          this.swRegistration.scope,
-        );
+        console.log('[UpdateService] Service Worker registrato:', this.swRegistration.scope);
 
         // Controlla aggiornamenti ogni 15 secondi (più frequente)
         this.startUpdateCheck();
 
         // Ascolta messaggi dal SW
-        navigator.serviceWorker.addEventListener(
-          "message",
-          this.handleSWMessage.bind(this),
-        );
+        navigator.serviceWorker.addEventListener('message', this.handleSWMessage.bind(this));
 
         // Controlla se c'è un SW in attesa
         if (this.swRegistration.waiting) {
@@ -39,21 +33,18 @@ class UpdateService {
         }
 
         // Ascolta SW state changes
-        this.swRegistration.addEventListener("updatefound", () => {
+        this.swRegistration.addEventListener('updatefound', () => {
           const newWorker = this.swRegistration.installing;
           if (newWorker) {
-            newWorker.addEventListener("statechange", () => {
-              if (
-                newWorker.state === "installed" &&
-                navigator.serviceWorker.controller
-              ) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                 this.showUpdateAvailable();
               }
             });
           }
         });
       } catch (error) {
-        console.error("[UpdateService] Errore registrazione SW:", error);
+        console.error('[UpdateService] Errore registrazione SW:', error);
       }
     }
   }
@@ -75,7 +66,7 @@ class UpdateService {
       try {
         await this.swRegistration.update();
       } catch (error) {
-        console.log("[UpdateService] Update check failed:", error);
+        console.log('[UpdateService] Update check failed:', error);
       }
     }
   }
@@ -84,7 +75,7 @@ class UpdateService {
   handleSWMessage(event) {
     const { data } = event;
 
-    if (data.type === "RELOAD_PAGE") {
+    if (data.type === 'RELOAD_PAGE') {
       this.reloadPage();
     }
   }
@@ -98,8 +89,8 @@ class UpdateService {
 
   // Crea banner di aggiornamento
   createUpdateBanner() {
-    const banner = document.createElement("div");
-    banner.id = "update-banner";
+    const banner = document.createElement('div');
+    banner.id = 'update-banner';
     banner.style.cssText = `
       position: fixed;
       top: 0;
@@ -137,7 +128,7 @@ class UpdateService {
     `;
 
     // Gestisci click aggiornamento
-    banner.querySelector("#update-btn").addEventListener("click", () => {
+    banner.querySelector('#update-btn').addEventListener('click', () => {
       this.applyUpdate();
       banner.remove();
     });
@@ -149,7 +140,7 @@ class UpdateService {
   async applyUpdate() {
     if (this.swRegistration && this.swRegistration.waiting) {
       // Dice al SW di prendere il controllo
-      this.swRegistration.waiting.postMessage({ type: "SKIP_WAITING" });
+      this.swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
     }
 
     // Forza clear cache
@@ -163,24 +154,20 @@ class UpdateService {
 
   // Pulisce tutte le cache
   async clearCache() {
-    if ("caches" in window) {
+    if ('caches' in window) {
       try {
         const cacheNames = await caches.keys();
-        await Promise.all(
-          cacheNames.map((cacheName) => caches.delete(cacheName)),
-        );
-        console.log("[UpdateService] Cache cleared");
+        await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+        console.log('[UpdateService] Cache cleared');
       } catch (error) {
-        console.error("[UpdateService] Cache clear failed:", error);
+        console.error('[UpdateService] Cache clear failed:', error);
       }
     }
 
     // Anche tramite SW se disponibile
     if (this.swRegistration && this.swRegistration.active) {
       const messageChannel = new MessageChannel();
-      this.swRegistration.active.postMessage({ type: "CLEAR_CACHE" }, [
-        messageChannel.port2,
-      ]);
+      this.swRegistration.active.postMessage({ type: 'CLEAR_CACHE' }, [messageChannel.port2]);
     }
   }
 
@@ -192,7 +179,7 @@ class UpdateService {
     } else {
       // Fallback con cache busting
       const url = new URL(window.location);
-      url.searchParams.set("_cb", Date.now());
+      url.searchParams.set('_cb', Date.now());
       window.location.href = url.toString();
     }
   }

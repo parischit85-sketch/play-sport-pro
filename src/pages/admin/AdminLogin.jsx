@@ -63,7 +63,7 @@ const AdminLogin = () => {
       try {
         const adminRef = doc(db, 'admin', user.uid);
         const adminSnap = await getDoc(adminRef);
-        
+
         if (!adminSnap.exists()) {
           // Crea profilo admin se non esiste
           // Questa logica può essere estesa in futuro
@@ -77,11 +77,10 @@ const AdminLogin = () => {
       // Reindirizza alla dashboard admin
       const from = location.state?.from?.pathname || '/admin/dashboard';
       navigate(from, { replace: true });
-      
     } catch (error) {
       console.error('Errore login admin:', error);
       let errorMessage = 'Errore durante il login';
-      
+
       switch (error.code) {
         case 'auth/user-not-found':
           errorMessage = 'Account non trovato';
@@ -101,7 +100,7 @@ const AdminLogin = () => {
         default:
           errorMessage = 'Errore durante il login. Riprova';
       }
-      
+
       setError(errorMessage);
     } finally {
       setLoading(false);

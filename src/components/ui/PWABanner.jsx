@@ -1,19 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { usePWA } from "../../hooks/usePWA.js";
+import React, { useState, useEffect } from 'react';
+import { usePWA } from '../../hooks/usePWA.js';
 
-export default function PWABanner({ className = "" }) {
-  const {
-    isInstallable,
-    isInstalled,
-    installApp,
-    browserInfo,
-    installInstructions,
-  } = usePWA();
+export default function PWABanner({ className = '' }) {
+  const { isInstallable, isInstalled, installApp, browserInfo, installInstructions } = usePWA();
   const [isDismissed, setIsDismissed] = useState(false);
   const [showInstructionsModal, setShowInstructionsModal] = useState(false);
 
   useEffect(() => {
-    const dismissed = localStorage.getItem("pwa-banner-dismissed");
+    const dismissed = localStorage.getItem('pwa-banner-dismissed');
     if (dismissed) {
       setIsDismissed(true);
     }
@@ -35,7 +29,7 @@ export default function PWABanner({ className = "" }) {
         setIsDismissed(true);
       }
     } catch (error) {
-      console.error("Install failed:", error);
+      console.error('Install failed:', error);
       if (installInstructions?.show) {
         setShowInstructionsModal(true);
       }
@@ -44,21 +38,21 @@ export default function PWABanner({ className = "" }) {
 
   const handleDismiss = () => {
     setIsDismissed(true);
-    localStorage.setItem("pwa-banner-dismissed", "true");
+    localStorage.setItem('pwa-banner-dismissed', 'true');
     setTimeout(
       () => {
-        localStorage.removeItem("pwa-banner-dismissed");
+        localStorage.removeItem('pwa-banner-dismissed');
       },
-      7 * 24 * 60 * 60 * 1000,
+      7 * 24 * 60 * 60 * 1000
     );
   };
 
   const getBrowserSpecificText = () => {
-    if (browserInfo?.isIOS) return "📱 Installa su iPhone/iPad";
-    if (browserInfo?.isAndroid) return "🤖 Installa su Android";
-    if (browserInfo?.isFirefox) return "🦊 Installa con Firefox";
-    if (browserInfo?.isMobile) return "📱 Installa App Mobile";
-    return "💻 Installa App Desktop";
+    if (browserInfo?.isIOS) return '📱 Installa su iPhone/iPad';
+    if (browserInfo?.isAndroid) return '🤖 Installa su Android';
+    if (browserInfo?.isFirefox) return '🦊 Installa con Firefox';
+    if (browserInfo?.isMobile) return '📱 Installa App Mobile';
+    return '💻 Installa App Desktop';
   };
 
   return (
@@ -88,12 +82,10 @@ export default function PWABanner({ className = "" }) {
               </div>
 
               <div className="text-center sm:text-left">
-                <h3 className="font-semibold text-white mb-1">
-                  {getBrowserSpecificText()}
-                </h3>
+                <h3 className="font-semibold text-white mb-1">{getBrowserSpecificText()}</h3>
                 <p className="text-blue-100 text-sm">
                   {browserInfo?.isMobile
-                    ? "Aggiungila alla home screen per accesso rapido"
+                    ? 'Aggiungila alla home screen per accesso rapido'
                     : "Installala sul desktop per un'esperienza app nativa"}
                 </p>
               </div>
@@ -104,12 +96,7 @@ export default function PWABanner({ className = "" }) {
                 onClick={handleInstall}
                 className="bg-white dark:bg-blue-600 text-blue-600 dark:text-white hover:bg-blue-50 dark:hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -117,7 +104,7 @@ export default function PWABanner({ className = "" }) {
                     d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
                   />
                 </svg>
-                {installInstructions?.show ? "Come installare" : "Installa ora"}
+                {installInstructions?.show ? 'Come installare' : 'Installa ora'}
               </button>
 
               <button
@@ -125,12 +112,7 @@ export default function PWABanner({ className = "" }) {
                 className="text-blue-100 hover:text-white p-2 transition-colors"
                 title="Nascondi banner"
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -149,13 +131,11 @@ export default function PWABanner({ className = "" }) {
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 border dark:border-gray-600">
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">
-                  {installInstructions.icon || "📱"}
-                </span>
+                <span className="text-3xl">{installInstructions.icon || '📱'}</span>
               </div>
 
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                {installInstructions.title || "Installa App"}
+                {installInstructions.title || 'Installa App'}
               </h3>
 
               <p className="text-gray-600 dark:text-gray-300 mb-6">
@@ -164,39 +144,35 @@ export default function PWABanner({ className = "" }) {
 
               {installInstructions.instructions && (
                 <div className="text-left space-y-4 mb-8">
-                  {installInstructions.instructions.map(
-                    (instruction, index) => (
-                      <div key={index} className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
-                          {index + 1}
-                        </div>
-                        <p className="text-sm text-gray-700 dark:text-gray-300 pt-1">
-                          {instruction}
-                        </p>
+                  {installInstructions.instructions.map((instruction, index) => (
+                    <div key={index} className="flex items-start gap-3">
+                      <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        {index + 1}
                       </div>
-                    ),
-                  )}
+                      <p className="text-sm text-gray-700 dark:text-gray-300 pt-1">{instruction}</p>
+                    </div>
+                  ))}
                 </div>
               )}
 
               {browserInfo && (
                 <div className="bg-gray-50 rounded-lg p-3 mb-6">
                   <p className="text-xs text-gray-600 text-center">
-                    Browser:{" "}
+                    Browser:{' '}
                     {browserInfo.isChrome
-                      ? "Chrome"
+                      ? 'Chrome'
                       : browserInfo.isFirefox
-                        ? "Firefox"
+                        ? 'Firefox'
                         : browserInfo.isEdge
-                          ? "Edge"
+                          ? 'Edge'
                           : browserInfo.isSafari
-                            ? "Safari"
+                            ? 'Safari'
                             : browserInfo.isOpera
-                              ? "Opera"
+                              ? 'Opera'
                               : browserInfo.isSamsung
-                                ? "Samsung Internet"
-                                : "Altro"}
-                    {browserInfo.isMobile ? " Mobile" : ""}
+                                ? 'Samsung Internet'
+                                : 'Altro'}
+                    {browserInfo.isMobile ? ' Mobile' : ''}
                   </p>
                 </div>
               )}
@@ -208,19 +184,17 @@ export default function PWABanner({ className = "" }) {
                 >
                   Ho capito
                 </button>
-                {browserInfo &&
-                  !browserInfo.isIOS &&
-                  !browserInfo.isFirefox && (
-                    <button
-                      onClick={async () => {
-                        setShowInstructionsModal(false);
-                        await installApp();
-                      }}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
-                    >
-                      Prova Auto-Install
-                    </button>
-                  )}
+                {browserInfo && !browserInfo.isIOS && !browserInfo.isFirefox && (
+                  <button
+                    onClick={async () => {
+                      setShowInstructionsModal(false);
+                      await installApp();
+                    }}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+                  >
+                    Prova Auto-Install
+                  </button>
+                )}
               </div>
             </div>
           </div>

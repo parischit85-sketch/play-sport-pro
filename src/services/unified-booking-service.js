@@ -18,9 +18,9 @@ import {
   serverTimestamp,
   getDoc,
   deleteField,
-} from "firebase/firestore";
-import { db } from "./firebase.js";
-import { invalidateUserBookingsCache } from "@hooks/useBookingPerformance.js";
+} from 'firebase/firestore';
+import { db } from './firebase.js';
+import { invalidateUserBookingsCache } from '@hooks/useBookingPerformance.js';
 
 // Simple debug logger fallback (disabled)
 const debugLogger = {
@@ -33,20 +33,20 @@ const debugLogger = {
 // =============================================
 // CONSTANTS
 // =============================================
-const STORAGE_KEY = "unified-bookings";
+const STORAGE_KEY = 'unified-bookings';
 const COLLECTIONS = {
-  BOOKINGS: "bookings",
+  BOOKINGS: 'bookings',
 };
 
 const BOOKING_STATUS = {
-  CONFIRMED: "confirmed",
-  CANCELLED: "cancelled",
-  PENDING: "pending",
+  CONFIRMED: 'confirmed',
+  CANCELLED: 'cancelled',
+  PENDING: 'pending',
 };
 
 const BOOKING_TYPES = {
-  COURT: "court",
-  LESSON: "lesson",
+  COURT: 'court',
+  LESSON: 'lesson',
 };
 
 // =============================================
@@ -57,7 +57,7 @@ let currentUser = null;
 let bookingCache = new Map(); // chiave: `${scope}|${clubId||'all'}`
 let subscriptions = new Map();
 // Initialization & migration guards
-const MIGRATION_FLAG_KEY = "unified-bookings-migration-done-v1";
+const MIGRATION_FLAG_KEY = 'unified-bookings-migration-done-v1';
 let initialized = false;
 let migrationInProgress = false;
 let pendingSyncTimeout = null;
@@ -95,7 +95,6 @@ export function initialize(options = {}) {
   initialized = true; // Mark as initialized to prevent multiple calls
   useCloudStorage = options.cloudEnabled || false;
   currentUser = options.user || null;
-  
 
   // ClubId non persistito qui: passato per ogni operazione (scelta multi-club)
 
@@ -105,9 +104,9 @@ export function initialize(options = {}) {
     if (!localStorage.getItem(MIGRATION_FLAG_KEY)) {
       migrationInProgress = true;
       migrateOldData()
-        .catch((e) => console.warn("Migration failed:", e))
+        .catch((e) => console.warn('Migration failed:', e))
         .finally(() => {
-          localStorage.setItem(MIGRATION_FLAG_KEY, "1");
+          localStorage.setItem(MIGRATION_FLAG_KEY, '1');
           migrationInProgress = false;
           scheduleSync(300);
         });
@@ -119,17 +118,17 @@ export function initialize(options = {}) {
 }
 
 function setupRealtimeSubscriptions(clubId = null) {
-  const subKey = `public|${clubId||'all'}`;
+  const subKey = `public|${clubId || 'all'}`;
   if (subscriptions.has(subKey)) return; // Already subscribed
 
   try {
     // Base query
     let qBase = query(
       collection(db, COLLECTIONS.BOOKINGS),
-      where("status", "!=", "cancelled"),
-      orderBy("status"),
-      orderBy("date", "asc"),
-      orderBy("time", "asc"),
+      where('status', '!=', 'cancelled'),
+      orderBy('status'),
+      orderBy('date', 'asc'),
+      orderBy('time', 'asc')
     );
     // Se clubId presente, aggiungere filtro clubId (richiede indice Firestore)
     if (clubId) {
@@ -156,10 +155,12 @@ function setupRealtimeSubscriptions(clubId = null) {
         return finalBooking;
       });
 
-      const filtered = clubId ? bookings.filter(b => b.clubId === clubId || (!b.clubId && clubId === 'default-club')) : bookings;
+      const filtered = clubId
+        ? bookings.filter((b) => b.clubId === clubId || (!b.clubId && clubId === 'default-club'))
+        : bookings;
       bookingCache.set(subKey, filtered);
 
-      emit("bookingsUpdated", { type: subKey, bookings: filtered });
+      emit('bookingsUpdated', { type: subKey, bookings: filtered });
     });
 
     subscriptions.set(subKey, unsubscribe);
@@ -176,7 +177,9 @@ function setupRealtimeSubscriptions(clubId = null) {
 export async function createBooking(bookingData, user, options = {}) {
   const clubId = bookingData.clubId || options.clubId || null;
   if (!clubId) {
-    console.warn('[UnifiedBookingService] createBooking senza clubId - fallback default-club (fase compat transitoria)');
+    console.warn(
+      '[UnifiedBookingService] createBooking senza clubId - fallback default-club (fase compat transitoria)'
+    );
   }
   if (bookingData.time) bookingData.time = normalizeTime(bookingData.time);
 
@@ -186,9 +189,7 @@ export async function createBooking(bookingData, user, options = {}) {
   // Validate booking data and check for conflicts/holes
   const validationErrors = validateBooking(bookingData, existingBookings);
   if (validationErrors.length > 0) {
-    const error = new Error(
-      `Validazione fallita: ${validationErrors.join(", ")}`,
-    );
+    const error = new Error(`Validazione fallita: ${validationErrors.join(', ')}`);
     error.validationErrors = validationErrors;
     throw error;
   }
@@ -210,11 +211,11 @@ export async function createBooking(bookingData, user, options = {}) {
     price: bookingData.price || 0,
 
     // User details
-    bookedBy: user?.displayName || user?.email || "Anonimo",
+    bookedBy: user?.displayName || user?.email || 'Anonimo',
     userEmail: user?.email,
-    userPhone: bookingData.userPhone || "",
+    userPhone: bookingData.userPhone || '',
     players: bookingData.players || [],
-    notes: bookingData.notes || "",
+    notes: bookingData.notes || '',
 
     // Visual customization
     color: bookingData.color || null, // Custom booking color
@@ -248,7 +249,7 @@ export async function createBooking(bookingData, user, options = {}) {
   }
 
   // Emit event for real-time updates
-  emit("bookingCreated", result);
+  emit('bookingCreated', result);
 
   return result;
 }
@@ -277,8 +278,8 @@ export async function updateBooking(bookingId, updates, user) {
   }
 
   if (result) {
-    emit("bookingUpdated", { id: bookingId, booking: result });
-    
+    emit('bookingUpdated', { id: bookingId, booking: result });
+
     // Invalidate user bookings cache to ensure UI updates immediately
     if (user?.uid) {
       invalidateUserBookingsCache(user.uid);
@@ -299,7 +300,7 @@ export async function cancelBooking(bookingId, user) {
       cancelledAt: new Date().toISOString(),
       cancelledBy: user?.uid || null,
     },
-    user,
+    user
   );
 }
 
@@ -319,7 +320,7 @@ export async function deleteBooking(bookingId, user) {
     deleteLocalBooking(bookingId);
   }
 
-  emit("bookingDeleted", { id: bookingId });
+  emit('bookingDeleted', { id: bookingId });
 }
 
 // =============================================
@@ -331,17 +332,15 @@ export async function deleteBooking(bookingId, user) {
  */
 export async function getPublicBookings(options = {}) {
   const { forceRefresh = false, includeLesson = true, clubId = null } = options;
-  const cacheKey = `public|${clubId||'all'}`;
-  
+  const cacheKey = `public|${clubId || 'all'}`;
+
   if (!forceRefresh && bookingCache.has(cacheKey)) {
     let cached = bookingCache.get(cacheKey);
 
     // Filter by clubId if provided
     if (clubId) {
       const isLegacyClub = clubId === 'sporting-cat';
-      cached = cached.filter((b) => 
-        b.clubId === clubId || (isLegacyClub && !b.clubId)
-      );
+      cached = cached.filter((b) => b.clubId === clubId || (isLegacyClub && !b.clubId));
     }
 
     // Cache debug disabled to reduce console spam
@@ -381,15 +380,13 @@ export async function getPublicBookings(options = {}) {
 
   // Filter by clubId if provided
   if (clubId) {
-    const isLegacyClub = ['sporting-cat','default-club'].includes(clubId);
-    bookings = bookings.filter(b => b.clubId === clubId || (isLegacyClub && !b.clubId));
+    const isLegacyClub = ['sporting-cat', 'default-club'].includes(clubId);
+    bookings = bookings.filter((b) => b.clubId === clubId || (isLegacyClub && !b.clubId));
   }
 
   if (!includeLesson) {
     bookings = bookings.filter((b) => !b.isLessonBooking);
   }
-
-
 
   bookingCache.set(cacheKey, bookings);
 
@@ -412,46 +409,44 @@ export async function getUserBookings(user, options = {}) {
   // Query ottimizzata: prenotazioni dell'utente
   const bookingsRef = collection(db, 'bookings');
   let q = query(bookingsRef, where('bookedBy', '==', user.uid));
-  
+
   // Filtra per club se specificato
   if (clubId) {
     q = query(bookingsRef, where('bookedBy', '==', user.uid), where('clubId', '==', clubId));
   }
-  
+
   const snapshot = await getDocs(q);
-  let userBookings = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  let userBookings = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
   if (lessonOnly) {
     userBookings = userBookings.filter((b) => b.isLessonBooking);
   }
 
   if (!includeCancelled) {
-    userBookings = userBookings.filter(
-      (b) => b.status !== BOOKING_STATUS.CANCELLED,
-    );
+    userBookings = userBookings.filter((b) => b.status !== BOOKING_STATUS.CANCELLED);
   }
 
   if (!includeHistory) {
     const now = new Date();
-    const today = now.toISOString().split("T")[0];
+    const today = now.toISOString().split('T')[0];
     const currentTime = now.getHours() * 60 + now.getMinutes();
-    
+
     // Filtra prenotazioni future + oggi con orario futuro
     userBookings = userBookings.filter((booking) => {
       if (!booking.date) return false;
-      
+
       // Se la prenotazione è per oggi, controlla anche l'orario
       if (booking.date === today) {
         if (!booking.time) return true; // Se non c'è orario, mostrala
-        
+
         // Converti l'orario della prenotazione in minuti
         const [hours, minutes] = booking.time.split(':').map(Number);
         const bookingTime = hours * 60 + minutes;
-        
+
         // Mostra solo se l'orario è futuro
         return bookingTime > currentTime;
       }
-      
+
       // Per date future, mostra sempre
       return booking.date > today;
     });
@@ -491,10 +486,7 @@ async function createCloudBooking(booking) {
     updatedAt: serverTimestamp(),
   });
 
-  const docRef = await addDoc(
-    collection(db, COLLECTIONS.BOOKINGS),
-    cleanedData,
-  );
+  const docRef = await addDoc(collection(db, COLLECTIONS.BOOKINGS), cleanedData);
   return {
     ...rest,
     id: docRef.id,
@@ -518,7 +510,7 @@ async function updateCloudBooking(bookingId, updates) {
     await updateDoc(docRef, cleanedUpdates);
   } catch (error) {
     // If document doesn't exist, try to create it from local data
-    if (error.code === "not-found") {
+    if (error.code === 'not-found') {
       const bookings = loadLocalBookings();
       const localBooking = bookings.find((b) => b.id === bookingId);
 
@@ -568,14 +560,12 @@ async function deleteCloudBooking(bookingId) {
 }
 
 async function loadCloudBookings() {
-
-  
   // Raw loader including cancelled (admin use)
   async function loadCloudBookingsRaw() {
     const q = query(
       collection(db, COLLECTIONS.BOOKINGS),
-      orderBy("date", "asc"),
-      orderBy("time", "asc"),
+      orderBy('date', 'asc'),
+      orderBy('time', 'asc')
     );
     const snapshot = await getDocs(q);
     return snapshot.docs.map((d) => {
@@ -594,8 +584,8 @@ async function loadCloudBookings() {
   }
   const q = query(
     collection(db, COLLECTIONS.BOOKINGS),
-    orderBy("date", "asc"),
-    orderBy("time", "asc"),
+    orderBy('date', 'asc'),
+    orderBy('time', 'asc')
   );
 
   const snapshot = await getDocs(q);
@@ -658,7 +648,7 @@ function deleteLocalBooking(bookingId) {
 
   // Salva direttamente (saveLocalBookings applicherà i suoi filtri)
   localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
-  localStorage.setItem("ml-field-bookings", JSON.stringify(filtered));
+  localStorage.setItem('ml-field-bookings', JSON.stringify(filtered));
 
   // Clear cache to force refresh
 
@@ -681,7 +671,7 @@ function loadLocalBookings() {
 
     return activeBookings;
   } catch (error) {
-    console.error("Error loading bookings from localStorage:", error);
+    console.error('Error loading bookings from localStorage:', error);
     return [];
   }
 }
@@ -692,8 +682,7 @@ async function syncLocalWithCloud() {
   try {
     const cloudBookings = await loadCloudBookings();
     const activeCloudBookings = cloudBookings.filter(
-      (b) =>
-        (b.status || BOOKING_STATUS.CONFIRMED) !== BOOKING_STATUS.CANCELLED,
+      (b) => (b.status || BOOKING_STATUS.CONFIRMED) !== BOOKING_STATUS.CANCELLED
     );
     localStorage.setItem(STORAGE_KEY, JSON.stringify(activeCloudBookings));
   } catch (error) {}
@@ -717,12 +706,12 @@ function saveLocalBookings(bookings) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(activeBookings));
 
     // Also sync with old storage keys for backward compatibility
-    localStorage.setItem("ml-field-bookings", JSON.stringify(activeBookings));
+    localStorage.setItem('ml-field-bookings', JSON.stringify(activeBookings));
 
     // Clear cache to force refresh
     bookingCache.clear();
   } catch (error) {
-    console.error("Error saving bookings to localStorage:", error);
+    console.error('Error saving bookings to localStorage:', error);
   }
 }
 
@@ -742,20 +731,17 @@ export async function migrateOldData() {
 
   // Migrate from old booking service
   try {
-    const oldBookings = localStorage.getItem("ml-field-bookings");
+    const oldBookings = localStorage.getItem('ml-field-bookings');
     if (oldBookings) {
       const parsed = JSON.parse(oldBookings);
-      migrations.push(
-        ...parsed.map((b) => ({ ...b, type: BOOKING_TYPES.COURT })),
-      );
+      migrations.push(...parsed.map((b) => ({ ...b, type: BOOKING_TYPES.COURT })));
     }
   } catch (error) {}
 
   // Migrate lesson bookings
   try {
     const oldLessons =
-      localStorage.getItem("lessonBookings") ||
-      localStorage.getItem("lesson-bookings");
+      localStorage.getItem('lessonBookings') || localStorage.getItem('lesson-bookings');
     if (oldLessons) {
       const parsed = JSON.parse(oldLessons);
       migrations.push(
@@ -763,7 +749,7 @@ export async function migrateOldData() {
           ...l,
           type: BOOKING_TYPES.LESSON,
           isLessonBooking: true,
-        })),
+        }))
       );
     }
   } catch (error) {}
@@ -772,10 +758,7 @@ export async function migrateOldData() {
     // Remove duplicates by ID and filter out cancelled bookings
     const uniqueBookings = migrations.reduce((acc, booking) => {
       const status = booking.status || BOOKING_STATUS.CONFIRMED; // Default a confirmed se status mancante
-      if (
-        !acc.some((b) => b.id === booking.id) &&
-        status !== BOOKING_STATUS.CANCELLED
-      ) {
+      if (!acc.some((b) => b.id === booking.id) && status !== BOOKING_STATUS.CANCELLED) {
         acc.push(booking);
       }
       return acc;
@@ -784,8 +767,8 @@ export async function migrateOldData() {
     saveLocalBookings(uniqueBookings);
 
     // Clear old storage
-    localStorage.removeItem("lessonBookings");
-    localStorage.removeItem("lesson-bookings");
+    localStorage.removeItem('lessonBookings');
+    localStorage.removeItem('lesson-bookings');
   }
 }
 
@@ -794,12 +777,12 @@ export async function migrateOldData() {
  */
 export function clearAllData() {
   localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem("ml-field-bookings");
-  localStorage.removeItem("lessonBookings");
-  localStorage.removeItem("lesson-bookings");
+  localStorage.removeItem('ml-field-bookings');
+  localStorage.removeItem('lessonBookings');
+  localStorage.removeItem('lesson-bookings');
   bookingCache.clear();
 
-  emit("dataCleared");
+  emit('dataCleared');
 }
 
 // =============================================
@@ -832,11 +815,10 @@ export function validateBooking(bookingData, existingBookings = []) {
   const errors = [];
 
   // Basic validation
-  if (!bookingData.courtId) errors.push("Campo richiesto");
-  if (!bookingData.date) errors.push("Data richiesta");
-  if (!bookingData.time) errors.push("Ora richiesta");
-  if (!bookingData.duration || bookingData.duration < 30)
-    errors.push("Durata minima 30 minuti");
+  if (!bookingData.courtId) errors.push('Campo richiesto');
+  if (!bookingData.date) errors.push('Data richiesta');
+  if (!bookingData.time) errors.push('Ora richiesta');
+  if (!bookingData.duration || bookingData.duration < 30) errors.push('Durata minima 30 minuti');
 
   // Validation debug disabled to reduce console spam
   // console.log('🔍 VALIDATION DEBUG - Checking conflicts for:', {
@@ -861,7 +843,7 @@ export function validateBooking(bookingData, existingBookings = []) {
       booking.time,
       booking.duration,
       bookingData.time,
-      bookingData.duration,
+      bookingData.duration
     );
 
     // Individual booking validation debug disabled to reduce console spam
@@ -882,21 +864,15 @@ export function validateBooking(bookingData, existingBookings = []) {
     //   }
     // });
 
-    return (
-      !isSameBooking &&
-      isSameCourt &&
-      isSameDate &&
-      isConfirmed &&
-      hasTimeOverlap
-    );
+    return !isSameBooking && isSameCourt && isSameDate && isConfirmed && hasTimeOverlap;
   });
 
   // ✅ FIX: For both lesson and court bookings, check against ALL types of conflicts
   if (conflicts.length > 0) {
-    if (bookingData.type === "lesson") {
+    if (bookingData.type === 'lesson') {
       errors.push("Orario già occupato da un'altra prenotazione");
     } else {
-      errors.push("Orario già occupato");
+      errors.push('Orario già occupato');
     }
   }
 
@@ -913,7 +889,7 @@ function timeOverlaps(time1, duration1, time2, duration2) {
 }
 
 function timeToMinutes(time) {
-  const [hours, minutes] = time.split(":").map(Number);
+  const [hours, minutes] = time.split(':').map(Number);
   return hours * 60 + minutes;
 }
 
@@ -923,8 +899,8 @@ function normalizeTime(t) {
     .trim()
     .match(/^(\d{1,2}):(\d{2})/);
   if (!match) return t;
-  const hh = String(Math.min(23, parseInt(match[1], 10))).padStart(2, "0");
-  const mm = String(Math.min(59, parseInt(match[2], 10))).padStart(2, "0");
+  const hh = String(Math.min(23, parseInt(match[1], 10))).padStart(2, '0');
+  const mm = String(Math.min(59, parseInt(match[2], 10))).padStart(2, '0');
   return `${hh}:${mm}`;
 }
 
@@ -935,13 +911,7 @@ function normalizeTime(t) {
 /**
  * Check if a time slot would be trapped between bookings (DISABLED)
  */
-export function isTimeSlotTrapped(
-  courtId,
-  date,
-  startTime,
-  duration,
-  existingBookings,
-) {
+export function isTimeSlotTrapped(courtId, date, startTime, duration, existingBookings) {
   // Always return false - trapped slot logic disabled along with hole prevention
   return false;
 }
@@ -950,13 +920,7 @@ export function isTimeSlotTrapped(
  * Check if a booking would create a problematic 30-minute hole
  * WITH EXEMPTION for trapped slots of exactly 120 minutes
  */
-export function wouldCreateHalfHourHole(
-  courtId,
-  date,
-  startTime,
-  duration,
-  existingBookings,
-) {
+export function wouldCreateHalfHourHole(courtId, date, startTime, duration, existingBookings) {
   const bookingStart = timeToMinutes(startTime);
   const bookingEnd = bookingStart + duration;
 
@@ -966,14 +930,12 @@ export function wouldCreateHalfHourHole(
       (b) =>
         b.courtId === courtId &&
         b.date === date &&
-        (b.status || BOOKING_STATUS.CONFIRMED) !== BOOKING_STATUS.CANCELLED,
+        (b.status || BOOKING_STATUS.CONFIRMED) !== BOOKING_STATUS.CANCELLED
     )
     .sort((a, b) => timeToMinutes(a.time) - timeToMinutes(b.time));
 
   // Check for hole after our booking
-  const nextBooking = courtBookings.find(
-    (b) => timeToMinutes(b.time) > bookingEnd,
-  );
+  const nextBooking = courtBookings.find((b) => timeToMinutes(b.time) > bookingEnd);
   if (nextBooking) {
     const nextStart = timeToMinutes(nextBooking.time);
     const holeSize = nextStart - bookingEnd;
@@ -1009,9 +971,7 @@ export function wouldCreateHalfHourHole(
 
     if (holeSize > 0 && holeSize <= 30) {
       // Check EXEMPTION: is this part of a trapped slot of EXACTLY 120 minutes?
-      const nextBooking = courtBookings.find(
-        (b) => timeToMinutes(b.time) >= bookingEnd,
-      );
+      const nextBooking = courtBookings.find((b) => timeToMinutes(b.time) >= bookingEnd);
 
       if (nextBooking) {
         const nextStart = timeToMinutes(nextBooking.time);
@@ -1033,13 +993,7 @@ export function wouldCreateHalfHourHole(
 /**
  * Basic slot availability check (no overlaps)
  */
-export function isSlotAvailable(
-  courtId,
-  date,
-  startTime,
-  duration,
-  existingBookings,
-) {
+export function isSlotAvailable(courtId, date, startTime, duration, existingBookings) {
   const bookingStart = timeToMinutes(startTime);
   const bookingEnd = bookingStart + duration;
 
@@ -1076,16 +1030,10 @@ export function isDurationBookable(
   startTime,
   duration,
   existingBookings,
-  isUserBooking = false,
+  isUserBooking = false
 ) {
   // Basic availability check
-  const basicAvailable = isSlotAvailable(
-    courtId,
-    date,
-    startTime,
-    duration,
-    existingBookings,
-  );
+  const basicAvailable = isSlotAvailable(courtId, date, startTime, duration, existingBookings);
 
   if (!basicAvailable) {
     return false;
@@ -1098,7 +1046,7 @@ export function isDurationBookable(
       date,
       startTime,
       duration,
-      existingBookings,
+      existingBookings
     );
 
     if (wouldCreateHole) {
@@ -1155,8 +1103,7 @@ export async function searchBookingsForPlayer({ userId, email, name }) {
         if (booking.bookedBy === name) return true;
         if (Array.isArray(booking.players)) {
           return booking.players.some(
-            (player) =>
-              (typeof player === "string" ? player : player?.name) === name,
+            (player) => (typeof player === 'string' ? player : player?.name) === name
           );
         }
       }
@@ -1170,43 +1117,25 @@ export async function searchBookingsForPlayer({ userId, email, name }) {
 
     if (userId) {
       queries.push(
-        getDocs(
-          query(
-            collection(db, COLLECTIONS.BOOKINGS),
-            where("createdBy", "==", userId),
-          ),
-        ),
+        getDocs(query(collection(db, COLLECTIONS.BOOKINGS), where('createdBy', '==', userId)))
       );
     }
 
     if (email) {
       queries.push(
-        getDocs(
-          query(
-            collection(db, COLLECTIONS.BOOKINGS),
-            where("userEmail", "==", email),
-          ),
-        ),
+        getDocs(query(collection(db, COLLECTIONS.BOOKINGS), where('userEmail', '==', email)))
       );
     }
 
     if (name) {
       // For name-based searches, we'll need to do client-side filtering since Firestore doesn't support complex queries
       queries.push(
-        getDocs(
-          query(
-            collection(db, COLLECTIONS.BOOKINGS),
-            where("bookedBy", "==", name),
-          ),
-        ),
+        getDocs(query(collection(db, COLLECTIONS.BOOKINGS), where('bookedBy', '==', name)))
       );
       queries.push(
         getDocs(
-          query(
-            collection(db, COLLECTIONS.BOOKINGS),
-            where("players", "array-contains", name),
-          ),
-        ),
+          query(collection(db, COLLECTIONS.BOOKINGS), where('players', 'array-contains', name))
+        )
       );
     }
 
@@ -1214,21 +1143,18 @@ export async function searchBookingsForPlayer({ userId, email, name }) {
     const bookingMap = new Map();
 
     for (const result of results) {
-      if (result.status === "fulfilled") {
+      if (result.status === 'fulfilled') {
         result.value.docs.forEach((doc) => {
           const data = doc.data() || {};
-          const legacyId =
-            data.id && data.id !== doc.id ? data.id : data.legacyId;
+          const legacyId = data.id && data.id !== doc.id ? data.id : data.legacyId;
           const { id, ...bookingData } = data;
 
           bookingMap.set(doc.id, {
             ...bookingData,
             id: doc.id,
             legacyId,
-            createdAt:
-              data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
-            updatedAt:
-              data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
+            createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+            updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
           });
         });
       }
@@ -1238,14 +1164,14 @@ export async function searchBookingsForPlayer({ userId, email, name }) {
 
     // Sort by date and time
     bookings.sort((a, b) => {
-      const dateCompare = (a.date || "").localeCompare(b.date || "");
+      const dateCompare = (a.date || '').localeCompare(b.date || '');
       if (dateCompare !== 0) return dateCompare;
-      return (a.time || "").localeCompare(b.time || "");
+      return (a.time || '').localeCompare(b.time || '');
     });
 
     return bookings;
   } catch (error) {
-    console.warn("Error searching bookings for player:", error);
+    console.warn('Error searching bookings for player:', error);
     return [];
   }
 }
@@ -1255,30 +1181,26 @@ export async function searchBookingsForPlayer({ userId, email, name }) {
  */
 export async function getActiveUserBookings(userId) {
   if (!userId) return [];
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().split('T')[0];
 
   if (!isCloudEnabled) {
     return (
-      await getUserBookings(
-        { uid: userId },
-        { includeHistory: true, includeCancelled: false },
-      )
+      await getUserBookings({ uid: userId }, { includeHistory: true, includeCancelled: false })
     ).filter(
       (booking) =>
         booking.date >= today &&
-        (booking.status || BOOKING_STATUS.CONFIRMED) ===
-          BOOKING_STATUS.CONFIRMED,
+        (booking.status || BOOKING_STATUS.CONFIRMED) === BOOKING_STATUS.CONFIRMED
     );
   }
 
   try {
     const q = query(
       collection(db, COLLECTIONS.BOOKINGS),
-      where("createdBy", "==", userId),
-      where("status", "==", BOOKING_STATUS.CONFIRMED),
-      where("date", ">=", today),
-      orderBy("date", "asc"),
-      orderBy("time", "asc"),
+      where('createdBy', '==', userId),
+      where('status', '==', BOOKING_STATUS.CONFIRMED),
+      where('date', '>=', today),
+      orderBy('date', 'asc'),
+      orderBy('time', 'asc')
     );
 
     const snapshot = await getDocs(q);
@@ -1296,11 +1218,8 @@ export async function getActiveUserBookings(userId) {
       };
     });
   } catch (error) {
-    console.warn("Error getting active user bookings:", error);
-    return getUserBookings(
-      { uid: userId },
-      { includeHistory: true, includeCancelled: false },
-    );
+    console.warn('Error getting active user bookings:', error);
+    return getUserBookings({ uid: userId }, { includeHistory: true, includeCancelled: false });
   }
 }
 
@@ -1309,28 +1228,23 @@ export async function getActiveUserBookings(userId) {
  */
 export async function getUserBookingHistory(userId) {
   if (!userId) return [];
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().split('T')[0];
 
   if (!isCloudEnabled) {
     return (
-      await getUserBookings(
-        { uid: userId },
-        { includeHistory: true, includeCancelled: true },
-      )
+      await getUserBookings({ uid: userId }, { includeHistory: true, includeCancelled: true })
     )
       .filter((booking) => booking.date < today)
-      .sort(
-        (a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time),
-      );
+      .sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time));
   }
 
   try {
     const q = query(
       collection(db, COLLECTIONS.BOOKINGS),
-      where("createdBy", "==", userId),
-      where("date", "<", today),
-      orderBy("date", "desc"),
-      orderBy("time", "desc"),
+      where('createdBy', '==', userId),
+      where('date', '<', today),
+      orderBy('date', 'desc'),
+      orderBy('time', 'desc')
     );
 
     const snapshot = await getDocs(q);
@@ -1348,16 +1262,11 @@ export async function getUserBookingHistory(userId) {
       };
     });
   } catch (error) {
-    console.warn("Error getting user booking history:", error);
+    console.warn('Error getting user booking history:', error);
     return (
-      await getUserBookings(
-        { uid: userId },
-        { includeHistory: true, includeCancelled: true },
-      )
+      await getUserBookings({ uid: userId }, { includeHistory: true, includeCancelled: true })
     )
       .filter((booking) => booking.date < today)
-      .sort(
-        (a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time),
-      );
+      .sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time));
   }
 }

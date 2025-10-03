@@ -1,20 +1,20 @@
 // =============================================
 // FILE: src/layouts/AppLayout.jsx
 // =============================================
-import React from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "@contexts/AuthContext.jsx";
-import { useUI } from "@contexts/UIContext.jsx";
-import { ClubProvider, useClub } from "@contexts/ClubContext.jsx";
-import ClubSwitcher from "@components/ClubSwitcher.jsx";
-import { themeTokens, LOGO_URL } from "@lib/theme.js";
-import { LoadingOverlay } from "@components/LoadingSpinner.jsx";
-import NotificationSystem from "@components/NotificationSystem.jsx";
-import NavTabs from "@ui/NavTabs.jsx";
-import BottomNavigation from "@ui/BottomNavigation.jsx";
-import PWAInstallButton from "@components/PWAInstallButton.jsx";
-import PWAFloatingButton from "@components/PWAFloatingButton.jsx";
-import { logout } from "@services/auth.jsx";
+import React from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@contexts/AuthContext.jsx';
+import { useUI } from '@contexts/UIContext.jsx';
+import { ClubProvider, useClub } from '@contexts/ClubContext.jsx';
+import ClubSwitcher from '@components/ClubSwitcher.jsx';
+import { themeTokens, LOGO_URL } from '@lib/theme.js';
+import { LoadingOverlay } from '@components/LoadingSpinner.jsx';
+import NotificationSystem from '@components/NotificationSystem.jsx';
+import NavTabs from '@ui/NavTabs.jsx';
+import BottomNavigation from '@ui/BottomNavigation.jsx';
+import PWAInstallButton from '@components/PWAInstallButton.jsx';
+import PWAFloatingButton from '@components/PWAFloatingButton.jsx';
+import { logout } from '@services/auth.jsx';
 
 function AppLayoutInner() {
   const { user, userRole, isClubAdmin, currentClub, getFirstAdminClub } = useAuth();
@@ -33,7 +33,7 @@ function AppLayoutInner() {
       clubId,
       hasClub,
       club: club?.name,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
     window.scrollTo(0, 0);
   }, [location.pathname, location.search, clubId, hasClub, club]);
@@ -56,17 +56,21 @@ function AppLayoutInner() {
   // Check if user is admin of current club or any club
   const firstAdminClubId = getFirstAdminClub ? getFirstAdminClub() : null;
   const effectiveClubId = clubId || firstAdminClubId;
-  const isCurrentClubAdmin = effectiveClubId && (userRole === 'super_admin' || isClubAdmin(effectiveClubId));
+  const isCurrentClubAdmin =
+    effectiveClubId && (userRole === 'super_admin' || isClubAdmin(effectiveClubId));
 
   // Navigation configuration - based on club selection and user permissions
   const navigation = React.useMemo(() => {
     const baseNavigation = [
       // Show Dashboard instead of Home for club admins
-      { 
-        id: "dashboard", 
-        label: isCurrentClubAdmin ? "Dashboard Admin" : "Home", 
-        path: isCurrentClubAdmin && effectiveClubId ? `/club/${effectiveClubId}/admin/dashboard` : "/dashboard", 
-        public: true 
+      {
+        id: 'dashboard',
+        label: isCurrentClubAdmin ? 'Dashboard Admin' : 'Home',
+        path:
+          isCurrentClubAdmin && effectiveClubId
+            ? `/club/${effectiveClubId}/admin/dashboard`
+            : '/dashboard',
+        public: true,
       },
     ];
 
@@ -74,27 +78,27 @@ function AppLayoutInner() {
     if (!hasClub && !isCurrentClubAdmin) {
       baseNavigation.push(
         {
-          id: "clubs",
-          label: "Cerca Circoli",
-          path: "/clubs/search",
+          id: 'clubs',
+          label: 'Cerca Circoli',
+          path: '/clubs/search',
           public: true,
         },
         {
-          id: "prenota",
-          label: "Prenota",
-          path: "/prenota",
+          id: 'prenota',
+          label: 'Prenota',
+          path: '/prenota',
           public: true,
         }
       );
     } else {
       // If club is selected OR user is admin, show club-specific tabs
-      const validClubId = (clubId && !['default-club'].includes(clubId)) ? clubId : effectiveClubId;
-      
+      const validClubId = clubId && !['default-club'].includes(clubId) ? clubId : effectiveClubId;
+
       if (validClubId) {
         // Add "Home Circolo" tab for club-specific dashboard
         baseNavigation.push({
-          id: "club-dashboard",
-          label: "Home Circolo",
+          id: 'club-dashboard',
+          label: 'Home Circolo',
           path: `/club/${validClubId}/dashboard`,
           public: true,
         });
@@ -102,28 +106,28 @@ function AppLayoutInner() {
         // Basic tabs for all users
         baseNavigation.push(
           {
-            id: "prenota-campo",
-            label: "Prenota Campo",
+            id: 'prenota-campo',
+            label: 'Prenota Campo',
             path: `/club/${validClubId}/booking`,
             public: true,
           },
           {
-            id: "prenota-lezione", 
-            label: "Prenota Lezione",
+            id: 'prenota-lezione',
+            label: 'Prenota Lezione',
             path: `/club/${validClubId}/lessons`,
             public: true,
           },
           {
-            id: "classifica",
-            label: "Classifica",
+            id: 'classifica',
+            label: 'Classifica',
             path: `/club/${validClubId}/classifica`,
             public: true,
           },
-          { 
-            id: "stats", 
-            label: "Statistiche", 
-            path: `/club/${validClubId}/stats`, 
-            public: true 
+          {
+            id: 'stats',
+            label: 'Statistiche',
+            path: `/club/${validClubId}/stats`,
+            public: true,
           }
         );
 
@@ -131,26 +135,26 @@ function AppLayoutInner() {
         if (isCurrentClubAdmin) {
           baseNavigation.push(
             {
-              id: "players",
-              label: "Giocatori",
+              id: 'players',
+              label: 'Giocatori',
               path: `/club/${validClubId}/players`,
               clubAdmin: true,
             },
             {
-              id: "matches",
-              label: "Partite",
+              id: 'matches',
+              label: 'Partite',
               path: `/club/${validClubId}/matches/create`,
               clubAdmin: true,
             },
             {
-              id: "tournaments",
-              label: "Tornei",
+              id: 'tournaments',
+              label: 'Tornei',
               path: `/club/${validClubId}/tournaments`,
               clubAdmin: true,
             },
             {
-              id: "admin-bookings",
-              label: "Gestione Campi",
+              id: 'admin-bookings',
+              label: 'Gestione Campi',
               path: `/club/${validClubId}/admin/bookings`,
               clubAdmin: true,
             }
@@ -160,15 +164,15 @@ function AppLayoutInner() {
         // Use global routes when no valid club is selected
         baseNavigation.push(
           {
-            id: "prenota-campo",
-            label: "Prenota Campo",
-            path: "/booking",
+            id: 'prenota-campo',
+            label: 'Prenota Campo',
+            path: '/booking',
             public: true,
           },
           {
-            id: "prenota-lezione", 
-            label: "Prenota Lezione",
-            path: "/lessons",
+            id: 'prenota-lezione',
+            label: 'Prenota Lezione',
+            path: '/lessons',
             public: true,
           }
         );
@@ -177,17 +181,17 @@ function AppLayoutInner() {
 
     // ALWAYS include profile/auth tab regardless of club state
     baseNavigation.push({
-      id: user ? "profile" : "auth",
-      label: user ? "Profilo" : "Accedi",
-      path: user ? "/profile" : "/login",
+      id: user ? 'profile' : 'auth',
+      label: user ? 'Profilo' : 'Accedi',
+      path: user ? '/profile' : '/login',
     });
 
     // Add super admin navigation
     if (userRole === 'super_admin') {
       baseNavigation.push({
-        id: "admin",
-        label: "Super Admin",
-        path: "/admin",
+        id: 'admin',
+        label: 'Super Admin',
+        path: '/admin',
         admin: true,
       });
     }
@@ -195,11 +199,19 @@ function AppLayoutInner() {
     // Extra functionality now integrated into Gestione Campi as settings modal
 
     return baseNavigation;
-  }, [user, userRole, hasClub, clubId, isClubAdmin, isCurrentClubAdmin, effectiveClubId, firstAdminClubId]);
+  }, [
+    user,
+    userRole,
+    hasClub,
+    clubId,
+    isClubAdmin,
+    isCurrentClubAdmin,
+    effectiveClubId,
+    firstAdminClubId,
+  ]);
 
   const currentPath = location.pathname;
-  const activeTab =
-    navigation.find((nav) => nav.path === currentPath)?.id || "";
+  const activeTab = navigation.find((nav) => nav.path === currentPath)?.id || '';
 
   const handleTabChange = (tabId) => {
     console.log('🔄 [AppLayout] handleTabChange called:', {
@@ -208,9 +220,9 @@ function AppLayoutInner() {
       currentPath: location.pathname,
       clubId,
       hasClub,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-    
+
     // Prevent navigation if already on the same tab (iOS fix for refresh issue)
     if (activeTab === tabId) {
       console.log('⚠️ [AppLayout] Already on tab, skipping navigation:', tabId);
@@ -218,18 +230,18 @@ function AppLayoutInner() {
     }
 
     const nav = navigation.find((n) => n.id === tabId);
-    
+
     if (nav) {
       console.log('✅ [AppLayout] Navigating to:', {
         tabId,
         path: nav.path,
         label: nav.label,
-        method: 'replace'
+        method: 'replace',
       });
-      
+
       // Scroll to top when changing tabs
       window.scrollTo(0, 0);
-      
+
       // Use replace instead of push to prevent back stack issues on iOS
       navigate(nav.path, { replace: true });
     } else {
@@ -237,15 +249,13 @@ function AppLayoutInner() {
     }
   };
 
-  const isDashboard = currentPath === "/dashboard" || currentPath === "/";
+  const isDashboard = currentPath === '/dashboard' || currentPath === '/';
   return (
     <div
-      className={`min-h-screen safe-area-top safe-area-bottom ${T.text} ${isDashboard ? "bg-gradient-to-b from-neutral-50 via-white to-neutral-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" : T.pageBg}`}
+      className={`min-h-screen safe-area-top safe-area-bottom ${T.text} ${isDashboard ? 'bg-gradient-to-b from-neutral-50 via-white to-neutral-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900' : T.pageBg}`}
     >
       {/* Header */}
-      <header
-        className={`sticky top-0 z-20 ${T.headerBg} safe-area-left safe-area-right`}
-      >
+      <header className={`sticky top-0 z-20 ${T.headerBg} safe-area-left safe-area-right`}>
         <div className="max-w-[1800px] mx-auto px-3 sm:px-4 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div className="h-10 w-auto rounded-md shadow shrink-0 flex items-center">
@@ -270,13 +280,18 @@ function AppLayoutInner() {
                     <span className="text-white text-sm font-bold">🏓</span>
                   </div>
                 )}
-                <div className="text-lg sm:text-2xl font-bold tracking-wide truncate text-neutral-900 dark:text-white" title={club?.name}>
+                <div
+                  className="text-lg sm:text-2xl font-bold tracking-wide truncate text-neutral-900 dark:text-white"
+                  title={club?.name}
+                >
                   {club.name}
                 </div>
                 {/* Nascondi il bottone di uscita per gli admin club */}
                 {!isClubAdmin(clubId) && (
                   <button
-                    onClick={() => { exitClub(); }}
+                    onClick={() => {
+                      exitClub();
+                    }}
                     className="text-sm px-2 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md transition-colors"
                     title="Esci dal circolo"
                   >
@@ -337,7 +352,7 @@ function AppLayoutInner() {
       <main
         className={`max-w-[1800px] mx-auto px-3 sm:px-4 py-5 sm:py-6 safe-area-left safe-area-right ${
           // Add bottom padding on mobile to account for bottom navigation
-          "pb-20 md:pb-5"
+          'pb-20 md:pb-5'
         }`}
       >
         <Outlet />
@@ -359,10 +374,7 @@ function AppLayoutInner() {
 
       {/* Global Components */}
       <NotificationSystem />
-      <LoadingOverlay
-        visible={loading}
-        message={"Caricamento..."}
-      />
+      <LoadingOverlay visible={loading} message={'Caricamento...'} />
     </div>
   );
 }

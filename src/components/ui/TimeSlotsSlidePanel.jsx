@@ -1,37 +1,37 @@
 // Genera array ore e minuti validi
-  const hourOptions = Array.from({length: 18}, (_, i) => (i + 6).toString().padStart(2, '0'));
-  const minuteOptions = ['00', '30'];
+const hourOptions = Array.from({ length: 18 }, (_, i) => (i + 6).toString().padStart(2, '0'));
+const minuteOptions = ['00', '30'];
 
-  // Helpers per gestire il cambio selezione
-  const getHour = (value) => value ? value.split(':')[0] : '';
-  const getMinute = (value) => value ? value.split(':')[1] : '';
-  const setTime = (prev, field, hour, minute) => ({
-    ...prev,
-    [field]: `${hour}:${minute}`
-  });
-  // Arrotonda i minuti a 00 o 30
-  const roundMinutes = (value) => {
-    if (!value) return value;
-    const [h, m] = value.split(':');
-    let minutes = parseInt(m, 10);
-    if (minutes < 15) minutes = 0;
-    else if (minutes < 45) minutes = 30;
-    else minutes = 0;
-    return `${h.padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-  };
+// Helpers per gestire il cambio selezione
+const getHour = (value) => (value ? value.split(':')[0] : '');
+const getMinute = (value) => (value ? value.split(':')[1] : '');
+const setTime = (prev, field, hour, minute) => ({
+  ...prev,
+  [field]: `${hour}:${minute}`,
+});
+// Arrotonda i minuti a 00 o 30
+const roundMinutes = (value) => {
+  if (!value) return value;
+  const [h, m] = value.split(':');
+  let minutes = parseInt(m, 10);
+  if (minutes < 15) minutes = 0;
+  else if (minutes < 45) minutes = 30;
+  else minutes = 0;
+  return `${h.padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+};
 import React, { useState } from 'react';
 import { X, Edit, Copy, Plus, Power, PowerOff, Calendar, Clock, User, MapPin } from 'lucide-react';
 
-function TimeSlotsSlidePanel({ 
-  isOpen, 
-  onClose, 
-  timeSlots = [], 
-  instructors = [], 
+function TimeSlotsSlidePanel({
+  isOpen,
+  onClose,
+  timeSlots = [],
+  instructors = [],
   courts = [],
   onEditTimeSlot,
   onCreateTimeSlot,
   onDuplicateTimeSlot,
-  onToggleTimeSlot
+  onToggleTimeSlot,
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [editingSlotId, setEditingSlotId] = useState(null);
@@ -41,13 +41,15 @@ function TimeSlotsSlidePanel({
   console.log('🔍 TimeSlotsSlidePanel - DATI CORRETTI:', {
     timeSlotsCount: timeSlots?.length || 0,
     instructorsCount: instructors?.length || 0,
-    slotsWithInstructorIds: timeSlots?.filter(slot => slot.instructorIds?.length > 0).length || 0,
-    slotsWithCourtIds: timeSlots?.filter(slot => slot.courtIds?.length > 0).length || 0,
-    sampleSlot: timeSlots?.[0] ? {
-      id: timeSlots[0].id,
-      instructorIds: timeSlots[0].instructorIds,
-      courtIds: timeSlots[0].courtIds
-    } : null
+    slotsWithInstructorIds: timeSlots?.filter((slot) => slot.instructorIds?.length > 0).length || 0,
+    slotsWithCourtIds: timeSlots?.filter((slot) => slot.courtIds?.length > 0).length || 0,
+    sampleSlot: timeSlots?.[0]
+      ? {
+          id: timeSlots[0].id,
+          instructorIds: timeSlots[0].instructorIds,
+          courtIds: timeSlots[0].courtIds,
+        }
+      : null,
   });
 
   // Enhanced instructor information retrieval
@@ -55,42 +57,45 @@ function TimeSlotsSlidePanel({
     if (!slot || !instructors || instructors.length === 0) {
       return null;
     }
-    
+
     let instructorId = null;
-    
+
     if (slot.instructorIds && Array.isArray(slot.instructorIds) && slot.instructorIds.length > 0) {
       instructorId = slot.instructorIds[0];
-    }
-    else if (slot.instructorId) {
+    } else if (slot.instructorId) {
       instructorId = slot.instructorId;
-    }
-    else if (slot.instructor?.id || slot.instructor?.playerId || slot.instructor?.userId) {
+    } else if (slot.instructor?.id || slot.instructor?.playerId || slot.instructor?.userId) {
       instructorId = slot.instructor.id || slot.instructor.playerId || slot.instructor.userId;
     }
-    
+
     if (!instructorId) return null;
-    
-    const foundInstructor = instructors.find(instructor => 
-      instructor.id === instructorId ||
-      instructor.playerId === instructorId ||
-      instructor.userId === instructorId
+
+    const foundInstructor = instructors.find(
+      (instructor) =>
+        instructor.id === instructorId ||
+        instructor.playerId === instructorId ||
+        instructor.userId === instructorId
     );
-    
+
     return foundInstructor || null;
   };
 
   // Get instructor display name with multiple fallbacks
   const getInstructorDisplayName = (instructor) => {
     if (!instructor) return 'Maestro non assegnato';
-    
-    return instructor.displayName || 
-           instructor.name || 
-           (instructor.firstName && instructor.lastName ? `${instructor.firstName} ${instructor.lastName}` : null) ||
-           instructor.firstName || 
-           instructor.lastName || 
-           instructor.username ||
-           instructor.email || 
-           `Maestro ID: ${instructor.id || instructor.playerId || instructor.userId}`;
+
+    return (
+      instructor.displayName ||
+      instructor.name ||
+      (instructor.firstName && instructor.lastName
+        ? `${instructor.firstName} ${instructor.lastName}`
+        : null) ||
+      instructor.firstName ||
+      instructor.lastName ||
+      instructor.username ||
+      instructor.email ||
+      `Maestro ID: ${instructor.id || instructor.playerId || instructor.userId}`
+    );
   };
 
   // Get court names from court IDs (can be multiple courts)
@@ -98,26 +103,24 @@ function TimeSlotsSlidePanel({
     if (!slot || !courts || courts.length === 0) {
       return 'Campi non specificati';
     }
-    
+
     let courtIds = [];
-    
+
     if (slot.courtIds && Array.isArray(slot.courtIds)) {
       courtIds = slot.courtIds;
-    }
-    else if (slot.courtId) {
+    } else if (slot.courtId) {
       courtIds = [slot.courtId];
-    }
-    else if (slot.court?.id) {
+    } else if (slot.court?.id) {
       courtIds = [slot.court.id];
     }
-    
+
     if (courtIds.length === 0) return 'Campi non specificati';
-    
-    const courtNames = courtIds.map(courtId => {
-      const court = courts.find(c => c.id === courtId);
+
+    const courtNames = courtIds.map((courtId) => {
+      const court = courts.find((c) => c.id === courtId);
       return court ? court.name : `Campo ${courtId}`;
     });
-    
+
     return courtNames.length > 1 ? courtNames.join(', ') : courtNames[0];
   };
 
@@ -126,23 +129,21 @@ function TimeSlotsSlidePanel({
     if (!slot || !courts || courts.length === 0) {
       return ['Campi non specificati'];
     }
-    
+
     let courtIds = [];
-    
+
     if (slot.courtIds && Array.isArray(slot.courtIds)) {
       courtIds = slot.courtIds;
-    }
-    else if (slot.courtId) {
+    } else if (slot.courtId) {
       courtIds = [slot.courtId];
-    }
-    else if (slot.court?.id) {
+    } else if (slot.court?.id) {
       courtIds = [slot.court.id];
     }
-    
+
     if (courtIds.length === 0) return ['Campi non specificati'];
-    
-    return courtIds.map(courtId => {
-      const court = courts.find(c => c.id === courtId);
+
+    return courtIds.map((courtId) => {
+      const court = courts.find((c) => c.id === courtId);
       return court ? court.name : `Campo ${courtId}`;
     });
   };
@@ -153,7 +154,7 @@ function TimeSlotsSlidePanel({
     return date.toLocaleDateString('it-IT', {
       weekday: 'short',
       day: '2-digit',
-      month: '2-digit'
+      month: '2-digit',
     });
   };
 
@@ -168,93 +169,106 @@ function TimeSlotsSlidePanel({
   };
 
   // Filter and sort time slots
-  const filteredTimeSlots = timeSlots.filter(slot => {
-    // Filtro 1: Filtra le fasce orarie passate
-    const now = new Date();
-    const today = now.getDay(); // 0 = Domenica, 1 = Lunedì, etc.
-    const currentTime = now.getHours() * 60 + now.getMinutes(); // minuti dall'inizio giornata
-    const currentDateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
-    
-    // Caso 1: Fascia con date specifiche (selectedDates)
-    if (slot.selectedDates && Array.isArray(slot.selectedDates) && slot.selectedDates.length > 0) {
-      // Controlla se almeno una delle date è oggi o nel futuro
-      const hasFutureDate = slot.selectedDates.some(dateStr => {
-        const slotDate = new Date(dateStr);
-        const slotDateStr = slotDate.toISOString().split('T')[0];
-        
-        // Se la data è nel futuro, la fascia è valida
-        if (slotDateStr > currentDateStr) return true;
-        
-        // Se la data è oggi, controlla l'orario di fine
-        if (slotDateStr === currentDateStr && slot.endTime) {
-          const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
-          const slotEndTime = endHours * 60 + endMinutes;
-          return slotEndTime > currentTime;
-        }
-        
-        return false;
-      });
-      
-      if (!hasFutureDate) return false; // Tutte le date sono passate
-    }
-    // Caso 2: Fascia ricorrente (dayOfWeek) - controlla solo se è per oggi
-    else if (slot.dayOfWeek === today && slot.endTime) {
-      const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
-      const slotEndTime = endHours * 60 + endMinutes;
-      
-      // Se la fascia è già terminata oggi, non mostrarla
-      if (slotEndTime <= currentTime) {
-        return false;
+  const filteredTimeSlots = timeSlots
+    .filter((slot) => {
+      // Filtro 1: Filtra le fasce orarie passate
+      const now = new Date();
+      const today = now.getDay(); // 0 = Domenica, 1 = Lunedì, etc.
+      const currentTime = now.getHours() * 60 + now.getMinutes(); // minuti dall'inizio giornata
+      const currentDateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+
+      // Caso 1: Fascia con date specifiche (selectedDates)
+      if (
+        slot.selectedDates &&
+        Array.isArray(slot.selectedDates) &&
+        slot.selectedDates.length > 0
+      ) {
+        // Controlla se almeno una delle date è oggi o nel futuro
+        const hasFutureDate = slot.selectedDates.some((dateStr) => {
+          const slotDate = new Date(dateStr);
+          const slotDateStr = slotDate.toISOString().split('T')[0];
+
+          // Se la data è nel futuro, la fascia è valida
+          if (slotDateStr > currentDateStr) return true;
+
+          // Se la data è oggi, controlla l'orario di fine
+          if (slotDateStr === currentDateStr && slot.endTime) {
+            const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
+            const slotEndTime = endHours * 60 + endMinutes;
+            return slotEndTime > currentTime;
+          }
+
+          return false;
+        });
+
+        if (!hasFutureDate) return false; // Tutte le date sono passate
       }
-    }
-    
-    // Filtro 2: Ricerca testuale
-    if (!searchTerm) return true;
-    
-    const instructor = getInstructorInfo(slot);
-    const instructorName = getInstructorDisplayName(instructor).toLowerCase();
-    const courtNames = getCourtNames(slot).toLowerCase();
-    const dayName = getDayName(slot.dayOfWeek).toLowerCase();
-    const timeRange = `${formatTime(slot.startTime)}-${formatTime(slot.endTime)}`.toLowerCase();
-    
-    const searchLower = searchTerm.toLowerCase();
-    
-    return instructorName.includes(searchLower) ||
-           courtNames.includes(searchLower) ||
-           dayName.includes(searchLower) ||
-           timeRange.includes(searchLower);
-  }).sort((a, b) => {
-    // Sort by selected dates first (if any)
-    if (a.selectedDates && a.selectedDates.length > 0 && b.selectedDates && b.selectedDates.length > 0) {
-      const dateA = new Date(a.selectedDates[0]);
-      const dateB = new Date(b.selectedDates[0]);
-      return dateA - dateB;
-    }
-    
-    // Prioritize slots with selected dates
-    if (a.selectedDates && a.selectedDates.length > 0) return -1;
-    if (b.selectedDates && b.selectedDates.length > 0) return 1;
-    
-    // For recurring slots, sort by day of week proximity to today
-    const today = new Date().getDay();
-    
-    const getDaysFromToday = (dayOfWeek) => {
-      const diff = dayOfWeek - today;
-      return diff >= 0 ? diff : diff + 7;
-    };
-    
-    const daysFromTodayA = getDaysFromToday(a.dayOfWeek);
-    const daysFromTodayB = getDaysFromToday(b.dayOfWeek);
-    
-    if (daysFromTodayA !== daysFromTodayB) {
-      return daysFromTodayA - daysFromTodayB;
-    }
-    
-    // For same day, sort by time
-    const timeA = a.startTime ? a.startTime.replace(':', '') : '0000';
-    const timeB = b.startTime ? b.startTime.replace(':', '') : '0000';
-    return timeA.localeCompare(timeB);
-  });
+      // Caso 2: Fascia ricorrente (dayOfWeek) - controlla solo se è per oggi
+      else if (slot.dayOfWeek === today && slot.endTime) {
+        const [endHours, endMinutes] = slot.endTime.split(':').map(Number);
+        const slotEndTime = endHours * 60 + endMinutes;
+
+        // Se la fascia è già terminata oggi, non mostrarla
+        if (slotEndTime <= currentTime) {
+          return false;
+        }
+      }
+
+      // Filtro 2: Ricerca testuale
+      if (!searchTerm) return true;
+
+      const instructor = getInstructorInfo(slot);
+      const instructorName = getInstructorDisplayName(instructor).toLowerCase();
+      const courtNames = getCourtNames(slot).toLowerCase();
+      const dayName = getDayName(slot.dayOfWeek).toLowerCase();
+      const timeRange = `${formatTime(slot.startTime)}-${formatTime(slot.endTime)}`.toLowerCase();
+
+      const searchLower = searchTerm.toLowerCase();
+
+      return (
+        instructorName.includes(searchLower) ||
+        courtNames.includes(searchLower) ||
+        dayName.includes(searchLower) ||
+        timeRange.includes(searchLower)
+      );
+    })
+    .sort((a, b) => {
+      // Sort by selected dates first (if any)
+      if (
+        a.selectedDates &&
+        a.selectedDates.length > 0 &&
+        b.selectedDates &&
+        b.selectedDates.length > 0
+      ) {
+        const dateA = new Date(a.selectedDates[0]);
+        const dateB = new Date(b.selectedDates[0]);
+        return dateA - dateB;
+      }
+
+      // Prioritize slots with selected dates
+      if (a.selectedDates && a.selectedDates.length > 0) return -1;
+      if (b.selectedDates && b.selectedDates.length > 0) return 1;
+
+      // For recurring slots, sort by day of week proximity to today
+      const today = new Date().getDay();
+
+      const getDaysFromToday = (dayOfWeek) => {
+        const diff = dayOfWeek - today;
+        return diff >= 0 ? diff : diff + 7;
+      };
+
+      const daysFromTodayA = getDaysFromToday(a.dayOfWeek);
+      const daysFromTodayB = getDaysFromToday(b.dayOfWeek);
+
+      if (daysFromTodayA !== daysFromTodayB) {
+        return daysFromTodayA - daysFromTodayB;
+      }
+
+      // For same day, sort by time
+      const timeA = a.startTime ? a.startTime.replace(':', '') : '0000';
+      const timeB = b.startTime ? b.startTime.replace(':', '') : '0000';
+      return timeA.localeCompare(timeB);
+    });
 
   const handleEdit = (slot) => {
     console.log('🔧 Edit time slot:', slot.id);
@@ -265,7 +279,7 @@ function TimeSlotsSlidePanel({
       setEditingData({
         startTime: slot.startTime || '',
         endTime: slot.endTime || '',
-        courtIds: slot.courtIds || []
+        courtIds: slot.courtIds || [],
       });
     }
   };
@@ -277,7 +291,7 @@ function TimeSlotsSlidePanel({
         ...slot,
         startTime: editingData.startTime,
         endTime: editingData.endTime,
-        courtIds: editingData.courtIds
+        courtIds: editingData.courtIds,
       };
       onEditTimeSlot(updatedSlot);
     }
@@ -319,7 +333,7 @@ function TimeSlotsSlidePanel({
     if (!window.confirm('Vuoi eliminare questa fascia oraria?')) return;
     try {
       if (typeof slot.id === 'undefined') return;
-      const updatedSlots = timeSlots.filter(s => s.id !== slot.id);
+      const updatedSlots = timeSlots.filter((s) => s.id !== slot.id);
       if (onEditTimeSlot) {
         // Passa null per segnalare la cancellazione
         onEditTimeSlot({ ...slot, delete: true });
@@ -328,15 +342,15 @@ function TimeSlotsSlidePanel({
         await window.updateLessonConfig({ ...window.lessonConfig, timeSlots: updatedSlots });
       }
     } catch (error) {
-      alert('Errore durante l\'eliminazione della fascia oraria');
+      alert("Errore durante l'eliminazione della fascia oraria");
     }
   };
 
   const toggleCourtSelection = (courtId) => {
-    setEditingData(prev => {
+    setEditingData((prev) => {
       const currentIds = prev.courtIds || [];
       const newIds = currentIds.includes(courtId)
-        ? currentIds.filter(id => id !== courtId)
+        ? currentIds.filter((id) => id !== courtId)
         : [...currentIds, courtId];
       return { ...prev, courtIds: newIds };
     });
@@ -347,11 +361,8 @@ function TimeSlotsSlidePanel({
   return (
     <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
-      <div 
-        className="flex-1 bg-black/20 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      
+      <div className="flex-1 bg-black/20 backdrop-blur-sm" onClick={onClose} />
+
       {/* Panel */}
       <div className="w-[48rem] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl border-l border-white/20 dark:border-gray-700/30 flex flex-col">
         {/* Header */}
@@ -405,9 +416,7 @@ function TimeSlotsSlidePanel({
               <Clock className="h-12 w-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
               <p>Nessuna fascia oraria trovata</p>
               {searchTerm && (
-                <p className="text-sm mt-1">
-                  Prova a modificare i criteri di ricerca
-                </p>
+                <p className="text-sm mt-1">Prova a modificare i criteri di ricerca</p>
               )}
             </div>
           ) : (
@@ -415,13 +424,13 @@ function TimeSlotsSlidePanel({
               {filteredTimeSlots.map((slot) => {
                 const instructor = getInstructorInfo(slot);
                 const instructorName = getInstructorDisplayName(instructor);
-                
+
                 return (
                   <div
                     key={slot.id}
                     className={`w-full p-4 rounded-lg border transition-all duration-200 hover:shadow-lg ${
-                      slot.isActive 
-                        ? 'bg-gradient-to-r from-white/90 to-blue-50/50 dark:from-gray-800/90 dark:to-blue-900/30 border-blue-200/50 dark:border-blue-700/50 hover:border-blue-300/70 dark:hover:border-blue-600/70' 
+                      slot.isActive
+                        ? 'bg-gradient-to-r from-white/90 to-blue-50/50 dark:from-gray-800/90 dark:to-blue-900/30 border-blue-200/50 dark:border-blue-700/50 hover:border-blue-300/70 dark:hover:border-blue-600/70'
                         : 'bg-gradient-to-r from-gray-100/90 to-gray-200/50 dark:from-gray-700/90 dark:to-gray-800/50 border-gray-300/50 dark:border-gray-600/50 hover:border-gray-400/70 dark:hover:border-gray-500/70'
                     }`}
                   >
@@ -432,9 +441,9 @@ function TimeSlotsSlidePanel({
                         <h3 className="font-semibold text-base text-gray-900 dark:text-white">
                           {typeof slot.dayOfWeek !== 'undefined' && slot.dayOfWeek !== null
                             ? getDayName(slot.dayOfWeek)
-                            : (slot.selectedDates && slot.selectedDates[0]
-                                ? getDayName(new Date(slot.selectedDates[0]).getDay())
-                                : 'Giorno sconosciuto')}
+                            : slot.selectedDates && slot.selectedDates[0]
+                              ? getDayName(new Date(slot.selectedDates[0]).getDay())
+                              : 'Giorno sconosciuto'}
                         </h3>
                         {slot.selectedDates && slot.selectedDates.length > 0 && (
                           <span className="text-sm text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
@@ -478,7 +487,7 @@ function TimeSlotsSlidePanel({
                             </>
                           )}
                         </button>
-                        
+
                         {editingSlotId === slot.id && (
                           <button
                             onClick={handleCancelEdit}
@@ -488,7 +497,7 @@ function TimeSlotsSlidePanel({
                             Annulla
                           </button>
                         )}
-                        
+
                         <button
                           onClick={() => handleToggle(slot)}
                           className={`flex items-center justify-center gap-1 px-3 py-1.5 rounded text-xs font-medium transition-colors ${
@@ -527,7 +536,9 @@ function TimeSlotsSlidePanel({
                         <div className="bg-orange-50/70 dark:bg-orange-900/30 rounded-lg p-4 border border-orange-200/50 dark:border-orange-700/50">
                           <div className="flex items-center gap-2 mb-2">
                             <Clock className="h-4 w-4 text-orange-600 dark:text-orange-200" />
-                            <span className="text-xs font-medium text-orange-700 dark:text-orange-300">Orario</span>
+                            <span className="text-xs font-medium text-orange-700 dark:text-orange-300">
+                              Orario
+                            </span>
                           </div>
                           {editingSlotId === slot.id ? (
                             <div className="flex items-center gap-2 flex-wrap">
@@ -535,37 +546,91 @@ function TimeSlotsSlidePanel({
                               <div className="flex items-center gap-1">
                                 <select
                                   value={getHour(editingData.startTime) || '08'}
-                                  onChange={e => setEditingData(prev => setTime(prev, 'startTime', e.target.value, getMinute(editingData.startTime) || '00'))}
+                                  onChange={(e) =>
+                                    setEditingData((prev) =>
+                                      setTime(
+                                        prev,
+                                        'startTime',
+                                        e.target.value,
+                                        getMinute(editingData.startTime) || '00'
+                                      )
+                                    )
+                                  }
                                   className="text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-1 py-1 text-orange-800 dark:text-orange-200 w-14"
                                 >
-                                  {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                                  {hourOptions.map((h) => (
+                                    <option key={h} value={h}>
+                                      {h}
+                                    </option>
+                                  ))}
                                 </select>
                                 :
                                 <select
                                   value={getMinute(editingData.startTime) || '00'}
-                                  onChange={e => setEditingData(prev => setTime(prev, 'startTime', getHour(editingData.startTime) || '08', e.target.value))}
+                                  onChange={(e) =>
+                                    setEditingData((prev) =>
+                                      setTime(
+                                        prev,
+                                        'startTime',
+                                        getHour(editingData.startTime) || '08',
+                                        e.target.value
+                                      )
+                                    )
+                                  }
                                   className="text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-1 py-1 text-orange-800 dark:text-orange-200 w-14"
                                 >
-                                  {minuteOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                                  {minuteOptions.map((m) => (
+                                    <option key={m} value={m}>
+                                      {m}
+                                    </option>
+                                  ))}
                                 </select>
                               </div>
-                              <span className="text-orange-700 dark:text-orange-300 text-base font-bold">-</span>
+                              <span className="text-orange-700 dark:text-orange-300 text-base font-bold">
+                                -
+                              </span>
                               {/* End Time */}
                               <div className="flex items-center gap-1">
                                 <select
                                   value={getHour(editingData.endTime) || '09'}
-                                  onChange={e => setEditingData(prev => setTime(prev, 'endTime', e.target.value, getMinute(editingData.endTime) || '00'))}
+                                  onChange={(e) =>
+                                    setEditingData((prev) =>
+                                      setTime(
+                                        prev,
+                                        'endTime',
+                                        e.target.value,
+                                        getMinute(editingData.endTime) || '00'
+                                      )
+                                    )
+                                  }
                                   className="text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-1 py-1 text-orange-800 dark:text-orange-200 w-14"
                                 >
-                                  {hourOptions.map(h => <option key={h} value={h}>{h}</option>)}
+                                  {hourOptions.map((h) => (
+                                    <option key={h} value={h}>
+                                      {h}
+                                    </option>
+                                  ))}
                                 </select>
                                 :
                                 <select
                                   value={getMinute(editingData.endTime) || '00'}
-                                  onChange={e => setEditingData(prev => setTime(prev, 'endTime', getHour(editingData.endTime) || '09', e.target.value))}
+                                  onChange={(e) =>
+                                    setEditingData((prev) =>
+                                      setTime(
+                                        prev,
+                                        'endTime',
+                                        getHour(editingData.endTime) || '09',
+                                        e.target.value
+                                      )
+                                    )
+                                  }
                                   className="text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-1 py-1 text-orange-800 dark:text-orange-200 w-14"
                                 >
-                                  {minuteOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                                  {minuteOptions.map((m) => (
+                                    <option key={m} value={m}>
+                                      {m}
+                                    </option>
+                                  ))}
                                 </select>
                               </div>
                             </div>
@@ -577,16 +642,26 @@ function TimeSlotsSlidePanel({
                         </div>
 
                         {/* Instructor Box */}
-                        <div className={`rounded-lg p-4 border ${
-                          instructor 
-                            ? 'bg-green-50/70 dark:bg-green-900/30 border-green-200/50 dark:border-green-700/50' 
-                            : 'bg-red-50/70 dark:bg-red-900/30 border-red-200/50 dark:border-red-700/50'
-                        }`}>
+                        <div
+                          className={`rounded-lg p-4 border ${
+                            instructor
+                              ? 'bg-green-50/70 dark:bg-green-900/30 border-green-200/50 dark:border-green-700/50'
+                              : 'bg-red-50/70 dark:bg-red-900/30 border-red-200/50 dark:border-red-700/50'
+                          }`}
+                        >
                           <div className="flex items-center gap-2 mb-2">
-                            <User className={`h-4 w-4 ${instructor ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`} />
-                            <span className={`text-xs font-medium ${instructor ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>Maestro</span>
+                            <User
+                              className={`h-4 w-4 ${instructor ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}
+                            />
+                            <span
+                              className={`text-xs font-medium ${instructor ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}
+                            >
+                              Maestro
+                            </span>
                           </div>
-                          <div className={`font-bold text-sm ${instructor ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
+                          <div
+                            className={`font-bold text-sm ${instructor ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}
+                          >
                             {instructorName}
                           </div>
                         </div>
@@ -596,7 +671,9 @@ function TimeSlotsSlidePanel({
                       <div className="bg-purple-50/70 dark:bg-purple-900/30 rounded-lg p-4 border border-purple-200/50 dark:border-purple-700/50">
                         <div className="flex items-center gap-2 mb-2">
                           <MapPin className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                          <span className="text-xs font-medium text-purple-700 dark:text-purple-300">Campi</span>
+                          <span className="text-xs font-medium text-purple-700 dark:text-purple-300">
+                            Campi
+                          </span>
                         </div>
                         {editingSlotId === slot.id ? (
                           <div className="space-y-2">
@@ -620,8 +697,8 @@ function TimeSlotsSlidePanel({
                         ) : (
                           <div className="space-y-1">
                             {getCourtNamesArray(slot).map((courtName, index) => (
-                              <div 
-                                key={index} 
+                              <div
+                                key={index}
                                 className="flex items-center gap-2 py-1 px-2 bg-purple-100/50 dark:bg-purple-800/30 rounded text-sm font-medium text-purple-800 dark:text-purple-200"
                               >
                                 <span className="text-purple-500 dark:text-purple-400">🎾</span>

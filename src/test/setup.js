@@ -14,7 +14,7 @@ beforeAll(() => {
   vi.stubEnv('VITE_FIREBASE_AUTH_DOMAIN', 'test-project.firebaseapp.com');
   vi.stubEnv('VITE_FIREBASE_PROJECT_ID', 'test-project');
   vi.stubEnv('VITE_FIREBASE_APP_ID', 'test-app-id');
-  vi.stubEnv('VITE_SENTRY_DSN', 'https://test@sentry.io/test');
+  // vi.stubEnv('VITE_SENTRY_DSN', 'https://test@sentry.io/test');
   vi.stubEnv('VITE_GOOGLE_ANALYTICS_ID', 'GA-TEST-123');
 
   // Mock Firebase
@@ -67,32 +67,6 @@ beforeAll(() => {
     disableNetwork: vi.fn(),
   }));
 
-  // Mock Sentry
-  vi.mock('@sentry/react', () => ({
-    init: vi.fn(),
-    captureException: vi.fn(),
-    captureMessage: vi.fn(),
-    addBreadcrumb: vi.fn(),
-    setUser: vi.fn(),
-    setContext: vi.fn(),
-    setTag: vi.fn(),
-    configureScope: vi.fn(),
-    withScope: vi.fn((cb) => cb({ setTag: vi.fn(), setContext: vi.fn() })),
-    getCurrentScope: vi.fn(() => ({
-      setTag: vi.fn(),
-      setContext: vi.fn(),
-      setUser: vi.fn(),
-    })),
-    ErrorBoundary: ({ children, fallback }) => {
-      // Simple mock that just renders children or fallback
-      try {
-        return children;
-      } catch (error) {
-        return fallback ? fallback({ error }) : null;
-      }
-    },
-  }));
-
   // Mock Google Analytics
   vi.mock('../lib/analytics.js', () => ({
     initAnalytics: vi.fn(),
@@ -112,7 +86,7 @@ beforeAll(() => {
   // Mock Web APIs
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: vi.fn().mockImplementation(query => ({
+    value: vi.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -143,14 +117,14 @@ beforeAll(() => {
   });
 
   // Mock IntersectionObserver
-  global.IntersectionObserver = vi.fn().mockImplementation(() => ({
+  globalThis.IntersectionObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
     unobserve: vi.fn(),
     disconnect: vi.fn(),
   }));
 
   // Mock ResizeObserver
-  global.ResizeObserver = vi.fn().mockImplementation(() => ({
+  globalThis.ResizeObserver = vi.fn().mockImplementation(() => ({
     observe: vi.fn(),
     unobserve: vi.fn(),
     disconnect: vi.fn(),
@@ -160,10 +134,10 @@ beforeAll(() => {
   Element.prototype.scrollIntoView = vi.fn();
 
   // Mock fetch for API calls
-  global.fetch = vi.fn();
+  globalThis.fetch = vi.fn();
 
   // Mock console methods in tests
-  global.console = {
+  globalThis.console = {
     ...console,
     log: vi.fn(),
     error: vi.fn(),

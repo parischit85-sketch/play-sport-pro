@@ -1,7 +1,7 @@
 // =============================================
 // FILE: src/components/ui/charts/ModernLineChart.jsx
 // =============================================
-import React, { useMemo } from "react";
+import React, { useMemo } from 'react';
 import {
   LineChart,
   Line,
@@ -10,22 +10,22 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
-} from "recharts";
+} from 'recharts';
 
 const MODERN_COLORS = {
-  primary: "#3b82f6",
-  success: "#10b981",
-  warning: "#f59e0b",
-  danger: "#ef4444",
-  purple: "#8b5cf6",
-  indigo: "#6366f1",
+  primary: '#3b82f6',
+  success: '#10b981',
+  warning: '#f59e0b',
+  danger: '#ef4444',
+  purple: '#8b5cf6',
+  indigo: '#6366f1',
 };
 
 export default function ModernLineChart({
   data,
-  dataKey = "rating",
-  chartId = "modern",
-  color = "primary",
+  dataKey = 'rating',
+  chartId = 'modern',
+  color = 'primary',
   showGrid = true,
 }) {
   const lineColor = MODERN_COLORS[color] || MODERN_COLORS.primary;
@@ -35,38 +35,33 @@ export default function ModernLineChart({
 
   // Calcola il range dell'asse Y basato sui dati visibili
   const yAxisDomain = useMemo(() => {
-    if (last10Data.length === 0) return ["auto", "auto"];
+    if (last10Data.length === 0) return ['auto', 'auto'];
 
     let minValue = Infinity;
     let maxValue = -Infinity;
 
     last10Data.forEach((point) => {
       const value = point[dataKey];
-      if (typeof value === "number") {
+      if (typeof value === 'number') {
         minValue = Math.min(minValue, value);
         maxValue = Math.max(maxValue, value);
       }
     });
 
-    if (minValue === Infinity) return ["auto", "auto"];
+    if (minValue === Infinity) return ['auto', 'auto'];
 
     // Aggiungi un buffer del 8% sopra e sotto
     const range = maxValue - minValue;
     const buffer = range * 0.08;
 
-    return [
-      Math.max(0, Math.floor(minValue - buffer)),
-      Math.ceil(maxValue + buffer),
-    ];
+    return [Math.max(0, Math.floor(minValue - buffer)), Math.ceil(maxValue + buffer)];
   }, [last10Data, dataKey]);
 
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
-          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {label}
-          </p>
+          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{label}</p>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             <span className="font-semibold" style={{ color: lineColor }}>
               {dataKey}: {payload[0].value}
@@ -99,18 +94,9 @@ export default function ModernLineChart({
   return (
     <div className="h-64 sm:h-80">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={last10Data}
-          margin={{ left: 10, right: 10, top: 20, bottom: 20 }}
-        >
+        <LineChart data={last10Data} margin={{ left: 10, right: 10, top: 20, bottom: 20 }}>
           <defs>
-            <linearGradient
-              id={`gradient-${chartId}`}
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
+            <linearGradient id={`gradient-${chartId}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={lineColor} stopOpacity={0.1} />
               <stop offset="100%" stopColor={lineColor} stopOpacity={0} />
             </linearGradient>
@@ -127,14 +113,14 @@ export default function ModernLineChart({
 
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 11, fill: "#6b7280" }}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
             axisLine={false}
             tickLine={false}
             interval="preserveStartEnd"
           />
 
           <YAxis
-            tick={{ fontSize: 11, fill: "#6b7280" }}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
             axisLine={false}
             tickLine={false}
             width={50}
@@ -153,9 +139,9 @@ export default function ModernLineChart({
             activeDot={{
               r: 6,
               fill: lineColor,
-              stroke: "white",
+              stroke: 'white',
               strokeWidth: 2,
-              className: "drop-shadow-lg",
+              className: 'drop-shadow-lg',
             }}
             className="drop-shadow-sm"
           />

@@ -1,10 +1,10 @@
 // =============================================
 // FILE: src/hooks/usePushNotifications.js
 // =============================================
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 export function usePushNotifications() {
-  const [permission, setPermission] = useState("default");
+  const [permission, setPermission] = useState('default');
   const [subscription, setSubscription] = useState(null);
   const [isSupported, setIsSupported] = useState(false);
 
@@ -12,9 +12,7 @@ export function usePushNotifications() {
     // Verifica supporto notifiche
     const checkSupport = () => {
       const supported =
-        "Notification" in window &&
-        "serviceWorker" in navigator &&
-        "PushManager" in window;
+        'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
       setIsSupported(supported);
 
       if (supported) {
@@ -28,7 +26,7 @@ export function usePushNotifications() {
   // Richiedi permesso per le notifiche
   const requestPermission = async () => {
     if (!isSupported) {
-      console.warn("Push notifications not supported");
+      console.warn('Push notifications not supported');
       return false;
     }
 
@@ -36,23 +34,23 @@ export function usePushNotifications() {
       const permission = await Notification.requestPermission();
       setPermission(permission);
 
-      if (permission === "granted") {
-        console.log("✅ Push notification permission granted");
+      if (permission === 'granted') {
+        console.log('✅ Push notification permission granted');
         await subscribeToPush();
         return true;
       } else {
-        console.log("❌ Push notification permission denied");
+        console.log('❌ Push notification permission denied');
         return false;
       }
     } catch (error) {
-      console.error("Push notification permission request failed:", error);
+      console.error('Push notification permission request failed:', error);
       return false;
     }
   };
 
   // Sottoscrivi alle push notifications
   const subscribeToPush = async () => {
-    if (!isSupported || permission !== "granted") {
+    if (!isSupported || permission !== 'granted') {
       return null;
     }
 
@@ -71,7 +69,7 @@ export function usePushNotifications() {
           applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
         });
 
-        console.log("✅ Push subscription created");
+        console.log('✅ Push subscription created');
       }
 
       setSubscription(sub);
@@ -81,7 +79,7 @@ export function usePushNotifications() {
 
       return sub;
     } catch (error) {
-      console.error("Push subscription failed:", error);
+      console.error('Push subscription failed:', error);
       return null;
     }
   };
@@ -94,39 +92,39 @@ export function usePushNotifications() {
       const success = await subscription.unsubscribe();
       if (success) {
         setSubscription(null);
-        console.log("✅ Push subscription cancelled");
+        console.log('✅ Push subscription cancelled');
 
         // Rimuovi subscription dal server
         await removeSubscriptionFromServer(subscription);
       }
       return success;
     } catch (error) {
-      console.error("Push unsubscribe failed:", error);
+      console.error('Push unsubscribe failed:', error);
       return false;
     }
   };
 
   // Invia notifica di test locale
   const sendTestNotification = async () => {
-    if (permission !== "granted") {
+    if (permission !== 'granted') {
       await requestPermission();
     }
 
-    if (permission === "granted") {
+    if (permission === 'granted') {
       try {
-        new Notification("🎾 Paris League Test", {
-          body: "Le notifiche funzionano perfettamente!",
-          icon: "/icons/icon.svg",
-          badge: "/icons/icon.svg",
-          tag: "test-notification",
+        new Notification('🎾 Paris League Test', {
+          body: 'Le notifiche funzionano perfettamente!',
+          icon: '/icons/icon.svg',
+          badge: '/icons/icon.svg',
+          tag: 'test-notification',
           vibrate: [200, 100, 200],
-          data: { url: "/dashboard", timestamp: Date.now() },
+          data: { url: '/dashboard', timestamp: Date.now() },
         });
 
-        console.log("✅ Test notification sent");
+        console.log('✅ Test notification sent');
         return true;
       } catch (error) {
-        console.error("Test notification failed:", error);
+        console.error('Test notification failed:', error);
         return false;
       }
     }
@@ -140,9 +138,9 @@ export function usePushNotifications() {
     requestPermission,
     unsubscribe,
     sendTestNotification,
-    isGranted: permission === "granted",
-    isDenied: permission === "denied",
-    isPending: permission === "default",
+    isGranted: permission === 'granted',
+    isDenied: permission === 'denied',
+    isPending: permission === 'default',
   };
 }
 
@@ -153,13 +151,13 @@ export function usePushNotifications() {
 // VAPID Public Key (sostituire con la propria)
 function getVapidPublicKey() {
   // Questo è un esempio - in produzione usare la propria chiave VAPID
-  return "BJKFJTNIbRK6ZOCmNsIGQVVx3fOSw5y8PnPH2yPn4eXe8a4E1YPJ5nBKJFJTNIbRK6ZOCmNsIGQVVx3fOSw5y8PnPH2yPn4eXe8a4E1YPJ5nBK";
+  return 'BJKFJTNIbRK6ZOCmNsIGQVVx3fOSw5y8PnPH2yPn4eXe8a4E1YPJ5nBKJFJTNIbRK6ZOCmNsIGQVVx3fOSw5y8PnPH2yPn4eXe8a4E1YPJ5nBK';
 }
 
 // Converti VAPID key in Uint8Array
 function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
@@ -174,22 +172,14 @@ function urlBase64ToUint8Array(base64String) {
 async function sendSubscriptionToServer(subscription) {
   try {
     // TODO: Implementare API call al backend
-    console.log("📤 Sending subscription to server:", {
+    console.log('📤 Sending subscription to server:', {
       endpoint: subscription.endpoint,
       keys: {
         auth: subscription.getKey
-          ? btoa(
-              String.fromCharCode(
-                ...new Uint8Array(subscription.getKey("auth")),
-              ),
-            )
+          ? btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('auth'))))
           : null,
         p256dh: subscription.getKey
-          ? btoa(
-              String.fromCharCode(
-                ...new Uint8Array(subscription.getKey("p256dh")),
-              ),
-            )
+          ? btoa(String.fromCharCode(...new Uint8Array(subscription.getKey('p256dh'))))
           : null,
       },
     });
@@ -209,7 +199,7 @@ async function sendSubscriptionToServer(subscription) {
 
     return true;
   } catch (error) {
-    console.error("Failed to send subscription to server:", error);
+    console.error('Failed to send subscription to server:', error);
     return false;
   }
 }
@@ -218,7 +208,7 @@ async function sendSubscriptionToServer(subscription) {
 async function removeSubscriptionFromServer(subscription) {
   try {
     // TODO: Implementare API call per rimozione
-    console.log("🗑️ Removing subscription from server");
+    console.log('🗑️ Removing subscription from server');
 
     // Esempio API call:
     // await fetch('/api/push/unsubscribe', {
@@ -229,7 +219,7 @@ async function removeSubscriptionFromServer(subscription) {
 
     return true;
   } catch (error) {
-    console.error("Failed to remove subscription from server:", error);
+    console.error('Failed to remove subscription from server:', error);
     return false;
   }
 }
@@ -240,33 +230,33 @@ async function removeSubscriptionFromServer(subscription) {
 
 export const NotificationTemplates = {
   booking: {
-    title: "🎾 Prenotazione Confermata",
-    body: "Il tuo campo è prenotato! Controlla i dettagli.",
-    tag: "booking-confirmed",
+    title: '🎾 Prenotazione Confermata',
+    body: 'Il tuo campo è prenotato! Controlla i dettagli.',
+    tag: 'booking-confirmed',
     requireInteraction: true,
-    data: { url: "/booking" },
+    data: { url: '/booking' },
   },
 
   reminder: {
-    title: "⏰ Promemoria Partita",
-    body: "La tua partita inizia tra 30 minuti!",
-    tag: "match-reminder",
+    title: '⏰ Promemoria Partita',
+    body: 'La tua partita inizia tra 30 minuti!',
+    tag: 'match-reminder',
     requireInteraction: true,
     vibrate: [300, 200, 300],
-    data: { url: "/matches" },
+    data: { url: '/matches' },
   },
 
   tournament: {
-    title: "🏆 Torneo Aggiornato",
-    body: "Nuovi risultati disponibili nel torneo.",
-    tag: "tournament-update",
-    data: { url: "/tournaments" },
+    title: '🏆 Torneo Aggiornato',
+    body: 'Nuovi risultati disponibili nel torneo.',
+    tag: 'tournament-update',
+    data: { url: '/tournaments' },
   },
 
   ranking: {
-    title: "📈 Classifica Aggiornata",
-    body: "La classifica è stata aggiornata!",
-    tag: "ranking-update",
-    data: { url: "/classifica" },
+    title: '📈 Classifica Aggiornata',
+    body: 'La classifica è stata aggiornata!',
+    tag: 'ranking-update',
+    data: { url: '/classifica' },
   },
 };

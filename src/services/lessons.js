@@ -12,7 +12,7 @@ export async function getLessons(clubId) {
   try {
     // Mock data - sostituire con chiamata API reale
     const today = new Date().toISOString().split('T')[0];
-    
+
     const mockLessons = [
       {
         id: '1',
@@ -25,7 +25,7 @@ export async function getLessons(clubId) {
         price: 45,
         status: 'confirmed',
         courtId: 'court-1',
-        duration: 60
+        duration: 60,
       },
       {
         id: '2',
@@ -38,13 +38,13 @@ export async function getLessons(clubId) {
         price: 25,
         status: 'confirmed',
         courtId: 'court-2',
-        duration: 90
-      }
+        duration: 90,
+      },
     ];
 
     // Simula una chiamata async
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     return mockLessons;
   } catch (error) {
     console.error('Error loading lessons:', error);
@@ -66,7 +66,7 @@ export async function createLesson(clubId, lessonData) {
       clubId,
       ...lessonData,
       createdAt: new Date().toISOString(),
-      status: 'confirmed'
+      status: 'confirmed',
     };
 
     console.log('Mock: Creating lesson', newLesson);
@@ -91,7 +91,7 @@ export async function updateLesson(clubId, lessonId, updates) {
       id: lessonId,
       clubId,
       ...updates,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
 
     console.log('Mock: Updating lesson', updatedLesson);

@@ -3,12 +3,12 @@
 // Storico prenotazioni del giocatore
 // =============================================
 
-import React, { useEffect, useMemo, useState } from "react";
-import { searchBookingsForPlayer } from "@services/unified-booking-service.js";
+import React, { useEffect, useMemo, useState } from 'react';
+import { searchBookingsForPlayer } from '@services/unified-booking-service.js';
 
 export default function PlayerBookingHistory({ player, T }) {
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [dateFilter, setDateFilter] = useState("all");
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [allBookings, setAllBookings] = useState([]);
@@ -22,9 +22,7 @@ export default function PlayerBookingHistory({ player, T }) {
       try {
         const userId = player?.linkedAccountId || null;
         const email = player?.linkedAccountEmail || player?.email || null;
-        const name =
-          player?.name ||
-          `${player?.firstName || ""} ${player?.lastName || ""}`.trim();
+        const name = player?.name || `${player?.firstName || ''} ${player?.lastName || ''}`.trim();
         const bookings = await searchBookingsForPlayer({ userId, email, name });
         if (ignore) return;
         setAllBookings(bookings || []);
@@ -52,18 +50,17 @@ export default function PlayerBookingHistory({ player, T }) {
   const normalized = useMemo(() => {
     return (allBookings || []).map((b) => {
       const date = b.date; // atteso 'YYYY-MM-DD'
-      const rawTime = b.time || "";
-      const time = rawTime.includes("-") ? rawTime : `${rawTime}`;
-      const court = b.courtName || b.court || "Campo";
-      const sport = b.sport || "Padel";
-      const status = b.status || "confirmed";
+      const rawTime = b.time || '';
+      const time = rawTime.includes('-') ? rawTime : `${rawTime}`;
+      const court = b.courtName || b.court || 'Campo';
+      const sport = b.sport || 'Padel';
+      const status = b.status || 'confirmed';
       const players =
         Array.isArray(b.players) && b.players.length > 0
           ? b.players
-          : [b.bookedBy || b.userEmail || ""];
-      const price =
-        typeof b.price === "number" ? b.price : Number(b.price || 0) || 0;
-      const paid = Boolean(b.paid) || b.paymentStatus === "paid";
+          : [b.bookedBy || b.userEmail || ''];
+      const price = typeof b.price === 'number' ? b.price : Number(b.price || 0) || 0;
+      const paid = Boolean(b.paid) || b.paymentStatus === 'paid';
       const paymentMethod = b.paymentMethod || null;
       return {
         id: b.id,
@@ -81,7 +78,7 @@ export default function PlayerBookingHistory({ player, T }) {
   }, [allBookings]);
 
   const getStartDateTime = (booking) => {
-    const t = (booking.time || "").split("-")[0].trim();
+    const t = (booking.time || '').split('-')[0].trim();
     const iso = t ? `${booking.date}T${t}:00` : `${booking.date}T00:00:00`;
     const d = new Date(iso);
     return isNaN(d.getTime()) ? new Date(booking.date) : d;
@@ -89,31 +86,31 @@ export default function PlayerBookingHistory({ player, T }) {
 
   const getStatusLabel = (status) => {
     switch (status) {
-      case "confirmed":
-        return "✅ Confermata";
-      case "completed":
-        return "🏁 Completata";
-      case "cancelled":
-        return "❌ Cancellata";
-      case "no_show":
-        return "👻 Assenza";
+      case 'confirmed':
+        return '✅ Confermata';
+      case 'completed':
+        return '🏁 Completata';
+      case 'cancelled':
+        return '❌ Cancellata';
+      case 'no_show':
+        return '👻 Assenza';
       default:
-        return "❓ Sconosciuto";
+        return '❓ Sconosciuto';
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "confirmed":
-        return "bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400";
-      case "completed":
-        return "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400";
-      case "cancelled":
-        return "bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400";
-      case "no_show":
-        return "bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400";
+      case 'confirmed':
+        return 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400';
+      case 'completed':
+        return 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400';
+      case 'cancelled':
+        return 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400';
+      case 'no_show':
+        return 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400';
       default:
-        return "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400";
+        return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400';
     }
   };
 
@@ -121,33 +118,33 @@ export default function PlayerBookingHistory({ player, T }) {
     const now = new Date();
     const start = getStartDateTime(booking);
 
-    if (filterStatus !== "all") {
-      if (filterStatus === "completed") {
-        if (!(start < now && booking.status !== "cancelled")) return false;
-      } else if (filterStatus === "confirmed") {
-        if (!(booking.status === "confirmed")) return false;
-      } else if (filterStatus === "cancelled") {
-        if (booking.status !== "cancelled") return false;
-      } else if (filterStatus === "no_show") {
-        if (booking.status !== "no_show") return false;
+    if (filterStatus !== 'all') {
+      if (filterStatus === 'completed') {
+        if (!(start < now && booking.status !== 'cancelled')) return false;
+      } else if (filterStatus === 'confirmed') {
+        if (!(booking.status === 'confirmed')) return false;
+      } else if (filterStatus === 'cancelled') {
+        if (booking.status !== 'cancelled') return false;
+      } else if (filterStatus === 'no_show') {
+        if (booking.status !== 'no_show') return false;
       } else {
         if (booking.status !== filterStatus) return false;
       }
     }
 
-    if (dateFilter !== "all") {
+    if (dateFilter !== 'all') {
       const bookingDate = new Date(booking.date);
 
       switch (dateFilter) {
-        case "week": {
+        case 'week': {
           const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
           return bookingDate >= weekAgo;
         }
-        case "month": {
+        case 'month': {
           const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
           return bookingDate >= monthAgo;
         }
-        case "year": {
+        case 'year': {
           const yearAgo = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
           return bookingDate >= yearAgo;
         }
@@ -162,15 +159,13 @@ export default function PlayerBookingHistory({ player, T }) {
   const stats = {
     total: normalized.length,
     completed: normalized.filter(
-      (b) => getStartDateTime(b) < new Date() && b.status !== "cancelled",
+      (b) => getStartDateTime(b) < new Date() && b.status !== 'cancelled'
     ).length,
     upcoming: normalized.filter(
-      (b) => getStartDateTime(b) >= new Date() && b.status !== "cancelled",
+      (b) => getStartDateTime(b) >= new Date() && b.status !== 'cancelled'
     ).length,
-    cancelled: normalized.filter((b) => b.status === "cancelled").length,
-    totalSpent: normalized
-      .filter((b) => b.paid)
-      .reduce((sum, b) => sum + b.price, 0),
+    cancelled: normalized.filter((b) => b.status === 'cancelled').length,
+    totalSpent: normalized.filter((b) => b.paid).reduce((sum, b) => sum + b.price, 0),
   };
 
   return (
@@ -178,9 +173,7 @@ export default function PlayerBookingHistory({ player, T }) {
       {/* Statistiche */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-            {stats.total}
-          </div>
+          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.total}</div>
           <div className={`text-xs ${T.subtext}`}>Totale</div>
         </div>
 
@@ -199,9 +192,7 @@ export default function PlayerBookingHistory({ player, T }) {
         </div>
 
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-            {stats.cancelled}
-          </div>
+          <div className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.cancelled}</div>
           <div className={`text-xs ${T.subtext}`}>Cancellate</div>
         </div>
 
@@ -216,9 +207,7 @@ export default function PlayerBookingHistory({ player, T }) {
       {/* Filtri */}
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="flex-1">
-          <label className={`block text-sm font-medium ${T.text} mb-2`}>
-            Filtra per stato
-          </label>
+          <label className={`block text-sm font-medium ${T.text} mb-2`}>Filtra per stato</label>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -233,9 +222,7 @@ export default function PlayerBookingHistory({ player, T }) {
         </div>
 
         <div className="flex-1">
-          <label className={`block text-sm font-medium ${T.text} mb-2`}>
-            Filtra per periodo
-          </label>
+          <label className={`block text-sm font-medium ${T.text} mb-2`}>Filtra per periodo</label>
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
@@ -256,36 +243,28 @@ export default function PlayerBookingHistory({ player, T }) {
         </h4>
 
         {loading ? (
-          <div
-            className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}
-          >
+          <div className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}>
             <div className="text-4xl mb-2">⏳</div>
             <div className={`${T.subtext}`}>Caricamento prenotazioni…</div>
           </div>
         ) : error ? (
-          <div
-            className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}
-          >
+          <div className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}>
             <div className="text-4xl mb-2">⚠️</div>
-            <div className={`${T.subtext}`}>
-              Errore nel caricamento delle prenotazioni
-            </div>
+            <div className={`${T.subtext}`}>Errore nel caricamento delle prenotazioni</div>
           </div>
         ) : filteredBookings.length === 0 ? (
-          <div
-            className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}
-          >
+          <div className={`text-center py-8 ${T.cardBg} ${T.border} rounded-xl`}>
             <div className="text-4xl mb-2">📅</div>
             <div className={`${T.subtext} mb-4`}>
-              {filterStatus !== "all" || dateFilter !== "all"
-                ? "Nessuna prenotazione corrispondente ai filtri"
-                : "Nessuna prenotazione presente"}
+              {filterStatus !== 'all' || dateFilter !== 'all'
+                ? 'Nessuna prenotazione corrispondente ai filtri'
+                : 'Nessuna prenotazione presente'}
             </div>
-            {filterStatus !== "all" || dateFilter !== "all" ? (
+            {filterStatus !== 'all' || dateFilter !== 'all' ? (
               <button
                 onClick={() => {
-                  setFilterStatus("all");
-                  setDateFilter("all");
+                  setFilterStatus('all');
+                  setDateFilter('all');
                 }}
                 className={`${T.btnSecondary} px-6 py-3`}
               >
@@ -298,10 +277,7 @@ export default function PlayerBookingHistory({ player, T }) {
             {filteredBookings
               .sort((a, b) => getStartDateTime(b) - getStartDateTime(a))
               .map((booking) => (
-                <div
-                  key={booking.id}
-                  className={`${T.cardBg} ${T.border} rounded-xl p-4`}
-                >
+                <div key={booking.id} className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
                   {/* Desktop layout */}
                   <div className="hidden lg:flex items-center gap-4">
                     <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
@@ -326,12 +302,9 @@ export default function PlayerBookingHistory({ player, T }) {
                       </div>
 
                       <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                        <span>
-                          📅{" "}
-                          {new Date(booking.date).toLocaleDateString("it-IT")}
-                        </span>
+                        <span>📅 {new Date(booking.date).toLocaleDateString('it-IT')}</span>
                         <span>⏰ {booking.time}</span>
-                        <span>👥 {booking.players.join(", ")}</span>
+                        <span>👥 {booking.players.join(', ')}</span>
                       </div>
                     </div>
 
@@ -340,9 +313,7 @@ export default function PlayerBookingHistory({ player, T }) {
                         €{booking.price.toFixed(2)}
                       </div>
                       <div className={`text-xs ${T.subtext}`}>
-                        {booking.paymentMethod
-                          ? booking.paymentMethod
-                          : "Non pagato"}
+                        {booking.paymentMethod ? booking.paymentMethod : 'Non pagato'}
                       </div>
                     </div>
                   </div>
@@ -355,9 +326,7 @@ export default function PlayerBookingHistory({ player, T }) {
                           {booking.court} - {booking.sport}
                         </div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
-                          📅{" "}
-                          {new Date(booking.date).toLocaleDateString("it-IT")}{" "}
-                          ⏰ {booking.time}
+                          📅 {new Date(booking.date).toLocaleDateString('it-IT')} ⏰ {booking.time}
                         </div>
                       </div>
                       <div className="text-right">
@@ -381,7 +350,7 @@ export default function PlayerBookingHistory({ player, T }) {
                     </div>
 
                     <div className="text-sm text-gray-500 dark:text-gray-400">
-                      👥 {booking.players.join(", ")}
+                      👥 {booking.players.join(', ')}
                     </div>
                   </div>
                 </div>

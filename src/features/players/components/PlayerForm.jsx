@@ -3,19 +3,19 @@
 // Form per creare/modificare giocatori nel CRM
 // =============================================
 
-import React, { useState, useEffect } from "react";
-import { createPlayerSchema, PLAYER_CATEGORIES } from "../types/playerTypes.js";
-import { DEFAULT_RATING } from "@lib/ids.js";
+import React, { useState, useEffect } from 'react';
+import { createPlayerSchema, PLAYER_CATEGORIES } from '../types/playerTypes.js';
+import { DEFAULT_RATING } from '@lib/ids.js';
 
 export default function PlayerForm({ player, onSave, onCancel, T }) {
   const [formData, setFormData] = useState(createPlayerSchema());
   const [errors, setErrors] = useState({});
-  const [activeTab, setActiveTab] = useState("basic");
+  const [activeTab, setActiveTab] = useState('basic');
 
   useEffect(() => {
     if (player) {
       const enhancedPlayer = { ...player };
-      
+
       // Se firstName e lastName non sono presenti ma c'è name, li separiamo
       if (!enhancedPlayer.firstName && !enhancedPlayer.lastName && enhancedPlayer.name) {
         const nameParts = enhancedPlayer.name.trim().split(' ');
@@ -23,10 +23,10 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
         enhancedPlayer.lastName = nameParts.slice(1).join(' ') || '';
         console.log(`🔧 Parsed name "${enhancedPlayer.name}" into:`, {
           firstName: enhancedPlayer.firstName,
-          lastName: enhancedPlayer.lastName
+          lastName: enhancedPlayer.lastName,
         });
       }
-      
+
       setFormData({ ...createPlayerSchema(), ...enhancedPlayer });
     } else {
       setFormData(createPlayerSchema());
@@ -37,8 +37,8 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
     setFormData((prev) => {
       let newData;
 
-      if (field.includes(".")) {
-        const [parent, child] = field.split(".");
+      if (field.includes('.')) {
+        const [parent, child] = field.split('.');
         newData = {
           ...prev,
           [parent]: {
@@ -51,20 +51,17 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
       }
 
       // Initialize instructor data when category is set to INSTRUCTOR
-      if (
-        field === "category" &&
-        value === PLAYER_CATEGORIES.INSTRUCTOR
-      ) {
+      if (field === 'category' && value === PLAYER_CATEGORIES.INSTRUCTOR) {
         newData.instructorData = {
           isInstructor: true, // Sempre attivo quando si seleziona categoria INSTRUCTOR
-          color: "#3B82F6",
+          color: '#3B82F6',
           specialties: [],
           hourlyRate: 0,
           priceSingle: 0,
           priceCouple: 0,
           priceThree: 0,
           priceMatchLesson: 0,
-          bio: "",
+          bio: '',
           certifications: [],
           ...newData.instructorData, // Mantieni i dati esistenti se ci sono
         };
@@ -72,7 +69,7 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
 
       // Clear instructor data when category is changed from INSTRUCTOR
       if (
-        field === "category" &&
+        field === 'category' &&
         value !== PLAYER_CATEGORIES.INSTRUCTOR &&
         prev.category === PLAYER_CATEGORIES.INSTRUCTOR
       ) {
@@ -95,16 +92,16 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
     const newErrors = {};
 
     if (!formData.firstName?.trim()) {
-      newErrors.firstName = "Nome richiesto";
+      newErrors.firstName = 'Nome richiesto';
     }
     if (!formData.lastName?.trim()) {
-      newErrors.lastName = "Cognome richiesto";
+      newErrors.lastName = 'Cognome richiesto';
     }
     if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Email non valida";
+      newErrors.email = 'Email non valida';
     }
     if (formData.phone && !/^[\d\s+\-()]+$/.test(formData.phone)) {
-      newErrors.phone = "Numero di telefono non valido";
+      newErrors.phone = 'Numero di telefono non valido';
     }
 
     setErrors(newErrors);
@@ -126,14 +123,14 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
   };
 
   const tabs = [
-    { id: "basic", label: "📝 Dati Base", icon: "📝" },
-    { id: "contact", label: "📞 Contatti", icon: "📞" },
-    { id: "sports", label: "🏃 Sport", icon: "🏃" },
+    { id: 'basic', label: '📝 Dati Base', icon: '📝' },
+    { id: 'contact', label: '📞 Contatti', icon: '📞' },
+    { id: 'sports', label: '🏃 Sport', icon: '🏃' },
     ...(formData.category === PLAYER_CATEGORIES.INSTRUCTOR
-      ? [{ id: "instructor", label: "👨‍🏫 Istruttore", icon: "👨‍🏫" }]
+      ? [{ id: 'instructor', label: '👨‍🏫 Istruttore', icon: '👨‍🏫' }]
       : []),
-    { id: "wallet", label: "💰 Wallet", icon: "💰" },
-    { id: "preferences", label: "⚙️ Preferenze", icon: "⚙️" },
+    { id: 'wallet', label: '💰 Wallet', icon: '💰' },
+    { id: 'preferences', label: '⚙️ Preferenze', icon: '⚙️' },
   ];
 
   return (
@@ -148,8 +145,8 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
               onClick={() => setActiveTab(tab.id)}
               className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === tab.id
-                  ? "border-blue-500 text-blue-600 dark:text-blue-400"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               <span className="hidden sm:inline">{tab.label}</span>
@@ -162,66 +159,52 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
       {/* Tab Content */}
       <div className="min-h-[400px]">
         {/* Dati Base */}
-        {activeTab === "basic" && (
+        {activeTab === 'basic' && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                  Nome *
-                </label>
+                <label className={`block text-sm font-medium ${T.text} mb-1`}>Nome *</label>
                 <input
                   type="text"
-                  value={formData.firstName || ""}
-                  onChange={(e) => handleChange("firstName", e.target.value)}
-                  className={`${T.input} w-full ${errors.firstName ? "border-red-500" : ""}`}
+                  value={formData.firstName || ''}
+                  onChange={(e) => handleChange('firstName', e.target.value)}
+                  className={`${T.input} w-full ${errors.firstName ? 'border-red-500' : ''}`}
                   placeholder="Nome del giocatore"
                 />
                 {errors.firstName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.firstName}
-                  </p>
+                  <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
                 )}
               </div>
 
               <div>
-                <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                  Cognome *
-                </label>
+                <label className={`block text-sm font-medium ${T.text} mb-1`}>Cognome *</label>
                 <input
                   type="text"
-                  value={formData.lastName || ""}
-                  onChange={(e) => handleChange("lastName", e.target.value)}
-                  className={`${T.input} w-full ${errors.lastName ? "border-red-500" : ""}`}
+                  value={formData.lastName || ''}
+                  onChange={(e) => handleChange('lastName', e.target.value)}
+                  className={`${T.input} w-full ${errors.lastName ? 'border-red-500' : ''}`}
                   placeholder="Cognome del giocatore"
                 />
-                {errors.lastName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
-                )}
+                {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
               </div>
             </div>
 
             <div>
-              <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                Data di Nascita
-              </label>
+              <label className={`block text-sm font-medium ${T.text} mb-1`}>Data di Nascita</label>
               <input
                 type="date"
-                value={formData.dateOfBirth || ""}
-                onChange={(e) => handleChange("dateOfBirth", e.target.value)}
+                value={formData.dateOfBirth || ''}
+                onChange={(e) => handleChange('dateOfBirth', e.target.value)}
                 className={`${T.input} w-full`}
               />
             </div>
 
             <div>
-              <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                Codice Fiscale
-              </label>
+              <label className={`block text-sm font-medium ${T.text} mb-1`}>Codice Fiscale</label>
               <input
                 type="text"
-                value={formData.fiscalCode || ""}
-                onChange={(e) =>
-                  handleChange("fiscalCode", e.target.value.toUpperCase())
-                }
+                value={formData.fiscalCode || ''}
+                onChange={(e) => handleChange('fiscalCode', e.target.value.toUpperCase())}
                 className={`${T.input} w-full`}
                 placeholder="RSSMRA80A01H501U"
                 maxLength={16}
@@ -229,12 +212,10 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
             </div>
 
             <div>
-              <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                Categoria
-              </label>
+              <label className={`block text-sm font-medium ${T.text} mb-1`}>Categoria</label>
               <select
                 value={formData.category || PLAYER_CATEGORIES.NON_MEMBER}
-                onChange={(e) => handleChange("category", e.target.value)}
+                onChange={(e) => handleChange('category', e.target.value)}
                 className={`${T.input} w-full`}
               >
                 <option value={PLAYER_CATEGORIES.NON_MEMBER}>Non Membro</option>
@@ -248,38 +229,30 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
         )}
 
         {/* Contatti */}
-        {activeTab === "contact" && (
+        {activeTab === 'contact' && (
           <div className="space-y-4">
             <div>
-              <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                Email
-              </label>
+              <label className={`block text-sm font-medium ${T.text} mb-1`}>Email</label>
               <input
                 type="email"
-                value={formData.email || ""}
-                onChange={(e) => handleChange("email", e.target.value)}
-                className={`${T.input} w-full ${errors.email ? "border-red-500" : ""}`}
+                value={formData.email || ''}
+                onChange={(e) => handleChange('email', e.target.value)}
+                className={`${T.input} w-full ${errors.email ? 'border-red-500' : ''}`}
                 placeholder="email@esempio.com"
               />
-              {errors.email && (
-                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             </div>
 
             <div>
-              <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                Telefono
-              </label>
+              <label className={`block text-sm font-medium ${T.text} mb-1`}>Telefono</label>
               <input
                 type="tel"
-                value={formData.phone || ""}
-                onChange={(e) => handleChange("phone", e.target.value)}
-                className={`${T.input} w-full ${errors.phone ? "border-red-500" : ""}`}
+                value={formData.phone || ''}
+                onChange={(e) => handleChange('phone', e.target.value)}
+                className={`${T.input} w-full ${errors.phone ? 'border-red-500' : ''}`}
                 placeholder="+39 123 456 7890"
               />
-              {errors.phone && (
-                <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
-              )}
+              {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
             </div>
 
             <div className="space-y-3">
@@ -287,8 +260,8 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
 
               <input
                 type="text"
-                value={formData.address?.street || ""}
-                onChange={(e) => handleChange("address.street", e.target.value)}
+                value={formData.address?.street || ''}
+                onChange={(e) => handleChange('address.street', e.target.value)}
                 className={`${T.input} w-full`}
                 placeholder="Via, numero civico"
               />
@@ -296,17 +269,15 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
               <div className="grid grid-cols-2 gap-4">
                 <input
                   type="text"
-                  value={formData.address?.city || ""}
-                  onChange={(e) => handleChange("address.city", e.target.value)}
+                  value={formData.address?.city || ''}
+                  onChange={(e) => handleChange('address.city', e.target.value)}
                   className={`${T.input} w-full`}
                   placeholder="Città"
                 />
                 <input
                   type="text"
-                  value={formData.address?.province || ""}
-                  onChange={(e) =>
-                    handleChange("address.province", e.target.value)
-                  }
+                  value={formData.address?.province || ''}
+                  onChange={(e) => handleChange('address.province', e.target.value)}
                   className={`${T.input} w-full`}
                   placeholder="Provincia"
                 />
@@ -315,19 +286,15 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
               <div className="grid grid-cols-2 gap-4">
                 <input
                   type="text"
-                  value={formData.address?.postalCode || ""}
-                  onChange={(e) =>
-                    handleChange("address.postalCode", e.target.value)
-                  }
+                  value={formData.address?.postalCode || ''}
+                  onChange={(e) => handleChange('address.postalCode', e.target.value)}
                   className={`${T.input} w-full`}
                   placeholder="CAP"
                 />
                 <input
                   type="text"
-                  value={formData.address?.country || "Italia"}
-                  onChange={(e) =>
-                    handleChange("address.country", e.target.value)
-                  }
+                  value={formData.address?.country || 'Italia'}
+                  onChange={(e) => handleChange('address.country', e.target.value)}
                   className={`${T.input} w-full`}
                   placeholder="Paese"
                 />
@@ -337,19 +304,15 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
         )}
 
         {/* Dati Sportivi */}
-        {activeTab === "sports" && (
+        {activeTab === 'sports' && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                  Rating Base
-                </label>
+                <label className={`block text-sm font-medium ${T.text} mb-1`}>Rating Base</label>
                 <input
                   type="number"
                   value={formData.baseRating || DEFAULT_RATING}
-                  onChange={(e) =>
-                    handleChange("baseRating", Number(e.target.value))
-                  }
+                  onChange={(e) => handleChange('baseRating', Number(e.target.value))}
                   className={`${T.input} w-full`}
                   min="0"
                   max="3000"
@@ -366,12 +329,8 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                 </label>
                 <input
                   type="number"
-                  value={
-                    formData.rating || formData.baseRating || DEFAULT_RATING
-                  }
-                  onChange={(e) =>
-                    handleChange("rating", Number(e.target.value))
-                  }
+                  value={formData.rating || formData.baseRating || DEFAULT_RATING}
+                  onChange={(e) => handleChange('rating', Number(e.target.value))}
                   className={`${T.input} w-full`}
                   min="0"
                   max="3000"
@@ -388,7 +347,7 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                 <input
                   type="checkbox"
                   checked={formData.isActive !== false}
-                  onChange={(e) => handleChange("isActive", e.target.checked)}
+                  onChange={(e) => handleChange('isActive', e.target.checked)}
                   className="rounded"
                 />
                 Giocatore attivo
@@ -401,166 +360,135 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
         )}
 
         {/* Configurazione Istruttore */}
-        {activeTab === "instructor" &&
-          formData.category === PLAYER_CATEGORIES.INSTRUCTOR && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                    Tariffa Oraria (€)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.instructorData?.hourlyRate || 0}
-                    onChange={(e) =>
-                      handleChange(
-                        "instructorData.hourlyRate",
-                        Number(e.target.value),
-                      )
-                    }
-                    className={`${T.input} w-full`}
-                    min="0"
-                    step="5"
-                    placeholder="es. 50"
-                  />
-                  <p className={`text-xs ${T.subtext} mt-1`}>
-                    Tariffa oraria per le lezioni
-                  </p>
-                </div>
-
-                <div>
-                  <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                    Colore Identificativo
-                  </label>
-                  <input
-                    type="color"
-                    value={formData.instructorData?.color || "#3B82F6"}
-                    onChange={(e) =>
-                      handleChange("instructorData.color", e.target.value)
-                    }
-                    className="w-full h-10 rounded border"
-                  />
-                  <p className={`text-xs ${T.subtext} mt-1`}>
-                    Colore per identificare l'istruttore nel calendario
-                  </p>
-                </div>
-              </div>
-
+        {activeTab === 'instructor' && formData.category === PLAYER_CATEGORIES.INSTRUCTOR && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                  Biografia
+                  Tariffa Oraria (€)
                 </label>
-                <textarea
-                  value={formData.instructorData?.bio || ""}
+                <input
+                  type="number"
+                  value={formData.instructorData?.hourlyRate || 0}
                   onChange={(e) =>
-                    handleChange("instructorData.bio", e.target.value)
+                    handleChange('instructorData.hourlyRate', Number(e.target.value))
                   }
                   className={`${T.input} w-full`}
-                  rows={3}
-                  placeholder="Descrizione dell'esperienza e qualifiche dell'istruttore..."
+                  min="0"
+                  step="5"
+                  placeholder="es. 50"
                 />
-                <p className={`text-xs ${T.subtext} mt-1`}>
-                  Breve descrizione che i clienti vedranno
-                </p>
+                <p className={`text-xs ${T.subtext} mt-1`}>Tariffa oraria per le lezioni</p>
               </div>
 
               <div>
                 <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                  Specialità
+                  Colore Identificativo
                 </label>
-                <div className="space-y-2">
-                  {/* Quick Add Common Specialties */}
-                  <div className="flex flex-wrap gap-2">
-                    {["Padel", "Tennis", "Fitness", "Calcio", "Basket"].map(
-                      (specialty) => (
-                        <button
-                          key={specialty}
-                          type="button"
-                          onClick={() => {
-                            const currentSpecialties =
-                              formData.instructorData?.specialties || [];
-                            if (!currentSpecialties.includes(specialty)) {
-                              handleChange("instructorData.specialties", [
-                                ...currentSpecialties,
-                                specialty,
-                              ]);
-                            }
-                          }}
-                          className={`px-3 py-1 text-sm rounded border ${
-                            (
-                              formData.instructorData?.specialties || []
-                            ).includes(specialty)
-                              ? "bg-blue-100 text-blue-800 border-blue-300"
-                              : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
-                          }`}
-                        >
-                          {specialty}
-                        </button>
-                      ),
-                    )}
-                  </div>
-
-                  {/* Current Specialties */}
-                  {(formData.instructorData?.specialties || []).length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {(formData.instructorData?.specialties || []).map(
-                        (specialty, idx) => (
-                          <div
-                            key={idx}
-                            className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                          >
-                            <span>{specialty}</span>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const currentSpecialties =
-                                  formData.instructorData?.specialties || [];
-                                handleChange(
-                                  "instructorData.specialties",
-                                  currentSpecialties.filter(
-                                    (s) => s !== specialty,
-                                  ),
-                                );
-                              }}
-                              className="text-blue-600 hover:text-blue-800"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ),
-                      )}
-                    </div>
-                  )}
-                </div>
+                <input
+                  type="color"
+                  value={formData.instructorData?.color || '#3B82F6'}
+                  onChange={(e) => handleChange('instructorData.color', e.target.value)}
+                  className="w-full h-10 rounded border"
+                />
                 <p className={`text-xs ${T.subtext} mt-1`}>
-                  Specialità sportive dell'istruttore
-                </p>
-              </div>
-
-              <div>
-                <label className={`flex items-center gap-2 ${T.text}`}>
-                  <input
-                    type="checkbox"
-                    checked={formData.instructorData?.isInstructor !== false}
-                    onChange={(e) =>
-                      handleChange(
-                        "instructorData.isInstructor",
-                        e.target.checked,
-                      )
-                    }
-                    className="rounded"
-                  />
-                  Istruttore Attivo
-                </label>
-                <p className={`text-xs ${T.subtext} mt-1`}>
-                  L'istruttore può ricevere prenotazioni lezioni
+                  Colore per identificare l'istruttore nel calendario
                 </p>
               </div>
             </div>
-          )}
+
+            <div>
+              <label className={`block text-sm font-medium ${T.text} mb-1`}>Biografia</label>
+              <textarea
+                value={formData.instructorData?.bio || ''}
+                onChange={(e) => handleChange('instructorData.bio', e.target.value)}
+                className={`${T.input} w-full`}
+                rows={3}
+                placeholder="Descrizione dell'esperienza e qualifiche dell'istruttore..."
+              />
+              <p className={`text-xs ${T.subtext} mt-1`}>
+                Breve descrizione che i clienti vedranno
+              </p>
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium ${T.text} mb-1`}>Specialità</label>
+              <div className="space-y-2">
+                {/* Quick Add Common Specialties */}
+                <div className="flex flex-wrap gap-2">
+                  {['Padel', 'Tennis', 'Fitness', 'Calcio', 'Basket'].map((specialty) => (
+                    <button
+                      key={specialty}
+                      type="button"
+                      onClick={() => {
+                        const currentSpecialties = formData.instructorData?.specialties || [];
+                        if (!currentSpecialties.includes(specialty)) {
+                          handleChange('instructorData.specialties', [
+                            ...currentSpecialties,
+                            specialty,
+                          ]);
+                        }
+                      }}
+                      className={`px-3 py-1 text-sm rounded border ${
+                        (formData.instructorData?.specialties || []).includes(specialty)
+                          ? 'bg-blue-100 text-blue-800 border-blue-300'
+                          : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                      }`}
+                    >
+                      {specialty}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Current Specialties */}
+                {(formData.instructorData?.specialties || []).length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {(formData.instructorData?.specialties || []).map((specialty, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                      >
+                        <span>{specialty}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const currentSpecialties = formData.instructorData?.specialties || [];
+                            handleChange(
+                              'instructorData.specialties',
+                              currentSpecialties.filter((s) => s !== specialty)
+                            );
+                          }}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <p className={`text-xs ${T.subtext} mt-1`}>Specialità sportive dell'istruttore</p>
+            </div>
+
+            <div>
+              <label className={`flex items-center gap-2 ${T.text}`}>
+                <input
+                  type="checkbox"
+                  checked={formData.instructorData?.isInstructor !== false}
+                  onChange={(e) => handleChange('instructorData.isInstructor', e.target.checked)}
+                  className="rounded"
+                />
+                Istruttore Attivo
+              </label>
+              <p className={`text-xs ${T.subtext} mt-1`}>
+                L'istruttore può ricevere prenotazioni lezioni
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Wallet */}
-        {activeTab === "wallet" && (
+        {activeTab === 'wallet' && (
           <div className="space-y-4">
             <div>
               <label className={`block text-sm font-medium ${T.text} mb-1`}>
@@ -569,9 +497,7 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
               <input
                 type="number"
                 value={formData.wallet?.balance || 0}
-                onChange={(e) =>
-                  handleChange("wallet.balance", Number(e.target.value))
-                }
+                onChange={(e) => handleChange('wallet.balance', Number(e.target.value))}
                 className={`${T.input} w-full`}
                 min="0"
                 step="0.01"
@@ -583,9 +509,7 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
             </div>
 
             <div className={`${T.cardBg} ${T.border} rounded-lg p-4`}>
-              <h4 className={`font-medium ${T.text} mb-2`}>
-                Informazioni Wallet
-              </h4>
+              <h4 className={`font-medium ${T.text} mb-2`}>Informazioni Wallet</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className={T.subtext}>Transazioni:</span>
@@ -595,10 +519,8 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                   <span className={T.subtext}>Ultimo aggiornamento:</span>
                   <span>
                     {formData.wallet?.lastUpdate
-                      ? new Date(
-                          formData.wallet.lastUpdate,
-                        ).toLocaleDateString()
-                      : "Mai"}
+                      ? new Date(formData.wallet.lastUpdate).toLocaleDateString()
+                      : 'Mai'}
                   </span>
                 </div>
               </div>
@@ -607,22 +529,17 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
         )}
 
         {/* Preferenze */}
-        {activeTab === "preferences" && (
+        {activeTab === 'preferences' && (
           <div className="space-y-4">
             <div>
-              <h4 className={`font-medium ${T.text} mb-3`}>
-                Preferenze di Comunicazione
-              </h4>
+              <h4 className={`font-medium ${T.text} mb-3`}>Preferenze di Comunicazione</h4>
               <div className="space-y-3">
                 <label className={`flex items-center gap-2 ${T.text}`}>
                   <input
                     type="checkbox"
                     checked={formData.communicationPreferences?.email !== false}
                     onChange={(e) =>
-                      handleChange(
-                        "communicationPreferences.email",
-                        e.target.checked,
-                      )
+                      handleChange('communicationPreferences.email', e.target.checked)
                     }
                     className="rounded"
                   />
@@ -633,12 +550,7 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                   <input
                     type="checkbox"
                     checked={formData.communicationPreferences?.sms === true}
-                    onChange={(e) =>
-                      handleChange(
-                        "communicationPreferences.sms",
-                        e.target.checked,
-                      )
-                    }
+                    onChange={(e) => handleChange('communicationPreferences.sms', e.target.checked)}
                     className="rounded"
                   />
                   Ricevi SMS
@@ -647,14 +559,9 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                 <label className={`flex items-center gap-2 ${T.text}`}>
                   <input
                     type="checkbox"
-                    checked={
-                      formData.communicationPreferences?.whatsapp === true
-                    }
+                    checked={formData.communicationPreferences?.whatsapp === true}
                     onChange={(e) =>
-                      handleChange(
-                        "communicationPreferences.whatsapp",
-                        e.target.checked,
-                      )
+                      handleChange('communicationPreferences.whatsapp', e.target.checked)
                     }
                     className="rounded"
                   />
@@ -664,14 +571,9 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                 <label className={`flex items-center gap-2 ${T.text}`}>
                   <input
                     type="checkbox"
-                    checked={
-                      formData.communicationPreferences?.notifications !== false
-                    }
+                    checked={formData.communicationPreferences?.notifications !== false}
                     onChange={(e) =>
-                      handleChange(
-                        "communicationPreferences.notifications",
-                        e.target.checked,
-                      )
+                      handleChange('communicationPreferences.notifications', e.target.checked)
                     }
                     className="rounded"
                   />
@@ -686,14 +588,14 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
               </label>
               <input
                 type="text"
-                value={formData.tags?.join(", ") || ""}
+                value={formData.tags?.join(', ') || ''}
                 onChange={(e) =>
                   handleChange(
-                    "tags",
+                    'tags',
                     e.target.value
-                      .split(",")
+                      .split(',')
                       .map((t) => t.trim())
-                      .filter(Boolean),
+                      .filter(Boolean)
                   )
                 }
                 className={`${T.input} w-full`}
@@ -709,15 +611,11 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
 
       {/* Actions */}
       <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
-        <button
-          type="button"
-          onClick={onCancel}
-          className={`${T.btnSecondary} px-6 py-2`}
-        >
+        <button type="button" onClick={onCancel} className={`${T.btnSecondary} px-6 py-2`}>
           Annulla
         </button>
         <button type="submit" className={`${T.btnPrimary} px-6 py-2`}>
-          {player ? "Aggiorna" : "Crea"} Giocatore
+          {player ? 'Aggiorna' : 'Crea'} Giocatore
         </button>
       </div>
     </form>

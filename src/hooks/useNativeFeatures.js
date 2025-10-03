@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
-import { useState, useEffect, useRef } from "react";
-import { Capacitor } from "@capacitor/core";
+import { useState, useEffect, useRef } from 'react';
+import { Capacitor } from '@capacitor/core';
 
 export const useNativeFeatures = () => {
   const [location, setLocation] = useState(null);
@@ -18,17 +18,13 @@ export const useNativeFeatures = () => {
     if (!isNative) return;
     (async () => {
       try {
-        const [
-          { Geolocation },
-          { PushNotifications },
-          { LocalNotifications },
-          { Share },
-        ] = await Promise.all([
-          import("@capacitor/geolocation"),
-          import("@capacitor/push-notifications"),
-          import("@capacitor/local-notifications"),
-          import("@capacitor/share"),
-        ]);
+        const [{ Geolocation }, { PushNotifications }, { LocalNotifications }, { Share }] =
+          await Promise.all([
+            import('@capacitor/geolocation'),
+            import('@capacitor/push-notifications'),
+            import('@capacitor/local-notifications'),
+            import('@capacitor/share'),
+          ]);
         pluginsRef.current = {
           Geolocation,
           PushNotifications,
@@ -59,7 +55,7 @@ export const useNativeFeatures = () => {
               longitude: position.coords.longitude,
             });
           },
-          (error) => console.error("GPS Error:", error),
+          (error) => console.error('GPS Error:', error)
         );
       }
       return;
@@ -74,7 +70,7 @@ export const useNativeFeatures = () => {
         longitude: coordinates.coords.longitude,
       });
     } catch (error) {
-      console.error("Native GPS Error:", error);
+      console.error('Native GPS Error:', error);
     }
   };
 
@@ -86,36 +82,28 @@ export const useNativeFeatures = () => {
       const { PushNotifications } = pluginsRef.current;
       if (!PushNotifications) return;
       const permission = await PushNotifications.requestPermissions();
-      if (permission.receive === "granted") {
+      if (permission.receive === 'granted') {
         await PushNotifications.register();
 
-        PushNotifications.addListener("registration", (token) => {
-          console.log("Push registration success, token: " + token.value);
+        PushNotifications.addListener('registration', (token) => {
+          console.log('Push registration success, token: ' + token.value);
           // Salva il token per invii futuri
         });
 
-        PushNotifications.addListener("registrationError", (error) => {
-          console.error("Error on registration: " + JSON.stringify(error));
+        PushNotifications.addListener('registrationError', (error) => {
+          console.error('Error on registration: ' + JSON.stringify(error));
         });
 
-        PushNotifications.addListener(
-          "pushNotificationReceived",
-          (notification) => {
-            console.log("Push received: " + JSON.stringify(notification));
-          },
-        );
+        PushNotifications.addListener('pushNotificationReceived', (notification) => {
+          console.log('Push received: ' + JSON.stringify(notification));
+        });
 
-        PushNotifications.addListener(
-          "pushNotificationActionPerformed",
-          (notification) => {
-            console.log(
-              "Push action performed: " + JSON.stringify(notification),
-            );
-          },
-        );
+        PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+          console.log('Push action performed: ' + JSON.stringify(notification));
+        });
       }
     } catch (error) {
-      console.error("Push notification setup error:", error);
+      console.error('Push notification setup error:', error);
     }
   };
 
@@ -123,7 +111,7 @@ export const useNativeFeatures = () => {
   const scheduleLocalNotification = async (title, body, scheduleAt) => {
     if (!isNative) {
       // Fallback per web
-      if (Notification.permission === "granted") {
+      if (Notification.permission === 'granted') {
         new Notification(title, { body });
       }
       return;
@@ -141,13 +129,13 @@ export const useNativeFeatures = () => {
             schedule: { at: new Date(scheduleAt) },
             sound: null,
             attachments: null,
-            actionTypeId: "",
+            actionTypeId: '',
             extra: null,
           },
         ],
       });
     } catch (error) {
-      console.error("Local notification error:", error);
+      console.error('Local notification error:', error);
     }
   };
 
@@ -159,7 +147,7 @@ export const useNativeFeatures = () => {
         await navigator.share({ title, text, url });
       } else {
         await navigator.clipboard.writeText(`${text} ${url}`);
-        alert("Link copiato negli appunti!");
+        alert('Link copiato negli appunti!');
       }
       return;
     }
@@ -169,7 +157,7 @@ export const useNativeFeatures = () => {
       if (!Share) return;
       await Share.share({ title, text, url });
     } catch (error) {
-      console.error("Native share error:", error);
+      console.error('Native share error:', error);
     }
   };
 

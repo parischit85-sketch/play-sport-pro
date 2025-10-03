@@ -1,21 +1,21 @@
 /**
  * Test suite per il sistema di rating storici
- * 
+ *
  * Testa il comportamento del calcolo RPA con rating storici
  * vs rating attuali per garantire la correttezza storica.
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { 
+import {
   savePlayerRatingSnapshot,
   getPlayerRatingAtDate,
   getHistoricalRatings,
-  savePreMatchRatings
+  savePreMatchRatings,
 } from '../services/rating-history.js';
 
 // Mock Firebase
 vi.mock('../firebase/config', () => ({
-  db: {}
+  db: {},
 }));
 
 vi.mock('firebase/firestore', () => ({
@@ -28,7 +28,7 @@ vi.mock('firebase/firestore', () => ({
   where: vi.fn(),
   orderBy: vi.fn(),
   limit: vi.fn(),
-  runTransaction: vi.fn()
+  runTransaction: vi.fn(),
 }));
 
 describe('Rating History Service', () => {
@@ -46,28 +46,31 @@ describe('Rating History Service', () => {
     it('should save rating snapshot with correct data structure', async () => {
       const mockSetDoc = vi.fn().mockResolvedValue(undefined);
       const mockDoc = vi.fn().mockReturnValue('doc-ref');
-      
+
       vi.doMock('firebase/firestore', () => ({
         doc: mockDoc,
-        setDoc: mockSetDoc
+        setDoc: mockSetDoc,
       }));
 
       await savePlayerRatingSnapshot(mockClubId, mockPlayerId, mockDate, mockRating, mockMatchId);
 
       expect(mockDoc).toHaveBeenCalledWith(
         expect.anything(),
-        'clubs', mockClubId,
-        'playerRatingHistory', mockPlayerId,
-        'ratings', mockDate
+        'clubs',
+        mockClubId,
+        'playerRatingHistory',
+        mockPlayerId,
+        'ratings',
+        mockDate
       );
-      
+
       expect(mockSetDoc).toHaveBeenCalledWith(
         'doc-ref',
         expect.objectContaining({
           date: mockDate,
           rating: mockRating,
           matchId: mockMatchId,
-          timestamp: expect.any(String)
+          timestamp: expect.any(String),
         })
       );
     });
@@ -76,7 +79,7 @@ describe('Rating History Service', () => {
       const mockError = new Error('Firebase error');
       vi.doMock('firebase/firestore', () => ({
         doc: vi.fn(),
-        setDoc: vi.fn().mockRejectedValue(mockError)
+        setDoc: vi.fn().mockRejectedValue(mockError),
       }));
 
       await expect(
@@ -90,7 +93,7 @@ describe('Rating History Service', () => {
       const mockRatingData = { rating: 1300, date: '2025-09-19T15:00:00.000Z' };
       const mockSnapshot = {
         empty: false,
-        docs: [{ data: () => mockRatingData }]
+        docs: [{ data: () => mockRatingData }],
       };
 
       vi.doMock('firebase/firestore', () => ({
@@ -99,7 +102,7 @@ describe('Rating History Service', () => {
         where: vi.fn(),
         orderBy: vi.fn(),
         limit: vi.fn(),
-        getDocs: vi.fn().mockResolvedValue(mockSnapshot)
+        getDocs: vi.fn().mockResolvedValue(mockSnapshot),
       }));
 
       const result = await getPlayerRatingAtDate(mockClubId, mockPlayerId, mockDate);
@@ -115,7 +118,7 @@ describe('Rating History Service', () => {
         where: vi.fn(),
         orderBy: vi.fn(),
         limit: vi.fn(),
-        getDocs: vi.fn().mockResolvedValue(mockSnapshot)
+        getDocs: vi.fn().mockResolvedValue(mockSnapshot),
       }));
 
       const result = await getPlayerRatingAtDate(mockClubId, mockPlayerId, mockDate);
@@ -135,12 +138,12 @@ describe('Rating History Service', () => {
           ...originalModule,
           getPlayerRatingAtDate: vi.fn((clubId, playerId) => {
             return Promise.resolve(mockRatings[playerId] || 1000);
-          })
+          }),
         };
       });
 
       const result = await getHistoricalRatings(mockClubId, mockPlayerIds, mockDate);
-      
+
       expect(result).toEqual(mockRatings);
     });
 
@@ -154,7 +157,7 @@ describe('Rating History Service', () => {
 describe('Rating Calculation Integration', () => {
   it('should calculate different RPA points with historical vs current ratings', () => {
     // Scenario di test:
-    // - Rating attuale: Player A = 1500, Player B = 1200  
+    // - Rating attuale: Player A = 1500, Player B = 1200
     // - Rating storico (1 mese fa): Player A = 1300, Player B = 1400
     // - Il risultato del calcolo RPA dovrebbe essere diverso
 
@@ -169,11 +172,15 @@ describe('Rating Calculation Integration', () => {
     };
 
     const currentResult = calculateRPA(currentRatings.playerA, currentRatings.playerB, 'A');
-    const historicalResult = calculateRPA(historicalRatings.playerA, historicalRatings.playerB, 'A');
+    const historicalResult = calculateRPA(
+      historicalRatings.playerA,
+      historicalRatings.playerB,
+      'A'
+    );
 
     // I risultati dovrebbero essere diversi
     expect(currentResult).not.toBe(historicalResult);
-    
+
     // Con rating correnti: A è favorito (1500 vs 1200), dovrebbe guadagnare meno punti
     // Con rating storici: B era favorito (1400 vs 1300), A dovrebbe guadagnare più punti
     expect(historicalResult).toBeGreaterThan(currentResult);
@@ -183,14 +190,14 @@ describe('Rating Calculation Integration', () => {
 describe('Edge Cases', () => {
   it('should handle new players without historical data', async () => {
     const newPlayerId = 'new-player-123';
-    
+
     vi.doMock('firebase/firestore', () => ({
       collection: vi.fn(),
       query: vi.fn(),
       where: vi.fn(),
       orderBy: vi.fn(),
       limit: vi.fn(),
-      getDocs: vi.fn().mockResolvedValue({ empty: true })
+      getDocs: vi.fn().mockResolvedValue({ empty: true }),
     }));
 
     const result = await getPlayerRatingAtDate(mockClubId, newPlayerId, mockDate);
@@ -199,7 +206,7 @@ describe('Edge Cases', () => {
 
   it('should handle future dates gracefully', async () => {
     const futureDate = '2030-01-01T00:00:00.000Z';
-    
+
     const result = await getPlayerRatingAtDate(mockClubId, mockPlayerId, futureDate);
     // Dovrebbe comunque funzionare, trovando il rating più recente disponibile
     expect(typeof result).toBe('number');
@@ -208,9 +215,9 @@ describe('Edge Cases', () => {
   it('should handle invalid player IDs', async () => {
     const invalidPlayerId = null;
     const playerIds = ['valid-player', invalidPlayerId, undefined];
-    
+
     const result = await getHistoricalRatings(mockClubId, playerIds, mockDate);
-    
+
     // Dovrebbe filtrare i player ID invalidi
     expect(result).toHaveProperty('valid-player');
     expect(result).not.toHaveProperty('null');
@@ -221,11 +228,11 @@ describe('Edge Cases', () => {
 describe('Performance', () => {
   it('should handle concurrent rating requests efficiently', async () => {
     const manyPlayerIds = Array.from({ length: 50 }, (_, i) => `player-${i}`);
-    
+
     const startTime = Date.now();
     await getHistoricalRatings(mockClubId, manyPlayerIds, mockDate);
     const endTime = Date.now();
-    
+
     // Le richieste dovrebbero essere eseguite in parallelo e completarsi rapidamente
     expect(endTime - startTime).toBeLessThan(5000); // Meno di 5 secondi
   });
@@ -235,10 +242,10 @@ describe('Data Consistency', () => {
   it('should ensure rating snapshots are saved in chronological order', () => {
     const dates = [
       '2025-09-18T10:00:00.000Z',
-      '2025-09-19T14:30:00.000Z', 
-      '2025-09-20T09:15:00.000Z'
+      '2025-09-19T14:30:00.000Z',
+      '2025-09-20T09:15:00.000Z',
     ];
-    
+
     const sortedDates = [...dates].sort();
     expect(dates).toEqual(sortedDates);
   });
@@ -246,7 +253,7 @@ describe('Data Consistency', () => {
   it('should handle timezone differences correctly', () => {
     const utcDate = '2025-09-20T10:30:00.000Z';
     const localDate = new Date(utcDate);
-    
+
     // Il sistema dovrebbe sempre usare UTC internamente
     expect(localDate.toISOString()).toBe(utcDate);
   });

@@ -11,7 +11,7 @@ const VITALS_THRESHOLDS = {
   FID: { good: 100, poor: 300 },
   FCP: { good: 1800, poor: 3000 },
   LCP: { good: 2500, poor: 4000 },
-  TTFB: { good: 800, poor: 1800 }
+  TTFB: { good: 800, poor: 1800 },
 };
 
 // Performance monitoring state
@@ -20,15 +20,13 @@ let performanceData = {
   metrics: {},
   customMetrics: {},
   resources: [],
-  errors: []
+  errors: [],
 };
 
 /**
  * Initialize Web Vitals monitoring
  */
 export const initWebVitals = () => {
-
-  
   // Modern browsers with web-vitals library (if available)
   if (typeof window !== 'undefined' && window.webVitals) {
     initModernWebVitals();
@@ -36,16 +34,16 @@ export const initWebVitals = () => {
     // Fallback to manual tracking
     initManualWebVitals();
   }
-  
+
   // Track custom performance metrics
   trackCustomMetrics();
-  
+
   // Monitor resource loading
   trackResourcePerformance();
-  
+
   // Track JavaScript errors impact on performance
   trackPerformanceErrors();
-  
+
   // Send initial performance report
   setTimeout(() => {
     sendPerformanceReport();
@@ -63,7 +61,7 @@ const initModernWebVitals = () => {
     webVitals.getFCP(onFCP);
     webVitals.getLCP(onLCP);
     webVitals.getTTFB(onTTFB);
-    
+
     console.log('✅ Modern Web Vitals tracking enabled');
   } catch (error) {
     console.warn('⚠️ Web Vitals library not available, using manual tracking');
@@ -78,7 +76,7 @@ const initManualWebVitals = () => {
   // First Contentful Paint (FCP)
   if ('PerformancePaintTiming' in window) {
     const paintEntries = performance.getEntriesByType('paint');
-    const fcpEntry = paintEntries.find(entry => entry.name === 'first-contentful-paint');
+    const fcpEntry = paintEntries.find((entry) => entry.name === 'first-contentful-paint');
     if (fcpEntry) {
       onFCP({ name: 'FCP', value: fcpEntry.startTime, delta: fcpEntry.startTime });
     }
@@ -104,14 +102,14 @@ const initManualWebVitals = () => {
   const handleFirstInput = (event) => {
     const fid = performance.now() - event.timeStamp;
     onFID({ name: 'FID', value: fid, delta: fid });
-    
+
     // Remove listener after first input
-    ['keydown', 'click', 'touchstart'].forEach(type => {
+    ['keydown', 'click', 'touchstart'].forEach((type) => {
       document.removeEventListener(type, handleFirstInput, { passive: true });
     });
   };
 
-  ['keydown', 'click', 'touchstart'].forEach(type => {
+  ['keydown', 'click', 'touchstart'].forEach((type) => {
     document.addEventListener(type, handleFirstInput, { passive: true });
   });
 
@@ -170,7 +168,7 @@ const onTTFB = (metric) => {
 const trackVitalMetric = (name, value) => {
   const threshold = VITALS_THRESHOLDS[name];
   let rating = 'good';
-  
+
   if (threshold) {
     if (value > threshold.poor) {
       rating = 'poor';
@@ -183,10 +181,8 @@ const trackVitalMetric = (name, value) => {
   analyticsModule.trackEvent('web_vitals', name.toLowerCase(), {
     value: Math.round(value),
     rating,
-    metric_name: name
+    metric_name: name,
   });
-
-
 };
 
 /**
@@ -197,9 +193,9 @@ const trackCustomMetrics = () => {
   document.addEventListener('DOMContentLoaded', () => {
     const domTime = performance.now();
     performanceData.customMetrics.domContentLoaded = domTime;
-    
+
     analyticsModule.trackEvent('performance', 'dom_content_loaded', {
-      value: Math.round(domTime)
+      value: Math.round(domTime),
     });
   });
 
@@ -207,9 +203,9 @@ const trackCustomMetrics = () => {
   window.addEventListener('load', () => {
     const loadTime = performance.now();
     performanceData.customMetrics.windowLoad = loadTime;
-    
+
     analyticsModule.trackEvent('performance', 'window_load', {
-      value: Math.round(loadTime)
+      value: Math.round(loadTime),
     });
 
     // Track Navigation Timing API metrics
@@ -224,15 +220,15 @@ const trackCustomMetrics = () => {
   // Track React hydration time (if using React)
   if (window.React) {
     const startTime = performance.now();
-    
+
     // Use React DevTools hook if available
     if (window.__REACT_DEVTOOLS_GLOBAL_HOOK__) {
       window.__REACT_DEVTOOLS_GLOBAL_HOOK__.onCommitFiberRoot = (id, root) => {
         const hydrationTime = performance.now() - startTime;
         performanceData.customMetrics.reactHydration = hydrationTime;
-        
+
         analyticsModule.trackEvent('performance', 'react_hydration', {
-          value: Math.round(hydrationTime)
+          value: Math.round(hydrationTime),
         });
       };
     }
@@ -246,22 +242,23 @@ const trackNavigationTiming = (navigation) => {
   const metrics = {
     dns: navigation.domainLookupEnd - navigation.domainLookupStart,
     tcp: navigation.connectEnd - navigation.connectStart,
-    ssl: navigation.secureConnectionStart > 0 ? navigation.connectEnd - navigation.secureConnectionStart : 0,
+    ssl:
+      navigation.secureConnectionStart > 0
+        ? navigation.connectEnd - navigation.secureConnectionStart
+        : 0,
     ttfb: navigation.responseStart - navigation.navigationStart,
     download: navigation.responseEnd - navigation.responseStart,
     domInteractive: navigation.domInteractive - navigation.navigationStart,
-    domComplete: navigation.domComplete - navigation.navigationStart
+    domComplete: navigation.domComplete - navigation.navigationStart,
   };
 
   Object.entries(metrics).forEach(([name, value]) => {
     performanceData.customMetrics[name] = value;
-    
+
     analyticsModule.trackEvent('navigation_timing', name, {
-      value: Math.round(value)
+      value: Math.round(value),
     });
   });
-
-
 };
 
 /**
@@ -273,17 +270,17 @@ const trackResourcePerformance = () => {
   const trackResources = () => {
     const resources = performance.getEntriesByType('resource');
     const newResources = resources.slice(performanceData.resources.length);
-    
-    newResources.forEach(resource => {
+
+    newResources.forEach((resource) => {
       const duration = resource.responseEnd - resource.requestStart;
       const size = resource.transferSize || 0;
-      
+
       performanceData.resources.push({
         name: resource.name,
         type: resource.initiatorType,
         duration: duration,
         size: size,
-        timestamp: resource.startTime
+        timestamp: resource.startTime,
       });
 
       // Track slow resources
@@ -292,7 +289,7 @@ const trackResourcePerformance = () => {
           resource_type: resource.initiatorType,
           duration: Math.round(duration),
           size: size,
-          resource_name: resource.name.split('/').pop()
+          resource_name: resource.name.split('/').pop(),
         });
       }
     });
@@ -300,12 +297,12 @@ const trackResourcePerformance = () => {
 
   // Track initial resources
   setTimeout(trackResources, 2000);
-  
+
   // Track resources loaded dynamically
   const observer = new PerformanceObserver((list) => {
     trackResources();
   });
-  
+
   try {
     observer.observe({ entryTypes: ['resource'] });
   } catch (error) {
@@ -318,19 +315,19 @@ const trackResourcePerformance = () => {
  */
 const trackPerformanceErrors = () => {
   const originalConsoleError = console.error;
-  
+
   console.error = (...args) => {
     const errorTime = performance.now();
     performanceData.errors.push({
       message: args.join(' '),
-      timestamp: errorTime
+      timestamp: errorTime,
     });
-    
+
     analyticsModule.trackEvent('performance', 'js_error', {
       timestamp: Math.round(errorTime),
-      error_count: performanceData.errors.length
+      error_count: performanceData.errors.length,
     });
-    
+
     originalConsoleError.apply(console, args);
   };
 
@@ -341,12 +338,12 @@ const trackPerformanceErrors = () => {
       message: event.message,
       filename: event.filename,
       line: event.lineno,
-      timestamp: errorTime
+      timestamp: errorTime,
     });
-    
+
     analyticsModule.trackEvent('performance', 'unhandled_error', {
       timestamp: Math.round(errorTime),
-      error_count: performanceData.errors.length
+      error_count: performanceData.errors.length,
     });
   });
 };
@@ -360,20 +357,22 @@ const sendPerformanceReport = () => {
     custom: performanceData.customMetrics,
     resources: {
       total: performanceData.resources.length,
-      slow_count: performanceData.resources.filter(r => r.duration > 1000).length,
-      total_size: performanceData.resources.reduce((sum, r) => sum + r.size, 0)
+      slow_count: performanceData.resources.filter((r) => r.duration > 1000).length,
+      total_size: performanceData.resources.reduce((sum, r) => sum + r.size, 0),
     },
     errors: {
       count: performanceData.errors.length,
-      recent: performanceData.errors.slice(-5)
+      recent: performanceData.errors.slice(-5),
     },
     timestamp: new Date().toISOString(),
     user_agent: navigator.userAgent,
-    connection: navigator.connection ? {
-      effective_type: navigator.connection.effectiveType,
-      downlink: navigator.connection.downlink,
-      rtt: navigator.connection.rtt
-    } : null
+    connection: navigator.connection
+      ? {
+          effective_type: navigator.connection.effectiveType,
+          downlink: navigator.connection.downlink,
+          rtt: navigator.connection.rtt,
+        }
+      : null,
   };
 
   // Send summary to analytics
@@ -381,11 +380,9 @@ const sendPerformanceReport = () => {
     vitals_count: Object.keys(report.vitals).length,
     resource_count: report.resources.total,
     error_count: report.errors.count,
-    total_size_mb: Math.round(report.resources.total_size / (1024 * 1024) * 100) / 100
+    total_size_mb: Math.round((report.resources.total_size / (1024 * 1024)) * 100) / 100,
   });
 
-
-  
   return report;
 };
 
@@ -409,28 +406,25 @@ export const getPerformanceSummary = () => {
 export const trackServiceWorkerMetrics = async () => {
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
     const messageChannel = new MessageChannel();
-    
+
     messageChannel.port1.onmessage = (event) => {
       if (event.data.type === 'PERFORMANCE_METRICS') {
         const metrics = event.data.data;
-        
+
         analyticsModule.trackEvent('service_worker', 'performance_metrics', {
           cache_hit_ratio: metrics.cacheHitRatio,
           cache_hits: metrics.cacheHits,
           cache_misses: metrics.cacheMisses,
           network_requests: metrics.networkRequests,
           offline_requests: metrics.offlineRequests,
-          runtime_minutes: Math.round(metrics.runtime / (1000 * 60))
+          runtime_minutes: Math.round(metrics.runtime / (1000 * 60)),
         });
-
-
       }
     };
 
-    navigator.serviceWorker.controller.postMessage(
-      { type: 'GET_PERFORMANCE_METRICS' },
-      [messageChannel.port2]
-    );
+    navigator.serviceWorker.controller.postMessage({ type: 'GET_PERFORMANCE_METRICS' }, [
+      messageChannel.port2,
+    ]);
   }
 };
 
@@ -443,5 +437,5 @@ export default {
   initWebVitals,
   getPerformanceData,
   getPerformanceSummary,
-  trackServiceWorkerMetrics
+  trackServiceWorkerMetrics,
 };

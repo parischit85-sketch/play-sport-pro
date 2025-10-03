@@ -7,13 +7,13 @@ import { createRoot } from 'react-dom/client';
 import AppRouter from './router/AppRouter.jsx';
 import updateService from './services/updateService.js';
 import hashChecker from './services/hashChecker.js';
-import { initSentry } from './lib/sentry.js';
+// import { initSentry } from './lib/sentry.js';
 import { initializeGA } from './lib/analytics.js';
 import { initWebVitals } from './lib/web-vitals.js';
 import SecurityProvider from './contexts/SecurityContext.jsx';
 
 // Initialize Sentry error tracking
-initSentry();
+// initSentry();
 
 // Initialize Google Analytics
 initializeGA();

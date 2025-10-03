@@ -1,6 +1,6 @@
 /**
  * Rating Migration Utility
- * 
+ *
  * Migra i dati esistenti al nuovo sistema di rating storici.
  * Esegue automaticamente la migrazione quando necessario.
  */
@@ -35,7 +35,7 @@ async function markMigrationCompleted(clubId) {
     await setDoc(migrationRef, {
       completed: true,
       migratedAt: new Date().toISOString(),
-      version: '1.0'
+      version: '1.0',
     });
     console.log(`✅ Migration marked as completed for club ${clubId}`);
   } catch (error) {
@@ -45,7 +45,7 @@ async function markMigrationCompleted(clubId) {
 
 /**
  * Esegue la migrazione automatica se necessaria
- * @param {string} clubId - ID del club  
+ * @param {string} clubId - ID del club
  * @param {Array} players - Array di giocatori
  * @returns {Promise<boolean>} True se la migrazione è stata eseguita
  */
@@ -57,26 +57,25 @@ export async function autoMigrateIfNeeded(clubId, players) {
   try {
     // Controlla se la migrazione è già stata completata
     const isAlreadyMigrated = await isMigrationCompleted(clubId);
-    
+
     if (isAlreadyMigrated) {
       console.log(`ℹ️ Club ${clubId} already migrated to historical ratings`);
       return false;
     }
 
     console.log(`🔄 Starting automatic rating migration for club ${clubId}...`);
-    
+
     // Usa la data corrente come punto di partenza della migrazione
     const migrationDate = new Date().toISOString();
-    
+
     // Esegui la migrazione
     await migrateExistingRatings(clubId, players, migrationDate);
-    
+
     // Marca come completata
     await markMigrationCompleted(clubId);
-    
+
     console.log(`✅ Automatic migration completed for club ${clubId}`);
     return true;
-    
   } catch (error) {
     console.error('❌ Error during automatic migration:', error);
     // Non lanciare l'errore per non bloccare l'app
@@ -90,7 +89,7 @@ export async function autoMigrateIfNeeded(clubId, players) {
  */
 export function useRatingMigration() {
   const { selectedClub, players } = useClub();
-  
+
   const runMigrationIfNeeded = async () => {
     if (selectedClub?.id && players?.length) {
       const migrated = await autoMigrateIfNeeded(selectedClub.id, players);
@@ -111,11 +110,11 @@ export function useRatingMigration() {
 export async function forceMigration(clubId, players) {
   try {
     console.log(`🔧 Forcing migration for club ${clubId}...`);
-    
+
     const migrationDate = new Date().toISOString();
     await migrateExistingRatings(clubId, players, migrationDate);
     await markMigrationCompleted(clubId);
-    
+
     console.log(`✅ Forced migration completed for club ${clubId}`);
     return true;
   } catch (error) {

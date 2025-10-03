@@ -1,12 +1,12 @@
 // =============================================
 // FILE: src/components/ProtectedRoute.jsx
 // =============================================
-import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "@contexts/AuthContext.jsx";
-import { LoadingPage } from "./LoadingSpinner.jsx";
-import { getRedirectPath, shouldRedirect } from "../utils/navigation.js";
-import LandingPage from "@pages/LandingPage.jsx";
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@contexts/AuthContext.jsx';
+import { LoadingPage } from './LoadingSpinner.jsx';
+import { getRedirectPath, shouldRedirect } from '../utils/navigation.js';
+import LandingPage from '@pages/LandingPage.jsx';
 
 // Simple in-memory log guards to reduce noisy repeated logs during re-renders
 let _prLastStateLog = 0;
@@ -15,8 +15,17 @@ let _prLastRoleCheckLog = 0;
 const PR_LOG_INTERVAL = 4000; // ms minimal interval for state log per path
 
 export function ProtectedRoute({ children, requireProfile = true, allowedRoles = null }) {
-  const { user, userProfile, isAuthenticated, isProfileComplete, loading, userRole, hasRole, isClubAdmin, getFirstAdminClub } =
-    useAuth();
+  const {
+    user,
+    userProfile,
+    isAuthenticated,
+    isProfileComplete,
+    loading,
+    userRole,
+    hasRole,
+    isClubAdmin,
+    getFirstAdminClub,
+  } = useAuth();
   const location = useLocation();
 
   console.log('🛡️ [ProtectedRoute] Rendering:', {
@@ -25,7 +34,7 @@ export function ProtectedRoute({ children, requireProfile = true, allowedRoles =
     loading,
     requireProfile,
     allowedRoles,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 
   // Show loading while auth state is being determined
@@ -36,7 +45,7 @@ export function ProtectedRoute({ children, requireProfile = true, allowedRoles =
 
   // Redirect to login if not authenticated (since AuthAwareRoute handles landing page)
   if (!isAuthenticated) {
-    const redirectPath = "/login";
+    const redirectPath = '/login';
     if (shouldRedirect(location.pathname, redirectPath, false)) {
       return <Navigate to={redirectPath} state={{ from: location }} replace />;
     }
@@ -56,15 +65,15 @@ export function ProtectedRoute({ children, requireProfile = true, allowedRoles =
     !isUserClubAdmin &&
     !userProfile?.firstName // Only redirect if they don"t even have a firstName
   ) {
-    console.log("🔄 ProtectedRoute: Profile incomplete, redirecting to profile", {
+    console.log('🔄 ProtectedRoute: Profile incomplete, redirecting to profile', {
       requireProfile,
       userProfile,
       isProfileComplete,
       isUserClubAdmin,
       hasFirstName: !!userProfile?.firstName,
-      currentPath: location.pathname
+      currentPath: location.pathname,
     });
-    const redirectPath = "/profile";
+    const redirectPath = '/profile';
     if (shouldRedirect(location.pathname, redirectPath, true)) {
       return <Navigate to={redirectPath} state={{ from: location }} replace />;
     }
@@ -73,14 +82,14 @@ export function ProtectedRoute({ children, requireProfile = true, allowedRoles =
   // Check role-based access if allowedRoles is specified
   if (allowedRoles) {
     if (!allowedRoles.includes(userRole)) {
-      console.warn("❌ ProtectedRoute: access denied, redirecting to /dashboard", {
+      console.warn('❌ ProtectedRoute: access denied, redirecting to /dashboard', {
         path: location.pathname,
         required: allowedRoles,
-        have: userRole
+        have: userRole,
       });
       return <Navigate to="/dashboard" replace />;
     } else {
-      console.log("✅ ProtectedRoute: access granted", { path: location.pathname, role: userRole });
+      console.log('✅ ProtectedRoute: access granted', { path: location.pathname, role: userRole });
     }
   }
 
@@ -102,11 +111,7 @@ export function AuthAwareRoute({ children }) {
   }
 
   // If authenticated, show the protected app layout
-  return (
-    <ProtectedRoute>
-      {children}
-    </ProtectedRoute>
-  );
+  return <ProtectedRoute>{children}</ProtectedRoute>;
 }
 
 export function PublicRoute({ children }) {

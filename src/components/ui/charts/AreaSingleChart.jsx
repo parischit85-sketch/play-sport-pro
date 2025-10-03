@@ -1,7 +1,7 @@
 // =============================================
 // FILE: src/components/ui/charts/AreaSingleChart.jsx
 // =============================================
-import React from "react";
+import React from 'react';
 import {
   AreaChart,
   Area,
@@ -11,32 +11,17 @@ import {
   ResponsiveContainer,
   CartesianGrid,
   Brush,
-} from "recharts";
-const CHART_COLORS = ["#10b981"];
-export default function AreaSingleChart({
-  data,
-  dataKey = "rating",
-  chartId = "single",
-}) {
+} from 'recharts';
+const CHART_COLORS = ['#10b981'];
+export default function AreaSingleChart({ data, dataKey = 'rating', chartId = 'single' }) {
   return (
     <div className="h-56 sm:h-72">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={data}
-          margin={{ left: 6, right: 6, top: 8, bottom: 8 }}
-        >
+        <AreaChart data={data} margin={{ left: 6, right: 6, top: 8, bottom: 8 }}>
           <defs>
             <linearGradient id={`grad-${chartId}`} x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="0%"
-                stopColor={CHART_COLORS[0]}
-                stopOpacity={0.45}
-              />
-              <stop
-                offset="100%"
-                stopColor={CHART_COLORS[0]}
-                stopOpacity={0.05}
-              />
+              <stop offset="0%" stopColor={CHART_COLORS[0]} stopOpacity={0.45} />
+              <stop offset="100%" stopColor={CHART_COLORS[0]} stopOpacity={0.05} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeOpacity={0.15} />

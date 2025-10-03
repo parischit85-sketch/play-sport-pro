@@ -15,13 +15,13 @@ export function computeClubRanking(players = [], matches = [], clubId, options =
     return { players: [], matches: [] };
   }
   const legacy = clubId === 'default-club' || clubId === 'sporting-cat';
-  const filteredPlayers = players.filter(p => p.clubId === clubId || (legacy && !p.clubId));
-  const playerIds = new Set(filteredPlayers.map(p => p.id));
-  const filteredMatches = matches.filter(m => {
+  const filteredPlayers = players.filter((p) => p.clubId === clubId || (legacy && !p.clubId));
+  const playerIds = new Set(filteredPlayers.map((p) => p.id));
+  const filteredMatches = matches.filter((m) => {
     const sameClub = m.clubId === clubId || (legacy && !m.clubId);
     if (!sameClub) return false;
     // ensure at least one player belongs to club filtered set (defensive)
-    return m.teamA?.some(id => playerIds.has(id)) || m.teamB?.some(id => playerIds.has(id));
+    return m.teamA?.some((id) => playerIds.has(id)) || m.teamB?.some((id) => playerIds.has(id));
   });
   return baseRecompute(filteredPlayers, filteredMatches);
 }

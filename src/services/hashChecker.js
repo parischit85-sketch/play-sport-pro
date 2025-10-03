@@ -36,7 +36,7 @@ class HashChecker {
 
       return null;
     } catch (error) {
-      console.error("[HashChecker] Error extracting hash:", error);
+      console.error('[HashChecker] Error extracting hash:', error);
       return null;
     }
   }
@@ -44,7 +44,7 @@ class HashChecker {
   // Inizializza il controllo hash
   init() {
     // TEMPORANEAMENTE DISABILITATO per evitare refresh continui
-    console.log("[HashChecker] Temporarily disabled to prevent refresh loops");
+    console.log('[HashChecker] Temporarily disabled to prevent refresh loops');
     return;
   }
 
@@ -63,9 +63,9 @@ class HashChecker {
           const { hashMismatch, currentHash, clientHash } = event.data;
 
           if (hashMismatch) {
-            console.log("[HashChecker] Hash mismatch detected!");
-            console.log("Client hash:", clientHash);
-            console.log("SW hash:", currentHash);
+            console.log('[HashChecker] Hash mismatch detected!');
+            console.log('Client hash:', clientHash);
+            console.log('SW hash:', currentHash);
             this.handleHashMismatch();
           }
 
@@ -74,14 +74,14 @@ class HashChecker {
 
         navigator.serviceWorker.controller.postMessage(
           {
-            type: "CHECK_HASH",
+            type: 'CHECK_HASH',
             hash: this.currentHash,
           },
-          [channel.port2],
+          [channel.port2]
         );
       });
     } catch (error) {
-      console.error("[HashChecker] Update check failed:", error);
+      console.error('[HashChecker] Update check failed:', error);
     }
   }
 
@@ -94,14 +94,12 @@ class HashChecker {
   // Pulisce la cache e ricarica la pagina
   async clearCacheAndReload() {
     try {
-      console.log("[HashChecker] Clearing cache and reloading...");
+      console.log('[HashChecker] Clearing cache and reloading...');
 
       // Pulisci tutte le cache
-      if ("caches" in window) {
+      if ('caches' in window) {
         const cacheNames = await caches.keys();
-        await Promise.all(
-          cacheNames.map((cacheName) => caches.delete(cacheName)),
-        );
+        await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
       }
 
       // Notifica il Service Worker di pulire anche le sue cache
@@ -114,10 +112,7 @@ class HashChecker {
           }, 500);
         };
 
-        navigator.serviceWorker.controller.postMessage(
-          { type: "CLEAR_CACHE" },
-          [channel.port2],
-        );
+        navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_CACHE' }, [channel.port2]);
       } else {
         // Fallback: ricarica diretta
         setTimeout(() => {
@@ -125,7 +120,7 @@ class HashChecker {
         }, 500);
       }
     } catch (error) {
-      console.error("[HashChecker] Cache clear failed:", error);
+      console.error('[HashChecker] Cache clear failed:', error);
       // Fallback: ricarica comunque
       window.location.reload(true);
     }

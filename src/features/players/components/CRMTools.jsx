@@ -3,29 +3,24 @@
 // Strumenti CRM: esportazione CSV, operazioni bulk, analytics
 // =============================================
 
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-export default function CRMTools({
-  players,
-  T,
-  onBulkOperation,
-  onRefreshData,
-}) {
+export default function CRMTools({ players, T, onBulkOperation, onRefreshData }) {
   const [exportSettings, setExportSettings] = useState({
-    format: "csv",
+    format: 'csv',
     includePersonalData: true,
     includeSportsData: true,
     includeWalletData: true,
     includeBookingHistory: false,
     includeNotes: false,
-    dateRange: "all",
+    dateRange: 'all',
   });
 
   const [bulkAction, setBulkAction] = useState({
-    type: "",
-    category: "",
+    type: '',
+    category: '',
     discount: 0,
-    message: "",
+    message: '',
     selectedPlayers: [],
   });
 
@@ -39,21 +34,14 @@ export default function CRMTools({
     const thisMonth = now.getMonth();
     const thisYear = now.getFullYear();
 
-    const activeMembers = players.filter((p) => p.category === "member").length;
-    const totalWalletBalance = players.reduce(
-      (sum, p) => sum + (p.wallet?.balance || 0),
-      0,
-    );
+    const activeMembers = players.filter((p) => p.category === 'member').length;
+    const totalWalletBalance = players.reduce((sum, p) => sum + (p.wallet?.balance || 0), 0);
     const newPlayersThisMonth = players.filter((p) => {
       const createdDate = new Date(p.createdAt || now);
-      return (
-        createdDate.getMonth() === thisMonth &&
-        createdDate.getFullYear() === thisYear
-      );
+      return createdDate.getMonth() === thisMonth && createdDate.getFullYear() === thisYear;
     }).length;
 
-    const avgWalletBalance =
-      players.length > 0 ? totalWalletBalance / players.length : 0;
+    const avgWalletBalance = players.length > 0 ? totalWalletBalance / players.length : 0;
 
     // Calcola distribuzione per categoria
     const categoryDistribution = players.reduce((acc, player) => {
@@ -88,51 +76,39 @@ export default function CRMTools({
 
     // Headers base
     if (exportSettings.includePersonalData) {
-      headers.push(
-        "Nome",
-        "Cognome",
-        "Email",
-        "Telefono",
-        "Data Nascita",
-        "Categoria",
-      );
+      headers.push('Nome', 'Cognome', 'Email', 'Telefono', 'Data Nascita', 'Categoria');
     }
 
     if (exportSettings.includeSportsData) {
-      headers.push(
-        "Sport",
-        "Livello Padel",
-        "Livello Tennis",
-        "Posizione Preferita",
-      );
+      headers.push('Sport', 'Livello Padel', 'Livello Tennis', 'Posizione Preferita');
     }
 
     if (exportSettings.includeWalletData) {
-      headers.push("Saldo Wallet", "Totale Ricariche", "Ultima Ricarica");
+      headers.push('Saldo Wallet', 'Totale Ricariche', 'Ultima Ricarica');
     }
 
-    let csvContent = headers.join(",") + "\n";
+    let csvContent = headers.join(',') + '\n';
 
     players.forEach((player) => {
       const row = [];
 
       if (exportSettings.includePersonalData) {
         row.push(
-          `"${player.firstName || ""}"`,
-          `"${player.lastName || ""}"`,
-          `"${player.email || ""}"`,
-          `"${player.phone || ""}"`,
-          `"${player.dateOfBirth || ""}"`,
-          `"${player.category || ""}"`,
+          `"${player.firstName || ''}"`,
+          `"${player.lastName || ''}"`,
+          `"${player.email || ''}"`,
+          `"${player.phone || ''}"`,
+          `"${player.dateOfBirth || ''}"`,
+          `"${player.category || ''}"`
         );
       }
 
       if (exportSettings.includeSportsData) {
         row.push(
-          `"${(player.sports || []).join(", ")}"`,
-          `"${player.ratings?.padel || ""}"`,
-          `"${player.ratings?.tennis || ""}"`,
-          `"${player.preferredPosition || ""}"`,
+          `"${(player.sports || []).join(', ')}"`,
+          `"${player.ratings?.padel || ''}"`,
+          `"${player.ratings?.tennis || ''}"`,
+          `"${player.preferredPosition || ''}"`
         );
       }
 
@@ -140,11 +116,11 @@ export default function CRMTools({
         row.push(
           `"${player.wallet?.balance || 0}"`,
           `"${player.wallet?.totalTopups || 0}"`,
-          `"${player.wallet?.lastTopupDate || ""}"`,
+          `"${player.wallet?.lastTopupDate || ''}"`
         );
       }
 
-      csvContent += row.join(",") + "\n";
+      csvContent += row.join(',') + '\n';
     });
 
     return csvContent;
@@ -152,16 +128,13 @@ export default function CRMTools({
 
   const downloadCSV = () => {
     const csvContent = generateCSV();
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
 
-    link.setAttribute("href", url);
-    link.setAttribute(
-      "download",
-      `giocatori_${new Date().toISOString().split("T")[0]}.csv`,
-    );
-    link.style.visibility = "hidden";
+    link.setAttribute('href', url);
+    link.setAttribute('download', `giocatori_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
 
     document.body.appendChild(link);
     link.click();
@@ -172,23 +145,23 @@ export default function CRMTools({
 
   const executeBulkAction = () => {
     // Qui implementeremo le operazioni bulk
-    console.log("Esecuzione bulk action:", bulkAction);
+    console.log('Esecuzione bulk action:', bulkAction);
 
     if (onBulkOperation) {
       onBulkOperation(bulkAction);
     }
 
     setBulkAction({
-      type: "",
-      category: "",
+      type: '',
+      category: '',
       discount: 0,
-      message: "",
+      message: '',
       selectedPlayers: [],
     });
     setShowBulkModal(false);
 
     alert(
-      `Operazione bulk "${bulkAction.type}" eseguita su ${bulkAction.selectedPlayers.length} giocatori!`,
+      `Operazione bulk "${bulkAction.type}" eseguita su ${bulkAction.selectedPlayers.length} giocatori!`
     );
   };
 
@@ -215,7 +188,7 @@ export default function CRMTools({
           className={`${T.btnSecondary} flex items-center gap-2 px-6 py-3`}
         >
           📈 Analytics
-          {showAnalytics ? " (Nascondi)" : " (Mostra)"}
+          {showAnalytics ? ' (Nascondi)' : ' (Mostra)'}
         </button>
 
         <button
@@ -229,9 +202,7 @@ export default function CRMTools({
       {/* Analytics Panel */}
       {showAnalytics && (
         <div className={`${T.cardBg} ${T.border} rounded-xl p-6`}>
-          <h3
-            className={`text-lg font-bold ${T.text} mb-6 flex items-center gap-2`}
-          >
+          <h3 className={`text-lg font-bold ${T.text} mb-6 flex items-center gap-2`}>
             📈 Analytics CRM
           </h3>
 
@@ -241,73 +212,58 @@ export default function CRMTools({
               <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                 {stats.totalPlayers}
               </div>
-              <div className="text-sm text-blue-700 dark:text-blue-300">
-                Giocatori Totali
-              </div>
+              <div className="text-sm text-blue-700 dark:text-blue-300">Giocatori Totali</div>
             </div>
 
             <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
               <div className="text-3xl font-bold text-green-600 dark:text-green-400">
                 {stats.activeMembers}
               </div>
-              <div className="text-sm text-green-700 dark:text-green-300">
-                Membri Attivi
-              </div>
+              <div className="text-sm text-green-700 dark:text-green-300">Membri Attivi</div>
             </div>
 
             <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
               <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
                 {stats.newPlayersThisMonth}
               </div>
-              <div className="text-sm text-purple-700 dark:text-purple-300">
-                Nuovi questo Mese
-              </div>
+              <div className="text-sm text-purple-700 dark:text-purple-300">Nuovi questo Mese</div>
             </div>
 
             <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl">
               <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
                 €{stats.totalWalletBalance.toFixed(0)}
               </div>
-              <div className="text-sm text-orange-700 dark:text-orange-300">
-                Totale Wallet
-              </div>
+              <div className="text-sm text-orange-700 dark:text-orange-300">Totale Wallet</div>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Distribuzione per categoria */}
             <div>
-              <h4 className={`font-semibold ${T.text} mb-3`}>
-                Distribuzione per Categoria
-              </h4>
+              <h4 className={`font-semibold ${T.text} mb-3`}>Distribuzione per Categoria</h4>
               <div className="space-y-2">
-                {Object.entries(stats.categoryDistribution).map(
-                  ([category, count]) => (
-                    <div
-                      key={category}
-                      className="flex justify-between items-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800"
-                    >
-                      <span className={`capitalize ${T.text}`}>
-                        {category === "member" && "👑 Membri"}
-                        {category === "non_member" && "👤 Non Membri"}
-                        {category === "guest" && "🏃 Ospiti"}
-                        {category === "vip" && "⭐ VIP"}
-                      </span>
-                      <span className={`font-medium ${T.text}`}>
-                        {count} (
-                        {((count / stats.totalPlayers) * 100).toFixed(1)}%)
-                      </span>
-                    </div>
-                  ),
-                )}
+                {Object.entries(stats.categoryDistribution).map(([category, count]) => (
+                  <div
+                    key={category}
+                    className="flex justify-between items-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800"
+                  >
+                    <span className={`capitalize ${T.text}`}>
+                      {category === 'member' && '👑 Membri'}
+                      {category === 'non_member' && '👤 Non Membri'}
+                      {category === 'guest' && '🏃 Ospiti'}
+                      {category === 'vip' && '⭐ VIP'}
+                    </span>
+                    <span className={`font-medium ${T.text}`}>
+                      {count} ({((count / stats.totalPlayers) * 100).toFixed(1)}%)
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
 
             {/* Sport più popolari */}
             <div>
-              <h4 className={`font-semibold ${T.text} mb-3`}>
-                Sport più Popolari
-              </h4>
+              <h4 className={`font-semibold ${T.text} mb-3`}>Sport più Popolari</h4>
               <div className="space-y-2">
                 {Object.entries(stats.sportsDistribution)
                   .sort(([, a], [, b]) => b - a)
@@ -318,15 +274,13 @@ export default function CRMTools({
                       className="flex justify-between items-center p-2 rounded-lg bg-gray-50 dark:bg-gray-800"
                     >
                       <span className={`capitalize ${T.text}`}>
-                        {sport === "padel" && "🎾 Padel"}
-                        {sport === "tennis" && "🎾 Tennis"}
-                        {sport === "calcetto" && "⚽ Calcetto"}
-                        {sport === "beach_volley" && "🏐 Beach Volley"}
-                        {sport || "❓ Altro"}
+                        {sport === 'padel' && '🎾 Padel'}
+                        {sport === 'tennis' && '🎾 Tennis'}
+                        {sport === 'calcetto' && '⚽ Calcetto'}
+                        {sport === 'beach_volley' && '🏐 Beach Volley'}
+                        {sport || '❓ Altro'}
                       </span>
-                      <span className={`font-medium ${T.text}`}>
-                        {count} giocatori
-                      </span>
+                      <span className={`font-medium ${T.text}`}>{count} giocatori</span>
                     </div>
                   ))}
               </div>
@@ -356,10 +310,7 @@ export default function CRMTools({
             <p className={`text-sm ${T.subtext} mb-4`}>
               Scarica i dati dei giocatori in formato CSV o Excel
             </p>
-            <button
-              onClick={() => setShowExportModal(true)}
-              className={`${T.btnPrimary} w-full`}
-            >
+            <button onClick={() => setShowExportModal(true)} className={`${T.btnPrimary} w-full`}>
               Esporta Ora
             </button>
           </div>
@@ -368,15 +319,13 @@ export default function CRMTools({
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
           <div className="text-center">
             <div className="text-4xl mb-2">✉️</div>
-            <h4 className={`font-semibold ${T.text} mb-2`}>
-              Messaggio di Massa
-            </h4>
+            <h4 className={`font-semibold ${T.text} mb-2`}>Messaggio di Massa</h4>
             <p className={`text-sm ${T.subtext} mb-4`}>
               Invia comunicazioni a più giocatori contemporaneamente
             </p>
             <button
               onClick={() => {
-                setBulkAction((prev) => ({ ...prev, type: "message" }));
+                setBulkAction((prev) => ({ ...prev, type: 'message' }));
                 setShowBulkModal(true);
               }}
               className={`${T.btnSecondary} w-full`}
@@ -389,15 +338,13 @@ export default function CRMTools({
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
           <div className="text-center">
             <div className="text-4xl mb-2">🏷️</div>
-            <h4 className={`font-semibold ${T.text} mb-2`}>
-              Gestione Categorie
-            </h4>
+            <h4 className={`font-semibold ${T.text} mb-2`}>Gestione Categorie</h4>
             <p className={`text-sm ${T.subtext} mb-4`}>
               Modifica le categorie di più giocatori insieme
             </p>
             <button
               onClick={() => {
-                setBulkAction((prev) => ({ ...prev, type: "category" }));
+                setBulkAction((prev) => ({ ...prev, type: 'category' }));
                 setShowBulkModal(true);
               }}
               className={`${T.btnSecondary} w-full`}
@@ -411,14 +358,10 @@ export default function CRMTools({
       {/* Modal Esportazione */}
       {showExportModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div
-            className={`${T.modalBg} rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden`}
-          >
+          <div className={`${T.modalBg} rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden`}>
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <h3 className={`text-xl font-bold ${T.text}`}>
-                  📊 Esporta Dati Giocatori
-                </h3>
+                <h3 className={`text-xl font-bold ${T.text}`}>📊 Esporta Dati Giocatori</h3>
                 <button
                   onClick={() => setShowExportModal(false)}
                   className={`${T.btnSecondary} px-4 py-2`}
@@ -440,7 +383,7 @@ export default function CRMTools({
                         type="radio"
                         name="format"
                         value="csv"
-                        checked={exportSettings.format === "csv"}
+                        checked={exportSettings.format === 'csv'}
                         onChange={(e) =>
                           setExportSettings((prev) => ({
                             ...prev,
@@ -456,7 +399,7 @@ export default function CRMTools({
                         type="radio"
                         name="format"
                         value="excel"
-                        checked={exportSettings.format === "excel"}
+                        checked={exportSettings.format === 'excel'}
                         onChange={(e) =>
                           setExportSettings((prev) => ({
                             ...prev,
@@ -487,9 +430,7 @@ export default function CRMTools({
                         }
                         className="text-blue-600"
                       />
-                      <span className={T.text}>
-                        👤 Dati Personali (Nome, Email, Telefono)
-                      </span>
+                      <span className={T.text}>👤 Dati Personali (Nome, Email, Telefono)</span>
                     </label>
 
                     <label className="flex items-center space-x-3">
@@ -504,9 +445,7 @@ export default function CRMTools({
                         }
                         className="text-blue-600"
                       />
-                      <span className={T.text}>
-                        🎾 Dati Sportivi (Sport, Livelli, Posizioni)
-                      </span>
+                      <span className={T.text}>🎾 Dati Sportivi (Sport, Livelli, Posizioni)</span>
                     </label>
 
                     <label className="flex items-center space-x-3">
@@ -521,9 +460,7 @@ export default function CRMTools({
                         }
                         className="text-blue-600"
                       />
-                      <span className={T.text}>
-                        💰 Dati Wallet (Saldo, Ricariche)
-                      </span>
+                      <span className={T.text}>💰 Dati Wallet (Saldo, Ricariche)</span>
                     </label>
 
                     <label className="flex items-center space-x-3">
@@ -559,10 +496,7 @@ export default function CRMTools({
                 </div>
 
                 <div className="flex gap-3">
-                  <button
-                    onClick={downloadCSV}
-                    className={`${T.btnPrimary} flex-1`}
-                  >
+                  <button onClick={downloadCSV} className={`${T.btnPrimary} flex-1`}>
                     📊 Scarica ({exportSettings.format.toUpperCase()})
                   </button>
                   <button
@@ -581,14 +515,10 @@ export default function CRMTools({
       {/* Modal Operazioni Bulk */}
       {showBulkModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div
-            className={`${T.modalBg} rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden`}
-          >
+          <div className={`${T.modalBg} rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden`}>
             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
-                <h3 className={`text-xl font-bold ${T.text}`}>
-                  🔄 Operazioni Bulk
-                </h3>
+                <h3 className={`text-xl font-bold ${T.text}`}>🔄 Operazioni Bulk</h3>
                 <button
                   onClick={() => setShowBulkModal(false)}
                   className={`${T.btnSecondary} px-4 py-2`}
@@ -622,11 +552,9 @@ export default function CRMTools({
                   </select>
                 </div>
 
-                {bulkAction.type === "category" && (
+                {bulkAction.type === 'category' && (
                   <div>
-                    <label
-                      className={`block text-sm font-medium ${T.text} mb-2`}
-                    >
+                    <label className={`block text-sm font-medium ${T.text} mb-2`}>
                       Nuova Categoria
                     </label>
                     <select
@@ -648,13 +576,9 @@ export default function CRMTools({
                   </div>
                 )}
 
-                {bulkAction.type === "message" && (
+                {bulkAction.type === 'message' && (
                   <div>
-                    <label
-                      className={`block text-sm font-medium ${T.text} mb-2`}
-                    >
-                      Messaggio
-                    </label>
+                    <label className={`block text-sm font-medium ${T.text} mb-2`}>Messaggio</label>
                     <textarea
                       value={bulkAction.message}
                       onChange={(e) =>
@@ -670,15 +594,10 @@ export default function CRMTools({
                   </div>
                 )}
 
-                {(bulkAction.type === "discount" ||
-                  bulkAction.type === "wallet_credit") && (
+                {(bulkAction.type === 'discount' || bulkAction.type === 'wallet_credit') && (
                   <div>
-                    <label
-                      className={`block text-sm font-medium ${T.text} mb-2`}
-                    >
-                      {bulkAction.type === "discount"
-                        ? "Percentuale Sconto"
-                        : "Importo Ricarica"}{" "}
+                    <label className={`block text-sm font-medium ${T.text} mb-2`}>
+                      {bulkAction.type === 'discount' ? 'Percentuale Sconto' : 'Importo Ricarica'}{' '}
                       (€)
                     </label>
                     <input
@@ -690,9 +609,7 @@ export default function CRMTools({
                           discount: parseFloat(e.target.value) || 0,
                         }))
                       }
-                      placeholder={
-                        bulkAction.type === "discount" ? "10" : "20.00"
-                      }
+                      placeholder={bulkAction.type === 'discount' ? '10' : '20.00'}
                       className={`${T.input} w-full`}
                     />
                   </div>
@@ -703,8 +620,8 @@ export default function CRMTools({
                     Giocatori Selezionati: {stats.totalPlayers}
                   </div>
                   <div className={`text-xs ${T.subtext}`}>
-                    Tutti i giocatori verranno inclusi nell'operazione bulk. In
-                    futuro aggiungeremo la selezione manuale.
+                    Tutti i giocatori verranno inclusi nell'operazione bulk. In futuro aggiungeremo
+                    la selezione manuale.
                   </div>
                 </div>
 
@@ -713,10 +630,8 @@ export default function CRMTools({
                     onClick={executeBulkAction}
                     disabled={
                       !bulkAction.type ||
-                      (bulkAction.type === "category" &&
-                        !bulkAction.category) ||
-                      (bulkAction.type === "message" &&
-                        !bulkAction.message.trim())
+                      (bulkAction.type === 'category' && !bulkAction.category) ||
+                      (bulkAction.type === 'message' && !bulkAction.message.trim())
                     }
                     className={`${T.btnPrimary} flex-1 disabled:opacity-50 disabled:cursor-not-allowed`}
                   >

@@ -2,14 +2,14 @@
 // FILE: src/components/booking/ClubSelectionForBooking.jsx
 // Componente per la selezione del circolo prima delle prenotazioni
 // =============================================
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@contexts/AuthContext.jsx";
-import { useClub } from "@contexts/ClubContext.jsx";
-import { createDSClasses } from "@lib/design-system.js";
-import { getClubs } from "@services/clubs.js";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@contexts/AuthContext.jsx';
+import { useClub } from '@contexts/ClubContext.jsx';
+import { createDSClasses } from '@lib/design-system.js';
+import { getClubs } from '@services/clubs.js';
 
-export default function ClubSelectionForBooking({ bookingType = "campo", T }) {
+export default function ClubSelectionForBooking({ bookingType = 'campo', T }) {
   const { user } = useAuth();
   const { selectClub } = useClub();
   const navigate = useNavigate();
@@ -18,10 +18,10 @@ export default function ClubSelectionForBooking({ bookingType = "campo", T }) {
   const [clubs, setClubs] = useState([]);
   const [userAffiliations, setUserAffiliations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [showSearch, setShowSearch] = useState(false);
 
-  const bookingTypeLabel = bookingType === "campo" ? "Campo" : "Lezione";
+  const bookingTypeLabel = bookingType === 'campo' ? 'Campo' : 'Lezione';
 
   useEffect(() => {
     loadClubsAndAffiliations();
@@ -30,7 +30,7 @@ export default function ClubSelectionForBooking({ bookingType = "campo", T }) {
   const loadClubsAndAffiliations = async () => {
     try {
       setLoading(true);
-      
+
       // Carica tutti i circoli
       const allClubs = await getClubs();
       setClubs(allClubs || []);
@@ -41,7 +41,7 @@ export default function ClubSelectionForBooking({ bookingType = "campo", T }) {
         setUserAffiliations(userAffiliationsData);
       }
     } catch (error) {
-      console.error("Errore nel caricamento circoli:", error);
+      console.error('Errore nel caricamento circoli:', error);
     } finally {
       setLoading(false);
     }
@@ -51,33 +51,34 @@ export default function ClubSelectionForBooking({ bookingType = "campo", T }) {
     try {
       // Seleziona il circolo nel contesto
       await selectClub(club.id);
-      
+
       // Naviga alla pagina di prenotazione specifica del circolo
-      const bookingPath = bookingType === "campo" ? "booking" : "lessons";
+      const bookingPath = bookingType === 'campo' ? 'booking' : 'lessons';
       navigate(`/club/${club.id}/${bookingPath}`);
     } catch (error) {
-      console.error("Errore nella selezione del circolo:", error);
+      console.error('Errore nella selezione del circolo:', error);
     }
   };
 
   // Filtra circoli per affiliazioni
-  const affiliatedClubs = clubs.filter(club => 
-    userAffiliations.some(aff => aff.clubId === club.id && aff.status === "approved")
+  const affiliatedClubs = clubs.filter((club) =>
+    userAffiliations.some((aff) => aff.clubId === club.id && aff.status === 'approved')
   );
 
   // Filtra circoli per ricerca
-  const searchFilteredClubs = searchTerm 
-    ? clubs.filter(club => 
-        club.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        club.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        club.address?.toLowerCase().includes(searchTerm.toLowerCase())
+  const searchFilteredClubs = searchTerm
+    ? clubs.filter(
+        (club) =>
+          club.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          club.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          club.address?.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : [];
 
   // Circoli vicini (per ora tutti gli altri, in futuro si può aggiungere geolocalizzazione)
-  const nearbyClubs = clubs.filter(club => 
-    !affiliatedClubs.some(aff => aff.id === club.id)
-  ).slice(0, 6); // Limita a 6 circoli per non sovraccaricare
+  const nearbyClubs = clubs
+    .filter((club) => !affiliatedClubs.some((aff) => aff.id === club.id))
+    .slice(0, 6); // Limita a 6 circoli per non sovraccaricare
 
   if (loading) {
     return (
@@ -93,12 +94,11 @@ export default function ClubSelectionForBooking({ bookingType = "campo", T }) {
       <div className={`${T.cardBg} ${T.border} rounded-lg p-6 text-center`}>
         <div className="space-y-4">
           <div className="text-6xl">🎾</div>
-          <h1 className={`${ds.h2} text-gray-900 dark:text-white`}>
-            Prenota {bookingTypeLabel}
-          </h1>
+          <h1 className={`${ds.h2} text-gray-900 dark:text-white`}>Prenota {bookingTypeLabel}</h1>
           <p className={`${ds.bodyLg} text-gray-600 dark:text-gray-400 max-w-2xl mx-auto`}>
-            Scegli prima il circolo dove vuoi prenotare un {bookingType === "campo" ? "campo" : "lezione"}. 
-            Ti mostreremo prima i circoli dove sei affiliato, poi quelli più vicini.
+            Scegli prima il circolo dove vuoi prenotare un{' '}
+            {bookingType === 'campo' ? 'campo' : 'lezione'}. Ti mostreremo prima i circoli dove sei
+            affiliato, poi quelli più vicini.
           </p>
         </div>
       </div>
@@ -263,7 +263,7 @@ export default function ClubSelectionForBooking({ bookingType = "campo", T }) {
       {/* Pulsante per tornare alla dashboard */}
       <div className={`${T.cardBg} ${T.border} rounded-lg p-6 text-center`}>
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate('/dashboard')}
           className={`${T.btnSecondary} px-4 py-2 text-sm`}
         >
           ← Torna alla Dashboard

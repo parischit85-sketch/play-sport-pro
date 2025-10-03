@@ -111,20 +111,12 @@ export const createMockSecurityContext = (overrides = {}) => ({
 
 // AuthContext mock provider
 const MockAuthProvider = ({ children, value = createMockAuthContext() }) => {
-  return (
-    <div data-testid="mock-auth-provider">
-      {children}
-    </div>
-  );
+  return <div data-testid="mock-auth-provider">{children}</div>;
 };
 
-// UIContext mock provider  
+// UIContext mock provider
 const MockUIProvider = ({ children, value = createMockUIContext() }) => {
-  return (
-    <div data-testid="mock-ui-provider">
-      {children}
-    </div>
-  );
+  return <div data-testid="mock-ui-provider">{children}</div>;
 };
 
 // Custom render with providers
@@ -139,9 +131,7 @@ export const renderWithProviders = (ui, options = {}) => {
   const Wrapper = ({ children }) => (
     <BrowserRouter {...routerOptions}>
       <MockAuthProvider value={authContextValue}>
-        <MockUIProvider value={uiContextValue}>
-          {children}
-        </MockUIProvider>
+        <MockUIProvider value={uiContextValue}>{children}</MockUIProvider>
       </MockAuthProvider>
     </BrowserRouter>
   );
@@ -152,12 +142,8 @@ export const renderWithProviders = (ui, options = {}) => {
 // Render with router only
 export const renderWithRouter = (ui, options = {}) => {
   const { routerOptions = {}, ...renderOptions } = options;
-  
-  const Wrapper = ({ children }) => (
-    <BrowserRouter {...routerOptions}>
-      {children}
-    </BrowserRouter>
-  );
+
+  const Wrapper = ({ children }) => <BrowserRouter {...routerOptions}>{children}</BrowserRouter>;
 
   return render(ui, { wrapper: Wrapper, ...renderOptions });
 };
@@ -220,11 +206,11 @@ export const createMockFirestoreOperations = () => {
 
 export const waitForLoadingToFinish = async () => {
   // Wait for any async operations to complete
-  await new Promise(resolve => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
 };
 
 export const simulateNetworkDelay = (ms = 100) => {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 export const createMockFormData = (fields = {}) => {
@@ -234,17 +220,17 @@ export const createMockFormData = (fields = {}) => {
     confirmPassword: 'password123',
     name: 'Test User',
   };
-  
+
   return { ...defaultFields, ...fields };
 };
 
 export const mockLocalStorage = () => {
   const store = new Map();
-  
+
   return {
-    getItem: vi.fn(key => store.get(key) || null),
+    getItem: vi.fn((key) => store.get(key) || null),
     setItem: vi.fn((key, value) => store.set(key, value)),
-    removeItem: vi.fn(key => store.delete(key)),
+    removeItem: vi.fn((key) => store.delete(key)),
     clear: vi.fn(() => store.clear()),
     length: store.size,
   };
@@ -293,7 +279,7 @@ export const measureRenderTime = async (renderFn) => {
   const start = performance.now();
   const result = await renderFn();
   const end = performance.now();
-  
+
   return {
     result,
     renderTime: end - start,
@@ -302,13 +288,13 @@ export const measureRenderTime = async (renderFn) => {
 
 export const createPerformanceObserver = () => {
   const entries = [];
-  
+
   const observer = {
     observe: vi.fn(),
     disconnect: vi.fn(),
     takeRecords: vi.fn(() => entries),
   };
-  
+
   return { observer, entries };
 };
 

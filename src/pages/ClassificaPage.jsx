@@ -1,16 +1,17 @@
 // =============================================
 // FILE: src/pages/ClassificaPage.jsx
 // =============================================
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { themeTokens } from "@lib/theme.js";
-import { useClub } from "@contexts/ClubContext.jsx";
-import { computeClubRanking } from "@lib/ranking-club.js";
-import Classifica from "@features/classifica/Classifica.jsx";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { themeTokens } from '@lib/theme.js';
+import { useClub } from '@contexts/ClubContext.jsx';
+import { computeClubRanking } from '@lib/ranking-club.js';
+import Classifica from '@features/classifica/Classifica.jsx';
 
 export default function ClassificaPage() {
   const navigate = useNavigate();
-  const { clubId, players, playersLoaded, loadPlayers, matches, matchesLoaded, loadMatches } = useClub();
+  const { clubId, players, playersLoaded, loadPlayers, matches, matchesLoaded, loadMatches } =
+    useClub();
   const T = React.useMemo(() => themeTokens(), []);
 
   const handleOpenStats = (playerId) => {

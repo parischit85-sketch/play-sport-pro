@@ -3,18 +3,18 @@
 // Servizio per gestione collezione `users` unificata
 // =============================================
 
-import { 
-  doc, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  collection, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+  orderBy,
   limit,
-  serverTimestamp 
+  serverTimestamp,
 } from 'firebase/firestore';
 import { db } from './firebase.js';
 
@@ -24,13 +24,13 @@ import { db } from './firebase.js';
 
 export const USER_GLOBAL_ROLES = {
   USER: 'user',
-  SUPER_ADMIN: 'super_admin'
+  SUPER_ADMIN: 'super_admin',
 };
 
 export const USER_STATUS = {
   ACTIVE: 'active',
   INACTIVE: 'inactive',
-  SUSPENDED: 'suspended'
+  SUSPENDED: 'suspended',
 };
 
 // =============================================
@@ -44,15 +44,15 @@ export const USER_STATUS = {
  */
 export async function getUser(uid) {
   if (!uid) return null;
-  
+
   try {
     const userRef = doc(db, 'users', uid);
     const userSnap = await getDoc(userRef);
-    
+
     if (userSnap.exists()) {
       return { uid, ...userSnap.data() };
     }
-    
+
     return null;
   } catch (error) {
     console.error('Error getting user:', error);
@@ -68,42 +68,42 @@ export async function getUser(uid) {
  */
 export async function createUser(uid, userData) {
   if (!uid) throw new Error('UID is required');
-  
+
   const now = serverTimestamp();
-  
+
   const newUser = {
     // Required fields
     email: userData.email || '',
     displayName: userData.displayName || userData.firstName || 'Utente',
     firstName: userData.firstName || '',
     lastName: userData.lastName || '',
-    
+
     // System fields
     globalRole: userData.globalRole || USER_GLOBAL_ROLES.USER,
     status: userData.status || USER_STATUS.ACTIVE,
     isActive: userData.isActive !== false,
     registeredAt: userData.registeredAt || now,
     lastLoginAt: now,
-    
+
     // Optional profile fields
     phone: userData.phone || '',
     avatar: userData.avatar || '',
     bio: userData.bio || '',
     dateOfBirth: userData.dateOfBirth || null,
-    
+
     // System metadata
     version: 1,
     createdAt: now,
     updatedAt: now,
-    
+
     // Keep any additional fields provided
-    ...userData
+    ...userData,
   };
-  
+
   try {
     const userRef = doc(db, 'users', uid);
     await setDoc(userRef, newUser);
-    
+
     console.log('✅ User created:', uid);
     return { uid, ...newUser };
   } catch (error) {
@@ -120,23 +120,23 @@ export async function createUser(uid, userData) {
  */
 export async function updateUser(uid, updates) {
   if (!uid) throw new Error('UID is required');
-  
+
   try {
     // Verifica prima se l'utente esiste
     const exists = await userExists(uid);
     if (!exists) {
       throw new Error(`Cannot update user: user ${uid} does not exist`);
     }
-    
+
     const userRef = doc(db, 'users', uid);
-    
+
     const updateData = {
       ...updates,
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     };
-    
+
     await updateDoc(userRef, updateData);
-    
+
     // Return updated user data
     return await getUser(uid);
   } catch (error) {
@@ -151,7 +151,7 @@ export async function updateUser(uid, updates) {
  */
 export async function updateLastLogin(uid) {
   if (!uid) return;
-  
+
   try {
     // Verifica prima se l'utente esiste
     const exists = await userExists(uid);
@@ -159,11 +159,11 @@ export async function updateLastLogin(uid) {
       console.warn('Cannot update last login: user does not exist:', uid);
       return;
     }
-    
+
     const userRef = doc(db, 'users', uid);
     await updateDoc(userRef, {
       lastLoginAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
     });
   } catch (error) {
     console.error('Error updating last login:', error);
@@ -178,7 +178,7 @@ export async function updateLastLogin(uid) {
  */
 export async function userExists(uid) {
   if (!uid) return false;
-  
+
   try {
     const userRef = doc(db, 'users', uid);
     const userSnap = await getDoc(userRef);
@@ -196,15 +196,15 @@ export async function userExists(uid) {
  */
 export async function createUserIfNeeded(firebaseUser) {
   if (!firebaseUser?.uid) throw new Error('Invalid Firebase user');
-  
+
   const exists = await userExists(firebaseUser.uid);
-  
+
   if (exists) {
     // Update last login and return existing user
     await updateLastLogin(firebaseUser.uid);
     return await getUser(firebaseUser.uid);
   }
-  
+
   // Create new user from Firebase Auth data
   const userData = {
     email: firebaseUser.email || '',
@@ -214,9 +214,9 @@ export async function createUserIfNeeded(firebaseUser) {
     avatar: firebaseUser.photoURL || '',
     globalRole: USER_GLOBAL_ROLES.USER,
     status: USER_STATUS.ACTIVE,
-    isActive: true
+    isActive: true,
   };
-  
+
   return await createUser(firebaseUser.uid, userData);
 }
 
@@ -232,11 +232,11 @@ export async function createUserIfNeeded(firebaseUser) {
  */
 export async function searchUsers(searchTerm, maxResults = 20) {
   if (!searchTerm || searchTerm.length < 2) return [];
-  
+
   try {
     const usersRef = collection(db, 'users');
     const searchLower = searchTerm.toLowerCase();
-    
+
     // Search by email (no isActive filter to avoid index requirement)
     const emailQuery = query(
       usersRef,
@@ -245,37 +245,37 @@ export async function searchUsers(searchTerm, maxResults = 20) {
       orderBy('email'),
       limit(maxResults * 2) // Get more to filter client-side
     );
-    
+
     const emailSnap = await getDocs(emailQuery);
     const results = [];
-    
-    emailSnap.forEach(doc => {
+
+    emailSnap.forEach((doc) => {
       const userData = doc.data();
       // Filter only active users client-side
       if (userData.isActive !== false) {
         results.push({ uid: doc.id, ...userData });
       }
     });
-    
+
     // If we have results, return them
     if (results.length > 0) {
       return results.slice(0, maxResults);
     }
-    
+
     // If no email matches, try searching by displayName or firstName/lastName
     // This requires getting all users and filtering client-side (not ideal for large datasets)
     const allUsersQuery = query(usersRef, limit(100));
     const allUsersSnap = await getDocs(allUsersQuery);
-    
-    allUsersSnap.forEach(doc => {
+
+    allUsersSnap.forEach((doc) => {
       const userData = doc.data();
       if (userData.isActive === false) return;
-      
+
       const fullName = `${userData.firstName || ''} ${userData.lastName || ''}`.toLowerCase();
       const displayName = (userData.displayName || '').toLowerCase();
       const phone = (userData.phone || '').replace(/\s/g, '');
       const searchPhone = searchTerm.replace(/\s/g, '');
-      
+
       if (
         fullName.includes(searchLower) ||
         displayName.includes(searchLower) ||
@@ -284,12 +284,10 @@ export async function searchUsers(searchTerm, maxResults = 20) {
         results.push({ uid: doc.id, ...userData });
       }
     });
-    
+
     // Remove duplicates and limit
-    const uniqueResults = Array.from(
-      new Map(results.map(user => [user.uid, user])).values()
-    );
-    
+    const uniqueResults = Array.from(new Map(results.map((user) => [user.uid, user])).values());
+
     return uniqueResults.slice(0, maxResults);
   } catch (error) {
     console.error('Error searching users:', error);
@@ -304,12 +302,10 @@ export async function searchUsers(searchTerm, maxResults = 20) {
  */
 export async function getUsersByIds(uids) {
   if (!Array.isArray(uids) || uids.length === 0) return [];
-  
+
   try {
-    const users = await Promise.all(
-      uids.map(uid => getUser(uid))
-    );
-    
+    const users = await Promise.all(uids.map((uid) => getUser(uid)));
+
     return users.filter(Boolean); // Remove null values
   } catch (error) {
     console.error('Error getting users by IDs:', error);
@@ -333,7 +329,7 @@ function extractFirstName(displayName) {
 
 /**
  * Extract last name from display name
- * @param {string} displayName - Full display name  
+ * @param {string} displayName - Full display name
  * @returns {string} Last name
  */
 function extractLastName(displayName) {
@@ -359,14 +355,14 @@ export function generateDisplayName(firstName, lastName) {
  */
 export function validateUserData(userData) {
   const errors = [];
-  
+
   if (!userData.email) {
     errors.push('Email is required');
   }
-  
+
   if (!userData.firstName && !userData.displayName) {
     errors.push('First name or display name is required');
   }
-  
+
   return errors;
 }

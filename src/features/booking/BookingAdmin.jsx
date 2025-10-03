@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import Section from "@ui/Section.jsx";
-import Badge from "@ui/Badge.jsx";
-import Modal from "@ui/Modal.jsx";
-import { createDSClasses } from "@lib/design-system.js";
+import React, { useState, useEffect } from 'react';
+import Section from '@ui/Section.jsx';
+import Badge from '@ui/Badge.jsx';
+import Modal from '@ui/Modal.jsx';
+import { createDSClasses } from '@lib/design-system.js';
 import {
   BOOKING_CONFIG,
   getTimeSlots,
@@ -18,7 +18,7 @@ import {
   saveBookings,
   getAdminBookings,
   BOOKING_STATUS,
-} from "@services/bookings.js";
+} from '@services/bookings.js';
 
 function BookingAdmin({ user, T }) {
   const ds = createDSClasses(T);
@@ -26,9 +26,9 @@ function BookingAdmin({ user, T }) {
   // Stato dati
   const [bookings, setBookings] = useState([]);
   const [filteredBookings, setFilteredBookings] = useState([]);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [courtFilter, setCourtFilter] = useState("all");
+  const [selectedDate, setSelectedDate] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [courtFilter, setCourtFilter] = useState('all');
 
   // Stato UI
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -58,11 +58,11 @@ function BookingAdmin({ user, T }) {
       filtered = filtered.filter((b) => b.date === selectedDate);
     }
 
-    if (statusFilter !== "all") {
+    if (statusFilter !== 'all') {
       filtered = filtered.filter((b) => b.status === statusFilter);
     }
 
-    if (courtFilter !== "all") {
+    if (courtFilter !== 'all') {
       filtered = filtered.filter((b) => b.courtId === courtFilter);
     }
 
@@ -77,7 +77,7 @@ function BookingAdmin({ user, T }) {
   };
 
   const handleCancelBooking = async (bookingId) => {
-    if (!confirm("Sei sicuro di voler cancellare questa prenotazione?")) {
+    if (!confirm('Sei sicuro di voler cancellare questa prenotazione?')) {
       return;
     }
 
@@ -87,15 +87,15 @@ function BookingAdmin({ user, T }) {
       if (cancelled) {
         loadBookingsData();
         setMessage({
-          type: "success",
-          text: "Prenotazione cancellata con successo",
+          type: 'success',
+          text: 'Prenotazione cancellata con successo',
         });
       } else {
-        setMessage({ type: "error", text: "Errore nella cancellazione" });
+        setMessage({ type: 'error', text: 'Errore nella cancellazione' });
       }
     } catch (error) {
-      console.error("Errore cancellazione:", error);
-      setMessage({ type: "error", text: "Errore durante la cancellazione" });
+      console.error('Errore cancellazione:', error);
+      setMessage({ type: 'error', text: 'Errore durante la cancellazione' });
     } finally {
       setIsSubmitting(false);
     }
@@ -109,15 +109,15 @@ function BookingAdmin({ user, T }) {
         loadBookingsData();
         setEditingBooking(null);
         setMessage({
-          type: "success",
-          text: "Prenotazione aggiornata con successo",
+          type: 'success',
+          text: 'Prenotazione aggiornata con successo',
         });
       } else {
-        setMessage({ type: "error", text: "Errore nell'aggiornamento" });
+        setMessage({ type: 'error', text: "Errore nell'aggiornamento" });
       }
     } catch (error) {
-      console.error("Errore aggiornamento:", error);
-      setMessage({ type: "error", text: "Errore durante l'aggiornamento" });
+      console.error('Errore aggiornamento:', error);
+      setMessage({ type: 'error', text: "Errore durante l'aggiornamento" });
     } finally {
       setIsSubmitting(false);
     }
@@ -125,15 +125,15 @@ function BookingAdmin({ user, T }) {
 
   const getStatusBadge = (status) => {
     const variants = {
-      [BOOKING_STATUS.CONFIRMED]: "success",
-      [BOOKING_STATUS.CANCELLED]: "danger",
-      [BOOKING_STATUS.PENDING]: "warning",
+      [BOOKING_STATUS.CONFIRMED]: 'success',
+      [BOOKING_STATUS.CANCELLED]: 'danger',
+      [BOOKING_STATUS.PENDING]: 'warning',
     };
 
     const labels = {
-      [BOOKING_STATUS.CONFIRMED]: "Confermata",
-      [BOOKING_STATUS.CANCELLED]: "Cancellata",
-      [BOOKING_STATUS.PENDING]: "In attesa",
+      [BOOKING_STATUS.CONFIRMED]: 'Confermata',
+      [BOOKING_STATUS.CANCELLED]: 'Cancellata',
+      [BOOKING_STATUS.PENDING]: 'In attesa',
     };
 
     return (
@@ -149,14 +149,9 @@ function BookingAdmin({ user, T }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className={`${ds.h3} mb-2`}>Gestione Prenotazioni</h1>
-          <p className={ds.bodySm}>
-            Visualizza e gestisci tutte le prenotazioni campi
-          </p>
+          <p className={ds.bodySm}>Visualizza e gestisci tutte le prenotazioni campi</p>
         </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className={`${T.btnPrimary} px-4 py-2`}
-        >
+        <button onClick={() => setShowCreateModal(true)} className={`${T.btnPrimary} px-4 py-2`}>
           Nuova Prenotazione
         </button>
       </div>
@@ -165,9 +160,9 @@ function BookingAdmin({ user, T }) {
       {message && (
         <div
           className={`p-4 rounded-lg ${
-            message.type === "error"
-              ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 border border-red-200"
-              : "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 border border-emerald-200"
+            message.type === 'error'
+              ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 border border-red-200'
+              : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 border border-emerald-200'
           }`}
         >
           {message.text}
@@ -229,22 +224,13 @@ function BookingAdmin({ user, T }) {
       </Section>
 
       {/* Lista Prenotazioni */}
-      <Section
-        title={`Prenotazioni (${filteredBookings.length})`}
-        variant="minimal"
-        T={T}
-      >
+      <Section title={`Prenotazioni (${filteredBookings.length})`} variant="minimal" T={T}>
         {filteredBookings.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            Nessuna prenotazione trovata
-          </div>
+          <div className="text-center py-8 text-gray-500">Nessuna prenotazione trovata</div>
         ) : (
           <div className="space-y-4">
             {filteredBookings.map((booking) => (
-              <div
-                key={booking.id}
-                className={`${T.cardBg} ${T.border} ${T.borderMd} p-4`}
-              >
+              <div key={booking.id} className={`${T.cardBg} ${T.border} ${T.borderMd} p-4`}>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   {/* Info Principali */}
                   <div className="flex-1">
@@ -255,31 +241,23 @@ function BookingAdmin({ user, T }) {
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
                       <div>
-                        <span className="text-gray-500 dark:text-gray-400">
-                          Data:
-                        </span>
+                        <span className="text-gray-500 dark:text-gray-400">Data:</span>
                         <div className="font-medium">
-                          {new Date(booking.date).toLocaleDateString("it-IT")}
+                          {new Date(booking.date).toLocaleDateString('it-IT')}
                         </div>
                       </div>
                       <div>
-                        <span className="text-gray-500 dark:text-gray-400">
-                          Orario:
-                        </span>
+                        <span className="text-gray-500 dark:text-gray-400">Orario:</span>
                         <div className="font-medium">
                           {booking.time} ({booking.duration}min)
                         </div>
                       </div>
                       <div>
-                        <span className="text-gray-500 dark:text-gray-400">
-                          Cliente:
-                        </span>
+                        <span className="text-gray-500 dark:text-gray-400">Cliente:</span>
                         <div className="font-medium">{booking.bookedBy}</div>
                       </div>
                       <div>
-                        <span className="text-gray-500 dark:text-gray-400">
-                          Prezzo:
-                        </span>
+                        <span className="text-gray-500 dark:text-gray-400">Prezzo:</span>
                         <div className="font-medium text-emerald-600 dark:text-emerald-400">
                           {booking.price}€
                         </div>
@@ -287,32 +265,24 @@ function BookingAdmin({ user, T }) {
                     </div>
 
                     {/* Dettagli Aggiuntivi */}
-                    {(booking.userEmail ||
-                      booking.userPhone ||
-                      booking.notes) && (
+                    {(booking.userEmail || booking.userPhone || booking.notes) && (
                       <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
                           {booking.userEmail && (
                             <div>
-                              <span className="text-gray-500 dark:text-gray-400">
-                                Email:
-                              </span>
+                              <span className="text-gray-500 dark:text-gray-400">Email:</span>
                               <div>{booking.userEmail}</div>
                             </div>
                           )}
                           {booking.userPhone && (
                             <div>
-                              <span className="text-gray-500 dark:text-gray-400">
-                                Telefono:
-                              </span>
+                              <span className="text-gray-500 dark:text-gray-400">Telefono:</span>
                               <div>{booking.userPhone}</div>
                             </div>
                           )}
                           {booking.notes && (
                             <div>
-                              <span className="text-gray-500 dark:text-gray-400">
-                                Note:
-                              </span>
+                              <span className="text-gray-500 dark:text-gray-400">Note:</span>
                               <div>{booking.notes}</div>
                             </div>
                           )}
@@ -392,20 +362,20 @@ function BookingAdmin({ user, T }) {
 function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
   const [formData, setFormData] = useState(
     booking || {
-      courtId: "",
-      date: "",
-      time: "",
+      courtId: '',
+      date: '',
+      time: '',
       duration: 60,
       lighting: false,
       heating: false,
-      bookedBy: "",
-      userEmail: "",
-      userPhone: "",
-      notes: "",
+      bookedBy: '',
+      userEmail: '',
+      userPhone: '',
+      notes: '',
       isLessonBooking: false,
       participants: 1,
       status: BOOKING_STATUS.CONFIRMED,
-    },
+    }
   );
 
   const handleSubmit = (e) => {
@@ -413,16 +383,9 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
     onSave(formData);
   };
 
-  const selectedCourt = BOOKING_CONFIG.courts.find(
-    (c) => c.id === formData.courtId,
-  );
+  const selectedCourt = BOOKING_CONFIG.courts.find((c) => c.id === formData.courtId);
   const courtPrice = selectedCourt
-    ? calculatePrice(
-        selectedCourt,
-        formData.duration,
-        formData.lighting,
-        formData.heating,
-      )
+    ? calculatePrice(selectedCourt, formData.duration, formData.lighting, formData.heating)
     : 0;
   // Lezione: calculateLessonPrice restituisce già il totale della lezione
   // Recupera eventuale instructor legato (non abbiamo elenco qui: placeholder per futura integrazione)
@@ -451,7 +414,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={booking ? "Modifica Prenotazione" : "Nuova Prenotazione"}
+      title={booking ? 'Modifica Prenotazione' : 'Nuova Prenotazione'}
       size="lg"
       T={T}
     >
@@ -462,9 +425,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
             <label className={`${ds.bodySm} block mb-1`}>Campo</label>
             <select
               value={formData.courtId}
-              onChange={(e) =>
-                setFormData({ ...formData, courtId: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, courtId: e.target.value })}
               className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing}`}
               required
             >
@@ -483,9 +444,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
             <input
               type="date"
               value={formData.date}
-              onChange={(e) =>
-                setFormData({ ...formData, date: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing}`}
               required
             />
@@ -498,9 +457,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
             <label className={`${ds.bodySm} block mb-1`}>Orario</label>
             <select
               value={formData.time}
-              onChange={(e) =>
-                setFormData({ ...formData, time: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, time: e.target.value })}
               className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing}`}
               required
             >
@@ -518,9 +475,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
             <label className={`${ds.bodySm} block mb-1`}>Durata</label>
             <select
               value={formData.duration}
-              onChange={(e) =>
-                setFormData({ ...formData, duration: parseInt(e.target.value) })
-              }
+              onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
               className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing}`}
             >
               {BOOKING_CONFIG.rules.allowedDurations.map((dur) => (
@@ -539,9 +494,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
             <input
               type="text"
               value={formData.bookedBy}
-              onChange={(e) =>
-                setFormData({ ...formData, bookedBy: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, bookedBy: e.target.value })}
               className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing}`}
               required
             />
@@ -549,11 +502,11 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
           <div>
             <label className={`${ds.bodySm} block mb-1`}>Tipo</label>
             <select
-              value={formData.isLessonBooking ? "lesson" : "court"}
+              value={formData.isLessonBooking ? 'lesson' : 'court'}
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  isLessonBooking: e.target.value === "lesson",
+                  isLessonBooking: e.target.value === 'lesson',
                 })
               }
               className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing}`}
@@ -571,9 +524,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
             <input
               type="email"
               value={formData.userEmail}
-              onChange={(e) =>
-                setFormData({ ...formData, userEmail: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
               className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing}`}
             />
           </div>
@@ -584,9 +535,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
             <input
               type="tel"
               value={formData.userPhone}
-              onChange={(e) =>
-                setFormData({ ...formData, userPhone: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, userPhone: e.target.value })}
               className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing}`}
             />
           </div>
@@ -602,9 +551,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
                     <input
                       type="checkbox"
                       checked={formData.lighting}
-                      onChange={(e) =>
-                        setFormData({ ...formData, lighting: e.target.checked })
-                      }
+                      onChange={(e) => setFormData({ ...formData, lighting: e.target.checked })}
                     />
                     <span>Luce (+{BOOKING_CONFIG.pricing.lighting}€)</span>
                   </label>
@@ -614,9 +561,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
                     <input
                       type="checkbox"
                       checked={formData.heating}
-                      onChange={(e) =>
-                        setFormData({ ...formData, heating: e.target.checked })
-                      }
+                      onChange={(e) => setFormData({ ...formData, heating: e.target.checked })}
                     />
                     <span>Calore (+{BOOKING_CONFIG.pricing.heating}€)</span>
                   </label>
@@ -655,9 +600,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
           <label className={`${ds.bodySm} block mb-1`}>Note</label>
           <textarea
             value={formData.notes}
-            onChange={(e) =>
-              setFormData({ ...formData, notes: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             rows={3}
             className={`w-full p-2 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing}`}
           />
@@ -666,9 +609,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
         {selectedCourt && (
           <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded-md text-sm flex flex-col gap-1">
             <div className="flex justify-between items-center">
-              <span>
-                {formData.isLessonBooking ? "Totale Lezione" : "Prezzo Campo"}:
-              </span>
+              <span>{formData.isLessonBooking ? 'Totale Lezione' : 'Prezzo Campo'}:</span>
               <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                 {totalPrice}€
               </span>
@@ -676,13 +617,9 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
             {perParticipant != null && (
               <div className="flex justify-between text-xs text-gray-600 dark:text-gray-400">
                 <span>
-                  {formData.isLessonBooking
-                    ? "Per partecipante:"
-                    : "Per giocatore (su 4):"}
+                  {formData.isLessonBooking ? 'Per partecipante:' : 'Per giocatore (su 4):'}
                 </span>
-                <span className="font-medium">
-                  {perParticipant.toFixed(2)}€
-                </span>
+                <span className="font-medium">{perParticipant.toFixed(2)}€</span>
               </div>
             )}
           </div>
@@ -690,15 +627,11 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
 
         {/* Azioni */}
         <div className="flex gap-3 pt-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className={`${T.btnSecondary} px-4 py-2 flex-1`}
-          >
+          <button type="button" onClick={onClose} className={`${T.btnSecondary} px-4 py-2 flex-1`}>
             Annulla
           </button>
           <button type="submit" className={`${T.btnPrimary} px-4 py-2 flex-1`}>
-            {booking ? "Aggiorna" : "Crea"} Prenotazione
+            {booking ? 'Aggiorna' : 'Crea'} Prenotazione
           </button>
         </div>
       </form>

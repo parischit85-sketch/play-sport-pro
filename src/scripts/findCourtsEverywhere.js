@@ -39,7 +39,7 @@ const mainCollections = [
             const courtsSubSnap = await getDocs(courtsSubRef);
             if (!courtsSubSnap.empty) {
               console.log(`Doc: ${docSnap.id} | Subcollection courts:`);
-              courtsSubSnap.forEach(subDoc => {
+              courtsSubSnap.forEach((subDoc) => {
                 console.log(`  - ${subDoc.id}:`, subDoc.data());
               });
             }

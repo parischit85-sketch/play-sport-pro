@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../services/firebase.js';
-import { 
-  collection, 
-  getDocs, 
-  doc, 
-  deleteDoc, 
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
   updateDoc,
   addDoc,
-  serverTimestamp 
+  serverTimestamp,
 } from 'firebase/firestore';
 import {
   Building2,
@@ -23,7 +23,7 @@ import {
   Search,
   Settings,
   Calendar,
-  Activity
+  Activity,
 } from 'lucide-react';
 
 const ClubsManagement = () => {
@@ -42,7 +42,7 @@ const ClubsManagement = () => {
     description: '',
     courts: 1,
     openingTime: '08:00',
-    closingTime: '22:00'
+    closingTime: '22:00',
   });
 
   useEffect(() => {
@@ -57,19 +57,19 @@ const ClubsManagement = () => {
 
       for (const clubDoc of clubsSnap.docs) {
         const clubData = { id: clubDoc.id, ...clubDoc.data() };
-        
+
         // Carica statistiche per ogni club
         try {
           const [profilesSnap, matchesSnap, bookingsSnap] = await Promise.all([
             getDocs(collection(db, 'clubs', clubDoc.id, 'profiles')),
             getDocs(collection(db, 'clubs', clubDoc.id, 'matches')),
-            getDocs(collection(db, 'clubs', clubDoc.id, 'bookings'))
+            getDocs(collection(db, 'clubs', clubDoc.id, 'bookings')),
           ]);
 
           clubData.stats = {
             members: profilesSnap.size,
             matches: matchesSnap.size,
-            bookings: bookingsSnap.size
+            bookings: bookingsSnap.size,
           };
         } catch (error) {
           console.warn(`Errore nel caricare le statistiche per ${clubDoc.id}:`, error);
@@ -88,23 +88,27 @@ const ClubsManagement = () => {
   };
 
   const handleDeleteClub = async (clubId, clubName) => {
-    if (!confirm(`Sei sicuro di voler eliminare il circolo "${clubName}"? Questa azione non può essere annullata.`)) {
+    if (
+      !confirm(
+        `Sei sicuro di voler eliminare il circolo "${clubName}"? Questa azione non può essere annullata.`
+      )
+    ) {
       return;
     }
 
     try {
       await deleteDoc(doc(db, 'clubs', clubId));
-      setClubs(clubs.filter(club => club.id !== clubId));
+      setClubs(clubs.filter((club) => club.id !== clubId));
       alert('Circolo eliminato con successo');
     } catch (error) {
-      console.error('Errore nell\'eliminare il circolo:', error);
-      alert('Errore nell\'eliminare il circolo');
+      console.error("Errore nell'eliminare il circolo:", error);
+      alert("Errore nell'eliminare il circolo");
     }
   };
 
   const handleCreateClub = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       alert('Il nome del circolo è obbligatorio');
       return;
@@ -122,18 +126,18 @@ const ClubsManagement = () => {
         openingTime: formData.openingTime,
         closingTime: formData.closingTime,
         createdAt: serverTimestamp(),
-        isActive: true
+        isActive: true,
       };
 
       const docRef = await addDoc(collection(db, 'clubs'), clubData);
-      
+
       // Aggiungi il nuovo circolo alla lista locale
       const newClub = {
         id: docRef.id,
         ...clubData,
-        stats: { members: 0, matches: 0, bookings: 0 }
+        stats: { members: 0, matches: 0, bookings: 0 },
       };
-      
+
       setClubs([...clubs, newClub]);
       setShowCreateModal(false);
       resetForm();
@@ -146,7 +150,7 @@ const ClubsManagement = () => {
 
   const handleEditClub = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       alert('Il nome del circolo è obbligatorio');
       return;
@@ -163,24 +167,20 @@ const ClubsManagement = () => {
         courts: parseInt(formData.courts) || 1,
         openingTime: formData.openingTime,
         closingTime: formData.closingTime,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       };
 
       await updateDoc(doc(db, 'clubs', editingClub.id), clubData);
-      
+
       // Aggiorna il circolo nella lista locale
-      setClubs(clubs.map(club => 
-        club.id === editingClub.id 
-          ? { ...club, ...clubData }
-          : club
-      ));
-      
+      setClubs(clubs.map((club) => (club.id === editingClub.id ? { ...club, ...clubData } : club)));
+
       setEditingClub(null);
       resetForm();
       alert('Circolo aggiornato con successo!');
     } catch (error) {
-      console.error('Errore nell\'aggiornare il circolo:', error);
-      alert('Errore nell\'aggiornare il circolo');
+      console.error("Errore nell'aggiornare il circolo:", error);
+      alert("Errore nell'aggiornare il circolo");
     }
   };
 
@@ -194,7 +194,7 @@ const ClubsManagement = () => {
       description: '',
       courts: 1,
       openingTime: '08:00',
-      closingTime: '22:00'
+      closingTime: '22:00',
     });
   };
 
@@ -208,15 +208,16 @@ const ClubsManagement = () => {
       description: club.description || '',
       courts: club.courts || 1,
       openingTime: club.openingTime || '08:00',
-      closingTime: club.closingTime || '22:00'
+      closingTime: club.closingTime || '22:00',
     });
     setEditingClub(club);
   };
 
-  const filteredClubs = clubs.filter(club => 
-    club.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    club.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    club.city?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredClubs = clubs.filter(
+    (club) =>
+      club.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      club.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      club.city?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const ClubCard = ({ club }) => (
@@ -261,7 +262,9 @@ const ClubsManagement = () => {
         {club.address && (
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <MapPin className="w-4 h-4" />
-            <span>{club.address}, {club.city}</span>
+            <span>
+              {club.address}, {club.city}
+            </span>
           </div>
         )}
         {club.phone && (
@@ -334,7 +337,7 @@ const ClubsManagement = () => {
                 <h1 className="text-xl font-bold text-gray-900">Gestione Circoli</h1>
               </div>
             </div>
-            
+
             <button
               onClick={() => setShowCreateModal(true)}
               className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -401,10 +404,9 @@ const ClubsManagement = () => {
               {searchTerm ? 'Nessun circolo trovato' : 'Nessun circolo presente'}
             </p>
             <p className="text-gray-400 mb-6">
-              {searchTerm 
-                ? 'Prova a modificare i termini di ricerca' 
-                : 'Inizia creando il tuo primo circolo'
-              }
+              {searchTerm
+                ? 'Prova a modificare i termini di ricerca'
+                : 'Inizia creando il tuo primo circolo'}
             </p>
             {!searchTerm && (
               <button
@@ -456,7 +458,7 @@ const ClubsManagement = () => {
                     type="text"
                     required
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Es. Tennis Club Milano"
                   />
@@ -464,13 +466,11 @@ const ClubsManagement = () => {
 
                 {/* Indirizzo */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Indirizzo
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Indirizzo</label>
                   <input
                     type="text"
                     value={formData.address}
-                    onChange={(e) => setFormData({...formData, address: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Via Roma 123"
                   />
@@ -478,13 +478,11 @@ const ClubsManagement = () => {
 
                 {/* Città */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Città
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Città</label>
                   <input
                     type="text"
                     value={formData.city}
-                    onChange={(e) => setFormData({...formData, city: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Milano"
                   />
@@ -492,13 +490,11 @@ const ClubsManagement = () => {
 
                 {/* Telefono */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Telefono
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Telefono</label>
                   <input
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="+39 02 1234567"
                   />
@@ -506,13 +502,11 @@ const ClubsManagement = () => {
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                   <input
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="info@tennisclub.it"
                   />
@@ -527,7 +521,7 @@ const ClubsManagement = () => {
                     type="number"
                     min="1"
                     value={formData.courts}
-                    onChange={(e) => setFormData({...formData, courts: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, courts: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -540,7 +534,7 @@ const ClubsManagement = () => {
                   <input
                     type="time"
                     value={formData.openingTime}
-                    onChange={(e) => setFormData({...formData, openingTime: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, openingTime: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -553,7 +547,7 @@ const ClubsManagement = () => {
                   <input
                     type="time"
                     value={formData.closingTime}
-                    onChange={(e) => setFormData({...formData, closingTime: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, closingTime: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
@@ -566,7 +560,7 @@ const ClubsManagement = () => {
                   <textarea
                     rows="3"
                     value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Descrizione del circolo..."
                   />

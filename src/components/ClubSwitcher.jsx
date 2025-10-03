@@ -14,27 +14,29 @@ export default function ClubSwitcher({ className = '' }) {
   const { userAffiliations, AFFILIATION_STATUS, isClubAdmin, getFirstAdminClub } = useAuth();
 
   const approved = React.useMemo(() => {
-    const approvedAffiliations = (userAffiliations || []).filter(a => a.status === AFFILIATION_STATUS.APPROVED);
-    
+    const approvedAffiliations = (userAffiliations || []).filter(
+      (a) => a.status === AFFILIATION_STATUS.APPROVED
+    );
+
     // Rimuovi duplicati per clubId (mantieni quello con ruolo più alto)
     const uniqueClubs = new Map();
-    approvedAffiliations.forEach(a => {
+    approvedAffiliations.forEach((a) => {
       const existing = uniqueClubs.get(a.clubId);
       if (!existing || (a.role === 'admin' && existing.role !== 'admin')) {
         uniqueClubs.set(a.clubId, a);
       }
     });
-    
+
     return Array.from(uniqueClubs.values());
   }, [userAffiliations]);
 
   // Nascondi il switcher se non ci sono affiliazioni approvate
   if (!approved.length) return null;
-  
+
   // Se l'utente è admin di un club, considera quello come club corrente
   const firstAdminClubId = getFirstAdminClub ? getFirstAdminClub() : null;
   const currentClubId = clubId || firstAdminClubId;
-  
+
   // Nascondi il switcher se l'utente è admin del club corrente
   if (currentClubId && isClubAdmin(currentClubId)) return null;
 
@@ -46,8 +48,10 @@ export default function ClubSwitcher({ className = '' }) {
         onChange={(e) => selectClub(e.target.value)}
       >
         <option value="">Seleziona Club</option>
-        {approved.map(a => (
-          <option key={a.clubId} value={a.clubId}>{a.clubName || a.clubId}</option>
+        {approved.map((a) => (
+          <option key={a.clubId} value={a.clubId}>
+            {a.clubName || a.clubId}
+          </option>
         ))}
       </select>
     </div>

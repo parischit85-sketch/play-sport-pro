@@ -1,29 +1,29 @@
 // =============================================
 // FILE: src/data/seed.js
 // =============================================
-import { DEFAULT_RATING, uid } from "@lib/ids.js";
+import { DEFAULT_RATING, uid } from '@lib/ids.js';
 
 export const ITA20 = [
-  "Andrea Paris",
-  "Giovanni Cardarelli",
-  "Nicola Di Marzio",
-  "Stefano Ruscitti",
-  "Domenico Di Gianfilippo",
-  "Giorgio Contestabile",
-  "Alfredo Di Donato",
-  "Paolo Chiola",
-  "Angelo Persia",
-  "Marco Idrofano",
-  "Lorenzo Eligi",
-  "Matteo Di Stefano",
-  "Claudio Morgante",
-  "Pierluigi Paris",
-  "Gabriele Rossi",
-  "Luca Bianchi",
-  "Marco Verdi",
-  "Antonio Esposito",
-  "Francesco Romano",
-  "Davide Moretti",
+  'Andrea Paris',
+  'Giovanni Cardarelli',
+  'Nicola Di Marzio',
+  'Stefano Ruscitti',
+  'Domenico Di Gianfilippo',
+  'Giorgio Contestabile',
+  'Alfredo Di Donato',
+  'Paolo Chiola',
+  'Angelo Persia',
+  'Marco Idrofano',
+  'Lorenzo Eligi',
+  'Matteo Di Stefano',
+  'Claudio Morgante',
+  'Pierluigi Paris',
+  'Gabriele Rossi',
+  'Luca Bianchi',
+  'Marco Verdi',
+  'Antonio Esposito',
+  'Francesco Romano',
+  'Davide Moretti',
 ];
 
 export function getDefaultBookingConfig() {
@@ -95,19 +95,19 @@ export function makeSeed() {
   const courts = [
     {
       id: uid(),
-      name: "Campo 1 (Outdoor)",
+      name: 'Campo 1 (Outdoor)',
       timeSlots: [],
       hasHeating: false,
     },
     {
       id: uid(),
-      name: "Campo 2 (Outdoor)",
+      name: 'Campo 2 (Outdoor)',
       timeSlots: [],
       hasHeating: false,
     },
     {
       id: uid(),
-      name: "Campo 3 (Indoor)",
+      name: 'Campo 3 (Indoor)',
       timeSlots: [],
       hasHeating: true,
     },
@@ -116,17 +116,17 @@ export function makeSeed() {
   const bookings = [
     // Test booking to verify hole prevention rule
     {
-      id: "test-booking-1",
+      id: 'test-booking-1',
       courtId: courts[0].id,
       courtName: courts[0].name,
-      date: new Date().toISOString().split("T")[0], // Today
-      time: "14:00",
+      date: new Date().toISOString().split('T')[0], // Today
+      time: '14:00',
       duration: 60,
-      bookedBy: "Test User",
-      players: ["Test User"],
-      status: "confirmed",
+      bookedBy: 'Test User',
+      players: ['Test User'],
+      status: 'confirmed',
       createdAt: new Date().toISOString(),
-      type: "court",
+      type: 'court',
     },
   ];
   const bookingConfig = getDefaultBookingConfig();

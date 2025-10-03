@@ -3,12 +3,7 @@
  * Provides CSRF protection, request sanitization, and security headers
  */
 
-import { 
-  getCSRFToken, 
-  getSecurityHeaders, 
-  sanitizeText, 
-  rateLimiter 
-} from '../lib/security';
+import { getCSRFToken, getSecurityHeaders, sanitizeText, rateLimiter } from '../lib/security';
 import analyticsModule from '../lib/analytics';
 
 class SecurityMiddleware {
@@ -37,7 +32,7 @@ class SecurityMiddleware {
    */
   shouldBlockRequest(url, options) {
     const fingerprint = this.generateRequestFingerprint(url, options.method || 'GET');
-    
+
     // Check if this request pattern is already blocked
     if (this.blockedRequests.has(fingerprint)) {
       return true;
@@ -50,10 +45,10 @@ class SecurityMiddleware {
       /<script/i,
       /\.\./,
       /eval\(/i,
-      /expression\(/i
+      /expression\(/i,
     ];
 
-    if (suspiciousPatterns.some(pattern => pattern.test(url))) {
+    if (suspiciousPatterns.some((pattern) => pattern.test(url))) {
       this.blockedRequests.add(fingerprint);
       this.logSecurityEvent('blocked_suspicious_url', { url, fingerprint });
       return true;
@@ -62,11 +57,10 @@ class SecurityMiddleware {
     // Check request body for suspicious content
     if (options.body) {
       try {
-        const bodyStr = typeof options.body === 'string' 
-          ? options.body 
-          : JSON.stringify(options.body);
-        
-        if (suspiciousPatterns.some(pattern => pattern.test(bodyStr))) {
+        const bodyStr =
+          typeof options.body === 'string' ? options.body : JSON.stringify(options.body);
+
+        if (suspiciousPatterns.some((pattern) => pattern.test(bodyStr))) {
           this.logSecurityEvent('blocked_suspicious_body', { fingerprint });
           return true;
         }
@@ -104,13 +98,13 @@ class SecurityMiddleware {
     }
 
     const isAllowed = rateLimiter.isAllowed(rateLimitKey, maxRequests, windowMs);
-    
+
     if (!isAllowed) {
       this.logSecurityEvent('rate_limit_exceeded', {
         fingerprint,
         clientId,
         maxRequests,
-        windowMs
+        windowMs,
       });
     }
 
@@ -125,9 +119,9 @@ class SecurityMiddleware {
     const fingerprint = [
       navigator.userAgent.substring(0, 50),
       navigator.language,
-      screen.width + 'x' + screen.height
+      screen.width + 'x' + screen.height,
     ].join('|');
-    
+
     return btoa(fingerprint).substring(0, 32);
   }
 
@@ -142,14 +136,14 @@ class SecurityMiddleware {
     }
 
     const sanitized = {};
-    
+
     for (const [key, value] of Object.entries(data)) {
       if (typeof value === 'string') {
         // Sanitize string values
         sanitized[key] = sanitizeText(value);
       } else if (Array.isArray(value)) {
         // Recursively sanitize array elements
-        sanitized[key] = value.map(item => 
+        sanitized[key] = value.map((item) =>
           typeof item === 'object' ? this.sanitizeRequestData(item) : sanitizeText(String(item))
         );
       } else if (typeof value === 'object' && value !== null) {
@@ -175,11 +169,11 @@ class SecurityMiddleware {
       details,
       timestamp: new Date().toISOString(),
       url: window.location.href,
-      userAgent: navigator.userAgent.substring(0, 100)
+      userAgent: navigator.userAgent.substring(0, 100),
     };
 
     this.securityLog.push(event);
-    
+
     // Keep only last 100 events
     if (this.securityLog.length > 100) {
       this.securityLog.shift();
@@ -189,13 +183,15 @@ class SecurityMiddleware {
     analyticsModule.trackEvent('security_middleware', {
       event_type: type,
       details,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     // Dispatch event for SecurityContext
-    window.dispatchEvent(new CustomEvent('securityMiddlewareEvent', {
-      detail: event
-    }));
+    window.dispatchEvent(
+      new CustomEvent('securityMiddlewareEvent', {
+        detail: event,
+      })
+    );
 
     console.warn('🔒 Security Middleware Event:', event);
   }
@@ -224,7 +220,7 @@ class SecurityMiddleware {
     const securityHeaders = getSecurityHeaders();
     processedOptions.headers = {
       ...securityHeaders,
-      ...processedOptions.headers
+      ...processedOptions.headers,
     };
 
     // Add CSRF token for state-changing requests
@@ -244,14 +240,12 @@ class SecurityMiddleware {
           const sanitized = this.sanitizeRequestData(parsed);
           processedOptions.body = JSON.stringify(sanitized);
         } else if (typeof processedOptions.body === 'object') {
-          processedOptions.body = JSON.stringify(
-            this.sanitizeRequestData(processedOptions.body)
-          );
+          processedOptions.body = JSON.stringify(this.sanitizeRequestData(processedOptions.body));
         }
       } catch (error) {
         this.logSecurityEvent('request_body_sanitization_error', {
           error: error.message,
-          url
+          url,
         });
       }
     }
@@ -272,7 +266,7 @@ class SecurityMiddleware {
    */
   trackConcurrentRequest(fingerprint) {
     const now = Date.now();
-    
+
     if (!this.requestQueue.has(fingerprint)) {
       this.requestQueue.set(fingerprint, []);
     }
@@ -281,15 +275,16 @@ class SecurityMiddleware {
     requests.push(now);
 
     // Remove old requests (older than 5 seconds)
-    const recentRequests = requests.filter(timestamp => now - timestamp < 5000);
+    const recentRequests = requests.filter((timestamp) => now - timestamp < 5000);
     this.requestQueue.set(fingerprint, recentRequests);
 
     // Check for potential DoS
-    if (recentRequests.length > 50) { // More than 50 requests in 5 seconds
+    if (recentRequests.length > 50) {
+      // More than 50 requests in 5 seconds
       this.logSecurityEvent('potential_dos_attack', {
         fingerprint,
         requestCount: recentRequests.length,
-        timeWindow: '5s'
+        timeWindow: '5s',
       });
     }
   }
@@ -306,7 +301,7 @@ class SecurityMiddleware {
       this.logSecurityEvent('error_response', {
         status: response.status,
         statusText: response.statusText,
-        url
+        url,
       });
     }
 
@@ -315,17 +310,15 @@ class SecurityMiddleware {
       'x-frame-options',
       'x-content-type-options',
       'x-xss-protection',
-      'strict-transport-security'
+      'strict-transport-security',
     ];
 
-    const missingHeaders = securityHeaders.filter(header => 
-      !response.headers.has(header)
-    );
+    const missingHeaders = securityHeaders.filter((header) => !response.headers.has(header));
 
     if (missingHeaders.length > 0) {
       this.logSecurityEvent('missing_security_headers', {
         url,
-        missingHeaders
+        missingHeaders,
       });
     }
 
@@ -343,7 +336,7 @@ class SecurityMiddleware {
       try {
         // Process request with security measures
         const processedOptions = this.processRequest(url, options);
-        
+
         if (processedOptions === null) {
           throw new Error('Request blocked by security middleware');
         }
@@ -353,12 +346,11 @@ class SecurityMiddleware {
 
         // Process response
         return this.processResponse(response, url);
-
       } catch (error) {
         this.logSecurityEvent('request_error', {
           url,
           error: error.message,
-          method: options.method || 'GET'
+          method: options.method || 'GET',
         });
         throw error;
       }
@@ -374,8 +366,10 @@ class SecurityMiddleware {
       blockedRequests: this.blockedRequests.size,
       securityEvents: this.securityLog.length,
       recentEvents: this.securityLog.slice(-10),
-      activeConnections: Array.from(this.requestQueue.values())
-        .reduce((total, requests) => total + requests.length, 0)
+      activeConnections: Array.from(this.requestQueue.values()).reduce(
+        (total, requests) => total + requests.length,
+        0
+      ),
     };
   }
 

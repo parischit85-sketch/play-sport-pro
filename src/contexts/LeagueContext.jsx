@@ -1,16 +1,10 @@
 // =============================================
 // FILE: src/contexts/LeagueContext.jsx
 // =============================================
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { loadLeague, saveLeague, subscribeLeague } from "@services/cloud.js";
-import { recompute } from "@lib/ranking.js";
-import { getDefaultBookingConfig } from "@data/seed.js";
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { loadLeague, saveLeague, subscribeLeague } from '@services/cloud.js';
+import { recompute } from '@lib/ranking.js';
+import { getDefaultBookingConfig } from '@data/seed.js';
 
 // Stato vuoto iniziale invece dei seed data
 function getEmptyState() {
@@ -22,15 +16,15 @@ function getEmptyState() {
     bookingConfig: getDefaultBookingConfig(),
   };
 }
-import { LS_KEY } from "@lib/ids.js";
-import { useAuth } from "./AuthContext.jsx";
+import { LS_KEY } from '@lib/ids.js';
+import { useAuth } from './AuthContext.jsx';
 
 const LeagueContext = createContext(null);
 
 export const useLeague = () => {
   const context = useContext(LeagueContext);
   if (!context) {
-    throw new Error("useLeague must be used within a LeagueProvider");
+    throw new Error('useLeague must be used within a LeagueProvider');
   }
   return context;
 };
@@ -47,7 +41,7 @@ export function LeagueProvider({ children }) {
   const [selectedClubLoading, setSelectedClubLoading] = useState(false);
 
   const [leagueId, setLeagueId] = useState(
-    localStorage.getItem(LS_KEY + "-leagueId") || "lega-andrea-2025",
+    localStorage.getItem(LS_KEY + '-leagueId') || 'lega-andrea-2025'
   );
 
   // Client ID for conflict resolution
@@ -55,7 +49,7 @@ export function LeagueProvider({ children }) {
   if (!clientIdRef.current) {
     const saved = (() => {
       try {
-        return localStorage.getItem("ml-client-id");
+        return localStorage.getItem('ml-client-id');
       } catch {
         return null;
       }
@@ -65,7 +59,7 @@ export function LeagueProvider({ children }) {
       const nid = Math.random().toString(36).slice(2, 10);
       clientIdRef.current = nid;
       try {
-        localStorage.setItem("ml-client-id", nid);
+        localStorage.setItem('ml-client-id', nid);
       } catch {
         void 0;
       }
@@ -77,13 +71,13 @@ export function LeagueProvider({ children }) {
 
   // Persist league ID
   useEffect(() => {
-    localStorage.setItem(LS_KEY + "-leagueId", leagueId);
+    localStorage.setItem(LS_KEY + '-leagueId', leagueId);
   }, [leagueId]);
 
   // Safe state setter with metadata
   const setStateSafe = (updater) => {
     setState((prev) => {
-      const base = typeof updater === "function" ? updater(prev) : updater;
+      const base = typeof updater === 'function' ? updater(prev) : updater;
       const stamp = Date.now();
       const nextRev = (prev?._rev || 0) + 1;
       muteCloudUntilRef.current = stamp + 2000; // 2s
@@ -110,7 +104,7 @@ export function LeagueProvider({ children }) {
           const fromCloud = await loadLeague(leagueId);
           const valid =
             fromCloud &&
-            typeof fromCloud === "object" &&
+            typeof fromCloud === 'object' &&
             Array.isArray(fromCloud.players) &&
             Array.isArray(fromCloud.matches);
 
@@ -118,24 +112,16 @@ export function LeagueProvider({ children }) {
             const migrated = { ...fromCloud };
             if (!Array.isArray(migrated.courts)) migrated.courts = [];
             if (!Array.isArray(migrated.bookings)) migrated.bookings = [];
-            if (!migrated.bookingConfig)
-              migrated.bookingConfig = getDefaultBookingConfig();
+            if (!migrated.bookingConfig) migrated.bookingConfig = getDefaultBookingConfig();
             if (!migrated.bookingConfig.pricing)
-              migrated.bookingConfig.pricing =
-                getDefaultBookingConfig().pricing;
+              migrated.bookingConfig.pricing = getDefaultBookingConfig().pricing;
             if (!migrated.bookingConfig.addons)
               migrated.bookingConfig.addons = getDefaultBookingConfig().addons;
 
             setState(migrated);
 
             // Update reference
-            const relevantFields = [
-              "players",
-              "matches",
-              "courts",
-              "bookings",
-              "bookingConfig",
-            ];
+            const relevantFields = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
             lastSavedStateRef.current = relevantFields.reduce((acc, field) => {
               acc[field] = migrated[field];
               return acc;
@@ -155,27 +141,14 @@ export function LeagueProvider({ children }) {
           const localData = localStorage.getItem(LS_KEY);
           if (localData) {
             const parsed = JSON.parse(localData);
-            if (
-              parsed &&
-              Array.isArray(parsed.players) &&
-              Array.isArray(parsed.matches)
-            ) {
+            if (parsed && Array.isArray(parsed.players) && Array.isArray(parsed.matches)) {
               setState(parsed);
 
-              const relevantFields = [
-                "players",
-                "matches",
-                "courts",
-                "bookings",
-                "bookingConfig",
-              ];
-              lastSavedStateRef.current = relevantFields.reduce(
-                (acc, field) => {
-                  acc[field] = parsed[field] || [];
-                  return acc;
-                },
-                {},
-              );
+              const relevantFields = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
+              lastSavedStateRef.current = relevantFields.reduce((acc, field) => {
+                acc[field] = parsed[field] || [];
+                return acc;
+              }, {});
               return;
             }
           }
@@ -187,21 +160,13 @@ export function LeagueProvider({ children }) {
         const initial = getEmptyState();
         setState(initial);
 
-        const relevantFields = [
-          "players",
-          "matches",
-          "courts",
-          "bookings",
-          "bookingConfig",
-        ];
+        const relevantFields = ['players', 'matches', 'courts', 'bookings', 'bookingConfig'];
         lastSavedStateRef.current = relevantFields.reduce((acc, field) => {
           acc[field] = initial[field] || [];
           return acc;
         }, {});
 
-        console.log(
-          "� App inizializzata con stato vuoto - aggiungi i tuoi dati!",
-        );
+        console.log('� App inizializzata con stato vuoto - aggiungi i tuoi dati!');
 
         // Salva solo in localStorage
         try {
@@ -210,7 +175,7 @@ export function LeagueProvider({ children }) {
           void 0;
         }
       } catch (err) {
-        console.error("League load error:", err);
+        console.error('League load error:', err);
         setError(err);
         const fallback = getEmptyState();
         setState(fallback);
@@ -229,7 +194,7 @@ export function LeagueProvider({ children }) {
       unsub = subscribeLeague(leagueId, (cloudState) => {
         const valid =
           cloudState &&
-          typeof cloudState === "object" &&
+          typeof cloudState === 'object' &&
           Array.isArray(cloudState.players) &&
           Array.isArray(cloudState.matches);
 
@@ -239,8 +204,7 @@ export function LeagueProvider({ children }) {
         const migrated = { ...cloudState };
         if (!Array.isArray(migrated.courts)) migrated.courts = [];
         if (!Array.isArray(migrated.bookings)) migrated.bookings = [];
-        if (!migrated.bookingConfig)
-          migrated.bookingConfig = getDefaultBookingConfig();
+        if (!migrated.bookingConfig) migrated.bookingConfig = getDefaultBookingConfig();
         if (!migrated.bookingConfig.pricing)
           migrated.bookingConfig.pricing = getDefaultBookingConfig().pricing;
         if (!migrated.bookingConfig.addons)
@@ -253,17 +217,16 @@ export function LeagueProvider({ children }) {
           const cloudRev = migrated?._rev ?? 0;
           const localTs = prev?._updatedAt ?? 0;
           const cloudTs = migrated?._updatedAt ?? 0;
-          const cloudIsNewer =
-            cloudRev > localRev || (cloudRev === localRev && cloudTs > localTs);
+          const cloudIsNewer = cloudRev > localRev || (cloudRev === localRev && cloudTs > localTs);
 
           if (cloudIsNewer) {
             const relevantFields = [
-              "players",
-              "matches",
-              "courts",
-              "bookings",
-              "bookingConfig",
-              "lessonConfig",
+              'players',
+              'matches',
+              'courts',
+              'bookings',
+              'bookingConfig',
+              'lessonConfig',
             ];
             lastSavedStateRef.current = relevantFields.reduce((acc, field) => {
               acc[field] = migrated[field];
@@ -276,7 +239,7 @@ export function LeagueProvider({ children }) {
         setUpdatingFromCloud(false);
       });
     } catch (e) {
-      console.error("Subscribe error:", e);
+      console.error('Subscribe error:', e);
     }
     return () => unsub && unsub();
   }, [leagueId, user, authLoading]);
@@ -286,12 +249,12 @@ export function LeagueProvider({ children }) {
     if (!state || updatingFromCloud || !user) return;
 
     const relevantFields = [
-      "players",
-      "matches",
-      "courts",
-      "bookings",
-      "bookingConfig",
-      "lessonConfig",
+      'players',
+      'matches',
+      'courts',
+      'bookings',
+      'bookingConfig',
+      'lessonConfig',
     ];
     const currentDataSignature = relevantFields.reduce((acc, field) => {
       acc[field] = state[field];
@@ -303,8 +266,7 @@ export function LeagueProvider({ children }) {
       !lastSavedSignature ||
       relevantFields.some(
         (field) =>
-          JSON.stringify(currentDataSignature[field]) !==
-          JSON.stringify(lastSavedSignature[field]),
+          JSON.stringify(currentDataSignature[field]) !== JSON.stringify(lastSavedSignature[field])
       );
 
     if (hasChanges) {
@@ -313,7 +275,7 @@ export function LeagueProvider({ children }) {
 
         // Clean undefined values to prevent Firebase errors
         const cleanState = Object.fromEntries(
-          Object.entries(state).filter(([key, value]) => value !== undefined),
+          Object.entries(state).filter(([key, value]) => value !== undefined)
         );
 
         const toSave = {
@@ -328,122 +290,119 @@ export function LeagueProvider({ children }) {
             await saveLeague(leagueId, toSave);
             lastSavedStateRef.current = currentDataSignature;
           } catch (e) {
-            console.error("Cloud save error:", e);
+            console.error('Cloud save error:', e);
           }
         }, 800);
 
         return () => clearTimeout(t);
       } catch (e) {
-        console.error("LocalStorage save error:", e);
+        console.error('LocalStorage save error:', e);
       }
     }
   }, [state, leagueId, updatingFromCloud, user]);
 
   // Compute derived data with club filtering
-  const derived = React.useMemo(
-    () => {
-      if (!state) return { players: [], matches: [] };
-      
-      // If no club is selected, return empty data
-      if (!selectedClub) {
-        return { players: [], matches: [] };
+  const derived = React.useMemo(() => {
+    if (!state) return { players: [], matches: [] };
+
+    // If no club is selected, return empty data
+    if (!selectedClub) {
+      return { players: [], matches: [] };
+    }
+
+    // Filter data by club ID with better legacy support
+    const clubId = selectedClub.id;
+    const clubName = selectedClub.name;
+
+    // Debug logging
+    console.log('🔍 FILTRO CLUB DEBUG:', {
+      selectedClubId: clubId,
+      selectedClubName: clubName,
+      totalPlayers: (state.players || []).length,
+      totalMatches: (state.matches || []).length,
+      firstPlayer: state.players?.[0],
+      firstMatch: state.matches?.[0],
+    });
+
+    // For "Sporting Cat" variants, include data without clubId (legacy data)
+    const isLegacyClub =
+      clubName?.toLowerCase().includes('sporting') ||
+      clubId === 'sporting-cat' ||
+      clubId === 'Sporting CAT';
+
+    const filteredPlayers = (state.players || []).filter((p) => {
+      const hasMatchingClubId = p.clubId === clubId;
+      const isLegacyData = isLegacyClub && !p.clubId;
+      const shouldInclude = hasMatchingClubId || isLegacyData;
+
+      if ((state.players || []).indexOf(p) < 3) {
+        // Log first 3 players
+        console.log('🔍 PLAYER FILTER:', {
+          playerName: p.name,
+          playerClubId: p.clubId,
+          hasMatchingClubId,
+          isLegacyData,
+          shouldInclude,
+        });
       }
-      
-      // Filter data by club ID with better legacy support
-      const clubId = selectedClub.id;
-      const clubName = selectedClub.name;
-      
-      // Debug logging
-      console.log('🔍 FILTRO CLUB DEBUG:', {
-        selectedClubId: clubId,
-        selectedClubName: clubName,
-        totalPlayers: (state.players || []).length,
-        totalMatches: (state.matches || []).length,
-        firstPlayer: state.players?.[0],
-        firstMatch: state.matches?.[0]
-      });
-      
-      // For "Sporting Cat" variants, include data without clubId (legacy data)
-      const isLegacyClub = clubName?.toLowerCase().includes('sporting') || 
-                           clubId === 'sporting-cat' || 
-                           clubId === 'Sporting CAT';
-      
-      const filteredPlayers = (state.players || []).filter(p => {
-        const hasMatchingClubId = p.clubId === clubId;
-        const isLegacyData = isLegacyClub && !p.clubId;
-        const shouldInclude = hasMatchingClubId || isLegacyData;
-        
-        if ((state.players || []).indexOf(p) < 3) { // Log first 3 players
-          console.log('🔍 PLAYER FILTER:', {
-            playerName: p.name,
-            playerClubId: p.clubId,
-            hasMatchingClubId,
-            isLegacyData,
-            shouldInclude
-          });
-        }
-        
-        return shouldInclude;
-      });
-      
-      const filteredMatches = (state.matches || []).filter(m => 
-        m.clubId === clubId || (isLegacyClub && !m.clubId)
-      );
-      
-      console.log('🔍 FILTRO RISULTATI:', {
-        filteredPlayers: filteredPlayers.length,
-        filteredMatches: filteredMatches.length,
-        isLegacyClub
-      });
-      
-      return recompute(filteredPlayers, filteredMatches);
-    },
-    [state, selectedClub],
-  );
+
+      return shouldInclude;
+    });
+
+    const filteredMatches = (state.matches || []).filter(
+      (m) => m.clubId === clubId || (isLegacyClub && !m.clubId)
+    );
+
+    console.log('🔍 FILTRO RISULTATI:', {
+      filteredPlayers: filteredPlayers.length,
+      filteredMatches: filteredMatches.length,
+      isLegacyClub,
+    });
+
+    return recompute(filteredPlayers, filteredMatches);
+  }, [state, selectedClub]);
 
   // Filter other data arrays by club
-  const filteredState = React.useMemo(
-    () => {
-      if (!state || !selectedClub) {
-        return {
-          ...state,
-          players: [],
-          matches: [],
-          bookings: [],
-          courts: []
-        };
-      }
-      
-      const clubId = selectedClub.id;
-      const clubName = selectedClub.name;
-      const isLegacyClub = clubName?.toLowerCase().includes('sporting') || 
-                           clubId === 'sporting-cat' || 
-                           clubId === 'Sporting CAT';
-      
-      console.log('🔍 FILTERED STATE per', clubName, '- isLegacyClub:', isLegacyClub);
-      
+  const filteredState = React.useMemo(() => {
+    if (!state || !selectedClub) {
       return {
         ...state,
-        players: (state.players || []).filter(p => 
-          p.clubId === clubId || (isLegacyClub && !p.clubId)
-        ),
-        matches: (state.matches || []).filter(m => 
-          m.clubId === clubId || (isLegacyClub && !m.clubId)
-        ),
-        bookings: (state.bookings || []).filter(b => 
-          b.clubId === clubId || (isLegacyClub && !b.clubId)
-        ),
-        courts: (state.courts || []).filter(c => 
-          c.clubId === clubId || (isLegacyClub && !c.clubId)
-        )
+        players: [],
+        matches: [],
+        bookings: [],
+        courts: [],
       };
-    },
-    [state, selectedClub],
-  );
+    }
+
+    const clubId = selectedClub.id;
+    const clubName = selectedClub.name;
+    const isLegacyClub =
+      clubName?.toLowerCase().includes('sporting') ||
+      clubId === 'sporting-cat' ||
+      clubId === 'Sporting CAT';
+
+    console.log('🔍 FILTERED STATE per', clubName, '- isLegacyClub:', isLegacyClub);
+
+    return {
+      ...state,
+      players: (state.players || []).filter(
+        (p) => p.clubId === clubId || (isLegacyClub && !p.clubId)
+      ),
+      matches: (state.matches || []).filter(
+        (m) => m.clubId === clubId || (isLegacyClub && !m.clubId)
+      ),
+      bookings: (state.bookings || []).filter(
+        (b) => b.clubId === clubId || (isLegacyClub && !b.clubId)
+      ),
+      courts: (state.courts || []).filter(
+        (c) => c.clubId === clubId || (isLegacyClub && !c.clubId)
+      ),
+    };
+  }, [state, selectedClub]);
 
   const playersById = React.useMemo(
     () => Object.fromEntries((derived.players || []).map((p) => [p.id, p])),
-    [derived],
+    [derived]
   );
 
   // Club selection functions
@@ -497,7 +456,5 @@ export function LeagueProvider({ children }) {
     rawState: state,
   };
 
-  return (
-    <LeagueContext.Provider value={value}>{children}</LeagueContext.Provider>
-  );
+  return <LeagueContext.Provider value={value}>{children}</LeagueContext.Provider>;
 }

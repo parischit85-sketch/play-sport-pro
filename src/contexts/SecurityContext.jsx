@@ -31,7 +31,7 @@ export const SecurityProvider = ({ children }) => {
     suspiciousActivities: 0,
     blockedRequests: 0,
     securityScans: 0,
-    threatDetections: 0
+    threatDetections: 0,
   });
 
   /**
@@ -62,9 +62,8 @@ export const SecurityProvider = ({ children }) => {
       analyticsModule.trackEvent('security_initialization', {
         securityScore: audit.score,
         recommendations: audit.recommendations.length,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
-
     } catch (error) {
       console.error('Security initialization failed:', error);
       addSecurityAlert('Security initialization failed', 'high');
@@ -98,11 +97,12 @@ export const SecurityProvider = ({ children }) => {
 
     document.addEventListener('click', () => {
       rapidClickCount++;
-      
+
       if (rapidClickTimer) clearTimeout(rapidClickTimer);
-      
+
       rapidClickTimer = setTimeout(() => {
-        if (rapidClickCount > 20) { // More than 20 clicks in 5 seconds
+        if (rapidClickCount > 20) {
+          // More than 20 clicks in 5 seconds
           handleSuspiciousActivity('rapid_clicking', { clicks: rapidClickCount });
         }
         rapidClickCount = 0;
@@ -114,8 +114,10 @@ export const SecurityProvider = ({ children }) => {
     const threshold = 160;
 
     setInterval(() => {
-      if (window.outerHeight - window.innerHeight > threshold ||
-          window.outerWidth - window.innerWidth > threshold) {
+      if (
+        window.outerHeight - window.innerHeight > threshold ||
+        window.outerWidth - window.innerWidth > threshold
+      ) {
         if (!devtools.open) {
           devtools.open = true;
           handleSuspiciousActivity('devtools_opened');
@@ -129,11 +131,11 @@ export const SecurityProvider = ({ children }) => {
     let tabCount = 1;
     window.addEventListener('focus', () => {
       tabCount++;
-      if (tabCount > 5) { // More than 5 tabs opened
+      if (tabCount > 5) {
+        // More than 5 tabs opened
         handleSuspiciousActivity('multiple_tabs', { count: tabCount });
       }
     });
-
   }, []);
 
   /**
@@ -144,10 +146,10 @@ export const SecurityProvider = ({ children }) => {
     setInterval(() => {
       const audit = performSecurityAudit();
       setSecurityAudit(audit);
-      
-      setSecurityMetrics(prev => ({
+
+      setSecurityMetrics((prev) => ({
         ...prev,
-        securityScans: prev.securityScans + 1
+        securityScans: prev.securityScans + 1,
       }));
 
       // Check for security score degradation
@@ -158,7 +160,7 @@ export const SecurityProvider = ({ children }) => {
 
       analyticsModule.trackEvent('security_scan', {
         score: audit.score,
-        threats: audit.recommendations.length
+        threats: audit.recommendations.length,
       });
     }, 300000); // Every 5 minutes
 
@@ -173,7 +175,7 @@ export const SecurityProvider = ({ children }) => {
               if (dangerousElements.length > 0) {
                 handleSuspiciousActivity('dom_injection', {
                   elements: dangerousElements.length,
-                  nodeName: node.nodeName
+                  nodeName: node.nodeName,
                 });
               }
             }
@@ -184,9 +186,8 @@ export const SecurityProvider = ({ children }) => {
 
     observer.observe(document.body, {
       childList: true,
-      subtree: true
+      subtree: true,
     });
-
   }, []);
 
   /**
@@ -194,50 +195,49 @@ export const SecurityProvider = ({ children }) => {
    * @param {string} type - Type of suspicious activity
    * @param {object} metadata - Additional metadata
    */
-  const handleSuspiciousActivity = useCallback((type, metadata = {}) => {
-    setSecurityMetrics(prev => ({
-      ...prev,
-      suspiciousActivities: prev.suspiciousActivities + 1
-    }));
-
-    const threatTypes = {
-      rapid_clicking: 'medium',
-      devtools_opened: 'low',
-      multiple_tabs: 'low',
-      dom_injection: 'high',
-      unusual_requests: 'medium'
-    };
-
-    const threat = threatTypes[type] || 'medium';
-    setThreatLevel(prev => threat === 'high' ? 'high' : prev);
-
-    addSecurityAlert(
-      `Suspicious activity detected: ${type}`,
-      threat,
-      `suspicious_${type}`
-    );
-
-    // Track security event
-    analyticsModule.trackEvent('security_threat', {
-      type,
-      threat_level: threat,
-      metadata,
-      timestamp: Date.now()
-    });
-
-    // Auto-escalate if multiple high-threat activities
-    if (threat === 'high') {
-      setSecurityMetrics(prev => ({
+  const handleSuspiciousActivity = useCallback(
+    (type, metadata = {}) => {
+      setSecurityMetrics((prev) => ({
         ...prev,
-        threatDetections: prev.threatDetections + 1
+        suspiciousActivities: prev.suspiciousActivities + 1,
       }));
 
-      if (securityMetrics.threatDetections >= 3) {
-        setThreatLevel('critical');
-        handleCriticalThreat();
+      const threatTypes = {
+        rapid_clicking: 'medium',
+        devtools_opened: 'low',
+        multiple_tabs: 'low',
+        dom_injection: 'high',
+        unusual_requests: 'medium',
+      };
+
+      const threat = threatTypes[type] || 'medium';
+      setThreatLevel((prev) => (threat === 'high' ? 'high' : prev));
+
+      addSecurityAlert(`Suspicious activity detected: ${type}`, threat, `suspicious_${type}`);
+
+      // Track security event
+      analyticsModule.trackEvent('security_threat', {
+        type,
+        threat_level: threat,
+        metadata,
+        timestamp: Date.now(),
+      });
+
+      // Auto-escalate if multiple high-threat activities
+      if (threat === 'high') {
+        setSecurityMetrics((prev) => ({
+          ...prev,
+          threatDetections: prev.threatDetections + 1,
+        }));
+
+        if (securityMetrics.threatDetections >= 3) {
+          setThreatLevel('critical');
+          handleCriticalThreat();
+        }
       }
-    }
-  }, [securityMetrics.threatDetections]);
+    },
+    [securityMetrics.threatDetections]
+  );
 
   /**
    * Handle critical security threats
@@ -257,7 +257,7 @@ export const SecurityProvider = ({ children }) => {
     analyticsModule.trackEvent('critical_security_threat', {
       threat_level: 'critical',
       auto_logout: true,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }, []);
 
@@ -274,10 +274,10 @@ export const SecurityProvider = ({ children }) => {
       severity,
       type,
       timestamp: new Date().toISOString(),
-      dismissed: false
+      dismissed: false,
     };
 
-    setSecurityAlerts(prev => [...prev.slice(-9), alert]); // Keep last 10 alerts
+    setSecurityAlerts((prev) => [...prev.slice(-9), alert]); // Keep last 10 alerts
 
     // Auto-dismiss low severity alerts after 10 seconds
     if (severity === 'low') {
@@ -292,12 +292,8 @@ export const SecurityProvider = ({ children }) => {
    * @param {string} alertId - Alert ID
    */
   const dismissSecurityAlert = useCallback((alertId) => {
-    setSecurityAlerts(prev => 
-      prev.map(alert => 
-        alert.id === alertId 
-          ? { ...alert, dismissed: true }
-          : alert
-      )
+    setSecurityAlerts((prev) =>
+      prev.map((alert) => (alert.id === alertId ? { ...alert, dismissed: true } : alert))
     );
   }, []);
 
@@ -312,13 +308,15 @@ export const SecurityProvider = ({ children }) => {
       suspiciousActivities: 0,
       blockedRequests: 0,
       securityScans: 0,
-      threatDetections: 0
+      threatDetections: 0,
     });
 
     // Dispatch logout event for the app to handle
-    window.dispatchEvent(new CustomEvent('securityLogout', {
-      detail: { reason: 'security_threat' }
-    }));
+    window.dispatchEvent(
+      new CustomEvent('securityLogout', {
+        detail: { reason: 'security_threat' },
+      })
+    );
   }, []);
 
   /**
@@ -339,10 +337,10 @@ export const SecurityProvider = ({ children }) => {
     return {
       threatLevel,
       securityScore: securityAudit?.score || 0,
-      activeAlerts: securityAlerts.filter(alert => !alert.dismissed).length,
+      activeAlerts: securityAlerts.filter((alert) => !alert.dismissed).length,
       sessionTimeRemaining,
       isSecure: threatLevel === 'low' && (securityAudit?.score || 0) > 80,
-      metrics: securityMetrics
+      metrics: securityMetrics,
     };
   }, [threatLevel, securityAudit, securityAlerts, sessionTimeRemaining, securityMetrics]);
 
@@ -352,21 +350,17 @@ export const SecurityProvider = ({ children }) => {
    * @param {object} details - Request details
    */
   const blockRequest = useCallback((reason, details = {}) => {
-    setSecurityMetrics(prev => ({
+    setSecurityMetrics((prev) => ({
       ...prev,
-      blockedRequests: prev.blockedRequests + 1
+      blockedRequests: prev.blockedRequests + 1,
     }));
 
-    addSecurityAlert(
-      `Blocked suspicious request: ${reason}`,
-      'medium',
-      'blocked_request'
-    );
+    addSecurityAlert(`Blocked suspicious request: ${reason}`, 'medium', 'blocked_request');
 
     analyticsModule.trackEvent('security_block', {
       reason,
       details,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }, []);
 
@@ -382,7 +376,7 @@ export const SecurityProvider = ({ children }) => {
         if (!secureSession.isExpired()) {
           const timeUntilExpiry = secureSession.getTimeUntilExpiry();
           const minutesRemaining = Math.ceil(timeUntilExpiry / 60000);
-          
+
           if (minutesRemaining <= 5 && minutesRemaining > 0) {
             setSessionTimeRemaining(minutesRemaining);
           } else {
@@ -399,7 +393,7 @@ export const SecurityProvider = ({ children }) => {
     // State
     isSecurityInitialized,
     threatLevel,
-    securityAlerts: securityAlerts.filter(alert => !alert.dismissed),
+    securityAlerts: securityAlerts.filter((alert) => !alert.dismissed),
     securityAudit,
     sessionTimeRemaining,
     securityMetrics,
@@ -416,14 +410,10 @@ export const SecurityProvider = ({ children }) => {
     secureSession,
 
     // Utilities
-    isSecure: threatLevel === 'low' && (securityAudit?.score || 0) > 80
+    isSecure: threatLevel === 'low' && (securityAudit?.score || 0) > 80,
   };
 
-  return (
-    <SecurityContext.Provider value={value}>
-      {children}
-    </SecurityContext.Provider>
-  );
+  return <SecurityContext.Provider value={value}>{children}</SecurityContext.Provider>;
 };
 
 export default SecurityProvider;

@@ -23,22 +23,21 @@ const ClubCourts = ({ clubId, club }) => {
 
     try {
       const data = await loadLeague('default'); // Default league ID
-      
+
       // Filter courts belonging to this club
-      let clubCourts = data.courts?.filter(court => court.clubId === clubId) || [];
-      
+      let clubCourts = data.courts?.filter((court) => court.clubId === clubId) || [];
+
       // Filter current bookings for club courts
       const today = new Date().toISOString().split('T')[0];
-      let clubBookings = data.bookings?.filter(booking => 
-        booking.clubId === clubId && booking.date >= today
-      ) || [];
+      let clubBookings =
+        data.bookings?.filter((booking) => booking.clubId === clubId && booking.date >= today) ||
+        [];
 
       // 🔧 FALLBACK: Se non ci sono campi del club, mostra campi non associati
       if (clubCourts.length === 0 && data.courts?.length > 0) {
-        clubCourts = data.courts.filter(court => !court.clubId) || [];
-        clubBookings = data.bookings?.filter(booking => 
-          !booking.clubId && booking.date >= today
-        ) || [];
+        clubCourts = data.courts.filter((court) => !court.clubId) || [];
+        clubBookings =
+          data.bookings?.filter((booking) => !booking.clubId && booking.date >= today) || [];
       }
 
       setCourts(clubCourts);
@@ -55,25 +54,29 @@ const ClubCourts = ({ clubId, club }) => {
     const today = new Date();
     const currentTime = today.getHours() * 60 + today.getMinutes();
     const todayString = today.toISOString().split('T')[0];
-    
-    const todayBookings = bookings.filter(booking => 
-      booking.courtId === courtId && booking.date === todayString
+
+    const todayBookings = bookings.filter(
+      (booking) => booking.courtId === courtId && booking.date === todayString
     );
 
     // Check if court is currently booked
-    const isCurrentlyBooked = todayBookings.some(booking => {
-      const startTime = parseInt(booking.startTime.split(':')[0]) * 60 + parseInt(booking.startTime.split(':')[1]);
-      const endTime = parseInt(booking.endTime.split(':')[0]) * 60 + parseInt(booking.endTime.split(':')[1]);
+    const isCurrentlyBooked = todayBookings.some((booking) => {
+      const startTime =
+        parseInt(booking.startTime.split(':')[0]) * 60 + parseInt(booking.startTime.split(':')[1]);
+      const endTime =
+        parseInt(booking.endTime.split(':')[0]) * 60 + parseInt(booking.endTime.split(':')[1]);
       return currentTime >= startTime && currentTime <= endTime;
     });
 
     return {
       status: isCurrentlyBooked ? 'occupied' : 'available',
       todayBookings: todayBookings.length,
-      nextBooking: todayBookings.find(booking => {
-        const startTime = parseInt(booking.startTime.split(':')[0]) * 60 + parseInt(booking.startTime.split(':')[1]);
+      nextBooking: todayBookings.find((booking) => {
+        const startTime =
+          parseInt(booking.startTime.split(':')[0]) * 60 +
+          parseInt(booking.startTime.split(':')[1]);
         return startTime > currentTime;
-      })
+      }),
     };
   };
 
@@ -103,9 +106,7 @@ const ClubCourts = ({ clubId, club }) => {
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           Campi {club?.name}
         </h2>
-        <p className="text-gray-600 dark:text-gray-400">
-          Stato e disponibilità dei campi del club
-        </p>
+        <p className="text-gray-600 dark:text-gray-400">Stato e disponibilità dei campi del club</p>
       </div>
 
       {courts.length === 0 ? (
@@ -122,7 +123,7 @@ const ClubCourts = ({ clubId, club }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courts.map((court) => {
             const courtInfo = getCourtStatus(court.id);
-            
+
             return (
               <div
                 key={court.id}
@@ -134,15 +135,18 @@ const ClubCourts = ({ clubId, club }) => {
                       {court.name || `Campo ${court.number || court.id}`}
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {court.surface || 'Terra rossa'} • {court.lighting ? 'Con illuminazione' : 'Senza illuminazione'}
+                      {court.surface || 'Terra rossa'} •{' '}
+                      {court.lighting ? 'Con illuminazione' : 'Senza illuminazione'}
                     </p>
                   </div>
-                  
-                  <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    courtInfo.status === 'occupied'
-                      ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                      : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                  }`}>
+
+                  <div
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      courtInfo.status === 'occupied'
+                        ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                        : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                    }`}
+                  >
                     {courtInfo.status === 'occupied' ? '🔴 Occupato' : '🟢 Disponibile'}
                   </div>
                 </div>

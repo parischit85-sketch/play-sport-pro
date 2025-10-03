@@ -1,17 +1,17 @@
 // =============================================
 // FILE: src/features/booking/MyBookings.jsx
 // =============================================
-import React from "react";
-import Section from "@ui/Section.jsx";
-import Badge from "@ui/Badge.jsx";
-import { createDSClasses } from "@lib/design-system.js";
+import React from 'react';
+import Section from '@ui/Section.jsx';
+import Badge from '@ui/Badge.jsx';
+import { createDSClasses } from '@lib/design-system.js';
 
 export default function MyBookings({ bookings, user, onCancel, T }) {
   const ds = createDSClasses(T);
 
   // Filtra solo le prenotazioni dell'utente corrente
   const userBookings = bookings.filter(
-    (booking) => booking.bookedBy === (user?.displayName || user?.email),
+    (booking) => booking.bookedBy === (user?.displayName || user?.email)
   );
 
   // Ordina per data e ora
@@ -42,11 +42,11 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
   }
 
   const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleDateString("it-IT", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+    return new Date(dateStr).toLocaleDateString('it-IT', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
   };
 
@@ -80,27 +80,22 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <span className={`${ds.bodySm} font-medium text-gray-500`}>
                       {new Date(booking.date)
-                        .toLocaleDateString("it-IT", {
-                          weekday: "short",
-                          month: "short",
-                          day: "numeric",
+                        .toLocaleDateString('it-IT', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
                         })
                         .toUpperCase()}
                     </span>
                   </div>
                   <div className="flex items-baseline gap-1 mb-2">
-                    <span className={`${ds.h4} font-bold`}>
-                      {booking.time.substring(0, 5)}
-                    </span>
+                    <span className={`${ds.h4} font-bold`}>{booking.time.substring(0, 5)}</span>
                     <span className={`${ds.bodySm} text-gray-500`}>
-                      -{" "}
+                      -{' '}
                       {(() => {
-                        const [hours, minutes] = booking.time.split(":");
+                        const [hours, minutes] = booking.time.split(':');
                         const endTime = new Date();
-                        endTime.setHours(
-                          parseInt(hours),
-                          parseInt(minutes) + booking.duration,
-                        );
+                        endTime.setHours(parseInt(hours), parseInt(minutes) + booking.duration);
                         return endTime.toTimeString().substring(0, 5);
                       })()}
                     </span>
@@ -122,16 +117,10 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
               {/* Court info e località */}
               <div className="mb-4">
                 <h3 className={`${ds.h5} font-semibold mb-1`}>
-                  {booking.courtName || "Campo Padel"}
+                  {booking.courtName || 'Campo Padel'}
                 </h3>
-                <p
-                  className={`${ds.bodySm} text-gray-500 flex items-center gap-1`}
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
+                <p className={`${ds.bodySm} text-gray-500 flex items-center gap-1`}>
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
@@ -153,12 +142,9 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
                           key={index}
                           className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold text-white border-2 border-white ${
                             index === 0
-                              ? "bg-blue-500"
-                              : [
-                                  "bg-green-500",
-                                  "bg-purple-500",
-                                  "bg-orange-500",
-                                ][index - 1] || "bg-gray-500"
+                              ? 'bg-blue-500'
+                              : ['bg-green-500', 'bg-purple-500', 'bg-orange-500'][index - 1] ||
+                                'bg-gray-500'
                           }`}
                           title={player}
                         >
@@ -167,7 +153,7 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
                       ))
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-semibold text-white border-2 border-white">
-                        {user?.displayName?.charAt(0).toUpperCase() || "U"}
+                        {user?.displayName?.charAt(0).toUpperCase() || 'U'}
                       </div>
                     )}
 
@@ -190,13 +176,9 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
                   </div>
 
                   {!booking.players || booking.players.length < 4 ? (
-                    <span className={`${ds.bodySm} text-gray-500 ml-1`}>
-                      Posto disponibile
-                    </span>
+                    <span className={`${ds.bodySm} text-gray-500 ml-1`}>Posto disponibile</span>
                   ) : (
-                    <span
-                      className={`${ds.bodySm} text-green-600 dark:text-green-400 ml-1`}
-                    >
+                    <span className={`${ds.bodySm} text-green-600 dark:text-green-400 ml-1`}>
                       Al completo
                     </span>
                   )}
@@ -218,29 +200,21 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span
-                      className={`${ds.bodySm} text-yellow-800 dark:text-yellow-200`}
-                    >
+                    <span className={`${ds.bodySm} text-yellow-800 dark:text-yellow-200`}>
                       Illuminazione
                     </span>
                   </div>
                 )}
                 {booking.heating && (
                   <div className="flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/20 rounded-full">
-                    <svg
-                      className="w-3 h-3 text-red-600"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
+                    <svg className="w-3 h-3 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M10 2a6 6 0 00-6 6c0 1.887-.454 3.665-1.257 5.234a.75.75 0 00.515 1.076 32.91 32.91 0 003.256.508 3.5 3.5 0 006.972 0 32.91 32.91 0 003.256-.508.75.75 0 00.515-1.076A11.448 11.448 0 0116 8a6 6 0 00-6-6zM8.05 14.943a33.54 33.54 0 003.9 0 2 2 0 01-3.9 0z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span
-                      className={`${ds.bodySm} text-red-800 dark:text-red-200`}
-                    >
+                    <span className={`${ds.bodySm} text-red-800 dark:text-red-200`}>
                       Riscaldamento
                     </span>
                   </div>
@@ -251,9 +225,7 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
               <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
                 <div className="flex flex-col">
                   <span className={`${ds.bodySm} text-gray-500`}>Totale</span>
-                  <span
-                    className={`${ds.h5} font-bold text-green-600 dark:text-green-400`}
-                  >
+                  <span className={`${ds.h5} font-bold text-green-600 dark:text-green-400`}>
                     €{booking.price}
                   </span>
                 </div>
@@ -263,11 +235,7 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
                     <button
                       className={`${T.btnSm} bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40 border-0`}
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                       </svg>
                     </button>
@@ -275,21 +243,13 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
                     {canCancel(booking.date, booking.time) && (
                       <button
                         onClick={() => {
-                          if (
-                            confirm(
-                              "Sei sicuro di voler cancellare questa prenotazione?",
-                            )
-                          ) {
+                          if (confirm('Sei sicuro di voler cancellare questa prenotazione?')) {
                             onCancel(booking.id);
                           }
                         }}
                         className={`${T.btnSm} bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40 border-0`}
                       >
-                        <svg
-                          className="w-4 h-4"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path
                             fillRule="evenodd"
                             d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"
@@ -315,14 +275,9 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
       <div className="flex justify-center mt-4 md:hidden">
         <div className="flex gap-1">
           {sortedBookings.slice(0, 5).map((_, index) => (
-            <div
-              key={index}
-              className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600"
-            ></div>
+            <div key={index} className="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600"></div>
           ))}
-          {sortedBookings.length > 5 && (
-            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-          )}
+          {sortedBookings.length > 5 && <div className="w-2 h-2 rounded-full bg-blue-500"></div>}
         </div>
       </div>
     </Section>

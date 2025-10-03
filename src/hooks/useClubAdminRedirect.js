@@ -7,7 +7,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 
 /**
  * Hook che gestisce il redirect automatico per i CLUB_ADMIN
- * Se un utente è CLUB_ADMIN di un solo club, viene automaticamente 
+ * Se un utente è CLUB_ADMIN di un solo club, viene automaticamente
  * reindirizzato alla dashboard amministrativa del club
  */
 export function useClubAdminRedirect() {
@@ -16,7 +16,6 @@ export function useClubAdminRedirect() {
   const { user, userRole, userClubRoles, currentClub, loading } = useAuth();
 
   useEffect(() => {
-
     // Se stiamo ancora caricando, aspettiamo
     if (loading) {
       return;
@@ -40,20 +39,17 @@ export function useClubAdminRedirect() {
     // Primo controllo: verifica userClubRoles
     let clubAdminRoles = [];
     if (userClubRoles && Object.keys(userClubRoles).length > 0) {
-      clubAdminRoles = Object.entries(userClubRoles).filter(
-        ([clubId, roles]) => {
-          // Gestisci sia stringhe che array
-          if (Array.isArray(roles)) {
-            return roles.includes('CLUB_ADMIN') || roles.includes('club_admin');
-          }
-          return roles === 'CLUB_ADMIN' || roles === 'club_admin';
+      clubAdminRoles = Object.entries(userClubRoles).filter(([clubId, roles]) => {
+        // Gestisci sia stringhe che array
+        if (Array.isArray(roles)) {
+          return roles.includes('CLUB_ADMIN') || roles.includes('club_admin');
         }
-      );
+        return roles === 'CLUB_ADMIN' || roles === 'club_admin';
+      });
     }
 
     // Secondo controllo: verifica userRole globale per club_admin
     if (clubAdminRoles.length === 0 && userRole === 'club_admin') {
-      
       // Prova a trovare il club dal currentClub o localStorage
       let clubId = currentClub?.id;
       if (!clubId) {
@@ -66,7 +62,7 @@ export function useClubAdminRedirect() {
           // Silent error handling
         }
       }
-      
+
       // Se abbiamo un club e l'utente è club_admin, assumiamo sia admin di quel club
       if (clubId) {
         clubAdminRoles = [[clubId, 'CLUB_ADMIN']];
@@ -83,14 +79,14 @@ export function useClubAdminRedirect() {
     // Se l'utente è admin di esattamente un club, reindirizza
     if (clubAdminRoles.length === 1) {
       const [clubId, role] = clubAdminRoles[0];
-      
+
       // Controllo di sicurezza: assicurati che clubId sia valido
       if (!clubId || clubId === 'undefined' || clubId === 'null') {
         return;
       }
-      
+
       const adminDashboardPath = `/club/${clubId}/admin/dashboard`;
-      
+
       // Usa un piccolo delay per assicurarsi che il DOM sia pronto
       setTimeout(() => {
         navigate(adminDashboardPath, { replace: true });

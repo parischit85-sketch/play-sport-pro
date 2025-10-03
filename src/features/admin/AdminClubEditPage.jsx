@@ -12,7 +12,7 @@ const AdminClubEditPage = () => {
   const { clubId } = useParams();
   const { userRole, USER_ROLES } = useAuth();
   const isEditing = Boolean(clubId);
-  
+
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [club, setClub] = useState({
@@ -23,18 +23,18 @@ const AdminClubEditPage = () => {
       address: '',
       city: '',
       region: '',
-      coordinates: null
+      coordinates: null,
     },
     contact: {
       email: '',
       phone: '',
-      website: ''
+      website: '',
     },
     settings: {
       allowPublicBookings: true,
       requireApproval: false,
-      maxBookingsPerUser: 10
-    }
+      maxBookingsPerUser: 10,
+    },
   });
 
   useEffect(() => {
@@ -57,16 +57,16 @@ const AdminClubEditPage = () => {
         ...clubData,
         location: {
           ...club.location,
-          ...clubData.location
+          ...clubData.location,
         },
         contact: {
           ...club.contact,
-          ...clubData.contact
+          ...clubData.contact,
         },
         settings: {
           ...club.settings,
-          ...clubData.settings
-        }
+          ...clubData.settings,
+        },
       });
     } catch (error) {
       console.error('Error loading club:', error);
@@ -79,24 +79,24 @@ const AdminClubEditPage = () => {
 
   const handleInputChange = (field, value, section = null) => {
     if (section) {
-      setClub(prev => ({
+      setClub((prev) => ({
         ...prev,
         [section]: {
           ...prev[section],
-          [field]: value
-        }
+          [field]: value,
+        },
       }));
     } else {
-      setClub(prev => ({
+      setClub((prev) => ({
         ...prev,
-        [field]: value
+        [field]: value,
       }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!club.name.trim()) {
       alert('Il nome del club è obbligatorio');
       return;
@@ -104,11 +104,11 @@ const AdminClubEditPage = () => {
 
     try {
       setSaving(true);
-      
+
       const clubData = {
         ...club,
         name: club.name.trim(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
       if (isEditing) {
@@ -119,7 +119,7 @@ const AdminClubEditPage = () => {
         await createClub(clubData);
         alert('Club creato con successo!');
       }
-      
+
       navigate('/admin/clubs');
     } catch (error) {
       console.error('Error saving club:', error);
@@ -174,7 +174,7 @@ const AdminClubEditPage = () => {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Informazioni Base
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -189,7 +189,7 @@ const AdminClubEditPage = () => {
                   required
                 />
               </div>
-              
+
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Descrizione
@@ -202,7 +202,7 @@ const AdminClubEditPage = () => {
                   placeholder="Descrizione del club"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Stato
@@ -225,7 +225,7 @@ const AdminClubEditPage = () => {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Localizzazione
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -239,7 +239,7 @@ const AdminClubEditPage = () => {
                   placeholder="Via, numero civico"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Città
@@ -252,7 +252,7 @@ const AdminClubEditPage = () => {
                   placeholder="Città"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Regione
@@ -270,10 +270,8 @@ const AdminClubEditPage = () => {
 
           {/* Contact */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-              Contatti
-            </h2>
-            
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Contatti</h2>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -287,7 +285,7 @@ const AdminClubEditPage = () => {
                   placeholder="email@club.com"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Telefono
@@ -300,7 +298,7 @@ const AdminClubEditPage = () => {
                   placeholder="+39 123 456 7890"
                 />
               </div>
-              
+
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Sito Web
@@ -321,34 +319,44 @@ const AdminClubEditPage = () => {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Impostazioni
             </h2>
-            
+
             <div className="space-y-4">
               <div className="flex items-center">
                 <input
                   type="checkbox"
                   id="allowPublicBookings"
                   checked={club.settings.allowPublicBookings}
-                  onChange={(e) => handleInputChange('allowPublicBookings', e.target.checked, 'settings')}
+                  onChange={(e) =>
+                    handleInputChange('allowPublicBookings', e.target.checked, 'settings')
+                  }
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                 />
-                <label htmlFor="allowPublicBookings" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="allowPublicBookings"
+                  className="ml-2 text-sm text-gray-700 dark:text-gray-300"
+                >
                   Consenti prenotazioni pubbliche
                 </label>
               </div>
-              
+
               <div className="flex items-center">
                 <input
                   type="checkbox"
                   id="requireApproval"
                   checked={club.settings.requireApproval}
-                  onChange={(e) => handleInputChange('requireApproval', e.target.checked, 'settings')}
+                  onChange={(e) =>
+                    handleInputChange('requireApproval', e.target.checked, 'settings')
+                  }
                   className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                 />
-                <label htmlFor="requireApproval" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                <label
+                  htmlFor="requireApproval"
+                  className="ml-2 text-sm text-gray-700 dark:text-gray-300"
+                >
                   Richiedi approvazione per le prenotazioni
                 </label>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Max prenotazioni per utente
@@ -358,7 +366,9 @@ const AdminClubEditPage = () => {
                   min="1"
                   max="50"
                   value={club.settings.maxBookingsPerUser}
-                  onChange={(e) => handleInputChange('maxBookingsPerUser', parseInt(e.target.value), 'settings')}
+                  onChange={(e) =>
+                    handleInputChange('maxBookingsPerUser', parseInt(e.target.value), 'settings')
+                  }
                   className="w-32 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
@@ -374,14 +384,14 @@ const AdminClubEditPage = () => {
             >
               Annulla
             </button>
-            
+
             <button
               type="submit"
               disabled={saving}
               className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-md flex items-center gap-2"
             >
               {saving && <LoadingSpinner size="sm" />}
-              {saving ? 'Salvando...' : (isEditing ? 'Aggiorna Club' : 'Crea Club')}
+              {saving ? 'Salvando...' : isEditing ? 'Aggiorna Club' : 'Crea Club'}
             </button>
           </div>
         </form>

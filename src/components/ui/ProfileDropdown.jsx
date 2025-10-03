@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 const ProfileDropdown = ({ onProfileClick, onBackupClick }) => {
   return (
@@ -8,20 +8,12 @@ const ProfileDropdown = ({ onProfileClick, onBackupClick }) => {
     >
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/30 dark:from-gray-700/30 via-transparent to-transparent pointer-events-none" />
-      
+
       <div className="relative">
         <div className="bg-gradient-to-r from-slate-50/80 to-gray-50/60 dark:from-slate-900/40 dark:to-gray-900/30 text-slate-600 dark:text-slate-400 border border-white/20 dark:border-gray-600/20 w-12 h-12 backdrop-blur-sm rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform mx-auto shadow-lg">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <circle cx="12" cy="7" r="4" strokeWidth={1.5} />
-            <path
-              d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
-              strokeWidth={1.5}
-            />
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" strokeWidth={1.5} />
           </svg>
         </div>
         <h3 className="font-bold text-base mb-2 text-gray-900 dark:text-white text-center">
