@@ -82,49 +82,7 @@ export default defineConfig({
         },
         chunkFileNames: `assets/[name]-${Date.now().toString(36)}-[hash].js`,
         entryFileNames: `assets/[name]-${Date.now().toString(36)}-[hash].js`,
-        manualChunks: (id) => {
-          // Core vendor libraries
-          if (id.includes('node_modules')) {
-            // Be more specific with React to avoid catching recharts, lucide-react, etc.
-            if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
-              return 'vendor';
-            }
-            if (id.includes('react-router')) {
-              return 'router';
-            }
-            if (id.includes('firebase')) {
-              return 'firebase';
-            }
-            if (id.includes('recharts') || id.includes('chart')) {
-              return 'charts';
-            }
-            if (id.includes('lucide-react') || id.includes('icon')) {
-              return 'icons';
-            }
-            // Other vendor libraries
-            return 'libs';
-          }
-          
-          // Application chunks
-          if (id.includes('/features/admin/')) {
-            return 'admin';
-          }
-          if (id.includes('/features/clubs/')) {
-            return 'clubs';
-          }
-          if (id.includes('/features/booking/') || id.includes('/features/prenota/')) {
-            return 'booking';
-          }
-          if (id.includes('/features/players/') || id.includes('/features/matches/')) {
-            return 'players-matches';
-          }
-          if (id.includes('/components/ui/')) {
-            return 'ui-components';
-          }
-          if (id.includes('/lib/') || id.includes('/utils/')) {
-            return 'utilities';
-          }
-        },
+        // Let Vite handle chunking automatically - safer and prevents dependency issues
       },
     },
     terserOptions: {
