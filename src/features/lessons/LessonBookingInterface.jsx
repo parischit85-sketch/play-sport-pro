@@ -89,15 +89,20 @@ export default function LessonBookingInterface({
     const baseConfig = clubLessonConfig || createLessonConfigSchema();
     const configSlots = baseConfig.timeSlots || [];
     
+    console.log('🔄 [LessonBooking] Merging time slots:', {
+      adminSlots: configSlots.length,
+      instructorSlots: instructorTimeSlots.length,
+    });
+    
     // Converti le fasce degli istruttori nel formato compatibile con lessonConfig
     const convertedInstructorSlots = instructorTimeSlots.map(slot => ({
       id: slot.id,
       dayOfWeek: null, // Gli slot degli istruttori usano date specifiche
-      selectedDates: slot.date ? [slot.date] : [],
+      selectedDates: slot.date ? [slot.date] : (slot.selectedDates || []),
       startTime: slot.startTime,
       endTime: slot.endTime,
       courtIds: slot.courtIds || [],
-      instructorIds: slot.instructorIds || [slot.instructorId],
+      instructorIds: slot.instructorIds || (slot.instructorId ? [slot.instructorId] : []),
       maxBookings: slot.maxParticipants || 5,
       isActive: slot.isActive !== false,
       source: 'instructor', // Marca la fonte
@@ -105,10 +110,27 @@ export default function LessonBookingInterface({
       updatedAt: slot.updatedAt,
     }));
     
-    return {
+    const merged = {
       ...baseConfig,
       timeSlots: [...configSlots, ...convertedInstructorSlots],
     };
+    
+    console.log('✅ [LessonBooking] Merged config:', {
+      totalSlots: merged.timeSlots.length,
+      adminSlots: configSlots.length,
+      instructorSlots: convertedInstructorSlots.length,
+      slots: merged.timeSlots.map(s => ({
+        id: s.id,
+        source: s.source || 'admin',
+        selectedDates: s.selectedDates,
+        dayOfWeek: s.dayOfWeek,
+        startTime: s.startTime,
+        endTime: s.endTime,
+        isActive: s.isActive,
+      })),
+    });
+    
+    return merged;
   }, [clubLessonConfig, instructorTimeSlots]);
   
   const players = clubPlayers || state?.players || [];
@@ -116,15 +138,29 @@ export default function LessonBookingInterface({
   // Carica le fasce orarie dalla collezione timeSlots (create dagli istruttori) con listener real-time
   useEffect(() => {
     const currentClubId = clubId || selectedClub?.id;
-    if (!currentClubId) return;
+    
+    console.log('🔍 [LessonBooking] Setting up timeSlots listener:', {
+      clubId,
+      selectedClubId: selectedClub?.id,
+      currentClubId,
+      hasClubId: !!currentClubId,
+    });
+    
+    if (!currentClubId) {
+      console.warn('⚠️ [LessonBooking] No clubId available, skipping timeSlots listener');
+      return;
+    }
 
     let unsubscribe;
 
     const setupRealtimeListener = async () => {
       try {
+        console.log('🔌 [LessonBooking] Importing Firestore modules...');
         const { collection, onSnapshot } = await import('firebase/firestore');
         const { db } = await import('@services/firebase.js');
         
+        const timeSlotsPath = `clubs/${currentClubId}/timeSlots`;
+        console.log('📡 [LessonBooking] Creating listener for path:', timeSlotsPath);
         const timeSlotsRef = collection(db, 'clubs', currentClubId, 'timeSlots');
         
         // Listener real-time per aggiornamenti automatici
@@ -138,13 +174,34 @@ export default function LessonBookingInterface({
             });
           });
           
-          console.log('📚 [LessonBooking] Real-time update - instructor time slots:', slots.length);
+          console.log('📚 [LessonBooking] Real-time update - instructor time slots:', {
+            count: slots.length,
+            path: timeSlotsPath,
+            slots: slots.map(s => ({
+              id: s.id,
+              date: s.date,
+              startTime: s.startTime,
+              endTime: s.endTime,
+              isActive: s.isActive,
+            })),
+          });
           setInstructorTimeSlots(slots);
         }, (error) => {
-          console.error('❌ [LessonBooking] Error in real-time listener:', error);
+          console.error('❌ [LessonBooking] Error in real-time listener:', {
+            error,
+            message: error.message,
+            code: error.code,
+            path: timeSlotsPath,
+          });
         });
+        
+        console.log('✅ [LessonBooking] Listener setup completed');
       } catch (error) {
-        console.error('❌ [LessonBooking] Error setting up real-time listener:', error);
+        console.error('❌ [LessonBooking] Error setting up real-time listener:', {
+          error,
+          message: error.message,
+          stack: error.stack,
+        });
       }
     };
 
