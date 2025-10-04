@@ -1,0 +1,1232 @@
+// =============================================
+// FILE: src/features/instructor/InstructorDashboard.jsx
+// Dashboard completa per istruttori con tutte le prenotazioni e gestione orari
+// =============================================
+import React, { useState, useEffect, useMemo } from 'react';
+import { useClub } from '@contexts/ClubContext.jsx';
+import { useAuth } from '@contexts/AuthContext.jsx';
+import { themeTokens } from '@lib/theme.js';
+import { format, parseISO, addDays, isToday, isTomorrow, isPast, isFuture, startOfDay } from 'date-fns';
+import { it } from 'date-fns/locale';
+import Modal from '@ui/Modal.jsx';
+
+export default function InstructorDashboard() {
+  const { clubId, club, courts } = useClub();
+  const { user } = useAuth();
+  const [allBookings, setAllBookings] = useState([]);
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('lessons'); // 'lessons', 'matches', 'schedule'
+  const [filterDate, setFilterDate] = useState('all'); // 'all', 'today', 'upcoming', 'past'
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showAddSlotModal, setShowAddSlotModal] = useState(false);
+  const [editingSlot, setEditingSlot] = useState(null);
+  const T = themeTokens();
+
+  // Form state for adding/editing slots
+  const [slotForm, setSlotForm] = useState({
+    date: '',
+    startTime: '',
+    endTime: '',
+    courtIds: [],
+    maxParticipants: 1,
+    price: 0,
+    notes: '',
+  });
+
+  // Load all bookings and time slots
+  useEffect(() => {
+    const loadData = async () => {
+      if (!clubId || !user?.uid) return;
+
+      try {
+        setLoading(true);
+        console.log('🎓 [InstructorDashboard] Loading data for instructor:', user.uid);
+
+        // Load bookings
+        const { loadPublicBookings } = await import('@services/cloud-bookings.js');
+        const clubBookings = await loadPublicBookings(clubId);
+
+        // Filter bookings where this user is the instructor OR a participant in matches
+        const instructorBookings = clubBookings.filter((booking) => {
+          // Lezioni dove è l'istruttore
+          const isInstructorInLesson = booking.instructorId === user.uid;
+          
+          // Partite dove è un partecipante
+          const isParticipantInMatch = 
+            booking.type === 'match' && 
+            booking.participants?.some(p => p.id === user.uid || p.uid === user.uid);
+
+          return isInstructorInLesson || isParticipantInMatch;
+        });
+
+        console.log('📚 [InstructorDashboard] Found bookings:', {
+          total: clubBookings.length,
+          instructor: instructorBookings.length
+        });
+
+        setAllBookings(instructorBookings);
+
+        // Load time slots
+        const { getInstructorTimeSlots } = await import('@services/time-slots.js');
+        const slots = await getInstructorTimeSlots(clubId, user.uid);
+        console.log('⏰ [InstructorDashboard] Found time slots:', slots.length);
+        setTimeSlots(slots);
+      } catch (error) {
+        console.error('❌ [InstructorDashboard] Error loading data:', error);
+        setAllBookings([]);
+        setTimeSlots([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [clubId, user?.uid]);
+
+  // Filter bookings by type (lessons vs matches)
+  const { lessonBookings, matchBookings } = useMemo(() => {
+    const lessons = allBookings.filter(
+      (b) => b.instructorId === user?.uid && 
+      (b.isLessonBooking || b.type === 'lesson' || b.bookingType === 'lezione')
+    );
+    const matches = allBookings.filter(
+      (b) => b.type === 'match' && 
+      b.participants?.some(p => p.id === user?.uid || p.uid === user?.uid)
+    );
+    return { lessonBookings: lessons, matchBookings: matches };
+  }, [allBookings, user?.uid]);
+
+  // Apply date filter
+  const filteredBookings = useMemo(() => {
+    const bookings = activeTab === 'lessons' ? lessonBookings : matchBookings;
+    const now = new Date();
+    const todayStart = startOfDay(now);
+
+    switch (filterDate) {
+      case 'today':
+        return bookings.filter((b) => {
+          const date = b.date ? parseISO(b.date) : null;
+          return date && isToday(date);
+        });
+      case 'upcoming':
+        return bookings.filter((b) => {
+          const date = b.date ? parseISO(b.date) : null;
+          return date && (isFuture(date) || isToday(date));
+        });
+      case 'past':
+        return bookings.filter((b) => {
+          const date = b.date ? parseISO(b.date) : null;
+          return date && isPast(date) && !isToday(date);
+        });
+      default:
+        return bookings;
+    }
+  }, [activeTab, lessonBookings, matchBookings, filterDate]);
+
+  // Format date for display
+  const formatBookingDate = (dateString) => {
+    if (!dateString) return 'Data non disponibile';
+    try {
+      const date = parseISO(dateString);
+      if (isToday(date)) return 'Oggi';
+      if (isTomorrow(date)) return 'Domani';
+      return format(date, 'EEEE d MMMM', { locale: it });
+    } catch {
+      return 'Data non valida';
+    }
+  };
+
+  // Get booking status color
+  const getStatusColor = (booking) => {
+    if (booking.status === 'cancelled') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+    if (booking.status === 'confirmed') {
+      const date = booking.date ? parseISO(booking.date) : null;
+      if (date && isPast(date)) return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+    }
+    return 'bg-gray-100 text-gray-700 dark:bg-gray-700/30 dark:text-gray-400';
+  };
+
+  // Get status text
+  const getStatusText = (booking) => {
+    if (booking.status === 'cancelled') return 'Annullata';
+    if (booking.status === 'confirmed') {
+      const date = booking.date ? parseISO(booking.date) : null;
+      if (date && isPast(date) && !isToday(date)) return 'Completata';
+      return 'Confermata';
+    }
+    return 'In attesa';
+  };
+
+  // Handle slot form submission
+  const handleSubmitSlot = async (e) => {
+    e.preventDefault();
+    try {
+      const { createTimeSlot, updateTimeSlot } = await import('@services/time-slots.js');
+      
+      const slotData = {
+        ...slotForm,
+        instructorId: user.uid,
+        instructorIds: [user.uid],
+        available: true,
+      };
+
+      if (editingSlot) {
+        await updateTimeSlot(clubId, editingSlot.id, slotData);
+        console.log('✅ Slot updated:', editingSlot.id);
+      } else {
+        await createTimeSlot(clubId, slotData);
+        console.log('✅ Slot created');
+      }
+
+      // Reset and reload
+      setSlotForm({ date: '', startTime: '', endTime: '', courtIds: [], maxParticipants: 1, price: 0, notes: '' });
+      setShowAddSlotModal(false);
+      setEditingSlot(null);
+
+      const { getInstructorTimeSlots } = await import('@services/time-slots.js');
+      const updatedSlots = await getInstructorTimeSlots(clubId, user.uid);
+      setTimeSlots(updatedSlots);
+    } catch (error) {
+      console.error('❌ Error saving slot:', error);
+      alert('Errore nel salvare la fascia oraria. Riprova.');
+    }
+  };
+
+  // Handle edit slot
+  const handleEditSlot = (slot) => {
+    setEditingSlot(slot);
+    setSlotForm({
+      date: slot.date || '',
+      startTime: slot.startTime || '',
+      endTime: slot.endTime || '',
+      courtIds: slot.courtIds || [],
+      maxParticipants: slot.maxParticipants || 1,
+      price: slot.price || 0,
+      notes: slot.notes || '',
+    });
+    setShowAddSlotModal(true);
+  };
+
+  // Handle delete slot
+  const handleDeleteSlot = async (slot) => {
+    if (!confirm('Sei sicuro di voler eliminare questa fascia oraria?')) return;
+    try {
+      // Usa la funzione corretta in base alla sorgente dello slot
+      if (slot.source === 'lessonConfig') {
+        const { deleteLessonConfigSlot } = await import('@services/time-slots.js');
+        await deleteLessonConfigSlot(clubId, slot.id);
+      } else {
+        const { deleteTimeSlot } = await import('@services/time-slots.js');
+        await deleteTimeSlot(clubId, slot.id);
+      }
+      
+      const { getInstructorTimeSlots } = await import('@services/time-slots.js');
+      const updatedSlots = await getInstructorTimeSlots(clubId, user.uid);
+      setTimeSlots(updatedSlots);
+    } catch (error) {
+      console.error('❌ Error deleting slot:', error);
+      alert('Errore nell\'eliminare la fascia oraria. Riprova.');
+    }
+  };
+
+  // Handle toggle slot active status
+  const handleToggleSlot = async (slot) => {
+    const newStatus = slot.isActive === false ? true : false;
+    const action = newStatus ? 'attivare' : 'disattivare';
+    
+    if (!confirm(`Sei sicuro di voler ${action} questa fascia oraria?`)) return;
+    
+    try {
+      // Usa la funzione corretta in base alla sorgente dello slot
+      if (slot.source === 'lessonConfig') {
+        const { updateLessonConfigSlot } = await import('@services/time-slots.js');
+        await updateLessonConfigSlot(clubId, slot.id, { isActive: newStatus });
+      } else {
+        const { updateTimeSlot } = await import('@services/time-slots.js');
+        await updateTimeSlot(clubId, slot.id, { isActive: newStatus });
+      }
+      
+      const { getInstructorTimeSlots } = await import('@services/time-slots.js');
+      const updatedSlots = await getInstructorTimeSlots(clubId, user.uid);
+      setTimeSlots(updatedSlots);
+    } catch (error) {
+      console.error('❌ Error toggling slot:', error);
+      alert(`Errore nel ${action} la fascia oraria. Riprova.`);
+    }
+  };
+
+  // Stats for dashboard
+  const stats = useMemo(() => {
+    const now = new Date();
+    const todayBookings = allBookings.filter(b => {
+      const date = b.date ? parseISO(b.date) : null;
+      return date && isToday(date);
+    });
+    const upcomingBookings = allBookings.filter(b => {
+      const date = b.date ? parseISO(b.date) : null;
+      return date && isFuture(date);
+    });
+
+    return {
+      todayLessons: todayBookings.filter(b => b.instructorId === user?.uid).length,
+      todayMatches: todayBookings.filter(b => b.type === 'match').length,
+      upcomingLessons: upcomingBookings.filter(b => b.instructorId === user?.uid).length,
+      upcomingMatches: upcomingBookings.filter(b => b.type === 'match').length,
+      totalSlots: timeSlots.length,
+      activeSlots: timeSlots.filter(s => s.available).length,
+    };
+  }, [allBookings, timeSlots, user?.uid]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 p-4">
+        <div className="max-w-7xl mx-auto space-y-6 animate-pulse">
+          <div className="h-12 bg-white/60 dark:bg-gray-800/60 rounded-2xl"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 bg-white/60 dark:bg-gray-800/60 rounded-2xl"></div>
+            ))}
+          </div>
+          <div className="h-96 bg-white/60 dark:bg-gray-800/60 rounded-2xl"></div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 p-4">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                Dashboard Istruttore
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400">
+                {club?.name || 'Caricamento...'}
+              </p>
+            </div>
+            <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <StatCard
+              title="Lezioni Oggi"
+              value={stats.todayLessons}
+              icon="📚"
+              color="from-blue-500 to-cyan-600"
+            />
+            <StatCard
+              title="Partite Oggi"
+              value={stats.todayMatches}
+              icon="🎾"
+              color="from-green-500 to-emerald-600"
+            />
+            <StatCard
+              title="Prossime Lezioni"
+              value={stats.upcomingLessons}
+              icon="📅"
+              color="from-purple-500 to-pink-600"
+            />
+            <StatCard
+              title="Prossime Partite"
+              value={stats.upcomingMatches}
+              icon="🏆"
+              color="from-orange-500 to-red-600"
+            />
+            <StatCard
+              title="Fasce Orarie"
+              value={stats.totalSlots}
+              icon="⏰"
+              color="from-indigo-500 to-purple-600"
+            />
+            <StatCard
+              title="Slot Attivi"
+              value={stats.activeSlots}
+              icon="✅"
+              color="from-teal-500 to-green-600"
+            />
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl">
+          {/* Tabs */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex gap-2">
+              {[
+                { key: 'lessons', label: 'Le Mie Lezioni', count: lessonBookings.length },
+                { key: 'matches', label: 'Le Mie Partite', count: matchBookings.length },
+                { key: 'schedule', label: 'Gestisci Orari', count: timeSlots.length },
+              ].map(({ key, label, count }) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    activeTab === key
+                      ? 'bg-blue-500 text-white shadow-lg'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {label} ({count})
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Filters (for lessons and matches tabs) */}
+          {activeTab !== 'schedule' && (
+            <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+              {[
+                { key: 'all', label: 'Tutte' },
+                { key: 'today', label: 'Oggi' },
+                { key: 'upcoming', label: 'Prossime' },
+                { key: 'past', label: 'Passate' },
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => setFilterDate(key)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                    filterDate === key
+                      ? 'bg-indigo-500 text-white shadow-lg'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Content */}
+          {activeTab === 'schedule' ? (
+            <div className="space-y-4 md:space-y-6">
+              {/* Add Button */}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => {
+                    setSlotForm({
+                      date: '',
+                      startTime: '14:00',
+                      endTime: '15:00',
+                      courtIds: Array.isArray(club?.courts) ? club.courts.map((c) => c.id) : [],
+                      maxParticipants: 5,
+                      price: 0,
+                      notes: '',
+                    });
+                    setEditingSlot(null);
+                    setShowAddSlotModal(true);
+                  }}
+                  className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 whitespace-nowrap text-sm sm:text-base"
+                >
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span className="hidden sm:inline">Nuova Fascia</span>
+                  <span className="sm:hidden">Nuova</span>
+                </button>
+              </div>
+
+              {/* Time Slots List */}
+              <TimeSlotsList
+                timeSlots={timeSlots}
+                onEdit={handleEditSlot}
+                onDelete={handleDeleteSlot}
+                onToggle={handleToggleSlot}
+              />
+            </div>
+          ) : (
+            <BookingsList
+              bookings={filteredBookings}
+              type={activeTab}
+              onSelectBooking={(booking) => {
+                setSelectedBooking(booking);
+                setShowBookingModal(true);
+              }}
+              formatBookingDate={formatBookingDate}
+              getStatusColor={getStatusColor}
+              getStatusText={getStatusText}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Booking Detail Modal */}
+      {showBookingModal && selectedBooking && (
+        <Modal
+          isOpen={showBookingModal}
+          onClose={() => {
+            setShowBookingModal(false);
+            setSelectedBooking(null);
+          }}
+          title={activeTab === 'lessons' ? 'Dettagli Lezione' : 'Dettagli Partita'}
+          size="lg"
+        >
+          <BookingDetail booking={selectedBooking} type={activeTab} />
+        </Modal>
+      )}
+
+      {/* Add/Edit Slot Modal */}
+      {showAddSlotModal && (
+        <SlotFormModal
+          isOpen={showAddSlotModal}
+          onClose={() => {
+            setShowAddSlotModal(false);
+            setEditingSlot(null);
+            setSlotForm({
+              date: '',
+              startTime: '14:00',
+              endTime: '15:00',
+              courtIds: [],
+              maxParticipants: 5,
+              price: 0,
+              notes: '',
+            });
+          }}
+          slotForm={slotForm}
+          setSlotForm={setSlotForm}
+          onSubmit={handleSubmitSlot}
+          editing={!!editingSlot}
+          clubCourts={courts || []}
+        />
+      )}
+    </div>
+  );
+}
+
+// Stat Card Component
+function StatCard({ title, value, icon, color }) {
+  return (
+    <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 backdrop-blur-sm rounded-2xl border border-white/30 dark:border-gray-600/30 p-4">
+      <div className="text-2xl mb-2">{icon}</div>
+      <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{value}</div>
+      <div className="text-xs text-gray-600 dark:text-gray-400">{title}</div>
+    </div>
+  );
+}
+
+// Bookings List Component
+function BookingsList({ bookings, type, onSelectBooking, formatBookingDate, getStatusColor, getStatusText }) {
+  if (bookings.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <svg className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        <p className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+          Nessuna {type === 'lessons' ? 'lezione' : 'partita'} trovata
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Le tue {type === 'lessons' ? 'lezioni' : 'partite'} appariranno qui
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {bookings.map((booking) => (
+        <button
+          key={booking.id}
+          onClick={() => onSelectBooking(booking)}
+          className="w-full bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 backdrop-blur-sm rounded-2xl border border-white/30 dark:border-gray-600/30 p-4 hover:shadow-lg transition-all duration-200 text-left"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                {formatBookingDate(booking.date)} {booking.time && `• ${booking.time}`}
+              </div>
+              {booking.courtName && (
+                <div className="text-xs text-gray-600 dark:text-gray-400">
+                  {booking.courtName}
+                </div>
+              )}
+            </div>
+            <div className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(booking)}`}>
+              {getStatusText(booking)}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {type === 'lessons' && (
+              <>
+                {booking.lessonType && (
+                  <div className="text-sm text-gray-700 dark:text-gray-300">
+                    Tipo: <span className="font-medium">{booking.lessonType === 'individual' ? 'Individuale' : 'Gruppo'}</span>
+                  </div>
+                )}
+                {booking.participants && (
+                  <div className="text-sm text-gray-700 dark:text-gray-300">
+                    Partecipanti: <span className="font-medium">{booking.participants.length}</span>
+                  </div>
+                )}
+              </>
+            )}
+            {type === 'matches' && (
+              <>
+                {booking.matchType && (
+                  <div className="text-sm text-gray-700 dark:text-gray-300">
+                    Tipo: <span className="font-medium">{booking.matchType}</span>
+                  </div>
+                )}
+                {booking.participants && (
+                  <div className="text-sm text-gray-700 dark:text-gray-300">
+                    Giocatori: <span className="font-medium">{booking.participants.map(p => p.name || p.displayName).join(', ')}</span>
+                  </div>
+                )}
+              </>
+            )}
+            {booking.price && (
+              <div className="text-sm text-green-600 dark:text-green-400 font-medium">
+                €{booking.price}
+              </div>
+            )}
+          </div>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// Time Slots List Component
+function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
+  const { club } = useClub();
+  const { user } = useAuth();
+  const T = themeTokens();
+  
+  // Separate active and expired time slots
+  const now = new Date();
+  const activeTimeSlots = useMemo(() => {
+    const active = timeSlots.filter((slot) => {
+      if (slot.selectedDates && slot.selectedDates.length > 0) {
+        return slot.selectedDates.some((dateStr) => {
+          const slotDate = new Date(dateStr);
+          return slotDate >= startOfDay(now);
+        });
+      }
+      if (slot.date) {
+        const slotDate = parseISO(slot.date);
+        return slotDate >= startOfDay(now);
+      }
+      return true;
+    });
+
+    // Ordina dalla data più vicina alla più lontana
+    return active.sort((a, b) => {
+      let dateA, dateB;
+
+      // Ottieni la data più vicina per lo slot A
+      if (a.selectedDates && a.selectedDates.length > 0) {
+        const futureDates = a.selectedDates
+          .map(d => new Date(d))
+          .filter(d => d >= startOfDay(now))
+          .sort((x, y) => x - y);
+        dateA = futureDates[0] || new Date(a.selectedDates[0]);
+      } else if (a.date) {
+        dateA = parseISO(a.date);
+      } else {
+        dateA = new Date(0); // Data molto lontana nel passato se non c'è data
+      }
+
+      // Ottieni la data più vicina per lo slot B
+      if (b.selectedDates && b.selectedDates.length > 0) {
+        const futureDates = b.selectedDates
+          .map(d => new Date(d))
+          .filter(d => d >= startOfDay(now))
+          .sort((x, y) => x - y);
+        dateB = futureDates[0] || new Date(b.selectedDates[0]);
+      } else if (b.date) {
+        dateB = parseISO(b.date);
+      } else {
+        dateB = new Date(0);
+      }
+
+      return dateA - dateB; // Ordina crescente (più vicina prima)
+    });
+  }, [timeSlots, now]);
+
+  if (timeSlots.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-full flex items-center justify-center">
+          <svg className="w-10 h-10 text-purple-500 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          Nessuna fascia oraria configurata
+        </h3>
+        <p className="text-gray-500 dark:text-gray-400 mb-6">
+          Aggiungi le tue fasce orarie per gestire le lezioni
+        </p>
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg text-sm">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Clicca su "Crea Nuova Fascia" per iniziare
+        </div>
+      </div>
+    );
+  }
+
+  const SlotCard = ({ slot, isExpired = false, onToggle }) => {
+    let displayTitle = '';
+    let dateInfo = '';
+
+    if (slot.selectedDates && slot.selectedDates.length > 0) {
+      const sortedDates = [...slot.selectedDates].sort();
+      if (sortedDates.length === 1) {
+        const date = new Date(sortedDates[0]);
+        displayTitle = format(date, 'EEEE', { locale: it });
+        dateInfo = format(date, 'dd/MM', { locale: it });
+      } else {
+        displayTitle = `${sortedDates.length} date`;
+        dateInfo = sortedDates.slice(0, 2).map((d) => format(new Date(d), 'dd/MM')).join(', ');
+        if (sortedDates.length > 2) dateInfo += '...';
+      }
+    } else if (slot.date) {
+      const date = new Date(slot.date);
+      displayTitle = format(date, 'EEEE', { locale: it });
+      dateInfo = format(date, 'dd/MM', { locale: it });
+    } else {
+      displayTitle = 'Data non specificata';
+    }
+
+    return (
+      <div className={`${T.cardBg} ${T.border} rounded-xl p-4 sm:p-6 ${isExpired ? 'opacity-60' : 'shadow-sm hover:shadow-md'} transition-all duration-200`}>
+        {/* Header with Date and Status */}
+        <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-200 dark:border-gray-700 gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white shadow-lg flex-shrink-0">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 capitalize truncate">
+                {displayTitle}
+              </h3>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                ven {dateInfo}
+              </p>
+            </div>
+          </div>
+          
+          {/* Status Badges */}
+          <div className="flex flex-col gap-1.5 flex-shrink-0">
+            {/* Active/Expired Badge */}
+            {!isExpired && slot.isActive !== false && (
+              <span className="px-2 sm:px-3 py-1 sm:py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs sm:text-sm font-semibold rounded-full flex items-center gap-1 sm:gap-1.5">
+                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <span className="hidden sm:inline">Attiva</span>
+                <span className="sm:hidden">✓</span>
+              </span>
+            )}
+            {isExpired && (
+              <span className="px-2 sm:px-3 py-1 sm:py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-xs sm:text-sm font-semibold rounded-full">
+                <span className="hidden sm:inline">Scaduta</span>
+                <span className="sm:hidden">✕</span>
+              </span>
+            )}
+            
+            {/* Disabled Badge */}
+            {!isExpired && slot.isActive === false && (
+              <span className="px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 text-xs sm:text-sm font-semibold rounded-full flex items-center gap-1 sm:gap-1.5">
+                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                <span className="hidden sm:inline">Disattivata</span>
+                <span className="sm:hidden">Off</span>
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
+          {/* Orario */}
+          <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg p-3 sm:p-4 border border-orange-200 dark:border-orange-700/30">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 dark:text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-xs sm:text-sm font-semibold text-orange-900 dark:text-orange-200">Orario</span>
+            </div>
+            <p className="text-lg sm:text-xl font-bold text-orange-900 dark:text-orange-100">
+              {slot.startTime} - {slot.endTime}
+            </p>
+          </div>
+
+          {/* Maestro */}
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-3 sm:p-4 border border-green-200 dark:border-green-700/30">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span className="text-xs sm:text-sm font-semibold text-green-900 dark:text-green-200">Maestro</span>
+            </div>
+            <p className="text-sm sm:text-base font-bold text-green-900 dark:text-green-100 truncate">
+              {user?.displayName || 'Tu'}
+            </p>
+          </div>
+
+          {/* Campi */}
+          <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg p-3 sm:p-4 border border-purple-200 dark:border-purple-700/30 sm:col-span-2 md:col-span-1">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+              <span className="text-xs sm:text-sm font-semibold text-purple-900 dark:text-purple-200">Campi Selezionati</span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {slot.courtIds && Array.isArray(slot.courtIds) && slot.courtIds.length > 0 ? (
+                Array.isArray(club?.courts) ? (
+                  club.courts
+                    .filter((court) => slot.courtIds.includes(court.id))
+                    .map((court) => (
+                      <span
+                        key={court.id}
+                        className="px-2 py-0.5 sm:py-1 bg-purple-200 dark:bg-purple-800/50 text-purple-900 dark:text-purple-100 text-xs font-semibold rounded"
+                      >
+                        {court.name}
+                      </span>
+                    ))
+                ) : (
+                  <span className="text-xs sm:text-sm font-medium text-purple-900 dark:text-purple-100">
+                    {slot.courtIds.length} {slot.courtIds.length === 1 ? 'campo' : 'campi'}
+                  </span>
+                )
+              ) : (
+                <span className="text-xs sm:text-sm text-purple-700 dark:text-purple-300">Nessun campo selezionato</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Info */}
+        {(slot.maxBookings || slot.maxParticipants || slot.price > 0) && (
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-3 sm:mb-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+            {(slot.maxBookings || slot.maxParticipants) && (
+              <div className="flex items-center gap-1.5">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span className="whitespace-nowrap">Max {slot.maxBookings || slot.maxParticipants}</span>
+              </div>
+            )}
+            {slot.price > 0 && (
+              <div className="flex items-center gap-1.5 font-semibold text-green-600 dark:text-green-400">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                €{slot.price}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Notes */}
+        {slot.notes && (
+          <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700/30">
+            <p className="text-xs sm:text-sm text-blue-900 dark:text-blue-100 break-words">{slot.notes}</p>
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => onEdit(slot)}
+            className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+          >
+            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Modifica
+          </button>
+          {!isExpired && (
+            <button
+              onClick={() => onToggle(slot)}
+              className={`flex-1 px-3 sm:px-4 py-2 sm:py-2.5 ${
+                slot.isActive === false 
+                  ? 'bg-green-500 hover:bg-green-600' 
+                  : 'bg-orange-500 hover:bg-orange-600'
+              } text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm sm:text-base`}
+            >
+              {slot.isActive === false ? (
+                <>
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="hidden sm:inline">Attiva</span>
+                  <span className="sm:hidden">ON</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                  </svg>
+                  <span className="hidden sm:inline">Disattiva</span>
+                  <span className="sm:hidden">Off</span>
+                </>
+              )}
+            </button>
+          )}
+          <button
+            onClick={() => onDelete(slot)}
+            className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+          >
+            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span className="hidden sm:inline">Elimina</span>
+            <span className="sm:hidden">Del</span>
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="space-y-4 sm:space-y-6">
+      {/* Active Time Slots */}
+      {activeTimeSlots.length > 0 ? (
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">
+              <span className="hidden sm:inline">Fasce Orarie</span>
+              <span className="sm:hidden">Fasce</span>
+            </h3>
+            <span className="px-2 sm:px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs sm:text-sm font-bold rounded-full">
+              {activeTimeSlots.length}
+            </span>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:gap-4">
+            {activeTimeSlots.map((slot) => (
+              <SlotCard key={slot.id} slot={slot} onToggle={onToggle} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="text-center py-8">
+          <p className="text-gray-500 dark:text-gray-400">
+            Nessuna fascia oraria attiva
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Booking Detail Component
+function BookingDetail({ booking, type }) {
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Data</div>
+          <div className="font-medium text-gray-900 dark:text-white">
+            {booking.date && format(parseISO(booking.date), 'd MMMM yyyy', { locale: it })}
+          </div>
+        </div>
+        <div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Ora</div>
+          <div className="font-medium text-gray-900 dark:text-white">
+            {booking.time || 'N/A'}
+          </div>
+        </div>
+        {booking.courtName && (
+          <div>
+            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Campo</div>
+            <div className="font-medium text-gray-900 dark:text-white">
+              {booking.courtName}
+            </div>
+          </div>
+        )}
+        {booking.duration && (
+          <div>
+            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Durata</div>
+            <div className="font-medium text-gray-900 dark:text-white">
+              {booking.duration} min
+            </div>
+          </div>
+        )}
+      </div>
+
+      {booking.participants && booking.participants.length > 0 && (
+        <div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Partecipanti</div>
+          <div className="space-y-2">
+            {booking.participants.map((participant, idx) => (
+              <div key={idx} className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
+                  {(participant.name || participant.displayName || 'U')[0].toUpperCase()}
+                </div>
+                <div className="font-medium text-gray-900 dark:text-white">
+                  {participant.name || participant.displayName || 'Utente'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {booking.price && (
+        <div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Prezzo</div>
+          <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+            €{booking.price}
+          </div>
+        </div>
+      )}
+
+      {booking.notes && (
+        <div>
+          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Note</div>
+          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm text-gray-900 dark:text-white">
+            {booking.notes}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Slot Form Modal Component
+function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editing, clubCourts }) {
+  const T = themeTokens();
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  // Calendar functionality
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    const startDay = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+    const days = [];
+
+    // Add empty cells for days before the first day of the month
+    for (let i = 0; i < (startDay === 0 ? 6 : startDay - 1); i++) {
+      days.push(null);
+    }
+
+    // Add all days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      days.push({
+        day,
+        dateStr,
+        isSelected: slotForm.date === dateStr,
+        isPast: new Date(dateStr) < new Date().setHours(0, 0, 0, 0),
+      });
+    }
+
+    return days;
+  };
+
+  const selectDate = (dateStr) => {
+    setSlotForm((prev) => ({ ...prev, date: dateStr }));
+  };
+
+  const navigateMonth = (direction) => {
+    const newMonth = new Date(currentMonth);
+    newMonth.setMonth(newMonth.getMonth() + direction);
+    setCurrentMonth(newMonth);
+  };
+
+  const monthNames = [
+    'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+    'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre',
+  ];
+
+  const dayNames = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!slotForm.startTime || !slotForm.endTime) {
+      alert('Inserisci orario di inizio e fine');
+      return;
+    }
+
+    if (slotForm.startTime >= slotForm.endTime) {
+      alert("L'orario di fine deve essere dopo quello di inizio");
+      return;
+    }
+
+    if (!slotForm.date) {
+      alert('Seleziona una data dal calendario');
+      return;
+    }
+
+    if (!slotForm.courtIds || slotForm.courtIds.length === 0) {
+      alert('Seleziona almeno un campo');
+      return;
+    }
+
+    onSubmit(e);
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={editing ? 'Modifica Fascia Oraria' : 'Crea nuova fascia oraria'}
+      size="large"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Date Selector */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            Data
+          </label>
+          <input
+            type="date"
+            value={slotForm.date}
+            onChange={(e) => setSlotForm((prev) => ({ ...prev, date: e.target.value }))}
+            min={new Date().toISOString().split('T')[0]}
+            className={`w-full p-3 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${T.text} text-base`}
+            required
+          />
+        </div>
+
+        {/* Time Range */}
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              Orario Inizio
+            </label>
+            <select
+              value={slotForm.startTime}
+              onChange={(e) => setSlotForm((prev) => ({ ...prev, startTime: e.target.value }))}
+              className={`w-full p-3 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${T.text} text-base`}
+              required
+            >
+              <option value="">Seleziona...</option>
+              {Array.from({ length: 48 }, (_, i) => {
+                const hour = Math.floor(i / 2) + 6;
+                const minutes = (i % 2) * 30;
+                if (hour >= 24) return null;
+                const time = `${String(hour).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                return <option key={time} value={time}>{time}</option>;
+              }).filter(Boolean)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              Orario Fine
+            </label>
+            <select
+              value={slotForm.endTime}
+              onChange={(e) => setSlotForm((prev) => ({ ...prev, endTime: e.target.value }))}
+              className={`w-full p-3 ${T.cardBg} ${T.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${T.text} text-base`}
+              required
+            >
+              <option value="">Seleziona...</option>
+              {Array.from({ length: 48 }, (_, i) => {
+                const hour = Math.floor(i / 2) + 6;
+                const minutes = (i % 2) * 30;
+                if (hour >= 24) return null;
+                const time = `${String(hour).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                return <option key={time} value={time}>{time}</option>;
+              }).filter(Boolean)}
+            </select>
+          </div>
+        </div>
+
+        {/* Istruttore (Hidden - always current user, just display) */}
+        <div className={`p-3 rounded-lg ${T.cardBg} border-l-4 border-green-500`}>
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Istruttore</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">Tu</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Court Selection */}
+        <div>
+          <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
+            Campi
+          </label>
+          <div className={`space-y-2 border rounded-lg p-3 ${T.border} ${T.cardBg} max-h-48 overflow-y-auto`}>
+            {clubCourts && clubCourts.length > 0 ? (
+              clubCourts.map((court) => (
+                <label
+                  key={court.id}
+                  className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                >
+                  <input
+                    type="checkbox"
+                    checked={slotForm.courtIds?.includes(court.id) || false}
+                    onChange={(e) => {
+                      const { checked } = e.target;
+                      setSlotForm((prev) => ({
+                        ...prev,
+                        courtIds: checked
+                          ? [...(prev.courtIds || []), court.id]
+                          : (prev.courtIds || []).filter((id) => id !== court.id),
+                      }));
+                    }}
+                    className="rounded text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-blue-500 w-5 h-5"
+                  />
+                  <span className="font-medium text-gray-900 dark:text-gray-100 text-base">
+                    {court.name || `Campo ${court.id}`}
+                  </span>
+                </label>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+                Nessun campo disponibile
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Active Toggle */}
+        <div className="flex items-center justify-between p-3 rounded-lg border ${T.border}">
+          <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            Attiva
+          </label>
+          <input
+            type="checkbox"
+            checked={slotForm.active !== false}
+            onChange={(e) => setSlotForm((prev) => ({ ...prev, active: e.target.checked }))}
+            className="rounded text-blue-600 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:ring-blue-500 w-6 h-6"
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 pt-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className={`flex-1 py-3 px-4 ${T.cardBg} ${T.border} rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 ${T.text} font-semibold transition-colors text-base`}
+          >
+            Annulla
+          </button>
+          <button
+            type="submit"
+            className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-colors font-semibold text-base shadow-lg"
+          >
+            Crea
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}

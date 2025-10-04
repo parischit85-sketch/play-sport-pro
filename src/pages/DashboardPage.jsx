@@ -13,11 +13,8 @@ import StatsCard from '@ui/StatsCard.jsx';
 // Lazy load heavy components
 const UserBookingsCard = React.lazy(() => import('@ui/UserBookingsCard.jsx'));
 const RecentClubsCard = React.lazy(() => import('../components/ui/RecentClubsCard.jsx'));
-const InstructorLessonBookings = React.lazy(
-  () => import('@features/instructor/InstructorLessonBookings.jsx')
-);
-const InstructorScheduleManager = React.lazy(
-  () => import('@features/instructor/InstructorScheduleManager.jsx')
+const InstructorDashboard = React.lazy(
+  () => import('@features/instructor/InstructorDashboard.jsx')
 );
 
 // Performance optimized quick actions
@@ -132,55 +129,29 @@ export default function DashboardPage() {
       {/* PWA Install Banner */}
       <PWABanner />
 
-      {/* Desktop: Layout fianco a fianco */}
-      <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start lg:p-2">
-        {/* Instructor Dashboard */}
-        {isUserInstructor ? (
-          <>
-            {/* Lezioni dell'istruttore - Desktop */}
-            <div>
-              <React.Suspense
-                fallback={
-                  <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-6 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
-                    <div className="h-4 bg-gray-200/80 dark:bg-gray-600/60 rounded w-32 mb-4"></div>
-                    <div className="space-y-3">
-                      {[1, 2].map((i) => (
-                        <div
-                          key={i}
-                          className="h-20 bg-gray-200/60 dark:bg-gray-600/40 rounded-lg"
-                        ></div>
-                      ))}
-                    </div>
-                  </div>
-                }
-              >
-                <InstructorLessonBookings />
-              </React.Suspense>
-            </div>
-
-            {/* Gestione orari istruttore - Desktop */}
-            <div>
-              <React.Suspense
-                fallback={
-                  <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-6 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
-                    <div className="h-4 bg-gray-200/80 dark:bg-gray-600/60 rounded w-32 mb-4"></div>
-                    <div className="space-y-3">
-                      {[1, 2].map((i) => (
-                        <div
-                          key={i}
-                          className="h-20 bg-gray-200/60 dark:bg-gray-600/40 rounded-lg"
-                        ></div>
-                      ))}
-                    </div>
-                  </div>
-                }
-              >
-                <InstructorScheduleManager />
-              </React.Suspense>
-            </div>
-          </>
-        ) : (
-          <>
+      {/* Instructor Dashboard - Full Width */}
+      {isUserInstructor ? (
+        <div className="p-2">
+          <React.Suspense
+            fallback={
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl animate-pulse">
+                <div className="h-8 bg-gray-200/80 dark:bg-gray-600/60 rounded w-64 mb-6"></div>
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-24 bg-gray-200/60 dark:bg-gray-600/40 rounded-2xl"></div>
+                  ))}
+                </div>
+                <div className="h-96 bg-gray-200/60 dark:bg-gray-600/40 rounded-2xl"></div>
+              </div>
+            }
+          >
+            <InstructorDashboard />
+          </React.Suspense>
+        </div>
+      ) : (
+        <>
+          {/* Desktop: Layout fianco a fianco */}
+          <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start lg:p-2">
             {/* Messaggio di benvenuto quando non si è in un club */}
             {/* Le tue prenotazioni - Desktop (Lazy loaded) */}
             <div>
@@ -250,59 +221,10 @@ export default function DashboardPage() {
                 ))}
               </div>
             </div>
-          </>
-        )}
-      </div>
+          </div>
 
-      {/* Mobile/Tablet: Layout verticale */}
-      <div className="lg:hidden space-y-1 p-1">
-        {/* Instructor Dashboard - Mobile */}
-        {isUserInstructor ? (
-          <>
-            {/* Lezioni dell'istruttore - Mobile */}
-            <div>
-              <React.Suspense
-                fallback={
-                  <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-4 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
-                    <div className="h-3 bg-gray-200/80 dark:bg-gray-600/60 rounded w-24 mb-3"></div>
-                    <div className="flex gap-2 overflow-x-auto pb-2">
-                      {[1, 2, 3].map((i) => (
-                        <div
-                          key={i}
-                          className="min-w-[200px] h-24 bg-gray-200/60 dark:bg-gray-600/40 rounded-lg flex-shrink-0"
-                        ></div>
-                      ))}
-                    </div>
-                  </div>
-                }
-              >
-                <InstructorLessonBookings compact={true} />
-              </React.Suspense>
-            </div>
-
-            {/* Gestione orari istruttore - Mobile */}
-            <div>
-              <React.Suspense
-                fallback={
-                  <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-4 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
-                    <div className="h-3 bg-gray-200/80 dark:bg-gray-600/60 rounded w-24 mb-3"></div>
-                    <div className="flex gap-2 overflow-x-auto pb-2">
-                      {[1, 2, 3].map((i) => (
-                        <div
-                          key={i}
-                          className="min-w-[200px] h-24 bg-gray-200/60 dark:bg-gray-600/40 rounded-lg flex-shrink-0"
-                        ></div>
-                      ))}
-                    </div>
-                  </div>
-                }
-              >
-                <InstructorScheduleManager compact={true} />
-              </React.Suspense>
-            </div>
-          </>
-        ) : (
-          <>
+          {/* Mobile/Tablet: Layout verticale */}
+          <div className="lg:hidden space-y-1 p-1">
             {/* Le tue prenotazioni - Mobile (Lazy loaded) */}
             <div>
               <React.Suspense
@@ -371,9 +293,9 @@ export default function DashboardPage() {
                 ))}
               </div>
             </div>
-          </>
-        )}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

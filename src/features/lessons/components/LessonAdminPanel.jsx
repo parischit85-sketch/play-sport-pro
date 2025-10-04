@@ -24,7 +24,7 @@ export default function LessonAdminPanel({
   onClearAllLessons,
   lessonBookingsCount,
 }) {
-  const { updatePlayer } = useClub();
+  const { updatePlayer, clubId } = useClub();
   const [activeSection, setActiveSection] = useState('config');
 
   // Debug logging per vedere i dati caricati
@@ -161,6 +161,7 @@ export default function LessonAdminPanel({
   // Separate and sort time slots
   const { activeTimeSlots, expiredTimeSlots } = useMemo(() => {
     const allSlots = lessonConfig.timeSlots || [];
+    // Mostra tutte le fasce insieme (sia admin che istruttori)
 
     const active = allSlots.filter((slot) => !isTimeSlotExpired(slot));
     const expired = allSlots.filter(
@@ -754,6 +755,7 @@ export default function LessonAdminPanel({
                       </div>
                     </div>
                   )}
+
                 </div>
               )}
             </div>

@@ -80,8 +80,84 @@ export default function LessonBookingInterface({
   const { selectedClub, players: clubPlayers, courts } = useClub();
   const { lessonConfig: clubLessonConfig, updateLessonConfig: updateClubLessonConfig } =
     useClubSettings({ clubId: clubId || selectedClub?.id });
-  const lessonConfig = clubLessonConfig || createLessonConfigSchema();
+  
+  // State per le fasce orarie degli istruttori dalla collezione timeSlots
+  const [instructorTimeSlots, setInstructorTimeSlots] = useState([]);
+  
+  // Combina le fasce dell'admin (lessonConfig) con quelle degli istruttori (timeSlots collection)
+  const lessonConfig = useMemo(() => {
+    const baseConfig = clubLessonConfig || createLessonConfigSchema();
+    const configSlots = baseConfig.timeSlots || [];
+    
+    // Converti le fasce degli istruttori nel formato compatibile con lessonConfig
+    const convertedInstructorSlots = instructorTimeSlots.map(slot => ({
+      id: slot.id,
+      dayOfWeek: null, // Gli slot degli istruttori usano date specifiche
+      selectedDates: slot.date ? [slot.date] : [],
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+      courtIds: slot.courtIds || [],
+      instructorIds: slot.instructorIds || [slot.instructorId],
+      maxBookings: slot.maxParticipants || 5,
+      isActive: slot.isActive !== false,
+      source: 'instructor', // Marca la fonte
+      createdAt: slot.createdAt,
+      updatedAt: slot.updatedAt,
+    }));
+    
+    return {
+      ...baseConfig,
+      timeSlots: [...configSlots, ...convertedInstructorSlots],
+    };
+  }, [clubLessonConfig, instructorTimeSlots]);
+  
   const players = clubPlayers || state?.players || [];
+
+  // Carica le fasce orarie dalla collezione timeSlots (create dagli istruttori) con listener real-time
+  useEffect(() => {
+    const currentClubId = clubId || selectedClub?.id;
+    if (!currentClubId) return;
+
+    let unsubscribe;
+
+    const setupRealtimeListener = async () => {
+      try {
+        const { collection, onSnapshot } = await import('firebase/firestore');
+        const { db } = await import('@services/firebase.js');
+        
+        const timeSlotsRef = collection(db, 'clubs', currentClubId, 'timeSlots');
+        
+        // Listener real-time per aggiornamenti automatici
+        unsubscribe = onSnapshot(timeSlotsRef, (snapshot) => {
+          const slots = [];
+          snapshot.forEach((doc) => {
+            slots.push({
+              id: doc.id,
+              source: 'personal',
+              ...doc.data(),
+            });
+          });
+          
+          console.log('📚 [LessonBooking] Real-time update - instructor time slots:', slots.length);
+          setInstructorTimeSlots(slots);
+        }, (error) => {
+          console.error('❌ [LessonBooking] Error in real-time listener:', error);
+        });
+      } catch (error) {
+        console.error('❌ [LessonBooking] Error setting up real-time listener:', error);
+      }
+    };
+
+    setupRealtimeListener();
+
+    // Cleanup function
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+        console.log('🔌 [LessonBooking] Unsubscribed from timeSlots listener');
+      }
+    };
+  }, [clubId, selectedClub?.id]);
 
   // Debug courts
   useEffect(() => {

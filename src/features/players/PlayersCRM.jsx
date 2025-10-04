@@ -15,6 +15,7 @@ import PlayerForm from './components/PlayerForm';
 import PlayerDetails from './components/PlayerDetails';
 import CRMTools from './components/CRMTools';
 import { useAuth } from '@contexts/AuthContext.jsx';
+import { listAllUserProfiles } from '@services/auth.jsx';
 
 export default function PlayersCRM({
   state,
@@ -33,6 +34,10 @@ export default function PlayersCRM({
   const [filterCategory, setFilterCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showTools, setShowTools] = useState(false);
+  const [showAccountPicker, setShowAccountPicker] = useState(false);
+  const [accounts, setAccounts] = useState([]);
+  const [loadingAccounts, setLoadingAccounts] = useState(false);
+  const [accountSearch, setAccountSearch] = useState('');
 
   const players = Array.isArray(state?.players) ? state.players : [];
 
@@ -143,22 +148,78 @@ export default function PlayersCRM({
     setSelectedPlayerId(null);
   };
 
-  const handleCreateFromAccount = () => {
-    if (!user) return;
+  const handleCreateFromAccount = async () => {
+    try {
+      setLoadingAccounts(true);
+      const res = await listAllUserProfiles(500);
+      setAccounts(res || []);
+      setAccountSearch('');
+      setShowAccountPicker(true);
+    } catch (error) {
+      console.error('Error loading accounts:', error);
+      alert('Errore nel caricamento degli account. Riprova.');
+    } finally {
+      setLoadingAccounts(false);
+    }
+  };
 
+  const handleSelectAccount = async (account) => {
     const playerData = {
-      firstName: user.firstName || user.displayName?.split(' ')[0] || '',
-      lastName: user.lastName || user.displayName?.split(' ')[1] || '',
-      name: user.displayName || `${user.firstName} ${user.lastName}`.trim(),
-      email: user.email || '',
-      linkedAccountId: user.uid,
-      linkedAccountEmail: user.email,
+      firstName: account.firstName || account.displayName?.split(' ')[0] || '',
+      lastName: account.lastName || account.displayName?.split(' ')[1] || '',
+      name: account.displayName || `${account.firstName} ${account.lastName}`.trim() || account.email?.split('@')[0] || '',
+      email: account.email || '',
+      linkedAccountId: account.uid,
+      linkedAccountEmail: account.email,
       isAccountLinked: true,
       category: PLAYER_CATEGORIES.MEMBER,
+      phone: account.phone || '',
+      dateOfBirth: account.dateOfBirth || null,
     };
 
-    handleAddPlayer(playerData);
+    await handleAddPlayer(playerData);
+    setShowAccountPicker(false);
+    setAccounts([]);
+    setAccountSearch('');
   };
+
+  // Filtra gli account escludendo quelli già collegati
+  const linkedAccountIds = useMemo(() => {
+    return new Set(
+      players
+        .filter((p) => p.linkedAccountId)
+        .map((p) => p.linkedAccountId)
+    );
+  }, [players]);
+
+  const linkedEmails = useMemo(() => {
+    return new Set(
+      players
+        .filter((p) => p.linkedAccountEmail)
+        .map((p) => p.linkedAccountEmail.toLowerCase())
+    );
+  }, [players]);
+
+  const unlinkedAccounts = useMemo(() => {
+    return accounts.filter((acc) => {
+      if (acc.uid && linkedAccountIds.has(acc.uid)) return false;
+      if (acc.email && linkedEmails.has(acc.email.toLowerCase())) return false;
+      return true;
+    });
+  }, [accounts, linkedAccountIds, linkedEmails]);
+
+  const filteredAccounts = useMemo(() => {
+    const q = accountSearch.trim().toLowerCase();
+    if (!q) return unlinkedAccounts;
+    return unlinkedAccounts.filter((acc) => {
+      return (
+        (acc.email || '').toLowerCase().includes(q) ||
+        (acc.firstName || '').toLowerCase().includes(q) ||
+        (acc.lastName || '').toLowerCase().includes(q) ||
+        (acc.displayName || '').toLowerCase().includes(q)
+      );
+    });
+  }, [unlinkedAccounts, accountSearch]);
 
   return (
     <>
@@ -204,10 +265,17 @@ export default function PlayersCRM({
               </button>
               <button
                 onClick={handleCreateFromAccount}
-                disabled={!user}
-                className={`${T.btnSecondary} px-4 py-2 text-sm`}
+                disabled={loadingAccounts}
+                className={`${T.btnSecondary} px-4 py-2 text-sm ${loadingAccounts ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                👤 Crea da Account
+                {loadingAccounts ? (
+                  <>
+                    <span className="inline-block animate-spin mr-2">⏳</span>
+                    Caricamento...
+                  </>
+                ) : (
+                  <>👤 Crea da Account</>
+                )}
               </button>
               <button
                 onClick={() => setShowTools(true)}
@@ -349,6 +417,123 @@ export default function PlayersCRM({
             }}
             T={T}
           />
+        </Modal>
+      )}
+
+      {/* Modal seleziona account */}
+      {showAccountPicker && (
+        <Modal
+          isOpen={true}
+          onClose={() => {
+            setShowAccountPicker(false);
+            setAccounts([]);
+            setAccountSearch('');
+          }}
+          title="Seleziona Account da Convertire"
+          size="large"
+        >
+          <div className="space-y-4">
+            {/* Informazioni */}
+            <div className={`${T.cardBg} ${T.border} rounded-lg p-4`}>
+              <p className={`text-sm ${T.subtext} mb-2`}>
+                Seleziona un account registrato per creare automaticamente un profilo giocatore collegato.
+              </p>
+              <p className={`text-xs ${T.subtext}`}>
+                Vengono mostrati solo gli account non ancora collegati a un giocatore.
+              </p>
+            </div>
+
+            {/* Ricerca */}
+            <input
+              type="text"
+              placeholder="Cerca per nome o email..."
+              value={accountSearch}
+              onChange={(e) => setAccountSearch(e.target.value)}
+              className={`${T.input} w-full`}
+              autoFocus
+            />
+
+            {/* Lista account */}
+            <div className={`${T.cardBg} ${T.border} rounded-lg max-h-[400px] overflow-y-auto`}>
+              {loadingAccounts ? (
+                <div className="p-8 text-center">
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                  <p className={`mt-4 ${T.subtext}`}>Caricamento account...</p>
+                </div>
+              ) : filteredAccounts.length === 0 ? (
+                <div className="p-8 text-center">
+                  <div className="text-4xl mb-3">👥</div>
+                  <p className={`text-lg font-medium ${T.text} mb-2`}>
+                    {accountSearch.trim() 
+                      ? 'Nessun account trovato' 
+                      : 'Nessun account disponibile'}
+                  </p>
+                  <p className={`text-sm ${T.subtext}`}>
+                    {accountSearch.trim()
+                      ? 'Prova a modificare i criteri di ricerca'
+                      : 'Tutti gli account registrati sono già collegati a un giocatore'}
+                  </p>
+                </div>
+              ) : (
+                <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {filteredAccounts.map((acc) => (
+                    <li
+                      key={acc.uid}
+                      className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          {/* Avatar */}
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold flex-shrink-0">
+                            {(acc.firstName || acc.displayName || acc.email || '?')
+                              .charAt(0)
+                              .toUpperCase()}
+                          </div>
+
+                          {/* Info */}
+                          <div className="min-w-0 flex-1">
+                            <div className={`font-medium ${T.text} truncate`}>
+                              {acc.firstName || acc.lastName
+                                ? `${acc.firstName || ''} ${acc.lastName || ''}`.trim()
+                                : acc.displayName || 'Senza nome'}
+                            </div>
+                            <div className={`text-sm ${T.subtext} truncate`}>
+                              {acc.email || 'Nessuna email'}
+                            </div>
+                            {acc.phone && (
+                              <div className={`text-xs ${T.subtext}`}>
+                                📱 {acc.phone}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Bottone */}
+                        <button
+                          onClick={() => handleSelectAccount(acc)}
+                          className="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all duration-200 font-medium flex-shrink-0 shadow-lg hover:shadow-xl"
+                        >
+                          Crea Giocatore
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Statistiche */}
+            {!loadingAccounts && (
+              <div className="flex justify-between items-center text-sm">
+                <span className={T.subtext}>
+                  {filteredAccounts.length} account{filteredAccounts.length !== 1 ? 's' : ''} disponibili
+                </span>
+                <span className={T.subtext}>
+                  {players.filter(p => p.isAccountLinked).length} giocatori collegati
+                </span>
+              </div>
+            )}
+          </div>
         </Modal>
       )}
     </>

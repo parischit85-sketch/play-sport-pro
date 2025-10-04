@@ -23,9 +23,69 @@ const AdminClubDashboard = () => {
 
   // State per slide-out panel fasce orarie
   const [showTimeSlotsPanel, setShowTimeSlotsPanel] = useState(false);
+  const [instructorTimeSlots, setInstructorTimeSlots] = useState([]);
 
   // Hook per gestire configurazioni club
   const { lessonConfig, updateLessonConfig } = useClubSettings({ clubId });
+
+  // Carica le fasce orarie create dagli istruttori e mergiale con quelle dell'admin
+  useEffect(() => {
+    const loadInstructorSlots = async () => {
+      if (!clubId) return;
+      
+      try {
+        const { collection, getDocs } = await import('firebase/firestore');
+        const { db } = await import('@services/firebase.js');
+        
+        const timeSlotsRef = collection(db, 'clubs', clubId, 'timeSlots');
+        const querySnapshot = await getDocs(timeSlotsRef);
+        
+        const slots = [];
+        querySnapshot.forEach((doc) => {
+          const slotData = doc.data();
+          slots.push({
+            id: doc.id,
+            source: 'instructor',
+            ...slotData,
+          });
+        });
+        
+        console.log('📚 [AdminDashboard] Loaded instructor slots:', slots.length);
+        setInstructorTimeSlots(slots);
+      } catch (error) {
+        console.error('❌ [AdminDashboard] Error loading instructor slots:', error);
+      }
+    };
+    
+    loadInstructorSlots();
+  }, [clubId]);
+
+  // Combina le fasce dell'admin con quelle degli istruttori
+  const mergedLessonConfig = React.useMemo(() => {
+    const baseConfig = lessonConfig || {};
+    const configSlots = baseConfig.timeSlots || [];
+    
+    // Converti le fasce degli istruttori nel formato compatibile
+    const convertedInstructorSlots = instructorTimeSlots.map(slot => ({
+      id: slot.id,
+      dayOfWeek: null,
+      selectedDates: slot.selectedDates || (slot.date ? [slot.date] : []),
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+      courtIds: slot.courtIds || [],
+      instructorIds: slot.instructorIds || (slot.instructorId ? [slot.instructorId] : []),
+      maxBookings: slot.maxParticipants || 5,
+      isActive: slot.isActive !== false,
+      source: 'instructor',
+      createdAt: slot.createdAt,
+      updatedAt: slot.updatedAt,
+    }));
+    
+    return {
+      ...baseConfig,
+      timeSlots: [...configSlots, ...convertedInstructorSlots],
+    };
+  }, [lessonConfig, instructorTimeSlots]);
 
   // Stati per i dati della dashboard
   const [dashboardData, setDashboardData] = useState({
@@ -268,14 +328,14 @@ const AdminClubDashboard = () => {
 
   // Funzione helper per contare le fasce orarie attive e non passate
   const getActiveAvailableTimeSlotsCount = () => {
-    if (!lessonConfig?.timeSlots || lessonConfig.timeSlots.length === 0) return 0;
+    if (!mergedLessonConfig?.timeSlots || mergedLessonConfig.timeSlots.length === 0) return 0;
 
     const now = new Date();
     const today = now.getDay();
     const currentTime = now.getHours() * 60 + now.getMinutes();
     const currentDateStr = now.toISOString().split('T')[0];
 
-    return lessonConfig.timeSlots.filter((slot) => {
+    return mergedLessonConfig.timeSlots.filter((slot) => {
       // Deve essere attiva
       if (!slot.isActive) return false;
 
@@ -644,7 +704,7 @@ const AdminClubDashboard = () => {
               />
             </svg>
             Disponibilità Lezioni
-            {lessonConfig?.timeSlots && lessonConfig.timeSlots.length > 0 && (
+            {mergedLessonConfig?.timeSlots && mergedLessonConfig.timeSlots.length > 0 && (
               <span className="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-bold">
                 {getActiveAvailableTimeSlotsCount()}
               </span>
@@ -794,7 +854,7 @@ const AdminClubDashboard = () => {
       <TimeSlotsSlidePanel
         isOpen={showTimeSlotsPanel}
         onClose={() => setShowTimeSlotsPanel(false)}
-        timeSlots={lessonConfig?.timeSlots || []}
+        timeSlots={mergedLessonConfig?.timeSlots || []}
         onToggleTimeSlot={handleToggleTimeSlot}
         onEditTimeSlot={handleEditTimeSlot}
         onCreateTimeSlot={handleCreateTimeSlot}

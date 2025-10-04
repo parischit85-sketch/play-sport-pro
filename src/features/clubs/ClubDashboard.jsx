@@ -6,6 +6,11 @@ import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
 import BookingDetailModal from '@ui/BookingDetailModal.jsx';
 import { updateBooking } from '@services/bookings.js';
 
+// Lazy load InstructorDashboard
+const InstructorDashboard = React.lazy(
+  () => import('@features/instructor/InstructorDashboard.jsx')
+);
+
 const QuickActionCard = ({ title, description, icon, onClick, gradient, iconBg }) => (
   <button
     onClick={onClick}
@@ -41,11 +46,14 @@ const ClubDashboard = () => {
   const { clubId } = useParams();
   const navigate = useNavigate();
   const { user, userProfile } = useAuth();
-  const { club, loading: clubLoading } = useClub();
+  const { club, loading: clubLoading, isUserInstructor } = useClub();
   const [activeBookings, setActiveBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+
+  // Check if current user is instructor in this club
+  const isInstructor = isUserInstructor(user?.uid);
 
   useEffect(() => {
     if (user && clubId) {
@@ -240,6 +248,29 @@ const ClubDashboard = () => {
             Cerca altri club
           </button>
         </div>
+      </div>
+    );
+  }
+
+  // If user is instructor, show InstructorDashboard
+  if (isInstructor) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 p-2">
+        <React.Suspense
+          fallback={
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl animate-pulse">
+              <div className="h-8 bg-gray-200/80 dark:bg-gray-600/60 rounded w-64 mb-6"></div>
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-24 bg-gray-200/60 dark:bg-gray-600/40 rounded-2xl"></div>
+                ))}
+              </div>
+              <div className="h-96 bg-gray-200/60 dark:bg-gray-600/40 rounded-2xl"></div>
+            </div>
+          }
+        >
+          <InstructorDashboard />
+        </React.Suspense>
       </div>
     );
   }

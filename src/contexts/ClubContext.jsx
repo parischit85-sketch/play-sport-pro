@@ -556,20 +556,226 @@ export function ClubProvider({ children }) {
   };
 
   // Placeholder functions for player management (to be implemented if needed)
-  const addPlayer = useCallback(async (playerData) => {
-    // TODO: Implement player addition
-    console.warn('addPlayer not implemented yet');
-  }, []);
+  const addPlayer = useCallback(
+    async (playerData) => {
+      if (!clubId) {
+        throw new Error('No club selected');
+      }
 
-  const updatePlayer = useCallback(async (playerId, updates) => {
-    // TODO: Implement player update
-    console.warn('updatePlayer not implemented yet');
-  }, []);
+      try {
+        console.log('📝 [ClubContext] Adding player to club:', clubId, playerData);
+
+        // Import the club users service
+        const { addUserToClub } = await import('@services/club-users.js');
+
+        // Check if playerData has linkedAccountId (user already exists)
+        if (playerData.linkedAccountId) {
+          // Add existing registered user to club
+          const clubUser = await addUserToClub(clubId, playerData.linkedAccountId, {
+            role: 'player',
+            addedBy: 'current-user',
+            notes: playerData.notes || '',
+          });
+
+          console.log('✅ [ClubContext] Registered user added to club:', clubUser);
+
+          // Reload players to get updated list
+          setPlayersLoaded(false);
+          await loadPlayers();
+
+          return clubUser;
+        } else {
+          // Create new profile in club's profiles collection (legacy system for non-registered users)
+          const { db } = await import('@services/firebase.js');
+          const { collection, addDoc, serverTimestamp } = await import('firebase/firestore');
+
+          const profileData = {
+            name: playerData.name || '',
+            displayName: playerData.name || '',
+            email: playerData.email || '',
+            phone: playerData.phone || '',
+            rating: playerData.rating || 1500,
+            baseRating: playerData.rating || 1500,
+            category: 'member',
+            role: 'player',
+            isActive: true,
+            tags: [],
+            subscriptions: [],
+            wallet: { balance: 0, currency: 'EUR', transactions: [] },
+            notes: playerData.notes ? [{ text: playerData.notes, createdAt: new Date() }] : [],
+            bookingHistory: [],
+            matchHistory: [],
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          };
+
+          const profilesRef = collection(db, 'clubs', clubId, 'profiles');
+          const docRef = await addDoc(profilesRef, profileData);
+
+          console.log('✅ [ClubContext] New profile created:', docRef.id);
+
+          // Reload players to get updated list
+          setPlayersLoaded(false);
+          await loadPlayers();
+
+          return { id: docRef.id, ...profileData };
+        }
+      } catch (error) {
+        console.error('❌ [ClubContext] Error adding player:', error);
+        throw error;
+      }
+    },
+    [clubId, loadPlayers]
+  );
+
+  const updatePlayer = useCallback(
+    async (playerId, updates) => {
+      if (!clubId || !playerId) {
+        throw new Error('Club ID and Player ID required');
+      }
+
+      try {
+        console.log('📝 [ClubContext] Updating player:', playerId, updates);
+
+        const { db } = await import('@services/firebase.js');
+        const { doc, updateDoc, serverTimestamp, getDoc } = await import('firebase/firestore');
+
+        // First, try to find the player in club users (new system)
+        const { getClubUsers } = await import('@services/club-users.js');
+        const clubUsers = await getClubUsers(clubId);
+        const clubUser = clubUsers.find((u) => u.userId === playerId);
+
+        if (clubUser) {
+          // Player is in new club users system
+          // Update both the club user document and the profile document
+          
+          // Update club user document if needed (role, status, etc.)
+          if (updates.role || updates.status) {
+            const clubUserRef = doc(db, 'clubs', clubId, 'users', clubUser.id);
+            const clubUserUpdates = {};
+            
+            if (updates.role) clubUserUpdates.role = updates.role;
+            if (updates.status) clubUserUpdates.status = updates.status;
+            clubUserUpdates.updatedAt = serverTimestamp();
+            
+            await updateDoc(clubUserRef, clubUserUpdates);
+            console.log('✅ [ClubContext] Updated club user document');
+          }
+
+          // Update profile document for other fields (category, instructorData, rating, etc.)
+          const profileRef = doc(db, 'clubs', clubId, 'profiles', playerId);
+          const profileSnap = await getDoc(profileRef);
+
+          const profileUpdates = {
+            updatedAt: serverTimestamp(),
+          };
+
+          // Map updates to profile fields
+          if (updates.name) {
+            profileUpdates.name = updates.name;
+            profileUpdates.displayName = updates.name;
+          }
+          if (updates.email) profileUpdates.email = updates.email;
+          if (updates.phone) profileUpdates.phone = updates.phone;
+          if (updates.rating !== undefined) {
+            profileUpdates.rating = updates.rating;
+            profileUpdates.baseRating = updates.rating;
+          }
+          if (updates.category) profileUpdates.category = updates.category;
+          if (updates.instructorData !== undefined) {
+            profileUpdates.instructorData = updates.instructorData;
+          }
+          if (updates.tags) profileUpdates.tags = updates.tags;
+          if (updates.notes) profileUpdates.notes = updates.notes;
+          if (updates.wallet) profileUpdates.wallet = updates.wallet;
+
+          if (profileSnap.exists()) {
+            // Update existing profile
+            await updateDoc(profileRef, profileUpdates);
+            console.log('✅ [ClubContext] Updated existing profile');
+          } else {
+            // Create profile if it doesn't exist
+            const { setDoc } = await import('firebase/firestore');
+            const newProfile = {
+              ...profileUpdates,
+              name: updates.name || clubUser.userName,
+              displayName: updates.name || clubUser.userName,
+              email: updates.email || clubUser.userEmail,
+              phone: updates.phone || clubUser.userPhone,
+              rating: updates.rating || 1500,
+              baseRating: updates.rating || 1500,
+              category: updates.category || 'member',
+              instructorData: updates.instructorData || null,
+              role: updates.role || 'player',
+              isActive: true,
+              tags: updates.tags || [],
+              subscriptions: [],
+              wallet: updates.wallet || { balance: 0, currency: 'EUR', transactions: [] },
+              notes: updates.notes || [],
+              bookingHistory: [],
+              matchHistory: [],
+              createdAt: serverTimestamp(),
+            };
+            await setDoc(profileRef, newProfile);
+            console.log('✅ [ClubContext] Created new profile for club user');
+          }
+        } else {
+          // Player is in old profiles system only
+          const profileRef = doc(db, 'clubs', clubId, 'profiles', playerId);
+          const profileUpdates = {
+            ...updates,
+            updatedAt: serverTimestamp(),
+          };
+
+          // Special handling for name updates
+          if (updates.name) {
+            profileUpdates.displayName = updates.name;
+          }
+
+          // Special handling for rating updates
+          if (updates.rating !== undefined) {
+            profileUpdates.baseRating = updates.rating;
+          }
+
+          await updateDoc(profileRef, profileUpdates);
+          console.log('✅ [ClubContext] Updated profile (old system)');
+        }
+
+        // Reload players to get updated list
+        setPlayersLoaded(false);
+        await loadPlayers();
+
+        console.log('✅ [ClubContext] Player updated successfully');
+      } catch (error) {
+        console.error('❌ [ClubContext] Error updating player:', error);
+        throw error;
+      }
+    },
+    [clubId, loadPlayers]
+  );
 
   const deletePlayer = useCallback(async (playerId) => {
     // TODO: Implement player deletion
     console.warn('deletePlayer not implemented yet');
   }, []);
+
+  // Check if current user is an instructor in this club
+  const isUserInstructor = useCallback(
+    (userId) => {
+      if (!userId || !players || players.length === 0) return false;
+
+      const userPlayer = players.find((p) => p.id === userId);
+      if (!userPlayer) return false;
+
+      // Check if user has instructor category and instructorData
+      const hasInstructorCategory = userPlayer.category === 'instructor';
+      const hasInstructorData =
+        userPlayer.instructorData && userPlayer.instructorData.isInstructor === true;
+
+      return hasInstructorCategory && hasInstructorData;
+    },
+    [players]
+  );
 
   const value = {
     clubId,
@@ -593,6 +799,7 @@ export function ClubProvider({ children }) {
     addPlayer,
     updatePlayer,
     deletePlayer,
+    isUserInstructor,
   };
 
   return <ClubContext.Provider value={value}>{children}</ClubContext.Provider>;
