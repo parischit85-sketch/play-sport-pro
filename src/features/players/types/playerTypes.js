@@ -84,6 +84,23 @@ export const createPlayerSchema = () => ({
     certifications: [],
   },
 
+  // Tournament/Championship participation
+  tournamentData: {
+    isParticipant: false, // Partecipa al campionato
+    initialRanking: null, // Ranking iniziale settato manualmente
+    currentRanking: null, // Ranking attuale calcolato
+    totalMatches: 0,
+    wins: 0,
+    losses: 0,
+    winRate: 0,
+    points: 0,
+    joinedAt: null, // Quando è stato attivato per il campionato
+    activeSince: null, // Data inizio partecipazione
+    isActive: true, // Può essere temporaneamente disattivato
+    division: null, // Categoria/divisione nel campionato
+    notes: '', // Note sulla partecipazione
+  },
+
   // Account collegato
   linkedAccountId: null,
   linkedAccountEmail: null,

@@ -360,57 +360,62 @@ function TimeSlotsSlidePanel({
 
   return (
     <div className="fixed inset-0 z-50 flex">
-      {/* Backdrop */}
-      <div className="flex-1 bg-black/20 backdrop-blur-sm" onClick={onClose} />
+      {/* Backdrop - nascosto su mobile (fullscreen), visibile su desktop */}
+      <div className="hidden md:flex flex-1 bg-black/20 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Panel */}
-      <div className="w-[48rem] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl border-l border-white/20 dark:border-gray-700/30 flex flex-col">
+      {/* Panel - fullscreen su mobile, side panel su desktop */}
+      <div className="w-full md:w-[48rem] lg:w-[56rem] bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-2xl md:border-l border-white/20 dark:border-gray-700/30 flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200/30 dark:border-gray-700/30 bg-gradient-to-r from-blue-50/80 to-purple-50/80 dark:from-gray-800/80 dark:to-gray-700/80">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+        <div className="p-3 sm:p-4 lg:p-6 border-b border-gray-200/30 dark:border-gray-700/30 bg-gradient-to-r from-blue-50/80 to-purple-50/80 dark:from-gray-800/80 dark:to-gray-700/80">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                 ⏰ Fasce Orarie Maestri
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-0.5 sm:mt-1">
                 {filteredTimeSlots.length} di {timeSlots.length} fasce
               </p>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors flex-shrink-0"
+              title="Chiudi"
             >
-              <X className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+              <X className="h-5 w-5 sm:h-6 sm:w-6 text-gray-500 dark:text-gray-400" />
             </button>
           </div>
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-gray-200/30 dark:border-gray-700/30">
+        <div className="p-2 sm:p-3 lg:p-4 border-b border-gray-200/30 dark:border-gray-700/30">
           <div className="relative">
             <input
               type="text"
-              placeholder="Cerca per maestro, campo, giorno..."
+              placeholder="Cerca..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-4 pr-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+              className="w-full pl-3 sm:pl-4 pr-3 sm:pr-4 py-1.5 sm:py-2 text-sm sm:text-base border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
             />
           </div>
         </div>
 
         {/* Create Button */}
-        <div className="p-4 border-b border-gray-200/30 dark:border-gray-700/30">
+        <div className="p-2 sm:p-3 lg:p-4 border-b border-gray-200/30 dark:border-gray-700/30">
           <button
             onClick={handleCreate}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2.5 sm:py-3 rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl text-sm sm:text-base font-semibold min-h-[48px]"
           >
-            <Plus className="h-4 w-4" />
-            Crea Nuova Fascia
+            <Plus className="h-5 w-5 sm:h-5 sm:w-5" />
+            <span className="hidden xs:inline">Crea Nuova Fascia</span>
+            <span className="xs:hidden">Nuova Fascia</span>
           </button>
         </div>
 
         {/* Time Slots List */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overscroll-contain" style={{
+          WebkitOverflowScrolling: 'touch',
+          scrollBehavior: 'smooth',
+        }}>
           {filteredTimeSlots.length === 0 ? (
             <div className="p-6 text-center text-gray-500 dark:text-gray-400">
               <Clock className="h-12 w-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />
@@ -420,7 +425,7 @@ function TimeSlotsSlidePanel({
               )}
             </div>
           ) : (
-            <div className="p-4 space-y-3">
+            <div className="p-2 sm:p-3 lg:p-4 space-y-2 sm:space-y-3 pb-6 sm:pb-4">
               {filteredTimeSlots.map((slot) => {
                 const instructor = getInstructorInfo(slot);
                 const instructorName = getInstructorDisplayName(instructor);
@@ -428,17 +433,17 @@ function TimeSlotsSlidePanel({
                 return (
                   <div
                     key={slot.id}
-                    className={`w-full p-4 rounded-lg border transition-all duration-200 hover:shadow-lg ${
+                    className={`w-full p-2 sm:p-3 lg:p-4 rounded-lg border transition-all duration-200 hover:shadow-lg ${
                       slot.isActive
                         ? 'bg-gradient-to-r from-white/90 to-blue-50/50 dark:from-gray-800/90 dark:to-blue-900/30 border-blue-200/50 dark:border-blue-700/50 hover:border-blue-300/70 dark:hover:border-blue-600/70'
                         : 'bg-gradient-to-r from-gray-100/90 to-gray-200/50 dark:from-gray-700/90 dark:to-gray-800/50 border-gray-300/50 dark:border-gray-600/50 hover:border-gray-400/70 dark:hover:border-gray-500/70'
                     }`}
                   >
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                        <h3 className="font-semibold text-base text-gray-900 dark:text-white">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2 sm:mb-3">
+                      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                        <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                        <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white">
                           {typeof slot.dayOfWeek !== 'undefined' && slot.dayOfWeek !== null
                             ? getDayName(slot.dayOfWeek)
                             : slot.selectedDates && slot.selectedDates[0]
@@ -446,13 +451,13 @@ function TimeSlotsSlidePanel({
                               : 'Giorno sconosciuto'}
                         </h3>
                         {slot.selectedDates && slot.selectedDates.length > 0 && (
-                          <span className="text-sm text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">
+                          <span className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
                             {formatDate(slot.selectedDates[0])}
                           </span>
                         )}
                         <div className="flex items-center gap-1">
                           {slot.isActive ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                            <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
                               <div className="w-1.5 h-1.5 bg-green-500 dark:bg-green-400 rounded-full"></div>
                               Attiva
                             </span>
@@ -466,10 +471,10 @@ function TimeSlotsSlidePanel({
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                         <button
                           onClick={() => handleEdit(slot)}
-                          className={`flex items-center justify-center gap-1 px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                          className={`flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md min-w-[44px] ${
                             editingSlotId === slot.id
                               ? 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white'
                               : 'bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white'
@@ -478,12 +483,12 @@ function TimeSlotsSlidePanel({
                           {editingSlotId === slot.id ? (
                             <>
                               <span>💾</span>
-                              Salva
+                              <span className="hidden sm:inline">Salva</span>
                             </>
                           ) : (
                             <>
                               <Edit className="h-3 w-3" />
-                              Modifica
+                              <span className="hidden sm:inline">Modifica</span>
                             </>
                           )}
                         </button>
@@ -491,16 +496,16 @@ function TimeSlotsSlidePanel({
                         {editingSlotId === slot.id && (
                           <button
                             onClick={handleCancelEdit}
-                            className="flex items-center justify-center gap-1 bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                            className="flex items-center justify-center gap-1 bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md min-w-[44px]"
                           >
                             <X className="h-3 w-3" />
-                            Annulla
+                            <span className="hidden sm:inline">Annulla</span>
                           </button>
                         )}
 
                         <button
                           onClick={() => handleToggle(slot)}
-                          className={`flex items-center justify-center gap-1 px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                          className={`flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md min-w-[44px] ${
                             slot.isActive
                               ? 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white'
                               : 'bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white'
@@ -509,33 +514,33 @@ function TimeSlotsSlidePanel({
                           {slot.isActive ? (
                             <>
                               <PowerOff className="h-3 w-3" />
-                              Disattiva
+                              <span className="hidden sm:inline">Disattiva</span>
                             </>
                           ) : (
                             <>
                               <Power className="h-3 w-3" />
-                              Attiva
+                              <span className="hidden sm:inline">Attiva</span>
                             </>
                           )}
                         </button>
                         <button
                           onClick={() => handleDelete(slot)}
-                          className="flex items-center justify-center gap-1 bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                          className="flex items-center justify-center gap-1 bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md min-w-[44px]"
                         >
                           <X className="h-3 w-3" />
-                          Elimina
+                          <span className="hidden sm:inline">Elimina</span>
                         </button>
                       </div>
                     </div>
 
                     {/* Content Grid */}
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                       {/* Left Column - Time and Instructor */}
                       <div className="space-y-3">
                         {/* Time Box */}
-                        <div className="bg-orange-50/70 dark:bg-orange-900/30 rounded-lg p-4 border border-orange-200/50 dark:border-orange-700/50">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Clock className="h-4 w-4 text-orange-600 dark:text-orange-200" />
+                        <div className="bg-orange-50/70 dark:bg-orange-900/30 rounded-lg p-2 sm:p-3 lg:p-4 border border-orange-200/50 dark:border-orange-700/50">
+                          <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                            <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-600 dark:text-orange-200" />
                             <span className="text-xs font-medium text-orange-700 dark:text-orange-300">
                               Orario
                             </span>
@@ -556,7 +561,7 @@ function TimeSlotsSlidePanel({
                                       )
                                     )
                                   }
-                                  className="text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-1 py-1 text-orange-800 dark:text-orange-200 w-14"
+                                  className="text-sm sm:text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-0.5 sm:px-1 py-0.5 sm:py-1 text-orange-800 dark:text-orange-200 w-12 sm:w-14"
                                 >
                                   {hourOptions.map((h) => (
                                     <option key={h} value={h}>
@@ -577,7 +582,7 @@ function TimeSlotsSlidePanel({
                                       )
                                     )
                                   }
-                                  className="text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-1 py-1 text-orange-800 dark:text-orange-200 w-14"
+                                  className="text-sm sm:text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-0.5 sm:px-1 py-0.5 sm:py-1 text-orange-800 dark:text-orange-200 w-12 sm:w-14"
                                 >
                                   {minuteOptions.map((m) => (
                                     <option key={m} value={m}>
@@ -586,7 +591,7 @@ function TimeSlotsSlidePanel({
                                   ))}
                                 </select>
                               </div>
-                              <span className="text-orange-700 dark:text-orange-300 text-base font-bold">
+                              <span className="text-orange-700 dark:text-orange-300 text-sm sm:text-base font-bold">
                                 -
                               </span>
                               {/* End Time */}
@@ -603,7 +608,7 @@ function TimeSlotsSlidePanel({
                                       )
                                     )
                                   }
-                                  className="text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-1 py-1 text-orange-800 dark:text-orange-200 w-14"
+                                  className="text-sm sm:text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-0.5 sm:px-1 py-0.5 sm:py-1 text-orange-800 dark:text-orange-200 w-12 sm:w-14"
                                 >
                                   {hourOptions.map((h) => (
                                     <option key={h} value={h}>
@@ -624,7 +629,7 @@ function TimeSlotsSlidePanel({
                                       )
                                     )
                                   }
-                                  className="text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-1 py-1 text-orange-800 dark:text-orange-200 w-14"
+                                  className="text-sm sm:text-base font-bold bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-600 rounded px-0.5 sm:px-1 py-0.5 sm:py-1 text-orange-800 dark:text-orange-200 w-12 sm:w-14"
                                 >
                                   {minuteOptions.map((m) => (
                                     <option key={m} value={m}>
@@ -643,15 +648,15 @@ function TimeSlotsSlidePanel({
 
                         {/* Instructor Box */}
                         <div
-                          className={`rounded-lg p-4 border ${
+                          className={`rounded-lg p-2 sm:p-3 lg:p-4 border ${
                             instructor
                               ? 'bg-green-50/70 dark:bg-green-900/30 border-green-200/50 dark:border-green-700/50'
                               : 'bg-red-50/70 dark:bg-red-900/30 border-red-200/50 dark:border-red-700/50'
                           }`}
                         >
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
                             <User
-                              className={`h-4 w-4 ${instructor ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}
+                              className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${instructor ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}
                             />
                             <span
                               className={`text-xs font-medium ${instructor ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}
@@ -668,9 +673,9 @@ function TimeSlotsSlidePanel({
                       </div>
 
                       {/* Right Column - Courts */}
-                      <div className="bg-purple-50/70 dark:bg-purple-900/30 rounded-lg p-4 border border-purple-200/50 dark:border-purple-700/50">
-                        <div className="flex items-center gap-2 mb-2">
-                          <MapPin className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                      <div className="bg-purple-50/70 dark:bg-purple-900/30 rounded-lg p-2 sm:p-3 lg:p-4 border border-purple-200/50 dark:border-purple-700/50">
+                        <div className="flex items-center gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+                          <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-purple-600 dark:text-purple-400" />
                           <span className="text-xs font-medium text-purple-700 dark:text-purple-300">
                             Campi
                           </span>

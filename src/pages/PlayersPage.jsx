@@ -7,6 +7,7 @@ import { themeTokens } from '@lib/theme.js';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useUI } from '@contexts/UIContext.jsx';
 import { useAuth } from '@contexts/AuthContext.jsx';
+import { computeClubRanking } from '@lib/ranking-club.js';
 import PlayersCRM from '@features/players/PlayersCRM.jsx';
 
 export default function PlayersPage() {
@@ -21,6 +22,8 @@ export default function PlayersPage() {
     updatePlayer,
     deletePlayer,
     loadingStates,
+    matches,
+    matchesLoaded,
   } = useClub();
   const { clubMode } = useUI();
   const { userRole, user, isClubAdmin } = useAuth();
@@ -28,6 +31,38 @@ export default function PlayersPage() {
 
   // Gli admin di club possono sempre accedere, anche senza clubMode attivato
   const canAccessPlayers = clubMode || isClubAdmin(clubId);
+
+  // 🎯 Calcola i ranking reali dalle partite (come in Classifica)
+  const playersWithRealRating = React.useMemo(() => {
+    if (!clubId || !players || !matchesLoaded) return players;
+    
+    // Filtra i giocatori del torneo
+    const tournamentPlayers = players.filter(p => 
+      p.tournamentData?.isParticipant === true &&
+      p.tournamentData?.isActive === true
+    );
+    
+    if (tournamentPlayers.length === 0) return players;
+    
+    // Calcola i ranking reali
+    const rankingData = computeClubRanking(tournamentPlayers, matches, clubId);
+    const rankingMap = new Map(rankingData.players.map(p => [p.id, p.rating]));
+    
+    // Applica i rating calcolati ai giocatori
+    return players.map(p => ({
+      ...p,
+      calculatedRating: rankingMap.get(p.id) || p.rating
+    }));
+  }, [clubId, players, matches, matchesLoaded]);
+
+  // Crea playersById con i rating calcolati
+  const playersByIdWithRating = React.useMemo(() => {
+    const map = {};
+    playersWithRealRating.forEach(p => {
+      map[p.id] = p;
+    });
+    return map;
+  }, [playersWithRealRating]);
 
   // I dati si caricano automaticamente nel ClubContext quando cambia clubId
 
@@ -108,12 +143,12 @@ export default function PlayersPage() {
   return (
     <PlayersCRM
       T={T}
-      state={{ players }}
+      state={{ players: playersWithRealRating }}
       setState={() => {
         /* Legacy prop - now using direct Firebase functions */
       }}
       onOpenStats={handleOpenStats}
-      playersById={playersById}
+      playersById={playersByIdWithRating}
       onAddPlayer={handleAddPlayer}
       onUpdatePlayer={handleUpdatePlayer}
       onDeletePlayer={handleDeletePlayer}

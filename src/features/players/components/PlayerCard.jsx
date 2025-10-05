@@ -8,7 +8,8 @@ import { DEFAULT_RATING } from '@lib/ids.js';
 import { PLAYER_CATEGORIES } from '../types/playerTypes.js';
 
 export default function PlayerCard({ player, playersById, onEdit, onDelete, onView, onStats, T }) {
-  const liveRating = playersById?.[player.id]?.rating ?? player.rating ?? DEFAULT_RATING;
+  // 🎯 Usa il rating calcolato dinamicamente (se disponibile)
+  const liveRating = player.calculatedRating ?? playersById?.[player.id]?.calculatedRating ?? playersById?.[player.id]?.rating ?? player.rating ?? DEFAULT_RATING;
 
   // Categorie con colori
   const getCategoryStyle = (category) => {
@@ -127,12 +128,21 @@ export default function PlayerCard({ player, playersById, onEdit, onDelete, onVi
             )}
           </div>
 
-          {/* Rating */}
+          {/* Ranking attuale (solo per partecipanti al campionato) */}
           <div className="text-center w-[84px] shrink-0">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {Number(liveRating).toFixed(0)}
-            </div>
-            <div className={`text-xs ${T.subtext}`}>Rating</div>
+            {player.tournamentData?.isParticipant && player.tournamentData?.isActive ? (
+              <>
+                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {Number(liveRating).toFixed(0)}
+                </div>
+                <div className={`text-xs ${T.subtext}`}>Ranking attuale</div>
+              </>
+            ) : (
+              <>
+                <div className="text-xl text-gray-300 dark:text-gray-600">-</div>
+                <div className={`text-xs ${T.subtext}`}>Non partecipa</div>
+              </>
+            )}
           </div>
 
           {/* Wallet */}
@@ -262,10 +272,19 @@ export default function PlayerCard({ player, playersById, onEdit, onDelete, onVi
           </div>
 
           <div className="text-right">
-            <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
-              {Number(liveRating).toFixed(0)}
-            </div>
-            <div className={`text-xs ${T.subtext}`}>Rating</div>
+            {player.tournamentData?.isParticipant && player.tournamentData?.isActive ? (
+              <>
+                <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                  {Number(liveRating).toFixed(0)}
+                </div>
+                <div className={`text-xs ${T.subtext}`}>Ranking attuale</div>
+              </>
+            ) : (
+              <>
+                <div className="text-lg text-gray-300 dark:text-gray-600">-</div>
+                <div className={`text-xs ${T.subtext}`}>Non partecipa</div>
+              </>
+            )}
           </div>
         </div>
 

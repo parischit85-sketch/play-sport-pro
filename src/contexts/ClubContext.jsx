@@ -205,7 +205,12 @@ export function ClubProvider({ children }) {
       try {
         const profilesSnapshot = await getDocs(collection(db, 'clubs', clubId, 'profiles'));
         profilesSnapshot.docs.forEach((doc) => {
-          clubProfiles.set(doc.id, doc.data());
+          const data = doc.data();
+          clubProfiles.set(doc.id, data);
+          // Debug tournamentData
+          if (data.tournamentData) {
+            console.log('🏆 [ClubContext] Profile with tournamentData:', doc.id, data.tournamentData);
+          }
         });
         console.log('✅ Loaded club profiles:', profilesSnapshot.docs.length);
       } catch (error) {
@@ -216,6 +221,11 @@ export function ClubProvider({ children }) {
       const playersData = clubUsers.map((clubUser) => {
         const userId = clubUser.userId;
         const originalProfile = clubProfiles.get(userId);
+        
+        // Debug tournamentData mapping
+        if (originalProfile?.tournamentData) {
+          console.log('🔄 [ClubContext] Mapping player with tournamentData:', userId, originalProfile.tournamentData);
+        }
 
         // Merge data from club profile if available
         const mergedData = {
@@ -233,6 +243,11 @@ export function ClubProvider({ children }) {
           // Additional data from original club profile
           category: originalProfile?.category || 'member',
           instructorData: originalProfile?.instructorData || null,
+          tournamentData: originalProfile?.tournamentData ? {
+            ...originalProfile.tournamentData,
+            // 🔄 SINCRONIZZAZIONE: se currentRanking non esiste, usa rating
+            currentRanking: originalProfile.tournamentData.currentRanking || originalProfile?.rating || 1500
+          } : null,
 
           // Preserve other profile data
           baseRating: originalProfile?.baseRating || originalProfile?.rating || 1500,
@@ -685,9 +700,23 @@ export function ClubProvider({ children }) {
           if (updates.instructorData !== undefined) {
             profileUpdates.instructorData = updates.instructorData;
           }
+          if (updates.tournamentData !== undefined) {
+            profileUpdates.tournamentData = updates.tournamentData;
+            // 🔄 SINCRONIZZAZIONE: rating = currentRanking del campionato
+            if (updates.tournamentData.currentRanking) {
+              profileUpdates.rating = updates.tournamentData.currentRanking;
+              profileUpdates.baseRating = updates.tournamentData.currentRanking;
+            }
+            console.log('🏆 [ClubContext] tournamentData to save:', updates.tournamentData);
+            console.log('🏆 [ClubContext] tournamentData.initialRanking:', updates.tournamentData.initialRanking);
+            console.log('🏆 [ClubContext] tournamentData.currentRanking:', updates.tournamentData.currentRanking);
+            console.log('🔄 [ClubContext] Synced rating:', profileUpdates.rating);
+          }
           if (updates.tags) profileUpdates.tags = updates.tags;
           if (updates.notes) profileUpdates.notes = updates.notes;
           if (updates.wallet) profileUpdates.wallet = updates.wallet;
+
+          console.log('💾 [ClubContext] Profile updates to save:', profileUpdates);
 
           if (profileSnap.exists()) {
             // Update existing profile

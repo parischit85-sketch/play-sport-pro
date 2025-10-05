@@ -12,6 +12,8 @@ import {
   PLAYER_CATEGORIES,
 } from '@features/players/types/playerTypes.js';
 import { useClub } from '@contexts/ClubContext.jsx';
+import { doc, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore';
+import { db } from '../../../services/firebase';
 
 export default function LessonAdminPanel({
   T,
@@ -193,8 +195,6 @@ export default function LessonAdminPanel({
       // dobbiamo aggiornarla direttamente in Firestore, non nel config admin
       if (editingTimeSlot && editingTimeSlot.source === 'instructor') {
         console.log('🎯 Aggiornamento fascia istruttore in Firestore');
-        const { doc, updateDoc, Timestamp } = await import('firebase/firestore');
-        const { db } = await import('../../../lib/firebase');
         
         const slotRef = doc(db, 'clubs', club.id, 'timeSlots', editingTimeSlot.id);
         
@@ -244,8 +244,6 @@ export default function LessonAdminPanel({
       // Se è una fascia creata dall'istruttore, eliminala da Firestore
       if (slotToDelete && slotToDelete.source === 'instructor') {
         console.log('🗑️ Eliminazione fascia istruttore da Firestore');
-        const { doc, deleteDoc } = await import('firebase/firestore');
-        const { db } = await import('../../../lib/firebase');
         
         const slotRef = doc(db, 'clubs', club.id, 'timeSlots', timeSlotId);
         await deleteDoc(slotRef);
@@ -261,7 +259,7 @@ export default function LessonAdminPanel({
       });
     } catch (error) {
       console.error('❌ Errore eliminazione fascia oraria:', error);
-      alert('Errore durante l\'eliminazione della fascia oraria');
+      alert("Errore durante l'eliminazione della fascia oraria");
     }
   };
 

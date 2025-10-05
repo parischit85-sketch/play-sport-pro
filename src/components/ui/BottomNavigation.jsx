@@ -359,8 +359,8 @@ export default function BottomNavigation({
           className="club-menu-container absolute bottom-full left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border-t border-white/20 dark:border-gray-700/30 shadow-2xl shadow-gray-900/20 dark:shadow-black/40"
           style={{ zIndex: 1000000 }}
         >
-          <div className="p-6">
-            <div className="flex justify-between items-center mb-4">
+          <div className="p-4 sm:p-6 max-h-[60vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-3 sm:mb-4">
               <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Menu Admin
               </div>
@@ -378,11 +378,11 @@ export default function BottomNavigation({
                 </svg>
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               {adminNavItems.map((item) => (
                 <div
                   key={item.id}
-                  className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
+                  className={`flex items-center space-x-2 sm:space-x-3 p-2.5 sm:p-3 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
                     active === item.id
                       ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 text-blue-600 dark:text-blue-400 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 border border-blue-200/30 dark:border-blue-600/30'
                       : 'bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-600/80 border border-white/30 dark:border-gray-600/30 shadow-lg hover:shadow-xl'
@@ -396,7 +396,7 @@ export default function BottomNavigation({
                   }}
                 >
                   <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                       active === item.id
                         ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
                         : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-md'
@@ -404,7 +404,7 @@ export default function BottomNavigation({
                   >
                     {item.icon}
                   </div>
-                  <span className="text-sm font-medium">{item.label}</span>
+                  <span className="text-xs sm:text-sm font-medium truncate">{item.label}</span>
                 </div>
               ))}
             </div>
