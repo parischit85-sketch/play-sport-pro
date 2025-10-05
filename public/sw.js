@@ -1,5 +1,5 @@
 // Service Worker per PlaySport Pro - Enhanced Performance Optimization
-const CACHE_VERSION = 'v1.10.0';
+const CACHE_VERSION = 'v1.11.0';
 const STATIC_CACHE = `playsport-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `playsport-dynamic-${CACHE_VERSION}`;
 const API_CACHE = `playsport-api-${CACHE_VERSION}`;
@@ -45,7 +45,7 @@ const urlsToCache = [
 
 // Enhanced installation with critical resource caching
 self.addEventListener('install', (event) => {
-  console.log('🔧 [SW] Installing Enhanced Service Worker v1.10.0');
+  console.log('🔧 [SW] Installing Enhanced Service Worker v1.11.0');
 
   event.waitUntil(
     caches
@@ -66,7 +66,7 @@ self.addEventListener('install', (event) => {
 
 // Enhanced activation with smart cache cleanup
 self.addEventListener('activate', (event) => {
-  console.log('🚀 [SW] Activating Enhanced Service Worker v1.10.0');
+  console.log('🚀 [SW] Activating Enhanced Service Worker v1.11.0');
 
   event.waitUntil(
     caches
