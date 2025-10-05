@@ -332,11 +332,25 @@ export default function BottomNavigation({
       icon: getIconForNavItem(nav.id),
     }));
 
-  // Mobile nav shows max 5 items: 4 public tabs + profile/auth + hamburger (for admins)
-  // If user is admin, show 4 public tabs + hamburger menu
-  // If user is normal, show up to 5 public tabs
-  const maxPublicTabs = isAdmin ? 4 : 5;
-  const mobileNavItems = publicNavItems.slice(0, maxPublicTabs);
+  // Find profile/auth tab (always present)
+  const profileTab = navigation.find((nav) => nav.id === 'profile' || nav.id === 'auth');
+  const profileNavItem = profileTab ? {
+    id: profileTab.id,
+    label: profileTab.label,
+    path: profileTab.path,
+    icon: getIconForNavItem(profileTab.id),
+  } : null;
+
+  // Mobile nav shows:
+  // - For admins: 3 public tabs + profile + hamburger (5 total)
+  // - For normal users: 4 public tabs + profile (5 total)
+  const maxPublicTabs = isAdmin ? 3 : 4;
+  let mobileNavItems = publicNavItems.slice(0, maxPublicTabs);
+  
+  // Always add profile/auth tab if exists
+  if (profileNavItem) {
+    mobileNavItems.push(profileNavItem);
+  }
 
   // Determine grid columns based on number of items + hamburger menu
   const totalItems = mobileNavItems.length + (isAdmin && adminNavItems.length > 0 ? 1 : 0);
