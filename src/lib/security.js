@@ -496,25 +496,9 @@ export const setupCSP = () => {
     return;
   }
 
-  // This would typically be set on the server, but we can add some client-side protection
-  if (!document.querySelector('meta[http-equiv="Content-Security-Policy"]')) {
-    const meta = document.createElement('meta');
-    meta.httpEquiv = 'Content-Security-Policy';
-    meta.content = `
-      default-src 'self';
-      script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://apis.google.com;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-      font-src 'self' https://fonts.gstatic.com;
-      img-src 'self' data: https:;
-      connect-src 'self' https://*.firebaseapp.com https://*.googleapis.com https://www.google-analytics.com https://apis.google.com;
-      frame-src 'self' https://accounts.google.com;
-      object-src 'none';
-    `
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    document.head.appendChild(meta);
-  }
+  // CSP is now set via Netlify headers (netlify.toml) - skip client-side CSP meta tag
+  // to avoid conflicts and ensure the server headers take precedence
+  console.log('🔒 CSP managed by server headers (netlify.toml)');
 };
 
 // =============================================================================
