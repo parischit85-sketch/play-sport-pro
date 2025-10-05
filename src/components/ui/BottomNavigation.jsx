@@ -322,15 +322,15 @@ export default function BottomNavigation({
     publicNavItems = orderedItems;
   }
 
-  // Admin tabs for the hamburger menu (only for admins)
-  const adminNavItems = navigation
-    .filter((nav) => nav.clubAdmin || nav.admin)
-    .map((nav) => ({
-      id: nav.id,
-      label: nav.label,
-      path: nav.path,
-      icon: getIconForNavItem(nav.id),
-    }));
+  // Hamburger menu items: ALL navigation tabs (only for admins)
+  // Include both public tabs and admin-only tabs
+  const hamburgerMenuItems = isAdmin ? navigation.map((nav) => ({
+    id: nav.id,
+    label: nav.label,
+    path: nav.path,
+    icon: getIconForNavItem(nav.id),
+    isAdmin: nav.clubAdmin || nav.admin,
+  })) : [];
 
   // Find profile/auth tab (always present)
   const profileTab = navigation.find((nav) => nav.id === 'profile' || nav.id === 'auth');
@@ -353,22 +353,22 @@ export default function BottomNavigation({
   }
 
   // Determine grid columns based on number of items + hamburger menu
-  const totalItems = mobileNavItems.length + (isAdmin && adminNavItems.length > 0 ? 1 : 0);
+  const totalItems = mobileNavItems.length + (isAdmin && hamburgerMenuItems.length > 0 ? 1 : 0);
   const gridColsClass = totalItems === 4 ? 'grid-cols-4' : 'grid-cols-5';
 
   return (
     <div
-      className="md:hidden bottom-nav-container bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border-t border-white/20 dark:border-gray-700/30 shadow-2xl shadow-gray-900/10 dark:shadow-black/20"
+      className="md:hidden bottom-nav-container bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border-t border-gray-200/50 dark:border-gray-700/50 shadow-2xl shadow-gray-900/10 dark:shadow-black/20"
       style={{
         zIndex: 999999,
         paddingBottom: 'env(safe-area-inset-bottom)',
-        height: `calc(68px + env(safe-area-inset-bottom))`,
+        height: `calc(76px + env(safe-area-inset-bottom))`,
       }}
       onClick={(e) => e.stopPropagation()}
       onTouchEnd={(e) => e.stopPropagation()}
     >
-      {/* Club Menu Overlay */}
-      {showClubMenu && isAdmin && adminNavItems.length > 0 && (
+      {/* Hamburger Menu Overlay - ALL TABS */}
+      {showClubMenu && isAdmin && hamburgerMenuItems.length > 0 && (
         <div
           className="club-menu-container absolute bottom-full left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border-t border-white/20 dark:border-gray-700/30 shadow-2xl shadow-gray-900/20 dark:shadow-black/40"
           style={{ zIndex: 1000000 }}
@@ -380,10 +380,10 @@ export default function BottomNavigation({
             <div className="flex justify-between items-center mb-3 sm:mb-4 sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl z-10 pb-2">
               <div className="flex items-center gap-2">
                 <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Menu Admin
+                  Menu Completo
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
-                  {adminNavItems.length}
+                  {hamburgerMenuItems.length}
                 </div>
               </div>
               <button
@@ -401,7 +401,7 @@ export default function BottomNavigation({
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 pb-4">
-              {adminNavItems.map((item) => (
+              {hamburgerMenuItems.map((item) => (
                 <div
                   key={item.id}
                   className={`flex items-center space-x-2 sm:space-x-3 p-3 sm:p-3.5 rounded-lg sm:rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 min-h-[56px] ${
@@ -421,12 +421,19 @@ export default function BottomNavigation({
                     className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
                       active === item.id
                         ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg'
-                        : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-md'
+                        : item.isAdmin
+                          ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-md'
+                          : 'bg-gradient-to-r from-gray-400 to-gray-500 text-white shadow-md'
                     }`}
                   >
                     {item.icon}
                   </div>
-                  <span className="text-sm sm:text-base font-medium truncate flex-1">{item.label}</span>
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm sm:text-base font-medium truncate block">{item.label}</span>
+                    {item.isAdmin && (
+                      <span className="text-xs text-purple-600 dark:text-purple-400">Admin</span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -434,7 +441,7 @@ export default function BottomNavigation({
         </div>
       )}
 
-      <div className={`grid ${gridColsClass} h-16 px-2`}>
+      <div className={`grid ${gridColsClass} h-[72px] px-1`}>
         {mobileNavItems.map((item, index) => {
           // Special styling for the "Prenota" button (center button)
           const isPrenotaButton = item.id === 'prenota';
@@ -442,7 +449,7 @@ export default function BottomNavigation({
           return (
             <div
               key={item.id}
-              className={`bottom-nav-item flex flex-col items-center justify-center space-y-1 cursor-pointer transition-all duration-300 ${
+              className={`bottom-nav-item flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-all duration-300 ${
                 active === item.id
                   ? 'text-blue-500 dark:text-blue-400'
                   : isPrenotaButton
@@ -463,23 +470,21 @@ export default function BottomNavigation({
             >
               {/* Icon Container with special styling for Prenota button */}
               <div
-                className={`relative flex items-center justify-center rounded-xl transition-all duration-300 ${
+                className={`relative flex items-center justify-center rounded-2xl transition-all duration-300 ${
                   isPrenotaButton
-                    ? 'w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 shadow-lg shadow-indigo-200/50 dark:shadow-indigo-900/30 hover:shadow-xl hover:scale-110 transform scale-105'
+                    ? 'w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 shadow-xl shadow-indigo-300/40 dark:shadow-indigo-900/40 hover:shadow-2xl hover:scale-110 -mt-2'
                     : active === item.id
-                      ? 'w-10 h-10 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-400/20 dark:to-indigo-400/20 backdrop-blur-sm border border-blue-200/30 dark:border-blue-600/30 shadow-lg shadow-blue-100/30 dark:shadow-blue-900/20 transform scale-110'
-                      : 'w-10 h-10 hover:bg-white/60 dark:hover:bg-gray-700/60 hover:backdrop-blur-sm hover:border hover:border-white/20 dark:hover:border-gray-600/20 hover:shadow-lg hover:transform hover:scale-105'
+                      ? 'w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 shadow-lg shadow-blue-300/30 dark:shadow-blue-900/30'
+                      : 'w-11 h-11 hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 hover:shadow-md'
                 }`}
               >
-                {/* Active indicator dot */}
-                {active === item.id && !isPrenotaButton && (
-                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg"></div>
-                )}
-                <div className={isPrenotaButton ? 'text-white' : ''}>{item.icon}</div>
+                <div className={`${isPrenotaButton || active === item.id ? 'text-white scale-110' : 'scale-100'} transition-transform duration-300`}>
+                  {item.icon}
+                </div>
               </div>
               <span
-                className={`font-medium text-xs leading-tight ${
-                  active === item.id || isPrenotaButton ? 'font-semibold' : ''
+                className={`text-[10px] font-medium leading-tight mt-0.5 ${
+                  active === item.id ? 'text-blue-600 dark:text-blue-400 font-semibold' : isPrenotaButton ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-gray-600 dark:text-gray-400'
                 }`}
               >
                 {item.label}
@@ -488,14 +493,10 @@ export default function BottomNavigation({
           );
         })}
 
-        {/* Hamburger Menu Button (only when user is admin and has admin items) */}
-        {isAdmin && adminNavItems.length > 0 && (
+        {/* Hamburger Menu Button (only when user is admin and has menu items) */}
+        {isAdmin && hamburgerMenuItems.length > 0 && (
           <div
-            className={`bottom-nav-item flex flex-col items-center justify-center space-y-1 cursor-pointer transition-all duration-300 ${
-              showClubMenu
-                ? 'text-blue-500 dark:text-blue-400'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
-            }`}
+            className="bottom-nav-item flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-all duration-300"
             onClick={!isIOS ? (e) => toggleClubMenu(e) : undefined}
             onTouchEnd={isIOS ? (e) => toggleClubMenu(e) : undefined}
             style={{
@@ -509,16 +510,13 @@ export default function BottomNavigation({
             }}
           >
             <div
-              className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 ${
+              className={`relative flex items-center justify-center w-11 h-11 rounded-2xl transition-all duration-300 ${
                 showClubMenu
-                  ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 dark:from-purple-400/20 dark:to-pink-400/20 backdrop-blur-sm border border-purple-200/30 dark:border-purple-600/30 shadow-lg shadow-purple-100/30 dark:shadow-purple-900/20 transform scale-110'
-                  : 'hover:bg-white/60 dark:hover:bg-gray-700/60 hover:backdrop-blur-sm hover:border hover:border-white/20 dark:hover:border-gray-600/20 hover:shadow-lg hover:transform hover:scale-105'
+                  ? 'bg-gradient-to-br from-purple-500 to-pink-600 dark:from-purple-400 dark:to-pink-500 shadow-lg shadow-purple-300/30 dark:shadow-purple-900/30'
+                  : 'hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 hover:shadow-md'
               }`}
             >
-              {showClubMenu && (
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full shadow-lg"></div>
-              )}
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-5 h-5 ${showClubMenu ? 'text-white scale-110' : 'text-gray-600 dark:text-gray-400'} transition-all duration-300`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -528,7 +526,9 @@ export default function BottomNavigation({
               </svg>
             </div>
             <span
-              className={`font-medium text-xs leading-tight ${showClubMenu ? 'font-semibold' : ''}`}
+              className={`text-[10px] font-medium leading-tight mt-0.5 ${
+                showClubMenu ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-600 dark:text-gray-400'
+              }`}
             >
               Menu
             </span>
