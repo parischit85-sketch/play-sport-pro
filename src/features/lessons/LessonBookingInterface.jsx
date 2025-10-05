@@ -283,9 +283,18 @@ export default function LessonBookingInterface({
   const updateLessonConfig = useCallback(
     async (newConfig) => {
       try {
+        // IMPORTANTE: Le fasce con source="instructor" vengono gestite separatamente
+        // in Firestore (clubs/{clubId}/timeSlots) e NON devono essere nel lessonConfig.
+        // Quando l'admin modifica una fascia istruttore, viene aggiornata direttamente
+        // in Firestore tramite handleSaveTimeSlot in LessonAdminPanel.
+        const cleanedConfig = {
+          ...newConfig,
+          timeSlots: (newConfig.timeSlots || []).filter(slot => slot.source !== 'instructor')
+        };
+
         // Salva la configurazione lezioni nel club via Firebase
-        await updateClubLessonConfig(newConfig);
-        console.log('✅ Configurazione lezioni salvata su Firebase:', newConfig);
+        await updateClubLessonConfig(cleanedConfig);
+        console.log('✅ Configurazione lezioni salvata su Firebase:', cleanedConfig);
       } catch (error) {
         console.error(
           '❌ Errore durante il salvataggio della configurazione lezioni su Firebase:',

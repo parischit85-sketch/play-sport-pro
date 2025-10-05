@@ -24,7 +24,7 @@ export default function LessonAdminPanel({
   onClearAllLessons,
   lessonBookingsCount,
 }) {
-  const { updatePlayer, clubId } = useClub();
+  const { updatePlayer, club } = useClub();
   const [activeSection, setActiveSection] = useState('config');
 
   // Debug logging per vedere i dati caricati
@@ -183,61 +183,85 @@ export default function LessonAdminPanel({
   };
 
   // Handle time slot management
-  const handleSaveTimeSlot = (timeSlotData) => {
-    console.log('� === SALVATAGGIO FASCIA ORARIA ===');
-    console.log(
-      '🔧 handleSaveTimeSlot - INPUT timeSlotData:',
-      JSON.stringify(timeSlotData, null, 2)
-    );
-    console.log('🔧 handleSaveTimeSlot - courtIds:', timeSlotData.courtIds);
-    console.log('🔧 handleSaveTimeSlot - instructorId:', timeSlotData.instructorId);
-    console.log('🔧 handleSaveTimeSlot - instructor:', timeSlotData.instructor);
-    console.log('🔧 handleSaveTimeSlot - ALL FIELDS:', Object.keys(timeSlotData));
+  const handleSaveTimeSlot = async (timeSlotData) => {
+    console.log('💾 === SALVATAGGIO FASCIA ORARIA ===');
+    console.log('🔧 timeSlotData:', timeSlotData);
+    console.log('🔧 editingTimeSlot:', editingTimeSlot);
 
-    const updatedTimeSlots = editingTimeSlot
-      ? (lessonConfig.timeSlots || []).map((slot) =>
-          slot.id === editingTimeSlot.id ? { ...slot, ...timeSlotData } : slot
-        )
-      : [
-          ...(lessonConfig.timeSlots || []),
-          { ...createLessonTimeSlotSchema(), ...timeSlotData, id: uid() },
-        ];
+    try {
+      // Se stiamo modificando una fascia creata dall'istruttore (source: "instructor")
+      // dobbiamo aggiornarla direttamente in Firestore, non nel config admin
+      if (editingTimeSlot && editingTimeSlot.source === 'instructor') {
+        console.log('🎯 Aggiornamento fascia istruttore in Firestore');
+        const { doc, updateDoc, Timestamp } = await import('firebase/firestore');
+        const { db } = await import('../../../lib/firebase');
+        
+        const slotRef = doc(db, 'clubs', club.id, 'timeSlots', editingTimeSlot.id);
+        
+        await updateDoc(slotRef, {
+          ...timeSlotData,
+          updatedAt: Timestamp.now(),
+        });
 
-    console.log(
-      '🔧 handleSaveTimeSlot - FINAL updatedTimeSlots:',
-      JSON.stringify(updatedTimeSlots, null, 2)
-    );
+        console.log('✅ Fascia istruttore aggiornata su Firestore');
+        setShowTimeSlotModal(false);
+        setEditingTimeSlot(null);
+        return;
+      }
 
-    // Log della struttura completa di ogni fascia oraria salvata
-    updatedTimeSlots.forEach((slot, index) => {
-      console.log(`📋 SLOT ${index + 1}:`, {
-        id: slot.id,
-        instructorId: slot.instructorId,
-        instructor: slot.instructor,
-        courtId: slot.courtId,
-        courtIds: slot.courtIds,
-        court: slot.court,
-        startTime: slot.startTime,
-        endTime: slot.endTime,
-        allFields: Object.keys(slot),
+      // Altrimenti, salva nel config admin come prima
+      const updatedTimeSlots = editingTimeSlot
+        ? (lessonConfig.timeSlots || []).map((slot) =>
+            slot.id === editingTimeSlot.id ? { ...slot, ...timeSlotData } : slot
+          )
+        : [
+            ...(lessonConfig.timeSlots || []),
+            { ...createLessonTimeSlotSchema(), ...timeSlotData, id: uid() },
+          ];
+
+      updateLessonConfig({
+        ...lessonConfig,
+        timeSlots: updatedTimeSlots,
       });
-    });
 
-    updateLessonConfig({
-      ...lessonConfig,
-      timeSlots: updatedTimeSlots,
-    });
-
-    setShowTimeSlotModal(false);
-    setEditingTimeSlot(null);
+      setShowTimeSlotModal(false);
+      setEditingTimeSlot(null);
+    } catch (error) {
+      console.error('❌ Errore salvataggio fascia oraria:', error);
+      alert('Errore durante il salvataggio della fascia oraria');
+    }
   };
 
-  const handleDeleteTimeSlot = (timeSlotId) => {
-    if (confirm('Sei sicuro di voler eliminare questa fascia oraria?')) {
+  const handleDeleteTimeSlot = async (timeSlotId) => {
+    if (!confirm('Sei sicuro di voler eliminare questa fascia oraria?')) {
+      return;
+    }
+
+    try {
+      // Trova la fascia da eliminare
+      const slotToDelete = (lessonConfig.timeSlots || []).find(slot => slot.id === timeSlotId);
+      
+      // Se è una fascia creata dall'istruttore, eliminala da Firestore
+      if (slotToDelete && slotToDelete.source === 'instructor') {
+        console.log('🗑️ Eliminazione fascia istruttore da Firestore');
+        const { doc, deleteDoc } = await import('firebase/firestore');
+        const { db } = await import('../../../lib/firebase');
+        
+        const slotRef = doc(db, 'clubs', club.id, 'timeSlots', timeSlotId);
+        await deleteDoc(slotRef);
+        
+        console.log('✅ Fascia istruttore eliminata da Firestore');
+        return;
+      }
+
+      // Altrimenti, eliminala dal config admin
       updateLessonConfig({
         ...lessonConfig,
         timeSlots: (lessonConfig.timeSlots || []).filter((slot) => slot.id !== timeSlotId),
       });
+    } catch (error) {
+      console.error('❌ Errore eliminazione fascia oraria:', error);
+      alert('Errore durante l\'eliminazione della fascia oraria');
     }
   };
 
