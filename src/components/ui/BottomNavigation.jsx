@@ -18,9 +18,8 @@ export default function BottomNavigation({
   const [showBookingModal, setShowBookingModal] = useState(false);
   const navigate = useNavigate();
 
-  // Get dynamic club path - MUST be defined before use
+  // Get dynamic club ID for booking paths
   const clubId = currentClub?.id || 'sporting-cat'; // Fallback to sporting-cat
-  const clubBasePath = `/club/${clubId}`;
 
   // Detect iOS
   const isIOS =
@@ -258,9 +257,10 @@ export default function BottomNavigation({
   };
 
   // Separate navigation items: public tabs vs admin tabs
-  // Filter out admin-only and super-admin tabs from bottom nav
+  // Filter out admin-only, super-admin tabs, AND profile/auth tab from bottom nav
+  // (profile will be added explicitly at the end)
   let publicNavItems = navigation
-    .filter((nav) => !nav.clubAdmin && !nav.admin)
+    .filter((nav) => !nav.clubAdmin && !nav.admin && nav.id !== 'profile' && nav.id !== 'auth')
     .map((nav) => ({
       id: nav.id,
       label: nav.label,
@@ -324,29 +324,33 @@ export default function BottomNavigation({
 
   // Hamburger menu items: ALL navigation tabs (only for admins)
   // Include both public tabs and admin-only tabs
-  const hamburgerMenuItems = isAdmin ? navigation.map((nav) => ({
-    id: nav.id,
-    label: nav.label,
-    path: nav.path,
-    icon: getIconForNavItem(nav.id),
-    isAdmin: nav.clubAdmin || nav.admin,
-  })) : [];
+  const hamburgerMenuItems = isAdmin
+    ? navigation.map((nav) => ({
+        id: nav.id,
+        label: nav.label,
+        path: nav.path,
+        icon: getIconForNavItem(nav.id),
+        isAdmin: nav.clubAdmin || nav.admin,
+      }))
+    : [];
 
   // Find profile/auth tab (always present)
   const profileTab = navigation.find((nav) => nav.id === 'profile' || nav.id === 'auth');
-  const profileNavItem = profileTab ? {
-    id: profileTab.id,
-    label: profileTab.label,
-    path: profileTab.path,
-    icon: getIconForNavItem(profileTab.id),
-  } : null;
+  const profileNavItem = profileTab
+    ? {
+        id: profileTab.id,
+        label: profileTab.label,
+        path: profileTab.path,
+        icon: getIconForNavItem(profileTab.id),
+      }
+    : null;
 
   // Mobile nav shows:
   // - For admins: 3 public tabs + profile + hamburger (5 total)
   // - For normal users: 4 public tabs + profile (5 total)
   const maxPublicTabs = isAdmin ? 3 : 4;
   let mobileNavItems = publicNavItems.slice(0, maxPublicTabs);
-  
+
   // Always add profile/auth tab if exists
   if (profileNavItem) {
     mobileNavItems.push(profileNavItem);
@@ -364,19 +368,24 @@ export default function BottomNavigation({
         paddingBottom: 'env(safe-area-inset-bottom)',
         height: `calc(76px + env(safe-area-inset-bottom))`,
       }}
-      onClick={(e) => e.stopPropagation()}
-      onTouchEnd={(e) => e.stopPropagation()}
+      role="navigation"
+      aria-label="Bottom navigation"
     >
       {/* Hamburger Menu Overlay - ALL TABS */}
       {showClubMenu && isAdmin && hamburgerMenuItems.length > 0 && (
         <div
           className="club-menu-container absolute bottom-full left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl border-t border-white/20 dark:border-gray-700/30 shadow-2xl shadow-gray-900/20 dark:shadow-black/40"
           style={{ zIndex: 1000000 }}
+          role="menu"
+          aria-label="Menu completo"
         >
-          <div className="p-4 sm:p-6 max-h-[70vh] overflow-y-auto overscroll-contain" style={{
-            WebkitOverflowScrolling: 'touch',
-            scrollBehavior: 'smooth',
-          }}>
+          <div
+            className="p-4 sm:p-6 max-h-[70vh] overflow-y-auto overscroll-contain"
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              scrollBehavior: 'smooth',
+            }}
+          >
             <div className="flex justify-between items-center mb-3 sm:mb-4 sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl z-10 pb-2">
               <div className="flex items-center gap-2">
                 <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -410,6 +419,9 @@ export default function BottomNavigation({
                       : 'bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-600/80 border border-white/30 dark:border-gray-600/30 shadow-lg hover:shadow-xl'
                   }`}
                   onClick={(e) => handleClubItemClick(item, e)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleClubItemClick(item, e)}
+                  role="menuitem"
+                  tabIndex={0}
                   style={{
                     WebkitTapHighlightColor: 'rgba(0,0,0,0)',
                     WebkitTouchCallout: 'none',
@@ -429,7 +441,9 @@ export default function BottomNavigation({
                     {item.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="text-sm sm:text-base font-medium truncate block">{item.label}</span>
+                    <span className="text-sm sm:text-base font-medium truncate block">
+                      {item.label}
+                    </span>
                     {item.isAdmin && (
                       <span className="text-xs text-purple-600 dark:text-purple-400">Admin</span>
                     )}
@@ -442,7 +456,7 @@ export default function BottomNavigation({
       )}
 
       <div className={`grid ${gridColsClass} h-[72px] px-1`}>
-        {mobileNavItems.map((item, index) => {
+        {mobileNavItems.map((item) => {
           // Special styling for the "Prenota" button (center button)
           const isPrenotaButton = item.id === 'prenota';
 
@@ -458,6 +472,10 @@ export default function BottomNavigation({
               }`}
               onClick={!isIOS ? (e) => handleNavClick(item, e) : undefined}
               onTouchEnd={isIOS ? (e) => handleNavClick(item, e) : undefined}
+              onKeyPress={(e) => e.key === 'Enter' && handleNavClick(item, e)}
+              role="button"
+              tabIndex={0}
+              aria-label={item.label}
               style={{
                 WebkitTapHighlightColor: 'rgba(0,0,0,0)',
                 WebkitTouchCallout: 'none',
@@ -478,13 +496,19 @@ export default function BottomNavigation({
                       : 'w-11 h-11 hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 hover:shadow-md'
                 }`}
               >
-                <div className={`${isPrenotaButton || active === item.id ? 'text-white scale-110' : 'scale-100'} transition-transform duration-300`}>
+                <div
+                  className={`${isPrenotaButton || active === item.id ? 'text-white scale-110' : 'scale-100'} transition-transform duration-300`}
+                >
                   {item.icon}
                 </div>
               </div>
               <span
                 className={`text-[10px] font-medium leading-tight mt-0.5 ${
-                  active === item.id ? 'text-blue-600 dark:text-blue-400 font-semibold' : isPrenotaButton ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-gray-600 dark:text-gray-400'
+                  active === item.id
+                    ? 'text-blue-600 dark:text-blue-400 font-semibold'
+                    : isPrenotaButton
+                      ? 'text-indigo-600 dark:text-indigo-400 font-semibold'
+                      : 'text-gray-600 dark:text-gray-400'
                 }`}
               >
                 {item.label}
@@ -499,6 +523,11 @@ export default function BottomNavigation({
             className="bottom-nav-item flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-all duration-300"
             onClick={!isIOS ? (e) => toggleClubMenu(e) : undefined}
             onTouchEnd={isIOS ? (e) => toggleClubMenu(e) : undefined}
+            onKeyPress={(e) => e.key === 'Enter' && toggleClubMenu(e)}
+            role="button"
+            tabIndex={0}
+            aria-label="Menu completo"
+            aria-expanded={showClubMenu}
             style={{
               WebkitTapHighlightColor: 'rgba(0,0,0,0)',
               WebkitTouchCallout: 'none',
@@ -516,7 +545,12 @@ export default function BottomNavigation({
                   : 'hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 hover:shadow-md'
               }`}
             >
-              <svg className={`w-5 h-5 ${showClubMenu ? 'text-white scale-110' : 'text-gray-600 dark:text-gray-400'} transition-all duration-300`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className={`w-5 h-5 ${showClubMenu ? 'text-white scale-110' : 'text-gray-600 dark:text-gray-400'} transition-all duration-300`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -527,7 +561,9 @@ export default function BottomNavigation({
             </div>
             <span
               className={`text-[10px] font-medium leading-tight mt-0.5 ${
-                showClubMenu ? 'text-purple-600 dark:text-purple-400 font-semibold' : 'text-gray-600 dark:text-gray-400'
+                showClubMenu
+                  ? 'text-purple-600 dark:text-purple-400 font-semibold'
+                  : 'text-gray-600 dark:text-gray-400'
               }`}
             >
               Menu
