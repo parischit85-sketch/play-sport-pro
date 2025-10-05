@@ -21,6 +21,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase.js';
 import { invalidateUserBookingsCache } from '@hooks/useBookingPerformance.js';
+import { emitBookingCreated, emitBookingUpdated, emitBookingCancelled, emitBookingDeleted } from '@utils/bookingEvents.js';
 
 // Simple debug logger fallback (disabled)
 const debugLogger = {
@@ -249,7 +250,7 @@ export async function createBooking(bookingData, user, options = {}) {
   }
 
   // Emit event for real-time updates
-  emit('bookingCreated', result);
+  emitBookingCreated(result);
 
   return result;
 }
@@ -278,7 +279,7 @@ export async function updateBooking(bookingId, updates, user) {
   }
 
   if (result) {
-    emit('bookingUpdated', { id: bookingId, booking: result });
+    emitBookingUpdated({ id: bookingId, booking: result });
 
     // Invalidate user bookings cache to ensure UI updates immediately
     if (user?.uid) {
@@ -320,7 +321,7 @@ export async function deleteBooking(bookingId, user) {
     deleteLocalBooking(bookingId);
   }
 
-  emit('bookingDeleted', { id: bookingId });
+  emitBookingDeleted({ id: bookingId });
 }
 
 // =============================================

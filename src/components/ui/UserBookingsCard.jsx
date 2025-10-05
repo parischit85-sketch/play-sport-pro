@@ -7,11 +7,11 @@ import { BOOKING_CONFIG } from '@services/bookings.js';
 import {
   updateBooking,
   getUserBookings,
-  addEventListener,
 } from '@services/unified-booking-service.js';
 import { useUserBookingsFast } from '@hooks/useBookingPerformance.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import BookingDetailModal from '@ui/BookingDetailModal.jsx';
+import { bookingEvents, BOOKING_EVENTS } from '@utils/bookingEvents.js';
 
 // Memoized booking card component
 const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
@@ -278,15 +278,27 @@ export default function UserBookingsCard({ user, state, T, compact }) {
       }
     };
 
-    // Subscribe to booking events
-    const unsubscribeUpdate = addEventListener('bookingUpdated', handleBookingUpdate);
-    const unsubscribeCreate = addEventListener('bookingCreated', handleBookingCreate);
-    const unsubscribeDelete = addEventListener('bookingDeleted', handleBookingDelete);
+    const handleBookingRefresh = () => {
+      if (mountedRef.current) {
+        console.log('🔄 [UserBookingsCard] Manual refresh triggered');
+        refreshCourts();
+        if (authUser) {
+          loadLessonBookings();
+        }
+      }
+    };
+
+    // Subscribe to booking events using centralized event emitter
+    bookingEvents.on(BOOKING_EVENTS.BOOKING_UPDATED, handleBookingUpdate);
+    bookingEvents.on(BOOKING_EVENTS.BOOKING_CREATED, handleBookingCreate);
+    bookingEvents.on(BOOKING_EVENTS.BOOKING_DELETED, handleBookingDelete);
+    bookingEvents.on(BOOKING_EVENTS.BOOKINGS_REFRESH, handleBookingRefresh);
 
     return () => {
-      unsubscribeUpdate?.();
-      unsubscribeCreate?.();
-      unsubscribeDelete?.();
+      bookingEvents.off(BOOKING_EVENTS.BOOKING_UPDATED, handleBookingUpdate);
+      bookingEvents.off(BOOKING_EVENTS.BOOKING_CREATED, handleBookingCreate);
+      bookingEvents.off(BOOKING_EVENTS.BOOKING_DELETED, handleBookingDelete);
+      bookingEvents.off(BOOKING_EVENTS.BOOKINGS_REFRESH, handleBookingRefresh);
     };
   }, [authUser, loadLessonBookings, refreshCourts]);
 
