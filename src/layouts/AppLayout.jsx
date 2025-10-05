@@ -14,6 +14,7 @@ import NavTabs from '@ui/NavTabs.jsx';
 import BottomNavigation from '@ui/BottomNavigation.jsx';
 import PWAInstallButton from '@components/PWAInstallButton.jsx';
 import PWAFloatingButton from '@components/PWAFloatingButton.jsx';
+import PWAInstallPrompt from '@ui/PWAInstallPrompt.jsx';
 import { logout } from '@services/auth.jsx';
 
 function AppLayoutInner() {
@@ -371,6 +372,9 @@ function AppLayoutInner() {
 
       {/* PWA Floating Button (Mobile Only) */}
       <PWAFloatingButton />
+
+      {/* PWA Install Prompt with Permissions (Auto-show on first access) */}
+      <PWAInstallPrompt />
 
       {/* Global Components */}
       <NotificationSystem />
