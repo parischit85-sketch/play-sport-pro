@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext.jsx';
 import PerformanceDashboard from '../components/debug/PerformanceDashboard.jsx';
 import DatabaseDashboard from '../components/debug/DatabaseDashboard.jsx';
+import NotificationTestPanel from '../components/debug/NotificationTestPanel.jsx';
 
 const UIContext = createContext(null);
 
@@ -145,6 +146,17 @@ export function UIProvider({ children }) {
     hideModal,
   };
 
+  // Bridge: allow triggering notifications via window.dispatchEvent(new CustomEvent('notify', {detail:{...}}))
+  React.useEffect(() => {
+    function handleNotify(e) {
+      if (!e || !e.detail) return;
+      const { type = 'info', title, message, autoClose = true } = e.detail;
+      addNotification({ type, title, message, autoClose });
+    }
+    window.addEventListener('notify', handleNotify);
+    return () => window.removeEventListener('notify', handleNotify);
+  }, []);
+
   return (
     <UIContext.Provider value={value}>
       {children}
@@ -155,6 +167,7 @@ export function UIProvider({ children }) {
           <div className="mt-4">
             <DatabaseDashboard />
           </div>
+          <NotificationTestPanel />
         </>
       )}
     </UIContext.Provider>
