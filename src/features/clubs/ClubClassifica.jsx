@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
 import Classifica from '@features/classifica/Classifica.jsx';
-import { loadLeague } from '@services/cloud.js';
+import { getClubPlayers, getClubMatches } from '@services/club-data.js';
 
 const ClubClassifica = ({ clubId, club }) => {
   const [players, setPlayers] = useState([]);
@@ -23,32 +23,11 @@ const ClubClassifica = ({ clubId, club }) => {
     setError(null);
 
     try {
-      // Load cloud data and filter by club
-      const data = await loadLeague('default'); // Default league ID
-
-      // Filter players affiliated to this club
-      let clubPlayers =
-        data.players?.filter(
-          (player) =>
-            player.clubId === clubId ||
-            player.affiliations?.some((aff) => aff.clubId === clubId && aff.status === 'approved')
-        ) || [];
-
-      // Filter matches that involve club players or are hosted by the club
-      let clubMatches =
-        data.matches?.filter((match) => {
-          const allPlayerIds = [...(match.teamA || []), ...(match.teamB || [])];
-          return (
-            match.clubId === clubId ||
-            allPlayerIds.some((playerId) => clubPlayers.some((p) => p.id === playerId))
-          );
-        }) || [];
-
-      // 🔧 FALLBACK: Se non ci sono dati del club, mostra tutti i dati non associati
-      if (clubPlayers.length === 0 && data.players?.length > 0) {
-        clubPlayers = data.players.filter((player) => !player.clubId) || [];
-        clubMatches = data.matches?.filter((match) => !match.clubId) || [];
-      }
+      // Carica dati direttamente dalle subcollections del club
+      const [clubPlayers, clubMatches] = await Promise.all([
+        getClubPlayers(clubId),
+        getClubMatches(clubId)
+      ]);
 
       setPlayers(clubPlayers);
       setMatches(clubMatches);

@@ -336,12 +336,30 @@ export async function getUserClubMemberships(userId) {
       console.log(`🔎 [getUserClubMemberships] Checking club: ${clubData.name} (${clubId})`);
 
       // Check if user is in this club's users collection
+      // Try both userId (old) and linkedUserId (new migration)
       const clubUsersRef = collection(db, 'clubs', clubId, 'users');
-      const userQuery = query(clubUsersRef, where('userId', '==', userId));
-      const userSnapshot = await getDocs(userQuery);
+      
+      // Query 1: userId (vecchio sistema)
+      const userIdQuery = query(clubUsersRef, where('userId', '==', userId));
+      // Query 2: linkedUserId (nuovo sistema dopo migrazione)
+      const linkedUserIdQuery = query(clubUsersRef, where('linkedUserId', '==', userId));
+      
+      const [userIdSnapshot, linkedUserIdSnapshot] = await Promise.all([
+        getDocs(userIdQuery),
+        getDocs(linkedUserIdQuery)
+      ]);
 
-      if (!userSnapshot.empty) {
-        const clubUserDoc = userSnapshot.docs[0];
+      // Prendi il primo risultato trovato (priorità a linkedUserId)
+      let clubUserDoc = null;
+      if (!linkedUserIdSnapshot.empty) {
+        clubUserDoc = linkedUserIdSnapshot.docs[0];
+        console.log(`✅ [getUserClubMemberships] Found via linkedUserId in ${clubData.name}`);
+      } else if (!userIdSnapshot.empty) {
+        clubUserDoc = userIdSnapshot.docs[0];
+        console.log(`✅ [getUserClubMemberships] Found via userId in ${clubData.name}`);
+      }
+
+      if (clubUserDoc) {
         const clubUserData = clubUserDoc.data();
 
         console.log(
@@ -355,7 +373,8 @@ export async function getUserClubMemberships(userId) {
           role: clubUserData.role,
           status: clubUserData.status,
           addedAt: clubUserData.addedAt,
-          isLinked: clubUserData.isLinked || false,
+          isLinked: !!clubUserData.linkedUserId, // true se ha linkedUserId
+          linkedUserId: clubUserData.linkedUserId || null,
           clubUserDocId: clubUserDoc.id,
         });
       } else {

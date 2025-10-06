@@ -5,6 +5,7 @@ import { useClub } from '@contexts/ClubContext.jsx';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
 import BookingDetailModal from '@ui/BookingDetailModal.jsx';
 import { updateBooking } from '@services/bookings.js';
+import { trackClubView } from '@services/club-analytics.js';
 
 // Lazy load InstructorDashboard
 const InstructorDashboard = React.lazy(
@@ -54,6 +55,14 @@ const ClubDashboard = () => {
 
   // Check if current user is instructor in this club
   const isInstructor = isUserInstructor(user?.uid);
+
+  // Track club view quando l'utente accede alla dashboard
+  useEffect(() => {
+    if (user && clubId && club) {
+      console.log('📊 [ClubDashboard] Tracking club view:', { clubId, clubName: club.name });
+      trackClubView(user.uid, clubId, club.name);
+    }
+  }, [user, clubId, club]);
 
   useEffect(() => {
     if (user && clubId) {

@@ -590,7 +590,7 @@ export default function UserBookingsCard({ user, state, T, compact }) {
       </div>
 
       {/* Scroll orizzontale ultra-compatto - stile Playtomic */}
-      <div className="overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0">
+      <div className="overflow-x-auto pb-2">
         <div className="flex gap-2 w-max sm:grid sm:grid-cols-1 sm:gap-3 sm:w-full">
           {displayBookings.map((booking, index) => {
             // Crea una key unica combinando il tipo di prenotazione, l'ID e l'indice

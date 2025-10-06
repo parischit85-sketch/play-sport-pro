@@ -125,7 +125,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-1 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800">
+    <div className="space-y-1 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 overflow-x-hidden">
       {/* PWA Install Banner */}
       <PWABanner />
 

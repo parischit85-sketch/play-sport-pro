@@ -3,7 +3,7 @@
 // =============================================
 import React, { useState, useEffect } from 'react';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
-import { loadLeague } from '@services/cloud.js';
+import { getClubCourts, getClubBookings } from '@services/club-data.js';
 
 const ClubCourts = ({ clubId, club }) => {
   const [courts, setCourts] = useState([]);
@@ -22,23 +22,13 @@ const ClubCourts = ({ clubId, club }) => {
     setError(null);
 
     try {
-      const data = await loadLeague('default'); // Default league ID
-
-      // Filter courts belonging to this club
-      let clubCourts = data.courts?.filter((court) => court.clubId === clubId) || [];
-
-      // Filter current bookings for club courts
+      // Carica dati direttamente dalle subcollections del club
       const today = new Date().toISOString().split('T')[0];
-      let clubBookings =
-        data.bookings?.filter((booking) => booking.clubId === clubId && booking.date >= today) ||
-        [];
-
-      // 🔧 FALLBACK: Se non ci sono campi del club, mostra campi non associati
-      if (clubCourts.length === 0 && data.courts?.length > 0) {
-        clubCourts = data.courts.filter((court) => !court.clubId) || [];
-        clubBookings =
-          data.bookings?.filter((booking) => !booking.clubId && booking.date >= today) || [];
-      }
+      
+      const [clubCourts, clubBookings] = await Promise.all([
+        getClubCourts(clubId),
+        getClubBookings(clubId, { fromDate: today })
+      ]);
 
       setCourts(clubCourts);
       setBookings(clubBookings);

@@ -23,6 +23,7 @@ const AdminClubEditPage = () => {
       address: '',
       city: '',
       region: '',
+      googleMapsUrl: '',
       coordinates: null,
     },
     contact: {
@@ -264,6 +265,22 @@ const AdminClubEditPage = () => {
                   className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Regione"
                 />
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  📍 Link Google Maps
+                </label>
+                <input
+                  type="url"
+                  value={club.location.googleMapsUrl || ''}
+                  onChange={(e) => handleInputChange('googleMapsUrl', e.target.value, 'location')}
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="https://maps.app.goo.gl/... o https://www.google.com/maps/..."
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  💡 Incolla il link di Google Maps per permettere il calcolo automatico della distanza nella ricerca circoli
+                </p>
               </div>
             </div>
           </div>

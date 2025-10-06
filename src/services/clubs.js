@@ -290,8 +290,12 @@ export const deleteClub = async (clubId) => {
 
 /**
  * Get user affiliations
+ * @deprecated Use getUserClubMemberships from club-users.js instead
+ * This function is kept for backward compatibility
  */
 export const getUserAffiliations = async (userId) => {
+  console.warn('⚠️  getUserAffiliations is DEPRECATED. Use getUserClubMemberships from club-users.js');
+  
   // Handle admin user - return empty array to avoid Firestore access
   if (userId === 'admin-paris-25') {
     console.log('🔄 Bypassing affiliations check for admin user');
@@ -307,42 +311,41 @@ export const getUserAffiliations = async (userId) => {
   }
 
   try {
+    // 🆕 NEW SYSTEM: Use getUserClubMemberships from club-users.js
+    // This reads clubs/{clubId}/users/ with linkedUserId
+    const { getUserClubMemberships } = await import('./club-users.js');
+    
     const result = await withRetry(
       async () => {
-        // NEW: Use global affiliations collection
-        // After migration, all affiliations are now in the global 'affiliations' collection
-        // with document IDs in format: userId_clubId
-
-        const affiliationsRef = collection(db, 'affiliations');
-        const q = query(affiliationsRef, where('userId', '==', userId));
-
-        const snapshot = await getDocs(q);
-        const affiliations = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-
-        // Sort by requestedAt in JavaScript (most recent first)
-        affiliations.sort((a, b) => {
-          const dateA = a.requestedAt?.toDate?.() || new Date(a.requestedAt) || new Date(0);
-          const dateB = b.requestedAt?.toDate?.() || new Date(b.requestedAt) || new Date(0);
-          return dateB - dateA;
-        });
-
-        // Enrich with club data
-        const enrichedAffiliations = await Promise.all(
-          affiliations.map(async (affiliation) => {
+        const memberships = await getUserClubMemberships(userId);
+        
+        // Transform to match old affiliations format for compatibility
+        const affiliations = await Promise.all(
+          memberships.map(async (membership) => {
             try {
-              const club = await getClub(affiliation.clubId);
-              return { ...affiliation, club };
-            } catch (error) {
-              console.warn(`Error loading club ${affiliation.clubId}:`, error.message);
-              // Fallback: return affiliation with basic club info
+              const club = await getClub(membership.clubId);
               return {
-                ...affiliation,
+                id: `${userId}_${membership.clubId}`, // Simulate old ID format
+                userId,
+                clubId: membership.clubId,
+                role: membership.role,
+                status: membership.status === 'active' ? 'approved' : membership.status,
+                requestedAt: membership.addedAt || new Date(),
+                club,
+                // Keep linkedUserId for new system
+                linkedUserId: membership.linkedUserId,
+                clubUserDocId: membership.clubUserDocId,
+              };
+            } catch (error) {
+              console.warn(`Error loading club ${membership.clubId}:`, error.message);
+              return {
+                userId,
+                clubId: membership.clubId,
+                role: membership.role,
+                status: membership.status === 'active' ? 'approved' : membership.status,
                 club: {
-                  id: affiliation.clubId,
-                  name: `Club ${affiliation.clubId}`,
+                  id: membership.clubId,
+                  name: membership.clubName || `Club ${membership.clubId}`,
                   error: true,
                 },
               };
@@ -350,7 +353,7 @@ export const getUserAffiliations = async (userId) => {
           })
         );
 
-        return enrichedAffiliations;
+        return affiliations;
       },
       2,
       1000
@@ -377,24 +380,43 @@ export const getUserAffiliations = async (userId) => {
 
 /**
  * Get club affiliations (for club managers)
+ * @deprecated Use getClubUsers from club-users.js instead
+ * This function is kept for backward compatibility
  */
 export const getClubAffiliations = async (clubId, status = null) => {
+  console.warn('⚠️  getClubAffiliations is DEPRECATED. Use getClubUsers from club-users.js');
+  
   try {
-    // NEW: Use club-scoped affiliations collection
-    const affiliationsRef = collection(db, 'clubs', clubId, 'affiliations');
+    // 🆕 NEW SYSTEM: Query clubs/{clubId}/users/ directly
+    const usersRef = collection(db, 'clubs', clubId, 'users');
     let q;
 
     if (status) {
-      q = query(affiliationsRef, where('status', '==', status));
+      // Map old status to new status
+      const newStatus = status === 'approved' ? 'active' : status;
+      q = query(usersRef, where('status', '==', newStatus));
     } else {
-      q = affiliationsRef;
+      q = usersRef;
     }
 
     const snapshot = await getDocs(q);
-    const affiliations = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    const affiliations = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        userId: data.linkedUserId || data.userId, // Try linkedUserId first
+        clubId,
+        role: data.role,
+        status: data.status === 'active' ? 'approved' : data.status, // Map new to old
+        requestedAt: data.addedAt || data.createdAt || new Date(),
+        // Include new fields
+        linkedUserId: data.linkedUserId,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        ...data,
+      };
+    });
 
     // Sort by requestedAt in JavaScript (most recent first)
     affiliations.sort((a, b) => {
@@ -412,34 +434,35 @@ export const getClubAffiliations = async (clubId, status = null) => {
 
 /**
  * Request club affiliation
+ * @deprecated Use addUserToClub from club-users.js instead
+ * This function is kept for backward compatibility
  */
 export const requestAffiliation = async (clubId, userId, notes = '') => {
+  console.warn('⚠️  requestAffiliation is DEPRECATED. Use addUserToClub from club-users.js');
+  
   try {
-    // Check if affiliation already exists
-    const existing = await getExistingAffiliation(clubId, userId);
+    // Check if user already exists in club
+    const { getClubUser, addUserToClub } = await import('./club-users.js');
+    const existing = await getClubUser(clubId, userId);
+    
     if (existing) {
-      if (existing.status === AFFILIATION_STATUS.PENDING) {
+      if (existing.status === 'pending') {
         throw new Error('Hai già una richiesta di affiliazione in corso per questo club');
       }
-      if (existing.status === AFFILIATION_STATUS.APPROVED) {
+      if (existing.status === 'active') {
         throw new Error('Sei già affiliato a questo club');
       }
-      // If rejected, allow new request
+      // If rejected or inactive, allow new request
     }
 
-    const affiliationsRef = collection(db, 'clubs', clubId, 'affiliations');
-    const affiliationData = {
-      clubId,
-      userId,
-      status: AFFILIATION_STATUS.PENDING,
+    // 🆕 NEW SYSTEM: Add user to clubs/{clubId}/users/ with status='pending'
+    const result = await addUserToClub(clubId, userId, {
+      role: 'member',
+      status: 'pending',
       notes: notes.trim(),
-      requestedAt: serverTimestamp(),
-      approvedAt: null,
-      approvedBy: null,
-    };
+    });
 
-    const docRef = await addDoc(affiliationsRef, affiliationData);
-    return docRef.id;
+    return result.id;
   } catch (error) {
     console.error('Error requesting affiliation:', error);
     throw error;

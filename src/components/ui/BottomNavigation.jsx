@@ -70,10 +70,11 @@ export default function BottomNavigation({
     }, delay);
   };
 
-  const handleBookingTypeSelect = (type) => {
-    const path = type === 'campo' ? `/club/${clubId}/booking` : `/club/${clubId}/lessons`;
+  const handleBookingTypeSelect = (type, selectedClubId) => {
+    const targetClubId = selectedClubId || clubId;
+    const path = type === 'campo' ? `/club/${targetClubId}/booking` : `/club/${targetClubId}/lessons`;
 
-    console.log('📱 [BottomNavigation] Booking type selected:', type, path);
+    console.log('📱 [BottomNavigation] Booking type selected:', type, 'for club:', targetClubId, path);
     navigate(path);
   };
 

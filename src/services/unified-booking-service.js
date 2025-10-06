@@ -17,18 +17,17 @@ import {
   onSnapshot,
   serverTimestamp,
   getDoc,
-  deleteField,
 } from 'firebase/firestore';
 import { db } from './firebase.js';
 import { invalidateUserBookingsCache } from '@hooks/useBookingPerformance.js';
-import { emitBookingCreated, emitBookingUpdated, emitBookingCancelled, emitBookingDeleted } from '@utils/bookingEvents.js';
+import { emitBookingCreated, emitBookingUpdated, emitBookingDeleted } from '@utils/bookingEvents.js';
 
 // Simple debug logger fallback (disabled)
 const debugLogger = {
-  info: (cat, msg, data) => {},
-  success: (cat, msg, data) => {},
-  warn: (cat, msg, data) => {},
-  error: (cat, msg, data) => {},
+  info: (_cat, _msg, _data) => {},
+  success: (_cat, _msg, _data) => {},
+  warn: (_cat, _msg, _data) => {},
+  error: (_cat, _msg, _data) => {},
 };
 
 // =============================================

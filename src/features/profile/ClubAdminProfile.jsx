@@ -47,6 +47,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
     phone: clubData?.phone || '',
     email: clubData?.email || '',
     website: clubData?.website || '',
+    googleMapsUrl: clubData?.location?.googleMapsUrl || clubData?.googleMapsUrl || '',
     logoUrl: clubData?.logoUrl || '',
     openingHours: clubData?.openingHours || '',
     facilities: clubData?.facilities || [],
@@ -290,6 +291,50 @@ export default function ClubAdminProfile({ T, club, clubId }) {
     setClubSettings((prev) => ({ ...prev, logoUrl: clubData?.logoUrl || '' }));
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  // Funzione per salvare le impostazioni generali del circolo
+  const handleSaveSettings = async () => {
+    if (!clubId) {
+      alert('❌ ID circolo non disponibile');
+      return;
+    }
+
+    setClubSettings((prev) => ({ ...prev, loading: true }));
+
+    try {
+      console.log('💾 Saving club settings for:', clubId);
+
+      // Import updateClub service dynamically
+      const { updateClub } = await import('@services/clubs.js');
+
+      // Prepara i dati da salvare
+      const updateData = {
+        name: clubSettings.name,
+        phone: clubSettings.phone,
+        email: clubSettings.email,
+        website: clubSettings.website,
+        address: clubSettings.address,
+        description: clubSettings.description,
+        location: {
+          ...(clubData?.location || {}),
+          googleMapsUrl: clubSettings.googleMapsUrl,
+        },
+      };
+
+      await updateClub(clubId, updateData);
+
+      console.log('✅ Club settings saved successfully');
+      alert('✅ Impostazioni salvate con successo!');
+
+      // Ricarica i dati del circolo
+      await loadClubData();
+    } catch (error) {
+      console.error('❌ Error saving club settings:', error);
+      alert('❌ Errore nel salvare le impostazioni. Riprova.');
+    } finally {
+      setClubSettings((prev) => ({ ...prev, loading: false }));
     }
   };
 
@@ -588,6 +633,23 @@ export default function ClubAdminProfile({ T, club, clubId }) {
               </div>
               <div className="md:col-span-2 space-y-2">
                 <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  📍 Link Google Maps
+                </label>
+                <input
+                  type="url"
+                  className="w-full px-4 py-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-xl border border-gray-200/50 dark:border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  value={clubSettings.googleMapsUrl}
+                  onChange={(e) =>
+                    setClubSettings((prev) => ({ ...prev, googleMapsUrl: e.target.value }))
+                  }
+                  placeholder="https://www.google.com/maps/..."
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  💡 Usa il link completo di Google Maps (non link abbreviati maps.app.goo.gl)
+                </p>
+              </div>
+              <div className="md:col-span-2 space-y-2">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Descrizione
                 </label>
                 <textarea
@@ -761,6 +823,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
             <div className="pt-6 border-t border-white/20 dark:border-gray-600/20">
               <button
                 type="button"
+                onClick={handleSaveSettings}
                 className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
                 disabled={clubSettings.loading}
               >

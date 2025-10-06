@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../../services/firebase.js';
-import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
 import { trackAdmin, trackPageView } from '../../lib/analytics.js';
 import {
   Users,
@@ -83,9 +83,9 @@ const AdminDashboard = () => {
           console.warn(`Errore nel contare le partite per ${clubId}:`, error);
         }
 
-        // Conta prenotazioni
+        // Conta prenotazioni dalla root collection
         try {
-          const bookingsSnap = await getDocs(collection(db, 'clubs', clubId, 'bookings'));
+          const bookingsSnap = await getDocs(query(collection(db, 'bookings'), where('clubId', '==', clubId)));
           clubBookings = bookingsSnap.size;
           totalBookings += clubBookings;
         } catch (error) {

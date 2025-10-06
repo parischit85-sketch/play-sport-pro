@@ -33,7 +33,17 @@ export async function loginWithGoogle() {
   await signInWithPopup(auth, provider);
 }
 
+/**
+ * @deprecated Sistema leagues/ OBSOLETO - usa getClubData() da club-data.js
+ * Questa funzione è mantenuta solo per backward compatibility temporanea.
+ * Il sistema è migrato alle subcollections clubs/{clubId}/...
+ * 
+ * @see src/services/club-data.js
+ */
 export async function loadLeague(leagueId) {
+  console.warn('⚠️ loadLeague() è DEPRECATO - usa getClubData() da @services/club-data.js');
+  console.warn('   Migrazione: loadLeague("default") → getClubData(clubId)');
+  
   // Admin bypass - return mock data for admin session
   try {
     const adminUser = localStorage.getItem('admin-session');
@@ -43,10 +53,11 @@ export async function loadLeague(leagueId) {
         console.log('🔑 Admin bypass: Returning mock league data');
         return {
           name: 'Admin Test League',
-          players: {},
-          matches: {},
-          tournaments: {},
-          bookings: {},
+          players: [],
+          matches: [],
+          courts: [],
+          bookings: [],
+          bookingConfig: {},
           _createdAt: Date.now(),
           _updatedAt: Date.now(),
         };
@@ -56,11 +67,33 @@ export async function loadLeague(leagueId) {
     // Ignore localStorage errors
   }
 
+  // Return empty data structure instead of null for better compatibility
   const snap = await getDoc(doc(db, 'leagues', leagueId));
-  return snap.exists() ? snap.data() : null;
+  if (snap.exists()) {
+    return snap.data();
+  }
+  
+  // Return empty structure to avoid null errors in legacy code
+  return {
+    players: [],
+    matches: [],
+    courts: [],
+    bookings: [],
+    bookingConfig: {},
+    profiles: []
+  };
 }
 
+/**
+ * @deprecated Sistema leagues/ OBSOLETO
+ * Questa funzione è mantenuta solo per backward compatibility temporanea.
+ * Non salva più dati nel database - usa i servizi specifici del club.
+ * 
+ * @see src/services/club-data.js
+ */
 export async function listLeagues() {
+  console.warn('⚠️ listLeagues() è DEPRECATO - il sistema leagues/ non è più utilizzato');
+  
   try {
     const querySnapshot = await getDocs(collection(db, 'leagues'));
     const leagues = [];
@@ -82,78 +115,44 @@ export async function listLeagues() {
   }
 }
 
+/**
+ * @deprecated Sistema leagues/ OBSOLETO - Non salvare più in leagues/
+ * Questa funzione è mantenuta solo per backward compatibility temporanea.
+ * Registra un warning e NON salva più dati nel database.
+ * 
+ * @see src/services/club-data.js per il nuovo sistema
+ */
 export async function saveLeague(leagueId, data) {
-  // 🛡️ PROTEZIONE ANTI-SOVRASCRITTURA
-  // Permetti ripristino manuale se ha flag _restored
-  if (data._restored) {
-    console.log('🔥 Ripristino manuale autorizzato - bypassando protezioni');
-  } else if (data.players && data.players.length < 5) {
-    console.warn(
-      '🚨 PROTEZIONE ATTIVA: Rifiutato salvataggio di dati con pochi giocatori (possibili seed data)'
-    );
-    console.warn('Dati non salvati:', {
-      players: data.players?.length,
-      matches: data.matches?.length,
-    });
-    return;
-  }
-
-  // Get current user
-  const auth = getAuth();
-  const currentUser = auth.currentUser;
-
-  // Backup automatico prima di salvare
-  try {
-    const existing = await loadLeague(leagueId);
-    if (existing && existing.players && existing.players.length > (data.players?.length || 0)) {
-      const backupKey = `firebase-backup-${Date.now()}`;
-      localStorage.setItem(
-        backupKey,
-        JSON.stringify({
-          timestamp: new Date().toISOString(),
-          data: existing,
-          reason: 'Auto-backup before potential data loss',
-        })
-      );
-      console.log('🔒 Backup automatico creato prima del salvataggio:', backupKey);
-    }
-  } catch (e) {
-    console.warn('Impossibile creare backup automatico:', e);
-  }
-
-  // Add ownership information for new leagues
-  const dataToSave = { ...data };
-  if (currentUser && !dataToSave.createdBy) {
-    dataToSave.createdBy = currentUser.uid;
-    dataToSave.createdAt = new Date().toISOString();
-  }
-
-  // merge per non sovrascrivere tutto
-  await setDoc(doc(db, 'leagues', leagueId), dataToSave, { merge: true });
-  console.log('✅ Dati salvati nel cloud:', {
-    players: dataToSave.players?.length,
-    matches: dataToSave.matches?.length,
+  console.warn('⚠️ saveLeague() è DEPRECATO - NON salva più dati nel database');
+  console.warn('   Il sistema è migrato alle subcollections clubs/{clubId}/...');
+  console.warn('   Usa i servizi specifici del club per salvare dati');
+  
+  // Non salvare più nulla - solo log per debug
+  console.log('� Tentativo di salvataggio in leagues/ bloccato:', {
+    leagueId,
+    players: data?.players?.length || 0,
+    matches: data?.matches?.length || 0,
+    courts: data?.courts?.length || 0,
+    bookings: data?.bookings?.length || 0
   });
+  
+  // Return silently - non lanciare errori per non rompere codice legacy
+  return;
 }
 
+/**
+ * @deprecated Sistema leagues/ OBSOLETO - Nessuna subscription real-time
+ * Questa funzione è mantenuta solo per backward compatibility temporanea.
+ * Ritorna una funzione no-op unsubscribe.
+ * 
+ * @see src/services/club-data.js per il nuovo sistema
+ */
 export function subscribeLeague(leagueId, cb) {
-  // Admin bypass - no real-time subscription for admin
-  try {
-    const adminUser = localStorage.getItem('admin-session');
-    if (adminUser) {
-      const parsed = JSON.parse(adminUser);
-      if (parsed?.isSpecialAdmin) {
-        console.log('🔑 Admin bypass: Skipping Firebase subscription');
-        // Return a dummy unsubscribe function
-        return () => {};
-      }
-    }
-  } catch (e) {
-    // Ignore localStorage errors
-  }
-
-  // ritorna l'unsubscribe usato già dal tuo App.jsx
-  return onSnapshot(doc(db, 'leagues', leagueId), (snap) => {
-    if (snap.exists()) cb(snap.data());
-  });
+  console.warn('⚠️ subscribeLeague() è DEPRECATO - nessuna subscription real-time attiva');
+  console.warn('   Il sistema è migrato alle subcollections clubs/{clubId}/...');
+  
+  // Return a no-op unsubscribe function
+  return () => {
+    console.log('🚫 No-op unsubscribe - subscribeLeague deprecato');
+  };
 }

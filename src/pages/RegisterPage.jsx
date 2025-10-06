@@ -32,6 +32,7 @@ export default function RegisterPage() {
   });
 
   const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isGoogleRegistration, setIsGoogleRegistration] = useState(false);
 
@@ -41,6 +42,25 @@ export default function RegisterPage() {
       navigate('/dashboard');
     }
   }, [user, navigate, isGoogleRegistration]);
+
+  // Mappa gli errori Firebase a messaggi user-friendly in italiano
+  const getErrorMessage = (error) => {
+    const errorCode = error.code;
+    switch(errorCode) {
+      case 'auth/email-already-in-use':
+        return 'Questa email è già registrata. Prova ad accedere o usa un\'altra email.';
+      case 'auth/weak-password':
+        return 'La password deve contenere almeno 6 caratteri.';
+      case 'auth/invalid-email':
+        return 'Inserisci un indirizzo email valido.';
+      case 'auth/operation-not-allowed':
+        return 'Registrazione non disponibile al momento. Contatta il supporto.';
+      case 'auth/network-request-failed':
+        return 'Errore di connessione. Controlla la tua connessione internet e riprova.';
+      default:
+        return 'Errore durante la registrazione. Riprova più tardi.';
+    }
+  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -102,6 +122,9 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Reset API error
+    setApiError('');
+
     if (!validateForm()) {
       alert('Compila tutti i campi obbligatori correttamente');
       return;
@@ -159,12 +182,12 @@ export default function RegisterPage() {
         console.log('✅ Registration completed successfully');
 
         // Force page reload per assicurarsi che tutto lo stato sia aggiornato
-        console.log('� Forcing page reload to ensure fresh state...');
+        console.log('🔄 Forcing page reload to ensure fresh state...');
         window.location.href = '/dashboard';
       }
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Errore durante la registrazione: ' + (error.message || error));
+      setApiError(getErrorMessage(error));
     } finally {
       setLoading(false);
       setIsGoogleRegistration(false);
@@ -174,6 +197,7 @@ export default function RegisterPage() {
   const handleGoogleRegistration = async () => {
     try {
       setLoading(true);
+      setApiError(''); // Reset error
       const result = await loginWithGoogle();
 
       if (result.user) {
@@ -196,7 +220,7 @@ export default function RegisterPage() {
       }
     } catch (error) {
       console.error('Google registration error:', error);
-      alert('Errore durante la registrazione con Google: ' + (error.message || error));
+      setApiError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -233,6 +257,18 @@ export default function RegisterPage() {
                 Crea il tuo account per iniziare
               </p>
             </div>
+
+            {/* API Error Display */}
+            {apiError && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg">
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-sm">{apiError}</span>
+                </div>
+              </div>
+            )}
 
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-4">

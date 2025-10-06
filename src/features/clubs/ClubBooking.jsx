@@ -3,7 +3,7 @@
 // =============================================
 import React, { useState, useEffect } from 'react';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
-import { loadLeague } from '@services/cloud.js';
+import { getClubData } from '@services/club-data.js';
 import ModernBookingInterface from '@features/booking/ModernBookingInterface.jsx';
 
 const ClubBooking = ({ clubId, club }) => {
@@ -22,25 +22,10 @@ const ClubBooking = ({ clubId, club }) => {
     setError(null);
 
     try {
-      const data = await loadLeague('default'); // Default league ID
+      // Carica tutti i dati del club in una chiamata parallela efficiente
+      const data = await getClubData(clubId);
 
-      // Filter data to only include club-specific items
-      let filteredData = {
-        ...data,
-        courts: data.courts?.filter((court) => court.clubId === clubId) || [],
-        bookings: data.bookings?.filter((booking) => booking.clubId === clubId) || [],
-        // Keep all profiles but booking component will handle filtering
-        profiles: data.profiles || [],
-        players: data.players || [],
-      };
-
-      // 🔧 FALLBACK: Se non ci sono campi del club, mostra campi non associati
-      if (filteredData.courts.length === 0 && data.courts?.length > 0) {
-        filteredData.courts = data.courts.filter((court) => !court.clubId) || [];
-        filteredData.bookings = data.bookings?.filter((booking) => !booking.clubId) || [];
-      }
-
-      setClubData(filteredData);
+      setClubData(data);
     } catch (err) {
       console.error('Error loading club booking data:', err);
       setError('Errore nel caricamento del sistema di prenotazioni');

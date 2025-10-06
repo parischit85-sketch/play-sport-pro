@@ -8,6 +8,8 @@ import {
   deleteDoc,
   updateDoc,
   addDoc,
+  query,
+  where,
   serverTimestamp,
 } from 'firebase/firestore';
 import {
@@ -63,7 +65,7 @@ const ClubsManagement = () => {
           const [profilesSnap, matchesSnap, bookingsSnap] = await Promise.all([
             getDocs(collection(db, 'clubs', clubDoc.id, 'profiles')),
             getDocs(collection(db, 'clubs', clubDoc.id, 'matches')),
-            getDocs(collection(db, 'clubs', clubDoc.id, 'bookings')),
+            getDocs(query(collection(db, 'bookings'), where('clubId', '==', clubDoc.id))),
           ]);
 
           clubData.stats = {
@@ -192,6 +194,7 @@ const ClubsManagement = () => {
       phone: '',
       email: '',
       description: '',
+      googleMapsUrl: '',
       courts: 1,
       openingTime: '08:00',
       closingTime: '22:00',
@@ -486,6 +489,23 @@ const ClubsManagement = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Milano"
                   />
+                </div>
+
+                {/* Google Maps URL */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    📍 Link Google Maps
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.googleMapsUrl || ''}
+                    onChange={(e) => setFormData({ ...formData, googleMapsUrl: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="https://maps.app.goo.gl/... o https://www.google.com/maps/..."
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    💡 Incolla il link di Google Maps per permettere il calcolo della distanza
+                  </p>
                 </div>
 
                 {/* Telefono */}

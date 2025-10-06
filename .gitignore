@@ -100,6 +100,8 @@ temp/
 .firebase/
 firebase-debug.log
 serviceAccountKey.json
+scripts/serviceAccount.json
+**/serviceAccount.json
 
 # Backup and migration files
 backup-*
