@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { searchClubs, searchClubsByLocation, getClubs } from '@services/clubs.js';
+import { getUserLocation, geocodeCity, LocationStatus } from '../../utils/location-service.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import ClubCard from './ClubCard.jsx';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
@@ -86,77 +87,51 @@ const ClubSearch = () => {
     }
   }, []);
 
-  const getCurrentLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      setError('Geolocalizzazione non supportata dal browser');
-      setShowManualLocationInput(true);
-      return;
-    }
-
-    // Check if we're on HTTPS or localhost (required for geolocation on PWA)
-    const isSecureContext = window.isSecureContext;
-    if (!isSecureContext && window.location.hostname !== 'localhost') {
-      setError('La geolocalizzazione richiede una connessione sicura (HTTPS). Inserisci la tua città manualmente.');
-      setShowManualLocationInput(true);
-      return;
-    }
-
+  // Unified location request using centralized service
+  const requestUserLocation = useCallback(async () => {
     setSearchLoading(true);
     setError(null);
+  const result = await getUserLocation({ timeout: 7000, highAccuracy: false, cache: true, cacheTTL: 180000 }); // 3 min TTL
+    setSearchLoading(false);
 
-    // Simple direct approach - no Permissions API
-    const timeout = setTimeout(() => {
-      setSearchLoading(false);
-      setError('La geolocalizzazione sta impiegando troppo tempo. Inserisci la tua città manualmente.');
-      setShowManualLocationInput(true);
-      setGeolocationAttempts(prev => prev + 1);
-    }, 8000); // 8 seconds timeout
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        clearTimeout(timeout);
-        const location = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        console.log('Geolocation success:', location);
-        setUserLocation(location);
-        setSearchLoading(false);
-        setError(null);
+    switch (result.status) {
+      case LocationStatus.SUCCESS:
+        setUserLocation(result.coords);
+        setShowManualLocationInput(false);
         setGeolocationAttempts(0);
-      },
-      (error) => {
-        clearTimeout(timeout);
-        console.error('Geolocation error:', error);
-        
-        let errorMessage = '';
-        let showManual = true;
-        
-        switch (error.code) {
-          case 1: // PERMISSION_DENIED
-            errorMessage = 'Permessi di localizzazione negati. Inserisci la tua città:';
-            break;
-          case 2: // POSITION_UNAVAILABLE
-            errorMessage = 'Posizione non disponibile. Inserisci la tua città:';
-            break;
-          case 3: // TIMEOUT
-            errorMessage = 'Timeout. Inserisci la tua città per cercare nelle vicinanze:';
-            break;
-          default:
-            errorMessage = 'Impossibile rilevare la posizione. Inserisci la tua città:';
-        }
-        
-        setError(errorMessage);
-        setShowManualLocationInput(showManual);
-        setSearchLoading(false);
-        setGeolocationAttempts(prev => prev + 1);
-      },
-      {
-        enableHighAccuracy: false, // Faster with lower accuracy
-        timeout: 7000,
-        maximumAge: 60000, // Allow 1 minute cache
-      }
-    );
+        break;
+      case LocationStatus.PERMISSION_DENIED:
+        setError('Permesso negato. Inserisci la tua città:');
+        setShowManualLocationInput(true);
+        setGeolocationAttempts(a => a + 1);
+        break;
+      case LocationStatus.TIMEOUT:
+        setError('Timeout. Inserisci la tua città:');
+        setShowManualLocationInput(true);
+        setGeolocationAttempts(a => a + 1);
+        break;
+      case LocationStatus.POSITION_UNAVAILABLE:
+        setError('Posizione non disponibile. Inserisci la tua città:');
+        setShowManualLocationInput(true);
+        setGeolocationAttempts(a => a + 1);
+        break;
+      case LocationStatus.INSECURE_CONTEXT:
+        setError('HTTPS richiesto per geolocalizzazione. Inserisci la tua città:');
+        setShowManualLocationInput(true);
+        break;
+      case LocationStatus.UNSUPPORTED:
+        setError('Geolocalizzazione non supportata. Inserisci la tua città:');
+        setShowManualLocationInput(true);
+        break;
+      case LocationStatus.BLOCKED_BY_POLICY:
+        setError('Bloccata dalla Permissions-Policy del server. Inserisci la tua città:');
+        setShowManualLocationInput(true);
+        break;
+      default:
+        setError('Impossibile rilevare la posizione. Inserisci la tua città:');
+        setShowManualLocationInput(true);
+        setGeolocationAttempts(a => a + 1);
+    }
   }, []);
 
   const searchByCity = useCallback(async (city) => {
@@ -164,56 +139,23 @@ const ClubSearch = () => {
       setError('Inserisci il nome di una città');
       return;
     }
-
     setSearchLoading(true);
     setError(null);
-
+    const geo = await geocodeCity(city, 'Italy');
+    if (!geo.ok) {
+      setError(geo.message || 'Città non trovata.');
+      setSearchLoading(false);
+      return;
+    }
+    setUserLocation(geo.coords);
+    setHasSearched(true);
     try {
-      // Use Nominatim for geocoding (free, no API key needed)
-      const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)},Italy&limit=1`;
-      
-      const response = await fetch(geocodeUrl, {
-        headers: {
-          'User-Agent': 'PlaySportPro/1.0' // Required by Nominatim
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Geocoding failed');
-      }
-
-      const data = await response.json();
-      
-      if (data && data.length > 0) {
-        const location = {
-          lat: parseFloat(data[0].lat),
-          lng: parseFloat(data[0].lon),
-        };
-        
-        console.log('City geocoded:', city, location);
-        setUserLocation(location);
-        setError(null);
-        
-        // Auto-search with 25km radius
-        // We'll call handleLocationSearch after it's defined
-        setSearchLoading(true);
-        setHasSearched(true);
-        try {
-          const results = await searchClubsByLocation(location.lat, location.lng, 25);
-          setSearchResults(results);
-        } catch (err) {
-          setError('Errore durante la ricerca per posizione. Riprova.');
-          console.error('Location search error:', err);
-        } finally {
-          setSearchLoading(false);
-        }
-      } else {
-        setError(`Città "${city}" non trovata. Prova con un nome diverso.`);
-        setSearchLoading(false);
-      }
+      const results = await searchClubsByLocation(geo.coords.lat, geo.coords.lng, 25);
+      setSearchResults(results);
     } catch (err) {
-      console.error('Geocoding error:', err);
-      setError('Errore nella ricerca della città. Riprova.');
+      console.error('Location search error:', err);
+      setError('Errore durante la ricerca per posizione. Riprova.');
+    } finally {
       setSearchLoading(false);
     }
   }, []);
@@ -223,7 +165,7 @@ const ClubSearch = () => {
       const searchLocation = location || userLocation;
       
       if (!searchLocation) {
-        getCurrentLocation();
+        requestUserLocation();
         return;
       }
       setSearchLoading(true);
@@ -239,7 +181,7 @@ const ClubSearch = () => {
         setSearchLoading(false);
       }
     },
-    [userLocation, getCurrentLocation]
+  [userLocation, requestUserLocation]
   );
 
   const clearSearch = () => {
@@ -371,7 +313,7 @@ const ClubSearch = () => {
                 {!userLocation ? (
                   <>
                     <button
-                      onClick={getCurrentLocation}
+                      onClick={requestUserLocation}
                       disabled={searchLoading}
                       className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2"
                     >

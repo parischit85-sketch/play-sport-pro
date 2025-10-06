@@ -2,6 +2,7 @@
 // FILE: src/layouts/AppLayout.jsx
 // =============================================
 import React from 'react';
+import { getUserLocation, LocationStatus } from '../utils/location-service.js';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useUI } from '@contexts/UIContext.jsx';
@@ -25,6 +26,94 @@ function AppLayoutInner() {
   const navigate = useNavigate();
 
   const T = React.useMemo(() => themeTokens(), []);
+
+  // One-time geolocation permission preflight on first app access
+  React.useEffect(() => {
+    // Execute only once per device/browser until user resets storage
+    const FLAG_KEY = 'geoPermissionAskedV1';
+    if (localStorage.getItem(FLAG_KEY)) return;
+
+    // Avoid triggering on routes where a modal might already request location (defensive)
+    const skipPaths = ['/login', '/register'];
+    if (skipPaths.includes(location.pathname)) return;
+
+    // Mark flag early to prevent multiple fast mounts (e.g. StrictMode double invoke in dev)
+    localStorage.setItem(FLAG_KEY, '1');
+
+    let cancelled = false;
+
+    const run = async () => {
+      try {
+        // Lightweight permission state probe before invoking real prompt
+        let permissionState = 'prompt';
+        if (navigator.permissions && navigator.permissions.query) {
+          try {
+            const perm = await navigator.permissions.query({ name: 'geolocation' });
+            permissionState = perm.state; // granted | denied | prompt
+          } catch (_) {}
+        }
+
+        // If already granted we can prefetch coords silently (fast UX later)
+        if (permissionState === 'granted') {
+          const result = await getUserLocation({ timeout: 5000, highAccuracy: false, cache: true, cacheTTL: 180000 });
+          if (!cancelled && result.status === LocationStatus.SUCCESS) {
+            console.log('🌍 [AppLayout] Prefetched location (permission already granted). Accuracy:', result.accuracy);
+          }
+          return; // Done.
+        }
+
+        // If denied we do nothing now (user can trigger manually in flows)
+        if (permissionState === 'denied') {
+          console.log('🚫 [AppLayout] Geolocation already denied. Skipping auto prompt.');
+          return;
+        }
+
+        // Show a subtle, non-blocking toast / notification BEFORE triggering the native prompt
+        // so user understands why. Using NotificationSystem context if available via window event.
+        try {
+          window.dispatchEvent(new CustomEvent('notify', {
+            detail: {
+              type: 'info',
+              message: 'Vuoi trovare rapidamente i circoli vicini? Attiva la geolocalizzazione (puoi sempre inserirla manualmente dopo).'
+            }
+          }));
+        } catch (_) {}
+
+        // Small delay to allow user to read the toast (1.2s) before native permission prompt
+        await new Promise(r => setTimeout(r, 1200));
+        if (cancelled) return;
+
+  const result = await getUserLocation({ timeout: 7000, highAccuracy: false, cache: true, cacheTTL: 180000 });
+        if (cancelled) return;
+
+        switch (result.status) {
+          case LocationStatus.SUCCESS:
+            console.log('✅ [AppLayout] Geolocation granted on first-run. Accuracy:', result.accuracy);
+            window.dispatchEvent(new CustomEvent('notify', { detail: { type: 'success', message: 'Posizione rilevata! Puoi cercare i circoli vicini.' } }));
+            break;
+          case LocationStatus.PERMISSION_DENIED:
+            window.dispatchEvent(new CustomEvent('notify', { detail: { type: 'warning', message: 'Hai negato il permesso GPS. Potrai sempre usare la ricerca per città.' } }));
+            break;
+          case LocationStatus.TIMEOUT:
+          case LocationStatus.POSITION_UNAVAILABLE:
+            window.dispatchEvent(new CustomEvent('notify', { detail: { type: 'warning', message: 'Non siamo riusciti a ottenere la posizione. Puoi inserirla manualmente.' } }));
+            break;
+          case LocationStatus.BLOCKED_BY_POLICY:
+            window.dispatchEvent(new CustomEvent('notify', { detail: { type: 'error', message: 'Il server blocca la geolocalizzazione. (Controlla Permissions-Policy)' } }));
+            break;
+          default:
+            // Do nothing; avoid noise
+            break;
+        }
+      } catch (e) {
+        console.warn('⚠️ [AppLayout] First-run geolocation preflight error:', e);
+      }
+    };
+
+    run();
+
+    return () => { cancelled = true; };
+  }, [location.pathname]);
 
   // Auto-scroll to top on route change (for programmatic navigation like clicking on players)
   React.useEffect(() => {

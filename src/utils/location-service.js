@@ -22,8 +22,30 @@ function isProbablyPolicyBlocked(startTime, errorCode, permissionState) {
 export async function getUserLocation(options = {}) {
   const {
     timeout = 8000,
-    highAccuracy = false
+    highAccuracy = false,
+    cache = true,
+    forceRefresh = false,
+    cacheTTL = 120000 // 2 minuti default
   } = options;
+
+  const CACHE_KEY = 'ps:lastLocation';
+  if (cache && !forceRefresh) {
+    try {
+      const raw = sessionStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.timestamp && (Date.now() - parsed.timestamp) < cacheTTL) {
+          return {
+            status: LocationStatus.SUCCESS,
+            coords: parsed.coords,
+            accuracy: parsed.accuracy,
+            permissionState: 'cached',
+            cached: true
+          };
+        }
+      }
+    } catch (_) { /* ignore cache errors */ }
+  }
 
   if (!('geolocation' in navigator)) {
     return { status: LocationStatus.UNSUPPORTED, message: 'Geolocalizzazione non supportata dal browser.' };
@@ -59,11 +81,21 @@ export async function getUserLocation(options = {}) {
           if (finished) return;
             finished = true;
             clearTimeout(t);
+            const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+            // Store in session cache
+            try {
+              sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+                coords,
+                accuracy: pos.coords.accuracy,
+                timestamp: Date.now()
+              }));
+            } catch (_) { /* ignore quota */ }
             resolve({
               status: LocationStatus.SUCCESS,
-              coords: { lat: pos.coords.latitude, lng: pos.coords.longitude },
+              coords,
               accuracy: pos.coords.accuracy,
-              permissionState
+              permissionState,
+              cached: false
             });
         },
         (err) => {
