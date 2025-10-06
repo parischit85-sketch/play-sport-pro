@@ -110,27 +110,80 @@ const ClubSearch = () => {
       setError('Geolocalizzazione non supportata dal browser');
       return;
     }
+
+    // Check if we're on HTTPS or localhost (required for geolocation on PWA)
+    const isSecureContext = window.isSecureContext;
+    if (!isSecureContext && window.location.hostname !== 'localhost') {
+      setError('La geolocalizzazione richiede una connessione sicura (HTTPS)');
+      return;
+    }
+
     setSearchLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const location = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        setUserLocation(location);
-        setSearchLoading(false);
-      },
-      (error) => {
-        console.error('Geolocation error:', error);
-        setError('Impossibile ottenere la posizione. Verifica i permessi del browser.');
-        setSearchLoading(false);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000,
-      }
-    );
+    setError(null);
+
+    // First, try to request permission explicitly
+    if (navigator.permissions) {
+      navigator.permissions.query({ name: 'geolocation' }).then((permissionStatus) => {
+        console.log('Geolocation permission status:', permissionStatus.state);
+        
+        if (permissionStatus.state === 'denied') {
+          setError('Permesso di geolocalizzazione negato. Abilita i permessi nelle impostazioni del browser.');
+          setSearchLoading(false);
+          return;
+        }
+
+        // Permission granted or prompt - proceed with geolocation
+        requestGeolocation();
+      }).catch((err) => {
+        console.warn('Permission API not supported, trying geolocation directly:', err);
+        // Fallback if Permissions API not supported
+        requestGeolocation();
+      });
+    } else {
+      // Fallback if Permissions API not supported
+      requestGeolocation();
+    }
+
+    function requestGeolocation() {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const location = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          console.log('Geolocation success:', location);
+          setUserLocation(location);
+          setSearchLoading(false);
+          setError(null);
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+          let errorMessage = 'Impossibile ottenere la posizione.';
+          
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = 'Permesso di geolocalizzazione negato. Abilita i permessi nelle impostazioni del browser.';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = 'Posizione non disponibile. Verifica la connessione GPS/WiFi.';
+              break;
+            case error.TIMEOUT:
+              errorMessage = 'Timeout nella ricerca della posizione. Riprova.';
+              break;
+            default:
+              errorMessage = 'Errore sconosciuto nella geolocalizzazione.';
+          }
+          
+          setError(errorMessage);
+          setSearchLoading(false);
+        },
+        {
+          enableHighAccuracy: true, // Use GPS for better accuracy
+          timeout: 15000, // Increased timeout for mobile
+          maximumAge: 0, // Don't use cached position on first request
+        }
+      );
+    }
   }, []);
 
   const clearSearch = () => {
