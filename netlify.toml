@@ -23,7 +23,8 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(self), microphone=(), camera=()"
+  # TEMP: broaden geolocation policy for diagnostics (will be reverted to (self) after verification)
+  Permissions-Policy = "geolocation=(*), microphone=(), camera=()"
     Content-Security-Policy = "frame-src 'self' https://accounts.google.com https://m-padelweb.firebaseapp.com https://*.firebaseapp.com https://*.googleapis.com; default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://apis.google.com https://*.firebaseapp.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://res.cloudinary.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://res.cloudinary.com https://www.google-analytics.com https://nominatim.openstreetmap.org wss://*.firebaseio.com;"
 
 # Cache static assets

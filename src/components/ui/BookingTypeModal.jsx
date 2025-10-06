@@ -9,6 +9,7 @@ import { getUserMostViewedClubs } from '../../services/club-analytics.js';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
 import { getClubCoordinates, calculateDistance } from '../../utils/maps-utils.js';
+import { getUserLocation, LocationStatus, geocodeCity } from '../../utils/location-service.js';
 
 export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId }) {
   const { user } = useAuth();
@@ -146,45 +147,52 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
     }
   };
 
-  const handleSearchLocation = () => {
-    // Richiedi posizione utente
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          
-          // Ordina circoli per distanza usando le coordinate da Google Maps URL
-          const clubsWithDistance = await Promise.all(
-            clubs.map(async (club) => {
-              // Ottieni coordinate dal Google Maps URL o dai campi esistenti
-              const clubCoords = await getClubCoordinates(club);
-              
-              if (clubCoords) {
-                const distance = calculateDistance(
-                  latitude,
-                  longitude,
-                  clubCoords.latitude,
-                  clubCoords.longitude
-                );
-                
-                return { ...club, distance };
-              }
-              
-              // Se non ci sono coordinate, metti il club in fondo
-              return { ...club, distance: 999999 };
-            })
-          );
-          
-          const sorted = clubsWithDistance.sort((a, b) => a.distance - b.distance);
-          setFilteredClubs(sorted);
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          alert('Impossibile ottenere la posizione. Verifica i permessi del browser.');
-        }
+  const handleSearchLocation = async () => {
+    const result = await getUserLocation({ timeout: 7000, highAccuracy: false });
+    if (result.status === LocationStatus.SUCCESS) {
+      const { lat, lng } = result.coords;
+      const clubsWithDistance = await Promise.all(
+        clubs.map(async (club) => {
+          const clubCoords = await getClubCoordinates(club);
+          if (clubCoords) {
+            const distance = calculateDistance(
+              lat,
+              lng,
+              clubCoords.latitude,
+              clubCoords.longitude
+            );
+            return { ...club, distance };
+          }
+          return { ...club, distance: 999999 };
+        })
       );
-    } else {
-      alert('La geolocalizzazione non è supportata dal tuo browser.');
+      const sorted = clubsWithDistance.sort((a, b) => a.distance - b.distance);
+      setFilteredClubs(sorted);
+      return;
+    }
+
+    // Advanced error handling
+    switch (result.status) {
+      case LocationStatus.INSECURE_CONTEXT:
+        alert('La geolocalizzazione richiede HTTPS. Apri la versione sicura del sito.');
+        break;
+      case LocationStatus.UNSUPPORTED:
+        alert('Il tuo browser non supporta la geolocalizzazione.');
+        break;
+      case LocationStatus.BLOCKED_BY_POLICY:
+        alert('Bloccata dalla configurazione del server (Permissions-Policy).');
+        break;
+      case LocationStatus.PERMISSION_DENIED:
+        alert('Permesso negato. Abilita la posizione nelle impostazioni del browser.');
+        break;
+      case LocationStatus.TIMEOUT:
+        alert('Timeout nel rilevamento. Assicurati che il GPS / posizione sia attivo.');
+        break;
+      case LocationStatus.POSITION_UNAVAILABLE:
+        alert('Posizione non disponibile. Prova all\'aperto o con una migliore connessione.');
+        break;
+      default:
+        alert('Impossibile ottenere la posizione: ' + (result.message || 'Errore sconosciuto'));
     }
   };
 
