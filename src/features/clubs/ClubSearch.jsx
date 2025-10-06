@@ -22,6 +22,9 @@ const ClubSearch = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [showCustomSearch, setShowCustomSearch] = useState(false);
   const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [manualCity, setManualCity] = useState('');
+  const [geolocationAttempts, setGeolocationAttempts] = useState(0);
+  const [showManualLocationInput, setShowManualLocationInput] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -83,17 +86,151 @@ const ClubSearch = () => {
     }
   }, []);
 
+  const getCurrentLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setError('Geolocalizzazione non supportata dal browser');
+      setShowManualLocationInput(true);
+      return;
+    }
+
+    // Check if we're on HTTPS or localhost (required for geolocation on PWA)
+    const isSecureContext = window.isSecureContext;
+    if (!isSecureContext && window.location.hostname !== 'localhost') {
+      setError('La geolocalizzazione richiede una connessione sicura (HTTPS). Inserisci la tua città manualmente.');
+      setShowManualLocationInput(true);
+      return;
+    }
+
+    setSearchLoading(true);
+    setError(null);
+
+    // Simple direct approach - no Permissions API
+    const timeout = setTimeout(() => {
+      setSearchLoading(false);
+      setError('La geolocalizzazione sta impiegando troppo tempo. Inserisci la tua città manualmente.');
+      setShowManualLocationInput(true);
+      setGeolocationAttempts(prev => prev + 1);
+    }, 8000); // 8 seconds timeout
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        clearTimeout(timeout);
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+        console.log('Geolocation success:', location);
+        setUserLocation(location);
+        setSearchLoading(false);
+        setError(null);
+        setGeolocationAttempts(0);
+      },
+      (error) => {
+        clearTimeout(timeout);
+        console.error('Geolocation error:', error);
+        
+        let errorMessage = '';
+        let showManual = true;
+        
+        switch (error.code) {
+          case 1: // PERMISSION_DENIED
+            errorMessage = 'Permessi di localizzazione negati. Inserisci la tua città:';
+            break;
+          case 2: // POSITION_UNAVAILABLE
+            errorMessage = 'Posizione non disponibile. Inserisci la tua città:';
+            break;
+          case 3: // TIMEOUT
+            errorMessage = 'Timeout. Inserisci la tua città per cercare nelle vicinanze:';
+            break;
+          default:
+            errorMessage = 'Impossibile rilevare la posizione. Inserisci la tua città:';
+        }
+        
+        setError(errorMessage);
+        setShowManualLocationInput(showManual);
+        setSearchLoading(false);
+        setGeolocationAttempts(prev => prev + 1);
+      },
+      {
+        enableHighAccuracy: false, // Faster with lower accuracy
+        timeout: 7000,
+        maximumAge: 60000, // Allow 1 minute cache
+      }
+    );
+  }, []);
+
+  const searchByCity = useCallback(async (city) => {
+    if (!city.trim()) {
+      setError('Inserisci il nome di una città');
+      return;
+    }
+
+    setSearchLoading(true);
+    setError(null);
+
+    try {
+      // Use Nominatim for geocoding (free, no API key needed)
+      const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city)},Italy&limit=1`;
+      
+      const response = await fetch(geocodeUrl, {
+        headers: {
+          'User-Agent': 'PlaySportPro/1.0' // Required by Nominatim
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Geocoding failed');
+      }
+
+      const data = await response.json();
+      
+      if (data && data.length > 0) {
+        const location = {
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon),
+        };
+        
+        console.log('City geocoded:', city, location);
+        setUserLocation(location);
+        setError(null);
+        
+        // Auto-search with 25km radius
+        // We'll call handleLocationSearch after it's defined
+        setSearchLoading(true);
+        setHasSearched(true);
+        try {
+          const results = await searchClubsByLocation(location.lat, location.lng, 25);
+          setSearchResults(results);
+        } catch (err) {
+          setError('Errore durante la ricerca per posizione. Riprova.');
+          console.error('Location search error:', err);
+        } finally {
+          setSearchLoading(false);
+        }
+      } else {
+        setError(`Città "${city}" non trovata. Prova con un nome diverso.`);
+        setSearchLoading(false);
+      }
+    } catch (err) {
+      console.error('Geocoding error:', err);
+      setError('Errore nella ricerca della città. Riprova.');
+      setSearchLoading(false);
+    }
+  }, []);
+
   const handleLocationSearch = useCallback(
-    async (radius = 10) => {
-      if (!userLocation) {
-        await getCurrentLocation();
+    async (radius = 10, location = null) => {
+      const searchLocation = location || userLocation;
+      
+      if (!searchLocation) {
+        getCurrentLocation();
         return;
       }
       setSearchLoading(true);
       setError(null);
       setHasSearched(true);
       try {
-        const results = await searchClubsByLocation(userLocation.lat, userLocation.lng, radius);
+        const results = await searchClubsByLocation(searchLocation.lat, searchLocation.lng, radius);
         setSearchResults(results);
       } catch (err) {
         setError('Errore durante la ricerca per posizione. Riprova.');
@@ -102,89 +239,8 @@ const ClubSearch = () => {
         setSearchLoading(false);
       }
     },
-    [userLocation]
+    [userLocation, getCurrentLocation]
   );
-
-  const getCurrentLocation = useCallback(() => {
-    if (!navigator.geolocation) {
-      setError('Geolocalizzazione non supportata dal browser');
-      return;
-    }
-
-    // Check if we're on HTTPS or localhost (required for geolocation on PWA)
-    const isSecureContext = window.isSecureContext;
-    if (!isSecureContext && window.location.hostname !== 'localhost') {
-      setError('La geolocalizzazione richiede una connessione sicura (HTTPS)');
-      return;
-    }
-
-    setSearchLoading(true);
-    setError(null);
-
-    // First, try to request permission explicitly
-    if (navigator.permissions) {
-      navigator.permissions.query({ name: 'geolocation' }).then((permissionStatus) => {
-        console.log('Geolocation permission status:', permissionStatus.state);
-        
-        if (permissionStatus.state === 'denied') {
-          setError('Permesso di geolocalizzazione negato. Abilita i permessi nelle impostazioni del browser.');
-          setSearchLoading(false);
-          return;
-        }
-
-        // Permission granted or prompt - proceed with geolocation
-        requestGeolocation();
-      }).catch((err) => {
-        console.warn('Permission API not supported, trying geolocation directly:', err);
-        // Fallback if Permissions API not supported
-        requestGeolocation();
-      });
-    } else {
-      // Fallback if Permissions API not supported
-      requestGeolocation();
-    }
-
-    function requestGeolocation() {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const location = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          console.log('Geolocation success:', location);
-          setUserLocation(location);
-          setSearchLoading(false);
-          setError(null);
-        },
-        (error) => {
-          console.error('Geolocation error:', error);
-          let errorMessage = 'Impossibile ottenere la posizione.';
-          
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = 'Permesso di geolocalizzazione negato. Abilita i permessi nelle impostazioni del browser.';
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = 'Posizione non disponibile. Verifica la connessione GPS/WiFi.';
-              break;
-            case error.TIMEOUT:
-              errorMessage = 'Timeout nella ricerca della posizione. Riprova.';
-              break;
-            default:
-              errorMessage = 'Errore sconosciuto nella geolocalizzazione.';
-          }
-          
-          setError(errorMessage);
-          setSearchLoading(false);
-        },
-        {
-          enableHighAccuracy: true, // Use GPS for better accuracy
-          timeout: 15000, // Increased timeout for mobile
-          maximumAge: 0, // Don't use cached position on first request
-        }
-      );
-    }
-  }, []);
 
   const clearSearch = () => {
     setSearchQuery('');
@@ -313,24 +369,58 @@ const ClubSearch = () => {
             ) : (
               <div className="text-center space-y-4">
                 {!userLocation ? (
-                  <button
-                    onClick={getCurrentLocation}
-                    disabled={searchLoading}
-                    className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2"
-                  >
-                    {searchLoading ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Rilevamento posizione...
-                      </>
-                    ) : (
-                      <> Usa la mia posizione</>
+                  <>
+                    <button
+                      onClick={getCurrentLocation}
+                      disabled={searchLoading}
+                      className="bg-blue-500 hover:bg-blue-600 disabled:bg-blue-300 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2"
+                    >
+                      {searchLoading ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Rilevamento posizione...
+                        </>
+                      ) : (
+                        <>📍 Usa la mia posizione GPS</>
+                      )}
+                    </button>
+
+                    {(showManualLocationInput || geolocationAttempts > 0) && (
+                      <div className="max-w-md mx-auto space-y-3">
+                        <div className="text-gray-600 dark:text-gray-400 font-medium">
+                          Oppure inserisci la tua città:
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="es. Milano, Roma, Torino..."
+                            value={manualCity}
+                            onChange={(e) => setManualCity(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter' && manualCity.trim()) {
+                                searchByCity(manualCity);
+                              }
+                            }}
+                            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                          <button
+                            onClick={() => searchByCity(manualCity)}
+                            disabled={!manualCity.trim() || searchLoading}
+                            className="bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                          >
+                            🔍 Cerca
+                          </button>
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          Cercheremo i circoli entro 25 km dalla città indicata
+                        </div>
+                      </div>
                     )}
-                  </button>
+                  </>
                 ) : (
                   <div className="space-y-4">
-                    <div className="text-green-600 dark:text-green-400 font-medium">
-                      Posizione rilevata
+                    <div className="text-green-600 dark:text-green-400 font-medium flex items-center justify-center gap-2">
+                      ✅ Posizione rilevata
                     </div>
                     <div className="flex justify-center gap-2 flex-wrap">
                       <button
@@ -352,6 +442,17 @@ const ClubSearch = () => {
                         Entro 25 km
                       </button>
                     </div>
+                    <button
+                      onClick={() => {
+                        setUserLocation(null);
+                        setManualCity('');
+                        setShowManualLocationInput(false);
+                        setGeolocationAttempts(0);
+                      }}
+                      className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 underline"
+                    >
+                      Cambia posizione
+                    </button>
                   </div>
                 )}
               </div>
