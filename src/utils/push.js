@@ -6,6 +6,12 @@
 // VAPID public key - generato con web-push generate-vapid-keys
 const VAPID_PUBLIC_KEY = 'BI9gOKRddotrncfkYftX0CRDhzE9BpHxqWULvYBiuJ2g7NctyoUeEaQ6Bw5ptBiViiPTDUpWNdXO_qUBzfplMqM';
 
+// Base URL per le Netlify Functions
+// In sviluppo locale usa le Functions di produzione
+const FUNCTIONS_BASE_URL = import.meta.env.DEV 
+  ? 'https://play-sport-pro-v2-2025.netlify.app/.netlify/functions'
+  : '/.netlify/functions';
+
 /**
  * Converte una chiave VAPID base64 in Uint8Array
  */
@@ -124,8 +130,9 @@ async function saveSubscription(userId, subscription) {
 
     console.log('[saveSubscription] Saving subscription for userId:', userId);
     console.log('[saveSubscription] Endpoint:', endpoint);
+    console.log('[saveSubscription] Using Functions URL:', FUNCTIONS_BASE_URL);
 
-    const response = await fetch('/.netlify/functions/save-push-subscription', {
+    const response = await fetch(`${FUNCTIONS_BASE_URL}/save-push-subscription`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -160,7 +167,7 @@ async function removeSubscription(userId, subscription) {
   try {
     const endpoint = subscription.endpoint;
 
-    const response = await fetch('/.netlify/functions/remove-push-subscription', {
+    const response = await fetch(`${FUNCTIONS_BASE_URL}/remove-push-subscription`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -187,7 +194,7 @@ async function removeSubscription(userId, subscription) {
  */
 export async function sendTestNotification(userId) {
   try {
-    const response = await fetch('/.netlify/functions/send-push', {
+    const response = await fetch(`${FUNCTIONS_BASE_URL}/send-push`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
