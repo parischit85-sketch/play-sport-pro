@@ -15,12 +15,15 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 // Configura VAPID keys per web-push
-// NOTA: Genera le chiavi con: npx web-push generate-vapid-keys
-// E aggiungi le variabili d'ambiente in Netlify
+if (!process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY) {
+  console.error('❌ VAPID keys non configurate nelle variabili d\'ambiente');
+  throw new Error('VAPID keys not configured');
+}
+
 webpush.setVapidDetails(
-  'mailto:your-email@example.com', // Sostituisci con la tua email
-  process.env.VAPID_PUBLIC_KEY || '',
-  process.env.VAPID_PRIVATE_KEY || ''
+  'mailto:paris.andrea@live.it',
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
 );
 
 exports.handler = async (event, context) => {
