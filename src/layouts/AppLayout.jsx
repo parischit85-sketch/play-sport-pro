@@ -13,6 +13,7 @@ import { LoadingOverlay } from '@components/LoadingSpinner.jsx';
 import NotificationSystem from '@components/NotificationSystem.jsx';
 import NavTabs from '@ui/NavTabs.jsx';
 import BottomNavigation from '@ui/BottomNavigation.jsx';
+import ProfileButton from '@ui/ProfileButton.jsx';
 import PWAInstallButton from '@components/PWAInstallButton.jsx';
 import PWAFloatingButton from '@components/PWAFloatingButton.jsx';
 import PWAInstallPrompt from '@ui/PWAInstallPrompt.jsx';
@@ -269,12 +270,8 @@ function AppLayoutInner() {
       }
     }
 
-    // ALWAYS include profile/auth tab regardless of club state
-    baseNavigation.push({
-      id: user ? 'profile' : 'auth',
-      label: user ? 'Profilo' : 'Accedi',
-      path: user ? '/profile' : '/login',
-    });
+    // REMOVED: Profile/auth tab now in ProfileButton (top-right header)
+    // No longer needed in bottom navigation
 
     // Add super admin navigation
     if (userRole === 'super_admin') {
@@ -395,6 +392,9 @@ function AppLayoutInner() {
           </div>
 
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            {/* Profile Button - Always visible on the right */}
+            <ProfileButton />
+
             {/* Admin Portal Button - Solo per admin autorizzati */}
             {user && ['paris.andrea@live.it', 'admin@playsport.it'].includes(user.email) && (
               <button
