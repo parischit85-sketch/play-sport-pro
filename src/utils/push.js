@@ -122,6 +122,9 @@ async function saveSubscription(userId, subscription) {
     const endpoint = subscription.endpoint;
     const subscriptionData = subscription.toJSON();
 
+    console.log('[saveSubscription] Saving subscription for userId:', userId);
+    console.log('[saveSubscription] Endpoint:', endpoint);
+
     const response = await fetch('/.netlify/functions/save-push-subscription', {
       method: 'POST',
       headers: {
@@ -135,13 +138,17 @@ async function saveSubscription(userId, subscription) {
       })
     });
 
+    const responseText = await response.text();
+    console.log('[saveSubscription] Response status:', response.status);
+    console.log('[saveSubscription] Response body:', responseText);
+
     if (!response.ok) {
-      throw new Error('Errore nel salvataggio della sottoscrizione');
+      throw new Error(`Errore nel salvataggio della sottoscrizione: ${response.status} - ${responseText}`);
     }
 
-    console.log('Sottoscrizione push salvata con successo');
+    console.log('✅ Sottoscrizione push salvata con successo');
   } catch (error) {
-    console.error('Errore nel salvataggio della sottoscrizione:', error);
+    console.error('❌ Errore nel salvataggio della sottoscrizione:', error);
     throw error;
   }
 }
