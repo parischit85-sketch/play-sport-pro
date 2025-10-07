@@ -19,7 +19,7 @@ Vai su: https://app.netlify.com/
 ### 3. Configura Environment Variables
 1. Nel menu laterale, vai su **Site configuration** → **Environment variables**
 2. Clicca su **Add a variable**
-3. Aggiungi queste 2 variabili:
+3. Aggiungi queste **5 variabili** (TUTTE necessarie):
 
 #### Variabile 1: VAPID_PUBLIC_KEY
 ```
@@ -34,6 +34,42 @@ Key: VAPID_PRIVATE_KEY
 Value: WOkYBn4ch0dNb2VfVovVE8KwfH70yUzi603ZlZlG6OI
 Scopes: All (produzione e deploys)
 ```
+
+#### Variabile 3: FIREBASE_PROJECT_ID
+```
+Key: FIREBASE_PROJECT_ID
+Value: m-padelweb
+Scopes: All (produzione e deploys)
+```
+
+#### Variabile 4: FIREBASE_CLIENT_EMAIL
+```
+Key: FIREBASE_CLIENT_EMAIL
+Value: firebase-adminsdk-i08ys@m-padelweb.iam.gserviceaccount.com
+Scopes: All (produzione e deploys)
+```
+
+#### Variabile 5: FIREBASE_PRIVATE_KEY
+```
+Key: FIREBASE_PRIVATE_KEY
+Value: (vedi sotto - chiave lunga)
+Scopes: All (produzione e deploys)
+```
+
+**⚠️ IMPORTANTE per FIREBASE_PRIVATE_KEY:**
+
+La chiave privata Firebase è già configurata nelle ENV vars esistenti del tuo sito Netlify.
+
+**Come trovarla:**
+1. Vai su Site configuration → Environment variables
+2. Cerca la variabile chiamata `FIREBASE_PRIVATE_KEY` o `VITE_FIREBASE_PRIVATE_KEY`
+3. Copia il valore (inizia con `-----BEGIN PRIVATE KEY-----`)
+4. **SE NON ESISTE**, devi ottenerla da Firebase Console:
+   - Firebase Console → Project Settings (⚙️)
+   - Service accounts tab
+   - Generate new private key
+   - Apri il file JSON scaricato
+   - Copia il valore del campo `"private_key"`
 
 ### 4. Redeploy del Sito
 Dopo aver aggiunto le variabili:
@@ -65,6 +101,27 @@ Dopo aver aggiunto le variabili:
 - Controlla che ci sia un documento con il tuo `userId`
 
 ## 🔍 Troubleshooting
+
+### Errore: "Service account object must contain a string 'project_id' property"
+
+**Causa**: Mancano le credenziali Firebase nelle variabili d'ambiente Netlify.
+
+**Soluzione**:
+1. Verifica che TUTTE e 5 le variabili siano configurate:
+   - ✅ `VAPID_PUBLIC_KEY`
+   - ✅ `VAPID_PRIVATE_KEY`
+   - ✅ `FIREBASE_PROJECT_ID`
+   - ✅ `FIREBASE_CLIENT_EMAIL`
+   - ✅ `FIREBASE_PRIVATE_KEY`
+
+2. Controlla che i valori siano corretti (no spazi extra, no virgolette)
+
+3. **IMPORTANTE**: `FIREBASE_PRIVATE_KEY` deve includere i caratteri `\n`:
+   ```
+   -----BEGIN PRIVATE KEY-----\nMIIEvQI...\n-----END PRIVATE KEY-----\n
+   ```
+
+4. Dopo aver aggiunto/modificato le variabili, **devi** fare un redeploy
 
 ### Errore: "VAPID keys not configured"
 - Verifica che le variabili d'ambiente siano state salvate correttamente
