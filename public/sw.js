@@ -144,13 +144,21 @@ async function cacheFirstStrategy(request) {
     const networkResponse = await fetch(request);
     if (networkResponse.ok) {
       const cache = await caches.open(STATIC_CACHE);
-      cache.put(request, networkResponse.clone());
+      // Safely cache response, ignoring CSP/CORS errors
+      try {
+        cache.put(request, networkResponse.clone());
+      } catch (cacheError) {
+        // Silently ignore cache errors (usually CSP violations)
+      }
     }
 
     performanceMetrics.cacheMisses++;
     return networkResponse;
   } catch (error) {
-    console.warn('⚠️ [SW] Cache first failed:', error);
+    // Only log non-CSP errors
+    if (!error.message?.includes('Content Security Policy')) {
+      console.warn('⚠️ [SW] Cache first failed:', error);
+    }
     performanceMetrics.offlineRequests++;
     return getOfflineFallback(request);
   }
@@ -178,12 +186,20 @@ async function networkFirstStrategy(request) {
         headers: headers,
       });
 
-      cache.put(request, modifiedResponse);
+      // Safely cache response, ignoring CSP/CORS errors
+      try {
+        cache.put(request, modifiedResponse);
+      } catch (cacheError) {
+        // Silently ignore cache errors (usually CSP violations)
+      }
     }
 
     return networkResponse;
   } catch (error) {
-    console.warn('⚠️ [SW] Network first fallback to cache:', error);
+    // Only log non-CSP errors
+    if (!error.message?.includes('Content Security Policy')) {
+      console.warn('⚠️ [SW] Network first fallback to cache:', error);
+    }
 
     const cachedResponse = await caches.match(request);
     if (cachedResponse && isCacheValid(cachedResponse)) {
