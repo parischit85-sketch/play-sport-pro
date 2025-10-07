@@ -1,0 +1,257 @@
+/**
+ * Web Push Notification Service
+ * Gestisce la sottoscrizione e l'invio di notifiche push del sistema
+ */
+
+// VAPID public key - da generare con web-push library
+// Per ora uso un placeholder - andrà sostituito con la chiave reale
+const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nqm-sI';
+
+/**
+ * Converte una chiave VAPID base64 in Uint8Array
+ */
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+/**
+ * Richiede il permesso per le notifiche
+ */
+export async function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    console.warn('Questo browser non supporta le notifiche');
+    return false;
+  }
+
+  if (Notification.permission === 'granted') {
+    return true;
+  }
+
+  if (Notification.permission !== 'denied') {
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
+  }
+
+  return false;
+}
+
+/**
+ * Registra il service worker e ottiene la sottoscrizione push
+ */
+export async function subscribeToPush(userId) {
+  try {
+    // Verifica supporto
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      console.warn('Push notifications non supportate');
+      return null;
+    }
+
+    // Richiedi permesso
+    const hasPermission = await requestNotificationPermission();
+    if (!hasPermission) {
+      console.log('Permesso notifiche negato');
+      return null;
+    }
+
+    // Registra service worker
+    let registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) {
+      registration = await navigator.serviceWorker.register('/sw.js');
+      await navigator.serviceWorker.ready;
+    }
+
+    // Controlla se esiste già una sottoscrizione
+    let subscription = await registration.pushManager.getSubscription();
+    
+    if (!subscription) {
+      // Crea nuova sottoscrizione
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+    }
+
+    // Salva la sottoscrizione sul server
+    await saveSubscription(userId, subscription);
+
+    return subscription;
+  } catch (error) {
+    console.error('Errore nella sottoscrizione push:', error);
+    return null;
+  }
+}
+
+/**
+ * Annulla la sottoscrizione push
+ */
+export async function unsubscribeFromPush(userId) {
+  try {
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) return true;
+
+    const subscription = await registration.pushManager.getSubscription();
+    if (!subscription) return true;
+
+    // Rimuovi dal server
+    await removeSubscription(userId, subscription);
+
+    // Annulla la sottoscrizione
+    await subscription.unsubscribe();
+    return true;
+  } catch (error) {
+    console.error('Errore nell\'annullamento sottoscrizione:', error);
+    return false;
+  }
+}
+
+/**
+ * Salva la sottoscrizione su Firestore
+ */
+async function saveSubscription(userId, subscription) {
+  try {
+    const endpoint = subscription.endpoint;
+    const subscriptionData = subscription.toJSON();
+
+    const response = await fetch('/.netlify/functions/save-push-subscription', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        subscription: subscriptionData,
+        endpoint,
+        timestamp: new Date().toISOString()
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Errore nel salvataggio della sottoscrizione');
+    }
+
+    console.log('Sottoscrizione push salvata con successo');
+  } catch (error) {
+    console.error('Errore nel salvataggio della sottoscrizione:', error);
+    throw error;
+  }
+}
+
+/**
+ * Rimuove la sottoscrizione da Firestore
+ */
+async function removeSubscription(userId, subscription) {
+  try {
+    const endpoint = subscription.endpoint;
+
+    const response = await fetch('/.netlify/functions/remove-push-subscription', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        endpoint
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Errore nella rimozione della sottoscrizione');
+    }
+
+    console.log('Sottoscrizione push rimossa con successo');
+  } catch (error) {
+    console.error('Errore nella rimozione della sottoscrizione:', error);
+    throw error;
+  }
+}
+
+/**
+ * Invia una notifica push di test
+ */
+export async function sendTestNotification(userId) {
+  try {
+    const response = await fetch('/.netlify/functions/send-push', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        notification: {
+          title: 'Notifica di Test',
+          body: 'Questa è una notifica push di test!',
+          icon: '/icon-192x192.png',
+          badge: '/badge-72x72.png',
+          tag: 'test-notification',
+          data: {
+            url: '/',
+            timestamp: Date.now()
+          }
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Errore nell\'invio della notifica di test');
+    }
+
+    console.log('Notifica di test inviata con successo');
+    return true;
+  } catch (error) {
+    console.error('Errore nell\'invio della notifica di test:', error);
+    return false;
+  }
+}
+
+/**
+ * Controlla se l'utente è sottoscritto alle notifiche push
+ */
+export async function isPushSubscribed() {
+  try {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      return false;
+    }
+
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (!registration) return false;
+
+    const subscription = await registration.pushManager.getSubscription();
+    return subscription !== null;
+  } catch (error) {
+    console.error('Errore nel controllo sottoscrizione:', error);
+    return false;
+  }
+}
+
+/**
+ * Ottiene lo stato delle notifiche push
+ */
+export function getPushNotificationStatus() {
+  if (!('Notification' in window)) {
+    return 'unsupported';
+  }
+
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    return 'unsupported';
+  }
+
+  switch (Notification.permission) {
+    case 'granted':
+      return 'granted';
+    case 'denied':
+      return 'denied';
+    default:
+      return 'default';
+  }
+}

@@ -9,12 +9,57 @@ export function notify(detail) {
   }
 }
 
-export function notifyBookingAddition({ court, time, club, date }) {
+export function notifyBookingAddition({ court, time, club }) {
   notify({
     type: 'success',
     title: 'Aggiunto alla prenotazione',
     message: `Sei stato aggiunto su ${court} alle ${time} (${club})`,
   });
+}
+
+/**
+ * Invia una notifica push quando un utente viene aggiunto a una prenotazione
+ * Questa funzione può essere chiamata dal server o dal client
+ */
+export async function sendBookingAdditionPush({ userId, court, time, club, date, bookingId }) {
+  try {
+    const response = await fetch('/.netlify/functions/send-push', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        notification: {
+          title: 'Aggiunto alla prenotazione',
+          body: `Sei stato aggiunto su ${court} alle ${time} - ${club}`,
+          icon: '/icon-192x192.png',
+          badge: '/badge-72x72.png',
+          tag: `booking-${bookingId}`,
+          requireInteraction: false,
+          data: {
+            url: `/bookings/${bookingId}`,
+            bookingId,
+            court,
+            time,
+            club,
+            date,
+            timestamp: Date.now(),
+            type: 'booking-addition'
+          }
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Errore nell\'invio della notifica push');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Errore nell\'invio della notifica push:', error);
+    return false;
+  }
 }
 
 export function notifyBookingRemoval({ court, time, club }) {

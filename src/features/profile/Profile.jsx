@@ -10,6 +10,7 @@ import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useUI } from '@contexts/UIContext.jsx';
 import ClubAdminProfile from './ClubAdminProfile.jsx';
+import PushNotificationPanel from '@/components/debug/PushNotificationPanel.jsx';
 
 export default function Profile({ T }) {
   // Profile component rendered
@@ -308,6 +309,9 @@ export default function Profile({ T }) {
               </button>
             </div>
           </div>
+
+          {/* Push Notifications Panel */}
+          <PushNotificationPanel />
 
           {/* Stato Account */}
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 backdrop-blur-sm">
