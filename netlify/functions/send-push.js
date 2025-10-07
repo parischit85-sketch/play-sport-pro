@@ -54,7 +54,10 @@ exports.handler = async (event, context) => {
   try {
     const { userId, notification } = JSON.parse(event.body);
 
+    console.log('[send-push] Request received:', { userId, hasNotification: !!notification });
+
     if (!userId || !notification) {
+      console.error('[send-push] Missing required fields');
       return {
         statusCode: 400,
         headers,
@@ -63,21 +66,29 @@ exports.handler = async (event, context) => {
     }
 
     // Recupera tutte le sottoscrizioni dell'utente
+    console.log('[send-push] Fetching subscriptions for userId:', userId);
     const subscriptionsSnapshot = await db
       .collection('pushSubscriptions')
       .where('userId', '==', userId)
       .get();
 
+    console.log('[send-push] Subscriptions found:', subscriptionsSnapshot.size);
+
     if (subscriptionsSnapshot.empty) {
+      console.warn('[send-push] No subscriptions found for user:', userId);
       return {
         statusCode: 404,
         headers,
-        body: JSON.stringify({ error: 'Nessuna sottoscrizione trovata per questo utente' }),
+        body: JSON.stringify({ 
+          error: 'Nessuna sottoscrizione trovata per questo utente',
+          hint: 'Assicurati di aver cliccato "Attiva Notifiche" prima di inviare il test'
+        }),
       };
     }
 
     // Prepara il payload della notifica
     const payload = JSON.stringify(notification);
+    console.log('[send-push] Payload prepared, length:', payload.length);
 
     // Invia la notifica a tutte le sottoscrizioni dell'utente
     const sendPromises = [];
@@ -87,13 +98,19 @@ exports.handler = async (event, context) => {
       const subscriptionData = doc.data();
       const subscription = subscriptionData.subscription;
 
+      console.log('[send-push] Sending to subscription:', doc.id);
+
       const sendPromise = webpush
         .sendNotification(subscription, payload)
+        .then(() => {
+          console.log('[send-push] Successfully sent to:', doc.id);
+        })
         .catch((error) => {
-          console.error('Errore nell\'invio push:', error);
+          console.error('[send-push] Error sending to subscription:', doc.id, error.message);
           
           // Se la sottoscrizione non è più valida (410 Gone o 404 Not Found)
           if (error.statusCode === 410 || error.statusCode === 404) {
+            console.log('[send-push] Marking subscription as invalid:', doc.id);
             invalidSubscriptions.push(doc.id);
           }
         });
@@ -102,32 +119,43 @@ exports.handler = async (event, context) => {
     });
 
     // Attendi tutte le richieste
+    console.log('[send-push] Waiting for all sends to complete...');
     await Promise.all(sendPromises);
 
     // Rimuovi le sottoscrizioni non valide
     if (invalidSubscriptions.length > 0) {
+      console.log('[send-push] Removing invalid subscriptions:', invalidSubscriptions.length);
       const deletePromises = invalidSubscriptions.map((id) =>
         db.collection('pushSubscriptions').doc(id).delete()
       );
       await Promise.all(deletePromises);
-      console.log(`Rimosse ${invalidSubscriptions.length} sottoscrizioni non valide`);
+      console.log(`[send-push] Removed ${invalidSubscriptions.length} invalid subscriptions`);
     }
+
+    const result = {
+      success: true,
+      sent: subscriptionsSnapshot.size - invalidSubscriptions.length,
+      removed: invalidSubscriptions.length,
+    };
+
+    console.log('[send-push] Request completed successfully:', result);
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({
-        success: true,
-        sent: subscriptionsSnapshot.size - invalidSubscriptions.length,
-        removed: invalidSubscriptions.length,
-      }),
+      body: JSON.stringify(result),
     };
   } catch (error) {
-    console.error('Errore nella funzione send-push:', error);
+    console.error('[send-push] Fatal error:', error);
+    console.error('[send-push] Error stack:', error.stack);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: error.message }),
+      body: JSON.stringify({ 
+        error: error.message,
+        type: error.constructor.name,
+        details: 'Check function logs for more information'
+      }),
     };
   }
 };
