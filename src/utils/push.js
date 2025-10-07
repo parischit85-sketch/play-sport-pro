@@ -3,9 +3,8 @@
  * Gestisce la sottoscrizione e l'invio di notifiche push del sistema
  */
 
-// VAPID public key - da generare con web-push library
-// Per ora uso un placeholder - andrà sostituito con la chiave reale
-const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nqm-sI';
+// VAPID public key - generato con web-push generate-vapid-keys
+const VAPID_PUBLIC_KEY = 'BI9gOKRddotrncfkYftX0CRDhzE9BpHxqWULvYBiuJ2g7NctyoUeEaQ6Bw5ptBiViiPTDUpWNdXO_qUBzfplMqM';
 
 /**
  * Converte una chiave VAPID base64 in Uint8Array
