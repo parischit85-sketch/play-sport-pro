@@ -117,3 +117,5 @@ AUDIT_*
 *REPORT.md
 temp_*
 TEMP_*
+# Local Netlify folder
+.netlify
