@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@ui/card.jsx';
+import { Button } from '@ui/button.jsx';
+import { Badge } from '@ui/Badge.jsx';
 import { Bell, BellOff, Send, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { 
   subscribeToPush, 
@@ -9,8 +9,8 @@ import {
   isPushSubscribed,
   getPushNotificationStatus,
   sendTestNotification
-} from '@/utils/push';
-import { useAuth } from '@/contexts/AuthContext';
+} from '@utils/push';
+import { useAuth } from '@contexts/AuthContext';
 
 export default function PushNotificationPanel() {
   const { user } = useAuth();

@@ -10,7 +10,7 @@ import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useUI } from '@contexts/UIContext.jsx';
 import ClubAdminProfile from './ClubAdminProfile.jsx';
-import PushNotificationPanel from '@/components/debug/PushNotificationPanel.jsx';
+import PushNotificationPanel from '@components/debug/PushNotificationPanel.jsx';
 
 export default function Profile({ T }) {
   // Profile component rendered
