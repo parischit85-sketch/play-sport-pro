@@ -55,19 +55,24 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
       
       // 🌍 Calculate distances if userLocation available
       if (userLocation) {
-        allClubs = allClubs.map(club => {
-          const coords = getClubCoordinates(club);
-          if (!coords) return { ...club, distance: Infinity };
-          
-          const distance = calculateDistance(
-            userLocation.lat,
-            userLocation.lng,
-            coords.lat,
-            coords.lng
-          );
-          
-          return { ...club, distance };
-        }).sort((a, b) => a.distance - b.distance); // Sort by distance
+        // Process clubs in parallel with Promise.all
+        const clubsWithDistances = await Promise.all(
+          allClubs.map(async (club) => {
+            const coords = await getClubCoordinates(club);
+            if (!coords) return { ...club, distance: Infinity };
+            
+            const distance = calculateDistance(
+              userLocation.lat,
+              userLocation.lng,
+              coords.latitude,
+              coords.longitude
+            );
+            
+            return { ...club, distance };
+          })
+        );
+        
+        allClubs = clubsWithDistances.sort((a, b) => a.distance - b.distance);
         
         console.log('🌍 [BookingTypeModal] Clubs sorted by distance:', {
           count: allClubs.length,
@@ -86,19 +91,23 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
         
         // 🌍 Add distances to viewed clubs too
         if (userLocation) {
-          clubsData = clubsData.map(club => {
-            const coords = getClubCoordinates(club);
-            if (!coords) return { ...club, distance: Infinity };
-            
-            const distance = calculateDistance(
-              userLocation.lat,
-              userLocation.lng,
-              coords.lat,
-              coords.lng
-            );
-            
-            return { ...club, distance };
-          }).sort((a, b) => a.distance - b.distance);
+          const clubsWithDistances = await Promise.all(
+            clubsData.map(async (club) => {
+              const coords = await getClubCoordinates(club);
+              if (!coords) return { ...club, distance: Infinity };
+              
+              const distance = calculateDistance(
+                userLocation.lat,
+                userLocation.lng,
+                coords.latitude,
+                coords.longitude
+              );
+              
+              return { ...club, distance };
+            })
+          );
+          
+          clubsData = clubsWithDistances.sort((a, b) => a.distance - b.distance);
         }
         
         setFilteredClubs(clubsData);
@@ -473,7 +482,7 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
                               />
                             </svg>
                             {club.location?.city || club.city || club.address?.city || 'Località'}
-                            {club.distance !== undefined && (
+                            {club.distance !== undefined && Number.isFinite(club.distance) && (
                               <span className="ml-2 px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">
                                 {club.distance.toFixed(1)} km
                               </span>
