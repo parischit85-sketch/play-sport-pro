@@ -1449,9 +1449,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                     style={{ gridTemplateColumns: `repeat(${filteredCourts.length}, 1fr)` }}
                   >
                     {/* Header campi */}
-                    {filteredCourts.map((c) => (
+                    {filteredCourts.map((c, idx) => (
                       <div
-                        key={`hdr_${c.id}`}
+                        key={`court-header-${c.id}-${idx}`}
                         className={`px-2 py-3 text-base font-bold text-center rounded-xl shadow-md ${T.cardBg} ${T.border}`}
                       >
                         <span className="inline-flex items-center gap-2">
@@ -1491,9 +1491,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
               {/* Celle prenotazione */}
               {timeSlots.map((t, r) => (
                 <React.Fragment key={t.getTime()}>
-                  {filteredCourts.map((c) => (
+                  {filteredCourts.map((c, courtIdx) => (
                     <div
-                      key={c.id + '_' + r}
+                      key={`cell-${c.id}-${t.getTime()}-${courtIdx}`}
                       className={`px-0.5 py-0.5 ${T.cardBg} ${T.border} rounded-lg`}
                     >
                       {renderCell(c.id, t)}

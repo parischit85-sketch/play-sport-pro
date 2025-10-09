@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { themeTokens, LOGO_URL } from '@lib/theme.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
+import RegistrationTypeModal from '@components/ui/RegistrationTypeModal';
 import {
   Users,
   Calendar,
@@ -27,6 +28,7 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const T = React.useMemo(() => themeTokens(), []);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
 
   // Se l'utente è già autenticato, reindirizza alla dashboard
   React.useEffect(() => {
@@ -100,12 +102,12 @@ export default function LandingPage() {
               >
                 Accedi
               </Link>
-              <Link
-                to="/register"
+              <button
+                onClick={() => setShowRegistrationModal(true)}
                 className="bg-emerald-600 hover:bg-emerald-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 Registrati
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -127,13 +129,13 @@ export default function LandingPage() {
               le tue abilità con lezioni professionali. Tutto in un'unica piattaforma.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/register"
+              <button
+                onClick={() => setShowRegistrationModal(true)}
                 className="bg-emerald-600 hover:bg-emerald-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
               >
                 <UserPlus className="w-5 h-5" />
                 Inizia Ora - È Gratuito
-              </Link>
+              </button>
               <button
                 onClick={() =>
                   document.getElementById('features').scrollIntoView({ behavior: 'smooth' })
@@ -289,13 +291,13 @@ export default function LandingPage() {
                   Traccia le tue statistiche e progressi
                 </li>
               </ul>
-              <Link
-                to="/register"
+              <button
+                onClick={() => setShowRegistrationModal(true)}
                 className="inline-flex items-center gap-2 mt-6 bg-white text-emerald-600 px-6 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
                 Registrati come Giocatore
-              </Link>
+              </button>
             </div>
 
             {/* Clubs */}
@@ -324,13 +326,13 @@ export default function LandingPage() {
                   Analizza statistiche e ricavi
                 </li>
               </ul>
-              <Link
-                to="/register"
+              <button
+                onClick={() => setShowRegistrationModal(true)}
                 className="inline-flex items-center gap-2 mt-6 bg-white text-emerald-600 px-6 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition-colors"
               >
                 <Building2 className="w-4 h-4" />
                 Registrati come Circolo
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -346,13 +348,13 @@ export default function LandingPage() {
             Unisciti a migliaia di atleti e circoli sportivi che già utilizzano Play-Sport.pro
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/register"
+            <button
+              onClick={() => setShowRegistrationModal(true)}
               className="bg-emerald-600 hover:bg-emerald-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
             >
               <UserPlus className="w-5 h-5" />
               Registrati Gratuitamente
-            </Link>
+            </button>
             <Link
               to="/login"
               className="border-2 border-emerald-600 dark:border-blue-400 text-emerald-600 dark:text-blue-400 hover:bg-emerald-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2"
@@ -435,6 +437,12 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Registration Type Modal */}
+      <RegistrationTypeModal 
+        isOpen={showRegistrationModal}
+        onClose={() => setShowRegistrationModal(false)}
+      />
     </div>
   );
 }

@@ -27,70 +27,67 @@ export function useClubAdminRedirect() {
     }
 
     // Solo reindirizza se siamo esattamente sulla dashboard principale
+    // Se siamo già su qualsiasi altra route, non fare nulla
     if (location.pathname !== '/dashboard') {
       return;
     }
 
-    // Se siamo già nella dashboard admin di un club, non reindirizzare
-    if (location.pathname.includes('/club/') && location.pathname.includes('/admin/dashboard')) {
-      return;
-    }
+    // Determina il clubId da reindirizzare
+    let targetClubId = null;
 
-    // Primo controllo: verifica userClubRoles
-    let clubAdminRoles = [];
+    // METODO 1: Controlla userClubRoles (più affidabile)
     if (userClubRoles && Object.keys(userClubRoles).length > 0) {
-      clubAdminRoles = Object.entries(userClubRoles).filter(([clubId, roles]) => {
+      const clubAdminEntries = Object.entries(userClubRoles).filter(([clubId, roles]) => {
         // Gestisci sia stringhe che array
         if (Array.isArray(roles)) {
           return roles.includes('CLUB_ADMIN') || roles.includes('club_admin');
         }
         return roles === 'CLUB_ADMIN' || roles === 'club_admin';
       });
+
+      // Se l'utente è admin di esattamente un club, usa quello
+      if (clubAdminEntries.length === 1) {
+        targetClubId = clubAdminEntries[0][0];
+      }
     }
 
-    // Secondo controllo: verifica userRole globale per club_admin
-    if (clubAdminRoles.length === 0 && userRole === 'club_admin') {
-      // Prova a trovare il club dal currentClub o localStorage
-      let clubId = currentClub?.id;
-      if (!clubId) {
+    // METODO 2: Se userClubRoles è vuoto ma userRole è club_admin, usa currentClub
+    if (!targetClubId && userRole === 'club_admin') {
+      // currentClub è direttamente il clubId (stringa), non un oggetto
+      if (currentClub) {
+        targetClubId = currentClub;
+      }
+      // Fallback: localStorage
+      else {
         try {
           const storedClubId = localStorage.getItem('currentClub');
           if (storedClubId && storedClubId !== 'null' && storedClubId !== 'undefined') {
-            clubId = storedClubId;
+            targetClubId = storedClubId;
           }
         } catch (error) {
-          // Silent error handling
+          console.error('[useClubAdminRedirect] Error reading localStorage:', error);
         }
       }
-
-      // Se abbiamo un club e l'utente è club_admin, assumiamo sia admin di quel club
-      if (clubId) {
-        clubAdminRoles = [[clubId, 'CLUB_ADMIN']];
-      }
     }
 
-    // Terzo controllo: fallback finale per sporting-cat SE l'utente ha effettivamente permessi admin
-    if (clubAdminRoles.length === 0) {
-      if (userRole === 'super_admin' || userRole === 'club_admin') {
-        clubAdminRoles = [['sporting-cat', 'CLUB_ADMIN']];
-      }
-    }
+    // Se abbiamo trovato un club valido, reindirizza
+    if (targetClubId && targetClubId !== 'undefined' && targetClubId !== 'null') {
+      // Trova lo slug del club (dobbiamo caricare il club per ottenere lo slug)
+      // Per ora usiamo direttamente il clubId come slug
+      const adminDashboardPath = `/club/${targetClubId}/admin/dashboard`;
 
-    // Se l'utente è admin di esattamente un club, reindirizza
-    if (clubAdminRoles.length === 1) {
-      const [clubId, role] = clubAdminRoles[0];
-
-      // Controllo di sicurezza: assicurati che clubId sia valido
-      if (!clubId || clubId === 'undefined' || clubId === 'null') {
-        return;
-      }
-
-      const adminDashboardPath = `/club/${clubId}/admin/dashboard`;
-
-      // Usa un piccolo delay per assicurarsi che il DOM sia pronto
-      setTimeout(() => {
-        navigate(adminDashboardPath, { replace: true });
-      }, 100);
+      console.log('[useClubAdminRedirect] Redirecting club_admin to:', adminDashboardPath);
+      
+      // Naviga immediatamente senza timeout per evitare loop
+      navigate(adminDashboardPath, { replace: true });
+    } else if (userRole === 'club_admin') {
+      // Se l'utente è club_admin ma non abbiamo trovato il club, c'è un problema di dati
+      console.warn('[useClubAdminRedirect] User is club_admin but no club found:', {
+        userId: user.uid,
+        userRole,
+        userClubRoles,
+        currentClub
+      });
     }
   }, [user, userRole, userClubRoles, currentClub, loading, location.pathname, navigate]);
 }

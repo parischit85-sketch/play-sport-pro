@@ -55,10 +55,21 @@ export const getClubs = async (filters = {}) => {
     }
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    
+    // Filter for activated AND approved clubs (unless explicitly requesting all)
+    const clubs = snapshot.docs
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      .filter((club) => {
+        // If filters.includeInactive is true, show all clubs (for admin/super-admin)
+        if (filters.includeInactive) return true;
+        // Otherwise only show activated AND approved clubs
+        return club.isActive === true && club.status === 'approved';
+      });
+    
+    return clubs;
   } catch (error) {
     console.error('Error getting clubs:', error);
     throw error;
@@ -93,11 +104,12 @@ export const searchClubs = async (searchQuery, options = {}) => {
       const clubData = doc.data();
       console.log('🔍 Processing club:', doc.id, clubData.name);
 
-      // Check visibility and subscription
+      // Check visibility, subscription, AND activation status
       const isVisible = clubData.settings?.publicVisibility !== false; // default to true
-      const isActive = clubData.subscription?.isActive !== false; // default to true
+      const isSubscriptionActive = clubData.subscription?.isActive !== false; // default to true
+      const isClubActive = clubData.isActive === true; // MUST be explicitly true for activation system
 
-      if (isVisible && isActive) {
+      if (isVisible && isSubscriptionActive && isClubActive) {
         // Search in club name, city, region, and description
         const searchFields = [
           clubData.name || '',
@@ -154,8 +166,13 @@ export const searchClubsByLocation = async (userLat, userLng, radiusKm = 10) => 
     // Filter by additional criteria in JavaScript
     return clubs
       .filter((club) => {
-        // Check public visibility and active subscription
+        // Check public visibility, active subscription, AND activation status
         if (!club.settings?.publicVisibility || !club.subscription?.isActive) {
+          return false;
+        }
+        
+        // Check if club is activated
+        if (club.isActive !== true) {
           return false;
         }
 

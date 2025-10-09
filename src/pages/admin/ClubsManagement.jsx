@@ -33,6 +33,7 @@ const ClubsManagement = () => {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all'); // all, pending, active, inactive
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingClub, setEditingClub] = useState(null);
   const [formData, setFormData] = useState({
@@ -216,57 +217,140 @@ const ClubsManagement = () => {
     setEditingClub(club);
   };
 
-  const filteredClubs = clubs.filter(
-    (club) =>
-      club.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      club.address?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      club.city?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleToggleActive = async (clubId, clubName, currentStatus) => {
+    const newStatus = !currentStatus;
+    const action = newStatus ? 'attivare' : 'disattivare';
+    
+    if (!window.confirm(`Confermi di voler ${action} il circolo "${clubName}"?`)) {
+      return;
+    }
 
-  const ClubCard = ({ club }) => (
-    <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-            <Building2 className="w-6 h-6 text-blue-600" />
+    try {
+      const clubRef = doc(db, 'clubs', clubId);
+      await updateDoc(clubRef, {
+        isActive: newStatus,
+        status: newStatus ? 'approved' : 'pending',
+        updatedAt: serverTimestamp(),
+      });
+
+      // Ricarica i circoli per aggiornare la lista
+      await loadClubs();
+
+      alert(`Circolo ${newStatus ? 'attivato' : 'disattivato'} con successo!`);
+    } catch (error) {
+      console.error('Errore durante il cambio stato del circolo:', error);
+      alert('Errore durante il cambio stato del circolo. Riprova.');
+    }
+  };
+
+  const filteredClubs = clubs
+    .filter((club) => {
+      // Filtro per testo di ricerca
+      const searchLower = searchTerm.toLowerCase();
+      
+      // Gestisci address come stringa o oggetto
+      const addressStr = typeof club.address === 'string' 
+        ? club.address 
+        : (club.location?.address || club.address?.street || '');
+      
+      // Gestisci city come stringa o oggetto
+      const cityStr = typeof club.city === 'string'
+        ? club.city
+        : (club.location?.city || club.address?.city || '');
+      
+      const matchesSearch =
+        club.name?.toLowerCase().includes(searchLower) ||
+        addressStr.toLowerCase().includes(searchLower) ||
+        cityStr.toLowerCase().includes(searchLower);
+
+      // Filtro per stato
+      if (statusFilter === 'all') return matchesSearch;
+      if (statusFilter === 'pending') return matchesSearch && (!club.isActive || club.status === 'pending');
+      if (statusFilter === 'active') return matchesSearch && club.isActive === true;
+      if (statusFilter === 'inactive') return matchesSearch && club.isActive === false && club.status !== 'pending';
+      
+      return matchesSearch;
+    });
+
+  const ClubCard = ({ club }) => {
+    // Determina lo stato del circolo
+    const isPending = !club.isActive || club.status === 'pending';
+    const isActive = club.isActive === true;
+    const isInactive = club.isActive === false && club.status !== 'pending';
+
+    const getStatusBadge = () => {
+      if (isPending) {
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+            In Attesa
+          </span>
+        );
+      }
+      if (isActive) {
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            Attivo
+          </span>
+        );
+      }
+      if (isInactive) {
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            Disattivato
+          </span>
+        );
+      }
+    };
+
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <Building2 className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <h3 className="text-lg font-semibold text-gray-900">{club.name}</h3>
+                {getStatusBadge()}
+              </div>
+              <p className="text-sm text-gray-600">ID: {club.id}</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">{club.name}</h3>
-            <p className="text-sm text-gray-600">ID: {club.id}</p>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => openEditModal(club)}
+              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              title="Modifica"
+            >
+              <Edit className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => navigate(`/admin/clubs/${club.id}/settings`)}
+              className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+              title="Configurazioni"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => handleDeleteClub(club.id, club.name)}
+              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              title="Elimina"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
           </div>
         </div>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => openEditModal(club)}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            title="Modifica"
-          >
-            <Edit className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => navigate(`/admin/clubs/${club.id}/settings`)}
-            className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-            title="Configurazioni"
-          >
-            <Settings className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => handleDeleteClub(club.id, club.name)}
-            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            title="Elimina"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
 
       {/* Informazioni di contatto */}
       <div className="space-y-2 mb-4">
-        {club.address && (
+        {(club.address || club.location) && (
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <MapPin className="w-4 h-4" />
             <span>
-              {club.address}, {club.city}
+              {typeof club.address === 'string' 
+                ? `${club.address}${club.city ? `, ${club.city}` : ''}` 
+                : club.location?.address || club.location?.city || 'Indirizzo non disponibile'}
             </span>
           </div>
         )}
@@ -308,8 +392,23 @@ const ClubsManagement = () => {
           <p className="text-xs text-gray-600">Prenotazioni</p>
         </div>
       </div>
+
+      {/* Toggle Attivazione/Disattivazione */}
+      <div className="mt-4 pt-4 border-t border-gray-200">
+        <button
+          onClick={() => handleToggleActive(club.id, club.name, club.isActive)}
+          className={`w-full py-2.5 px-4 rounded-lg font-medium transition-colors ${
+            club.isActive
+              ? 'bg-red-50 text-red-700 hover:bg-red-100'
+              : 'bg-green-50 text-green-700 hover:bg-green-100'
+          }`}
+        >
+          {club.isActive ? 'Disattiva Circolo' : 'Attiva Circolo'}
+        </button>
+      </div>
     </div>
-  );
+    );
+  };
 
   if (loading) {
     return (
@@ -356,8 +455,8 @@ const ClubsManagement = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search and Filters */}
         <div className="mb-6">
-          <div className="flex items-center space-x-4">
-            <div className="flex-1 relative">
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <div className="flex-1 relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
@@ -367,34 +466,84 @@ const ClubsManagement = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+            
+            {/* Filtri per stato */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setStatusFilter('all')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  statusFilter === 'all'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Tutti
+              </button>
+              <button
+                onClick={() => setStatusFilter('pending')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  statusFilter === 'pending'
+                    ? 'bg-yellow-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                In Attesa
+              </button>
+              <button
+                onClick={() => setStatusFilter('active')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  statusFilter === 'active'
+                    ? 'bg-green-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Attivi
+              </button>
+              <button
+                onClick={() => setStatusFilter('inactive')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  statusFilter === 'inactive'
+                    ? 'bg-red-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Disattivati
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Stats Summary */}
         <div className="mb-6 bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Riepilogo</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div>
               <p className="text-2xl font-bold text-blue-600">{clubs.length}</p>
-              <p className="text-sm text-gray-600">Circoli Totali</p>
+              <p className="text-sm text-gray-600">Totali</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-yellow-600">
+                {clubs.filter(c => !c.isActive || c.status === 'pending').length}
+              </p>
+              <p className="text-sm text-gray-600">In Attesa</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-green-600">
-                {clubs.reduce((sum, club) => sum + (club.stats?.members || 0), 0)}
+                {clubs.filter(c => c.isActive === true).length}
               </p>
-              <p className="text-sm text-gray-600">Membri Totali</p>
+              <p className="text-sm text-gray-600">Attivi</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-red-600">
+                {clubs.filter(c => c.isActive === false && c.status !== 'pending').length}
+              </p>
+              <p className="text-sm text-gray-600">Disattivati</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-purple-600">
-                {clubs.reduce((sum, club) => sum + (club.stats?.matches || 0), 0)}
+                {clubs.reduce((sum, club) => sum + (club.stats?.members || 0), 0)}
               </p>
-              <p className="text-sm text-gray-600">Partite Totali</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-orange-600">
-                {clubs.reduce((sum, club) => sum + (club.stats?.bookings || 0), 0)}
-              </p>
-              <p className="text-sm text-gray-600">Prenotazioni Totali</p>
+              <p className="text-sm text-gray-600">Membri</p>
             </div>
           </div>
         </div>

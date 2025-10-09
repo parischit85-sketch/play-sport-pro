@@ -4,6 +4,8 @@ import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
 import BookingDetailModal from '@ui/BookingDetailModal.jsx';
+import BookingTypeModal from '@ui/BookingTypeModal.jsx';
+import ClubActivationBanner from '@ui/ClubActivationBanner.jsx';
 import { updateBooking } from '@services/bookings.js';
 import { trackClubView } from '@services/club-analytics.js';
 
@@ -47,14 +49,25 @@ const ClubDashboard = () => {
   const { clubId } = useParams();
   const navigate = useNavigate();
   const { user, userProfile } = useAuth();
-  const { club, loading: clubLoading, isUserInstructor } = useClub();
+  const { club, loading: clubLoading, isUserInstructor, players, playersLoaded } = useClub();
   const [activeBookings, setActiveBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
 
   // Check if current user is instructor in this club
-  const isInstructor = isUserInstructor(user?.uid);
+  // IMPORTANTE: verifica solo dopo che i players sono caricati per evitare falsi positivi
+  const isInstructor = playersLoaded && isUserInstructor(user?.uid);
+
+  console.log('🏢 [ClubDashboard] Instructor check:', {
+    clubId,
+    userId: user?.uid,
+    playersLoaded,
+    playersCount: players?.length,
+    isInstructor,
+    userInPlayers: players?.find(p => p.id === user?.uid),
+  });
 
   // Track club view quando l'utente accede alla dashboard
   useEffect(() => {
@@ -287,12 +300,21 @@ const ClubDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 py-4 md:py-6 px-4">
       <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
-        <div className="hidden lg:block text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">{club.name}</h1>
-          <p className="text-gray-600 dark:text-gray-400">
+        {/* Banner Stato Attivazione Circolo - visibile solo per club-admin */}
+        {userProfile?.role === 'club-admin' && userProfile?.clubId === clubId && (
+          <ClubActivationBanner club={club} />
+        )}
+
+        {/* Header con titolo club */}
+        <div className="text-center mb-4 md:mb-8">
+          <h1 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-1 md:mb-2">
+            {club.name}
+          </h1>
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
             📍 {club.location?.city}, {club.location?.region}
           </p>
         </div>
+
         {/* Le Tue Prenotazioni - Stile Compatto con Scroll Orizzontale */}
         <div className="space-y-3 md:space-y-4">
           <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2 md:gap-3">
@@ -692,6 +714,17 @@ const ClubDashboard = () => {
           onReview={handleReview}
         />
       )}
+
+      {/* Modal per scelta tipo prenotazione */}
+      <BookingTypeModal
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        onSelectType={(type) => {
+          const path = type === 'campo' ? `/club/${clubId}/booking` : `/club/${clubId}/lessons`;
+          navigate(path);
+        }}
+        clubId={clubId}
+      />
     </div>
   );
 };

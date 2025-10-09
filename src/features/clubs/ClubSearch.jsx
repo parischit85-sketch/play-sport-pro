@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { searchClubs, searchClubsByLocation, getClubs } from '@services/clubs.js';
+import { searchClubs, searchClubsByLocation, getClubs, calculateDistance } from '@services/clubs.js';
 import { getUserLocation, geocodeCity, LocationStatus } from '../../utils/location-service.js';
+import { getClubCoordinates } from '../../utils/maps-utils.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import ClubCard from './ClubCard.jsx';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
@@ -38,6 +39,9 @@ const ClubSearch = () => {
     loadInitialData();
   }, []);
 
+  // 🌍 GPS already requested by AppLayout on app startup
+  // No auto-request here - only when user clicks "Cerca Vicino a Me" in Prenota flow
+
   useEffect(() => {
     if (debouncedQuery.trim() && searchType === SEARCH_TYPES.TEXT && showCustomSearch) {
       handleTextSearch(debouncedQuery);
@@ -60,16 +64,51 @@ const ClubSearch = () => {
   const affiliatedClubs = useMemo(() => {
     if (!user || !userAffiliations || !allClubs.length) return [];
     return allClubs.filter((club) =>
+      // 🔒 FILTRO: Solo circoli attivi E affiliati approvati
+      club.isActive === true &&
       userAffiliations.some((aff) => aff.clubId === club.id && aff.status === 'approved')
     );
   }, [allClubs, userAffiliations, user]);
 
   const nearbyClubs = useMemo(() => {
     if (!allClubs.length) return [];
-    return allClubs
-      .filter((club) => !affiliatedClubs.some((aff) => aff.id === club.id))
-      .slice(0, 6);
-  }, [allClubs, affiliatedClubs]);
+    
+    const nonAffiliatedClubs = allClubs.filter((club) => 
+      // 🔒 FILTRO: Solo circoli attivi E non già affiliati
+      club.isActive === true &&
+      !affiliatedClubs.some((aff) => aff.id === club.id)
+    );
+
+    // ✅ Calculate distances if userLocation available (from AppLayout cache)
+    if (userLocation) {
+      const clubsWithDistance = nonAffiliatedClubs
+        .map((club) => {
+          const coords = getClubCoordinates(club);
+          if (!coords) return { ...club, distance: Infinity };
+          
+          const distance = calculateDistance(
+            userLocation.lat,
+            userLocation.lng,
+            coords.lat,
+            coords.lng
+          );
+          
+          return { ...club, distance };
+        })
+        .sort((a, b) => a.distance - b.distance); // Sort by distance ascending
+      
+      console.log('🌍 [ClubSearch] Nearby clubs sorted by distance:', {
+        userLocation,
+        clubsCount: clubsWithDistance.length,
+        first3: clubsWithDistance.slice(0, 3).map(c => ({ name: c.name, distance: c.distance }))
+      });
+      
+      return clubsWithDistance.slice(0, 6);
+    }
+    
+    // Without location, return first 6 without sorting
+    return nonAffiliatedClubs.slice(0, 6);
+  }, [allClubs, affiliatedClubs, userLocation]);
 
   const handleTextSearch = useCallback(async (query) => {
     if (!query.trim()) return;
@@ -201,28 +240,41 @@ const ClubSearch = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-      <div className="text-center">
-        <div className="text-6xl mb-4"></div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Trova il tuo Club</h1>
-        <p className="text-gray-600 dark:text-gray-400">
+      {/* Header */}
+      <div className="text-center mb-6">
+        <div className="text-5xl mb-3">🏟️</div>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          Trova il tuo Circolo
+        </h1>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           Scopri i circoli sportivi e unisciti alla community
         </p>
       </div>
 
+      {/* 1. I TUOI CIRCOLI - Circoli dove l'utente ha fatto accesso */}
       {user && affiliatedClubs.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-2xl"></span>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">I Tuoi Circoli</h2>
+        <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/10 rounded-2xl border-2 border-green-200 dark:border-green-700/30 p-6 shadow-lg">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">I Tuoi Circoli</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {affiliatedClubs.length} {affiliatedClubs.length === 1 ? 'circolo affiliato' : 'circoli affiliati'}
+              </p>
+            </div>
           </div>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Circoli dove hai un'affiliazione attiva
-          </p>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {affiliatedClubs.map((club) => (
               <div key={club.id} className="relative">
                 <ClubCard club={club} userLocation={userLocation} />
-                <div className="absolute top-2 right-2 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-1 rounded-full text-xs font-medium">
+                <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
                   Affiliato
                 </div>
               </div>
@@ -231,32 +283,49 @@ const ClubSearch = () => {
         </div>
       )}
 
+      {/* 2. I 3 PIÙ VICINI - Card più piccole e compatte */}
       {nearbyClubs.length > 0 && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-2xl"></span>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Circoli Nelle Vicinanze
-            </h2>
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/10 rounded-xl border border-blue-200 dark:border-blue-700/30 p-4 shadow-md">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Circoli Nelle Vicinanze</h2>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                I migliori circoli più vicini a te
+              </p>
+            </div>
           </div>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            Altri circoli disponibili per nuove affiliazioni
-          </p>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {nearbyClubs.map((club) => (
-              <ClubCard key={club.id} club={club} userLocation={userLocation} />
+          <div className="grid gap-3 md:grid-cols-3">
+            {nearbyClubs.slice(0, 3).map((club, index) => (
+              <div key={club.id} className="relative transform scale-95">
+                <ClubCard club={club} userLocation={userLocation} compact={true} />
+                {index === 0 && (
+                  <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow-md">
+                    Più vicino
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>
       )}
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+      {/* 3. RICERCA PERSONALIZZATA - Collapsible */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border-2 border-gray-200 dark:border-gray-700 p-6 shadow-lg">
         <div className="text-center mb-6">
           <button
             onClick={() => setShowCustomSearch(!showCustomSearch)}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 text-lg font-medium rounded-lg transition-all inline-flex items-center gap-2"
+            className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-8 py-4 text-lg font-bold rounded-xl transition-all inline-flex items-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
-            {showCustomSearch ? 'Nascondi Ricerca' : 'Cerca Altri Circoli'}
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            {showCustomSearch ? 'Nascondi Ricerca Avanzata' : 'Ricerca Avanzata'}
           </button>
         </div>
 

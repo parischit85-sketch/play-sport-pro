@@ -56,6 +56,11 @@ export function AuthProvider({ children }) {
       return USER_ROLES.SUPER_ADMIN;
     }
 
+    // Check profile role for Club Admin
+    if (profile?.role === 'club-admin') {
+      return USER_ROLES.CLUB_ADMIN;
+    }
+
     // Check custom claims
     if (customClaims.role === 'club_admin') {
       return USER_ROLES.CLUB_ADMIN;

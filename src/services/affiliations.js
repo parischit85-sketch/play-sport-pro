@@ -175,12 +175,12 @@ export async function approveAffiliation(affiliationId, approverId) {
 
     const affiliationRef = doc(db, 'affiliations', affiliationId);
 
-    await updateDoc(affiliationRef, {
+    await setDoc(affiliationRef, {
       status: AFFILIATION_STATUS.APPROVED,
       approvedAt: Timestamp.now(),
       approvedBy: approverId,
       updatedAt: Timestamp.now(),
-    });
+    }, { merge: true });
 
     console.log('✅ Affiliation approved');
     return true;
@@ -284,12 +284,12 @@ export async function updateAffiliationRole(affiliationId, newRole, updaterId) {
 
     const affiliationRef = doc(db, 'affiliations', affiliationId);
 
-    await updateDoc(affiliationRef, {
+    await setDoc(affiliationRef, {
       role: newRole,
       permissions: getRolePermissions(newRole),
       updatedAt: Timestamp.now(),
       updatedBy: updaterId,
-    });
+    }, { merge: true });
 
     console.log('✅ Affiliation role updated');
     return true;

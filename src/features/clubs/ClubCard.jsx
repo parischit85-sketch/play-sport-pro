@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { requestAffiliation, getExistingAffiliation, calculateDistance } from '@services/clubs.js';
 
-const ClubCard = ({ club, userLocation }) => {
+const ClubCard = ({ club, userLocation, compact = false }) => {
   const navigate = useNavigate();
   const { user, userAffiliations, loadUserAffiliations, AFFILIATION_STATUS } = useAuth();
   const [userAffiliation, setUserAffiliation] = useState(null);
@@ -65,6 +65,47 @@ const ClubCard = ({ club, userLocation }) => {
     console.log('🏢 [ClubCard] Entering club:', club.id);
     navigate(`/club/${club.id}/dashboard`);
   };
+
+  // COMPACT VERSION - Solo logo, nome e città
+  if (compact) {
+    // Prova a trovare la città in vari campi possibili
+    const city = club.location?.city || club.city || club.address?.city || 'N/D';
+    
+    return (
+      <div
+        onClick={handleEnterClub}
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md 
+                  transition-all duration-300 overflow-hidden cursor-pointer 
+                  border border-gray-100 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600
+                  transform hover:scale-102"
+      >
+        <div className="p-4 flex items-center gap-3">
+          {/* Club Logo */}
+          {club.logoUrl ? (
+            <img
+              src={club.logoUrl}
+              alt={`${club.name} logo`}
+              className="h-12 w-12 rounded-lg object-cover shadow-sm border border-gray-200 dark:border-gray-600 flex-shrink-0"
+            />
+          ) : (
+            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm border border-gray-200 dark:border-gray-600 flex-shrink-0">
+              <span className="text-xl">🏓</span>
+            </div>
+          )}
+          
+          {/* Nome e Città */}
+          <div className="flex-1 min-w-0">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white truncate">
+              {club.name}
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+              📍 {city}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Handle club preview (deprecated - now we always go to dashboard)
   const handlePreviewClub = () => {

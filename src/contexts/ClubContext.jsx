@@ -70,7 +70,8 @@ export function ClubProvider({ children }) {
       const courtsData = snapshot.docs
         .map((doc) => ({
           firebaseId: doc.id,
-          id: doc.data().id || doc.id,
+          // Usa sempre il Firebase ID come ID principale per evitare duplicati
+          id: doc.id,
           ...doc.data(),
         }))
         .filter((court) => {
@@ -193,14 +194,8 @@ export function ClubProvider({ children }) {
         console.log('⚠️ [ClubContext] No club users found for club:', clubId);
       }
 
-      if (clubUsers.length === 0) {
-        setPlayers([]);
-        setPlayersLoaded(true);
-        console.log('No players found for club');
-        return;
-      }
-
       // 🆕 NEW: Load original club profiles to get additional data (category, instructorData, etc.)
+      // ⚠️ IMPORTANTE: Carichiamo profiles SEMPRE, anche se clubUsers è vuoto (backward compatibility)
       let clubProfiles = new Map();
       try {
         const profilesSnapshot = await getDocs(collection(db, 'clubs', clubId, 'profiles'));
@@ -217,10 +212,59 @@ export function ClubProvider({ children }) {
         console.log('⚠️ Could not load club profiles, continuing without additional data');
       }
 
-      // Transform club users to player format with merged profile data
-      const playersData = clubUsers.map((clubUser) => {
-        const userId = clubUser.userId;
-        const originalProfile = clubProfiles.get(userId);
+      // 🔄 FALLBACK: Se non ci sono users ma ci sono profiles, usa i profiles (backward compatibility)
+      if (clubUsers.length === 0 && clubProfiles.size === 0) {
+        setPlayers([]);
+        setPlayersLoaded(true);
+        console.log('No players found for club');
+        return;
+      }
+
+      // 🔄 LEGACY SUPPORT: Se non ci sono users, crea players solo dai profiles
+      let playersData = [];
+      
+      if (clubUsers.length === 0 && clubProfiles.size > 0) {
+        console.log('🔄 [ClubContext] Using legacy profiles system (no users collection)');
+        
+        playersData = Array.from(clubProfiles.entries()).map(([userId, profileData]) => ({
+          id: userId,
+          name: profileData.name || profileData.displayName || 'Unknown',
+          displayName: profileData.name || profileData.displayName || 'Unknown',
+          email: profileData.email || '',
+          phone: profileData.phone || '',
+          rating: profileData.rating || profileData.baseRating || 1500,
+          role: profileData.role || 'player',
+          isLinked: true, // Profiles have userId as document ID
+          clubUserId: null, // No club user document
+          
+          // Additional data from profile
+          category: profileData.category || 'member',
+          instructorData: profileData.instructorData || null,
+          tournamentData: profileData.tournamentData ? {
+            ...profileData.tournamentData,
+            currentRanking: profileData.tournamentData.currentRanking || profileData.rating || 1500
+          } : null,
+          
+          baseRating: profileData.baseRating || profileData.rating || 1500,
+          tags: profileData.tags || [],
+          subscriptions: profileData.subscriptions || [],
+          wallet: profileData.wallet || { balance: 0, currency: 'EUR' },
+          notes: profileData.notes || [],
+          bookingHistory: profileData.bookingHistory || [],
+          matchHistory: profileData.matchHistory || [],
+          isActive: profileData.isActive !== false,
+          
+          createdAt: profileData.createdAt || null,
+          updatedAt: profileData.updatedAt || null,
+          lastActivity: profileData.lastActivity || null,
+        }));
+        
+        console.log('✅ [ClubContext] Created', playersData.length, 'players from legacy profiles');
+      } else {
+        // Transform club users to player format with merged profile data
+        playersData = clubUsers.map((clubUser) => {
+          const userId = clubUser.userId;
+          const originalProfile = clubProfiles.get(userId);
         
         // Debug tournamentData mapping
         if (originalProfile?.tournamentData) {
@@ -266,7 +310,8 @@ export function ClubProvider({ children }) {
         };
 
         return mergedData;
-      });
+        });
+      }
 
       // 🔍 DEBUG: Analizza i profili caricati per trovare quelli problematici
       console.log('🔍 DEBUGGING PLAYERS DATA:');
@@ -512,6 +557,22 @@ export function ClubProvider({ children }) {
     },
     [clubId, matchesLoaded]
   );
+
+  // Reset players and matches when clubId changes
+  useEffect(() => {
+    console.log('🔄 [ClubContext] clubId changed, resetting state:', {
+      clubId,
+      timestamp: new Date().toISOString(),
+    });
+    
+    // Reset players state when clubId changes
+    setPlayersLoaded(false);
+    setPlayers([]);
+    
+    // Reset matches state when clubId changes
+    setMatchesLoaded(false);
+    setMatches([]);
+  }, [clubId]);
 
   // Carica automaticamente players e matches quando cambia clubId (dopo definizione funzioni)
   useEffect(() => {

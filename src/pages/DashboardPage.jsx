@@ -1,7 +1,7 @@
 // =============================================
 // FILE: src/pages/DashboardPage.jsx
 // =============================================
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { themeTokens } from '@lib/theme.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
@@ -9,6 +9,7 @@ import { useClub } from '@contexts/ClubContext.jsx';
 import { useClubAdminRedirect } from '../hooks/useClubAdminRedirect.js';
 import PWABanner from '../components/ui/PWABanner.jsx';
 import StatsCard from '@ui/StatsCard.jsx';
+import BookingTypeModal from '../components/ui/BookingTypeModal.jsx';
 
 // Lazy load heavy components
 const UserBookingsCard = React.lazy(() => import('@ui/UserBookingsCard.jsx'));
@@ -46,9 +47,10 @@ QuickAction.displayName = 'QuickAction';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { user, userRole, userAffiliations, isInstructor } = useAuth();
-  const { players, matches, clubId } = useClub();
+  const { user, userRole, userAffiliations } = useAuth();
+  const { players, matches, clubId, playersLoaded, isUserInstructor } = useClub();
   const T = React.useMemo(() => themeTokens(), []);
+  const [showBookingModal, setShowBookingModal] = useState(false);
 
   console.log('🏠 [DashboardPage] Rendering:', {
     clubId,
@@ -62,17 +64,35 @@ export default function DashboardPage() {
   useClubAdminRedirect();
 
   // Check if user is instructor in current club
-  const isUserInstructor = isInstructor(clubId);
+  // IMPORTANTE: usa isUserInstructor da ClubContext che controlla i players del circolo corrente
+  // e verifica solo dopo che i players sono caricati per evitare falsi positivi
+  // ⚠️ INOLTRE: mostra InstructorDashboard SOLO quando c'è un clubId (non nella dashboard principale)
+  const isInstructor = clubId && playersLoaded && isUserInstructor(user?.uid);
 
-  // Hook per redirect automatico dei CLUB_ADMIN
-  useClubAdminRedirect();
+  console.log('👨‍🏫 [DashboardPage] Instructor check:', {
+    clubId,
+    userId: user?.uid,
+    playersLoaded,
+    isInstructor,
+    userInPlayers: players?.find(p => p.id === user?.uid),
+  });
 
-  // Memoized quick actions to prevent recreating on every render (solo Cerca Club e Prenota)
+  // Handle booking type selection - same logic as BottomNavigation
+  const handleBookingTypeSelect = (type, selectedClubId) => {
+    // Use selectedClubId from modal if available, otherwise use 'sporting-cat' as fallback
+    const targetClubId = selectedClubId || 'sporting-cat';
+    const path = type === 'campo' ? `/club/${targetClubId}/booking` : `/club/${targetClubId}/lessons`;
+
+    console.log('📱 [DashboardPage] Booking type selected:', type, 'for club:', targetClubId, path);
+    navigate(path);
+  };
+
+  // Memoized quick actions to prevent recreating on every render (solo Cerca Circoli e Prenota)
   const quickActions = React.useMemo(
     () => [
       {
-        title: 'Cerca Club',
-        description: 'Trova e affiliati a nuovi club',
+        title: 'Cerca Circoli',
+        description: 'Trova e affiliati a nuovi circoli',
         icon: (
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -81,7 +101,7 @@ export default function DashboardPage() {
             />
           </svg>
         ),
-        action: () => navigate('/search-clubs'),
+        action: () => navigate('/clubs/search'),
         iconWrap:
           'bg-gradient-to-r from-blue-50/80 to-cyan-50/60 dark:from-blue-900/40 dark:to-cyan-900/30 text-blue-600 dark:text-blue-400 border-blue-200/50 dark:border-blue-500/30',
       },
@@ -95,7 +115,7 @@ export default function DashboardPage() {
             <path d="M12 13v6M9 16h6" strokeWidth={1.5} />
           </svg>
         ),
-        action: () => navigate('/prenota'),
+        action: () => setShowBookingModal(true), // Apri modal come in BottomNavigation
         iconWrap:
           'bg-gradient-to-r from-emerald-50/80 to-green-50/60 dark:from-emerald-900/40 dark:to-green-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-500/30',
       },
@@ -130,7 +150,7 @@ export default function DashboardPage() {
       <PWABanner />
 
       {/* Instructor Dashboard - Full Width */}
-      {isUserInstructor ? (
+      {isInstructor ? (
         <div className="p-2">
           <React.Suspense
             fallback={
@@ -296,6 +316,14 @@ export default function DashboardPage() {
           </div>
         </>
       )}
+
+      {/* Booking Type Modal - same as BottomNavigation */}
+      <BookingTypeModal
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        onSelectType={handleBookingTypeSelect}
+        clubId={null} // null to show club selection
+      />
     </div>
   );
 }

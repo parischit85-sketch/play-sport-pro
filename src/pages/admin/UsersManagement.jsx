@@ -178,29 +178,16 @@ const UsersManagement = () => {
       const affiliationId = `${user.id}_${clubId}`;
       const affiliationRef = doc(db, 'affiliations', affiliationId);
 
-      try {
-        // Tenta di aggiornare l'affiliazione esistente
-        await updateDoc(affiliationRef, {
-          role: 'admin',
-          isClubAdmin: true,
-          status: 'approved',
-          promotedToAdminAt: new Date().toISOString(),
-          _updatedAt: new Date().toISOString(),
-        });
-      } catch (error) {
-        // Se non esiste, crea una nuova affiliazione
-        await setDoc(affiliationRef, {
-          userId: user.id,
-          clubId: clubId,
-          role: 'admin',
-          isClubAdmin: true,
-          status: 'approved',
-          joinedAt: new Date().toISOString(),
-          promotedToAdminAt: new Date().toISOString(),
-          _createdAt: new Date().toISOString(),
-          _updatedAt: new Date().toISOString(),
-        });
-      }
+      // Usa setDoc con merge per gestire sia creazione che aggiornamento
+      await setDoc(affiliationRef, {
+        userId: user.id,
+        clubId: clubId,
+        role: 'admin',
+        isClubAdmin: true,
+        status: 'approved',
+        promotedToAdminAt: new Date().toISOString(),
+        _updatedAt: new Date().toISOString(),
+      }, { merge: true });
 
       // 3. Aggiorna il documento del circolo con la lista dei manager
       const clubRef = doc(db, 'clubs', clubId);
@@ -252,12 +239,12 @@ const UsersManagement = () => {
       const affiliationRef = doc(db, 'affiliations', affiliationId);
 
       try {
-        await updateDoc(affiliationRef, {
+        await setDoc(affiliationRef, {
           role: 'member',
           isClubAdmin: false,
           demotedFromAdminAt: new Date().toISOString(),
           _updatedAt: new Date().toISOString(),
-        });
+        }, { merge: true });
       } catch (error) {
         console.error("Errore nell'aggiornamento dell'affiliazione:", error);
         // Continua anche se l'affiliazione non esiste

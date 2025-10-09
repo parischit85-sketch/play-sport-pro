@@ -3,7 +3,7 @@
 // FUTURISTIC REDESIGN - Modern glassmorphism UI
 // =============================================
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import BookingTypeModal from './BookingTypeModal.jsx';
 
 export default function BottomNavigation({
@@ -17,9 +17,14 @@ export default function BottomNavigation({
   const [showClubMenu, setShowClubMenu] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Get dynamic club ID for booking paths
-  const clubId = currentClub?.id || 'sporting-cat'; // Fallback to sporting-cat
+  // Don't use fallback for modal - we want null when not in a club
+  // Also check if we're actually inside a club route (not just dashboard)
+  const isInsideClubRoute = location.pathname.startsWith('/club/');
+  const clubId = isInsideClubRoute ? currentClub?.id : null;
+  const clubIdForPaths = currentClub?.id || 'sporting-cat'; // Fallback only for navigation paths
 
   // Detect iOS
   const isIOS =
@@ -53,10 +58,10 @@ export default function BottomNavigation({
       return;
     }
 
-    // Prevent navigation to same tab (especially for profile refresh issue)
+    // Allow navigation even if already on same tab (for refresh)
+    // Just log a warning but don't block navigation
     if (active === item.id) {
-      console.log('⚠️ [BottomNavigation] Already on this tab, skipping');
-      return;
+      console.log('🔄 [BottomNavigation] Already on this tab, will refresh');
     }
 
     // Set active immediately on iOS, with small delay on other platforms
@@ -71,7 +76,7 @@ export default function BottomNavigation({
   };
 
   const handleBookingTypeSelect = (type, selectedClubId) => {
-    const targetClubId = selectedClubId || clubId;
+    const targetClubId = selectedClubId || clubIdForPaths;
     const path = type === 'campo' ? `/club/${targetClubId}/booking` : `/club/${targetClubId}/lessons`;
 
     console.log('📱 [BottomNavigation] Booking type selected:', type, 'for club:', targetClubId, path);
@@ -276,29 +281,28 @@ export default function BottomNavigation({
       (nav) => nav.id !== 'prenota-campo' && nav.id !== 'prenota-lezione'
     );
 
-    // Create single "Prenota" button with prominent icon
+    // Create single "Prenota" button with standard calendar icon
     const prenotaButton = {
       id: 'prenota',
       label: 'Prenota',
       path: '#', // Dummy path since we'll handle click specially
       icon: (
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2.5}
-            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            strokeWidth={2}
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
       ),
     };
 
     // Reorganize tabs in optimal order:
-    // 1. Home (dashboard)
-    // 2. Prenota (central/most used action)
-    // 3. Home Circolo (club-dashboard)
-    // 4. Classifica
-    // 5. Statistiche
+    // 1. Home (dashboard) - LEFT
+    // 2. Home Circolo (club-dashboard) - CENTER-LEFT
+    // 3. Classifica - CENTER-RIGHT
+    // 4. Prenota (most used action) - ALWAYS RIGHT
 
     const orderedItems = [];
     const dashboardItem = publicNavItems.find((nav) => nav.id === 'dashboard');
@@ -306,19 +310,21 @@ export default function BottomNavigation({
     const classificaItem = publicNavItems.find((nav) => nav.id === 'classifica');
     const statsItem = publicNavItems.find((nav) => nav.id === 'stats');
 
-    // Add in optimal order
+    // Add in optimal order - Prenota LAST (right side)
     if (dashboardItem) orderedItems.push(dashboardItem);
-    orderedItems.push(prenotaButton); // Prenota in center position
     if (clubDashboardItem) orderedItems.push(clubDashboardItem);
     if (classificaItem) orderedItems.push(classificaItem);
     if (statsItem) orderedItems.push(statsItem);
-
-    // Add any remaining items that weren't explicitly ordered
+    
+    // Add any remaining items that weren't explicitly ordered (except Prenota)
     publicNavItems.forEach((item) => {
       if (!orderedItems.find((orderedItem) => orderedItem.id === item.id)) {
         orderedItems.push(item);
       }
     });
+
+    // Prenota button ALWAYS LAST (right position)
+    orderedItems.push(prenotaButton);
 
     publicNavItems = orderedItems;
   }
@@ -347,14 +353,16 @@ export default function BottomNavigation({
     : null;
 
   // Mobile nav shows:
-  // - For admins: 3 public tabs + profile + hamburger (5 total)
-  // - For normal users: 4 public tabs + profile (5 total)
-  const maxPublicTabs = isAdmin ? 3 : 4;
-  let mobileNavItems = publicNavItems.slice(0, maxPublicTabs);
-
-  // Always add profile/auth tab if exists
-  if (profileNavItem) {
-    mobileNavItems.push(profileNavItem);
+  // - For admins: 3 public tabs + hamburger (4 total) - profile è in alto a destra
+  // - For normal users in club mode: tutti i public tabs (incluso Prenota) - profile è in alto a destra
+  let mobileNavItems = [];
+  
+  if (isAdmin) {
+    // Admin: primi 3 public tabs (senza tagliare Prenota se presente)
+    mobileNavItems = publicNavItems.slice(0, 3);
+  } else {
+    // Normal users: tutti i public tabs (incluso Prenota)
+    mobileNavItems = [...publicNavItems];
   }
 
   // Determine grid columns based on number of items + hamburger menu
@@ -456,20 +464,15 @@ export default function BottomNavigation({
         </div>
       )}
 
-      <div className={`grid ${gridColsClass} h-[72px] px-1`}>
+      <div className={`flex justify-between items-center h-[72px] px-2`}>
         {mobileNavItems.map((item) => {
-          // Special styling for the "Prenota" button (center button)
-          const isPrenotaButton = item.id === 'prenota';
-
           return (
             <div
               key={item.id}
               className={`bottom-nav-item flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-all duration-300 ${
                 active === item.id
                   ? 'text-blue-500 dark:text-blue-400'
-                  : isPrenotaButton
-                    ? 'text-indigo-600 dark:text-indigo-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
               }`}
               onClick={!isIOS ? (e) => handleNavClick(item, e) : undefined}
               onTouchEnd={isIOS ? (e) => handleNavClick(item, e) : undefined}
@@ -487,18 +490,16 @@ export default function BottomNavigation({
                 zIndex: 1000000,
               }}
             >
-              {/* Icon Container with special styling for Prenota button */}
+              {/* Icon Container with unified styling */}
               <div
-                className={`relative flex items-center justify-center rounded-2xl transition-all duration-300 ${
-                  isPrenotaButton
-                    ? 'w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 shadow-xl shadow-indigo-300/40 dark:shadow-indigo-900/40 hover:shadow-2xl hover:scale-110 -mt-2'
-                    : active === item.id
-                      ? 'w-11 h-11 bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 shadow-lg shadow-blue-300/30 dark:shadow-blue-900/30'
-                      : 'w-11 h-11 hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 hover:shadow-md'
+                className={`relative flex items-center justify-center w-11 h-11 rounded-2xl transition-all duration-300 ${
+                  active === item.id
+                    ? 'bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 shadow-lg shadow-blue-300/30 dark:shadow-blue-900/30'
+                    : 'hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-700 dark:hover:to-gray-600 hover:shadow-md'
                 }`}
               >
                 <div
-                  className={`${isPrenotaButton || active === item.id ? 'text-white scale-110' : 'scale-100'} transition-transform duration-300`}
+                  className={`${active === item.id ? 'text-white scale-110' : 'scale-100'} transition-transform duration-300`}
                 >
                   {item.icon}
                 </div>
@@ -507,9 +508,7 @@ export default function BottomNavigation({
                 className={`text-[10px] font-medium leading-tight mt-0.5 ${
                   active === item.id
                     ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                    : isPrenotaButton
-                      ? 'text-indigo-600 dark:text-indigo-400 font-semibold'
-                      : 'text-gray-600 dark:text-gray-400'
+                    : 'text-gray-600 dark:text-gray-400'
                 }`}
               >
                 {item.label}

@@ -9,17 +9,35 @@ import { getUserMostViewedClubs } from '../../services/club-analytics.js';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
 import { getClubCoordinates, calculateDistance } from '../../utils/maps-utils.js';
-import { getUserLocation, LocationStatus, geocodeCity } from '../../utils/location-service.js';
+import { getUserLocation, LocationStatus } from '../../utils/location-service.js';
 
 export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId }) {
   const { user } = useAuth();
-  const [step, setStep] = useState('club'); // 'club' o 'type'
+  // Se clubId è già fornito, salta direttamente allo step 'type', altrimenti inizia da 'club'
+  const [step, setStep] = useState(clubId ? 'type' : 'club');
   const [selectedClubId, setSelectedClubId] = useState(clubId || null);
   const [clubs, setClubs] = useState([]);
   const [filteredClubs, setFilteredClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+
+  // 🌍 Auto-load GPS location on modal open
+  useEffect(() => {
+    if (isOpen && !userLocation) {
+      console.log('🌍 [BookingTypeModal] Auto-requesting GPS for distance calculation');
+      getUserLocation({ timeout: 5000, highAccuracy: false, cache: true, cacheTTL: 180000 })
+        .then(result => {
+          if (result.status === LocationStatus.SUCCESS) {
+            console.log('✅ [BookingTypeModal] GPS location obtained:', result.coords);
+            setUserLocation(result.coords);
+          } else {
+            console.log('⚠️ [BookingTypeModal] GPS not available:', result.status);
+          }
+        });
+    }
+  }, [isOpen, userLocation]);
 
   const loadClubs = useCallback(async () => {
     setLoading(true);
@@ -27,19 +45,62 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
       // Carica sempre tutti i circoli disponibili per la ricerca
       const clubsRef = collection(db, 'clubs');
       const clubsSnap = await getDocs(clubsRef);
-      const allClubs = clubsSnap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      let allClubs = clubsSnap.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }))
+        // Filter only active clubs for public users
+        .filter(club => club.isActive === true);
+      
+      // 🌍 Calculate distances if userLocation available
+      if (userLocation) {
+        allClubs = allClubs.map(club => {
+          const coords = getClubCoordinates(club);
+          if (!coords) return { ...club, distance: Infinity };
+          
+          const distance = calculateDistance(
+            userLocation.lat,
+            userLocation.lng,
+            coords.lat,
+            coords.lng
+          );
+          
+          return { ...club, distance };
+        }).sort((a, b) => a.distance - b.distance); // Sort by distance
+        
+        console.log('🌍 [BookingTypeModal] Clubs sorted by distance:', {
+          count: allClubs.length,
+          first3: allClubs.slice(0, 3).map(c => ({ name: c.name, distance: c.distance }))
+        });
+      }
       
       setClubs(allClubs);
       
       // Carica anche i più visualizzati
       const viewedClubs = await getUserMostViewedClubs(user.uid, 10);
       if (viewedClubs.length > 0) {
-        const clubsData = viewedClubs
-          .filter(v => v.club !== null)
+        let clubsData = viewedClubs
+          .filter(v => v.club !== null && v.club.isActive === true) // Filter active clubs
           .map(v => v.club);
+        
+        // 🌍 Add distances to viewed clubs too
+        if (userLocation) {
+          clubsData = clubsData.map(club => {
+            const coords = getClubCoordinates(club);
+            if (!coords) return { ...club, distance: Infinity };
+            
+            const distance = calculateDistance(
+              userLocation.lat,
+              userLocation.lng,
+              coords.lat,
+              coords.lng
+            );
+            
+            return { ...club, distance };
+          }).sort((a, b) => a.distance - b.distance);
+        }
+        
         setFilteredClubs(clubsData);
       } else {
         setFilteredClubs(allClubs);
@@ -51,7 +112,7 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, userLocation]);
 
   // Carica circoli quando il modal si apre
   useEffect(() => {
@@ -85,10 +146,12 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
   // Reset quando chiude
   useEffect(() => {
     if (!isOpen) {
-      setStep('club');
+      // Se c'è un clubId, riparte da 'type', altrimenti da 'club'
+      setStep(clubId ? 'type' : 'club');
       setSelectedClubId(clubId || null);
       setSearchText('');
       setShowSearch(false);
+      setUserLocation(null); // Reset GPS location
     }
   }, [isOpen, clubId]);
 
@@ -203,9 +266,13 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
   };
 
   const modalContent = (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <div
       className="fixed inset-0 z-[1000000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
       onClick={handleOverlayClick}
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      role="dialog"
+      aria-modal="true"
       style={{
         animation: 'fadeIn 0.2s ease-out',
         WebkitTapHighlightColor: 'transparent',
@@ -217,6 +284,7 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
       }}
     >
       {/* Modal Container - Centered */}
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md transform transition-all"
         style={{
@@ -225,6 +293,8 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
           overflow: 'auto',
         }}
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        role="document"
       >
         {/* Header */}
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">

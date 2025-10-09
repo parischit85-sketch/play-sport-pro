@@ -15,6 +15,7 @@ import { trackPageView } from '@lib/analytics.js';
 // Lazy load pages for better performance
 const LoginPage = React.lazy(() => import('@pages/LoginPage.jsx'));
 const RegisterPage = React.lazy(() => import('@pages/RegisterPage.jsx'));
+const RegisterClubPage = React.lazy(() => import('@pages/RegisterClubPage.jsx'));
 const LandingPage = React.lazy(() => import('@pages/LandingPage.jsx'));
 const DashboardHomePage = React.lazy(() => import('@pages/DashboardHomePage.jsx'));
 const DashboardPage = React.lazy(() => import('@pages/DashboardPage.jsx'));
@@ -45,6 +46,7 @@ const AdminLogin = React.lazy(() => import('@pages/admin/AdminLogin.jsx'));
 const AdminDashboard = React.lazy(() => import('@pages/admin/AdminDashboard.jsx'));
 const ClubsManagement = React.lazy(() => import('@pages/admin/ClubsManagement.jsx'));
 const ClubSettings = React.lazy(() => import('@pages/admin/ClubSettings.jsx'));
+const ClubRegistrationRequests = React.lazy(() => import('@pages/admin/ClubRegistrationRequests.jsx'));
 const UsersManagement = React.lazy(() => import('@pages/admin/UsersManagement.jsx'));
 const AdminProtectedRoute = React.lazy(() => import('@components/admin/AdminProtectedRoute.jsx'));
 
@@ -92,6 +94,14 @@ export default function AppRouter() {
                   element={
                     <PublicRoute>
                       <RegisterPage />
+                    </PublicRoute>
+                  }
+                />
+                <Route
+                  path="/register-club"
+                  element={
+                    <PublicRoute>
+                      <RegisterClubPage />
                     </PublicRoute>
                   }
                 />
@@ -150,6 +160,7 @@ export default function AppRouter() {
                         <Route path="dashboard" element={<AdminDashboard />} />
                         <Route path="clubs" element={<ClubsManagement />} />
                         <Route path="clubs/:clubId/settings" element={<ClubSettings />} />
+                        <Route path="club-requests" element={<ClubRegistrationRequests />} />
                         <Route path="users" element={<UsersManagement />} />
                       </Routes>
                     </AdminProtectedRoute>

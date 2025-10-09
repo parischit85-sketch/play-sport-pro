@@ -176,7 +176,7 @@ const ExpandableCourtCard = ({
 
   const addTimeSlot = () => {
     const newSlot = {
-      id: Date.now().toString(),
+      id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       label: 'Nuova fascia',
       eurPerHour: 25,
       from: '08:00',
@@ -437,8 +437,12 @@ export default function AdvancedCourtsManager({
       courtsWithOrder.length > 0 ? Math.max(...courtsWithOrder.map((c) => c.order || 0)) : 0;
     const nextOrder = maxOrder + 1;
 
+    // Non generiamo più un ID locale - lasciamo che Firebase lo generi automaticamente
+    // quando il campo viene salvato. Usiamo un ID temporaneo per il rendering locale.
+    const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     const newCourt = {
-      id: Date.now().toString(),
+      id: tempId, // ID temporaneo che sarà sostituito dall'ID Firebase
       name: newCourtName.trim(),
       hasHeating: false,
       timeSlots: [],

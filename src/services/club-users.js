@@ -335,47 +335,36 @@ export async function getUserClubMemberships(userId) {
 
       console.log(`🔎 [getUserClubMemberships] Checking club: ${clubData.name} (${clubId})`);
 
-      // Check if user is in this club's users collection
-      // Try both userId (old) and linkedUserId (new migration)
-      const clubUsersRef = collection(db, 'clubs', clubId, 'users');
-      
-      // Query 1: userId (vecchio sistema)
-      const userIdQuery = query(clubUsersRef, where('userId', '==', userId));
-      // Query 2: linkedUserId (nuovo sistema dopo migrazione)
-      const linkedUserIdQuery = query(clubUsersRef, where('linkedUserId', '==', userId));
-      
-      const [userIdSnapshot, linkedUserIdSnapshot] = await Promise.all([
-        getDocs(userIdQuery),
-        getDocs(linkedUserIdQuery)
-      ]);
+      // Check if user profile exists in this club (direct document ID match)
+      const profileRef = doc(db, 'clubs', clubId, 'profiles', userId);
+      const profileSnap = await getDoc(profileRef);
 
-      // Prendi il primo risultato trovato (priorità a linkedUserId)
-      let clubUserDoc = null;
-      if (!linkedUserIdSnapshot.empty) {
-        clubUserDoc = linkedUserIdSnapshot.docs[0];
-        console.log(`✅ [getUserClubMemberships] Found via linkedUserId in ${clubData.name}`);
-      } else if (!userIdSnapshot.empty) {
-        clubUserDoc = userIdSnapshot.docs[0];
-        console.log(`✅ [getUserClubMemberships] Found via userId in ${clubData.name}`);
-      }
+      if (profileSnap.exists()) {
+        const profileData = profileSnap.data();
 
-      if (clubUserDoc) {
-        const clubUserData = clubUserDoc.data();
+        // Check if user is admin/owner of this club
+        const isClubAdmin = profileData.role === 'club_admin' || profileData.isClubAdmin || clubData.ownerId === userId;
+
+        // ⚠️ SECURITY: Only show approved clubs to regular users
+        // Club admins/owners can see their own pending clubs
+        if (clubData.status !== 'approved' && !isClubAdmin) {
+          console.log(`⏭️ [getUserClubMemberships] Skipping non-approved club for regular user: ${clubData.name} (status: ${clubData.status})`);
+          continue;
+        }
 
         console.log(
           `✅ [getUserClubMemberships] Found membership in ${clubData.name}:`,
-          clubUserData
+          profileData
         );
 
         memberships.push({
           clubId,
           clubName: clubData.name,
-          role: clubUserData.role,
-          status: clubUserData.status,
-          addedAt: clubUserData.addedAt,
-          isLinked: !!clubUserData.linkedUserId, // true se ha linkedUserId
-          linkedUserId: clubUserData.linkedUserId || null,
-          clubUserDocId: clubUserDoc.id,
+          role: profileData.role,
+          status: profileData.status || 'active',
+          addedAt: profileData.createdAt || profileData.joinedAt,
+          isClubAdmin,
+          clubStatus: clubData.status, // Include club approval status
         });
       } else {
         console.log(`❌ [getUserClubMemberships] No membership found in ${clubData.name}`);

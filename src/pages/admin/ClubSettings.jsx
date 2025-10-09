@@ -29,6 +29,7 @@ import {
   X,
   Image as ImageIcon,
 } from 'lucide-react';
+import ClubActivationBanner from '@ui/ClubActivationBanner.jsx';
 
 const ClubSettings = () => {
   const { clubId } = useParams();
@@ -279,6 +280,9 @@ const ClubSettings = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Banner Stato Attivazione Circolo */}
+        <ClubActivationBanner club={club} />
+
         <div className="flex space-x-8">
           {/* Sidebar Tabs */}
           <div className="w-64 flex-shrink-0">

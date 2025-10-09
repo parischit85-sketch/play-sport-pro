@@ -13,22 +13,30 @@ const InstructorDashboard = React.lazy(
 );
 
 export default function InstructorDashboardPage() {
-  const { user, isInstructor } = useAuth();
-  const { clubId } = useClub();
+  const { user } = useAuth();
+  const { clubId, playersLoaded, isUserInstructor } = useClub();
   const navigate = useNavigate();
 
   // Check if user is instructor in current club
-  const isUserInstructor = isInstructor(clubId);
+  // IMPORTANTE: usa isUserInstructor da ClubContext che controlla i players del circolo corrente
+  const isInstructor = playersLoaded && isUserInstructor(user?.uid);
+
+  console.log('👨‍🏫 [InstructorDashboardPage] Instructor check:', {
+    clubId,
+    userId: user?.uid,
+    playersLoaded,
+    isInstructor,
+  });
 
   // Redirect if not instructor
   React.useEffect(() => {
-    if (user && clubId && !isUserInstructor) {
+    if (user && clubId && playersLoaded && !isInstructor) {
       console.log('⚠️ User is not an instructor, redirecting to dashboard');
       navigate('/dashboard');
     }
-  }, [user, clubId, isUserInstructor, navigate]);
+  }, [user, clubId, playersLoaded, isInstructor, navigate]);
 
-  if (!isUserInstructor) {
+  if (!playersLoaded || !isInstructor) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 p-4 flex items-center justify-center">
         <div className="text-center">

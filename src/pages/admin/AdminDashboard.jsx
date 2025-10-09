@@ -385,6 +385,16 @@ const AdminDashboard = () => {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Azioni Rapide</h3>
             <div className="space-y-3">
               <button
+                onClick={() => navigate('/admin/club-requests')}
+                className="w-full flex items-center space-x-3 p-3 text-left hover:bg-gray-50 rounded-lg transition-colors bg-yellow-50 border border-yellow-200"
+              >
+                <Building2 className="w-5 h-5 text-yellow-600" />
+                <div className="flex-1">
+                  <span className="block font-medium">Richieste Circoli</span>
+                  <span className="text-xs text-yellow-600">Nuove registrazioni da approvare</span>
+                </div>
+              </button>
+              <button
                 onClick={() => navigate('/admin/clubs/new')}
                 className="w-full flex items-center space-x-3 p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
               >

@@ -112,7 +112,11 @@ export async function getUserMostViewedClubs(userId, limitCount = 3) {
         const clubDocSnap = await getDoc(clubDocRef);
         
         if (clubDocSnap.exists()) {
-          clubData = { id: clubId, ...clubDocSnap.data() };
+          const data = clubDocSnap.data();
+          // 🔒 FILTRO: Solo circoli attivi
+          if (data.isActive === true) {
+            clubData = { id: clubId, ...data };
+          }
         }
       } catch (clubError) {
         console.error(`❌ [getUserMostViewedClubs] Error loading club ${clubId}:`, clubError);

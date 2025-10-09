@@ -101,9 +101,9 @@ export default function RecentClubsCard({ user }) {
         // Usa getUserMostViewedClubs da club-analytics.js
         const mostViewedClubs = await getUserMostViewedClubs(user.uid, 3);
         
-        // Filtra solo circoli che hanno dati validi
+        // Filtra solo circoli che hanno dati validi E sono attivi
         const clubsData = mostViewedClubs
-          .filter(viewData => viewData.club !== null) // Solo club esistenti nel DB
+          .filter(viewData => viewData.club !== null && viewData.club.isActive === true) // Solo club esistenti e attivi
           .map(viewData => ({
             id: viewData.clubId,
             viewCount: viewData.viewCount, // Numero di visualizzazioni
