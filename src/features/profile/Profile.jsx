@@ -16,14 +16,13 @@ export default function Profile({ T }) {
   // Profile component rendered
   const user = auth.currentUser;
   const navigate = useNavigate();
-  const { darkMode, toggleTheme, addNotification } = useUI();
+  const { darkMode, toggleTheme } = useUI();
   const {
     logout,
     setUserProfile,
     reloadUserData,
     userRole,
     isClubAdmin,
-    userAffiliations,
     getFirstAdminClub,
   } = useAuth();
   const { clubId, club } = useClub();
@@ -161,24 +160,6 @@ export default function Profile({ T }) {
     }
   };
 
-  // Simula aggiunta a prenotazione -> notifica test
-  const simulateAddedToBooking = () => {
-    const when = new Date(Date.now() + 45 * 60000); // +45 min
-    const time = when.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-    const fake = {
-      court: 'Campo 2',
-      club: (club && club.name) || 'Club Demo',
-      time,
-      date: when.toISOString().slice(0, 10),
-    };
-    addNotification({
-      type: 'success',
-      title: 'Aggiunto alla prenotazione',
-      message: `Sei stato aggiunto su ${fake.court} alle ${fake.time} (${fake.club})`,
-    });
-    console.log('🔔 [Profile] Simulated booking addition notification:', fake);
-  };
-
   const getProviderIcon = (providerId) => {
     switch (providerId) {
       case 'google.com':
@@ -297,16 +278,6 @@ export default function Profile({ T }) {
                   </span>
                 </div>
               </div>
-            </div>
-            {/* Pulsante test notifica prenotazione */}
-            <div className="mt-4">
-              <button
-                type="button"
-                onClick={simulateAddedToBooking}
-                className="px-4 py-2 text-sm rounded-lg bg-green-500 hover:bg-green-600 text-white shadow inline-flex items-center gap-2"
-              >
-                🏓 Test notifica prenotazione
-              </button>
             </div>
           </div>
 
