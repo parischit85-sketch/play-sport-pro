@@ -4,10 +4,7 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BOOKING_CONFIG } from '@services/bookings.js';
-import {
-  updateBooking,
-  getUserBookings,
-} from '@services/unified-booking-service.js';
+import { updateBooking, getUserBookings } from '@services/unified-booking-service.js';
 import { useUserBookingsFast } from '@hooks/useBookingPerformance.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import BookingDetailModal from '@ui/BookingDetailModal.jsx';
@@ -57,6 +54,14 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
   return (
     <div
       onClick={() => onBookingClick(booking)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onBookingClick(booking);
+        }
+      }}
+      role="button"
+      tabIndex={0}
       className={`${cardColors.background} backdrop-blur-xl border-2 ${cardColors.border}
         hover:bg-white dark:hover:bg-gray-800 ${cardColors.hoverBorder} 
         hover:shadow-2xl ${cardColors.hoverShadow} 
@@ -186,7 +191,7 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
 // Provide an explicit display name for better debugging and to satisfy lint rules
 BookingCard.displayName = 'BookingCard';
 
-export default function UserBookingsCard({ user, state, T, compact }) {
+export default function UserBookingsCard({ user, state, T, compact: _compact, onBookNow }) {
   console.log('📅 [UserBookingsCard] Mounting with user:', user?.uid || 'no user');
 
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -202,8 +207,6 @@ export default function UserBookingsCard({ user, state, T, compact }) {
     bookings: courtBookings,
     loading: courtLoading,
     refresh: refreshCourts,
-    hasBookings: hasCourtBookings,
-    lastUpdate,
   } = useUserBookingsFast({
     refreshInterval: 30000, // 30 seconds
     enableBackground: true,
@@ -247,9 +250,9 @@ export default function UserBookingsCard({ user, state, T, compact }) {
 
   // Listen for booking service events to auto-refresh data
   useEffect(() => {
-    const handleBookingUpdate = (data) => {
-      if (mountedRef.current && data?.id) {
-        console.log('🔄 [UserBookingsCard] Booking updated, refreshing data:', data.id);
+    const handleBookingUpdate = (_data) => {
+      if (mountedRef.current && _data?.id) {
+        console.log('🔄 [UserBookingsCard] Booking updated, refreshing data:', _data.id);
         // Refresh both court and lesson bookings
         refreshCourts();
         if (authUser) {
@@ -258,7 +261,7 @@ export default function UserBookingsCard({ user, state, T, compact }) {
       }
     };
 
-    const handleBookingCreate = (booking) => {
+    const handleBookingCreate = (_booking) => {
       if (mountedRef.current) {
         console.log('➕ [UserBookingsCard] New booking created, refreshing data');
         refreshCourts();
@@ -329,7 +332,7 @@ export default function UserBookingsCard({ user, state, T, compact }) {
             title: isLesson ? 'Prenotazione Lezione' : 'Prenotazione Padel',
             text: shareText,
           });
-        } catch (err) {
+        } catch {
           console.log('Condivisione annullata');
         }
       } else {
@@ -364,7 +367,7 @@ export default function UserBookingsCard({ user, state, T, compact }) {
             players: booking.players,
           };
 
-          const result = await updateBooking(booking.id, { players: booking.players }, authUser);
+          await updateBooking(booking.id, { players: booking.players }, authUser);
 
           // Aggiorna lo stato locale
           setSelectedBooking(updatedBooking);
@@ -552,7 +555,7 @@ export default function UserBookingsCard({ user, state, T, compact }) {
             Non hai prenotazioni attive
           </p>
           <button
-            onClick={() => navigate('/booking')}
+            onClick={onBookNow || (() => navigate('/booking'))}
             className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
           >
             Prenota Ora
@@ -611,7 +614,15 @@ export default function UserBookingsCard({ user, state, T, compact }) {
 
           {/* Card "Prenota nuovo" ultra-compatta */}
           <div
-            onClick={() => navigate('/booking')}
+            onClick={onBookNow || (() => navigate('/booking'))}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                (onBookNow || (() => navigate('/booking')))();
+              }
+            }}
+            role="button"
+            tabIndex={0}
             className="bg-gradient-to-br from-blue-50/95 to-blue-100/95 dark:from-blue-900/50 dark:to-blue-800/50 
               hover:from-blue-100 hover:to-blue-200 dark:hover:from-blue-800/60 dark:hover:to-blue-700/60
               backdrop-blur-sm border-2 border-dashed border-blue-500/90 dark:border-blue-400/80 rounded-2xl cursor-pointer

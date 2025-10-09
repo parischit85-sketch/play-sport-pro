@@ -8,7 +8,7 @@ import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useClubAdminRedirect } from '../hooks/useClubAdminRedirect.js';
 import PWABanner from '../components/ui/PWABanner.jsx';
-import StatsCard from '@ui/StatsCard.jsx';
+// import StatsCard from '@ui/StatsCard.jsx';
 import BookingTypeModal from '../components/ui/BookingTypeModal.jsx';
 
 // Lazy load heavy components
@@ -19,7 +19,7 @@ const InstructorDashboard = React.lazy(
 );
 
 // Performance optimized quick actions
-const QuickAction = React.memo(({ action, T }) => (
+const QuickAction = React.memo(({ action, T: _T }) => (
   <button
     onClick={action.action}
     className={`relative bg-emerald-50/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/40 dark:border-gray-600/40 hover:border-emerald-300/60 dark:hover:border-gray-500/60 p-6 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group text-center overflow-hidden`}
@@ -47,8 +47,8 @@ QuickAction.displayName = 'QuickAction';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { user, userRole, userAffiliations } = useAuth();
-  const { players, matches, clubId, playersLoaded, isUserInstructor } = useClub();
+  const { user, userRole } = useAuth();
+  const { players, clubId, playersLoaded, isUserInstructor } = useClub();
   const T = React.useMemo(() => themeTokens(), []);
   const [showBookingModal, setShowBookingModal] = useState(false);
 
@@ -74,14 +74,15 @@ export default function DashboardPage() {
     userId: user?.uid,
     playersLoaded,
     isInstructor,
-    userInPlayers: players?.find(p => p.id === user?.uid),
+    userInPlayers: players?.find((p) => p.id === user?.uid),
   });
 
   // Handle booking type selection - same logic as BottomNavigation
   const handleBookingTypeSelect = (type, selectedClubId) => {
     // Use selectedClubId from modal if available, otherwise use 'sporting-cat' as fallback
     const targetClubId = selectedClubId || 'sporting-cat';
-    const path = type === 'campo' ? `/club/${targetClubId}/booking` : `/club/${targetClubId}/lessons`;
+    const path =
+      type === 'campo' ? `/club/${targetClubId}/booking` : `/club/${targetClubId}/lessons`;
 
     console.log('📱 [DashboardPage] Booking type selected:', type, 'for club:', targetClubId, path);
     navigate(path);
@@ -158,7 +159,10 @@ export default function DashboardPage() {
                 <div className="h-8 bg-gray-200/80 dark:bg-gray-600/60 rounded w-64 mb-6"></div>
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="h-24 bg-gray-200/60 dark:bg-gray-600/40 rounded-2xl"></div>
+                    <div
+                      key={i}
+                      className="h-24 bg-gray-200/60 dark:bg-gray-600/40 rounded-2xl"
+                    ></div>
                   ))}
                 </div>
                 <div className="h-96 bg-gray-200/60 dark:bg-gray-600/40 rounded-2xl"></div>
@@ -190,7 +194,7 @@ export default function DashboardPage() {
                   </div>
                 }
               >
-                <UserBookingsCard user={user} T={T} />
+                <UserBookingsCard user={user} T={T} onBookNow={() => setShowBookingModal(true)} />
               </React.Suspense>
             </div>
 
@@ -262,7 +266,12 @@ export default function DashboardPage() {
                   </div>
                 }
               >
-                <UserBookingsCard user={user} T={T} compact={true} />
+                <UserBookingsCard
+                  user={user}
+                  T={T}
+                  compact={true}
+                  onBookNow={() => setShowBookingModal(true)}
+                />
               </React.Suspense>
             </div>
 
