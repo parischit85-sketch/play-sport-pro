@@ -11,8 +11,8 @@ import {
   calculateCertificateStatus,
 } from '@services/medicalCertificates.js';
 import { CERTIFICATE_TYPES } from '../types/playerTypes.js';
-import { useAuth } from '@context/AuthContext.jsx';
-import { useClub } from '@context/ClubContext.jsx';
+import { useAuth } from '@contexts/AuthContext.jsx';
+import { useClub } from '@contexts/ClubContext.jsx';
 
 export default function PlayerMedicalTab({ player, onUpdate, T }) {
   const { currentUser } = useAuth();
