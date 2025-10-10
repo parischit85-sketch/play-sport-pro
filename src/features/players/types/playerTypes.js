@@ -46,6 +46,7 @@ export const NOTE_TYPES = {
 export const CERTIFICATE_TYPES = {
   AGONISTIC: 'agonistic',
   NON_AGONISTIC: 'non-agonistic',
+  OTHER: 'other',
 };
 
 /**
