@@ -21,14 +21,7 @@ import {
 import { db } from './firebase.js';
 import { invalidateUserBookingsCache } from '@hooks/useBookingPerformance.js';
 import { emitBookingCreated, emitBookingUpdated, emitBookingDeleted } from '@utils/bookingEvents.js';
-
-// Simple debug logger fallback (disabled)
-const debugLogger = {
-  info: (_cat, _msg, _data) => {},
-  success: (_cat, _msg, _data) => {},
-  warn: (_cat, _msg, _data) => {},
-  error: (_cat, _msg, _data) => {},
-};
+import { calculateCertificateStatus } from './medicalCertificates.js';
 
 // =============================================
 // CONSTANTS
@@ -53,7 +46,6 @@ const BOOKING_TYPES = {
 // GLOBAL STATE MANAGEMENT
 // =============================================
 let useCloudStorage = false;
-let currentUser = null;
 let bookingCache = new Map(); // chiave: `${scope}|${clubId||'all'}`
 let subscriptions = new Map();
 // Initialization & migration guards
@@ -164,7 +156,9 @@ function setupRealtimeSubscriptions(clubId = null) {
     });
 
     subscriptions.set(subKey, unsubscribe);
-  } catch (error) {}
+  } catch (_error) {
+    // Ignore subscription errors
+  }
 }
 
 // =============================================
@@ -182,6 +176,46 @@ export async function createBooking(bookingData, user, options = {}) {
     );
   }
   if (bookingData.time) bookingData.time = normalizeTime(bookingData.time);
+
+  // 🏥 CHECK CERTIFICATO MEDICO - Verifica se l'utente ha un certificato valido
+  if (user?.uid && clubId && clubId !== 'default-club') {
+    try {
+      // Cerca il giocatore nel club tramite linkedAccountId
+      const playersRef = collection(db, 'clubs', clubId, 'players');
+      const playerQuery = query(playersRef, where('linkedAccountId', '==', user.uid));
+      const playerSnapshot = await getDocs(playerQuery);
+
+      if (!playerSnapshot.empty) {
+        const playerDoc = playerSnapshot.docs[0];
+        const player = playerDoc.data();
+
+        // Controlla il certificato
+        const certStatus = calculateCertificateStatus(player.medicalCertificates?.current?.expiryDate);
+
+        if (certStatus.isExpired) {
+          const daysExpired = Math.abs(certStatus.daysUntilExpiry);
+          throw new Error(
+            `❌ Certificato medico scaduto da ${daysExpired} ${daysExpired === 1 ? 'giorno' : 'giorni'}. ` +
+            `Non puoi effettuare prenotazioni. Contatta il circolo per rinnovare il certificato.`
+          );
+        }
+
+        // Warning se in scadenza critica (< 7 giorni) ma permetti comunque
+        if (certStatus.isExpiring && certStatus.daysUntilExpiry <= 7) {
+          console.warn(
+            `⚠️ [Booking Warning] Certificato medico in scadenza tra ${certStatus.daysUntilExpiry} giorni per utente ${user.uid}`
+          );
+        }
+      }
+    } catch (error) {
+      // Se è l'errore del certificato scaduto, rilancialo
+      if (error.message.includes('Certificato medico scaduto')) {
+        throw error;
+      }
+      // Altri errori (es. permessi) li loggo ma non blocco la prenotazione
+      console.warn('[Certificate Check] Errore durante verifica certificato:', error);
+    }
+  }
 
   // Get existing bookings for validation
   const existingBookings = await getPublicBookings({ forceRefresh: true });
@@ -241,7 +275,8 @@ export async function createBooking(bookingData, user, options = {}) {
   if (useCloudStorage && user) {
     try {
       result = await createCloudBooking(booking);
-    } catch (error) {
+    } catch (_error) {
+      // Fallback to local storage on cloud error
       result = createLocalBooking(booking);
     }
   } else {
@@ -270,7 +305,8 @@ export async function updateBooking(bookingId, updates, user) {
   if (useCloudStorage && user) {
     try {
       result = await updateCloudBooking(bookingId, updateData);
-    } catch (error) {
+    } catch (_error) {
+      // Fallback to local storage on cloud error
       result = updateLocalBooking(bookingId, updateData);
     }
   } else {
@@ -313,7 +349,8 @@ export async function deleteBooking(bookingId, user) {
       await deleteCloudBooking(bookingId);
 
       scheduleSync(400);
-    } catch (error) {
+    } catch (_error) {
+      // Fallback to local storage on cloud error
       deleteLocalBooking(bookingId);
     }
   } else {
@@ -368,7 +405,8 @@ export async function getPublicBookings(options = {}) {
   if (useCloudStorage) {
     try {
       bookings = await loadCloudBookings();
-    } catch (error) {
+    } catch (_error) {
+      // Fallback to local storage on cloud error
       bookings = loadLocalBookings();
     }
   } else {
@@ -571,7 +609,7 @@ async function loadCloudBookings() {
     return snapshot.docs.map((d) => {
       const raw = d.data() || {};
       const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId;
-      const { id: _discardId, ...rest } = raw;
+      const { id: _discardId, ...rest } = raw; // eslint-disable-line no-unused-vars
 
       return {
         ...rest,
@@ -685,7 +723,9 @@ async function syncLocalWithCloud() {
       (b) => (b.status || BOOKING_STATUS.CONFIRMED) !== BOOKING_STATUS.CANCELLED
     );
     localStorage.setItem(STORAGE_KEY, JSON.stringify(activeCloudBookings));
-  } catch (error) {}
+  } catch (_error) {
+    // Ignore localStorage errors
+  }
 }
 
 function scheduleSync(delay = 500) {
@@ -736,7 +776,9 @@ export async function migrateOldData() {
       const parsed = JSON.parse(oldBookings);
       migrations.push(...parsed.map((b) => ({ ...b, type: BOOKING_TYPES.COURT })));
     }
-  } catch (error) {}
+  } catch (_error) {
+    // Ignore migration errors
+  }
 
   // Migrate lesson bookings
   try {
@@ -752,7 +794,9 @@ export async function migrateOldData() {
         }))
       );
     }
-  } catch (error) {}
+  } catch (_error) {
+    // Ignore migration errors
+  }
 
   if (migrations.length > 0) {
     // Remove duplicates by ID and filter out cancelled bookings
@@ -1087,8 +1131,8 @@ export {};
 export async function searchBookingsForPlayer({ userId, email, name }) {
   if (!userId && !email && !name) return [];
 
-  if (!isCloudEnabled) {
-    const localBookings = loadFromLocalStorage();
+  if (!useCloudStorage) {
+    const localBookings = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     return localBookings.filter((booking) => {
       if (!booking) return false;
 
@@ -1183,7 +1227,7 @@ export async function getActiveUserBookings(userId) {
   if (!userId) return [];
   const today = new Date().toISOString().split('T')[0];
 
-  if (!isCloudEnabled) {
+  if (!useCloudStorage) {
     return (
       await getUserBookings({ uid: userId }, { includeHistory: true, includeCancelled: false })
     ).filter(
@@ -1207,7 +1251,7 @@ export async function getActiveUserBookings(userId) {
     return snapshot.docs.map((doc) => {
       const data = doc.data() || {};
       const legacyId = data.id && data.id !== doc.id ? data.id : data.legacyId;
-      const { id, ...bookingData } = data;
+      const { id: _id, ...bookingData } = data; // eslint-disable-line no-unused-vars
 
       return {
         ...bookingData,
@@ -1230,7 +1274,7 @@ export async function getUserBookingHistory(userId) {
   if (!userId) return [];
   const today = new Date().toISOString().split('T')[0];
 
-  if (!isCloudEnabled) {
+  if (!useCloudStorage) {
     return (
       await getUserBookings({ uid: userId }, { includeHistory: true, includeCancelled: true })
     )
@@ -1251,7 +1295,7 @@ export async function getUserBookingHistory(userId) {
     return snapshot.docs.map((doc) => {
       const data = doc.data() || {};
       const legacyId = data.id && data.id !== doc.id ? data.id : data.legacyId;
-      const { id, ...bookingData } = data;
+      const { id: _id, ...bookingData } = data; // eslint-disable-line no-unused-vars
 
       return {
         ...bookingData,
