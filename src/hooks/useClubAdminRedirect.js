@@ -77,7 +77,7 @@ export function useClubAdminRedirect() {
       const adminDashboardPath = `/club/${targetClubId}/admin/dashboard`;
 
       console.log('[useClubAdminRedirect] Redirecting club_admin to:', adminDashboardPath);
-      
+
       // Naviga immediatamente senza timeout per evitare loop
       navigate(adminDashboardPath, { replace: true });
     } else if (userRole === 'club_admin') {
@@ -86,7 +86,7 @@ export function useClubAdminRedirect() {
         userId: user.uid,
         userRole,
         userClubRoles,
-        currentClub
+        currentClub,
       });
     }
   }, [user, userRole, userClubRoles, currentClub, loading, location.pathname, navigate]);

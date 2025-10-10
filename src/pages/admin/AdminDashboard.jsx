@@ -85,7 +85,9 @@ const AdminDashboard = () => {
 
         // Conta prenotazioni dalla root collection
         try {
-          const bookingsSnap = await getDocs(query(collection(db, 'bookings'), where('clubId', '==', clubId)));
+          const bookingsSnap = await getDocs(
+            query(collection(db, 'bookings'), where('clubId', '==', clubId))
+          );
           clubBookings = bookingsSnap.size;
           totalBookings += clubBookings;
         } catch (error) {

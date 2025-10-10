@@ -195,9 +195,9 @@ export default function LessonAdminPanel({
       // dobbiamo aggiornarla direttamente in Firestore, non nel config admin
       if (editingTimeSlot && editingTimeSlot.source === 'instructor') {
         console.log('🎯 Aggiornamento fascia istruttore in Firestore');
-        
+
         const slotRef = doc(db, 'clubs', club.id, 'timeSlots', editingTimeSlot.id);
-        
+
         await updateDoc(slotRef, {
           ...timeSlotData,
           updatedAt: Timestamp.now(),
@@ -239,15 +239,15 @@ export default function LessonAdminPanel({
 
     try {
       // Trova la fascia da eliminare
-      const slotToDelete = (lessonConfig.timeSlots || []).find(slot => slot.id === timeSlotId);
-      
+      const slotToDelete = (lessonConfig.timeSlots || []).find((slot) => slot.id === timeSlotId);
+
       // Se è una fascia creata dall'istruttore, eliminala da Firestore
       if (slotToDelete && slotToDelete.source === 'instructor') {
         console.log('🗑️ Eliminazione fascia istruttore da Firestore');
-        
+
         const slotRef = doc(db, 'clubs', club.id, 'timeSlots', timeSlotId);
         await deleteDoc(slotRef);
-        
+
         console.log('✅ Fascia istruttore eliminata da Firestore');
         return;
       }
@@ -777,7 +777,6 @@ export default function LessonAdminPanel({
                       </div>
                     </div>
                   )}
-
                 </div>
               )}
             </div>

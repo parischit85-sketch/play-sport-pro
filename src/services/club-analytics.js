@@ -3,26 +3,26 @@
 // Servizio per tracciare le visualizzazioni dei circoli
 // =============================================
 
-import { 
-  collection, 
-  doc, 
-  getDoc, 
-  setDoc, 
-  updateDoc, 
-  increment, 
+import {
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  increment,
   serverTimestamp,
   query,
   where,
   getDocs,
   orderBy,
-  limit
+  limit,
 } from 'firebase/firestore';
 import { db } from './firebase.js';
 
 /**
  * Track club view (visualizzazione circolo)
  * Incrementa il counter di visualizzazioni per un utente specifico
- * 
+ *
  * @param {string} userId - ID dell'utente
  * @param {string} clubId - ID del circolo visualizzato
  * @param {string} clubName - Nome del circolo (per cache)
@@ -39,7 +39,7 @@ export async function trackClubView(userId, clubId, clubName = null) {
 
     // Documento: users/{userId}/clubViews/{clubId}
     const viewDocRef = doc(db, 'users', userId, 'clubViews', clubId);
-    
+
     // Prova a leggere il documento esistente
     const viewDocSnap = await getDoc(viewDocRef);
 
@@ -47,9 +47,9 @@ export async function trackClubView(userId, clubId, clubName = null) {
       // Documento esiste: incrementa viewCount e aggiorna lastViewedAt
       await updateDoc(viewDocRef, {
         viewCount: increment(1),
-        lastViewedAt: serverTimestamp()
+        lastViewedAt: serverTimestamp(),
       });
-      
+
       console.log(`✅ [trackClubView] Updated view count for club ${clubId}`);
     } else {
       // Documento non esiste: crealo
@@ -58,9 +58,9 @@ export async function trackClubView(userId, clubId, clubName = null) {
         clubName: clubName || clubId,
         viewCount: 1,
         firstViewedAt: serverTimestamp(),
-        lastViewedAt: serverTimestamp()
+        lastViewedAt: serverTimestamp(),
       });
-      
+
       console.log(`✅ [trackClubView] Created first view for club ${clubId}`);
     }
   } catch (error) {
@@ -72,7 +72,7 @@ export async function trackClubView(userId, clubId, clubName = null) {
 /**
  * Get user's most viewed clubs
  * Recupera i circoli più visualizzati dall'utente
- * 
+ *
  * @param {string} userId - ID dell'utente
  * @param {number} limitCount - Numero massimo di circoli da recuperare (default: 3)
  * @returns {Promise<Array>} Array di circoli ordinati per viewCount
@@ -85,16 +85,12 @@ export async function getUserMostViewedClubs(userId, limitCount = 3) {
 
   try {
     const clubViewsRef = collection(db, 'users', userId, 'clubViews');
-    
+
     // Query ordinata per viewCount decrescente, limitata a limitCount
-    const q = query(
-      clubViewsRef,
-      orderBy('viewCount', 'desc'),
-      limit(limitCount)
-    );
+    const q = query(clubViewsRef, orderBy('viewCount', 'desc'), limit(limitCount));
 
     const snapshot = await getDocs(q);
-    
+
     if (snapshot.empty) {
       return [];
     }
@@ -110,7 +106,7 @@ export async function getUserMostViewedClubs(userId, limitCount = 3) {
       try {
         const clubDocRef = doc(db, 'clubs', clubId);
         const clubDocSnap = await getDoc(clubDocRef);
-        
+
         if (clubDocSnap.exists()) {
           const data = clubDocSnap.data();
           // 🔒 FILTRO: Solo circoli attivi
@@ -129,12 +125,11 @@ export async function getUserMostViewedClubs(userId, limitCount = 3) {
         firstViewedAt: viewData.firstViewedAt,
         club: clubData, // Dati completi del circolo (può essere null se non trovato)
         // Fallback al nome cachato se club non trovato
-        name: clubData?.name || viewData.clubName || clubId
+        name: clubData?.name || viewData.clubName || clubId,
       });
     }
 
     return clubViews;
-
   } catch (error) {
     console.error('❌ [getUserMostViewedClubs] Error getting most viewed clubs:', error);
     return [];
@@ -144,7 +139,7 @@ export async function getUserMostViewedClubs(userId, limitCount = 3) {
 /**
  * Get all club views for a user (senza limite)
  * Utile per statistiche e debug
- * 
+ *
  * @param {string} userId - ID dell'utente
  * @returns {Promise<Array>} Array di tutte le visualizzazioni
  */
@@ -159,14 +154,13 @@ export async function getAllUserClubViews(userId) {
     const q = query(clubViewsRef, orderBy('viewCount', 'desc'));
     const snapshot = await getDocs(q);
 
-    const clubViews = snapshot.docs.map(doc => ({
+    const clubViews = snapshot.docs.map((doc) => ({
       clubId: doc.id,
-      ...doc.data()
+      ...doc.data(),
     }));
 
     console.log(`📊 [getAllUserClubViews] Found ${clubViews.length} total club views`);
     return clubViews;
-
   } catch (error) {
     console.error('❌ [getAllUserClubViews] Error getting all club views:', error);
     return [];
@@ -175,7 +169,7 @@ export async function getAllUserClubViews(userId) {
 
 /**
  * Reset club views for a user (utility per testing)
- * 
+ *
  * @param {string} userId - ID dell'utente
  * @returns {Promise<void>}
  */
@@ -187,11 +181,11 @@ export async function resetUserClubViews(userId) {
 
   try {
     console.log(`🗑️ [resetUserClubViews] Resetting all club views for user: ${userId}`);
-    
+
     const clubViewsRef = collection(db, 'users', userId, 'clubViews');
     const snapshot = await getDocs(clubViewsRef);
 
-    const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+    const deletePromises = snapshot.docs.map((doc) => deleteDoc(doc.ref));
     await Promise.all(deletePromises);
 
     console.log(`✅ [resetUserClubViews] Deleted ${snapshot.docs.length} club views`);

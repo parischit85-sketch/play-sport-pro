@@ -17,14 +17,8 @@ export default function Profile({ T }) {
   const user = auth.currentUser;
   const navigate = useNavigate();
   const { darkMode, toggleTheme } = useUI();
-  const {
-    logout,
-    setUserProfile,
-    reloadUserData,
-    userRole,
-    isClubAdmin,
-    getFirstAdminClub,
-  } = useAuth();
+  const { logout, setUserProfile, reloadUserData, userRole, isClubAdmin, getFirstAdminClub } =
+    useAuth();
   const { clubId, club } = useClub();
 
   // Debug: mostra i valori per capire il problema

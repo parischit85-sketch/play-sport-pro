@@ -55,7 +55,7 @@ export const getClubs = async (filters = {}) => {
     }
 
     const snapshot = await getDocs(q);
-    
+
     // Filter for activated AND approved clubs (unless explicitly requesting all)
     const clubs = snapshot.docs
       .map((doc) => ({
@@ -68,7 +68,7 @@ export const getClubs = async (filters = {}) => {
         // Otherwise only show activated AND approved clubs
         return club.isActive === true && club.status === 'approved';
       });
-    
+
     return clubs;
   } catch (error) {
     console.error('Error getting clubs:', error);
@@ -170,7 +170,7 @@ export const searchClubsByLocation = async (userLat, userLng, radiusKm = 10) => 
         if (!club.settings?.publicVisibility || !club.subscription?.isActive) {
           return false;
         }
-        
+
         // Check if club is activated
         if (club.isActive !== true) {
           return false;
@@ -311,8 +311,10 @@ export const deleteClub = async (clubId) => {
  * This function is kept for backward compatibility
  */
 export const getUserAffiliations = async (userId) => {
-  console.warn('⚠️  getUserAffiliations is DEPRECATED. Use getUserClubMemberships from club-users.js');
-  
+  console.warn(
+    '⚠️  getUserAffiliations is DEPRECATED. Use getUserClubMemberships from club-users.js'
+  );
+
   // Handle admin user - return empty array to avoid Firestore access
   if (userId === 'admin-paris-25') {
     console.log('🔄 Bypassing affiliations check for admin user');
@@ -331,11 +333,11 @@ export const getUserAffiliations = async (userId) => {
     // 🆕 NEW SYSTEM: Use getUserClubMemberships from club-users.js
     // This reads clubs/{clubId}/users/ with linkedUserId
     const { getUserClubMemberships } = await import('./club-users.js');
-    
+
     const result = await withRetry(
       async () => {
         const memberships = await getUserClubMemberships(userId);
-        
+
         // Transform to match old affiliations format for compatibility
         const affiliations = await Promise.all(
           memberships.map(async (membership) => {
@@ -402,7 +404,7 @@ export const getUserAffiliations = async (userId) => {
  */
 export const getClubAffiliations = async (clubId, status = null) => {
   console.warn('⚠️  getClubAffiliations is DEPRECATED. Use getClubUsers from club-users.js');
-  
+
   try {
     // 🆕 NEW SYSTEM: Query clubs/{clubId}/users/ directly
     const usersRef = collection(db, 'clubs', clubId, 'users');
@@ -456,12 +458,12 @@ export const getClubAffiliations = async (clubId, status = null) => {
  */
 export const requestAffiliation = async (clubId, userId, notes = '') => {
   console.warn('⚠️  requestAffiliation is DEPRECATED. Use addUserToClub from club-users.js');
-  
+
   try {
     // Check if user already exists in club
     const { getClubUser, addUserToClub } = await import('./club-users.js');
     const existing = await getClubUser(clubId, userId);
-    
+
     if (existing) {
       if (existing.status === 'pending') {
         throw new Error('Hai già una richiesta di affiliazione in corso per questo club');

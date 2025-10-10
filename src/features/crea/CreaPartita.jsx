@@ -109,12 +109,12 @@ export default function CreaPartita({
   //   firstActual: actualMatches[0]?.id,
   //   lastActual: actualMatches[actualMatches.length - 1]?.id
   // });
-  
+
   // 🏆 FILTRO CAMPIONATO: Solo giocatori che partecipano attivamente al campionato
   const playersAlpha = useMemo(() => {
-    const tournamentPlayers = players.filter(player => 
-      player.tournamentData?.isParticipant === true &&
-      player.tournamentData?.isActive === true
+    const tournamentPlayers = players.filter(
+      (player) =>
+        player.tournamentData?.isParticipant === true && player.tournamentData?.isActive === true
     );
     return [...tournamentPlayers].sort(byPlayerFirstAlpha);
   }, [players]);

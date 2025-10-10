@@ -279,7 +279,8 @@ const AdminClubEditPage = () => {
                   placeholder="https://maps.app.goo.gl/... o https://www.google.com/maps/..."
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  💡 Incolla il link di Google Maps per permettere il calcolo automatico della distanza nella ricerca circoli
+                  💡 Incolla il link di Google Maps per permettere il calcolo automatico della
+                  distanza nella ricerca circoli
                 </p>
               </div>
             </div>

@@ -356,12 +356,15 @@ const ClubSettings = () => {
                       <input
                         type="url"
                         value={settings.googleMapsUrl || ''}
-                        onChange={(e) => setSettings({ ...settings, googleMapsUrl: e.target.value })}
+                        onChange={(e) =>
+                          setSettings({ ...settings, googleMapsUrl: e.target.value })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="https://maps.app.goo.gl/... o https://www.google.com/maps/..."
                       />
                       <p className="text-xs text-gray-500 mt-1">
-                        💡 Incolla il link di Google Maps per permettere il calcolo della distanza nella ricerca circoli
+                        💡 Incolla il link di Google Maps per permettere il calcolo della distanza
+                        nella ricerca circoli
                       </p>
                     </div>
                     <div>

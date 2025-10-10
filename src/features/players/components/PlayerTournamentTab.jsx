@@ -18,19 +18,21 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
     console.log('🏆 [PlayerTournamentTab] Loading data for player:', player?.id);
     console.log('🏆 [PlayerTournamentTab] player.tournamentData:', player?.tournamentData);
     console.log('🏆 [PlayerTournamentTab] player.rating (currentRanking):', player?.rating);
-    
+
     if (player?.tournamentData) {
       setFormData({
         isParticipant: player.tournamentData.isParticipant || false,
         // 🔄 initialRanking: se non c'è, usa currentRanking che è sincronizzato con rating
-        initialRanking: player.tournamentData.initialRanking || player.tournamentData.currentRanking || 1500,
+        initialRanking:
+          player.tournamentData.initialRanking || player.tournamentData.currentRanking || 1500,
         division: player.tournamentData.division || null,
         notes: player.tournamentData.notes || '',
-        isActive: player.tournamentData.isActive !== undefined ? player.tournamentData.isActive : true,
+        isActive:
+          player.tournamentData.isActive !== undefined ? player.tournamentData.isActive : true,
       });
     } else {
       // Initialize with default
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         initialRanking: 1500,
       }));
@@ -41,12 +43,13 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
     console.log('💾 [PlayerTournamentTab] Saving with formData:', formData);
     console.log('💾 [PlayerTournamentTab] formData.initialRanking:', formData.initialRanking);
     console.log('💾 [PlayerTournamentTab] formData.isParticipant:', formData.isParticipant);
-    
+
     // Ensure initialRanking is a valid number (not null/undefined/0)
-    const validInitialRanking = formData.initialRanking && formData.initialRanking > 0 
-      ? formData.initialRanking 
-      : (player.rating || 1500);
-    
+    const validInitialRanking =
+      formData.initialRanking && formData.initialRanking > 0
+        ? formData.initialRanking
+        : player.rating || 1500;
+
     const tournamentData = {
       ...player.tournamentData,
       isParticipant: formData.isParticipant,
@@ -59,7 +62,7 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
       isActive: formData.isActive,
       // Set joinedAt only if becoming participant for first time
       joinedAt: player.tournamentData?.joinedAt || (formData.isParticipant ? new Date() : null),
-      activeSince: formData.isParticipant ? (player.tournamentData?.activeSince || new Date()) : null,
+      activeSince: formData.isParticipant ? player.tournamentData?.activeSince || new Date() : null,
       // Keep existing stats
       totalMatches: player.tournamentData?.totalMatches || 0,
       wins: player.tournamentData?.wins || 0,
@@ -84,9 +87,7 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
       <div className={`${T.cardBg} ${T.border} rounded-lg p-6`}>
         <div className="flex items-start justify-between mb-6">
           <div>
-            <h3 className={`text-xl font-bold ${T.text} mb-2`}>
-              🏆 Partecipazione Campionato
-            </h3>
+            <h3 className={`text-xl font-bold ${T.text} mb-2`}>🏆 Partecipazione Campionato</h3>
             <p className={`text-sm ${T.subtext}`}>
               Abilita questo giocatore a partecipare al campionato del circolo
             </p>
@@ -115,13 +116,13 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
                     : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 group-hover:border-blue-400'
                 }`}
               >
-                {formData.isParticipant && (
-                  <span className="text-white text-sm font-bold">✓</span>
-                )}
+                {formData.isParticipant && <span className="text-white text-sm font-bold">✓</span>}
               </div>
             </div>
             <div>
-              <span className={`${T.label} font-semibold ${formData.isParticipant ? 'text-blue-700 dark:text-blue-300' : ''}`}>
+              <span
+                className={`${T.label} font-semibold ${formData.isParticipant ? 'text-blue-700 dark:text-blue-300' : ''}`}
+              >
                 Abilita partecipazione al campionato
               </span>
               <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
@@ -136,16 +137,16 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
           <div className="space-y-4">
             {/* Initial Ranking */}
             <div>
-              <label className={`block ${T.label} mb-2`}>
-                🎯 Ranking Iniziale *
-              </label>
+              <label className={`block ${T.label} mb-2`}>🎯 Ranking Iniziale *</label>
               <input
                 type="number"
                 min="0"
                 max="5000"
                 step="10"
                 value={formData.initialRanking || ''}
-                onChange={(e) => setFormData({ ...formData, initialRanking: parseInt(e.target.value) || 0 })}
+                onChange={(e) =>
+                  setFormData({ ...formData, initialRanking: parseInt(e.target.value) || 0 })
+                }
                 className={`w-full p-3 ${T.input} rounded-lg border ${T.border} focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400`}
                 placeholder="1500"
               />
@@ -156,9 +157,7 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
 
             {/* Division */}
             <div>
-              <label className={`block ${T.label} mb-2`}>
-                📊 Divisione/Categoria
-              </label>
+              <label className={`block ${T.label} mb-2`}>📊 Divisione/Categoria</label>
               <select
                 value={formData.division || ''}
                 onChange={(e) => setFormData({ ...formData, division: e.target.value || null })}
@@ -192,13 +191,13 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
                         : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 group-hover:border-emerald-400'
                     }`}
                   >
-                    {formData.isActive && (
-                      <span className="text-white text-sm font-bold">✓</span>
-                    )}
+                    {formData.isActive && <span className="text-white text-sm font-bold">✓</span>}
                   </div>
                 </div>
                 <div>
-                  <span className={`${T.label} font-semibold ${formData.isActive ? 'text-emerald-700 dark:text-emerald-300' : ''}`}>
+                  <span
+                    className={`${T.label} font-semibold ${formData.isActive ? 'text-emerald-700 dark:text-emerald-300' : ''}`}
+                  >
                     Partecipazione attiva
                   </span>
                   <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
@@ -210,9 +209,7 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
 
             {/* Notes */}
             <div>
-              <label className={`block ${T.label} mb-2`}>
-                📝 Note
-              </label>
+              <label className={`block ${T.label} mb-2`}>📝 Note</label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -238,9 +235,7 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
       {/* Statistics Card (only if participating and has stats) */}
       {formData.isParticipant && hasStats && (
         <div className={`${T.cardBg} ${T.border} rounded-lg p-6`}>
-          <h4 className={`text-lg font-bold ${T.text} mb-4`}>
-            📊 Statistiche Campionato
-          </h4>
+          <h4 className={`text-lg font-bold ${T.text} mb-4`}>📊 Statistiche Campionato</h4>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Total Matches */}
@@ -248,9 +243,7 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                 {stats.totalMatches}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                Partite Totali
-              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Partite Totali</div>
             </div>
 
             {/* Wins */}
@@ -258,9 +251,7 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
               <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {stats.wins}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                Vittorie
-              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Vittorie</div>
             </div>
 
             {/* Losses */}
@@ -268,9 +259,7 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
               <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                 {stats.losses}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                Sconfitte
-              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Sconfitte</div>
             </div>
 
             {/* Win Rate */}
@@ -278,33 +267,28 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
               <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                 {stats.winRate ? `${stats.winRate.toFixed(1)}%` : '0%'}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                Win Rate
-              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Win Rate</div>
             </div>
           </div>
 
           {/* Ranking Evolution */}
           <div className="mt-4 grid grid-cols-2 gap-4">
             <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                Ranking Iniziale
-              </div>
-              <div className={`text-xl font-bold ${T.text}`}>
-                {stats.initialRanking || 'N/A'}
-              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Ranking Iniziale</div>
+              <div className={`text-xl font-bold ${T.text}`}>{stats.initialRanking || 'N/A'}</div>
             </div>
 
             <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                Ranking Attuale
-              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Ranking Attuale</div>
               <div className={`text-xl font-bold ${T.text}`}>
                 {stats.currentRanking || stats.initialRanking || 'N/A'}
               </div>
               {stats.currentRanking && stats.initialRanking && (
-                <div className={`text-sm mt-1 ${stats.currentRanking >= stats.initialRanking ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                  {stats.currentRanking >= stats.initialRanking ? '↑' : '↓'} {Math.abs(stats.currentRanking - stats.initialRanking)} punti
+                <div
+                  className={`text-sm mt-1 ${stats.currentRanking >= stats.initialRanking ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+                >
+                  {stats.currentRanking >= stats.initialRanking ? '↑' : '↓'}{' '}
+                  {Math.abs(stats.currentRanking - stats.initialRanking)} punti
                 </div>
               )}
             </div>
@@ -328,7 +312,9 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
             <ul className="space-y-1 list-disc list-inside">
               <li>Abilita la partecipazione per far apparire il giocatore nelle classifiche</li>
               <li>Imposta il ranking iniziale in base al livello stimato del giocatore</li>
-              <li>Il ranking verrà aggiornato automaticamente in base ai risultati delle partite</li>
+              <li>
+                Il ranking verrà aggiornato automaticamente in base ai risultati delle partite
+              </li>
               <li>Puoi disattivare temporaneamente la partecipazione senza perdere i dati</li>
               <li>Le statistiche vengono calcolate automaticamente dopo ogni partita</li>
             </ul>

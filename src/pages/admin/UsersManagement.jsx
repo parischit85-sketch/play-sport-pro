@@ -179,15 +179,19 @@ const UsersManagement = () => {
       const affiliationRef = doc(db, 'affiliations', affiliationId);
 
       // Usa setDoc con merge per gestire sia creazione che aggiornamento
-      await setDoc(affiliationRef, {
-        userId: user.id,
-        clubId: clubId,
-        role: 'admin',
-        isClubAdmin: true,
-        status: 'approved',
-        promotedToAdminAt: new Date().toISOString(),
-        _updatedAt: new Date().toISOString(),
-      }, { merge: true });
+      await setDoc(
+        affiliationRef,
+        {
+          userId: user.id,
+          clubId: clubId,
+          role: 'admin',
+          isClubAdmin: true,
+          status: 'approved',
+          promotedToAdminAt: new Date().toISOString(),
+          _updatedAt: new Date().toISOString(),
+        },
+        { merge: true }
+      );
 
       // 3. Aggiorna il documento del circolo con la lista dei manager
       const clubRef = doc(db, 'clubs', clubId);
@@ -239,12 +243,16 @@ const UsersManagement = () => {
       const affiliationRef = doc(db, 'affiliations', affiliationId);
 
       try {
-        await setDoc(affiliationRef, {
-          role: 'member',
-          isClubAdmin: false,
-          demotedFromAdminAt: new Date().toISOString(),
-          _updatedAt: new Date().toISOString(),
-        }, { merge: true });
+        await setDoc(
+          affiliationRef,
+          {
+            role: 'member',
+            isClubAdmin: false,
+            demotedFromAdminAt: new Date().toISOString(),
+            _updatedAt: new Date().toISOString(),
+          },
+          { merge: true }
+        );
       } catch (error) {
         console.error("Errore nell'aggiornamento dell'affiliazione:", error);
         // Continua anche se l'affiliazione non esiste

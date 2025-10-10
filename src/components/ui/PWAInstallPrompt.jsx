@@ -38,7 +38,11 @@ export default function PWAInstallPrompt() {
 
   // Se già installata, controlla i permessi
   useEffect(() => {
-    if (isInstalled && !permissions.notifications && !localStorage.getItem('permissions-requested')) {
+    if (
+      isInstalled &&
+      !permissions.notifications &&
+      !localStorage.getItem('permissions-requested')
+    ) {
       setCurrentStep('permissions');
       setShowPrompt(true);
     }
@@ -156,7 +160,7 @@ export default function PWAInstallPrompt() {
                   </h3>
                   <p className="text-blue-100 text-sm">
                     {currentStep === 'install' && 'Accesso rapido e funzioni extra'}
-                    {currentStep === 'permissions' && 'Per un\'esperienza completa'}
+                    {currentStep === 'permissions' && "Per un'esperienza completa"}
                     {currentStep === 'complete' && 'Configurazione completata'}
                   </p>
                 </div>
@@ -189,8 +193,8 @@ export default function PWAInstallPrompt() {
                     {browserInfo?.isIOS ? '📱' : browserInfo?.isAndroid ? '🤖' : '💻'}
                   </div>
                   <p className="text-gray-600 dark:text-gray-300">
-                    Installa l&apos;app per accedere rapidamente e godere di tutte le funzionalità anche
-                    offline.
+                    Installa l&apos;app per accedere rapidamente e godere di tutte le funzionalità
+                    anche offline.
                   </p>
                 </div>
 

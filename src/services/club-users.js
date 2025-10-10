@@ -343,12 +343,17 @@ export async function getUserClubMemberships(userId) {
         const profileData = profileSnap.data();
 
         // Check if user is admin/owner of this club
-        const isClubAdmin = profileData.role === 'club_admin' || profileData.isClubAdmin || clubData.ownerId === userId;
+        const isClubAdmin =
+          profileData.role === 'club_admin' ||
+          profileData.isClubAdmin ||
+          clubData.ownerId === userId;
 
         // ⚠️ SECURITY: Only show approved clubs to regular users
         // Club admins/owners can see their own pending clubs
         if (clubData.status !== 'approved' && !isClubAdmin) {
-          console.log(`⏭️ [getUserClubMemberships] Skipping non-approved club for regular user: ${clubData.name} (status: ${clubData.status})`);
+          console.log(
+            `⏭️ [getUserClubMemberships] Skipping non-approved club for regular user: ${clubData.name} (status: ${clubData.status})`
+          );
           continue;
         }
 

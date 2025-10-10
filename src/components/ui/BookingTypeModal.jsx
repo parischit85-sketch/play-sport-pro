@@ -27,15 +27,16 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
   useEffect(() => {
     if (isOpen && !userLocation) {
       console.log('🌍 [BookingTypeModal] Auto-requesting GPS for distance calculation');
-      getUserLocation({ timeout: 5000, highAccuracy: false, cache: true, cacheTTL: 180000 })
-        .then(result => {
+      getUserLocation({ timeout: 5000, highAccuracy: false, cache: true, cacheTTL: 180000 }).then(
+        (result) => {
           if (result.status === LocationStatus.SUCCESS) {
             console.log('✅ [BookingTypeModal] GPS location obtained:', result.coords);
             setUserLocation(result.coords);
           } else {
             console.log('⚠️ [BookingTypeModal] GPS not available:', result.status);
           }
-        });
+        }
+      );
     }
   }, [isOpen, userLocation]);
 
@@ -46,13 +47,13 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
       const clubsRef = collection(db, 'clubs');
       const clubsSnap = await getDocs(clubsRef);
       let allClubs = clubsSnap.docs
-        .map(doc => ({
+        .map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }))
         // Filter only active clubs for public users
-        .filter(club => club.isActive === true);
-      
+        .filter((club) => club.isActive === true);
+
       // 🌍 Calculate distances if userLocation available
       if (userLocation) {
         // Process clubs in parallel with Promise.all
@@ -60,56 +61,56 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
           allClubs.map(async (club) => {
             const coords = await getClubCoordinates(club);
             if (!coords) return { ...club, distance: Infinity };
-            
+
             const distance = calculateDistance(
               userLocation.lat,
               userLocation.lng,
               coords.latitude,
               coords.longitude
             );
-            
+
             return { ...club, distance };
           })
         );
-        
+
         allClubs = clubsWithDistances.sort((a, b) => a.distance - b.distance);
-        
+
         console.log('🌍 [BookingTypeModal] Clubs sorted by distance:', {
           count: allClubs.length,
-          first3: allClubs.slice(0, 3).map(c => ({ name: c.name, distance: c.distance }))
+          first3: allClubs.slice(0, 3).map((c) => ({ name: c.name, distance: c.distance })),
         });
       }
-      
+
       setClubs(allClubs);
-      
+
       // Carica anche i più visualizzati
       const viewedClubs = await getUserMostViewedClubs(user.uid, 10);
       if (viewedClubs.length > 0) {
         let clubsData = viewedClubs
-          .filter(v => v.club !== null && v.club.isActive === true) // Filter active clubs
-          .map(v => v.club);
-        
+          .filter((v) => v.club !== null && v.club.isActive === true) // Filter active clubs
+          .map((v) => v.club);
+
         // 🌍 Add distances to viewed clubs too
         if (userLocation) {
           const clubsWithDistances = await Promise.all(
             clubsData.map(async (club) => {
               const coords = await getClubCoordinates(club);
               if (!coords) return { ...club, distance: Infinity };
-              
+
               const distance = calculateDistance(
                 userLocation.lat,
                 userLocation.lng,
                 coords.latitude,
                 coords.longitude
               );
-              
+
               return { ...club, distance };
             })
           );
-          
+
           clubsData = clubsWithDistances.sort((a, b) => a.distance - b.distance);
         }
-        
+
         setFilteredClubs(clubsData);
       } else {
         setFilteredClubs(allClubs);
@@ -139,16 +140,16 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
     }
 
     const searchLower = searchText.toLowerCase();
-    const filtered = clubs.filter(club => {
+    const filtered = clubs.filter((club) => {
       const name = (club.name || '').toLowerCase();
       const city = (club.location?.city || club.city || club.address?.city || '').toLowerCase();
       const address = (club.location?.address || club.address?.street || '').toLowerCase();
-      
-      return name.includes(searchLower) || 
-             city.includes(searchLower) || 
-             address.includes(searchLower);
+
+      return (
+        name.includes(searchLower) || city.includes(searchLower) || address.includes(searchLower)
+      );
     });
-    
+
     setFilteredClubs(filtered);
   }, [searchText, clubs]);
 
@@ -196,7 +197,7 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
     const newShowSearch = !showSearch;
     setShowSearch(newShowSearch);
     setSearchText('');
-    
+
     if (newShowSearch) {
       // Mostra tutti i circoli
       setFilteredClubs(clubs);
@@ -205,9 +206,7 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
       try {
         const viewedClubs = await getUserMostViewedClubs(user.uid, 10);
         if (viewedClubs.length > 0) {
-          const clubsData = viewedClubs
-            .filter(v => v.club !== null)
-            .map(v => v.club);
+          const clubsData = viewedClubs.filter((v) => v.club !== null).map((v) => v.club);
           setFilteredClubs(clubsData);
         } else {
           setFilteredClubs(clubs);
@@ -227,12 +226,7 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
         clubs.map(async (club) => {
           const clubCoords = await getClubCoordinates(club);
           if (clubCoords) {
-            const distance = calculateDistance(
-              lat,
-              lng,
-              clubCoords.latitude,
-              clubCoords.longitude
-            );
+            const distance = calculateDistance(lat, lng, clubCoords.latitude, clubCoords.longitude);
             return { ...club, distance };
           }
           return { ...club, distance: 999999 };
@@ -261,7 +255,7 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
         alert('Timeout nel rilevamento. Assicurati che il GPS / posizione sia attivo.');
         break;
       case LocationStatus.POSITION_UNAVAILABLE:
-        alert('Posizione non disponibile. Prova all\'aperto o con una migliore connessione.');
+        alert("Posizione non disponibile. Prova all'aperto o con una migliore connessione.");
         break;
       default:
         alert('Impossibile ottenere la posizione: ' + (result.message || 'Errore sconosciuto'));
@@ -389,10 +383,10 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
                           onChange={(e) => setSearchText(e.target.value)}
                           className="w-full px-4 py-3 pl-11 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl border-2 border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-gray-600 transition-all outline-none"
                         />
-                        <svg 
+                        <svg
                           className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                          fill="none" 
-                          stroke="currentColor" 
+                          fill="none"
+                          stroke="currentColor"
                           viewBox="0 0 24 24"
                         >
                           <path
@@ -409,7 +403,12 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
                         onClick={handleSearchLocation}
                         className="w-full p-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-lg transition-all flex items-center justify-center gap-2"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -425,90 +424,105 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
 
                 {/* Lista circoli */}
                 <div className="space-y-3 max-h-[50vh] overflow-y-auto">
-                {filteredClubs.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                    <svg className="w-16 h-16 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                    <p>Nessun circolo trovato</p>
-                  </div>
-                ) : (
-                  filteredClubs.map((club) => (
-                    <button
-                      key={club.id}
-                      onClick={() => handleClubSelection(club.id)}
-                      className="w-full p-4 bg-[#1e293b] hover:bg-[#2d3b52] text-white rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] border border-gray-700/50"
-                      style={{
-                        WebkitTapHighlightColor: 'transparent',
-                      }}
-                    >
-                      <div className="flex items-center space-x-4">
-                        {/* Logo */}
-                        <div className="w-14 h-14 rounded-full overflow-hidden bg-white border-2 border-gray-600 shrink-0">
-                          {club.logoUrl ? (
-                            <img
-                              src={club.logoUrl}
-                              alt={club.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600">
-                              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {filteredClubs.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      <svg
+                        className="w-16 h-16 mx-auto mb-3 opacity-50"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                      </svg>
+                      <p>Nessun circolo trovato</p>
+                    </div>
+                  ) : (
+                    filteredClubs.map((club) => (
+                      <button
+                        key={club.id}
+                        onClick={() => handleClubSelection(club.id)}
+                        className="w-full p-4 bg-[#1e293b] hover:bg-[#2d3b52] text-white rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] border border-gray-700/50"
+                        style={{
+                          WebkitTapHighlightColor: 'transparent',
+                        }}
+                      >
+                        <div className="flex items-center space-x-4">
+                          {/* Logo */}
+                          <div className="w-14 h-14 rounded-full overflow-hidden bg-white border-2 border-gray-600 shrink-0">
+                            {club.logoUrl ? (
+                              <img
+                                src={club.logoUrl}
+                                alt={club.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600">
+                                <svg
+                                  className="w-7 h-7 text-white"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                  />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          {/* Info */}
+                          <div className="flex-1 text-left">
+                            <div className="text-lg font-bold">{club.name}</div>
+                            <div className="text-sm text-gray-400 flex items-center gap-1 mt-0.5">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
                                 <path
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
                                   strokeWidth={2}
-                                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                                 />
                               </svg>
+                              {club.location?.city || club.city || club.address?.city || 'Località'}
+                              {club.distance !== undefined && Number.isFinite(club.distance) && (
+                                <span className="ml-2 px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">
+                                  {club.distance.toFixed(1)} km
+                                </span>
+                              )}
                             </div>
-                          )}
-                        </div>
-                        {/* Info */}
-                        <div className="flex-1 text-left">
-                          <div className="text-lg font-bold">{club.name}</div>
-                          <div className="text-sm text-gray-400 flex items-center gap-1 mt-0.5">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                              />
-                            </svg>
-                            {club.location?.city || club.city || club.address?.city || 'Località'}
-                            {club.distance !== undefined && Number.isFinite(club.distance) && (
-                              <span className="ml-2 px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full text-xs font-semibold">
-                                {club.distance.toFixed(1)} km
-                              </span>
-                            )}
                           </div>
+                          {/* Freccia */}
+                          <svg
+                            className="w-6 h-6 shrink-0 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
                         </div>
-                        {/* Freccia */}
-                        <svg
-                          className="w-6 h-6 shrink-0 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                        </svg>
-                      </div>
-                    </button>
-                  ))
-                )}
-              </div>
-            </>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </>
             )
           ) : (
             // STEP 2: Selezione Tipo Prenotazione

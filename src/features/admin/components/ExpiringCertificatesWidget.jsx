@@ -57,10 +57,7 @@ export default function ExpiringCertificatesWidget({ clubId, T }) {
         <div className="text-center py-8">
           <div className="text-5xl mb-3">❌</div>
           <p className={`${T.subtext} text-sm`}>Errore nel caricamento: {error}</p>
-          <button
-            onClick={loadExpiringCertificates}
-            className={`${T.btnSecondary} mt-3 text-sm`}
-          >
+          <button onClick={loadExpiringCertificates} className={`${T.btnSecondary} mt-3 text-sm`}>
             🔄 Riprova
           </button>
         </div>
@@ -179,9 +176,7 @@ export default function ExpiringCertificatesWidget({ clubId, T }) {
                   {status === 'missing' ? (
                     <>
                       <p className="text-sm font-bold text-gray-600 dark:text-gray-400">Mancante</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Nessun certificato
-                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Nessun certificato</p>
                     </>
                   ) : isExpired ? (
                     <>
@@ -224,7 +219,13 @@ export default function ExpiringCertificatesWidget({ clubId, T }) {
 
                 {/* Icona */}
                 <div className="text-2xl shrink-0">
-                  {status === 'missing' ? '📄' : isExpired ? '⚠️' : daysUntilExpiry <= 7 ? '🚨' : '⏰'}
+                  {status === 'missing'
+                    ? '📄'
+                    : isExpired
+                      ? '⚠️'
+                      : daysUntilExpiry <= 7
+                        ? '🚨'
+                        : '⏰'}
                 </div>
               </div>
             </div>

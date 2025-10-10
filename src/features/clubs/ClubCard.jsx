@@ -70,7 +70,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
   if (compact) {
     // Prova a trovare la città in vari campi possibili
     const city = club.location?.city || club.city || club.address?.city || 'N/D';
-    
+
     return (
       <div
         onClick={handleEnterClub}
@@ -92,15 +92,13 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
               <span className="text-xl">🏓</span>
             </div>
           )}
-          
+
           {/* Nome e Città */}
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white truncate">
               {club.name}
             </h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-              📍 {city}
-            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">📍 {city}</p>
           </div>
         </div>
       </div>

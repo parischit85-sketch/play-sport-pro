@@ -77,9 +77,16 @@ export default function BottomNavigation({
 
   const handleBookingTypeSelect = (type, selectedClubId) => {
     const targetClubId = selectedClubId || clubIdForPaths;
-    const path = type === 'campo' ? `/club/${targetClubId}/booking` : `/club/${targetClubId}/lessons`;
+    const path =
+      type === 'campo' ? `/club/${targetClubId}/booking` : `/club/${targetClubId}/lessons`;
 
-    console.log('📱 [BottomNavigation] Booking type selected:', type, 'for club:', targetClubId, path);
+    console.log(
+      '📱 [BottomNavigation] Booking type selected:',
+      type,
+      'for club:',
+      targetClubId,
+      path
+    );
     navigate(path);
   };
 
@@ -315,7 +322,7 @@ export default function BottomNavigation({
     if (clubDashboardItem) orderedItems.push(clubDashboardItem);
     if (classificaItem) orderedItems.push(classificaItem);
     if (statsItem) orderedItems.push(statsItem);
-    
+
     // Add any remaining items that weren't explicitly ordered (except Prenota)
     publicNavItems.forEach((item) => {
       if (!orderedItems.find((orderedItem) => orderedItem.id === item.id)) {
@@ -356,7 +363,7 @@ export default function BottomNavigation({
   // - For admins: 3 public tabs + hamburger (4 total) - profile è in alto a destra
   // - For normal users in club mode: tutti i public tabs (incluso Prenota) - profile è in alto a destra
   let mobileNavItems = [];
-  
+
   if (isAdmin) {
     // Admin: primi 3 public tabs (senza tagliare Prenota se presente)
     mobileNavItems = publicNavItems.slice(0, 3);

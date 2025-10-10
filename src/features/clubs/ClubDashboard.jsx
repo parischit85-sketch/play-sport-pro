@@ -66,7 +66,7 @@ const ClubDashboard = () => {
     playersLoaded,
     playersCount: players?.length,
     isInstructor,
-    userInPlayers: players?.find(p => p.id === user?.uid),
+    userInPlayers: players?.find((p) => p.id === user?.uid),
   });
 
   // Track club view quando l'utente accede alla dashboard
@@ -284,7 +284,10 @@ const ClubDashboard = () => {
               <div className="h-8 bg-gray-200/80 dark:bg-gray-600/60 rounded w-64 mb-6"></div>
               <div className="grid grid-cols-3 gap-4 mb-6">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-24 bg-gray-200/60 dark:bg-gray-600/40 rounded-2xl"></div>
+                  <div
+                    key={i}
+                    className="h-24 bg-gray-200/60 dark:bg-gray-600/40 rounded-2xl"
+                  ></div>
                 ))}
               </div>
               <div className="h-96 bg-gray-200/60 dark:bg-gray-600/40 rounded-2xl"></div>

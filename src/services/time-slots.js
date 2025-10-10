@@ -40,10 +40,7 @@ export async function getInstructorTimeSlots(clubId, instructorId) {
     // 1. Carica i time slots personali dalla collezione timeSlots
     try {
       const timeSlotsRef = collection(db, 'clubs', clubId, 'timeSlots');
-      const q = query(
-        timeSlotsRef,
-        where('instructorId', '==', instructorId)
-      );
+      const q = query(timeSlotsRef, where('instructorId', '==', instructorId));
 
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
@@ -68,14 +65,20 @@ export async function getInstructorTimeSlots(clubId, instructorId) {
         const lessonConfig = settingsData.lessonConfig || {};
         const configTimeSlots = lessonConfig.timeSlots || [];
 
-        console.log('📚 [getInstructorTimeSlots] Lesson config slots found:', configTimeSlots.length);
+        console.log(
+          '📚 [getInstructorTimeSlots] Lesson config slots found:',
+          configTimeSlots.length
+        );
 
         // Filtra gli slot dove l'istruttore è assegnato
         const instructorSlots = configTimeSlots.filter((slot) => {
           return slot.instructorIds && slot.instructorIds.includes(instructorId);
         });
 
-        console.log('🎯 [getInstructorTimeSlots] Slots for this instructor:', instructorSlots.length);
+        console.log(
+          '🎯 [getInstructorTimeSlots] Slots for this instructor:',
+          instructorSlots.length
+        );
 
         // Trasforma gli slot in formato consistente
         instructorSlots.forEach((slot) => {
@@ -123,30 +126,30 @@ export async function getAllInstructorTimeSlots(clubId) {
 
     const timeSlotsRef = collection(db, 'clubs', clubId, 'timeSlots');
     const querySnapshot = await getDocs(timeSlotsRef);
-    
+
     const now = new Date();
     const today = now.toISOString().split('T')[0];
-    
+
     const allSlots = [];
     querySnapshot.forEach((doc) => {
       const slotData = doc.data();
-      
+
       // Filtra: solo slot futuri (se hanno una data)
       // Include sia attivi che disattivati per visualizzazione admin
       if (slotData.date && slotData.date < today) {
         console.log('⏭️ Skipping past slot:', doc.id, slotData.date);
         return;
       }
-      
+
       // Per slot con selectedDates, filtra solo se tutte le date sono passate
       if (slotData.selectedDates && Array.isArray(slotData.selectedDates)) {
-        const hasValidDate = slotData.selectedDates.some(d => d >= today);
+        const hasValidDate = slotData.selectedDates.some((d) => d >= today);
         if (!hasValidDate) {
           console.log('⏭️ Skipping slot with all past dates:', doc.id);
           return;
         }
       }
-      
+
       allSlots.push({
         id: doc.id,
         source: 'personal',
@@ -400,7 +403,7 @@ export async function updateLessonConfigSlot(clubId, timeSlotId, updates) {
     const timeSlots = lessonConfig.timeSlots || [];
 
     // Trova e aggiorna lo slot
-    const slotIndex = timeSlots.findIndex(slot => slot.id === timeSlotId);
+    const slotIndex = timeSlots.findIndex((slot) => slot.id === timeSlotId);
     if (slotIndex === -1) {
       throw new Error('Time slot not found in lesson config');
     }
@@ -443,7 +446,7 @@ export async function deleteLessonConfigSlot(clubId, timeSlotId) {
     const timeSlots = lessonConfig.timeSlots || [];
 
     // Rimuovi lo slot
-    const filteredSlots = timeSlots.filter(slot => slot.id !== timeSlotId);
+    const filteredSlots = timeSlots.filter((slot) => slot.id !== timeSlotId);
 
     if (filteredSlots.length === timeSlots.length) {
       throw new Error('Time slot not found in lesson config');

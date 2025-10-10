@@ -10,7 +10,7 @@
  * - https://www.google.com/maps/@lat,lng,zoom
  * - https://www.google.com/maps/place/.../@lat,lng,zoom
  * - https://goo.gl/maps/...
- * 
+ *
  * @param {string} url - URL di Google Maps
  * @returns {Promise<{latitude: number, longitude: number} | null>}
  */
@@ -23,11 +23,11 @@ export async function extractCoordinatesFromGoogleMapsUrl(url) {
     // Pattern 1: Coordinate direttamente nell'URL (@lat,lng)
     const directPattern = /@(-?\d+\.\d+),(-?\d+\.\d+)/;
     const directMatch = url.match(directPattern);
-    
+
     if (directMatch) {
       return {
         latitude: parseFloat(directMatch[1]),
-        longitude: parseFloat(directMatch[2])
+        longitude: parseFloat(directMatch[2]),
       };
     }
 
@@ -37,11 +37,11 @@ export async function extractCoordinatesFromGoogleMapsUrl(url) {
     if (url.includes('maps.app.goo.gl') || url.includes('goo.gl/maps')) {
       console.warn(
         '⚠️ URL abbreviato di Google Maps rilevato.\n' +
-        'Gli URL abbreviati (maps.app.goo.gl) non possono essere elaborati.\n' +
-        'Per favore usa l\'URL completo:\n' +
-        '1. Apri il link abbreviato nel browser\n' +
-        '2. Copia l\'URL completo dalla barra degli indirizzi\n' +
-        '3. Incollalo nel campo Google Maps URL'
+          'Gli URL abbreviati (maps.app.goo.gl) non possono essere elaborati.\n' +
+          "Per favore usa l'URL completo:\n" +
+          '1. Apri il link abbreviato nel browser\n' +
+          "2. Copia l'URL completo dalla barra degli indirizzi\n" +
+          '3. Incollalo nel campo Google Maps URL'
       );
       return null;
     }
@@ -49,22 +49,22 @@ export async function extractCoordinatesFromGoogleMapsUrl(url) {
     // Pattern 3: Query parameter q=lat,lng
     const qPattern = /[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/;
     const qMatch = url.match(qPattern);
-    
+
     if (qMatch) {
       return {
         latitude: parseFloat(qMatch[1]),
-        longitude: parseFloat(qMatch[2])
+        longitude: parseFloat(qMatch[2]),
       };
     }
 
     // Pattern 4: ll parameter
     const llPattern = /[?&]ll=(-?\d+\.\d+),(-?\d+\.\d+)/;
     const llMatch = url.match(llPattern);
-    
+
     if (llMatch) {
       return {
         latitude: parseFloat(llMatch[1]),
-        longitude: parseFloat(llMatch[2])
+        longitude: parseFloat(llMatch[2]),
       };
     }
 
@@ -88,30 +88,29 @@ export function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; // Raggio della Terra in km
   const dLat = toRadians(lat2 - lat1);
   const dLon = toRadians(lon2 - lon1);
-  
-  const a = 
+
+  const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = R * c;
-  
+
   return distance;
 }
 
 /**
  * Converte gradi in radianti
- * @param {number} degrees 
+ * @param {number} degrees
  * @returns {number}
  */
 function toRadians(degrees) {
-  return degrees * Math.PI / 180;
+  return (degrees * Math.PI) / 180;
 }
 
 /**
  * Valida se un URL è un link valido di Google Maps
- * @param {string} url 
+ * @param {string} url
  * @returns {boolean}
  */
 export function isValidGoogleMapsUrl(url) {
@@ -126,7 +125,7 @@ export function isValidGoogleMapsUrl(url) {
     /^https?:\/\/maps\.google\.[a-z]+/,
   ];
 
-  return validPatterns.some(pattern => pattern.test(url));
+  return validPatterns.some((pattern) => pattern.test(url));
 }
 
 /**
@@ -141,7 +140,7 @@ export async function getClubCoordinates(club) {
   if (club.location?.latitude && club.location?.longitude) {
     return {
       latitude: club.location.latitude,
-      longitude: club.location.longitude
+      longitude: club.location.longitude,
     };
   }
 
@@ -149,7 +148,7 @@ export async function getClubCoordinates(club) {
   if (club.latitude && club.longitude) {
     return {
       latitude: club.latitude,
-      longitude: club.longitude
+      longitude: club.longitude,
     };
   }
 

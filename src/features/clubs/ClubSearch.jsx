@@ -1,5 +1,10 @@
 ﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { searchClubs, searchClubsByLocation, getClubs, calculateDistance } from '@services/clubs.js';
+import {
+  searchClubs,
+  searchClubsByLocation,
+  getClubs,
+  calculateDistance,
+} from '@services/clubs.js';
 import { getUserLocation, geocodeCity, LocationStatus } from '../../utils/location-service.js';
 import { getClubCoordinates } from '../../utils/maps-utils.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
@@ -63,20 +68,21 @@ const ClubSearch = () => {
 
   const affiliatedClubs = useMemo(() => {
     if (!user || !userAffiliations || !allClubs.length) return [];
-    return allClubs.filter((club) =>
-      // 🔒 FILTRO: Solo circoli attivi E affiliati approvati
-      club.isActive === true &&
-      userAffiliations.some((aff) => aff.clubId === club.id && aff.status === 'approved')
+    return allClubs.filter(
+      (club) =>
+        // 🔒 FILTRO: Solo circoli attivi E affiliati approvati
+        club.isActive === true &&
+        userAffiliations.some((aff) => aff.clubId === club.id && aff.status === 'approved')
     );
   }, [allClubs, userAffiliations, user]);
 
   const nearbyClubs = useMemo(() => {
     if (!allClubs.length) return [];
-    
-    const nonAffiliatedClubs = allClubs.filter((club) => 
-      // 🔒 FILTRO: Solo circoli attivi E non già affiliati
-      club.isActive === true &&
-      !affiliatedClubs.some((aff) => aff.id === club.id)
+
+    const nonAffiliatedClubs = allClubs.filter(
+      (club) =>
+        // 🔒 FILTRO: Solo circoli attivi E non già affiliati
+        club.isActive === true && !affiliatedClubs.some((aff) => aff.id === club.id)
     );
 
     // ✅ Calculate distances if userLocation available (from AppLayout cache)
@@ -85,27 +91,27 @@ const ClubSearch = () => {
         .map((club) => {
           const coords = getClubCoordinates(club);
           if (!coords) return { ...club, distance: Infinity };
-          
+
           const distance = calculateDistance(
             userLocation.lat,
             userLocation.lng,
             coords.lat,
             coords.lng
           );
-          
+
           return { ...club, distance };
         })
         .sort((a, b) => a.distance - b.distance); // Sort by distance ascending
-      
+
       console.log('🌍 [ClubSearch] Nearby clubs sorted by distance:', {
         userLocation,
         clubsCount: clubsWithDistance.length,
-        first3: clubsWithDistance.slice(0, 3).map(c => ({ name: c.name, distance: c.distance }))
+        first3: clubsWithDistance.slice(0, 3).map((c) => ({ name: c.name, distance: c.distance })),
       });
-      
+
       return clubsWithDistance.slice(0, 6);
     }
-    
+
     // Without location, return first 6 without sorting
     return nonAffiliatedClubs.slice(0, 6);
   }, [allClubs, affiliatedClubs, userLocation]);
@@ -130,7 +136,12 @@ const ClubSearch = () => {
   const requestUserLocation = useCallback(async () => {
     setSearchLoading(true);
     setError(null);
-  const result = await getUserLocation({ timeout: 7000, highAccuracy: false, cache: true, cacheTTL: 180000 }); // 3 min TTL
+    const result = await getUserLocation({
+      timeout: 7000,
+      highAccuracy: false,
+      cache: true,
+      cacheTTL: 180000,
+    }); // 3 min TTL
     setSearchLoading(false);
 
     switch (result.status) {
@@ -142,17 +153,17 @@ const ClubSearch = () => {
       case LocationStatus.PERMISSION_DENIED:
         setError('Permesso negato. Inserisci la tua città:');
         setShowManualLocationInput(true);
-        setGeolocationAttempts(a => a + 1);
+        setGeolocationAttempts((a) => a + 1);
         break;
       case LocationStatus.TIMEOUT:
         setError('Timeout. Inserisci la tua città:');
         setShowManualLocationInput(true);
-        setGeolocationAttempts(a => a + 1);
+        setGeolocationAttempts((a) => a + 1);
         break;
       case LocationStatus.POSITION_UNAVAILABLE:
         setError('Posizione non disponibile. Inserisci la tua città:');
         setShowManualLocationInput(true);
-        setGeolocationAttempts(a => a + 1);
+        setGeolocationAttempts((a) => a + 1);
         break;
       case LocationStatus.INSECURE_CONTEXT:
         setError('HTTPS richiesto per geolocalizzazione. Inserisci la tua città:');
@@ -169,7 +180,7 @@ const ClubSearch = () => {
       default:
         setError('Impossibile rilevare la posizione. Inserisci la tua città:');
         setShowManualLocationInput(true);
-        setGeolocationAttempts(a => a + 1);
+        setGeolocationAttempts((a) => a + 1);
     }
   }, []);
 
@@ -202,7 +213,7 @@ const ClubSearch = () => {
   const handleLocationSearch = useCallback(
     async (radius = 10, location = null) => {
       const searchLocation = location || userLocation;
-      
+
       if (!searchLocation) {
         requestUserLocation();
         return;
@@ -220,7 +231,7 @@ const ClubSearch = () => {
         setSearchLoading(false);
       }
     },
-  [userLocation, requestUserLocation]
+    [userLocation, requestUserLocation]
   );
 
   const clearSearch = () => {
@@ -256,14 +267,25 @@ const ClubSearch = () => {
         <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/10 rounded-2xl border-2 border-green-200 dark:border-green-700/30 p-6 shadow-lg">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">I Tuoi Circoli</h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {affiliatedClubs.length} {affiliatedClubs.length === 1 ? 'circolo affiliato' : 'circoli affiliati'}
+                {affiliatedClubs.length}{' '}
+                {affiliatedClubs.length === 1 ? 'circolo affiliato' : 'circoli affiliati'}
               </p>
             </div>
           </div>
@@ -273,7 +295,12 @@ const ClubSearch = () => {
                 <ClubCard club={club} userLocation={userLocation} />
                 <div className="absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   Affiliato
                 </div>
@@ -288,13 +315,30 @@ const ClubSearch = () => {
         <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/10 rounded-xl border border-blue-200 dark:border-blue-700/30 p-4 shadow-md">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
               </svg>
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Circoli Nelle Vicinanze</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                Circoli Nelle Vicinanze
+              </h2>
               <p className="text-xs text-gray-600 dark:text-gray-400">
                 I migliori circoli più vicini a te
               </p>
@@ -323,7 +367,12 @@ const ClubSearch = () => {
             className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white px-8 py-4 text-lg font-bold rounded-xl transition-all inline-flex items-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
             {showCustomSearch ? 'Nascondi Ricerca Avanzata' : 'Ricerca Avanzata'}
           </button>

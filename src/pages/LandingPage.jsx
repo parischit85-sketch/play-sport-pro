@@ -439,7 +439,7 @@ export default function LandingPage() {
       </footer>
 
       {/* Registration Type Modal */}
-      <RegistrationTypeModal 
+      <RegistrationTypeModal
         isOpen={showRegistrationModal}
         onClose={() => setShowRegistrationModal(false)}
       />

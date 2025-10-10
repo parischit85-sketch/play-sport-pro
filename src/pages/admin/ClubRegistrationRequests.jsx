@@ -4,8 +4,28 @@
 // =============================================
 import React, { useState, useEffect } from 'react';
 import { db } from '@services/firebase.js';
-import { collection, query, where, getDocs, doc, updateDoc, addDoc, serverTimestamp } from 'firebase/firestore';
-import { Building2, Check, X, Eye, Mail, Phone, Globe, MapPin, Calendar, Clock } from 'lucide-react';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc,
+  addDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
+import {
+  Building2,
+  Check,
+  X,
+  Eye,
+  Mail,
+  Phone,
+  Globe,
+  MapPin,
+  Calendar,
+  Clock,
+} from 'lucide-react';
 
 export default function ClubRegistrationRequests() {
   const [requests, setRequests] = useState([]);
@@ -20,14 +40,11 @@ export default function ClubRegistrationRequests() {
   const loadRequests = async () => {
     try {
       setLoading(true);
-      const q = query(
-        collection(db, 'clubRegistrationRequests'),
-        where('status', '==', 'pending')
-      );
+      const q = query(collection(db, 'clubRegistrationRequests'), where('status', '==', 'pending'));
       const snapshot = await getDocs(q);
-      const data = snapshot.docs.map(doc => ({
+      const data = snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setRequests(data);
     } catch (error) {
@@ -48,7 +65,7 @@ export default function ClubRegistrationRequests() {
       // Nota: Il logo viene salvato come Base64 nel documento del circolo
       // Per caricare su Storage, devi prima configurare le regole Firebase Storage
       // Vedi: CLUB_REGISTRATION_SYSTEM.md per le istruzioni
-      
+
       // 1. Crea il circolo nella collection clubs
       const clubData = {
         name: request.name,
@@ -57,7 +74,7 @@ export default function ClubRegistrationRequests() {
         location: {
           city: request.address.city,
           province: request.address.province || '',
-          coordinates: null // TODO: geocoding
+          coordinates: null, // TODO: geocoding
         },
         contact: request.contact,
         logo: request.logoBase64 || null, // Salva il logo in Base64 per ora
@@ -65,14 +82,14 @@ export default function ClubRegistrationRequests() {
           bookingDuration: 90,
           advanceBookingDays: 14,
           cancellationHours: 24,
-          allowGuestBooking: false
+          allowGuestBooking: false,
         },
         sports: [],
         courts: [],
         instructors: [],
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        isActive: true
+        isActive: true,
       };
 
       const clubRef = await addDoc(collection(db, 'clubs'), clubData);
@@ -81,15 +98,17 @@ export default function ClubRegistrationRequests() {
       await updateDoc(doc(db, 'clubRegistrationRequests', request.id), {
         status: 'approved',
         approvedAt: serverTimestamp(),
-        clubId: clubRef.id
+        clubId: clubRef.id,
       });
 
-      alert(`✅ Circolo "${request.name}" approvato con successo!\n\nID Circolo: ${clubRef.id}\n\nNota: Il logo è salvato in Base64. Per migliorare le performance, puoi caricarlo su Firebase Storage dalle impostazioni del circolo.`);
+      alert(
+        `✅ Circolo "${request.name}" approvato con successo!\n\nID Circolo: ${clubRef.id}\n\nNota: Il logo è salvato in Base64. Per migliorare le performance, puoi caricarlo su Firebase Storage dalle impostazioni del circolo.`
+      );
       loadRequests(); // Ricarica la lista
       setSelectedRequest(null);
     } catch (error) {
       console.error('Error approving request:', error);
-      alert('❌ Errore durante l\'approvazione: ' + error.message);
+      alert("❌ Errore durante l'approvazione: " + error.message);
     } finally {
       setProcessing(false);
     }
@@ -104,7 +123,7 @@ export default function ClubRegistrationRequests() {
       await updateDoc(doc(db, 'clubRegistrationRequests', request.id), {
         status: 'rejected',
         rejectedAt: serverTimestamp(),
-        rejectionReason: reason || 'Non specificato'
+        rejectionReason: reason || 'Non specificato',
       });
 
       alert(`❌ Richiesta rifiutata`);
@@ -126,7 +145,7 @@ export default function ClubRegistrationRequests() {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(date);
   };
 
@@ -159,7 +178,9 @@ export default function ClubRegistrationRequests() {
           <div className="flex items-center gap-3">
             <Clock className="w-8 h-8 text-yellow-600 dark:text-yellow-400" />
             <div>
-              <p className="text-2xl font-bold text-yellow-900 dark:text-yellow-100">{requests.length}</p>
+              <p className="text-2xl font-bold text-yellow-900 dark:text-yellow-100">
+                {requests.length}
+              </p>
               <p className="text-sm text-yellow-700 dark:text-yellow-300">In Attesa</p>
             </div>
           </div>
@@ -179,7 +200,7 @@ export default function ClubRegistrationRequests() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {requests.map(request => (
+          {requests.map((request) => (
             <div
               key={request.id}
               className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
@@ -215,7 +236,9 @@ export default function ClubRegistrationRequests() {
                   {/* Actions */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => setSelectedRequest(selectedRequest?.id === request.id ? null : request)}
+                      onClick={() =>
+                        setSelectedRequest(selectedRequest?.id === request.id ? null : request)
+                      }
                       className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors flex items-center gap-2"
                     >
                       <Eye className="w-4 h-4" />
@@ -247,19 +270,26 @@ export default function ClubRegistrationRequests() {
                       {/* Colonna 1 */}
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Descrizione</h4>
+                          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                            Descrizione
+                          </h4>
                           <p className="text-gray-600 dark:text-gray-400">
                             {request.description || 'Nessuna descrizione fornita'}
                           </p>
                         </div>
 
                         <div>
-                          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Indirizzo</h4>
+                          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                            Indirizzo
+                          </h4>
                           <div className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
                             <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0" />
                             <div>
                               <p>{request.address.street}</p>
-                              <p>{request.address.postalCode} {request.address.city} ({request.address.province})</p>
+                              <p>
+                                {request.address.postalCode} {request.address.city} (
+                                {request.address.province})
+                              </p>
                               <p>{request.address.country}</p>
                             </div>
                           </div>
@@ -269,17 +299,25 @@ export default function ClubRegistrationRequests() {
                       {/* Colonna 2 */}
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Contatti</h4>
+                          <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                            Contatti
+                          </h4>
                           <div className="space-y-2">
                             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                               <Phone className="w-5 h-5" />
-                              <a href={`tel:${request.contact.phone}`} className="hover:text-blue-600">
+                              <a
+                                href={`tel:${request.contact.phone}`}
+                                className="hover:text-blue-600"
+                              >
                                 {request.contact.phone}
                               </a>
                             </div>
                             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                               <Mail className="w-5 h-5" />
-                              <a href={`mailto:${request.contact.email}`} className="hover:text-blue-600">
+                              <a
+                                href={`mailto:${request.contact.email}`}
+                                className="hover:text-blue-600"
+                              >
                                 {request.contact.email}
                               </a>
                             </div>

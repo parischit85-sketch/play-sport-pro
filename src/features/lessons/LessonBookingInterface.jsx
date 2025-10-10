@@ -80,25 +80,25 @@ export default function LessonBookingInterface({
   const { selectedClub, players: clubPlayers, courts } = useClub();
   const { lessonConfig: clubLessonConfig, updateLessonConfig: updateClubLessonConfig } =
     useClubSettings({ clubId: clubId || selectedClub?.id });
-  
+
   // State per le fasce orarie degli istruttori dalla collezione timeSlots
   const [instructorTimeSlots, setInstructorTimeSlots] = useState([]);
-  
+
   // Combina le fasce dell'admin (lessonConfig) con quelle degli istruttori (timeSlots collection)
   const lessonConfig = useMemo(() => {
     const baseConfig = clubLessonConfig || createLessonConfigSchema();
     const configSlots = baseConfig.timeSlots || [];
-    
+
     console.log('🔄 [LessonBooking] Merging time slots:', {
       adminSlots: configSlots.length,
       instructorSlots: instructorTimeSlots.length,
     });
-    
+
     // Converti le fasce degli istruttori nel formato compatibile con lessonConfig
-    const convertedInstructorSlots = instructorTimeSlots.map(slot => ({
+    const convertedInstructorSlots = instructorTimeSlots.map((slot) => ({
       id: slot.id,
       dayOfWeek: null, // Gli slot degli istruttori usano date specifiche
-      selectedDates: slot.date ? [slot.date] : (slot.selectedDates || []),
+      selectedDates: slot.date ? [slot.date] : slot.selectedDates || [],
       startTime: slot.startTime,
       endTime: slot.endTime,
       courtIds: slot.courtIds || [],
@@ -109,17 +109,17 @@ export default function LessonBookingInterface({
       createdAt: slot.createdAt,
       updatedAt: slot.updatedAt,
     }));
-    
+
     const merged = {
       ...baseConfig,
       timeSlots: [...configSlots, ...convertedInstructorSlots],
     };
-    
+
     console.log('✅ [LessonBooking] Merged config:', {
       totalSlots: merged.timeSlots.length,
       adminSlots: configSlots.length,
       instructorSlots: convertedInstructorSlots.length,
-      slots: merged.timeSlots.map(s => ({
+      slots: merged.timeSlots.map((s) => ({
         id: s.id,
         source: s.source || 'admin',
         selectedDates: s.selectedDates,
@@ -129,23 +129,23 @@ export default function LessonBookingInterface({
         isActive: s.isActive,
       })),
     });
-    
+
     return merged;
   }, [clubLessonConfig, instructorTimeSlots]);
-  
+
   const players = clubPlayers || state?.players || [];
 
   // Carica le fasce orarie dalla collezione timeSlots (create dagli istruttori) con listener real-time
   useEffect(() => {
     const currentClubId = clubId || selectedClub?.id;
-    
+
     console.log('🔍 [LessonBooking] Setting up timeSlots listener:', {
       clubId,
       selectedClubId: selectedClub?.id,
       currentClubId,
       hasClubId: !!currentClubId,
     });
-    
+
     if (!currentClubId) {
       console.warn('⚠️ [LessonBooking] No clubId available, skipping timeSlots listener');
       return;
@@ -158,43 +158,47 @@ export default function LessonBookingInterface({
         console.log('🔌 [LessonBooking] Importing Firestore modules...');
         const { collection, onSnapshot } = await import('firebase/firestore');
         const { db } = await import('@services/firebase.js');
-        
+
         const timeSlotsPath = `clubs/${currentClubId}/timeSlots`;
         console.log('📡 [LessonBooking] Creating listener for path:', timeSlotsPath);
         const timeSlotsRef = collection(db, 'clubs', currentClubId, 'timeSlots');
-        
+
         // Listener real-time per aggiornamenti automatici
-        unsubscribe = onSnapshot(timeSlotsRef, (snapshot) => {
-          const slots = [];
-          snapshot.forEach((doc) => {
-            slots.push({
-              id: doc.id,
-              source: 'personal',
-              ...doc.data(),
+        unsubscribe = onSnapshot(
+          timeSlotsRef,
+          (snapshot) => {
+            const slots = [];
+            snapshot.forEach((doc) => {
+              slots.push({
+                id: doc.id,
+                source: 'personal',
+                ...doc.data(),
+              });
             });
-          });
-          
-          console.log('📚 [LessonBooking] Real-time update - instructor time slots:', {
-            count: slots.length,
-            path: timeSlotsPath,
-            slots: slots.map(s => ({
-              id: s.id,
-              date: s.date,
-              startTime: s.startTime,
-              endTime: s.endTime,
-              isActive: s.isActive,
-            })),
-          });
-          setInstructorTimeSlots(slots);
-        }, (error) => {
-          console.error('❌ [LessonBooking] Error in real-time listener:', {
-            error,
-            message: error.message,
-            code: error.code,
-            path: timeSlotsPath,
-          });
-        });
-        
+
+            console.log('📚 [LessonBooking] Real-time update - instructor time slots:', {
+              count: slots.length,
+              path: timeSlotsPath,
+              slots: slots.map((s) => ({
+                id: s.id,
+                date: s.date,
+                startTime: s.startTime,
+                endTime: s.endTime,
+                isActive: s.isActive,
+              })),
+            });
+            setInstructorTimeSlots(slots);
+          },
+          (error) => {
+            console.error('❌ [LessonBooking] Error in real-time listener:', {
+              error,
+              message: error.message,
+              code: error.code,
+              path: timeSlotsPath,
+            });
+          }
+        );
+
         console.log('✅ [LessonBooking] Listener setup completed');
       } catch (error) {
         console.error('❌ [LessonBooking] Error setting up real-time listener:', {
@@ -289,7 +293,7 @@ export default function LessonBookingInterface({
         // in Firestore tramite handleSaveTimeSlot in LessonAdminPanel.
         const cleanedConfig = {
           ...newConfig,
-          timeSlots: (newConfig.timeSlots || []).filter(slot => slot.source !== 'instructor')
+          timeSlots: (newConfig.timeSlots || []).filter((slot) => slot.source !== 'instructor'),
         };
 
         // Salva la configurazione lezioni nel club via Firebase

@@ -29,7 +29,8 @@ const ClubActivationBanner = ({ club }) => {
               </h3>
               <div className="mt-2 text-sm text-yellow-700">
                 <p className="mb-2">
-                  Il tuo circolo è stato registrato con successo ed è attualmente in fase di revisione.
+                  Il tuo circolo è stato registrato con successo ed è attualmente in fase di
+                  revisione.
                 </p>
                 <p className="mb-2">
                   <strong>Cosa puoi fare ora:</strong>
@@ -41,7 +42,8 @@ const ClubActivationBanner = ({ club }) => {
                   <li>Configura i servizi offerti</li>
                 </ul>
                 <p className="mt-3 font-medium">
-                  ⏳ Il circolo sarà visibile agli utenti solo dopo l'approvazione da parte dell'amministratore.
+                  ⏳ Il circolo sarà visibile agli utenti solo dopo l'approvazione da parte
+                  dell'amministratore.
                 </p>
               </div>
             </div>
@@ -56,9 +58,7 @@ const ClubActivationBanner = ({ club }) => {
               <XCircle className="h-6 w-6 text-red-600" />
             </div>
             <div className="ml-3 flex-1">
-              <h3 className="text-sm font-semibold text-red-800">
-                Circolo Disattivato
-              </h3>
+              <h3 className="text-sm font-semibold text-red-800">Circolo Disattivato</h3>
               <div className="mt-2 text-sm text-red-700">
                 <p className="mb-2">
                   Il tuo circolo è stato temporaneamente disattivato e non è visibile agli utenti.

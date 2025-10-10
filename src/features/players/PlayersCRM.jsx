@@ -167,7 +167,11 @@ export default function PlayersCRM({
     const playerData = {
       firstName: account.firstName || account.displayName?.split(' ')[0] || '',
       lastName: account.lastName || account.displayName?.split(' ')[1] || '',
-      name: account.displayName || `${account.firstName} ${account.lastName}`.trim() || account.email?.split('@')[0] || '',
+      name:
+        account.displayName ||
+        `${account.firstName} ${account.lastName}`.trim() ||
+        account.email?.split('@')[0] ||
+        '',
       email: account.email || '',
       linkedAccountId: account.uid,
       linkedAccountEmail: account.email,
@@ -185,18 +189,12 @@ export default function PlayersCRM({
 
   // Filtra gli account escludendo quelli già collegati
   const linkedAccountIds = useMemo(() => {
-    return new Set(
-      players
-        .filter((p) => p.linkedAccountId)
-        .map((p) => p.linkedAccountId)
-    );
+    return new Set(players.filter((p) => p.linkedAccountId).map((p) => p.linkedAccountId));
   }, [players]);
 
   const linkedEmails = useMemo(() => {
     return new Set(
-      players
-        .filter((p) => p.linkedAccountEmail)
-        .map((p) => p.linkedAccountEmail.toLowerCase())
+      players.filter((p) => p.linkedAccountEmail).map((p) => p.linkedAccountEmail.toLowerCase())
     );
   }, [players]);
 
@@ -436,7 +434,8 @@ export default function PlayersCRM({
             {/* Informazioni */}
             <div className={`${T.cardBg} ${T.border} rounded-lg p-4`}>
               <p className={`text-sm ${T.subtext} mb-2`}>
-                Seleziona un account registrato per creare automaticamente un profilo giocatore collegato.
+                Seleziona un account registrato per creare automaticamente un profilo giocatore
+                collegato.
               </p>
               <p className={`text-xs ${T.subtext}`}>
                 Vengono mostrati solo gli account non ancora collegati a un giocatore.
@@ -464,9 +463,7 @@ export default function PlayersCRM({
                 <div className="p-8 text-center">
                   <div className="text-4xl mb-3">👥</div>
                   <p className={`text-lg font-medium ${T.text} mb-2`}>
-                    {accountSearch.trim() 
-                      ? 'Nessun account trovato' 
-                      : 'Nessun account disponibile'}
+                    {accountSearch.trim() ? 'Nessun account trovato' : 'Nessun account disponibile'}
                   </p>
                   <p className={`text-sm ${T.subtext}`}>
                     {accountSearch.trim()
@@ -501,9 +498,7 @@ export default function PlayersCRM({
                               {acc.email || 'Nessuna email'}
                             </div>
                             {acc.phone && (
-                              <div className={`text-xs ${T.subtext}`}>
-                                📱 {acc.phone}
-                              </div>
+                              <div className={`text-xs ${T.subtext}`}>📱 {acc.phone}</div>
                             )}
                           </div>
                         </div>
@@ -526,10 +521,11 @@ export default function PlayersCRM({
             {!loadingAccounts && (
               <div className="flex justify-between items-center text-sm">
                 <span className={T.subtext}>
-                  {filteredAccounts.length} account{filteredAccounts.length !== 1 ? 's' : ''} disponibili
+                  {filteredAccounts.length} account{filteredAccounts.length !== 1 ? 's' : ''}{' '}
+                  disponibili
                 </span>
                 <span className={T.subtext}>
-                  {players.filter(p => p.isAccountLinked).length} giocatori collegati
+                  {players.filter((p) => p.isAccountLinked).length} giocatori collegati
                 </span>
               </div>
             )}

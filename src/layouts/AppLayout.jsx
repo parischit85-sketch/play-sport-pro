@@ -511,7 +511,7 @@ function AppLayoutInner() {
       >
         {/* Alert Certificato Medico - Solo per utenti in un club */}
         {user && clubId && <CertificateExpiryAlert />}
-        
+
         <Outlet />
       </main>
 

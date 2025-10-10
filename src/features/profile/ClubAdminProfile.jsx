@@ -80,9 +80,10 @@ export default function ClubAdminProfile({ T, club, clubId }) {
         setClubSettings({
           name: club.name || '',
           description: club.description || '',
-          address: typeof club.address === 'object' 
-            ? `${club.address.street || ''}, ${club.address.city || ''}, ${club.address.province || ''} ${club.address.postalCode || ''}`.trim()
-            : (club.address || ''),
+          address:
+            typeof club.address === 'object'
+              ? `${club.address.street || ''}, ${club.address.city || ''}, ${club.address.province || ''} ${club.address.postalCode || ''}`.trim()
+              : club.address || '',
           phone: club.contact?.phone || club.phone || '',
           email: club.contact?.email || club.email || '',
           website: club.contact?.website || club.website || '',
@@ -437,8 +438,10 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 {clubData?.name || 'Club Admin'}
               </h3>
               <p className="text-green-600 dark:text-green-400 text-lg truncate mb-2">
-                {typeof clubData?.address === 'object' 
-                  ? `${clubData.address.street || ''}, ${clubData.address.city || ''}`.trim().replace(/^,\s*/, '') 
+                {typeof clubData?.address === 'object'
+                  ? `${clubData.address.street || ''}, ${clubData.address.city || ''}`
+                      .trim()
+                      .replace(/^,\s*/, '')
                   : clubData?.address || 'Indirizzo non specificato'}
               </p>
               <div className="flex items-center gap-3">

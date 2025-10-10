@@ -151,7 +151,7 @@ export function usePermissions() {
       setErrors((prev) => ({
         ...prev,
         contacts:
-          'L\'API Contatti non è supportata su questo dispositivo. Disponibile solo su Android Chrome 80+',
+          "L'API Contatti non è supportata su questo dispositivo. Disponibile solo su Android Chrome 80+",
       }));
       return false;
     }
@@ -239,7 +239,10 @@ export function usePermissions() {
   };
 
   // Invia una notifica di test
-  const sendTestNotification = async (title = 'Test Notifica', body = 'Questa è una notifica di test') => {
+  const sendTestNotification = async (
+    title = 'Test Notifica',
+    body = 'Questa è una notifica di test'
+  ) => {
     if (permissions.notifications !== 'granted') {
       console.warn('⚠️ Notification permission not granted');
       return false;

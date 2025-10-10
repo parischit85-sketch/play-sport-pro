@@ -15,15 +15,16 @@ import SecurityProvider from './contexts/SecurityContext.jsx';
 // Global Firebase quota error handler
 window.addEventListener('unhandledrejection', (event) => {
   const error = event.reason;
-  
+
   // Check for Firebase quota exceeded errors
-  if (error?.code === 'resource-exhausted' || 
-      error?.message?.includes('quota exceeded') ||
-      error?.message?.includes('resource-exhausted') ||
-      error?.message?.includes('Quota exceeded')) {
-    
+  if (
+    error?.code === 'resource-exhausted' ||
+    error?.message?.includes('quota exceeded') ||
+    error?.message?.includes('resource-exhausted') ||
+    error?.message?.includes('Quota exceeded')
+  ) {
     console.warn('🚨 Firebase quota exceeded. App may not function properly.');
-    
+
     // Show user-friendly message
     const alertDiv = document.createElement('div');
     alertDiv.style.cssText = `
@@ -36,18 +37,19 @@ window.addEventListener('unhandledrejection', (event) => {
       Alcune funzionalità potrebbero non essere disponibili.
     `;
     document.body.appendChild(alertDiv);
-    
+
     // Prevent the error from causing app crash
     event.preventDefault();
     return;
   }
-  
+
   // Check for React.Children errors specifically
-  if (error?.message?.includes('Cannot set properties of undefined') && 
-      error?.message?.includes('Children')) {
-    
+  if (
+    error?.message?.includes('Cannot set properties of undefined') &&
+    error?.message?.includes('Children')
+  ) {
     console.error('🚨 React.Children error detected - likely due to Firebase quota issues');
-    
+
     // Show error message and reload suggestion
     const alertDiv = document.createElement('div');
     alertDiv.style.cssText = `
@@ -64,7 +66,7 @@ window.addEventListener('unhandledrejection', (event) => {
       ">Ricarica pagina</button>
     `;
     document.body.appendChild(alertDiv);
-    
+
     // Prevent the error from propagating
     event.preventDefault();
     return;

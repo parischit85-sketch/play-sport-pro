@@ -6,7 +6,16 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { themeTokens } from '@lib/theme.js';
-import { format, parseISO, addDays, isToday, isTomorrow, isPast, isFuture, startOfDay } from 'date-fns';
+import {
+  format,
+  parseISO,
+  addDays,
+  isToday,
+  isTomorrow,
+  isPast,
+  isFuture,
+  startOfDay,
+} from 'date-fns';
 import { it } from 'date-fns/locale';
 import Modal from '@ui/Modal.jsx';
 
@@ -52,18 +61,18 @@ export default function InstructorDashboard() {
         const instructorBookings = clubBookings.filter((booking) => {
           // Lezioni dove è l'istruttore
           const isInstructorInLesson = booking.instructorId === user.uid;
-          
+
           // Partite dove è un partecipante
-          const isParticipantInMatch = 
-            booking.type === 'match' && 
-            booking.participants?.some(p => p.id === user.uid || p.uid === user.uid);
+          const isParticipantInMatch =
+            booking.type === 'match' &&
+            booking.participants?.some((p) => p.id === user.uid || p.uid === user.uid);
 
           return isInstructorInLesson || isParticipantInMatch;
         });
 
         console.log('📚 [InstructorDashboard] Found bookings:', {
           total: clubBookings.length,
-          instructor: instructorBookings.length
+          instructor: instructorBookings.length,
         });
 
         setAllBookings(instructorBookings);
@@ -88,12 +97,13 @@ export default function InstructorDashboard() {
   // Filter bookings by type (lessons vs matches)
   const { lessonBookings, matchBookings } = useMemo(() => {
     const lessons = allBookings.filter(
-      (b) => b.instructorId === user?.uid && 
-      (b.isLessonBooking || b.type === 'lesson' || b.bookingType === 'lezione')
+      (b) =>
+        b.instructorId === user?.uid &&
+        (b.isLessonBooking || b.type === 'lesson' || b.bookingType === 'lezione')
     );
     const matches = allBookings.filter(
-      (b) => b.type === 'match' && 
-      b.participants?.some(p => p.id === user?.uid || p.uid === user?.uid)
+      (b) =>
+        b.type === 'match' && b.participants?.some((p) => p.id === user?.uid || p.uid === user?.uid)
     );
     return { lessonBookings: lessons, matchBookings: matches };
   }, [allBookings, user?.uid]);
@@ -140,10 +150,12 @@ export default function InstructorDashboard() {
 
   // Get booking status color
   const getStatusColor = (booking) => {
-    if (booking.status === 'cancelled') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+    if (booking.status === 'cancelled')
+      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
     if (booking.status === 'confirmed') {
       const date = booking.date ? parseISO(booking.date) : null;
-      if (date && isPast(date)) return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+      if (date && isPast(date))
+        return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
       return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
     }
     return 'bg-gray-100 text-gray-700 dark:bg-gray-700/30 dark:text-gray-400';
@@ -165,7 +177,7 @@ export default function InstructorDashboard() {
     e.preventDefault();
     try {
       const { createTimeSlot, updateTimeSlot } = await import('@services/time-slots.js');
-      
+
       const slotData = {
         ...slotForm,
         instructorId: user.uid,
@@ -182,7 +194,15 @@ export default function InstructorDashboard() {
       }
 
       // Reset and reload
-      setSlotForm({ date: '', startTime: '', endTime: '', courtIds: [], maxParticipants: 1, price: 0, notes: '' });
+      setSlotForm({
+        date: '',
+        startTime: '',
+        endTime: '',
+        courtIds: [],
+        maxParticipants: 1,
+        price: 0,
+        notes: '',
+      });
       setShowAddSlotModal(false);
       setEditingSlot(null);
 
@@ -222,13 +242,13 @@ export default function InstructorDashboard() {
         const { deleteTimeSlot } = await import('@services/time-slots.js');
         await deleteTimeSlot(clubId, slot.id);
       }
-      
+
       const { getInstructorTimeSlots } = await import('@services/time-slots.js');
       const updatedSlots = await getInstructorTimeSlots(clubId, user.uid);
       setTimeSlots(updatedSlots);
     } catch (error) {
       console.error('❌ Error deleting slot:', error);
-      alert('Errore nell\'eliminare la fascia oraria. Riprova.');
+      alert("Errore nell'eliminare la fascia oraria. Riprova.");
     }
   };
 
@@ -236,9 +256,9 @@ export default function InstructorDashboard() {
   const handleToggleSlot = async (slot) => {
     const newStatus = slot.isActive === false ? true : false;
     const action = newStatus ? 'attivare' : 'disattivare';
-    
+
     if (!confirm(`Sei sicuro di voler ${action} questa fascia oraria?`)) return;
-    
+
     try {
       // Usa la funzione corretta in base alla sorgente dello slot
       if (slot.source === 'lessonConfig') {
@@ -248,7 +268,7 @@ export default function InstructorDashboard() {
         const { updateTimeSlot } = await import('@services/time-slots.js');
         await updateTimeSlot(clubId, slot.id, { isActive: newStatus });
       }
-      
+
       const { getInstructorTimeSlots } = await import('@services/time-slots.js');
       const updatedSlots = await getInstructorTimeSlots(clubId, user.uid);
       setTimeSlots(updatedSlots);
@@ -261,22 +281,22 @@ export default function InstructorDashboard() {
   // Stats for dashboard
   const stats = useMemo(() => {
     const now = new Date();
-    const todayBookings = allBookings.filter(b => {
+    const todayBookings = allBookings.filter((b) => {
       const date = b.date ? parseISO(b.date) : null;
       return date && isToday(date);
     });
-    const upcomingBookings = allBookings.filter(b => {
+    const upcomingBookings = allBookings.filter((b) => {
       const date = b.date ? parseISO(b.date) : null;
       return date && isFuture(date);
     });
 
     return {
-      todayLessons: todayBookings.filter(b => b.instructorId === user?.uid).length,
-      todayMatches: todayBookings.filter(b => b.type === 'match').length,
-      upcomingLessons: upcomingBookings.filter(b => b.instructorId === user?.uid).length,
-      upcomingMatches: upcomingBookings.filter(b => b.type === 'match').length,
+      todayLessons: todayBookings.filter((b) => b.instructorId === user?.uid).length,
+      todayMatches: todayBookings.filter((b) => b.type === 'match').length,
+      upcomingLessons: upcomingBookings.filter((b) => b.instructorId === user?.uid).length,
+      upcomingMatches: upcomingBookings.filter((b) => b.type === 'match').length,
       totalSlots: timeSlots.length,
-      activeSlots: timeSlots.filter(s => s.available).length,
+      activeSlots: timeSlots.filter((s) => s.available).length,
     };
   }, [allBookings, timeSlots, user?.uid]);
 
@@ -303,14 +323,24 @@ export default function InstructorDashboard() {
         <div className="relative overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl border border-indigo-100/50 dark:border-indigo-700/30 shadow-xl shadow-indigo-100/50 dark:shadow-indigo-900/30">
           {/* Decorative gradient background */}
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-pink-500/5 dark:from-indigo-500/10 dark:via-purple-500/10 dark:to-pink-500/10"></div>
-          
+
           <div className="relative p-6 sm:p-8">
             <div className="flex items-start justify-between mb-6">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
-                    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    <svg
+                      className="w-7 h-7 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                      />
                     </svg>
                   </div>
                   <div>
@@ -390,11 +420,13 @@ export default function InstructorDashboard() {
                     <span className="flex items-center gap-2">
                       {label}
                       {count > 0 && (
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                          activeTab === key 
-                            ? 'bg-white/20 text-white' 
-                            : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
-                        }`}>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                            activeTab === key
+                              ? 'bg-white/20 text-white'
+                              : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                          }`}
+                        >
                           {count}
                         </span>
                       )}
@@ -430,55 +462,65 @@ export default function InstructorDashboard() {
                 ))}
               </div>
             )}
-          {activeTab === 'schedule' ? (
-            <div className="space-y-4 md:space-y-6">
-              {/* Add Button */}
-              <div className="flex justify-end">
-                <button
-                  onClick={() => {
-                    setSlotForm({
-                      date: '',
-                      startTime: '14:00',
-                      endTime: '15:00',
-                      courtIds: Array.isArray(club?.courts) ? club.courts.map((c) => c.id) : [],
-                      maxParticipants: 5,
-                      price: 0,
-                      notes: '',
-                    });
-                    setEditingSlot(null);
-                    setShowAddSlotModal(true);
-                  }}
-                  className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 whitespace-nowrap text-sm sm:text-base"
-                >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  <span className="hidden sm:inline">Nuova Fascia</span>
-                  <span className="sm:hidden">Nuova</span>
-                </button>
-              </div>
+            {activeTab === 'schedule' ? (
+              <div className="space-y-4 md:space-y-6">
+                {/* Add Button */}
+                <div className="flex justify-end">
+                  <button
+                    onClick={() => {
+                      setSlotForm({
+                        date: '',
+                        startTime: '14:00',
+                        endTime: '15:00',
+                        courtIds: Array.isArray(club?.courts) ? club.courts.map((c) => c.id) : [],
+                        maxParticipants: 5,
+                        price: 0,
+                        notes: '',
+                      });
+                      setEditingSlot(null);
+                      setShowAddSlotModal(true);
+                    }}
+                    className="px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 whitespace-nowrap text-sm sm:text-base"
+                  >
+                    <svg
+                      className="w-4 h-4 sm:w-5 sm:h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    <span className="hidden sm:inline">Nuova Fascia</span>
+                    <span className="sm:hidden">Nuova</span>
+                  </button>
+                </div>
 
-              {/* Time Slots List */}
-              <TimeSlotsList
-                timeSlots={timeSlots}
-                onEdit={handleEditSlot}
-                onDelete={handleDeleteSlot}
-                onToggle={handleToggleSlot}
+                {/* Time Slots List */}
+                <TimeSlotsList
+                  timeSlots={timeSlots}
+                  onEdit={handleEditSlot}
+                  onDelete={handleDeleteSlot}
+                  onToggle={handleToggleSlot}
+                />
+              </div>
+            ) : (
+              <BookingsList
+                bookings={filteredBookings}
+                type={activeTab}
+                onSelectBooking={(booking) => {
+                  setSelectedBooking(booking);
+                  setShowBookingModal(true);
+                }}
+                formatBookingDate={formatBookingDate}
+                getStatusColor={getStatusColor}
+                getStatusText={getStatusText}
               />
-            </div>
-          ) : (
-            <BookingsList
-              bookings={filteredBookings}
-              type={activeTab}
-              onSelectBooking={(booking) => {
-                setSelectedBooking(booking);
-                setShowBookingModal(true);
-              }}
-              formatBookingDate={formatBookingDate}
-              getStatusColor={getStatusColor}
-              getStatusText={getStatusText}
-            />
-          )}
+            )}
           </div>
         </div>
       </div>
@@ -530,15 +572,21 @@ export default function InstructorDashboard() {
 function StatCard({ title, value, icon, color }) {
   return (
     <div className="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-      <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 transition-opacity duration-300`}></div>
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 transition-opacity duration-300`}
+      ></div>
       <div className="relative">
         <div className="flex items-center justify-between mb-2">
           <span className="text-2xl">{icon}</span>
-          <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${color} opacity-10 dark:opacity-20 flex items-center justify-center`}>
+          <div
+            className={`w-10 h-10 rounded-lg bg-gradient-to-br ${color} opacity-10 dark:opacity-20 flex items-center justify-center`}
+          >
             <span className="text-xl">{icon}</span>
           </div>
         </div>
-        <div className={`text-2xl sm:text-3xl font-bold bg-gradient-to-r ${color} bg-clip-text text-transparent mb-1`}>
+        <div
+          className={`text-2xl sm:text-3xl font-bold bg-gradient-to-r ${color} bg-clip-text text-transparent mb-1`}
+        >
           {value}
         </div>
         <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">
@@ -550,12 +598,29 @@ function StatCard({ title, value, icon, color }) {
 }
 
 // Bookings List Component
-function BookingsList({ bookings, type, onSelectBooking, formatBookingDate, getStatusColor, getStatusText }) {
+function BookingsList({
+  bookings,
+  type,
+  onSelectBooking,
+  formatBookingDate,
+  getStatusColor,
+  getStatusText,
+}) {
   if (bookings.length === 0) {
     return (
       <div className="text-center py-12">
-        <svg className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        <svg
+          className="w-16 h-16 mx-auto mb-4 text-gray-400 dark:text-gray-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+          />
         </svg>
         <p className="text-lg font-medium text-gray-900 dark:text-white mb-1">
           Nessuna {type === 'lessons' ? 'lezione' : 'partita'} trovata
@@ -578,22 +643,49 @@ function BookingsList({ bookings, type, onSelectBooking, formatBookingDate, getS
           <div className="flex items-center justify-between mb-3">
             <div className="flex-1">
               <div className="text-sm font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-                <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <svg
+                  className="w-4 h-4 text-indigo-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
                 </svg>
                 {formatBookingDate(booking.date)} {booking.time && `• ${booking.time}`}
               </div>
               {booking.courtName && (
                 <div className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1.5 mt-1">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
                   {booking.courtName}
                 </div>
               )}
             </div>
-            <div className={`px-3 py-1.5 rounded-full text-xs font-bold ${getStatusColor(booking)}`}>
+            <div
+              className={`px-3 py-1.5 rounded-full text-xs font-bold ${getStatusColor(booking)}`}
+            >
               {getStatusText(booking)}
             </div>
           </div>
@@ -603,7 +695,10 @@ function BookingsList({ bookings, type, onSelectBooking, formatBookingDate, getS
               <>
                 {booking.lessonType && (
                   <div className="text-sm text-gray-700 dark:text-gray-300">
-                    Tipo: <span className="font-medium">{booking.lessonType === 'individual' ? 'Individuale' : 'Gruppo'}</span>
+                    Tipo:{' '}
+                    <span className="font-medium">
+                      {booking.lessonType === 'individual' ? 'Individuale' : 'Gruppo'}
+                    </span>
                   </div>
                 )}
                 {booking.participants && (
@@ -622,7 +717,10 @@ function BookingsList({ bookings, type, onSelectBooking, formatBookingDate, getS
                 )}
                 {booking.participants && (
                   <div className="text-sm text-gray-700 dark:text-gray-300">
-                    Giocatori: <span className="font-medium">{booking.participants.map(p => p.name || p.displayName).join(', ')}</span>
+                    Giocatori:{' '}
+                    <span className="font-medium">
+                      {booking.participants.map((p) => p.name || p.displayName).join(', ')}
+                    </span>
                   </div>
                 )}
               </>
@@ -644,7 +742,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
   const { club } = useClub();
   const { user } = useAuth();
   const T = themeTokens();
-  
+
   // Separate active and expired time slots
   const now = new Date();
   const activeTimeSlots = useMemo(() => {
@@ -669,8 +767,8 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
       // Ottieni la data più vicina per lo slot A
       if (a.selectedDates && a.selectedDates.length > 0) {
         const futureDates = a.selectedDates
-          .map(d => new Date(d))
-          .filter(d => d >= startOfDay(now))
+          .map((d) => new Date(d))
+          .filter((d) => d >= startOfDay(now))
           .sort((x, y) => x - y);
         dateA = futureDates[0] || new Date(a.selectedDates[0]);
       } else if (a.date) {
@@ -682,8 +780,8 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
       // Ottieni la data più vicina per lo slot B
       if (b.selectedDates && b.selectedDates.length > 0) {
         const futureDates = b.selectedDates
-          .map(d => new Date(d))
-          .filter(d => d >= startOfDay(now))
+          .map((d) => new Date(d))
+          .filter((d) => d >= startOfDay(now))
           .sort((x, y) => x - y);
         dateB = futureDates[0] || new Date(b.selectedDates[0]);
       } else if (b.date) {
@@ -700,8 +798,18 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
     return (
       <div className="text-center py-16">
         <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-full flex items-center justify-center">
-          <svg className="w-10 h-10 text-purple-500 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            className="w-10 h-10 text-purple-500 dark:text-purple-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </div>
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
@@ -712,7 +820,12 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
         </p>
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg text-sm">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
           Clicca su "Crea Nuova Fascia" per iniziare
         </div>
@@ -732,7 +845,10 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
         dateInfo = format(date, 'dd/MM', { locale: it });
       } else {
         displayTitle = `${sortedDates.length} date`;
-        dateInfo = sortedDates.slice(0, 2).map((d) => format(new Date(d), 'dd/MM')).join(', ');
+        dateInfo = sortedDates
+          .slice(0, 2)
+          .map((d) => format(new Date(d), 'dd/MM'))
+          .join(', ');
         if (sortedDates.length > 2) dateInfo += '...';
       }
     } else if (slot.date) {
@@ -744,29 +860,43 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
     }
 
     return (
-      <div className={`group relative bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden ${isExpired ? 'opacity-60' : 'hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-600'} transition-all duration-300`}>
+      <div
+        className={`group relative bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden ${isExpired ? 'opacity-60' : 'hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-600'} transition-all duration-300`}
+      >
         {/* Decorative gradient bar */}
-        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${isExpired ? 'from-gray-400 to-gray-500' : 'from-indigo-500 via-purple-500 to-pink-500'}`}></div>
-        
+        <div
+          className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${isExpired ? 'from-gray-400 to-gray-500' : 'from-indigo-500 via-purple-500 to-pink-500'}`}
+        ></div>
+
         <div className="p-4 sm:p-6">
           {/* Header with Date and Status */}
           <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-200 dark:border-gray-700 gap-3">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-              <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${isExpired ? 'from-gray-400 to-gray-500' : 'from-indigo-500 to-purple-600'} rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0`}>
-                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <div
+                className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${isExpired ? 'from-gray-400 to-gray-500' : 'from-indigo-500 to-purple-600'} rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0`}
+              >
+                <svg
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
                 </svg>
               </div>
               <div className="min-w-0 flex-1">
                 <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-gray-100 capitalize truncate">
                   {displayTitle}
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                  {dateInfo}
-                </p>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{dateInfo}</p>
               </div>
             </div>
-            
+
             {/* Status Badges */}
             <div className="flex flex-col gap-1.5 flex-shrink-0">
               {/* Active/Expired Badge */}
@@ -783,12 +913,22 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
                   <span className="sm:hidden">✕</span>
                 </span>
               )}
-              
+
               {/* Disabled Badge */}
               {!isExpired && slot.isActive === false && (
                 <span className="px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 text-xs sm:text-sm font-bold rounded-full flex items-center gap-1 sm:gap-1.5">
-                  <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                  <svg
+                    className="w-3 h-3 sm:w-3.5 sm:h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                    />
                   </svg>
                   <span className="hidden sm:inline">Disattivata</span>
                   <span className="sm:hidden">Off</span>
@@ -803,10 +943,22 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
           {/* Orario */}
           <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg p-3 sm:p-4 border border-orange-200 dark:border-orange-700/30">
             <div className="flex items-center gap-2 mb-2">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 dark:text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 dark:text-orange-400 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
-              <span className="text-xs sm:text-sm font-semibold text-orange-900 dark:text-orange-200">Orario</span>
+              <span className="text-xs sm:text-sm font-semibold text-orange-900 dark:text-orange-200">
+                Orario
+              </span>
             </div>
             <p className="text-lg sm:text-xl font-bold text-orange-900 dark:text-orange-100">
               {slot.startTime} - {slot.endTime}
@@ -816,10 +968,22 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
           {/* Maestro */}
           <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-3 sm:p-4 border border-green-200 dark:border-green-700/30">
             <div className="flex items-center gap-2 mb-2">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
               </svg>
-              <span className="text-xs sm:text-sm font-semibold text-green-900 dark:text-green-200">Maestro</span>
+              <span className="text-xs sm:text-sm font-semibold text-green-900 dark:text-green-200">
+                Maestro
+              </span>
             </div>
             <p className="text-sm sm:text-base font-bold text-green-900 dark:text-green-100 truncate">
               {user?.displayName || 'Tu'}
@@ -829,10 +993,22 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
           {/* Campi */}
           <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg p-3 sm:p-4 border border-purple-200 dark:border-purple-700/30 sm:col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-2">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 dark:text-purple-400 flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
               </svg>
-              <span className="text-xs sm:text-sm font-semibold text-purple-900 dark:text-purple-200">Campi Selezionati</span>
+              <span className="text-xs sm:text-sm font-semibold text-purple-900 dark:text-purple-200">
+                Campi Selezionati
+              </span>
             </div>
             <div className="flex flex-wrap gap-1">
               {slot.courtIds && Array.isArray(slot.courtIds) && slot.courtIds.length > 0 ? (
@@ -853,7 +1029,9 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
                   </span>
                 )
               ) : (
-                <span className="text-xs sm:text-sm text-purple-700 dark:text-purple-300">Nessun campo selezionato</span>
+                <span className="text-xs sm:text-sm text-purple-700 dark:text-purple-300">
+                  Nessun campo selezionato
+                </span>
               )}
             </div>
           </div>
@@ -864,16 +1042,38 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-3 sm:mb-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
             {(slot.maxBookings || slot.maxParticipants) && (
               <div className="flex items-center gap-1.5">
-                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                <svg
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
                 </svg>
-                <span className="whitespace-nowrap">Max {slot.maxBookings || slot.maxParticipants}</span>
+                <span className="whitespace-nowrap">
+                  Max {slot.maxBookings || slot.maxParticipants}
+                </span>
               </div>
             )}
             {slot.price > 0 && (
               <div className="flex items-center gap-1.5 font-semibold text-green-600 dark:text-green-400">
-                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 €{slot.price}
               </div>
@@ -884,7 +1084,9 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
         {/* Notes */}
         {slot.notes && (
           <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700/30">
-            <p className="text-xs sm:text-sm text-blue-900 dark:text-blue-100 break-words">{slot.notes}</p>
+            <p className="text-xs sm:text-sm text-blue-900 dark:text-blue-100 break-words">
+              {slot.notes}
+            </p>
           </div>
         )}
 
@@ -894,8 +1096,18 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
             onClick={() => onEdit(slot)}
             className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
           >
-            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <svg
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
             </svg>
             Modifica
           </button>
@@ -903,23 +1115,43 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
             <button
               onClick={() => onToggle(slot)}
               className={`flex-1 px-3 sm:px-4 py-2 sm:py-2.5 ${
-                slot.isActive === false 
-                  ? 'bg-green-500 hover:bg-green-600' 
+                slot.isActive === false
+                  ? 'bg-green-500 hover:bg-green-600'
                   : 'bg-orange-500 hover:bg-orange-600'
               } text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm sm:text-base`}
             >
               {slot.isActive === false ? (
                 <>
-                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg
+                    className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   <span className="hidden sm:inline">Attiva</span>
                   <span className="sm:hidden">ON</span>
                 </>
               ) : (
                 <>
-                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                  <svg
+                    className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                    />
                   </svg>
                   <span className="hidden sm:inline">Disattiva</span>
                   <span className="sm:hidden">Off</span>
@@ -931,8 +1163,18 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
             onClick={() => onDelete(slot)}
             className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
           >
-            <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            <svg
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
             </svg>
             <span className="hidden sm:inline">Elimina</span>
             <span className="sm:hidden">Del</span>
@@ -964,9 +1206,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
         </div>
       ) : (
         <div className="text-center py-8">
-          <p className="text-gray-500 dark:text-gray-400">
-            Nessuna fascia oraria attiva
-          </p>
+          <p className="text-gray-500 dark:text-gray-400">Nessuna fascia oraria attiva</p>
         </div>
       )}
     </div>
@@ -986,24 +1226,18 @@ function BookingDetail({ booking, type }) {
         </div>
         <div>
           <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Ora</div>
-          <div className="font-medium text-gray-900 dark:text-white">
-            {booking.time || 'N/A'}
-          </div>
+          <div className="font-medium text-gray-900 dark:text-white">{booking.time || 'N/A'}</div>
         </div>
         {booking.courtName && (
           <div>
             <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Campo</div>
-            <div className="font-medium text-gray-900 dark:text-white">
-              {booking.courtName}
-            </div>
+            <div className="font-medium text-gray-900 dark:text-white">{booking.courtName}</div>
           </div>
         )}
         {booking.duration && (
           <div>
             <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Durata</div>
-            <div className="font-medium text-gray-900 dark:text-white">
-              {booking.duration} min
-            </div>
+            <div className="font-medium text-gray-900 dark:text-white">{booking.duration} min</div>
           </div>
         )}
       </div>
@@ -1013,7 +1247,10 @@ function BookingDetail({ booking, type }) {
           <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Partecipanti</div>
           <div className="space-y-2">
             {booking.participants.map((participant, idx) => (
-              <div key={idx} className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div
+                key={idx}
+                className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg"
+              >
                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
                   {(participant.name || participant.displayName || 'U')[0].toUpperCase()}
                 </div>
@@ -1093,8 +1330,18 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
   };
 
   const monthNames = [
-    'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
-    'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre',
+    'Gennaio',
+    'Febbraio',
+    'Marzo',
+    'Aprile',
+    'Maggio',
+    'Giugno',
+    'Luglio',
+    'Agosto',
+    'Settembre',
+    'Ottobre',
+    'Novembre',
+    'Dicembre',
   ];
 
   const dayNames = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
@@ -1166,7 +1413,11 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
                 const minutes = (i % 2) * 30;
                 if (hour >= 24) return null;
                 const time = `${String(hour).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-                return <option key={time} value={time}>{time}</option>;
+                return (
+                  <option key={time} value={time}>
+                    {time}
+                  </option>
+                );
               }).filter(Boolean)}
             </select>
           </div>
@@ -1186,7 +1437,11 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
                 const minutes = (i % 2) * 30;
                 if (hour >= 24) return null;
                 const time = `${String(hour).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-                return <option key={time} value={time}>{time}</option>;
+                return (
+                  <option key={time} value={time}>
+                    {time}
+                  </option>
+                );
               }).filter(Boolean)}
             </select>
           </div>
@@ -1195,8 +1450,18 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
         {/* Istruttore (Hidden - always current user, just display) */}
         <div className={`p-3 rounded-lg ${T.cardBg} border-l-4 border-green-500`}>
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <svg
+              className="w-5 h-5 text-green-600 dark:text-green-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
             </svg>
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400">Istruttore</p>
@@ -1210,7 +1475,9 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
           <label className="block text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
             Campi
           </label>
-          <div className={`space-y-2 border rounded-lg p-3 ${T.border} ${T.cardBg} max-h-48 overflow-y-auto`}>
+          <div
+            className={`space-y-2 border rounded-lg p-3 ${T.border} ${T.cardBg} max-h-48 overflow-y-auto`}
+          >
             {clubCourts && clubCourts.length > 0 ? (
               clubCourts.map((court) => (
                 <label
@@ -1246,9 +1513,7 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
 
         {/* Active Toggle */}
         <div className="flex items-center justify-between p-3 rounded-lg border ${T.border}">
-          <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Attiva
-          </label>
+          <label className="text-sm font-semibold text-gray-900 dark:text-gray-100">Attiva</label>
           <input
             type="checkbox"
             checked={slotForm.active !== false}

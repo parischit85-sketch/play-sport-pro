@@ -26,7 +26,7 @@ const ClubClassifica = ({ clubId, club }) => {
       // Carica dati direttamente dalle subcollections del club
       const [clubPlayers, clubMatches] = await Promise.all([
         getClubPlayers(clubId),
-        getClubMatches(clubId)
+        getClubMatches(clubId),
       ]);
 
       setPlayers(clubPlayers);

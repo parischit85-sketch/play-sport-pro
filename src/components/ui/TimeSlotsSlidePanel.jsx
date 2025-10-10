@@ -412,10 +412,13 @@ function TimeSlotsSlidePanel({
         </div>
 
         {/* Time Slots List */}
-        <div className="flex-1 overflow-y-auto overscroll-contain" style={{
-          WebkitOverflowScrolling: 'touch',
-          scrollBehavior: 'smooth',
-        }}>
+        <div
+          className="flex-1 overflow-y-auto overscroll-contain"
+          style={{
+            WebkitOverflowScrolling: 'touch',
+            scrollBehavior: 'smooth',
+          }}
+        >
           {filteredTimeSlots.length === 0 ? (
             <div className="p-6 text-center text-gray-500 dark:text-gray-400">
               <Clock className="h-12 w-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" />

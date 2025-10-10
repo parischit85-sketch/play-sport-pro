@@ -24,10 +24,10 @@ const ClubCourts = ({ clubId, club }) => {
     try {
       // Carica dati direttamente dalle subcollections del club
       const today = new Date().toISOString().split('T')[0];
-      
+
       const [clubCourts, clubBookings] = await Promise.all([
         getClubCourts(clubId),
-        getClubBookings(clubId, { fromDate: today })
+        getClubBookings(clubId, { fromDate: today }),
       ]);
 
       setCourts(clubCourts);

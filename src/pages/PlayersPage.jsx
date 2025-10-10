@@ -35,30 +35,29 @@ export default function PlayersPage() {
   // 🎯 Calcola i ranking reali dalle partite (come in Classifica)
   const playersWithRealRating = React.useMemo(() => {
     if (!clubId || !players || !matchesLoaded) return players;
-    
+
     // Filtra i giocatori del torneo
-    const tournamentPlayers = players.filter(p => 
-      p.tournamentData?.isParticipant === true &&
-      p.tournamentData?.isActive === true
+    const tournamentPlayers = players.filter(
+      (p) => p.tournamentData?.isParticipant === true && p.tournamentData?.isActive === true
     );
-    
+
     if (tournamentPlayers.length === 0) return players;
-    
+
     // Calcola i ranking reali
     const rankingData = computeClubRanking(tournamentPlayers, matches, clubId);
-    const rankingMap = new Map(rankingData.players.map(p => [p.id, p.rating]));
-    
+    const rankingMap = new Map(rankingData.players.map((p) => [p.id, p.rating]));
+
     // Applica i rating calcolati ai giocatori
-    return players.map(p => ({
+    return players.map((p) => ({
       ...p,
-      calculatedRating: rankingMap.get(p.id) || p.rating
+      calculatedRating: rankingMap.get(p.id) || p.rating,
     }));
   }, [clubId, players, matches, matchesLoaded]);
 
   // Crea playersById con i rating calcolati
   const playersByIdWithRating = React.useMemo(() => {
     const map = {};
-    playersWithRealRating.forEach(p => {
+    playersWithRealRating.forEach((p) => {
       map[p.id] = p;
     });
     return map;

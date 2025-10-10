@@ -55,20 +55,20 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
               className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/10 rounded-xl p-6 border-2 border-emerald-200 dark:border-emerald-700/30 hover:border-emerald-400 dark:hover:border-emerald-500 transition-all duration-300 hover:shadow-lg hover:scale-105"
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-full -mr-10 -mt-10"></div>
-              
+
               <div className="relative z-10">
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform">
                   <User className="w-8 h-8 text-white" />
                 </div>
-                
+
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                   Registrati come Utente
                 </h3>
-                
+
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   Prenota campi, partecipa a tornei, segui statistiche e migliora il tuo gioco
                 </p>
-                
+
                 <div className="space-y-2 text-xs text-gray-500 dark:text-gray-500">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
@@ -83,11 +83,21 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
                     <span>Tornei e classifiche</span>
                   </div>
                 </div>
-                
+
                 <div className="mt-4 flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold">
                   <span>Inizia subito</span>
-                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -99,20 +109,20 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
               className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/10 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-700/30 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:scale-105"
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-full -mr-10 -mt-10"></div>
-              
+
               <div className="relative z-10">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform">
                   <Building2 className="w-8 h-8 text-white" />
                 </div>
-                
+
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                   Registra il tuo Circolo
                 </h3>
-                
+
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                   Gestisci campi, prenotazioni, tornei e membri del tuo circolo sportivo
                 </p>
-                
+
                 <div className="space-y-2 text-xs text-gray-500 dark:text-gray-500">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
@@ -127,11 +137,21 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
                     <span>Analisi e reportistica</span>
                   </div>
                 </div>
-                
+
                 <div className="mt-4 flex items-center justify-center gap-2 text-blue-600 dark:text-blue-400 font-semibold">
                   <span>Registra circolo</span>
-                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </div>
               </div>

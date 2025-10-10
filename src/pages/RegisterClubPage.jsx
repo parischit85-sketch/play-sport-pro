@@ -4,7 +4,20 @@
 // =============================================
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Building2, MapPin, Phone, Mail, Globe, Upload, ArrowLeft, Check, Lock, User, Info, X } from 'lucide-react';
+import {
+  Building2,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  Upload,
+  ArrowLeft,
+  Check,
+  Lock,
+  User,
+  Info,
+  X,
+} from 'lucide-react';
 import { themeTokens, LOGO_URL } from '@lib/theme.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { auth, db } from '@services/firebase.js';
@@ -23,7 +36,7 @@ export default function RegisterClubPage() {
     clubPhone: '',
     password: '',
     confirmPassword: '',
-    
+
     // STEP 2: Info circolo dettagliate
     logo: null,
     description: '',
@@ -32,15 +45,15 @@ export default function RegisterClubPage() {
       city: '',
       province: '',
       postalCode: '',
-      country: 'Italia'
+      country: 'Italia',
     },
     googleMapsLink: '',
-    
+
     // STEP 3: Dati operatore/admin
     adminFirstName: '',
     adminLastName: '',
     adminEmail: '',
-    adminPhone: ''
+    adminPhone: '',
   });
 
   const [logoPreview, setLogoPreview] = useState(null);
@@ -61,18 +74,18 @@ export default function RegisterClubPage() {
     const { name, value } = e.target;
     if (name.startsWith('address.')) {
       const field = name.split('.')[1];
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        address: { ...prev.address, [field]: value }
+        address: { ...prev.address, [field]: value },
       }));
     } else if (name.startsWith('contact.')) {
       const field = name.split('.')[1];
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        contact: { ...prev.contact, [field]: value }
+        contact: { ...prev.contact, [field]: value },
       }));
     } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -103,7 +116,7 @@ export default function RegisterClubPage() {
         setUploading(true);
         const tempClubId = `temp_${Date.now()}`;
         const logoUrl = await uploadLogo(file, tempClubId);
-        setFormData(prev => ({ ...prev, logo: logoUrl }));
+        setFormData((prev) => ({ ...prev, logo: logoUrl }));
       } catch (error) {
         console.error('Errore upload logo:', error);
         alert('Errore durante il caricamento del logo. Riprova.');
@@ -169,7 +182,7 @@ export default function RegisterClubPage() {
       // 2. Aggiorna il profilo con il nome completo dell'operatore
       const adminFullName = `${formData.adminFirstName} ${formData.adminLastName}`.trim();
       await updateProfile(newUser, {
-        displayName: adminFullName
+        displayName: adminFullName,
       });
 
       // 3. Crea il circolo (status: pending)
@@ -181,12 +194,12 @@ export default function RegisterClubPage() {
           city: formData.address.city,
           province: formData.address.province || '',
           postalCode: formData.address.postalCode || '',
-          country: formData.address.country || 'Italia'
+          country: formData.address.country || 'Italia',
         },
         contact: {
           phone: formData.clubPhone,
           email: formData.clubEmail,
-          website: formData.googleMapsLink || ''
+          website: formData.googleMapsLink || '',
         },
         googleMapsLink: formData.googleMapsLink || '',
         logoUrl: formData.logo || null, // URL già caricato su Cloudinary nello Step 2
@@ -194,7 +207,7 @@ export default function RegisterClubPage() {
           bookingDuration: 90,
           advanceBookingDays: 14,
           cancellationHours: 24,
-          allowGuestBooking: false
+          allowGuestBooking: false,
         },
         sports: [],
         courts: [],
@@ -204,7 +217,7 @@ export default function RegisterClubPage() {
         isActive: false, // Non attivo fino all'approvazione
         status: 'pending', // In attesa di approvazione
         ownerId: newUser.uid,
-        ownerEmail: formData.clubEmail
+        ownerEmail: formData.clubEmail,
       };
 
       const clubRef = await addDoc(collection(db, 'clubs'), clubData);
@@ -221,7 +234,7 @@ export default function RegisterClubPage() {
         clubId: clubRef.id,
         clubName: formData.clubName,
         createdAt: serverTimestamp(),
-        registeredAt: serverTimestamp()
+        registeredAt: serverTimestamp(),
       });
 
       // 5. Crea il profilo nel club
@@ -235,7 +248,7 @@ export default function RegisterClubPage() {
         isClubAdmin: true,
         status: 'active',
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
 
       // 6. Crea il documento affiliation
@@ -250,28 +263,27 @@ export default function RegisterClubPage() {
         approvedAt: serverTimestamp(),
         joinedAt: serverTimestamp(),
         _createdAt: serverTimestamp(),
-        _updatedAt: serverTimestamp()
+        _updatedAt: serverTimestamp(),
       });
 
       // 7. Aggiungi l'utente all'array managers del club
       await updateDoc(doc(db, 'clubs', clubRef.id), {
         managers: [newUser.uid],
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
 
       // 8. Successo! Redirect alla dashboard admin del circolo
-      const successMessage = formData.logo 
+      const successMessage = formData.logo
         ? `✅ Registrazione completata!\n\nIl circolo "${formData.clubName}" è stato creato con il logo.\n\nOperatore: ${adminFullName}\nEmail: ${formData.adminEmail}\nTelefono: ${formData.adminPhone}\n\nPotrai configurare campi, istruttori e orari dalla dashboard admin.`
         : `✅ Registrazione completata!\n\nIl circolo "${formData.clubName}" è stato creato.\n\nOperatore: ${adminFullName}\nEmail: ${formData.adminEmail}\nTelefono: ${formData.adminPhone}\n\nPotrai aggiungere un logo dalle impostazioni del circolo.`;
-      
+
       alert(successMessage);
       // Redirect alla dashboard ADMIN del circolo
       navigate(`/club/${clubRef.id}/admin/dashboard`);
-      
     } catch (err) {
       console.error('Error registering club:', err);
       if (err.code === 'auth/email-already-in-use') {
-        setError('Questa email è già registrata. Usa un\'altra email o accedi.');
+        setError("Questa email è già registrata. Usa un'altra email o accedi.");
       } else if (err.code === 'auth/weak-password') {
         setError('La password deve essere di almeno 6 caratteri.');
       } else if (err.code === 'auth/invalid-email') {
@@ -285,24 +297,19 @@ export default function RegisterClubPage() {
   };
 
   // Validazioni per ogni step
-  const canProceedToStep2 = 
-    formData.clubName && 
-    formData.clubEmail && 
+  const canProceedToStep2 =
+    formData.clubName &&
+    formData.clubEmail &&
     formData.clubPhone &&
-    formData.password && 
-    formData.confirmPassword && 
-    formData.password === formData.confirmPassword && 
+    formData.password &&
+    formData.confirmPassword &&
+    formData.password === formData.confirmPassword &&
     formData.password.length >= 6;
 
-  const canProceedToStep3 = 
-    formData.description &&
-    formData.address.city;
+  const canProceedToStep3 = formData.description && formData.address.city;
 
-  const canSubmit = 
-    formData.adminFirstName && 
-    formData.adminLastName &&
-    formData.adminEmail &&
-    formData.adminPhone;
+  const canSubmit =
+    formData.adminFirstName && formData.adminLastName && formData.adminEmail && formData.adminPhone;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -338,7 +345,8 @@ export default function RegisterClubPage() {
             Registra il Tuo Circolo
           </h1>
           <p className="text-xl text-neutral-600 dark:text-gray-300">
-            Unisciti alla nostra piattaforma e gestisci il tuo circolo sportivo in modo professionale
+            Unisciti alla nostra piattaforma e gestisci il tuo circolo sportivo in modo
+            professionale
           </p>
         </div>
 
@@ -353,18 +361,22 @@ export default function RegisterClubPage() {
                       step > s
                         ? 'bg-emerald-500 text-white'
                         : step === s
-                        ? 'bg-blue-500 text-white ring-4 ring-blue-500/20'
-                        : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                          ? 'bg-blue-500 text-white ring-4 ring-blue-500/20'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
                     }`}
                   >
                     {step > s ? <Check className="w-5 h-5" /> : s}
                   </div>
-                  <span className={`text-sm font-medium ${step >= s ? 'text-neutral-900 dark:text-white' : 'text-gray-500'}`}>
+                  <span
+                    className={`text-sm font-medium ${step >= s ? 'text-neutral-900 dark:text-white' : 'text-gray-500'}`}
+                  >
                     {s === 1 ? 'Dati Circolo' : s === 2 ? 'Logo & Dettagli' : 'Operatore'}
                   </span>
                 </div>
                 {s < 3 && (
-                  <div className={`w-12 h-1 rounded ${step > s ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-gray-700'}`} />
+                  <div
+                    className={`w-12 h-1 rounded ${step > s ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-gray-700'}`}
+                  />
                 )}
               </React.Fragment>
             ))}
@@ -372,7 +384,10 @@ export default function RegisterClubPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8"
+        >
           {error && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400">
               {error}
@@ -388,7 +403,8 @@ export default function RegisterClubPage() {
 
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
                 <p className="text-sm text-blue-800 dark:text-blue-300">
-                  Inserisci i dati principali del tuo circolo sportivo. Questi dati saranno utilizzati per creare l'account e per il login.
+                  Inserisci i dati principali del tuo circolo sportivo. Questi dati saranno
+                  utilizzati per creare l'account e per il login.
                 </p>
               </div>
 
@@ -520,14 +536,14 @@ export default function RegisterClubPage() {
                 <div className="flex flex-col items-center gap-4">
                   {formData.logo && (
                     <div className="relative">
-                      <img 
-                        src={formData.logo} 
-                        alt="Logo preview" 
+                      <img
+                        src={formData.logo}
+                        alt="Logo preview"
                         className="w-32 h-32 object-contain rounded-lg border-2 border-gray-300 dark:border-gray-600"
                       />
                       <button
                         type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, logo: '' }))}
+                        onClick={() => setFormData((prev) => ({ ...prev, logo: '' }))}
                         className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                       >
                         <X className="w-4 h-4" />
@@ -805,11 +821,12 @@ export default function RegisterClubPage() {
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              
+
               <div className="space-y-4 text-sm text-gray-700 dark:text-gray-300">
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
                   <p className="text-blue-800 dark:text-blue-200 font-medium">
-                    💡 Usa il link completo dalla barra degli indirizzi del browser, NON il link abbreviato!
+                    💡 Usa il link completo dalla barra degli indirizzi del browser, NON il link
+                    abbreviato!
                   </p>
                 </div>
 
@@ -820,7 +837,15 @@ export default function RegisterClubPage() {
                   <div>
                     <p className="font-medium">Apri Google Maps</p>
                     <p className="text-gray-600 dark:text-gray-400">
-                      Vai su <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">maps.google.com</a>
+                      Vai su{' '}
+                      <a
+                        href="https://maps.google.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        maps.google.com
+                      </a>
                     </p>
                   </div>
                 </div>
@@ -844,14 +869,17 @@ export default function RegisterClubPage() {
                   <div>
                     <p className="font-medium">Copia dalla barra degli indirizzi</p>
                     <p className="text-gray-600 dark:text-gray-400">
-                      Copia il <strong>link COMPLETO</strong> dalla barra degli indirizzi del browser
+                      Copia il <strong>link COMPLETO</strong> dalla barra degli indirizzi del
+                      browser
                     </p>
                     <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                      ✅ Esempio corretto:<br/>
+                      ✅ Esempio corretto:
+                      <br />
                       https://www.google.com/maps/place/...
                     </p>
                     <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-                      ❌ NON usare:<br/>
+                      ❌ NON usare:
+                      <br />
                       maps.app.goo.gl/xyz (link abbreviato)
                     </p>
                   </div>
@@ -883,7 +911,10 @@ export default function RegisterClubPage() {
         {/* Footer Note */}
         <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
           Hai già un account?{' '}
-          <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+          <Link
+            to="/login"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+          >
             Accedi qui
           </Link>
         </div>

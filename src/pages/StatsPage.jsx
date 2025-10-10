@@ -26,13 +26,13 @@ export default function StatsPage() {
     if (!clubId) return { players: [], matches: [] };
     const srcPlayers = playersLoaded ? players : [];
     const srcMatches = matchesLoaded ? matches : [];
-    
+
     // 🏆 FILTRO CAMPIONATO: Solo giocatori che partecipano attivamente al campionato
-    const tournamentPlayers = srcPlayers.filter(player => 
-      player.tournamentData?.isParticipant === true &&
-      player.tournamentData?.isActive === true
+    const tournamentPlayers = srcPlayers.filter(
+      (player) =>
+        player.tournamentData?.isParticipant === true && player.tournamentData?.isActive === true
     );
-    
+
     return computeClubRanking(tournamentPlayers, srcMatches, clubId);
   }, [clubId, players, playersLoaded, matches, matchesLoaded]);
 

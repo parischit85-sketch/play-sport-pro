@@ -10,7 +10,12 @@ import { calculateCertificateStatus } from '@services/medicalCertificates.js';
 
 export default function PlayerCard({ player, playersById, onEdit, onDelete, onView, onStats, T }) {
   // 🎯 Usa il rating calcolato dinamicamente (se disponibile)
-  const liveRating = player.calculatedRating ?? playersById?.[player.id]?.calculatedRating ?? playersById?.[player.id]?.rating ?? player.rating ?? DEFAULT_RATING;
+  const liveRating =
+    player.calculatedRating ??
+    playersById?.[player.id]?.calculatedRating ??
+    playersById?.[player.id]?.rating ??
+    player.rating ??
+    DEFAULT_RATING;
 
   // 🏥 Calcola status certificato
   const certStatus = calculateCertificateStatus(player.medicalCertificates?.current?.expiryDate);
@@ -99,15 +104,23 @@ export default function PlayerCard({ player, playersById, onEdit, onDelete, onVi
 
                 {/* Badge Certificato Medico */}
                 {certStatus.isExpired && (
-                  <span className="text-red-600 text-sm" title={`Certificato scaduto ${Math.abs(certStatus.daysUntilExpiry)} giorni fa`}>
+                  <span
+                    className="text-red-600 text-sm"
+                    title={`Certificato scaduto ${Math.abs(certStatus.daysUntilExpiry)} giorni fa`}
+                  >
                     ⚠️
                   </span>
                 )}
-                {certStatus.isExpiring && certStatus.daysUntilExpiry <= 15 && !certStatus.isExpired && (
-                  <span className="text-orange-600 text-sm animate-pulse" title={`Certificato scade tra ${certStatus.daysUntilExpiry} giorni`}>
-                    ⏰
-                  </span>
-                )}
+                {certStatus.isExpiring &&
+                  certStatus.daysUntilExpiry <= 15 &&
+                  !certStatus.isExpired && (
+                    <span
+                      className="text-orange-600 text-sm animate-pulse"
+                      title={`Certificato scade tra ${certStatus.daysUntilExpiry} giorni`}
+                    >
+                      ⏰
+                    </span>
+                  )}
                 {certStatus.status === 'missing' && (
                   <span className="text-gray-500 text-sm" title="Nessun certificato medico">
                     📄
@@ -279,15 +292,23 @@ export default function PlayerCard({ player, playersById, onEdit, onDelete, onVi
 
               {/* Badge Certificato Medico - Mobile */}
               {certStatus.isExpired && (
-                <span className="text-red-600 text-sm" title={`Certificato scaduto ${Math.abs(certStatus.daysUntilExpiry)} giorni fa`}>
+                <span
+                  className="text-red-600 text-sm"
+                  title={`Certificato scaduto ${Math.abs(certStatus.daysUntilExpiry)} giorni fa`}
+                >
                   ⚠️
                 </span>
               )}
-              {certStatus.isExpiring && certStatus.daysUntilExpiry <= 15 && !certStatus.isExpired && (
-                <span className="text-orange-600 text-sm animate-pulse" title={`Certificato scade tra ${certStatus.daysUntilExpiry} giorni`}>
-                  ⏰
-                </span>
-              )}
+              {certStatus.isExpiring &&
+                certStatus.daysUntilExpiry <= 15 &&
+                !certStatus.isExpired && (
+                  <span
+                    className="text-orange-600 text-sm animate-pulse"
+                    title={`Certificato scade tra ${certStatus.daysUntilExpiry} giorni`}
+                  >
+                    ⏰
+                  </span>
+                )}
               {certStatus.status === 'missing' && (
                 <span className="text-gray-500 text-sm" title="Nessun certificato medico">
                   📄

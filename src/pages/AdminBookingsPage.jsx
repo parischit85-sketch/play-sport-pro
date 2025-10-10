@@ -163,11 +163,11 @@ export default function AdminBookingsPage() {
                       try {
                         const courtsRef = collection(db, 'clubs', clubId, 'courts');
                         const docRef = doc(courtsRef);
-                        
+
                         // Rimuovi il campo 'id' temporaneo prima di salvare in Firebase
                         // Firebase genererà automaticamente un ID univoco (docRef.id)
                         const { id: _, firebaseId: __, ...courtDataToSave } = court;
-                        
+
                         batch.set(docRef, courtDataToSave);
 
                         // Aggiorna l'ID nel nuovo state

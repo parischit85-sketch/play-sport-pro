@@ -109,7 +109,8 @@ export default function CertificateExpiryAlert() {
         type: 'info',
         icon: '📄',
         title: 'Certificato Medico Mancante',
-        message: 'Non hai ancora caricato il certificato medico. Contatta il circolo per maggiori informazioni.',
+        message:
+          'Non hai ancora caricato il certificato medico. Contatta il circolo per maggiori informazioni.',
         bgClass: 'bg-gray-50 dark:bg-gray-800',
         borderClass: 'border-gray-400',
         textClass: 'text-gray-800 dark:text-gray-200',
@@ -126,24 +127,23 @@ export default function CertificateExpiryAlert() {
   const expiryDate = playerData?.medicalCertificates?.current?.expiryDate;
 
   return (
-    <div className={`${config.bgClass} border-l-4 ${config.borderClass} p-4 mb-4 rounded-r-lg shadow-md`}>
+    <div
+      className={`${config.bgClass} border-l-4 ${config.borderClass} p-4 mb-4 rounded-r-lg shadow-md`}
+    >
       <div className="flex items-start gap-3">
         <span className="text-3xl shrink-0">{config.icon}</span>
-        
+
         <div className="flex-1 min-w-0">
-          <h3 className={`font-semibold ${config.textClass} mb-1`}>
-            {config.title}
-          </h3>
-          <p className={`text-sm ${config.textClass} mb-2`}>
-            {config.message}
-          </p>
-          
+          <h3 className={`font-semibold ${config.textClass} mb-1`}>{config.title}</h3>
+          <p className={`text-sm ${config.textClass} mb-2`}>{config.message}</p>
+
           {expiryDate && (
             <p className={`text-xs ${config.textClass} opacity-75`}>
-              Scadenza: {new Date(expiryDate).toLocaleDateString('it-IT', {
+              Scadenza:{' '}
+              {new Date(expiryDate).toLocaleDateString('it-IT', {
                 day: 'numeric',
                 month: 'long',
-                year: 'numeric'
+                year: 'numeric',
               })}
             </p>
           )}
@@ -156,7 +156,7 @@ export default function CertificateExpiryAlert() {
             >
               Visualizza Dettagli
             </a>
-            
+
             {config.dismissable && (
               <>
                 <span className={`text-sm ${config.textClass} opacity-50`}>•</span>

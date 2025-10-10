@@ -46,7 +46,9 @@ const AdminLogin = React.lazy(() => import('@pages/admin/AdminLogin.jsx'));
 const AdminDashboard = React.lazy(() => import('@pages/admin/AdminDashboard.jsx'));
 const ClubsManagement = React.lazy(() => import('@pages/admin/ClubsManagement.jsx'));
 const ClubSettings = React.lazy(() => import('@pages/admin/ClubSettings.jsx'));
-const ClubRegistrationRequests = React.lazy(() => import('@pages/admin/ClubRegistrationRequests.jsx'));
+const ClubRegistrationRequests = React.lazy(
+  () => import('@pages/admin/ClubRegistrationRequests.jsx')
+);
 const UsersManagement = React.lazy(() => import('@pages/admin/UsersManagement.jsx'));
 const AdminProtectedRoute = React.lazy(() => import('@components/admin/AdminProtectedRoute.jsx'));
 

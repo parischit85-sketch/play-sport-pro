@@ -220,7 +220,7 @@ const ClubsManagement = () => {
   const handleToggleActive = async (clubId, clubName, currentStatus) => {
     const newStatus = !currentStatus;
     const action = newStatus ? 'attivare' : 'disattivare';
-    
+
     if (!window.confirm(`Confermi di voler ${action} il circolo "${clubName}"?`)) {
       return;
     }
@@ -243,34 +243,35 @@ const ClubsManagement = () => {
     }
   };
 
-  const filteredClubs = clubs
-    .filter((club) => {
-      // Filtro per testo di ricerca
-      const searchLower = searchTerm.toLowerCase();
-      
-      // Gestisci address come stringa o oggetto
-      const addressStr = typeof club.address === 'string' 
-        ? club.address 
-        : (club.location?.address || club.address?.street || '');
-      
-      // Gestisci city come stringa o oggetto
-      const cityStr = typeof club.city === 'string'
-        ? club.city
-        : (club.location?.city || club.address?.city || '');
-      
-      const matchesSearch =
-        club.name?.toLowerCase().includes(searchLower) ||
-        addressStr.toLowerCase().includes(searchLower) ||
-        cityStr.toLowerCase().includes(searchLower);
+  const filteredClubs = clubs.filter((club) => {
+    // Filtro per testo di ricerca
+    const searchLower = searchTerm.toLowerCase();
 
-      // Filtro per stato
-      if (statusFilter === 'all') return matchesSearch;
-      if (statusFilter === 'pending') return matchesSearch && (!club.isActive || club.status === 'pending');
-      if (statusFilter === 'active') return matchesSearch && club.isActive === true;
-      if (statusFilter === 'inactive') return matchesSearch && club.isActive === false && club.status !== 'pending';
-      
-      return matchesSearch;
-    });
+    // Gestisci address come stringa o oggetto
+    const addressStr =
+      typeof club.address === 'string'
+        ? club.address
+        : club.location?.address || club.address?.street || '';
+
+    // Gestisci city come stringa o oggetto
+    const cityStr =
+      typeof club.city === 'string' ? club.city : club.location?.city || club.address?.city || '';
+
+    const matchesSearch =
+      club.name?.toLowerCase().includes(searchLower) ||
+      addressStr.toLowerCase().includes(searchLower) ||
+      cityStr.toLowerCase().includes(searchLower);
+
+    // Filtro per stato
+    if (statusFilter === 'all') return matchesSearch;
+    if (statusFilter === 'pending')
+      return matchesSearch && (!club.isActive || club.status === 'pending');
+    if (statusFilter === 'active') return matchesSearch && club.isActive === true;
+    if (statusFilter === 'inactive')
+      return matchesSearch && club.isActive === false && club.status !== 'pending';
+
+    return matchesSearch;
+  });
 
   const ClubCard = ({ club }) => {
     // Determina lo stato del circolo
@@ -342,71 +343,71 @@ const ClubsManagement = () => {
           </div>
         </div>
 
-      {/* Informazioni di contatto */}
-      <div className="space-y-2 mb-4">
-        {(club.address || club.location) && (
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <MapPin className="w-4 h-4" />
-            <span>
-              {typeof club.address === 'string' 
-                ? `${club.address}${club.city ? `, ${club.city}` : ''}` 
-                : club.location?.address || club.location?.city || 'Indirizzo non disponibile'}
-            </span>
-          </div>
-        )}
-        {club.phone && (
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <Phone className="w-4 h-4" />
-            <span>{club.phone}</span>
-          </div>
-        )}
-        {club.email && (
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <Mail className="w-4 h-4" />
-            <span>{club.email}</span>
-          </div>
-        )}
-      </div>
+        {/* Informazioni di contatto */}
+        <div className="space-y-2 mb-4">
+          {(club.address || club.location) && (
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <MapPin className="w-4 h-4" />
+              <span>
+                {typeof club.address === 'string'
+                  ? `${club.address}${club.city ? `, ${club.city}` : ''}`
+                  : club.location?.address || club.location?.city || 'Indirizzo non disponibile'}
+              </span>
+            </div>
+          )}
+          {club.phone && (
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <Phone className="w-4 h-4" />
+              <span>{club.phone}</span>
+            </div>
+          )}
+          {club.email && (
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <Mail className="w-4 h-4" />
+              <span>{club.email}</span>
+            </div>
+          )}
+        </div>
 
-      {/* Statistiche */}
-      <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
-        <div className="text-center">
-          <div className="flex items-center justify-center space-x-1 text-blue-600 mb-1">
-            <Users className="w-4 h-4" />
+        {/* Statistiche */}
+        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-1 text-blue-600 mb-1">
+              <Users className="w-4 h-4" />
+            </div>
+            <p className="text-lg font-semibold text-gray-900">{club.stats?.members || 0}</p>
+            <p className="text-xs text-gray-600">Membri</p>
           </div>
-          <p className="text-lg font-semibold text-gray-900">{club.stats?.members || 0}</p>
-          <p className="text-xs text-gray-600">Membri</p>
-        </div>
-        <div className="text-center">
-          <div className="flex items-center justify-center space-x-1 text-green-600 mb-1">
-            <Activity className="w-4 h-4" />
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-1 text-green-600 mb-1">
+              <Activity className="w-4 h-4" />
+            </div>
+            <p className="text-lg font-semibold text-gray-900">{club.stats?.matches || 0}</p>
+            <p className="text-xs text-gray-600">Partite</p>
           </div>
-          <p className="text-lg font-semibold text-gray-900">{club.stats?.matches || 0}</p>
-          <p className="text-xs text-gray-600">Partite</p>
-        </div>
-        <div className="text-center">
-          <div className="flex items-center justify-center space-x-1 text-purple-600 mb-1">
-            <Calendar className="w-4 h-4" />
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-1 text-purple-600 mb-1">
+              <Calendar className="w-4 h-4" />
+            </div>
+            <p className="text-lg font-semibold text-gray-900">{club.stats?.bookings || 0}</p>
+            <p className="text-xs text-gray-600">Prenotazioni</p>
           </div>
-          <p className="text-lg font-semibold text-gray-900">{club.stats?.bookings || 0}</p>
-          <p className="text-xs text-gray-600">Prenotazioni</p>
         </div>
-      </div>
 
-      {/* Toggle Attivazione/Disattivazione */}
-      <div className="mt-4 pt-4 border-t border-gray-200">
-        <button
-          onClick={() => handleToggleActive(club.id, club.name, club.isActive)}
-          className={`w-full py-2.5 px-4 rounded-lg font-medium transition-colors ${
-            club.isActive
-              ? 'bg-red-50 text-red-700 hover:bg-red-100'
-              : 'bg-green-50 text-green-700 hover:bg-green-100'
-          }`}
-        >
-          {club.isActive ? 'Disattiva Circolo' : 'Attiva Circolo'}
-        </button>
+        {/* Toggle Attivazione/Disattivazione */}
+        <div className="mt-4 pt-4 border-t border-gray-200">
+          <button
+            onClick={() => handleToggleActive(club.id, club.name, club.isActive)}
+            className={`w-full py-2.5 px-4 rounded-lg font-medium transition-colors ${
+              club.isActive
+                ? 'bg-red-50 text-red-700 hover:bg-red-100'
+                : 'bg-green-50 text-green-700 hover:bg-green-100'
+            }`}
+          >
+            {club.isActive ? 'Disattiva Circolo' : 'Attiva Circolo'}
+          </button>
+        </div>
       </div>
-    </div>
     );
   };
 
@@ -466,7 +467,7 @@ const ClubsManagement = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            
+
             {/* Filtri per stato */}
             <div className="flex gap-2">
               <button
@@ -523,19 +524,19 @@ const ClubsManagement = () => {
             </div>
             <div>
               <p className="text-2xl font-bold text-yellow-600">
-                {clubs.filter(c => !c.isActive || c.status === 'pending').length}
+                {clubs.filter((c) => !c.isActive || c.status === 'pending').length}
               </p>
               <p className="text-sm text-gray-600">In Attesa</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-green-600">
-                {clubs.filter(c => c.isActive === true).length}
+                {clubs.filter((c) => c.isActive === true).length}
               </p>
               <p className="text-sm text-gray-600">Attivi</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-red-600">
-                {clubs.filter(c => c.isActive === false && c.status !== 'pending').length}
+                {clubs.filter((c) => c.isActive === false && c.status !== 'pending').length}
               </p>
               <p className="text-sm text-gray-600">Disattivati</p>
             </div>

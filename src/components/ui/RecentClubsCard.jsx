@@ -33,7 +33,12 @@ const ClubCard = React.memo(({ club, onClubClick }) => {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -47,11 +52,14 @@ const ClubCard = React.memo(({ club, onClubClick }) => {
 
         {/* Info circolo */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-white font-semibold text-base mb-0.5 truncate">
-            {club.name}
-          </h3>
+          <h3 className="text-white font-semibold text-base mb-0.5 truncate">{club.name}</h3>
           <div className="flex items-center gap-1.5">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -67,10 +75,10 @@ const ClubCard = React.memo(({ club, onClubClick }) => {
 
         {/* Freccia navigazione */}
         <div className="flex-shrink-0">
-          <svg 
-            className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" 
-            fill="none" 
-            stroke="currentColor" 
+          <svg
+            className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors"
+            fill="none"
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -100,15 +108,15 @@ export default function RecentClubsCard({ user }) {
         // 🆕 NUOVO SISTEMA: Carica i top 3 circoli più visualizzati
         // Usa getUserMostViewedClubs da club-analytics.js
         const mostViewedClubs = await getUserMostViewedClubs(user.uid, 3);
-        
+
         // Filtra solo circoli che hanno dati validi E sono attivi
         const clubsData = mostViewedClubs
-          .filter(viewData => viewData.club !== null && viewData.club.isActive === true) // Solo club esistenti e attivi
-          .map(viewData => ({
+          .filter((viewData) => viewData.club !== null && viewData.club.isActive === true) // Solo club esistenti e attivi
+          .map((viewData) => ({
             id: viewData.clubId,
             viewCount: viewData.viewCount, // Numero di visualizzazioni
             lastViewedAt: viewData.lastViewedAt,
-            ...viewData.club // Spread dei dati completi del club
+            ...viewData.club, // Spread dei dati completi del club
           }));
 
         setRecentClubs(clubsData);
@@ -136,7 +144,12 @@ export default function RecentClubsCard({ user }) {
       <div className="bg-transparent">
         <div className="flex items-center gap-3 mb-4 px-1">
           <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -164,7 +177,12 @@ export default function RecentClubsCard({ user }) {
       <div className="bg-transparent">
         <div className="flex items-center gap-3 mb-4 px-1">
           <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-6 h-6 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -177,7 +195,12 @@ export default function RecentClubsCard({ user }) {
         </div>
         <div className="bg-[#1e293b] rounded-2xl p-6 border border-gray-700/50 text-center">
           <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-8 h-8 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -186,12 +209,8 @@ export default function RecentClubsCard({ user }) {
               />
             </svg>
           </div>
-          <h3 className="font-semibold text-lg mb-2 text-white">
-            Nessun circolo visitato
-          </h3>
-          <p className="text-sm text-gray-400 mb-4">
-            Inizia a esplorare i circoli disponibili
-          </p>
+          <h3 className="font-semibold text-lg mb-2 text-white">Nessun circolo visitato</h3>
+          <p className="text-sm text-gray-400 mb-4">Inizia a esplorare i circoli disponibili</p>
         </div>
       </div>
     );

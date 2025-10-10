@@ -3,12 +3,12 @@ import { Card, CardContent } from '@ui/card.jsx';
 import { Button } from '@ui/button.jsx';
 import { Badge } from '@ui/Badge.jsx';
 import { Bell, BellOff, Send, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { 
-  subscribeToPush, 
-  unsubscribeFromPush, 
+import {
+  subscribeToPush,
+  unsubscribeFromPush,
   isPushSubscribed,
   getPushNotificationStatus,
-  sendTestNotification
+  sendTestNotification,
 } from '@utils/push';
 import { useAuth } from '@contexts/AuthContext';
 
@@ -40,7 +40,7 @@ export default function PushNotificationPanel() {
 
     try {
       const subscription = await subscribeToPush(user.uid);
-      
+
       if (subscription) {
         setIsSubscribed(true);
         setPermission('granted');
@@ -64,15 +64,15 @@ export default function PushNotificationPanel() {
 
     try {
       const success = await unsubscribeFromPush(user.uid);
-      
+
       if (success) {
         setIsSubscribed(false);
         setMessage({ type: 'success', text: 'Sottoscrizione annullata' });
       } else {
-        setMessage({ type: 'error', text: 'Errore nell\'annullamento' });
+        setMessage({ type: 'error', text: "Errore nell'annullamento" });
       }
     } catch (error) {
-      console.error('Errore nell\'annullamento:', error);
+      console.error("Errore nell'annullamento:", error);
       setMessage({ type: 'error', text: error.message });
     } finally {
       setIsLoading(false);
@@ -95,14 +95,17 @@ export default function PushNotificationPanel() {
 
     try {
       const success = await sendTestNotification(user.uid);
-      
+
       if (success) {
-        setMessage({ type: 'success', text: 'Notifica di test inviata! Controlla il pannello notifiche del sistema.' });
+        setMessage({
+          type: 'success',
+          text: 'Notifica di test inviata! Controlla il pannello notifiche del sistema.',
+        });
       } else {
-        setMessage({ type: 'error', text: 'Errore nell\'invio della notifica' });
+        setMessage({ type: 'error', text: "Errore nell'invio della notifica" });
       }
     } catch (error) {
-      console.error('Errore nell\'invio della notifica:', error);
+      console.error("Errore nell'invio della notifica:", error);
       setMessage({ type: 'error', text: error.message });
     } finally {
       setIsLoading(false);
@@ -112,13 +115,29 @@ export default function PushNotificationPanel() {
   const getPermissionBadge = () => {
     switch (permission) {
       case 'granted':
-        return <Badge className="bg-green-500"><CheckCircle className="w-3 h-3 mr-1" /> Autorizzato</Badge>;
+        return (
+          <Badge className="bg-green-500">
+            <CheckCircle className="w-3 h-3 mr-1" /> Autorizzato
+          </Badge>
+        );
       case 'denied':
-        return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" /> Negato</Badge>;
+        return (
+          <Badge variant="destructive">
+            <XCircle className="w-3 h-3 mr-1" /> Negato
+          </Badge>
+        );
       case 'unsupported':
-        return <Badge variant="secondary"><AlertCircle className="w-3 h-3 mr-1" /> Non supportato</Badge>;
+        return (
+          <Badge variant="secondary">
+            <AlertCircle className="w-3 h-3 mr-1" /> Non supportato
+          </Badge>
+        );
       default:
-        return <Badge variant="outline"><AlertCircle className="w-3 h-3 mr-1" /> Non richiesto</Badge>;
+        return (
+          <Badge variant="outline">
+            <AlertCircle className="w-3 h-3 mr-1" /> Non richiesto
+          </Badge>
+        );
     }
   };
 
@@ -132,10 +151,13 @@ export default function PushNotificationPanel() {
 
         <div className="space-y-2 text-sm">
           <p className="text-muted-foreground">
-            Attiva le notifiche push per ricevere aggiornamenti in tempo reale sulle tue prenotazioni.
+            Attiva le notifiche push per ricevere aggiornamenti in tempo reale sulle tue
+            prenotazioni.
           </p>
           <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${isSubscribed ? 'bg-green-500' : 'bg-gray-300'}`} />
+            <div
+              className={`w-2 h-2 rounded-full ${isSubscribed ? 'bg-green-500' : 'bg-gray-300'}`}
+            />
             <span className="text-xs text-muted-foreground">
               {isSubscribed ? 'Sottoscritto' : 'Non sottoscritto'}
             </span>
@@ -143,11 +165,15 @@ export default function PushNotificationPanel() {
         </div>
 
         {message && (
-          <div className={`p-3 rounded-lg text-sm ${
-            message.type === 'success' ? 'bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300' :
-            message.type === 'error' ? 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300' :
-            'bg-blue-50 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300'
-          }`}>
+          <div
+            className={`p-3 rounded-lg text-sm ${
+              message.type === 'success'
+                ? 'bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-300'
+                : message.type === 'error'
+                  ? 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-300'
+                  : 'bg-blue-50 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300'
+            }`}
+          >
             {message.text}
           </div>
         )}
@@ -190,7 +216,8 @@ export default function PushNotificationPanel() {
           <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg text-sm text-amber-800 dark:text-amber-300">
             <p className="font-medium mb-1">Permesso negato</p>
             <p className="text-xs">
-              Hai negato il permesso per le notifiche. Per attivare le notifiche, devi modificare le impostazioni del browser.
+              Hai negato il permesso per le notifiche. Per attivare le notifiche, devi modificare le
+              impostazioni del browser.
             </p>
           </div>
         )}

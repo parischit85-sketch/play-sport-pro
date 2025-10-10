@@ -10,13 +10,13 @@ export const LocationStatus = {
   POSITION_UNAVAILABLE: 'position_unavailable',
   TIMEOUT: 'timeout',
   BLOCKED_BY_POLICY: 'blocked_by_policy', // Heuristic (permission denied instantly & no prior user action)
-  ERROR: 'error'
+  ERROR: 'error',
 };
 
 function isProbablyPolicyBlocked(startTime, errorCode, permissionState) {
   // Heuristic: immediate PERMISSION_DENIED (< 80ms) AND permission state reports denied BEFORE user interaction
   const elapsed = performance.now() - startTime;
-  return errorCode === 1 && elapsed < 80 && (permissionState === 'denied');
+  return errorCode === 1 && elapsed < 80 && permissionState === 'denied';
 }
 
 export async function getUserLocation(options = {}) {
@@ -25,7 +25,7 @@ export async function getUserLocation(options = {}) {
     highAccuracy = false,
     cache = true,
     forceRefresh = false,
-    cacheTTL = 120000 // 2 minuti default
+    cacheTTL = 120000, // 2 minuti default
   } = options;
 
   const CACHE_KEY = 'ps:lastLocation';
@@ -34,25 +34,33 @@ export async function getUserLocation(options = {}) {
       const raw = sessionStorage.getItem(CACHE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed && parsed.timestamp && (Date.now() - parsed.timestamp) < cacheTTL) {
+        if (parsed && parsed.timestamp && Date.now() - parsed.timestamp < cacheTTL) {
           return {
             status: LocationStatus.SUCCESS,
             coords: parsed.coords,
             accuracy: parsed.accuracy,
             permissionState: 'cached',
-            cached: true
+            cached: true,
           };
         }
       }
-    } catch (_) { /* ignore cache errors */ }
+    } catch (_) {
+      /* ignore cache errors */
+    }
   }
 
   if (!('geolocation' in navigator)) {
-    return { status: LocationStatus.UNSUPPORTED, message: 'Geolocalizzazione non supportata dal browser.' };
+    return {
+      status: LocationStatus.UNSUPPORTED,
+      message: 'Geolocalizzazione non supportata dal browser.',
+    };
   }
 
   if (!window.isSecureContext && window.location.hostname !== 'localhost') {
-    return { status: LocationStatus.INSECURE_CONTEXT, message: 'Richiesto HTTPS per usare la geolocalizzazione.' };
+    return {
+      status: LocationStatus.INSECURE_CONTEXT,
+      message: 'Richiesto HTTPS per usare la geolocalizzazione.',
+    };
   }
 
   let permissionState = 'unknown';
@@ -72,31 +80,39 @@ export async function getUserLocation(options = {}) {
     const t = setTimeout(() => {
       if (finished) return;
       finished = true;
-      resolve({ status: LocationStatus.TIMEOUT, message: 'Timeout durante il rilevamento della posizione.' });
+      resolve({
+        status: LocationStatus.TIMEOUT,
+        message: 'Timeout durante il rilevamento della posizione.',
+      });
     }, timeout);
 
     try {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           if (finished) return;
-            finished = true;
-            clearTimeout(t);
-            const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-            // Store in session cache
-            try {
-              sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+          finished = true;
+          clearTimeout(t);
+          const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          // Store in session cache
+          try {
+            sessionStorage.setItem(
+              CACHE_KEY,
+              JSON.stringify({
                 coords,
                 accuracy: pos.coords.accuracy,
-                timestamp: Date.now()
-              }));
-            } catch (_) { /* ignore quota */ }
-            resolve({
-              status: LocationStatus.SUCCESS,
-              coords,
-              accuracy: pos.coords.accuracy,
-              permissionState,
-              cached: false
-            });
+                timestamp: Date.now(),
+              })
+            );
+          } catch (_) {
+            /* ignore quota */
+          }
+          resolve({
+            status: LocationStatus.SUCCESS,
+            coords,
+            accuracy: pos.coords.accuracy,
+            permissionState,
+            cached: false,
+          });
         },
         (err) => {
           if (finished) return;
@@ -129,14 +145,17 @@ export async function getUserLocation(options = {}) {
         {
           enableHighAccuracy: highAccuracy,
           timeout: timeout - 500, // Slightly less than wrapper timeout
-          maximumAge: 60000
+          maximumAge: 60000,
         }
       );
     } catch (e) {
       if (finished) return;
       finished = true;
       clearTimeout(t);
-      resolve({ status: LocationStatus.ERROR, message: 'Eccezione geolocalizzazione: ' + e.message });
+      resolve({
+        status: LocationStatus.ERROR,
+        message: 'Eccezione geolocalizzazione: ' + e.message,
+      });
     }
   });
 }
@@ -148,7 +167,7 @@ export async function geocodeCity(city, country = 'Italy') {
   const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(city + ',' + country)}&limit=1`;
   try {
     const response = await fetch(url, {
-      headers: { 'User-Agent': 'PlaySportPro/1.0 (geocoding)' }
+      headers: { 'User-Agent': 'PlaySportPro/1.0 (geocoding)' },
     });
     if (!response.ok) {
       return { ok: false, message: 'Geocoding non disponibile.' };
@@ -157,7 +176,11 @@ export async function geocodeCity(city, country = 'Italy') {
     if (!data.length) {
       return { ok: false, message: `Città "${city}" non trovata.` };
     }
-    return { ok: true, coords: { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) }, raw: data[0] };
+    return {
+      ok: true,
+      coords: { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) },
+      raw: data[0],
+    };
   } catch (e) {
     return { ok: false, message: 'Errore di rete nel geocoding.' };
   }

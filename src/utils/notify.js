@@ -45,19 +45,19 @@ export async function sendBookingAdditionPush({ userId, court, time, club, date,
             club,
             date,
             timestamp: Date.now(),
-            type: 'booking-addition'
-          }
-        }
-      })
+            type: 'booking-addition',
+          },
+        },
+      }),
     });
 
     if (!response.ok) {
-      throw new Error('Errore nell\'invio della notifica push');
+      throw new Error("Errore nell'invio della notifica push");
     }
 
     return true;
   } catch (error) {
-    console.error('Errore nell\'invio della notifica push:', error);
+    console.error("Errore nell'invio della notifica push:", error);
     return false;
   }
 }

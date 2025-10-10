@@ -37,13 +37,13 @@ export async function loginWithGoogle() {
  * @deprecated Sistema leagues/ OBSOLETO - usa getClubData() da club-data.js
  * Questa funzione è mantenuta solo per backward compatibility temporanea.
  * Il sistema è migrato alle subcollections clubs/{clubId}/...
- * 
+ *
  * @see src/services/club-data.js
  */
 export async function loadLeague(leagueId) {
   console.warn('⚠️ loadLeague() è DEPRECATO - usa getClubData() da @services/club-data.js');
   console.warn('   Migrazione: loadLeague("default") → getClubData(clubId)');
-  
+
   // Admin bypass - return mock data for admin session
   try {
     const adminUser = localStorage.getItem('admin-session');
@@ -72,7 +72,7 @@ export async function loadLeague(leagueId) {
   if (snap.exists()) {
     return snap.data();
   }
-  
+
   // Return empty structure to avoid null errors in legacy code
   return {
     players: [],
@@ -80,7 +80,7 @@ export async function loadLeague(leagueId) {
     courts: [],
     bookings: [],
     bookingConfig: {},
-    profiles: []
+    profiles: [],
   };
 }
 
@@ -88,12 +88,12 @@ export async function loadLeague(leagueId) {
  * @deprecated Sistema leagues/ OBSOLETO
  * Questa funzione è mantenuta solo per backward compatibility temporanea.
  * Non salva più dati nel database - usa i servizi specifici del club.
- * 
+ *
  * @see src/services/club-data.js
  */
 export async function listLeagues() {
   console.warn('⚠️ listLeagues() è DEPRECATO - il sistema leagues/ non è più utilizzato');
-  
+
   try {
     const querySnapshot = await getDocs(collection(db, 'leagues'));
     const leagues = [];
@@ -119,23 +119,23 @@ export async function listLeagues() {
  * @deprecated Sistema leagues/ OBSOLETO - Non salvare più in leagues/
  * Questa funzione è mantenuta solo per backward compatibility temporanea.
  * Registra un warning e NON salva più dati nel database.
- * 
+ *
  * @see src/services/club-data.js per il nuovo sistema
  */
 export async function saveLeague(leagueId, data) {
   console.warn('⚠️ saveLeague() è DEPRECATO - NON salva più dati nel database');
   console.warn('   Il sistema è migrato alle subcollections clubs/{clubId}/...');
   console.warn('   Usa i servizi specifici del club per salvare dati');
-  
+
   // Non salvare più nulla - solo log per debug
   console.log('� Tentativo di salvataggio in leagues/ bloccato:', {
     leagueId,
     players: data?.players?.length || 0,
     matches: data?.matches?.length || 0,
     courts: data?.courts?.length || 0,
-    bookings: data?.bookings?.length || 0
+    bookings: data?.bookings?.length || 0,
   });
-  
+
   // Return silently - non lanciare errori per non rompere codice legacy
   return;
 }
@@ -144,13 +144,13 @@ export async function saveLeague(leagueId, data) {
  * @deprecated Sistema leagues/ OBSOLETO - Nessuna subscription real-time
  * Questa funzione è mantenuta solo per backward compatibility temporanea.
  * Ritorna una funzione no-op unsubscribe.
- * 
+ *
  * @see src/services/club-data.js per il nuovo sistema
  */
 export function subscribeLeague(leagueId, cb) {
   console.warn('⚠️ subscribeLeague() è DEPRECATO - nessuna subscription real-time attiva');
   console.warn('   Il sistema è migrato alle subcollections clubs/{clubId}/...');
-  
+
   // Return a no-op unsubscribe function
   return () => {
     console.log('🚫 No-op unsubscribe - subscribeLeague deprecato');

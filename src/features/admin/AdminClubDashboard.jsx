@@ -33,14 +33,14 @@ const AdminClubDashboard = () => {
   useEffect(() => {
     const loadInstructorSlots = async () => {
       if (!clubId) return;
-      
+
       try {
         const { collection, getDocs } = await import('firebase/firestore');
         const { db } = await import('@services/firebase.js');
-        
+
         const timeSlotsRef = collection(db, 'clubs', clubId, 'timeSlots');
         const querySnapshot = await getDocs(timeSlotsRef);
-        
+
         const slots = [];
         querySnapshot.forEach((doc) => {
           const slotData = doc.data();
@@ -50,14 +50,14 @@ const AdminClubDashboard = () => {
             ...slotData,
           });
         });
-        
+
         console.log('📚 [AdminDashboard] Loaded instructor slots:', slots.length);
         setInstructorTimeSlots(slots);
       } catch (error) {
         console.error('❌ [AdminDashboard] Error loading instructor slots:', error);
       }
     };
-    
+
     loadInstructorSlots();
   }, [clubId]);
 
@@ -65,9 +65,9 @@ const AdminClubDashboard = () => {
   const mergedLessonConfig = React.useMemo(() => {
     const baseConfig = lessonConfig || {};
     const configSlots = baseConfig.timeSlots || [];
-    
+
     // Converti le fasce degli istruttori nel formato compatibile
-    const convertedInstructorSlots = instructorTimeSlots.map(slot => ({
+    const convertedInstructorSlots = instructorTimeSlots.map((slot) => ({
       id: slot.id,
       dayOfWeek: null,
       selectedDates: slot.selectedDates || (slot.date ? [slot.date] : []),
@@ -81,7 +81,7 @@ const AdminClubDashboard = () => {
       createdAt: slot.createdAt,
       updatedAt: slot.updatedAt,
     }));
-    
+
     return {
       ...baseConfig,
       timeSlots: [...configSlots, ...convertedInstructorSlots],
@@ -382,9 +382,13 @@ const AdminClubDashboard = () => {
     >
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className={`text-xs sm:text-sm font-medium ${T.subtext} mb-0.5 sm:mb-1 truncate`}>{title}</div>
+          <div className={`text-xs sm:text-sm font-medium ${T.subtext} mb-0.5 sm:mb-1 truncate`}>
+            {title}
+          </div>
           <div className={`text-lg sm:text-xl lg:text-2xl font-bold ${color}`}>{value}</div>
-          {subtitle && <div className={`text-xs ${T.subtext} mt-0.5 sm:mt-1 hidden sm:block`}>{subtitle}</div>}
+          {subtitle && (
+            <div className={`text-xs ${T.subtext} mt-0.5 sm:mt-1 hidden sm:block`}>{subtitle}</div>
+          )}
         </div>
         <div className={`text-xl sm:text-2xl lg:text-3xl opacity-70 flex-shrink-0`}>{icon}</div>
       </div>
@@ -413,7 +417,9 @@ const AdminClubDashboard = () => {
     return (
       <div className={`${T.cardBg} ${T.border} rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6`}>
         <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <h3 className={`text-base sm:text-lg font-semibold ${T.text}`}>Prossime Prenotazioni Oggi</h3>
+          <h3 className={`text-base sm:text-lg font-semibold ${T.text}`}>
+            Prossime Prenotazioni Oggi
+          </h3>
           <button
             onClick={() =>
               navigate(
@@ -681,7 +687,9 @@ const AdminClubDashboard = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
         <div className="min-w-0">
-          <h1 className={`text-xl sm:text-2xl font-bold ${T.text} truncate`}>Dashboard Admin - {club?.name}</h1>
+          <h1 className={`text-xl sm:text-2xl font-bold ${T.text} truncate`}>
+            Dashboard Admin - {club?.name}
+          </h1>
           <p className={`${T.subtext} mt-1 text-xs sm:text-sm`}>
             <span className="hidden sm:inline">Panoramica delle attività del </span>
             {new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
@@ -697,7 +705,12 @@ const AdminClubDashboard = () => {
             className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
             title="Gestione rapida disponibilità lezioni"
           >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4 sm:w-5 sm:h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -724,7 +737,9 @@ const AdminClubDashboard = () => {
             className={`${T.btnSecondary} px-2 sm:px-4 py-1.5 sm:py-2 flex items-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm`}
           >
             <span className={dashboardData.loading ? 'animate-spin' : ''}>🔄</span>
-            <span className="hidden sm:inline">{dashboardData.loading ? 'Aggiornamento...' : 'Aggiorna'}</span>
+            <span className="hidden sm:inline">
+              {dashboardData.loading ? 'Aggiornamento...' : 'Aggiorna'}
+            </span>
           </button>
         </div>
       </div>
@@ -804,7 +819,9 @@ const AdminClubDashboard = () => {
 
         {/* Azioni Rapide */}
         <div className={`${T.cardBg} ${T.border} rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6`}>
-          <h3 className={`text-base sm:text-lg font-semibold ${T.text} mb-3 sm:mb-4`}>Azioni Rapide</h3>
+          <h3 className={`text-base sm:text-lg font-semibold ${T.text} mb-3 sm:mb-4`}>
+            Azioni Rapide
+          </h3>
           <div className="space-y-3">
             <button
               onClick={() => navigate(`/club/${clubId}/admin/bookings`)}
@@ -832,7 +849,9 @@ const AdminClubDashboard = () => {
 
         {/* Informazioni Club */}
         <div className={`${T.cardBg} ${T.border} rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6`}>
-          <h3 className={`text-base sm:text-lg font-semibold ${T.text} mb-3 sm:mb-4`}>Info Circolo</h3>
+          <h3 className={`text-base sm:text-lg font-semibold ${T.text} mb-3 sm:mb-4`}>
+            Info Circolo
+          </h3>
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
               <span className="text-gray-400">🏟️</span>

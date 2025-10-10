@@ -4,11 +4,12 @@
  */
 
 // VAPID public key - generato con web-push generate-vapid-keys
-const VAPID_PUBLIC_KEY = 'BI9gOKRddotrncfkYftX0CRDhzE9BpHxqWULvYBiuJ2g7NctyoUeEaQ6Bw5ptBiViiPTDUpWNdXO_qUBzfplMqM';
+const VAPID_PUBLIC_KEY =
+  'BI9gOKRddotrncfkYftX0CRDhzE9BpHxqWULvYBiuJ2g7NctyoUeEaQ6Bw5ptBiViiPTDUpWNdXO_qUBzfplMqM';
 
 // Base URL per le Netlify Functions
 // In sviluppo locale usa le Functions di produzione
-const FUNCTIONS_BASE_URL = import.meta.env.DEV 
+const FUNCTIONS_BASE_URL = import.meta.env.DEV
   ? 'https://play-sport-pro-v2-2025.netlify.app/.netlify/functions'
   : '/.netlify/functions';
 
@@ -16,10 +17,8 @@ const FUNCTIONS_BASE_URL = import.meta.env.DEV
  * Converte una chiave VAPID base64 in Uint8Array
  */
 function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, '+')
-    .replace(/_/g, '/');
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
@@ -78,12 +77,12 @@ export async function subscribeToPush(userId) {
 
     // Controlla se esiste già una sottoscrizione
     let subscription = await registration.pushManager.getSubscription();
-    
+
     if (!subscription) {
       // Crea nuova sottoscrizione
       subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
       });
     }
 
@@ -115,7 +114,7 @@ export async function unsubscribeFromPush(userId) {
     await subscription.unsubscribe();
     return true;
   } catch (error) {
-    console.error('Errore nell\'annullamento sottoscrizione:', error);
+    console.error("Errore nell'annullamento sottoscrizione:", error);
     return false;
   }
 }
@@ -141,8 +140,8 @@ async function saveSubscription(userId, subscription) {
         userId,
         subscription: subscriptionData,
         endpoint,
-        timestamp: new Date().toISOString()
-      })
+        timestamp: new Date().toISOString(),
+      }),
     });
 
     const responseText = await response.text();
@@ -150,7 +149,9 @@ async function saveSubscription(userId, subscription) {
     console.log('[saveSubscription] Response body:', responseText);
 
     if (!response.ok) {
-      throw new Error(`Errore nel salvataggio della sottoscrizione: ${response.status} - ${responseText}`);
+      throw new Error(
+        `Errore nel salvataggio della sottoscrizione: ${response.status} - ${responseText}`
+      );
     }
 
     console.log('✅ Sottoscrizione push salvata con successo');
@@ -174,8 +175,8 @@ async function removeSubscription(userId, subscription) {
       },
       body: JSON.stringify({
         userId,
-        endpoint
-      })
+        endpoint,
+      }),
     });
 
     if (!response.ok) {
@@ -209,20 +210,20 @@ export async function sendTestNotification(userId) {
           tag: 'test-notification',
           data: {
             url: '/',
-            timestamp: Date.now()
-          }
-        }
-      })
+            timestamp: Date.now(),
+          },
+        },
+      }),
     });
 
     if (!response.ok) {
-      throw new Error('Errore nell\'invio della notifica di test');
+      throw new Error("Errore nell'invio della notifica di test");
     }
 
     console.log('Notifica di test inviata con successo');
     return true;
   } catch (error) {
-    console.error('Errore nell\'invio della notifica di test:', error);
+    console.error("Errore nell'invio della notifica di test:", error);
     return false;
   }
 }

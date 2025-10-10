@@ -20,7 +20,11 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase.js';
 import { invalidateUserBookingsCache } from '@hooks/useBookingPerformance.js';
-import { emitBookingCreated, emitBookingUpdated, emitBookingDeleted } from '@utils/bookingEvents.js';
+import {
+  emitBookingCreated,
+  emitBookingUpdated,
+  emitBookingDeleted,
+} from '@utils/bookingEvents.js';
 import { calculateCertificateStatus } from './medicalCertificates.js';
 
 // =============================================
@@ -190,13 +194,15 @@ export async function createBooking(bookingData, user, options = {}) {
         const player = playerDoc.data();
 
         // Controlla il certificato
-        const certStatus = calculateCertificateStatus(player.medicalCertificates?.current?.expiryDate);
+        const certStatus = calculateCertificateStatus(
+          player.medicalCertificates?.current?.expiryDate
+        );
 
         if (certStatus.isExpired) {
           const daysExpired = Math.abs(certStatus.daysUntilExpiry);
           throw new Error(
             `❌ Certificato medico scaduto da ${daysExpired} ${daysExpired === 1 ? 'giorno' : 'giorni'}. ` +
-            `Non puoi effettuare prenotazioni. Contatta il circolo per rinnovare il certificato.`
+              `Non puoi effettuare prenotazioni. Contatta il circolo per rinnovare il certificato.`
           );
         }
 

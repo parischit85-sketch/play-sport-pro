@@ -204,7 +204,11 @@ export function ClubProvider({ children }) {
           clubProfiles.set(doc.id, data);
           // Debug tournamentData
           if (data.tournamentData) {
-            console.log('🏆 [ClubContext] Profile with tournamentData:', doc.id, data.tournamentData);
+            console.log(
+              '🏆 [ClubContext] Profile with tournamentData:',
+              doc.id,
+              data.tournamentData
+            );
           }
         });
         console.log('✅ Loaded club profiles:', profilesSnapshot.docs.length);
@@ -222,10 +226,10 @@ export function ClubProvider({ children }) {
 
       // 🔄 LEGACY SUPPORT: Se non ci sono users, crea players solo dai profiles
       let playersData = [];
-      
+
       if (clubUsers.length === 0 && clubProfiles.size > 0) {
         console.log('🔄 [ClubContext] Using legacy profiles system (no users collection)');
-        
+
         playersData = Array.from(clubProfiles.entries()).map(([userId, profileData]) => ({
           id: userId,
           name: profileData.name || profileData.displayName || 'Unknown',
@@ -236,15 +240,18 @@ export function ClubProvider({ children }) {
           role: profileData.role || 'player',
           isLinked: true, // Profiles have userId as document ID
           clubUserId: null, // No club user document
-          
+
           // Additional data from profile
           category: profileData.category || 'member',
           instructorData: profileData.instructorData || null,
-          tournamentData: profileData.tournamentData ? {
-            ...profileData.tournamentData,
-            currentRanking: profileData.tournamentData.currentRanking || profileData.rating || 1500
-          } : null,
-          
+          tournamentData: profileData.tournamentData
+            ? {
+                ...profileData.tournamentData,
+                currentRanking:
+                  profileData.tournamentData.currentRanking || profileData.rating || 1500,
+              }
+            : null,
+
           baseRating: profileData.baseRating || profileData.rating || 1500,
           tags: profileData.tags || [],
           subscriptions: profileData.subscriptions || [],
@@ -253,63 +260,72 @@ export function ClubProvider({ children }) {
           bookingHistory: profileData.bookingHistory || [],
           matchHistory: profileData.matchHistory || [],
           isActive: profileData.isActive !== false,
-          
+
           createdAt: profileData.createdAt || null,
           updatedAt: profileData.updatedAt || null,
           lastActivity: profileData.lastActivity || null,
         }));
-        
+
         console.log('✅ [ClubContext] Created', playersData.length, 'players from legacy profiles');
       } else {
         // Transform club users to player format with merged profile data
         playersData = clubUsers.map((clubUser) => {
           const userId = clubUser.userId;
           const originalProfile = clubProfiles.get(userId);
-        
-        // Debug tournamentData mapping
-        if (originalProfile?.tournamentData) {
-          console.log('🔄 [ClubContext] Mapping player with tournamentData:', userId, originalProfile.tournamentData);
-        }
 
-        // Merge data from club profile if available
-        const mergedData = {
-          // Base data from club-user
-          id: userId,
-          name: clubUser.mergedData?.name || clubUser.userName,
-          displayName: clubUser.mergedData?.name || clubUser.userName,
-          email: clubUser.userEmail,
-          phone: clubUser.userPhone,
-          rating: clubUser.mergedData?.rating || clubUser.originalProfileData?.rating || 1500,
-          role: clubUser.role,
-          isLinked: clubUser.isLinked || false,
-          clubUserId: clubUser.id, // Keep reference to club user document
+          // Debug tournamentData mapping
+          if (originalProfile?.tournamentData) {
+            console.log(
+              '🔄 [ClubContext] Mapping player with tournamentData:',
+              userId,
+              originalProfile.tournamentData
+            );
+          }
 
-          // Additional data from original club profile
-          category: originalProfile?.category || 'member',
-          instructorData: originalProfile?.instructorData || null,
-          tournamentData: originalProfile?.tournamentData ? {
-            ...originalProfile.tournamentData,
-            // 🔄 SINCRONIZZAZIONE: se currentRanking non esiste, usa rating
-            currentRanking: originalProfile.tournamentData.currentRanking || originalProfile?.rating || 1500
-          } : null,
+          // Merge data from club profile if available
+          const mergedData = {
+            // Base data from club-user
+            id: userId,
+            name: clubUser.mergedData?.name || clubUser.userName,
+            displayName: clubUser.mergedData?.name || clubUser.userName,
+            email: clubUser.userEmail,
+            phone: clubUser.userPhone,
+            rating: clubUser.mergedData?.rating || clubUser.originalProfileData?.rating || 1500,
+            role: clubUser.role,
+            isLinked: clubUser.isLinked || false,
+            clubUserId: clubUser.id, // Keep reference to club user document
 
-          // Preserve other profile data
-          baseRating: originalProfile?.baseRating || originalProfile?.rating || 1500,
-          tags: originalProfile?.tags || [],
-          subscriptions: originalProfile?.subscriptions || [],
-          wallet: originalProfile?.wallet || { balance: 0, currency: 'EUR' },
-          notes: originalProfile?.notes || [],
-          bookingHistory: originalProfile?.bookingHistory || [],
-          matchHistory: originalProfile?.matchHistory || [],
-          isActive: originalProfile?.isActive !== false, // Default to true if not specified
+            // Additional data from original club profile
+            category: originalProfile?.category || 'member',
+            instructorData: originalProfile?.instructorData || null,
+            tournamentData: originalProfile?.tournamentData
+              ? {
+                  ...originalProfile.tournamentData,
+                  // 🔄 SINCRONIZZAZIONE: se currentRanking non esiste, usa rating
+                  currentRanking:
+                    originalProfile.tournamentData.currentRanking ||
+                    originalProfile?.rating ||
+                    1500,
+                }
+              : null,
 
-          // Metadata
-          createdAt: originalProfile?.createdAt || clubUser.addedAt,
-          updatedAt: originalProfile?.updatedAt || null,
-          lastActivity: originalProfile?.lastActivity || null,
-        };
+            // Preserve other profile data
+            baseRating: originalProfile?.baseRating || originalProfile?.rating || 1500,
+            tags: originalProfile?.tags || [],
+            subscriptions: originalProfile?.subscriptions || [],
+            wallet: originalProfile?.wallet || { balance: 0, currency: 'EUR' },
+            notes: originalProfile?.notes || [],
+            bookingHistory: originalProfile?.bookingHistory || [],
+            matchHistory: originalProfile?.matchHistory || [],
+            isActive: originalProfile?.isActive !== false, // Default to true if not specified
 
-        return mergedData;
+            // Metadata
+            createdAt: originalProfile?.createdAt || clubUser.addedAt,
+            updatedAt: originalProfile?.updatedAt || null,
+            lastActivity: originalProfile?.lastActivity || null,
+          };
+
+          return mergedData;
         });
       }
 
@@ -564,11 +580,11 @@ export function ClubProvider({ children }) {
       clubId,
       timestamp: new Date().toISOString(),
     });
-    
+
     // Reset players state when clubId changes
     setPlayersLoaded(false);
     setPlayers([]);
-    
+
     // Reset matches state when clubId changes
     setMatchesLoaded(false);
     setMatches([]);
@@ -724,16 +740,16 @@ export function ClubProvider({ children }) {
         if (clubUser) {
           // Player is in new club users system
           // Update both the club user document and the profile document
-          
+
           // Update club user document if needed (role, status, etc.)
           if (updates.role || updates.status) {
             const clubUserRef = doc(db, 'clubs', clubId, 'users', clubUser.id);
             const clubUserUpdates = {};
-            
+
             if (updates.role) clubUserUpdates.role = updates.role;
             if (updates.status) clubUserUpdates.status = updates.status;
             clubUserUpdates.updatedAt = serverTimestamp();
-            
+
             await updateDoc(clubUserRef, clubUserUpdates);
             console.log('✅ [ClubContext] Updated club user document');
           }
@@ -769,8 +785,14 @@ export function ClubProvider({ children }) {
               profileUpdates.baseRating = updates.tournamentData.currentRanking;
             }
             console.log('🏆 [ClubContext] tournamentData to save:', updates.tournamentData);
-            console.log('🏆 [ClubContext] tournamentData.initialRanking:', updates.tournamentData.initialRanking);
-            console.log('🏆 [ClubContext] tournamentData.currentRanking:', updates.tournamentData.currentRanking);
+            console.log(
+              '🏆 [ClubContext] tournamentData.initialRanking:',
+              updates.tournamentData.initialRanking
+            );
+            console.log(
+              '🏆 [ClubContext] tournamentData.currentRanking:',
+              updates.tournamentData.currentRanking
+            );
             console.log('🔄 [ClubContext] Synced rating:', profileUpdates.rating);
           }
           if (updates.tags) profileUpdates.tags = updates.tags;
