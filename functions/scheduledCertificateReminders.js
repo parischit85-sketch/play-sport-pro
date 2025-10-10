@@ -309,7 +309,7 @@ export const dailyCertificateCheck = onSchedule(
     timeZone: 'Europe/Rome',
     memory: '256MiB',
     timeoutSeconds: 540, // 9 minuti
-    secrets: ['SENDGRID_API_KEY', 'EMAIL_USER', 'EMAIL_PASSWORD', 'FROM_EMAIL'],
+    secrets: ['EMAIL_USER', 'EMAIL_PASSWORD', 'FROM_EMAIL'],
   },
   async (event) => {
     console.log('🏥 [Certificate Check] Starting daily certificate expiry check...');
