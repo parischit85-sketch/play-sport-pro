@@ -14,34 +14,44 @@ import PlayerWallet from './PlayerWallet';
 import PlayerCommunications from './PlayerCommunications';
 import PlayerBookingHistory from './PlayerBookingHistory';
 import PlayerTournamentTab from './PlayerTournamentTab';
+import PlayerMedicalTab from './PlayerMedicalTab';
 
-export default function PlayerDetails({ player, onUpdate, onClose, T }) {
-  console.log('👤 [PlayerDetails] Rendering with player:', player?.id, 'tournamentData:', player?.tournamentData);
-  
+export default function PlayerDetails({ player, onUpdate, _onClose, T }) {
+  console.log(
+    '👤 [PlayerDetails] Rendering with player:',
+    player?.id,
+    'tournamentData:',
+    player?.tournamentData
+  );
+
   const { clubId, players, matches } = useClub();
-  
+
   // 🎯 Calcola il ranking reale dalle partite (come in Classifica e Stats)
   const playerWithRealRating = useMemo(() => {
     if (!clubId || !player) return player;
-    
+
     // 🏆 FILTRO CAMPIONATO: Solo giocatori che partecipano attivamente
-    const tournamentPlayers = players.filter(p => 
-      p.tournamentData?.isParticipant === true &&
-      p.tournamentData?.isActive === true
+    const tournamentPlayers = players.filter(
+      (p) => p.tournamentData?.isParticipant === true && p.tournamentData?.isActive === true
     );
-    
+
     // Calcola il ranking per TUTTI i giocatori del torneo (non solo questo)
     const rankingData = computeClubRanking(tournamentPlayers, matches, clubId);
-    const calculatedPlayer = rankingData.players.find(p => p.id === player.id);
-    
+    const calculatedPlayer = rankingData.players.find((p) => p.id === player.id);
+
     if (calculatedPlayer) {
-      console.log('🎯 [PlayerDetails] Real rating calculated:', calculatedPlayer.rating, 'vs profile rating:', player.rating);
+      console.log(
+        '🎯 [PlayerDetails] Real rating calculated:',
+        calculatedPlayer.rating,
+        'vs profile rating:',
+        player.rating
+      );
       return { ...player, rating: calculatedPlayer.rating };
     }
-    
+
     return player;
   }, [player, players, matches, clubId]);
-  
+
   const [activeTab, setActiveTab] = useState('overview');
   const [linking, setLinking] = useState(false);
   const [linkEmail, setLinkEmail] = useState('');
@@ -192,6 +202,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
   const tabs = [
     { id: 'overview', label: '👤 Panoramica', icon: '👤' },
     { id: 'tournament', label: '🏆 Campionato', icon: '🏆' },
+    { id: 'medical', label: '🏥 Certificato Medico', icon: '🏥' },
     { id: 'notes', label: '📝 Note', icon: '📝' },
     { id: 'wallet', label: '💰 Wallet', icon: '💰' },
     { id: 'bookings', label: '📅 Prenotazioni', icon: '📅' },
@@ -270,9 +281,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                   </>
                 ) : (
                   <>
-                    <div className="text-2xl font-bold text-gray-400 dark:text-gray-600">
-                      -
-                    </div>
+                    <div className="text-2xl font-bold text-gray-400 dark:text-gray-600">-</div>
                     <div className={`text-xs ${T.subtext}`}>Non partecipa</div>
                   </>
                 )}
@@ -548,21 +557,32 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
 
                     <div className="flex justify-between">
                       <span className={T.subtext}>📊 Progressione:</span>
-                      <span className={
-                        (playerWithRealRating.rating || 0) > (player.tournamentData.initialRanking || 0)
-                          ? 'text-green-600 dark:text-green-400 font-semibold'
-                          : (playerWithRealRating.rating || 0) < (player.tournamentData.initialRanking || 0)
-                          ? 'text-red-600 dark:text-red-400 font-semibold'
-                          : T.text
-                      }>
-                        {((playerWithRealRating.rating || 0) - (player.tournamentData.initialRanking || 0)) > 0 ? '+' : ''}
-                        {(playerWithRealRating.rating || 0) - (player.tournamentData.initialRanking || 0)}
+                      <span
+                        className={
+                          (playerWithRealRating.rating || 0) >
+                          (player.tournamentData.initialRanking || 0)
+                            ? 'text-green-600 dark:text-green-400 font-semibold'
+                            : (playerWithRealRating.rating || 0) <
+                                (player.tournamentData.initialRanking || 0)
+                              ? 'text-red-600 dark:text-red-400 font-semibold'
+                              : T.text
+                        }
+                      >
+                        {(playerWithRealRating.rating || 0) -
+                          (player.tournamentData.initialRanking || 0) >
+                        0
+                          ? '+'
+                          : ''}
+                        {(playerWithRealRating.rating || 0) -
+                          (player.tournamentData.initialRanking || 0)}
                       </span>
                     </div>
                   </>
                 ) : (
                   <div className="text-center py-4">
-                    <span className={`text-sm ${T.subtext}`}>Giocatore non partecipa al campionato</span>
+                    <span className={`text-sm ${T.subtext}`}>
+                      Giocatore non partecipa al campionato
+                    </span>
                   </div>
                 )}
 
@@ -643,7 +663,11 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
           </div>
         )}
 
-        {activeTab === 'tournament' && <PlayerTournamentTab player={player} onUpdate={onUpdate} T={T} />}
+        {activeTab === 'tournament' && (
+          <PlayerTournamentTab player={player} onUpdate={onUpdate} T={T} />
+        )}
+
+        {activeTab === 'medical' && <PlayerMedicalTab player={player} onUpdate={onUpdate} T={T} />}
 
         {activeTab === 'notes' && <PlayerNotes player={player} onUpdate={onUpdate} T={T} />}
 

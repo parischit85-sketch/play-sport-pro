@@ -41,6 +41,30 @@ export const NOTE_TYPES = {
 };
 
 /**
+ * Tipi di certificato medico
+ */
+export const CERTIFICATE_TYPES = {
+  AGONISTIC: 'agonistic',
+  NON_AGONISTIC: 'non-agonistic',
+};
+
+/**
+ * Stati del certificato medico
+ */
+export const CERTIFICATE_STATUS = {
+  VALID: 'valid',
+  EXPIRING: 'expiring', // < 30 giorni
+  EXPIRED: 'expired',
+  MISSING: 'missing',
+};
+
+/**
+ * Soglie di alert per scadenza certificato
+ */
+export const EXPIRY_WARNING_DAYS = 30; // Alert quando mancano 30 giorni
+export const EXPIRY_CRITICAL_DAYS = 15; // Alert critico < 15 giorni
+
+/**
  * Struttura completa del giocatore nel CRM
  */
 export const createPlayerSchema = () => ({
@@ -141,6 +165,37 @@ export const createPlayerSchema = () => ({
     sms: false,
     whatsapp: false,
     notifications: true,
+  },
+
+  // Certificati medici
+  medicalCertificates: {
+    current: {
+      id: '',
+      type: 'agonistic', // 'agonistic' | 'non-agonistic'
+      number: '', // Numero documento
+      issueDate: null, // Data rilascio
+      expiryDate: null, // Data scadenza
+      doctor: '', // Nome medico/ente
+      facility: '', // Struttura rilasciante
+      fileUrl: '', // URL file caricato su Firebase Storage
+      fileName: '', // Nome file originale
+      uploadedAt: null, // Data caricamento
+      uploadedBy: '', // Admin che ha caricato
+      notes: '', // Note aggiuntive
+    },
+    history: [], // Array di certificati precedenti
+    lastReminderSent: null, // Ultima notifica inviata
+    remindersSent: 0, // Contatore reminder
+  },
+
+  // Stato certificato (calcolato automaticamente)
+  certificateStatus: {
+    isValid: false, // Certificato valido
+    isExpiring: false, // In scadenza (< 30 giorni)
+    isExpired: false, // Scaduto
+    daysUntilExpiry: null, // Giorni rimanenti
+    canBook: true, // Può prenotare
+    status: 'missing', // 'valid' | 'expiring' | 'expired' | 'missing'
   },
 });
 
