@@ -403,7 +403,9 @@ function AppLayoutInner() {
       className={`min-h-screen safe-area-top safe-area-bottom ${T.text} ${isDashboard ? 'bg-gradient-to-b from-neutral-50 via-white to-neutral-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900' : T.pageBg}`}
     >
       {/* Header */}
-      <header className={`sticky top-0 z-20 ${T.headerBg} safe-area-left safe-area-right`}>
+      <header
+        className={`sticky top-0 z-20 ${T.headerBg} safe-area-top safe-area-left safe-area-right`}
+      >
         <div className="max-w-[1800px] mx-auto px-3 sm:px-4 py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div className="h-10 w-auto rounded-md shrink-0 flex items-center">

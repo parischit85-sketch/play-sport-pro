@@ -4,8 +4,8 @@
   "description": "App per la gestione e prenotazione campi da tennis e padel",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f9fafb",
-  "theme_color": "#2563eb",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "it",
@@ -88,12 +88,7 @@
   ],
   "prefer_related_applications": false,
   "related_applications": [],
-  "permissions": [
-    "notifications",
-    "vibrate",
-    "geolocation",
-    "contacts"
-  ],
+  "permissions": ["notifications", "vibrate", "geolocation", "contacts"],
   "edge_side_panel": {
     "preferred_width": 400
   },
