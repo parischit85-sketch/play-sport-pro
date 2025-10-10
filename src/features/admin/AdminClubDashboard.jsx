@@ -9,6 +9,7 @@ import { useClub } from '@contexts/ClubContext.jsx';
 import { themeTokens } from '@lib/theme.js';
 import { useClubSettings } from '@hooks/useClubSettings.js';
 import TimeSlotsSlidePanel from '@ui/TimeSlotsSlidePanel.jsx';
+import ExpiringCertificatesWidget from './components/ExpiringCertificatesWidget.jsx';
 
 // Import dei servizi per ottenere i dati reali
 import { loadAdminDashboardData } from '@services/adminDashboard.js';
@@ -791,9 +792,10 @@ const AdminClubDashboard = () => {
       </div>
 
       {/* Sezione principale con le attività del giorno */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         <TodayBookingsCard />
         <TodayLessonsCard />
+        <ExpiringCertificatesWidget clubId={clubId} T={T} />
       </div>
 
       {/* Sezione maestri e azioni rapide */}
