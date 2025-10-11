@@ -4,7 +4,7 @@
 // =============================================
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Section from '@ui/Section.jsx';
 import Modal from '@ui/Modal.jsx';
 import { uid } from '@lib/ids.js';
@@ -28,6 +28,7 @@ export default function PlayersCRM({
   onDeletePlayer,
 }) {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [showPlayerForm, setShowPlayerForm] = useState(false);
   const [editingPlayer, setEditingPlayer] = useState(null);
@@ -40,6 +41,27 @@ export default function PlayersCRM({
   const [accountSearch, setAccountSearch] = useState('');
 
   const players = Array.isArray(state?.players) ? state.players : [];
+
+  // 🔧 Leggi il parametro 'selected' dalla URL all'avvio
+  useEffect(() => {
+    const selectedParam = searchParams.get('selected');
+    if (selectedParam) {
+      setSelectedPlayerId(selectedParam);
+    }
+  }, []); // Solo al mount
+
+  // 🔧 Aggiorna la URL quando cambia selectedPlayerId
+  useEffect(() => {
+    if (selectedPlayerId) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('selected', selectedPlayerId);
+      setSearchParams(newParams, { replace: true });
+    } else {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('selected');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [selectedPlayerId]); // Quando cambia selectedPlayerId
 
   // Deriva il giocatore selezionato dai dati correnti (si aggiorna live)
   const selectedPlayer = useMemo(() => {

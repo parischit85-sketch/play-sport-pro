@@ -52,6 +52,8 @@ const BOOKING_TYPES = {
 let useCloudStorage = false;
 let bookingCache = new Map(); // chiave: `${scope}|${clubId||'all'}`
 let subscriptions = new Map();
+// Track the current authenticated user for optional cloud ops
+let currentUser = null;
 // Initialization & migration guards
 const MIGRATION_FLAG_KEY = 'unified-bookings-migration-done-v1';
 let initialized = false;
@@ -1055,8 +1057,8 @@ export function isSlotAvailable(courtId, date, startTime, duration, existingBook
     const status = booking.status || BOOKING_STATUS.CONFIRMED;
     if (status === BOOKING_STATUS.CANCELLED) return false;
 
-    const existingStart = timeToMinutes(booking.time);
-    const existingEnd = existingStart + existingBookings.duration;
+  const existingStart = timeToMinutes(booking.time);
+  const existingEnd = existingStart + booking.duration;
 
     // Check for overlap
     const overlap = bookingStart < existingEnd && bookingEnd > existingStart;

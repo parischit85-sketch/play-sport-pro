@@ -16,6 +16,26 @@ import { useClub } from '@contexts/ClubContext.jsx';
 export default function PlayerMedicalTab({ player, onUpdate, T }) {
   const { currentUser } = useAuth();
   const { clubId } = useClub();
+  
+  // 🔍 DEBUG: Log what we receive for player 70xe0dha
+  useEffect(() => {
+    if (player.id === '70xe0dha') {
+      console.log('🔍 [PlayerMedicalTab] Received player 70xe0dha:', {
+        id: player.id,
+        name: player.name,
+        hasCertificate: !!player.medicalCertificates,
+        certificateData: player.medicalCertificates,
+        current: player.medicalCertificates?.current,
+        hasCurrentCert: !!player.medicalCertificates?.current,
+        hasExpiryDate: !!player.medicalCertificates?.current?.expiryDate,
+        expiryDate: player.medicalCertificates?.current?.expiryDate,
+        certificateStatus: player.certificateStatus,
+        editing: !player.medicalCertificates?.current?.expiryDate,
+        allKeys: Object.keys(player)
+      });
+    }
+  }, [player]);
+
   const [editing, setEditing] = useState(!player.medicalCertificates?.current?.expiryDate);
   const [formData, setFormData] = useState({
     type: player.medicalCertificates?.current?.type || 'agonistic',
@@ -24,6 +44,23 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
     expiryDate: player.medicalCertificates?.current?.expiryDate || '',
     notes: player.medicalCertificates?.current?.notes || '',
   });
+
+  // 🔧 FIX: Aggiorna formData e editing quando cambia il certificato del player
+  useEffect(() => {
+    const currentCert = player.medicalCertificates?.current;
+    if (currentCert?.expiryDate) {
+      setFormData({
+        type: currentCert.type || 'agonistic',
+        otherType: currentCert.otherType || '',
+        issueDate: currentCert.issueDate || '',
+        expiryDate: currentCert.expiryDate || '',
+        notes: currentCert.notes || '',
+      });
+      setEditing(false); // Mostra il certificato invece del form
+    } else {
+      setEditing(true); // Mostra il form se non c'è certificato
+    }
+  }, [player.medicalCertificates?.current]);
 
   // Auto-calcola data scadenza quando cambia data emissione
   useEffect(() => {

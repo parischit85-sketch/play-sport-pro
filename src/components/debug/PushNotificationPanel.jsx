@@ -9,6 +9,7 @@ import {
   isPushSubscribed,
   getPushNotificationStatus,
   sendTestNotification,
+    checkPushServerConfig,
 } from '@utils/push';
 import { useAuth } from '@contexts/AuthContext';
 
@@ -18,6 +19,7 @@ export default function PushNotificationPanel() {
   const [permission, setPermission] = useState('default');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [serverCheck, setServerCheck] = useState(null);
 
   useEffect(() => {
     checkSubscription();
@@ -107,6 +109,23 @@ export default function PushNotificationPanel() {
     } catch (error) {
       console.error("Errore nell'invio della notifica:", error);
       setMessage({ type: 'error', text: error.message });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleServerDiagnostics = async () => {
+    setIsLoading(true);
+    setMessage(null);
+    setServerCheck(null);
+    try {
+      const res = await checkPushServerConfig();
+      setServerCheck(res);
+      if (!res.ok) {
+        setMessage({ type: 'error', text: `Diagnostica fallita: ${res.error}` });
+      }
+    } catch (e) {
+      setMessage({ type: 'error', text: e.message });
     } finally {
       setIsLoading(false);
     }
@@ -210,7 +229,38 @@ export default function PushNotificationPanel() {
               </Button>
             </>
           )}
+          <Button onClick={handleServerDiagnostics} disabled={isLoading} variant="secondary" className="w-full">
+            {isLoading ? 'Verifica...' : 'Diagnostica server push'}
+          </Button>
         </div>
+
+        {serverCheck && (
+          <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-xs text-gray-700 dark:text-gray-300 space-y-1">
+            <div className="font-medium">Stato server push:</div>
+            {serverCheck.ok && serverCheck.data ? (
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Ambiente: {serverCheck.data.environment}</li>
+                {'checks' in serverCheck.data && (
+                  <>
+                    <li>VAPID_PUBLIC_KEY: {serverCheck.data.checks.VAPID_PUBLIC_KEY?.exists ? 'OK' : 'MANCANTE'}</li>
+                    <li>VAPID_PRIVATE_KEY: {serverCheck.data.checks.VAPID_PRIVATE_KEY?.exists ? 'OK' : 'MANCANTE'}</li>
+                    <li>FIREBASE_PROJECT_ID: {serverCheck.data.checks.FIREBASE_PROJECT_ID?.exists ? 'OK' : 'MANCANTE'}</li>
+                    <li>FIREBASE_CLIENT_EMAIL: {serverCheck.data.checks.FIREBASE_CLIENT_EMAIL?.exists ? 'OK' : 'MANCANTE'}</li>
+                    <li>FIREBASE_PRIVATE_KEY: {serverCheck.data.checks.FIREBASE_PRIVATE_KEY?.exists ? 'OK' : 'MANCANTE'}</li>
+                  </>
+                )}
+                {'allConfigured' in serverCheck.data && (
+                  <li className="font-semibold">Completa: {serverCheck.data.allConfigured ? 'Sì' : 'No'}</li>
+                )}
+                {'firebaseTest' in serverCheck.data && (
+                  <li>Firebase Admin: {serverCheck.data.firebaseTest.status}</li>
+                )}
+              </ul>
+            ) : (
+              <div>Errore: {serverCheck.error || 'Sconosciuto'}</div>
+            )}
+          </div>
+        )}
 
         {permission === 'denied' && (
           <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg text-sm text-amber-800 dark:text-amber-300">

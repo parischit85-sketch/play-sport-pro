@@ -5,11 +5,11 @@
 
 // VAPID public key - generato con web-push generate-vapid-keys
 const VAPID_PUBLIC_KEY =
-  'BI9gOKRddotrncfkYftX0CRDhzE9BpHxqWULvYBiuJ2g7NctyoUeEaQ6Bw5ptBiViiPTDUpWNdXO_qUBzfplMqM';
+  'BLgzoWZyeroUOSQ_qCFGfD-Y1PTkM809QTxc85X9oiHFKLovhxCpTgpAQV8zX6iJwLKy_wmMEQx7HHZUKrXusdM';
 
 // Base URL per le Netlify Functions
 // In sviluppo locale usa le Functions di produzione
-const FUNCTIONS_BASE_URL = import.meta.env.DEV
+export const FUNCTIONS_BASE_URL = import.meta.env.DEV
   ? 'https://play-sport-pro-v2-2025.netlify.app/.netlify/functions'
   : '/.netlify/functions';
 
@@ -267,5 +267,33 @@ export function getPushNotificationStatus() {
       return 'denied';
     default:
       return 'default';
+  }
+}
+
+/**
+ * Verifica la configurazione del server push (Netlify Functions)
+ * Chiama la function `test-env` per controllare la presenza delle env vars.
+ * Ritorna un oggetto { ok: boolean, data?: any, error?: string }
+ */
+export async function checkPushServerConfig() {
+  try {
+    const res = await fetch(`${FUNCTIONS_BASE_URL}/test-env`, { method: 'GET' });
+    const text = await res.text();
+
+    let data = null;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      data = { raw: text };
+    }
+
+    if (!res.ok) {
+      const message = data && data.error ? data.error : `HTTP ${res.status}`;
+      return { ok: false, error: message, data };
+    }
+
+    return { ok: true, data };
+  } catch (error) {
+    return { ok: false, error: error.message };
   }
 }

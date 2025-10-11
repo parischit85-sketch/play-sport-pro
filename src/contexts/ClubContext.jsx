@@ -259,6 +259,8 @@ export function ClubProvider({ children }) {
           notes: profileData.notes || [],
           bookingHistory: profileData.bookingHistory || [],
           matchHistory: profileData.matchHistory || [],
+          medicalCertificates: profileData.medicalCertificates || { current: null, history: [] }, // 🔧 FIX: Include certificati medici
+          certificateStatus: profileData.certificateStatus || null, // 🔧 FIX: Include status certificato
           isActive: profileData.isActive !== false,
 
           createdAt: profileData.createdAt || null,
@@ -270,8 +272,34 @@ export function ClubProvider({ children }) {
       } else {
         // Transform club users to player format with merged profile data
         playersData = clubUsers.map((clubUser) => {
-          const userId = clubUser.userId;
+          // 🔍 CRITICAL: userId might be undefined for legacy users
+          // In that case, use the club-user document ID as the player ID
+          const userId = clubUser.userId || clubUser.id;
           const originalProfile = clubProfiles.get(userId);
+
+          // 🔍 DEBUG: Log certificate data for player 70xe0dha
+          if (userId === '70xe0dha') {
+            console.log('🔍 [DEBUG] Player 70xe0dha BEFORE mapping:', {
+              clubUserId: clubUser.id,
+              userId,
+              hasProfile: !!originalProfile,
+              hasCertificate: !!originalProfile?.medicalCertificates,
+              certificateData: originalProfile?.medicalCertificates,
+              certificateRaw: originalProfile && 'medicalCertificates' in originalProfile,
+              profileKeys: originalProfile ? Object.keys(originalProfile) : 'no profile',
+              fullProfile: originalProfile
+            });
+          }
+
+          // Debug problematic users without userId
+          if (!clubUser.userId) {
+            console.log('⚠️ [ClubContext] Club user without userId, using doc ID:', {
+              docId: clubUser.id,
+              userName: clubUser.userName,
+              userEmail: clubUser.userEmail,
+              role: clubUser.role
+            });
+          }
 
           // Debug tournamentData mapping
           if (originalProfile?.tournamentData) {
@@ -286,11 +314,11 @@ export function ClubProvider({ children }) {
           const mergedData = {
             // Base data from club-user
             id: userId,
-            name: clubUser.mergedData?.name || clubUser.userName,
-            displayName: clubUser.mergedData?.name || clubUser.userName,
-            email: clubUser.userEmail,
-            phone: clubUser.userPhone,
-            rating: clubUser.mergedData?.rating || clubUser.originalProfileData?.rating || 1500,
+            name: clubUser.mergedData?.name || clubUser.userName || originalProfile?.name || 'Unknown User',
+            displayName: clubUser.mergedData?.name || clubUser.userName || originalProfile?.name || 'Unknown User',
+            email: clubUser.userEmail || originalProfile?.email,
+            phone: clubUser.userPhone || originalProfile?.phone,
+            rating: clubUser.mergedData?.rating || clubUser.originalProfileData?.rating || originalProfile?.rating || 1500,
             role: clubUser.role,
             isLinked: clubUser.isLinked || false,
             clubUserId: clubUser.id, // Keep reference to club user document
@@ -317,6 +345,8 @@ export function ClubProvider({ children }) {
             notes: originalProfile?.notes || [],
             bookingHistory: originalProfile?.bookingHistory || [],
             matchHistory: originalProfile?.matchHistory || [],
+            medicalCertificates: originalProfile?.medicalCertificates || { current: null, history: [] }, // 🔧 FIX: Include certificati medici
+            certificateStatus: originalProfile?.certificateStatus || null, // 🔧 FIX: Include status certificato
             isActive: originalProfile?.isActive !== false, // Default to true if not specified
 
             // Metadata
@@ -324,6 +354,18 @@ export function ClubProvider({ children }) {
             updatedAt: originalProfile?.updatedAt || null,
             lastActivity: originalProfile?.lastActivity || null,
           };
+
+          // 🔍 DEBUG: Log final mapped data for player 70xe0dha
+          if (userId === '70xe0dha') {
+            console.log('🔍 [DEBUG] Player 70xe0dha AFTER mapping:', {
+              id: mergedData.id,
+              name: mergedData.name,
+              hasCertificate: !!mergedData.medicalCertificates,
+              certificateData: mergedData.medicalCertificates,
+              certificateStatus: mergedData.certificateStatus,
+              allKeys: Object.keys(mergedData)
+            });
+          }
 
           return mergedData;
         });
@@ -360,14 +402,26 @@ export function ClubProvider({ children }) {
         }
       });
 
-      // 🧹 FILTRO FINALE: Rimuovi profili con name undefined o vuoto
+      // 🧹 FILTRO FINALE: Rimuovi solo profili completamente invalidi
       const filteredPlayers = playersData.filter((player) => {
-        // Deve avere un name valido (non undefined, non vuoto)
-        const hasValidName = player.name && player.name.trim().length > 0;
-        if (!hasValidName) {
-          console.log('🚫 FILTERING OUT PLAYER:', player.id, 'name:', player.name);
+        // Deve avere almeno un ID valido
+        const hasValidId = player.id && player.id.trim().length > 0;
+        if (!hasValidId) {
+          console.log('🚫 FILTERING OUT PLAYER (no ID):', player);
           return false;
         }
+        
+        // Se non ha un name valido, logga un warning ma mantieni il player
+        // (il fallback 'Unknown User' garantisce che ci sia sempre un nome)
+        if (!player.name || player.name === 'Unknown User') {
+          console.log('⚠️ KEEPING PLAYER WITH PLACEHOLDER NAME:', {
+            id: player.id,
+            name: player.name,
+            email: player.email,
+            role: player.role
+          });
+        }
+        
         return true;
       });
 
@@ -767,8 +821,12 @@ export function ClubProvider({ children }) {
             profileUpdates.name = updates.name;
             profileUpdates.displayName = updates.name;
           }
-          if (updates.email) profileUpdates.email = updates.email;
-          if (updates.phone) profileUpdates.phone = updates.phone;
+          if (updates.email !== undefined && updates.email !== null) {
+            profileUpdates.email = updates.email;
+          }
+          if (updates.phone !== undefined && updates.phone !== null) {
+            profileUpdates.phone = updates.phone;
+          }
           if (updates.rating !== undefined) {
             profileUpdates.rating = updates.rating;
             profileUpdates.baseRating = updates.rating;
@@ -798,6 +856,19 @@ export function ClubProvider({ children }) {
           if (updates.tags) profileUpdates.tags = updates.tags;
           if (updates.notes) profileUpdates.notes = updates.notes;
           if (updates.wallet) profileUpdates.wallet = updates.wallet;
+          if (updates.medicalCertificates !== undefined) {
+            profileUpdates.medicalCertificates = updates.medicalCertificates;
+          }
+          if (updates.certificateStatus !== undefined) {
+            profileUpdates.certificateStatus = updates.certificateStatus;
+          }
+
+          // 🔥 CRITICAL: Remove undefined values before saving to Firestore
+          Object.keys(profileUpdates).forEach(key => {
+            if (profileUpdates[key] === undefined) {
+              delete profileUpdates[key];
+            }
+          });
 
           console.log('💾 [ClubContext] Profile updates to save:', profileUpdates);
 
@@ -826,6 +897,8 @@ export function ClubProvider({ children }) {
               notes: updates.notes || [],
               bookingHistory: [],
               matchHistory: [],
+              medicalCertificates: updates.medicalCertificates || { current: null, history: [] },
+              certificateStatus: updates.certificateStatus || null,
               createdAt: serverTimestamp(),
             };
             await setDoc(profileRef, newProfile);
@@ -849,6 +922,13 @@ export function ClubProvider({ children }) {
             profileUpdates.baseRating = updates.rating;
           }
 
+          // 🔥 CRITICAL: Remove undefined values before saving to Firestore
+          Object.keys(profileUpdates).forEach(key => {
+            if (profileUpdates[key] === undefined) {
+              delete profileUpdates[key];
+            }
+          });
+
           await updateDoc(profileRef, profileUpdates);
           console.log('✅ [ClubContext] Updated profile (old system)');
         }
@@ -866,10 +946,36 @@ export function ClubProvider({ children }) {
     [clubId, loadPlayers]
   );
 
-  const deletePlayer = useCallback(async (playerId) => {
-    // TODO: Implement player deletion
-    console.warn('deletePlayer not implemented yet');
-  }, []);
+  const deletePlayer = useCallback(
+    async (playerId) => {
+      if (!clubId) {
+        throw new Error('Club ID not available');
+      }
+
+      if (!playerId) {
+        throw new Error('Player ID is required');
+      }
+
+      try {
+        console.log('🗑️ [ClubContext] Deleting player:', playerId);
+
+        // Delete from clubs/{clubId}/users collection
+        const userRef = doc(db, 'clubs', clubId, 'users', playerId);
+        await deleteDoc(userRef);
+
+        console.log('✅ [ClubContext] Player deleted from club users');
+
+        // Reload players list
+        await loadPlayers();
+
+        console.log('✅ [ClubContext] Player deleted successfully');
+      } catch (error) {
+        console.error('❌ [ClubContext] Error deleting player:', error);
+        throw error;
+      }
+    },
+    [clubId, loadPlayers]
+  );
 
   // Check if current user is an instructor in this club
   const isUserInstructor = useCallback(

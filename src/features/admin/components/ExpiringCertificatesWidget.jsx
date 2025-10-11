@@ -6,12 +6,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getPlayersWithExpiringCertificates } from '@services/medicalCertificates.js';
 import { useNavigate } from 'react-router-dom';
+import Modal from '@ui/Modal.jsx';
+import MedicalCertificatesManager from './MedicalCertificatesManager';
+import { useClub } from '@contexts/ClubContext.jsx';
 
 export default function ExpiringCertificatesWidget({ clubId, T }) {
   const navigate = useNavigate();
+  const { players: allPlayers } = useClub();
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showManager, setShowManager] = useState(false);
 
   const loadExpiringCertificates = useCallback(async () => {
     if (!clubId) return;
@@ -145,11 +150,11 @@ export default function ExpiringCertificatesWidget({ clubId, T }) {
               key={player.id}
               role="button"
               tabIndex={0}
-              onClick={() => navigate(`/club/${clubId}/players?selected=${player.id}`)}
+              onClick={() => navigate(`/club/${clubId}/players?selected=${player.id}&tab=medical`)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  navigate(`/club/${clubId}/players?selected=${player.id}`);
+                  navigate(`/club/${clubId}/players?selected=${player.id}&tab=medical`);
                 }
               }}
               className={`p-3 rounded-lg cursor-pointer transition-all hover:scale-[1.02] ${
@@ -236,7 +241,7 @@ export default function ExpiringCertificatesWidget({ clubId, T }) {
       {/* Footer con azione */}
       {players.length > 10 && (
         <button
-          onClick={() => navigate(`/club/${clubId}/players`)}
+          onClick={() => setShowManager(true)}
           className={`w-full mt-4 ${T.btnSecondary} text-sm`}
         >
           Vedi tutti ({players.length})
@@ -244,11 +249,26 @@ export default function ExpiringCertificatesWidget({ clubId, T }) {
       )}
 
       <button
-        onClick={() => navigate(`/club/${clubId}/players`)}
+        onClick={() => setShowManager(true)}
         className="w-full mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
       >
         📋 Gestisci Certificati
       </button>
+
+      {/* Modal per gestione completa certificati */}
+      <Modal 
+        isOpen={showManager} 
+        onClose={() => setShowManager(false)} 
+        size="xl"
+        title="Gestione Certificati Medici"
+      >
+        <MedicalCertificatesManager
+          clubId={clubId}
+          players={allPlayers}
+          onClose={() => setShowManager(false)}
+          T={T}
+        />
+      </Modal>
     </div>
   );
 }

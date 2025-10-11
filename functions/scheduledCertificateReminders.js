@@ -67,7 +67,7 @@ if (NODEMAILER_ENABLED) {
 }
 
 // Email mittente (personalizza con il tuo dominio)
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@playsport.pro';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'noreplay@play-sport.pro';
 const FROM_NAME = 'Play-Sport.pro';
 
 /**

@@ -3,7 +3,8 @@
 // Vista dettagliata del giocatore con tab multiple
 // =============================================
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { listAllUserProfiles } from '@services/auth.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { DEFAULT_RATING } from '@lib/ids.js';
@@ -25,6 +26,7 @@ export default function PlayerDetails({ player, onUpdate, _onClose, T }) {
   );
 
   const { clubId, players, matches } = useClub();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   // 🎯 Calcola il ranking reale dalle partite (come in Classifica e Stats)
   const playerWithRealRating = useMemo(() => {
@@ -59,6 +61,18 @@ export default function PlayerDetails({ player, onUpdate, _onClose, T }) {
   const [accounts, setAccounts] = useState([]);
   const [loadingAccounts, setLoadingAccounts] = useState(false);
   const { players: clubPlayers } = useClub();
+
+  // 🔧 Leggi il parametro 'tab' dalla URL e apri la tab corrispondente
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam) {
+      setActiveTab(tabParam);
+      // Rimuovi il parametro 'tab' dalla URL dopo averlo letto
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('tab');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const linkedEmailsSet = useMemo(
     () =>
