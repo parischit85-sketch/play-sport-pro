@@ -71,8 +71,32 @@ export async function subscribeToPush(userId) {
     // Registra service worker
     let registration = await navigator.serviceWorker.getRegistration();
     if (!registration) {
-      registration = await navigator.serviceWorker.register('/sw.js');
-      await navigator.serviceWorker.ready;
+      try {
+        console.log('📝 Registering Service Worker...');
+        registration = await navigator.serviceWorker.register('/sw.js', {
+          scope: '/',
+          type: 'classic',
+        });
+        console.log('✅ Service Worker registered successfully');
+        await navigator.serviceWorker.ready;
+        console.log('✅ Service Worker ready');
+      } catch (swError) {
+        console.error('❌ Service Worker registration failed:', swError);
+
+        // In development, se SW fallisce, mostra un messaggio utile
+        if (import.meta.env.DEV) {
+          throw new Error(
+            'Service Worker registration failed. ' +
+              'In development, you may need to:\n' +
+              '1. Clear browser cache (Ctrl+Shift+Del)\n' +
+              '2. Disable other Service Workers\n' +
+              '3. Check if /public/sw.js exists\n' +
+              '4. Try in incognito mode\n\n' +
+              `Original error: ${swError.message}`
+          );
+        }
+        throw swError;
+      }
     }
 
     // Controlla se esiste già una sottoscrizione
@@ -283,7 +307,7 @@ export async function checkPushServerConfig() {
     let data = null;
     try {
       data = JSON.parse(text);
-    } catch (e) {
+    } catch {
       data = { raw: text };
     }
 
