@@ -50,22 +50,33 @@ exports.handler = async (event, context) => {
     }
 
     // Trova e rimuovi la sottoscrizione
-    const subscriptionSnapshot = await db
+    // 1) Prova match stretto: (userId, endpoint)
+    let snapshot = await db
       .collection('pushSubscriptions')
       .where('userId', '==', userId)
       .where('endpoint', '==', endpoint)
       .get();
 
-    if (subscriptionSnapshot.empty) {
+    // 2) Fallback: match per solo endpoint (l'endpoint è unico per device)
+    if (snapshot.empty) {
+      snapshot = await db.collection('pushSubscriptions').where('endpoint', '==', endpoint).get();
+    }
+
+    // Se non c'è nulla da rimuovere, ritorna comunque 200 per non bloccare la UI
+    if (snapshot.empty) {
       return {
-        statusCode: 404,
+        statusCode: 200,
         headers,
-        body: JSON.stringify({ error: 'Sottoscrizione non trovata' }),
+        body: JSON.stringify({
+          success: true,
+          message: 'Nessuna sottoscrizione da rimuovere',
+          removed: 0,
+        }),
       };
     }
 
     // Rimuovi tutte le sottoscrizioni corrispondenti
-    const deletePromises = subscriptionSnapshot.docs.map((doc) =>
+    const deletePromises = snapshot.docs.map((doc) =>
       db.collection('pushSubscriptions').doc(doc.id).delete()
     );
 
