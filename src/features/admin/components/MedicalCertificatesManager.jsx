@@ -311,12 +311,24 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
       });
 
       // Importa Firebase Functions SDK v2
-  const { getFunctions, httpsCallable, connectFunctionsEmulator } = await import('firebase/functions');
-  // Usa esplicitamente la regione della funzione callable
-  const functions = getFunctions(undefined, 'us-central1');
+      const { getFunctions, httpsCallable } = await import('firebase/functions');
+      // Usa esplicitamente la regione della funzione callable
+      const functions = getFunctions(undefined, 'us-central1');
+      
+      console.log('🔧 [Debug] Firebase Functions instance:', {
+        app: functions.app.name,
+        region: 'us-central1',
+        customDomain: functions.customDomain
+      });
 
       // IMPORTANTE: Usa la regione corretta
       const sendBulkNotifications = httpsCallable(functions, 'sendBulkCertificateNotifications');
+      
+      console.log('📞 [Debug] Calling function with params:', {
+        clubId,
+        playerIds: Array.from(selectedPlayers),
+        notificationType: type,
+      });
       
       const result = await sendBulkNotifications({
         clubId,

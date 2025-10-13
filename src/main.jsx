@@ -105,21 +105,22 @@ if (import.meta.env.PROD) {
 }
 
 // PWA Service Worker e Update Service
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', async () => {
-    try {
-      // Inizializza il servizio di aggiornamenti
-      // Initialize services
-      updateService.init();
-      hashChecker.init();
+// Registrato sia in development che in production (necessario per push notifications)
+window.addEventListener('load', async () => {
+  try {
+    // Inizializza il servizio di aggiornamenti
+    updateService.init();
+    hashChecker.init();
+    
+    if (import.meta.env.DEV) {
+      console.log('🔧 Service Worker enabled in development mode (for push notifications)');
+    } else {
       console.log('✅ Update Service initialized');
-    } catch (error) {
-      console.error('❌ Update Service failed:', error);
     }
-  });
-} else {
-  console.log('🔧 Service Worker disabled in development mode');
-}
+  } catch (error) {
+    console.error('❌ Update Service failed:', error);
+  }
+});
 
 const container = document.getElementById('root');
 if (!container) {

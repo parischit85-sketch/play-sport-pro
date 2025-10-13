@@ -61,12 +61,23 @@ const FROM_NAME = 'Play-Sport.pro';
 const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || '';
 const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '';
 const WEB_PUSH_ENABLED = !!(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY);
+
+console.log('🔧 [Web Push Config]', {
+  publicKeyPresent: !!VAPID_PUBLIC_KEY,
+  privateKeyPresent: !!VAPID_PRIVATE_KEY,
+  enabled: WEB_PUSH_ENABLED,
+  publicKeyPreview: VAPID_PUBLIC_KEY ? `${VAPID_PUBLIC_KEY.substring(0, 20)}...` : 'MISSING',
+});
+
 if (WEB_PUSH_ENABLED) {
   try {
     webpush.setVapidDetails('mailto:support@play-sport.pro', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+    console.log('✅ Web Push VAPID configured successfully');
   } catch (e) {
     console.warn('⚠️ Web Push VAPID configuration failed:', e?.message || e);
   }
+} else {
+  console.warn('⚠️ Web Push disabled: VAPID keys not found in environment');
 }
 
 // =============================================
@@ -147,18 +158,34 @@ async function sendEmailNotification(player, club, status) {
 // HELPER: invio push (Web Push)
 // =============================================
 async function sendPushNotificationToUser(userId, notification) {
+  console.log('📱 [sendPushNotificationToUser] Starting...', {
+    userId,
+    notificationTitle: notification?.title,
+    webPushEnabled: WEB_PUSH_ENABLED,
+    vapidConfigured: !!(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY),
+  });
+
   if (!WEB_PUSH_ENABLED) {
-    throw new Error('Servizio Push non configurato (VAPID mancante)');
+    console.error('❌ [Push] VAPID keys not configured!', {
+      publicKeyPresent: !!VAPID_PUBLIC_KEY,
+      privateKeyPresent: !!VAPID_PRIVATE_KEY,
+      envVarsList: Object.keys(process.env).filter(k => k.includes('VAPID')),
+    });
+    throw new Error('Servizio Push non configurato (VAPID mancante) [push-service-unconfigured]');
   }
 
   // Recupera tutte le sottoscrizioni da Firestore (stesso schema usato nelle Netlify Functions)
+  console.log('🔍 [Push] Querying subscriptions for userId:', userId);
   const subsSnap = await db
     .collection('pushSubscriptions')
     .where('userId', '==', userId)
     .get();
 
+  console.log('📊 [Push] Subscriptions found:', subsSnap.size);
+
   if (subsSnap.empty) {
-    throw new Error('Nessuna sottoscrizione push trovata per questo utente');
+    console.warn('⚠️ [Push] No subscriptions found for user:', userId);
+    throw new Error('Nessuna sottoscrizione push trovata per questo utente [push-no-subscription]');
   }
 
   const payload = JSON.stringify(notification);
@@ -201,8 +228,8 @@ export const sendBulkCertificateNotifications = onCall(
     region: 'us-central1',
     memory: '256MiB',
     timeoutSeconds: 300,
-  // secrets necessari per i provider email. Le VAPID vengono lette da env se configurate
-  secrets: ['EMAIL_USER', 'EMAIL_PASSWORD', 'FROM_EMAIL'],
+    // Secrets necessari per email e push notifications
+    secrets: ['EMAIL_USER', 'EMAIL_PASSWORD', 'FROM_EMAIL', 'VAPID_PUBLIC_KEY', 'VAPID_PRIVATE_KEY'],
   },
   async (request) => {
     const { data, auth } = request;
