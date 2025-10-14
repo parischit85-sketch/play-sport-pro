@@ -109,6 +109,7 @@ self.addEventListener('fetch', (event) => {
     'www.googletagmanager.com',
     'www.google-analytics.com',
     'accounts.google.com',
+    'api.open-meteo.com',
   ];
 
   if (externalDomains.some((domain) => url.hostname.includes(domain))) {
