@@ -12,6 +12,7 @@ import { useClub } from '@contexts/ClubContext.jsx';
 
 // Nuovo componente per gestione campi avanzata
 import AdvancedCourtsManager from './AdvancedCourtsManager.jsx';
+import AdvancedCourtsManager_Mobile from './AdvancedCourtsManager_Mobile.jsx';
 
 // RulesEditor mantenuto per compatibilità legacy (se necessario)
 import RulesEditor from '@features/prenota/RulesEditor.jsx';
@@ -32,6 +33,17 @@ export default function Extra({
   const { cleanInvalidCourts, club, courts } = useClub();
   const [cloudMsg, setCloudMsg] = React.useState('');
   const navigate = useNavigate();
+
+  // Rileva se siamo su mobile (< 1024px) per usare il componente ottimizzato
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 1024);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Gli admin di club possono sempre accedere, anche senza clubMode attivato
   // Passa esplicitamente il clubId dalla URL alla funzione isClubAdmin
@@ -349,13 +361,22 @@ export default function Extra({
         </button>
       </div>
 
-      {/* Gestione Campi Avanzata - Solo per Admin */}
-      <AdvancedCourtsManager
-        courts={clubMode ? courts : state?.courts || []}
-        onChange={updateCourts}
-        T={T}
-        courtTypes={[...new Set(club?.courtTypes || ['Indoor', 'Outdoor', 'Covered'])]}
-      />
+      {/* Gestione Campi Avanzata - Responsive: Mobile o Desktop */}
+      {isMobile ? (
+        <AdvancedCourtsManager_Mobile
+          courts={clubMode ? courts : state?.courts || []}
+          onChange={updateCourts}
+          T={T}
+          courtTypes={[...new Set(club?.courtTypes || ['Indoor', 'Outdoor', 'Covered'])]}
+        />
+      ) : (
+        <AdvancedCourtsManager
+          courts={clubMode ? courts : state?.courts || []}
+          onChange={updateCourts}
+          T={T}
+          courtTypes={[...new Set(club?.courtTypes || ['Indoor', 'Outdoor', 'Covered'])]}
+        />
+      )}
 
       {/* Parametri prenotazioni + Regole tariffarie per-campo */}
       <div

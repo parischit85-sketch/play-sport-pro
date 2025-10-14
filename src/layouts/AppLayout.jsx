@@ -240,13 +240,15 @@ function AppLayoutInner() {
       const validClubId = clubId && !['default-club'].includes(clubId) ? clubId : effectiveClubId;
 
       if (validClubId) {
-        // Add "Home Circolo" tab for club-specific dashboard
-        baseNavigation.push({
-          id: 'club-dashboard',
-          label: 'Home Circolo',
-          path: `/club/${validClubId}/dashboard`,
-          public: true,
-        });
+        // Add "Home Circolo" tab for non-admin users only
+        if (!isCurrentClubAdmin) {
+          baseNavigation.push({
+            id: 'club-dashboard',
+            label: 'Home Circolo',
+            path: `/club/${validClubId}/dashboard`,
+            public: true,
+          });
+        }
 
         // Basic tabs for all users
         baseNavigation.push(
@@ -437,18 +439,6 @@ function AppLayoutInner() {
                 >
                   {club.name}
                 </div>
-                {/* Nascondi il bottone di uscita per gli admin club */}
-                {!isClubAdmin(clubId) && (
-                  <button
-                    onClick={() => {
-                      exitClub();
-                    }}
-                    className="text-sm px-2 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-md transition-colors"
-                    title="Esci dal circolo"
-                  >
-                    ✕
-                  </button>
-                )}
               </div>
             )}
             {/* Nascondi il ClubSwitcher quando non siamo in un club specifico */}
@@ -468,18 +458,6 @@ function AppLayoutInner() {
               >
                 <span>🛡️</span>
                 <span>Admin</span>
-              </button>
-            )}
-
-            {/* Logout Button - Solo per utenti autenticati */}
-            {user && (
-              <button
-                onClick={handleLogout}
-                className="hidden sm:flex items-center space-x-1 px-3 py-1.5 bg-gray-600 hover:bg-gray-700 text-white text-xs rounded-lg transition-colors"
-                title="Esci dall'account"
-              >
-                <span>🚪</span>
-                <span>Logout</span>
               </button>
             )}
 

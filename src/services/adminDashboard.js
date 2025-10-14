@@ -483,13 +483,16 @@ export async function loadAdminDashboardData(clubId) {
         return bookingDate === today;
       });
 
-      // console.log(`🔍 Raw bookings for today (${today}):`, todayBookingsDebug.length);
+      console.log(`🔍 Raw bookings for today (${today}):`, todayBookingsDebug.length);
       if (todayBookingsDebug.length > 0) {
-        // console.log(`🔍 Today bookings sample:`, todayBookingsDebug.slice(0, 3).map(b => ({
-        //   date: b.date,
-        //   time: b.time,
-        //   status: b.status
-        // })));
+        console.log(`🔍 Today bookings sample:`, todayBookingsDebug.map(b => ({
+          id: b.id.substring(0, 8),
+          date: b.date,
+          time: b.time,
+          type: b.type || b.bookingType,
+          status: b.status,
+          isLessonBooking: b.isLessonBooking
+        })));
       }
     }
 
@@ -554,12 +557,12 @@ export async function loadAdminDashboardData(clubId) {
 
     // Non mostrare prenotazioni fallback se non ci sono prenotazioni per oggi
     let displayTodayBookings = todayBookings; // Mostra SOLO le prenotazioni di oggi
-    let actualTodayCount = todayBookings.length + todayLessons.length; // ✅ Include anche le lezioni nell'utilizzo campi
+    let totalTodayCount = todayBookings.length + todayLessons.length; // ✅ Totale per utilizzo campi (prenotazioni + lezioni)
 
     if (todayBookings.length === 0 && todayLessons.length === 0) {
       // console.log(`📅 No bookings or lessons found for today (${today})`);
     }
-    // console.log(`📊 Today total count for court utilization: ${actualTodayCount} (${todayBookings.length} bookings + ${todayLessons.length} lessons)`);
+    // console.log(`📊 Today total count for court utilization: ${totalTodayCount} (${todayBookings.length} bookings + ${todayLessons.length} lessons)`);
 
     // Calcola prenotazioni per domani (supporta diversi formati data)
     const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -631,7 +634,7 @@ export async function loadAdminDashboardData(clubId) {
     // Utilizzo campi basato su prenotazioni + lezioni di oggi
     const courtUtilization =
       courts.length > 0
-        ? (actualTodayCount / (courts.length * 10)) * 100 // 10 slot per campo al giorno (include prenotazioni + lezioni)
+        ? (totalTodayCount / (courts.length * 10)) * 100 // 10 slot per campo al giorno (include prenotazioni + lezioni)
         : 0;
 
     const dashboardData = {
@@ -640,10 +643,10 @@ export async function loadAdminDashboardData(clubId) {
       availableInstructors,
       courts,
       stats: {
-        todayBookingsCount: actualTodayCount, // Usa il conteggio REALE per oggi (può essere 0)
-        tomorrowBookingsCount: tomorrowBookings.length, // Nuovo: conteggio prenotazioni domani
-        todayLessonsCount: todayLessons.length, // Nuovo: conteggio lezioni oggi
-        tomorrowLessonsCount: tomorrowLessons.length, // Nuovo: conteggio lezioni domani
+        todayBookingsCount: todayBookings.length, // ✅ SOLO prenotazioni campo oggi
+        tomorrowBookingsCount: tomorrowBookings.length, // ✅ SOLO prenotazioni campo domani
+        todayLessonsCount: todayLessons.length, // ✅ SOLO lezioni oggi
+        tomorrowLessonsCount: tomorrowLessons.length, // ✅ SOLO lezioni domani
         todayRevenue: Math.round(todayRevenue),
         weeklyBookings: weeklyBookings.length,
         memberCount: 0, // Sarà aggiornato dal ClubContext

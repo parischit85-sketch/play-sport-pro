@@ -10,6 +10,7 @@ import { themeTokens } from '@lib/theme.js';
 import { useClubSettings } from '@hooks/useClubSettings.js';
 import TimeSlotsSlidePanel from '@ui/TimeSlotsSlidePanel.jsx';
 import ExpiringCertificatesWidget from './components/ExpiringCertificatesWidget.jsx';
+import WeatherWidget from './components/WeatherWidget.jsx';
 
 // Import dei servizi per ottenere i dati reali
 import { loadAdminDashboardData } from '@services/adminDashboard.js';
@@ -813,39 +814,12 @@ const AdminClubDashboard = () => {
         <ExpiringCertificatesWidget clubId={clubId} T={T} />
       </div>
 
-      {/* Sezione maestri e azioni rapide */}
+      {/* Sezione maestri, meteo e info circolo */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <InstructorsCard />
 
-        {/* Azioni Rapide */}
-        <div className={`${T.cardBg} ${T.border} rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6`}>
-          <h3 className={`text-base sm:text-lg font-semibold ${T.text} mb-3 sm:mb-4`}>
-            Azioni Rapide
-          </h3>
-          <div className="space-y-3">
-            <button
-              onClick={() => navigate(`/club/${clubId}/admin/bookings`)}
-              className={`w-full ${T.btnPrimary} flex items-center justify-center space-x-2`}
-            >
-              <span>📅</span>
-              <span>Gestione Campi</span>
-            </button>
-            <button
-              onClick={() => navigate(`/club/${clubId}/players`)}
-              className={`w-full ${T.btnSecondary} flex items-center justify-center space-x-2`}
-            >
-              <span>👥</span>
-              <span>Gestione Giocatori</span>
-            </button>
-            <button
-              onClick={() => navigate(`/club/${clubId}/matches/create`)}
-              className={`w-full ${T.btnSecondary} flex items-center justify-center space-x-2`}
-            >
-              <span>🏆</span>
-              <span>Crea Partita</span>
-            </button>
-          </div>
-        </div>
+        {/* Meteo Widget */}
+        <WeatherWidget club={club} />
 
         {/* Informazioni Club */}
         <div className={`${T.cardBg} ${T.border} rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6`}>
@@ -858,7 +832,7 @@ const AdminClubDashboard = () => {
               <span className={`text-sm ${T.text}`}>{courts ? courts.length : 0} Campi</span>
             </div>
             <div className="flex items-center space-x-3">
-              <span className="text-gray-400">📍</span>
+              <span className="text-gray-400">�</span>
               <span className={`text-sm ${T.text}`}>
                 {club?.location?.city || 'Località non specificata'}
               </span>
@@ -871,6 +845,31 @@ const AdminClubDashboard = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Azioni Rapide */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <button
+          onClick={() => navigate(`/club/${clubId}/admin/bookings`)}
+          className={`${T.btnPrimary} flex items-center justify-center space-x-2 py-3`}
+        >
+          <span>📅</span>
+          <span>Gestione Campi</span>
+        </button>
+        <button
+          onClick={() => navigate(`/club/${clubId}/players`)}
+          className={`${T.btnSecondary} flex items-center justify-center space-x-2 py-3`}
+        >
+          <span>�</span>
+          <span>Gestione Giocatori</span>
+        </button>
+        <button
+          onClick={() => navigate(`/club/${clubId}/matches/create`)}
+          className={`${T.btnSecondary} flex items-center justify-center space-x-2 py-3`}
+        >
+          <span>🏆</span>
+          <span>Crea Partita</span>
+        </button>
       </div>
 
       {/* Slide-out Panel per Fasce Orarie */}

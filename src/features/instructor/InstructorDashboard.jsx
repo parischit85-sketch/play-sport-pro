@@ -20,13 +20,13 @@ import { it } from 'date-fns/locale';
 import Modal from '@ui/Modal.jsx';
 
 export default function InstructorDashboard() {
-  const { clubId, club, courts } = useClub();
+  const { clubId, club, courts, matches } = useClub();
   const { user } = useAuth();
   const [allBookings, setAllBookings] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('lessons'); // 'lessons', 'matches', 'schedule'
-  const [filterDate, setFilterDate] = useState('all'); // 'all', 'today', 'upcoming', 'past'
+  const [filterDate, setFilterDate] = useState('today'); // 'today', 'upcoming', 'past', 'all' - default to today
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showAddSlotModal, setShowAddSlotModal] = useState(false);
@@ -53,29 +53,107 @@ export default function InstructorDashboard() {
         setLoading(true);
         console.log('🎓 [InstructorDashboard] Loading data for instructor:', user.uid);
 
-        // Load bookings
+        // Load ALL club bookings to find lessons where this user is the instructor
+        // (lessons have instructorId but user is NOT bookedBy - the student is bookedBy)
         const { loadPublicBookings } = await import('@services/cloud-bookings.js');
-        const clubBookings = await loadPublicBookings(clubId);
+        const allClubBookings = await loadPublicBookings(clubId);
+        
+        // Filter lessons where this user is the instructor
+        const instructorLessons = allClubBookings.filter(
+          (b) => {
+            const isLesson = b.isLessonBooking || b.type === 'lesson' || b.bookingType === 'lezione';
+            const isInstructor = b.instructorId === user.uid;
+            return isLesson && isInstructor;
+          }
+        );
 
-        // Filter bookings where this user is the instructor OR a participant in matches
-        const instructorBookings = clubBookings.filter((booking) => {
-          // Lezioni dove è l'istruttore
-          const isInstructorInLesson = booking.instructorId === user.uid;
+        console.log('📚 [InstructorDashboard] Instructor lessons found:', instructorLessons.length);
 
-          // Partite dove è un partecipante
-          const isParticipantInMatch =
-            booking.type === 'match' &&
-            booking.participants?.some((p) => p.id === user.uid || p.uid === user.uid);
+        // Load user's bookings for matches (where user is a player/participant)
+        const { loadActiveUserBookings } = await import('@services/cloud-bookings.js');
+        const { getDoc, doc } = await import('firebase/firestore');
+        const { db } = await import('@services/firebase.js');
+        
+        // Get user profile for email and name
+        let userProfile = null;
+        try {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            userProfile = userDoc.data();
+          }
+        } catch (error) {
+          console.warn('⚠️ [InstructorDashboard] Could not load user profile:', error);
+        }
 
-          return isInstructorInLesson || isParticipantInMatch;
+        const userInfo = {
+          displayName: userProfile?.firstName && userProfile?.lastName 
+            ? `${userProfile.firstName} ${userProfile.lastName}` 
+            : user.displayName,
+          email: user.email || userProfile?.email,
+        };
+
+        // Load bookings where user is a player
+        const userBookings = await loadActiveUserBookings(user.uid, clubId, userInfo);
+
+        console.log('📚 [InstructorDashboard] User bookings (as player):', userBookings.length);
+        console.log('📚 [InstructorDashboard] Matches from ClubContext:', matches?.length || 0);
+
+        // Filter matches to include only those where the user is involved
+        const userMatches = (matches || []).filter(match => {
+          // Check if user is the one who booked
+          if (match.bookedBy === user.uid) return true;
+          
+          // Check if user is in players array
+          if (match.players && Array.isArray(match.players)) {
+            const isInPlayers = match.players.some(player => {
+              if (typeof player === 'string') return false; // Can't match string names without user name
+              return player?.id === user.uid || player?.uid === user.uid;
+            });
+            if (isInPlayers) return true;
+          }
+          
+          // Check if user is in participants array
+          if (match.participants && Array.isArray(match.participants)) {
+            const isInParticipants = match.participants.some(p => 
+              p?.id === user.uid || p?.uid === user.uid
+            );
+            if (isInParticipants) return true;
+          }
+          
+          // Check teamA and teamB
+          if (match.teamA && Array.isArray(match.teamA)) {
+            const isInTeamA = match.teamA.some(p => p?.id === user.uid || p?.uid === user.uid);
+            if (isInTeamA) return true;
+          }
+          
+          if (match.teamB && Array.isArray(match.teamB)) {
+            const isInTeamB = match.teamB.some(p => p?.id === user.uid || p?.uid === user.uid);
+            if (isInTeamB) return true;
+          }
+          
+          return false;
         });
 
-        console.log('📚 [InstructorDashboard] Found bookings:', {
-          total: clubBookings.length,
-          instructor: instructorBookings.length,
-        });
+        console.log('🏓 [InstructorDashboard] User matches found:', userMatches.length);
 
-        setAllBookings(instructorBookings);
+        // Combine all bookings:
+        // 1. Lessons where this user is the instructor
+        // 2. Bookings where user is a player (from userBookings)
+        // 3. Matches from matches collection where user is involved
+        const allBookingsData = [
+          ...instructorLessons,
+          ...userBookings,
+          ...userMatches,
+        ];
+
+        console.log('📚 [InstructorDashboard] Total combined bookings:', allBookingsData.length);
+        if (allBookingsData.length > 0) {
+          console.log('📚 [InstructorDashboard] Sample booking:', allBookingsData[0]);
+        }
+
+        // Don't filter here - let the useMemo do the filtering
+        // This allows more flexible filtering logic
+        setAllBookings(allBookingsData);
 
         // Load time slots
         const { getInstructorTimeSlots } = await import('@services/time-slots.js');
@@ -92,21 +170,112 @@ export default function InstructorDashboard() {
     };
 
     loadData();
-  }, [clubId, user?.uid]);
+  }, [clubId, user?.uid, matches]); // Re-run when matches change
 
   // Filter bookings by type (lessons vs matches)
   const { lessonBookings, matchBookings } = useMemo(() => {
+    console.log('🔍 [InstructorDashboard] Separating lessons and matches');
+    console.log('🔍 [InstructorDashboard] Total bookings:', allBookings.length);
+    
+    // Lessons: already filtered - only those where user is instructor
     const lessons = allBookings.filter(
-      (b) =>
-        b.instructorId === user?.uid &&
-        (b.isLessonBooking || b.type === 'lesson' || b.bookingType === 'lezione')
+      (b) => {
+        const isLesson = b.isLessonBooking || b.type === 'lesson' || b.bookingType === 'lezione';
+        return isLesson;
+      }
     );
-    const matches = allBookings.filter(
-      (b) =>
-        b.type === 'match' && b.participants?.some((p) => p.id === user?.uid || p.uid === user?.uid)
-    );
+    
+    console.log('📚 [InstructorDashboard] Found lessons:', lessons.length);
+    if (lessons.length > 0) {
+      console.log('📚 [InstructorDashboard] Sample lesson dates:', lessons.slice(0, 3).map(l => ({
+        id: l.id?.substring(0, 8),
+        date: l.date,
+        time: l.time,
+        instructorId: l.instructorId,
+      })));
+    }
+    
+    // Matches: everything that is NOT a lesson
+    const matches = allBookings.filter((b) => {
+      const isLesson = b.isLessonBooking || b.type === 'lesson' || b.bookingType === 'lezione';
+      return !isLesson;
+    });
+    
+    console.log('🏓 [InstructorDashboard] Found matches:', matches.length);
+    if (matches.length > 0) {
+      console.log('🏓 [InstructorDashboard] Sample match dates:', matches.slice(0, 3).map(m => ({
+        id: m.id?.substring(0, 8),
+        date: m.date,
+        time: m.time,
+      })));
+    }
+    
     return { lessonBookings: lessons, matchBookings: matches };
-  }, [allBookings, user?.uid]);
+  }, [allBookings]);
+
+  // Count future lessons only (for badge display)
+  const futureLessonsCount = useMemo(() => {
+    const now = new Date();
+    return lessonBookings.filter((b) => {
+      const date = b.date ? parseISO(b.date) : null;
+      return date && (isFuture(date) || isToday(date));
+    }).length;
+  }, [lessonBookings]);
+
+  // Count future + today matches only (for badge display)
+  const futureMatchesCount = useMemo(() => {
+    const now = new Date();
+    return matchBookings.filter((b) => {
+      const date = b.date ? parseISO(b.date) : null;
+      return date && (isFuture(date) || isToday(date));
+    }).length;
+  }, [matchBookings]);
+
+  // Count active time slots only (for badge display)
+  const activeTimeSlotsCount = useMemo(() => {
+    const now = new Date();
+    return timeSlots.filter((slot) => {
+      if (slot.selectedDates && slot.selectedDates.length > 0) {
+        return slot.selectedDates.some((dateStr) => {
+          const slotDate = new Date(dateStr);
+          return slotDate >= startOfDay(now);
+        });
+      }
+      if (slot.date) {
+        const slotDate = parseISO(slot.date);
+        return slotDate >= startOfDay(now);
+      }
+      return true;
+    }).length;
+  }, [timeSlots]);
+
+  // Count bookings by filter (for filter badges)
+  const filterCounts = useMemo(() => {
+    const bookings = activeTab === 'lessons' ? lessonBookings : matchBookings;
+    const now = new Date();
+
+    const todayCount = bookings.filter((b) => {
+      const date = b.date ? parseISO(b.date) : null;
+      return date && isToday(date);
+    }).length;
+
+    const upcomingCount = bookings.filter((b) => {
+      const date = b.date ? parseISO(b.date) : null;
+      return date && isFuture(date); // Solo future, non oggi
+    }).length;
+
+    const pastCount = bookings.filter((b) => {
+      const date = b.date ? parseISO(b.date) : null;
+      return date && isPast(date) && !isToday(date);
+    }).length;
+
+    return {
+      all: bookings.length,
+      today: todayCount,
+      upcoming: upcomingCount,
+      past: pastCount,
+    };
+  }, [activeTab, lessonBookings, matchBookings]);
 
   // Apply date filter
   const filteredBookings = useMemo(() => {
@@ -114,17 +283,60 @@ export default function InstructorDashboard() {
     const now = new Date();
     const todayStart = startOfDay(now);
 
+    console.log('🔍 [InstructorDashboard] Filtering with:', {
+      filterDate,
+      totalBookings: bookings.length,
+      today: format(now, 'yyyy-MM-dd'),
+    });
+
     switch (filterDate) {
       case 'today':
-        return bookings.filter((b) => {
+        const todayBookings = bookings.filter((b) => {
+          // Log first 2 bookings to debug
+          if (bookings.indexOf(b) < 2) {
+            console.log('🔎 [InstructorDashboard] Checking booking:', {
+              id: b.id?.substring(0, 8),
+              rawDate: b.date,
+              dateType: typeof b.date,
+              hasDate: !!b.date,
+              allDateFields: {
+                date: b.date,
+                matchDate: b.matchDate,
+                startDate: b.startDate,
+              }
+            });
+          }
+          
           const date = b.date ? parseISO(b.date) : null;
-          return date && isToday(date);
+          const isDateToday = date && isToday(date);
+          if (isDateToday) {
+            console.log('✅ Today booking:', {
+              id: b.id?.substring(0, 8),
+              date: b.date,
+              parsedDate: date ? format(date, 'yyyy-MM-dd') : null,
+            });
+          }
+          return isDateToday;
         });
+        console.log('📅 Today bookings found:', todayBookings.length);
+        return todayBookings;
+        
       case 'upcoming':
-        return bookings.filter((b) => {
+        const upcomingBookings = bookings.filter((b) => {
           const date = b.date ? parseISO(b.date) : null;
-          return date && (isFuture(date) || isToday(date));
+          const isDateUpcoming = date && isFuture(date); // Solo future, non oggi
+          if (isDateUpcoming) {
+            console.log('✅ Upcoming booking:', {
+              id: b.id?.substring(0, 8),
+              date: b.date,
+              parsedDate: date ? format(date, 'yyyy-MM-dd') : null,
+            });
+          }
+          return isDateUpcoming;
         });
+        console.log('📅 Upcoming bookings found:', upcomingBookings.length);
+        return upcomingBookings;
+        
       case 'past':
         return bookings.filter((b) => {
           const date = b.date ? parseISO(b.date) : null;
@@ -281,24 +493,40 @@ export default function InstructorDashboard() {
   // Stats for dashboard
   const stats = useMemo(() => {
     const now = new Date();
-    const todayBookings = allBookings.filter((b) => {
+    
+    // Today lessons (where user is instructor)
+    const todayLessons = lessonBookings.filter((b) => {
       const date = b.date ? parseISO(b.date) : null;
       return date && isToday(date);
-    });
-    const upcomingBookings = allBookings.filter((b) => {
+    }).length;
+    
+    // Today matches (where user is player)
+    const todayMatches = matchBookings.filter((b) => {
+      const date = b.date ? parseISO(b.date) : null;
+      return date && isToday(date);
+    }).length;
+    
+    // Upcoming lessons (where user is instructor)
+    const upcomingLessons = lessonBookings.filter((b) => {
       const date = b.date ? parseISO(b.date) : null;
       return date && isFuture(date);
-    });
+    }).length;
+    
+    // Upcoming matches (where user is player)
+    const upcomingMatches = matchBookings.filter((b) => {
+      const date = b.date ? parseISO(b.date) : null;
+      return date && isFuture(date);
+    }).length;
 
     return {
-      todayLessons: todayBookings.filter((b) => b.instructorId === user?.uid).length,
-      todayMatches: todayBookings.filter((b) => b.type === 'match').length,
-      upcomingLessons: upcomingBookings.filter((b) => b.instructorId === user?.uid).length,
-      upcomingMatches: upcomingBookings.filter((b) => b.type === 'match').length,
-      totalSlots: timeSlots.length,
+      todayLessons,
+      todayMatches,
+      upcomingLessons,
+      upcomingMatches,
+      totalSlots: activeTimeSlotsCount,
       activeSlots: timeSlots.filter((s) => s.available).length,
     };
-  }, [allBookings, timeSlots, user?.uid]);
+  }, [lessonBookings, matchBookings, activeTimeSlotsCount, timeSlots]);
 
   if (loading) {
     return (
@@ -317,149 +545,117 @@ export default function InstructorDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-indigo-900/20 dark:to-purple-900/20 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="relative overflow-hidden bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl border border-indigo-100/50 dark:border-indigo-700/30 shadow-xl shadow-indigo-100/50 dark:shadow-indigo-900/30">
-          {/* Decorative gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-pink-500/5 dark:from-indigo-500/10 dark:via-purple-500/10 dark:to-pink-500/10"></div>
-
-          <div className="relative p-6 sm:p-8">
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
-                    <svg
-                      className="w-7 h-7 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-                      Dashboard Istruttore
-                    </h1>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {club?.name || 'Caricamento...'}
-                    </p>
-                  </div>
-                </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/30 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900 p-3 sm:p-4 lg:p-6 pb-20 sm:pb-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+        {/* Header Compatto */}
+        <div className="relative overflow-hidden bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-800">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5 dark:from-indigo-500/10 dark:via-purple-500/10 dark:to-pink-500/10"></div>
+          
+          <div className="relative p-4 sm:p-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 sm:p-3 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-md">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+                  Dashboard Istruttore
+                </h1>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
+                  {club?.name || 'Caricamento...'}
+                </p>
               </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-              <StatCard
-                title="Lezioni Oggi"
-                value={stats.todayLessons}
-                icon="📚"
-                color="from-indigo-500 to-blue-600"
-              />
-              <StatCard
-                title="Partite Oggi"
-                value={stats.todayMatches}
-                icon="🎾"
-                color="from-emerald-500 to-teal-600"
-              />
-              <StatCard
-                title="Prossime Lezioni"
-                value={stats.upcomingLessons}
-                icon="📅"
-                color="from-purple-500 to-pink-600"
-              />
-              <StatCard
-                title="Prossime Partite"
-                value={stats.upcomingMatches}
-                icon="🏆"
-                color="from-amber-500 to-orange-600"
-              />
-              <StatCard
-                title="Fasce Orarie"
-                value={stats.totalSlots}
-                icon="⏰"
-                color="from-violet-500 to-purple-600"
-              />
-              <StatCard
-                title="Slot Attivi"
-                value={stats.activeSlots}
-                icon="✅"
-                color="from-teal-500 to-cyan-600"
-              />
+            {/* Stats Grid Ottimizzato */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 mt-4 sm:mt-6">
+              <StatCard title="Lezioni Oggi" value={stats.todayLessons} icon="📚" color="from-indigo-500 to-blue-600" />
+              <StatCard title="Partite Oggi" value={stats.todayMatches} icon="🎾" color="from-emerald-500 to-teal-600" />
+              <StatCard title="Prossime Lezioni" value={stats.upcomingLessons} icon="📅" color="from-purple-500 to-pink-600" />
+              <StatCard title="Prossime Partite" value={stats.upcomingMatches} icon="🏆" color="from-amber-500 to-orange-600" />
+              <StatCard title="Fasce Attive" value={stats.totalSlots} icon="⏰" color="from-violet-500 to-purple-600" />
+              <StatCard title="Slot Disponibili" value={stats.activeSlots} icon="✅" color="from-teal-500 to-cyan-600" />
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-2xl border border-indigo-100/50 dark:border-indigo-700/30 shadow-xl shadow-indigo-100/50 dark:shadow-indigo-900/30 overflow-hidden">
-          {/* Tabs */}
-          <div className="border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/20 px-4 sm:px-6 py-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: 'lessons', label: 'Le Mie Lezioni', count: lessonBookings.length },
-                  { key: 'matches', label: 'Le Mie Partite', count: matchBookings.length },
-                  { key: 'schedule', label: 'Gestisci Orari', count: timeSlots.length },
-                ].map(({ key, label, count }) => (
-                  <button
-                    key={key}
-                    onClick={() => setActiveTab(key)}
-                    className={`relative px-4 sm:px-6 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
-                      activeTab === key
-                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50'
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
-                    }`}
-                  >
-                    <span className="flex items-center gap-2">
-                      {label}
-                      {count > 0 && (
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                            activeTab === key
-                              ? 'bg-white/20 text-white'
-                              : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
-                          }`}
-                        >
-                          {count}
-                        </span>
-                      )}
-                    </span>
-                  </button>
-                ))}
-              </div>
+        {/* Main Content - Design Rinnovato */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-800 overflow-hidden">
+          {/* Tabs - In Unica Riga con Scroll Orizzontale */}
+          <div className="border-b border-gray-200 dark:border-gray-800 bg-gradient-to-b from-gray-50/50 to-transparent dark:from-gray-800/30 px-3 sm:px-4 py-3">
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+              {[
+                { key: 'lessons', label: 'Lezioni', count: futureLessonsCount },
+                { key: 'matches', label: 'Partite', count: futureMatchesCount },
+                { key: 'schedule', label: 'Orari', count: activeTimeSlotsCount },
+              ].map(({ key, label, count }) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`relative px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
+                    activeTab === key
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                      : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5 sm:gap-2">
+                    {label}
+                    {count > 0 && (
+                      <span className={`px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
+                        activeTab === key
+                          ? 'bg-white/20 text-white'
+                          : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
+                      }`}>
+                        {count}
+                      </span>
+                    )}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Content */}
-          <div className="p-4 sm:p-6">
-            {/* Filters (for lessons and matches tabs) */}
+          <div className="p-3 sm:p-4 lg:p-6">
+            {/* Filters (for lessons and matches tabs) - Ottimizzati */}
             {activeTab !== 'schedule' && (
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="flex gap-1.5 sm:gap-2 mb-4 sm:mb-6">
                 {[
-                  { key: 'all', label: 'Tutte' },
                   { key: 'today', label: 'Oggi' },
                   { key: 'upcoming', label: 'Prossime' },
                   { key: 'past', label: 'Passate' },
-                ].map(({ key, label }) => (
-                  <button
-                    key={key}
-                    onClick={() => setFilterDate(key)}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
-                      filterDate === key
-                        ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-200 dark:shadow-indigo-900/50'
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-600 border border-gray-200 dark:border-gray-600'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
+                  { key: 'all', label: 'Tutte' },
+                ].map(({ key, label }) => {
+                  const isActiveFilter = key === 'today' || key === 'upcoming';
+                  
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setFilterDate(key)}
+                      className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
+                        filterDate === key
+                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                          : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                      }`}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        {label}
+                        {filterCounts[key] > 0 && (
+                          <span className={`px-1.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
+                            filterDate === key
+                              ? 'bg-white/20 text-white'
+                              : isActiveFilter
+                              ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
+                              : 'bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                          }`}>
+                            {filterCounts[key]}
+                          </span>
+                        )}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             )}
             {activeTab === 'schedule' ? (
@@ -571,25 +767,23 @@ export default function InstructorDashboard() {
 // Stat Card Component
 function StatCard({ title, value, icon, color }) {
   return (
-    <div className="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
-      <div
-        className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 transition-opacity duration-300`}
-      ></div>
+    <div className="group relative overflow-hidden bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-3 sm:p-4 hover:shadow-md hover:border-gray-300 dark:hover:border-gray-700 transition-all duration-200">
+      {/* Gradient Overlay on Hover */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-[0.03] dark:group-hover:opacity-[0.08] transition-opacity duration-200`}></div>
+      
       <div className="relative">
+        {/* Icon & Badge */}
         <div className="flex items-center justify-between mb-2">
-          <span className="text-2xl">{icon}</span>
-          <div
-            className={`w-10 h-10 rounded-lg bg-gradient-to-br ${color} opacity-10 dark:opacity-20 flex items-center justify-center`}
-          >
-            <span className="text-xl">{icon}</span>
-          </div>
+          <span className="text-xl sm:text-2xl">{icon}</span>
         </div>
-        <div
-          className={`text-2xl sm:text-3xl font-bold bg-gradient-to-r ${color} bg-clip-text text-transparent mb-1`}
-        >
+        
+        {/* Value */}
+        <div className={`text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r ${color} bg-clip-text text-transparent mb-0.5 sm:mb-1`}>
           {value}
         </div>
-        <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 font-medium">
+        
+        {/* Title */}
+        <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 font-medium leading-tight">
           {title}
         </div>
       </div>
@@ -633,7 +827,7 @@ function BookingsList({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 pb-4">
       {bookings.map((booking) => (
         <button
           key={booking.id}
@@ -715,7 +909,7 @@ function BookingsList({
                     Tipo: <span className="font-medium">{booking.matchType}</span>
                   </div>
                 )}
-                {booking.participants && (
+                {booking.participants && Array.isArray(booking.participants) && booking.participants.length > 0 && (
                   <div className="text-sm text-gray-700 dark:text-gray-300">
                     Giocatori:{' '}
                     <span className="font-medium">

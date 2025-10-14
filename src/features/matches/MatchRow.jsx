@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { DEFAULT_RATING } from '@lib/ids.js';
 import { surnameOf } from '@lib/names.js';
-import { computeFromSets, rpaFactor } from '@lib/rpa.js';
+import { rpaFactor } from '@lib/rpa.js';
 
 export default function MatchRow({ m, playersById, onShowFormula, onDelete, T }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
   // DEBUG MIRATO: MatchRow rendering
   // console.log('🎾 MATCHROW RENDER:', {
   //   matchId: m?.id,
@@ -46,8 +48,6 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
       </div>
     );
   }
-
-  const [isExpanded, setIsExpanded] = useState(false);
 
   try {
     const nameOf = (id) => playersById?.[id]?.name ?? id;

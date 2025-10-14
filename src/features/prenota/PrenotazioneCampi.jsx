@@ -6,6 +6,7 @@ import { useAuth } from '@contexts/AuthContext.jsx';
 import Section from '@ui/Section.jsx';
 import Modal from '@ui/Modal.jsx';
 import ZoomableGrid from '@ui/ZoomableGrid.jsx';
+import MobileBookingView from './MobileBookingView.jsx';
 import { euro, euro2 } from '@lib/format.js';
 import { sameDay, floorToSlot, addMinutes, overlaps } from '@lib/date.js';
 import { computePrice, getRateInfo, isCourtBookableAt } from '@lib/pricing.js';
@@ -403,10 +404,14 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   const [dragOverSlot, setDragOverSlot] = useState(null);
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 1024);
 
-  // Update isDesktop on resize
+  // Mobile detection for booking view - using same breakpoint as desktop for consistency
+  const [isMobileView, setIsMobileView] = useState(() => window.innerWidth < 1024);
+
+  // Update isDesktop and isMobileView on resize
   useEffect(() => {
     const handleResize = () => {
       setIsDesktop(window.innerWidth >= 1024);
+      setIsMobileView(window.innerWidth < 1024);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -982,7 +987,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       });
       return (
         <div
-          className="relative w-full h-9 rounded-lg ring-1 text-[11px] font-medium bg-gray-200 dark:bg-gray-800 opacity-50 cursor-not-allowed border-dashed border-2 border-gray-300 dark:border-gray-700 flex items-center justify-center"
+          className={`relative w-full rounded-lg ring-1 text-[11px] sm:text-xs font-medium bg-gray-200 dark:bg-gray-800 opacity-50 cursor-not-allowed border-dashed border-2 border-gray-300 dark:border-gray-700 flex items-center justify-center ${
+            isMobileView ? 'h-14' : 'h-9'
+          }`}
           title="Fuori fascia oraria per questo campo"
         >
           <span className="absolute inset-0 grid place-items-center text-[11px] opacity-80">
@@ -1019,7 +1026,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
             console.log('🎾 Click slot libero!', { courtId, time: t });
             openCreate(courtId, t);
           }}
-          className={`relative w-full h-9 rounded-lg ring-1 text-[11px] font-medium transition-all duration-200 ${
+          className={`relative w-full rounded-lg ring-1 text-[11px] sm:text-xs font-medium transition-all duration-200 ${
+            isMobileView ? 'h-14 text-sm' : 'h-9'
+          } ${
             isDragTarget
               ? 'ring-2 ring-blue-500 ring-offset-1 scale-105'
               : isDragIncompatible
@@ -1358,37 +1367,37 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       ) : (
         <>
           {/* Header principale con filtri e navigazione affiancati */}
-          <div className="flex flex-col lg:flex-row gap-3 mb-4">
+          <div className="flex flex-col lg:flex-row gap-2 lg:gap-3 mb-3 lg:mb-4">
             {/* Filtri per tipologia campo - a sinistra */}
-            <div className={`flex-1 ${T.cardBg} ${T.border} p-2 rounded-xl shadow-lg`}>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm font-semibold">🏓</span>
-                <span className="text-sm font-medium">Filtra per tipologia campo</span>
+            <div className={`flex-1 ${T.cardBg} ${T.border} p-2 lg:p-3 rounded-lg lg:rounded-xl shadow-lg`}>
+              <div className={`flex items-center gap-2 ${isMobileView ? 'mb-1.5' : 'mb-2'}`}>
+                <span className={`${isMobileView ? 'text-xs' : 'text-sm'} font-semibold`}>🏓</span>
+                <span className={`${isMobileView ? 'text-xs' : 'text-sm'} font-medium`}>Filtra per tipologia campo</span>
               </div>
               <div className="flex flex-wrap gap-1">
                 <button
                   type="button"
                   onClick={() => setActiveCourtFilter('all')}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  className={`${isMobileView ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm'} rounded-lg font-medium transition-all duration-200 ${
                     activeCourtFilter === 'all'
                       ? 'bg-blue-500 text-white shadow-lg'
                       : `${T.btnGhost} hover:bg-blue-50 dark:hover:bg-blue-900/20`
                   }`}
                 >
-                  Tutti ({sortedCourts.length})
+                  Tutti {!isMobileView && `(${sortedCourts.length})`}
                 </button>
                 {availableCourtTypes.map((type) => (
                   <button
                     key={type}
                     type="button"
                     onClick={() => setActiveCourtFilter(type)}
-                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`${isMobileView ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm'} rounded-lg font-medium transition-all duration-200 ${
                       activeCourtFilter === type
                         ? 'bg-blue-500 text-white shadow-lg'
                         : `${T.btnGhost} hover:bg-blue-50 dark:hover:bg-blue-900/20`
                     }`}
                   >
-                    {type} ({courtTypeCounts[type]})
+                    {type} {!isMobileView && `(${courtTypeCounts[type]})`}
                   </button>
                 ))}
               </div>
@@ -1410,12 +1419,12 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
             </div>
 
             {/* Header moderno con navigazione integrata - a destra */}
-            <div className={`flex-1 ${T.cardBg} ${T.border} p-3 rounded-xl shadow-lg`}>
+            <div className={`flex-1 ${T.cardBg} ${T.border} ${isMobileView ? 'p-2' : 'p-3'} rounded-lg lg:rounded-xl shadow-lg`}>
               {/* Navigazione date centrata con frecce grandi */}
-              <div className="flex items-center justify-center gap-6">
+              <div className="flex items-center justify-center gap-4 lg:gap-6">
                 <button
                   type="button"
-                  className={`w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-2xl font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
+                  className={`${isMobileView ? 'w-10 h-10 text-xl' : 'w-12 h-12 text-2xl'} rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
                   onClick={() => goOffset(-1)}
                   title="Giorno precedente"
                 >
@@ -1425,7 +1434,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                 <button
                   type="button"
                   onClick={() => setShowDatePicker(true)}
-                  className={`text-2xl sm:text-3xl font-bold cursor-pointer hover:scale-105 transition-transform bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent dark:from-emerald-400 dark:to-lime-400 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-center`}
+                  className={`${isMobileView ? 'text-lg' : 'text-2xl sm:text-3xl'} font-bold cursor-pointer hover:scale-105 transition-transform bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent dark:from-emerald-400 dark:to-lime-400 ${isMobileView ? 'px-2 py-1' : 'px-3 sm:px-4 py-2'} rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-center`}
                   title="Clicca per aprire calendario"
                 >
                   {/* Versione mobile: formato compatto */}
@@ -1436,7 +1445,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
                 <button
                   type="button"
-                  className={`w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-2xl font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
+                  className={`${isMobileView ? 'w-10 h-10 text-xl' : 'w-12 h-12 text-2xl'} rounded-full bg-blue-500 hover:bg-blue-600 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
                   onClick={() => goOffset(1)}
                   title="Giorno successivo"
                 >
@@ -1446,78 +1455,90 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
             </div>
           </div>
 
-          {/* Header campi sticky */}
-          <div className="sticky top-16 z-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm -mx-4 px-4 pb-2">
-            <div className="relative w-full" style={{ minHeight: '70px' }}>
-              <div className="w-full overflow-x-auto" style={{ touchAction: 'auto' }}>
-                <div
-                  style={{
-                    transform: 'none',
-                    transformOrigin: 'left top',
-                    transition: 'transform 0.2s ease-out',
-                    minWidth: '100%',
-                    minHeight: '100%',
-                  }}
-                >
+          {/* Header campi sticky - Solo Desktop */}
+          {!isMobileView && (
+            <div className="sticky top-16 z-10 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm -mx-4 px-4 pb-2">
+              <div className="relative w-full" style={{ minHeight: '70px' }}>
+                <div className="w-full overflow-x-auto" style={{ touchAction: 'auto' }}>
                   <div
-                    className="min-w-[720px] grid gap-2"
-                    style={{ gridTemplateColumns: `repeat(${filteredCourts.length}, 1fr)` }}
+                    style={{
+                      transform: 'none',
+                      transformOrigin: 'left top',
+                      transition: 'transform 0.2s ease-out',
+                      minWidth: '100%',
+                      minHeight: '100%',
+                    }}
                   >
-                    {/* Header campi */}
-                    {filteredCourts.map((c, idx) => (
-                      <div
-                        key={`court-header-${c.id}-${idx}`}
-                        className={`px-2 py-3 text-base font-bold text-center rounded-xl shadow-md ${T.cardBg} ${T.border}`}
-                      >
-                        <span className="inline-flex items-center gap-2">
-                          <span
-                            className={`w-7 h-7 rounded-full bg-blue-400 dark:bg-emerald-400 text-white flex items-center justify-center font-bold shadow`}
-                          >
-                            {c.name[0]}
+                    <div
+                      className="min-w-[720px] grid gap-2"
+                      style={{ gridTemplateColumns: `repeat(${filteredCourts.length}, 1fr)` }}
+                    >
+                      {/* Header campi */}
+                      {filteredCourts.map((c, idx) => (
+                        <div
+                          key={`court-header-${c.id}-${idx}`}
+                          className={`px-2 py-3 text-base font-bold text-center rounded-xl shadow-md ${T.cardBg} ${T.border}`}
+                        >
+                          <span className="inline-flex items-center gap-2">
+                            <span
+                              className={`w-7 h-7 rounded-full bg-blue-400 dark:bg-emerald-400 text-white flex items-center justify-center font-bold shadow`}
+                            >
+                              {c.name[0]}
+                            </span>
+                            <div className="flex flex-col items-start">
+                              <span>{c.name}</span>
+                              {form.start && hasPromoSlot(c.id, form.start) && (
+                                <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-black px-2 py-0.5 rounded-full font-medium">
+                                  🏷️ Promo
+                                </span>
+                              )}
+                              {c.hasHeating && (
+                                <span className="text-xs text-orange-500 dark:text-orange-400 font-medium">
+                                  🔥 Riscaldato
+                                </span>
+                              )}
+                            </div>
                           </span>
-                          <div className="flex flex-col items-start">
-                            <span>{c.name}</span>
-                            {form.start && hasPromoSlot(c.id, form.start) && (
-                              <span className="text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-black px-2 py-0.5 rounded-full font-medium">
-                                🏷️ Promo
-                              </span>
-                            )}
-                            {c.hasHeating && (
-                              <span className="text-xs text-orange-500 dark:text-orange-400 font-medium">
-                                🔥 Riscaldato
-                              </span>
-                            )}
-                          </div>
-                        </span>
-                      </div>
-                    ))}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Griglia principale - sempre visibile anche su mobile con zoom */}
-          <ZoomableGrid T={T} className="pb-4">
-            <div
-              className="min-w-[720px] grid gap-2"
-              style={{ gridTemplateColumns: `repeat(${filteredCourts.length}, 1fr)` }}
-            >
-              {/* Celle prenotazione */}
-              {timeSlots.map((t, r) => (
-                <React.Fragment key={t.getTime()}>
-                  {filteredCourts.map((c, courtIdx) => (
-                    <div
-                      key={`cell-${c.id}-${t.getTime()}-${courtIdx}`}
-                      className={`px-0.5 py-0.5 ${T.cardBg} ${T.border} rounded-lg`}
-                    >
-                      {renderCell(c.id, t)}
-                    </div>
-                  ))}
-                </React.Fragment>
-              ))}
-            </div>
-          </ZoomableGrid>
+          {/* Griglia principale - Desktop con zoom, Mobile con timeline verticale */}
+          {isMobileView ? (
+            <MobileBookingView
+              filteredCourts={filteredCourts}
+              timeSlots={timeSlots}
+              renderCell={renderCell}
+              currentDate={day}
+              T={T}
+            />
+          ) : (
+            <ZoomableGrid T={T} className="pb-4">
+              <div
+                className="min-w-[720px] grid gap-2"
+                style={{ gridTemplateColumns: `repeat(${filteredCourts.length}, 1fr)` }}
+              >
+                {/* Celle prenotazione */}
+                {timeSlots.map((t, r) => (
+                  <React.Fragment key={t.getTime()}>
+                    {filteredCourts.map((c, courtIdx) => (
+                      <div
+                        key={`cell-${c.id}-${t.getTime()}-${courtIdx}`}
+                        className={`px-0.5 py-0.5 ${T.cardBg} ${T.border} rounded-lg`}
+                      >
+                        {renderCell(c.id, t)}
+                      </div>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </div>
+            </ZoomableGrid>
+          )}
 
           {/* Modal glassmorphism per prenotazione - FUTURISTIC DESIGN */}
           <Modal

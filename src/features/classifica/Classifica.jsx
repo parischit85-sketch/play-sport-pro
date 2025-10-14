@@ -472,15 +472,15 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
             </div>
 
             <div className="overflow-x-auto mb-6">
-              <table className="min-w-full text-sm">
+              <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left border-b border-white/20 dark:border-gray-600/30 text-gray-600 dark:text-gray-300">
-                    <th className="py-3 pr-3 font-semibold">#</th>
-                    <th className="py-3 pr-3 font-semibold">Giocatore</th>
-                    <th className="py-3 pr-3 font-semibold">Ranking</th>
-                    <th className="py-3 pr-3 font-semibold">Vittorie</th>
-                    <th className="py-3 pr-3 font-semibold">Sconfitte</th>
-                    <th className="py-3 pr-3 font-semibold">% Vittorie</th>
+                  <tr className="border-b border-white/20 dark:border-gray-600/30 text-gray-600 dark:text-gray-300">
+                    <th className="py-3 px-1 sm:px-2 font-semibold text-center">#</th>
+                    <th className="py-3 px-1 sm:px-2 font-semibold text-left">Giocatore</th>
+                    <th className="py-3 px-1 sm:px-2 font-semibold text-center">Ranking</th>
+                    <th className="py-3 px-1 sm:px-2 font-semibold text-center">Vittorie</th>
+                    <th className="py-3 px-1 sm:px-2 font-semibold text-center">Sconfitte</th>
+                    <th className="py-3 px-1 sm:px-2 font-semibold text-center">% Vitt.</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -489,28 +489,28 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                       key={p.id}
                       className="border-b border-white/10 dark:border-gray-700/20 hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-200"
                     >
-                      <td className="py-3 pr-3 font-semibold text-gray-800 dark:text-gray-200">
+                      <td className="py-3 px-1 sm:px-2 font-semibold text-gray-800 dark:text-gray-200 text-center">
                         {idx + 1}
                       </td>
-                      <td className="py-3 pr-3">
+                      <td className="py-3 px-1 sm:px-2 text-left">
                         <button
-                          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 hover:underline"
+                          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-left break-words"
                           onClick={() => onOpenStats(p.id)}
                         >
                           {p.name}
                         </button>
                       </td>
-                      <td className="py-3 pr-3 font-bold text-gray-900 dark:text-white">
-                        {p.rating.toFixed(2)}
+                      <td className="py-3 px-1 sm:px-2 font-bold text-gray-900 dark:text-white text-center">
+                        {Math.round(p.rating)}
                         <TrendArrow total={p.trend5Total} pos={p.trend5Pos} neg={p.trend5Neg} />
                       </td>
-                      <td className="py-3 pr-3 text-green-600 dark:text-green-400 font-semibold">
+                      <td className="py-3 px-1 sm:px-2 text-green-600 dark:text-green-400 font-semibold text-center">
                         {p.wins || 0}
                       </td>
-                      <td className="py-3 pr-3 text-red-600 dark:text-red-400 font-semibold">
+                      <td className="py-3 px-1 sm:px-2 text-red-600 dark:text-red-400 font-semibold text-center">
                         {p.losses || 0}
                       </td>
-                      <td className="py-3 pr-3 font-bold text-gray-800 dark:text-gray-200">
+                      <td className="py-3 px-1 sm:px-2 font-bold text-gray-800 dark:text-gray-200 text-center">
                         {p.winRate.toFixed(0)}%
                       </td>
                     </tr>

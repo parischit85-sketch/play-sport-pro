@@ -463,3 +463,13 @@ select.dark-select option {
   background-color: rgb(55, 65, 81) !important;
   color: rgb(229, 231, 235) !important;
 }
+
+/* ===== SCROLLBAR HIDE FOR MOBILE FILTERS ===== */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
