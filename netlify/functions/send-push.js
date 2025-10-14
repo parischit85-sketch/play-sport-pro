@@ -26,6 +26,43 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY
 );
 
+// =============================================
+// UTILITY FUNCTIONS
+// =============================================
+
+/**
+ * Invia una notifica con retry logic e exponential backoff
+ */
+async function sendWithRetry(subscription, payload, subscriptionId, maxRetries = 3) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`[send-push] Attempt ${attempt}/${maxRetries} for subscription: ${subscriptionId}`);
+      await webpush.sendNotification(subscription, payload);
+      return; // Success
+    } catch (error) {
+      lastError = error;
+      console.warn(`[send-push] Attempt ${attempt} failed for ${subscriptionId}:`, error.message);
+
+      // Non ritentare per errori permanenti
+      if (error.statusCode === 410 || error.statusCode === 404 || error.statusCode === 400) {
+        throw error;
+      }
+
+      // Se non è l'ultimo tentativo, aspetta prima di riprovare
+      if (attempt < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000); // Exponential backoff, max 10s
+        console.log(`[send-push] Waiting ${delay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+
+  // Tutti i tentativi falliti
+  throw lastError;
+}
+
 exports.handler = async (event, context) => {
   // Abilita CORS
   const headers = {
@@ -61,7 +98,11 @@ exports.handler = async (event, context) => {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: 'userId e notification sono richiesti' }),
+        body: JSON.stringify({ 
+          error: 'Parametri mancanti: userId e notification sono obbligatori',
+          code: 'MISSING_PARAMETERS',
+          resolution: 'Assicurati di passare userId e notification nel body della richiesta POST'
+        }),
       };
     }
 
@@ -80,8 +121,14 @@ exports.handler = async (event, context) => {
         statusCode: 404,
         headers,
         body: JSON.stringify({ 
-          error: 'Nessuna sottoscrizione trovata per questo utente',
-          hint: 'Assicurati di aver cliccato "Attiva Notifiche" prima di inviare il test'
+          error: 'Nessuna sottoscrizione push trovata per questo utente',
+          code: 'NO_SUBSCRIPTIONS',
+          resolution: 'L\'utente deve prima attivare le notifiche push cliccando "Attiva Notifiche" nell\'app',
+          troubleshooting: [
+            'Verifica che l\'utente abbia concesso i permessi per le notifiche nel browser',
+            'Controlla che il Service Worker sia registrato correttamente',
+            'Assicurati che la funzione save-push-subscription sia stata chiamata con successo'
+          ]
         }),
       };
     }
@@ -93,6 +140,7 @@ exports.handler = async (event, context) => {
     // Invia la notifica a tutte le sottoscrizioni dell'utente
     const sendPromises = [];
     const invalidSubscriptions = [];
+    const failedSubscriptions = [];
 
     subscriptionsSnapshot.forEach((doc) => {
       const subscriptionData = doc.data();
@@ -100,10 +148,19 @@ exports.handler = async (event, context) => {
 
       console.log('[send-push] Sending to subscription:', doc.id);
 
-      const sendPromise = webpush
-        .sendNotification(subscription, payload)
-        .then(() => {
+      const sendPromise = sendWithRetry(subscription, payload, doc.id)
+        .then(async () => {
           console.log('[send-push] Successfully sent to:', doc.id);
+          
+          // Aggiorna lastUsedAt per questa sottoscrizione
+          try {
+            await db.collection('pushSubscriptions').doc(doc.id).update({
+              lastUsedAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            });
+          } catch (updateError) {
+            console.warn('[send-push] Failed to update lastUsedAt for:', doc.id, updateError.message);
+          }
         })
         .catch((error) => {
           console.error('[send-push] Error sending to subscription:', doc.id, error.message);
@@ -112,6 +169,13 @@ exports.handler = async (event, context) => {
           if (error.statusCode === 410 || error.statusCode === 404) {
             console.log('[send-push] Marking subscription as invalid:', doc.id);
             invalidSubscriptions.push(doc.id);
+          } else {
+            // Altri errori: marca come fallita ma non eliminare
+            failedSubscriptions.push({
+              id: doc.id,
+              error: error.message,
+              statusCode: error.statusCode
+            });
           }
         });
 
@@ -134,8 +198,10 @@ exports.handler = async (event, context) => {
 
     const result = {
       success: true,
-      sent: subscriptionsSnapshot.size - invalidSubscriptions.length,
+      sent: subscriptionsSnapshot.size - invalidSubscriptions.length - failedSubscriptions.length,
       removed: invalidSubscriptions.length,
+      failed: failedSubscriptions.length,
+      failedDetails: failedSubscriptions.length > 0 ? failedSubscriptions : undefined,
     };
 
     console.log('[send-push] Request completed successfully:', result);
@@ -148,13 +214,27 @@ exports.handler = async (event, context) => {
   } catch (error) {
     console.error('[send-push] Fatal error:', error);
     console.error('[send-push] Error stack:', error.stack);
+    
+    let errorCode = 'UNKNOWN_ERROR';
+    let resolution = 'Contatta il supporto tecnico con i dettagli dell\'errore';
+    
+    if (error.message?.includes('VAPID')) {
+      errorCode = 'VAPID_CONFIG_ERROR';
+      resolution = 'Verifica che le chiavi VAPID siano configurate correttamente nelle variabili d\'ambiente';
+    } else if (error.message?.includes('Firebase')) {
+      errorCode = 'FIREBASE_ERROR';
+      resolution = 'Problema di connessione a Firestore. Verifica le credenziali Firebase';
+    }
+    
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
         error: error.message,
+        code: errorCode,
+        resolution: resolution,
         type: error.constructor.name,
-        details: 'Check function logs for more information'
+        details: 'Controlla i log della funzione per maggiori informazioni'
       }),
     };
   }

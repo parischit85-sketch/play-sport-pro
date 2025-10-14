@@ -354,6 +354,27 @@ const ExpandableCourtCard = ({
                 </select>
               </div>
             </div>
+
+            {/* Toggle Riscaldamento */}
+            <div className="mt-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={court.hasHeating || false}
+                  onChange={toggleHeating}
+                  className="w-5 h-5 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 dark:focus:ring-orange-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                />
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">🔥</span>
+                  <div>
+                    <div className="font-medium text-sm">Riscaldamento Disponibile</div>
+                    <div className={`text-xs ${T.subtext}`}>
+                      Abilita il riscaldamento per questo campo
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </div>
           </div>
 
           {/* Gestione fasce orarie */}

@@ -15,9 +15,20 @@ export default defineConfig({
       'firebase/auth',
       'firebase/firestore',
     ],
+    force: true, // Force re-optimization on restart
   },
   resolve: {
-    dedupe: ['react', 'react-dom'], // Force single instance of React
+    dedupe: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      // Ensure single firebase instance to avoid Firestore type mismatches
+      'firebase',
+      'firebase/app',
+      'firebase/auth',
+      'firebase/firestore',
+      'firebase/storage',
+    ], // Force single instance
     alias: {
       '@app': path.resolve(__dirname, 'src/app'),
       '@features': path.resolve(__dirname, 'src/features'),
@@ -44,7 +55,7 @@ export default defineConfig({
       'Cross-Origin-Embedder-Policy': 'unsafe-none',
       // CSP for development - allows Firebase Cloud Functions
       'Content-Security-Policy':
-        "frame-src 'self' https://accounts.google.com https://m-padelweb.firebaseapp.com https://*.firebaseapp.com https://*.googleapis.com; default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://apis.google.com https://*.firebaseapp.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://res.cloudinary.com https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.cloudfunctions.net https://res.cloudinary.com https://www.google-analytics.com https://www.google.com https://nominatim.openstreetmap.org wss://*.firebaseio.com ws://localhost:5173;",
+        "frame-src 'self' https://accounts.google.com https://m-padelweb.firebaseapp.com https://*.firebaseapp.com https://*.googleapis.com; default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://apis.google.com https://*.firebaseapp.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://res.cloudinary.com https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.cloudfunctions.net https://play-sport-pro-v2-2025.netlify.app https://res.cloudinary.com https://www.google-analytics.com https://www.google.com https://nominatim.openstreetmap.org wss://*.firebaseio.com ws://localhost:5173; worker-src 'self' blob:;",
     },
     cors: {
       origin: ['http://localhost:5173', 'https://*.firebaseapp.com', 'https://*.googleapis.com'],

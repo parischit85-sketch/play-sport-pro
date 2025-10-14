@@ -6,7 +6,15 @@ import { DEFAULT_RATING } from './ids.js';
 export function recompute(players, matches) {
   const map = new Map(
     players.map((p) => {
-      const start = Number(p.baseRating ?? p.startRating ?? p.rating ?? DEFAULT_RATING);
+      // 🎯 Usa rating corrente se disponibile, altrimenti baseRating/default
+      // tournamentData.currentRanking è il rating più aggiornato dal campionato
+      const start = Number(
+        p.tournamentData?.currentRanking ?? 
+        p.rating ?? 
+        p.baseRating ?? 
+        p.startRating ?? 
+        DEFAULT_RATING
+      );
       return [
         p.id,
         {
@@ -41,7 +49,18 @@ export function recompute(players, matches) {
       winner: rr.winner,
       sets: m.sets,
     });
-    const rec = { ...m, ...rr, ...res };
+    // 🎯 Salva i rating pre-match per visualizzarli correttamente in MatchRow
+    const rec = { 
+      ...m, 
+      ...rr, 
+      ...res,
+      preMatchRatings: {
+        ratingA1: a1?.rating ?? DEFAULT_RATING,
+        ratingA2: a2?.rating ?? DEFAULT_RATING,
+        ratingB1: b1?.rating ?? DEFAULT_RATING,
+        ratingB2: b2?.rating ?? DEFAULT_RATING,
+      }
+    };
     enriched.push(rec);
     const pushH = (id, d) => {
       if (!id) return;

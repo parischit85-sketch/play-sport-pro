@@ -1,0 +1,1683 @@
+{
+  "3sg14giw": {
+    "migratedAt": "2025-09-16T22:17:16.095Z",
+    "baseRating": 1000,
+    "clubName": "Sporting CAT",
+    "matches": 0,
+    "wins": 0,
+    "name": "Giovanni Cardarelli",
+    "rating": 1000,
+    "id": "3sg14giw",
+    "losses": 0,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "_migrated": true,
+    "_originalId": "3sg14giw",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "tournamentData": {
+      "isParticipant": true,
+      "initialRanking": 1000,
+      "currentRanking": 1000,
+      "division": null,
+      "notes": "",
+      "isActive": true,
+      "joinedAt": {
+        "_seconds": 1759667852,
+        "_nanoseconds": 525000000
+      },
+      "activeSince": {
+        "_seconds": 1759667852,
+        "_nanoseconds": 525000000
+      },
+      "totalMatches": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": 0,
+      "points": 0
+    },
+    "updatedAt": {
+      "_seconds": 1759667849,
+      "_nanoseconds": 76000000
+    }
+  },
+  "466tjbfc": {
+    "name": "Marco Verdi",
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "clubName": "Sporting CAT",
+    "baseRating": 1000,
+    "migratedAt": "2025-09-16T22:17:16.100Z",
+    "id": "466tjbfc",
+    "wins": 0,
+    "matches": 0,
+    "losses": 0,
+    "updatedAt": "2025-09-16T22:17:16.100Z",
+    "rating": 1000,
+    "_migrated": true,
+    "_originalId": "466tjbfc",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "promotedToAdminAt": "2025-09-29T21:46:32.674Z",
+    "role": "admin",
+    "isClubAdmin": true,
+    "_updatedAt": "2025-09-29T21:46:32.674Z"
+  },
+  "4dtp4cr1": {
+    "rating": 1000,
+    "baseRating": 1000,
+    "wins": 0,
+    "updatedAt": "2025-09-16T22:17:16.102Z",
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "name": "Marco Giannitti",
+    "id": "4dtp4cr1",
+    "losses": 0,
+    "clubName": "Sporting CAT",
+    "matches": 0,
+    "migratedAt": "2025-09-16T22:17:16.102Z",
+    "_migrated": true,
+    "_originalId": "4dtp4cr1",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "promotedToAdminAt": "2025-09-21T20:53:32.817Z",
+    "demotedFromAdminAt": "2025-09-21T20:54:10.138Z",
+    "role": "member",
+    "isClubAdmin": false,
+    "_updatedAt": "2025-09-21T20:54:10.138Z"
+  },
+  "5T0OJxTJuDOXJoeHjo5keLkoo122": {
+    "rating": 1500,
+    "baseRating": 1500,
+    "name": "Andrea Paris",
+    "displayName": "Andrea Paris",
+    "email": "andrea@gmail.com",
+    "phone": "320000000",
+    "category": "member",
+    "instructorData": null,
+    "role": "player",
+    "isActive": true,
+    "tags": [],
+    "subscriptions": [],
+    "wallet": {
+      "balance": 0,
+      "currency": "EUR",
+      "transactions": []
+    },
+    "notes": [],
+    "bookingHistory": [],
+    "matchHistory": [],
+    "medicalCertificates": {
+      "current": null,
+      "history": []
+    },
+    "certificateStatus": null,
+    "createdAt": {
+      "_seconds": 1760377670,
+      "_nanoseconds": 412000000
+    },
+    "tournamentData": {
+      "initialRanking": 1500,
+      "wins": 0,
+      "division": null,
+      "joinedAt": null,
+      "points": 0,
+      "activeSince": null,
+      "notes": "",
+      "isParticipant": true,
+      "losses": 0,
+      "winRate": 0,
+      "totalMatches": 0,
+      "currentRanking": 1500,
+      "isActive": true
+    },
+    "updatedAt": {
+      "_seconds": 1760379043,
+      "_nanoseconds": 96000000
+    }
+  },
+  "70xe0dha": {
+    "linkedAccountEmail": null,
+    "isActive": true,
+    "wins": 0,
+    "subscriptions": [],
+    "tags": [],
+    "firstName": "Angelo",
+    "phone": "",
+    "instructorData": {
+      "availability": {},
+      "isInstructor": true,
+      "priceSingle": 25,
+      "bio": "",
+      "priceMatchLesson": 52,
+      "specialties": [
+        "Padel",
+        "Tennis"
+      ],
+      "color": "#24c1d6",
+      "priceCouple": 36,
+      "hourlyRate": 25,
+      "certifications": [],
+      "priceThree": 45
+    },
+    "clubName": "Sporting CAT",
+    "createdAt": null,
+    "id": "70xe0dha",
+    "fiscalCode": "",
+    "lastName": "Di Mattia",
+    "category": "instructor",
+    "email": "",
+    "address": {
+      "province": "",
+      "street": "",
+      "postalCode": "",
+      "city": "",
+      "country": "Italia"
+    },
+    "name": "Angelo Di Mattia",
+    "dateOfBirth": null,
+    "matchHistory": [],
+    "bookingHistory": [],
+    "wallet": {
+      "balance": 0,
+      "currency": "EUR",
+      "lastUpdate": null,
+      "transactions": []
+    },
+    "linkedAccountId": null,
+    "migratedAt": "2025-09-16T22:17:16.102Z",
+    "isAccountLinked": false,
+    "losses": 0,
+    "communicationPreferences": {
+      "whatsapp": false,
+      "email": true,
+      "notifications": true,
+      "sms": false
+    },
+    "customFields": {},
+    "communications": [],
+    "lastActivity": null,
+    "matches": 0,
+    "notes": [],
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "_migrated": true,
+    "_originalId": "70xe0dha",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "tournamentData": {
+      "isParticipant": true,
+      "initialRanking": 1500,
+      "currentRanking": 1500,
+      "division": null,
+      "notes": "",
+      "isActive": true,
+      "joinedAt": {
+        "_seconds": 1759660484,
+        "_nanoseconds": 430000000
+      },
+      "activeSince": {
+        "_seconds": 1759660484,
+        "_nanoseconds": 430000000
+      },
+      "totalMatches": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": 0,
+      "points": 0
+    },
+    "rating": 1500,
+    "baseRating": 1500,
+    "certificateStatus": {
+      "isValid": true,
+      "isExpiring": false,
+      "isExpired": false,
+      "daysUntilExpiry": 352,
+      "canBook": true,
+      "status": "valid"
+    },
+    "medicalCertificates": {
+      "current": {
+        "id": "cert_1760113299447",
+        "type": "agonistic",
+        "otherType": "",
+        "issueDate": "2025-09-29",
+        "expiryDate": "2026-09-30",
+        "notes": "",
+        "createdAt": "2025-10-10T16:21:39.447Z",
+        "updatedAt": "2025-10-13T10:08:35.699Z",
+        "updatedBy": ""
+      },
+      "history": []
+    },
+    "updatedAt": {
+      "_seconds": 1760350117,
+      "_nanoseconds": 761000000
+    }
+  },
+  "7m9oy3oo": {
+    "matches": 0,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "id": "7m9oy3oo",
+    "migratedAt": "2025-09-16T22:17:16.102Z",
+    "losses": 0,
+    "wins": 0,
+    "clubName": "Sporting CAT",
+    "name": "Piergiorgio Mancini",
+    "_migrated": true,
+    "_originalId": "7m9oy3oo",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "tournamentData": {
+      "isParticipant": true,
+      "isActive": true,
+      "currentRanking": 1500,
+      "initialRanking": 1500,
+      "division": null,
+      "notes": "",
+      "joinedAt": {
+        "_seconds": 1760379725,
+        "_nanoseconds": 157000000
+      },
+      "activeSince": {
+        "_seconds": 1760379725,
+        "_nanoseconds": 157000000
+      },
+      "totalMatches": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": 0,
+      "points": 0
+    },
+    "rating": 1500,
+    "baseRating": 1500,
+    "updatedAt": {
+      "_seconds": 1760379724,
+      "_nanoseconds": 970000000
+    }
+  },
+  "FoqdMJ6vCFfshRPlz4CYrCl0fpu1": {
+    "provider": "password",
+    "email": "sportingcat@gmil.com",
+    "needsCompletion": true,
+    "firstName": "Sporting",
+    "lastName": "Cat",
+    "address": "",
+    "registrationCompleted": true,
+    "phone": "123456789",
+    "fiscalCode": "",
+    "birthDate": "",
+    "promotedToAdminAt": "2025-09-25T22:02:11.414Z",
+    "role": "admin",
+    "isClubAdmin": true,
+    "createdAt": "2025-09-27T10:04:38.376Z",
+    "_updatedAt": 1758967478376,
+    "tournamentData": {
+      "isParticipant": false,
+      "isActive": true,
+      "currentRanking": 1500,
+      "initialRanking": 1500,
+      "division": null,
+      "notes": "",
+      "joinedAt": null,
+      "activeSince": null,
+      "totalMatches": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": 0,
+      "points": 0
+    },
+    "rating": 1500,
+    "baseRating": 1500,
+    "updatedAt": {
+      "_seconds": 1760379758,
+      "_nanoseconds": 327000000
+    }
+  },
+  "FrewudyR6jSesgzYIe5do1iJKJf1": {
+    "dateOfBirth": null,
+    "uid": "FrewudyR6jSesgzYIe5do1iJKJf1",
+    "lastLoginAt": {
+      "_seconds": 1758187724,
+      "_nanoseconds": 543000000
+    },
+    "gender": "M",
+    "active": true,
+    "preferences": {
+      "language": "it",
+      "theme": "light",
+      "timezone": "Europe/Rome",
+      "notifications": {
+        "push": true,
+        "email": true,
+        "sms": false
+      }
+    },
+    "displayName": "Andrea Paris",
+    "email": "paris.andrea@live.it",
+    "phone": "+39 123 456 7890",
+    "_migrated": true,
+    "_originalId": "FrewudyR6jSesgzYIe5do1iJKJf1",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "createdAt": "2025-09-26T07:56:57.307Z",
+    "firstName": "Andrea",
+    "lastName": "Paris",
+    "needsCompletion": true,
+    "pendingLinkingSuggestions": [
+      {
+        "type": "name_similar",
+        "profile": {
+          "dateOfBirth": null,
+          "clubId": "sporting-cat",
+          "isLegacyMember": true,
+          "id": "FrewudyR6jSesgzYIe5do1iJKJf1",
+          "clubName": "Sporting Cat",
+          "displayName": "Paris Andrea",
+          "createdAt": {
+            "_seconds": 1758187724,
+            "_nanoseconds": 543000000
+          },
+          "lastName": "Andrea",
+          "migratedAt": "2025-09-19T20:23:22.283Z",
+          "updatedAt": {
+            "_seconds": 1758187724,
+            "_nanoseconds": 543000000
+          },
+          "active": true,
+          "firstName": "Paris",
+          "lastLoginAt": {
+            "_seconds": 1758187724,
+            "_nanoseconds": 543000000
+          },
+          "preferences": {
+            "language": "it",
+            "timezone": "Europe/Rome",
+            "notifications": {
+              "push": true,
+              "sms": false,
+              "email": true
+            },
+            "theme": "light"
+          },
+          "gender": "M",
+          "phone": "+39 123 456 7890",
+          "email": "paris.andrea@live.it",
+          "uid": "FrewudyR6jSesgzYIe5do1iJKJf1"
+        },
+        "confidence": 100
+      },
+      {
+        "profile": {
+          "avatar": "https://lh3.googleusercontent.com/a/ACg8ocJmI4IfTzzgYD47tArPeikUib0tTHHwd4DMySu2_zlaHpx6go-F=s96-c",
+          "address": "",
+          "firstName": "Andrea",
+          "displayName": "Andrea Paris",
+          "migratedAt": "2025-09-19T20:23:22.589Z",
+          "id": "Y3o7UxPqUPRZSlLM3DA9sKr2SEB2",
+          "phone": "3299028484",
+          "clubId": "sporting-cat",
+          "provider": "google",
+          "clubName": "Sporting Cat",
+          "lastName": "Paris",
+          "updatedAt": {
+            "_seconds": 1758060049,
+            "_nanoseconds": 42000000
+          },
+          "isLegacyMember": true,
+          "birthDate": "",
+          "role": "admin",
+          "status": "active",
+          "_updatedAt": 1757611776889,
+          "email": "parischit85@gmail.com",
+          "fiscalCode": ""
+        },
+        "type": "name_similar",
+        "confidence": 100
+      },
+      {
+        "type": "name_similar",
+        "confidence": 100,
+        "profile": {
+          "linkedAccountId": "FrewudyR6jSesgzYIe5do1iJKJf1",
+          "subscriptions": [],
+          "instructorData": {
+            "hourlyRate": 25,
+            "certifications": [],
+            "priceMatchLesson": 52,
+            "priceSingle": 25,
+            "priceThree": 42,
+            "bio": "",
+            "priceCouple": 36,
+            "isInstructor": false,
+            "color": "#F59E0B",
+            "specialties": [
+              "Padel"
+            ]
+          },
+          "communications": [],
+          "losses": 0,
+          "fiscalCode": "",
+          "name": "Andrea  Paris",
+          "customFields": {},
+          "tags": [],
+          "isLegacyMember": true,
+          "communicationPreferences": {
+            "sms": false,
+            "notifications": true,
+            "whatsapp": false,
+            "email": true
+          },
+          "createdAt": null,
+          "notes": [],
+          "migratedAt": "2025-09-19T20:23:24.479Z",
+          "clubId": "sporting-cat",
+          "matchHistory": [],
+          "firstName": "Andrea ",
+          "wallet": {
+            "currency": "EUR",
+            "balance": 0,
+            "transactions": [
+              {
+                "amount": 210,
+                "type": "debit",
+                "description": "torneo",
+                "createdAt": "2025-09-09T10:11:37.450Z",
+                "id": "0zbhsu55",
+                "reference": "",
+                "createdBy": "current-user"
+              },
+              {
+                "createdAt": "2025-09-09T10:07:52.414Z",
+                "createdBy": "current-user",
+                "description": "mio",
+                "type": "credit",
+                "id": "046m3zrs",
+                "reference": "",
+                "amount": 200
+              }
+            ],
+            "lastUpdate": "2025-09-09T10:11:37.450Z"
+          },
+          "rating": 1000,
+          "linkedAccountEmail": "paris.andrea@live.it",
+          "displayName": "Andrea  Paris",
+          "isActive": true,
+          "address": {
+            "province": "",
+            "postalCode": "",
+            "country": "Italia",
+            "city": "",
+            "street": ""
+          },
+          "category": "instructor",
+          "matches": 0,
+          "lastActivity": null,
+          "email": "",
+          "phone": "",
+          "isAccountLinked": true,
+          "wins": 0,
+          "baseRating": 1000,
+          "lastName": "Paris",
+          "bookingHistory": [],
+          "updatedAt": "2025-09-16T22:17:16.094Z",
+          "id": "mg7dxebq",
+          "clubName": "Sporting Cat",
+          "dateOfBirth": null
+        }
+      }
+    ],
+    "_updatedAt": 1758873417308,
+    "rating": 1000,
+    "baseRating": 1000,
+    "tournamentData": {
+      "losses": 0,
+      "totalMatches": 0,
+      "joinedAt": {
+        "_seconds": 1759660452,
+        "_nanoseconds": 854000000
+      },
+      "division": null,
+      "winRate": 0,
+      "isParticipant": false,
+      "currentRanking": 1000,
+      "wins": 0,
+      "activeSince": null,
+      "initialRanking": 1000,
+      "isActive": true,
+      "notes": "",
+      "points": 0
+    },
+    "updatedAt": {
+      "_seconds": 1760379015,
+      "_nanoseconds": 515000000
+    }
+  },
+  "NhN9YIJFBghjbExhLimFMHcrj2v2": {
+    "provider": "password",
+    "email": "paris@live.it",
+    "createdAt": "2025-09-19T14:33:52.462Z",
+    "needsCompletion": true,
+    "address": "",
+    "fiscalCode": "",
+    "birthDate": "",
+    "firstName": "Giacomo",
+    "lastName": "Paris",
+    "_updatedAt": 1758292676494,
+    "notes": [],
+    "wallet": {
+      "balance": 0,
+      "currency": "EUR"
+    },
+    "phone": "32000000",
+    "displayName": "Giacomo Paris",
+    "name": "Giacomo Paris",
+    "rating": 1500,
+    "baseRating": 1500,
+    "category": "instructor",
+    "tags": [],
+    "instructorData": {
+      "isInstructor": true,
+      "color": "#3B82F6",
+      "specialties": [
+        "Padel"
+      ],
+      "hourlyRate": 0,
+      "priceSingle": 20,
+      "priceCouple": 30,
+      "priceThree": 40,
+      "priceMatchLesson": 50,
+      "bio": "",
+      "certifications": []
+    },
+    "updatedAt": {
+      "_seconds": 1759509522,
+      "_nanoseconds": 291000000
+    }
+  },
+  "Y3o7UxPqUPRZSlLM3DA9sKr2SEB2": {
+    "avatar": "https://lh3.googleusercontent.com/a/ACg8ocJmI4IfTzzgYD47tArPeikUib0tTHHwd4DMySu2_zlaHpx6go-F=s96-c",
+    "lastName": "Paris",
+    "firstName": "Andrea",
+    "address": "",
+    "birthDate": "",
+    "fiscalCode": "",
+    "phone": "3299028484",
+    "email": "parischit85@gmail.com",
+    "status": "active",
+    "provider": "google",
+    "_migrated": true,
+    "_originalId": "Y3o7UxPqUPRZSlLM3DA9sKr2SEB2",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "demotedFromAdminAt": "2025-09-19T11:25:37.789Z",
+    "promotedToAdminAt": "2025-09-19T11:26:08.795Z",
+    "role": "admin",
+    "isClubAdmin": true,
+    "needsCompletion": true,
+    "createdAt": "2025-09-24T20:22:10.599Z",
+    "_updatedAt": 1758745330600,
+    "certificateStatus": {
+      "isValid": false,
+      "isExpiring": false,
+      "isExpired": true,
+      "daysUntilExpiry": -5,
+      "canBook": false,
+      "status": "expired"
+    },
+    "medicalCertificates": {
+      "current": {
+        "id": "cert_1760113343046",
+        "type": "agonistic",
+        "otherType": "",
+        "issueDate": "2024-10-01",
+        "expiryDate": "2025-10-05",
+        "notes": "",
+        "createdAt": "2025-10-10T16:22:23.046Z",
+        "updatedAt": "2025-10-10T16:22:23.046Z",
+        "updatedBy": ""
+      },
+      "history": []
+    },
+    "rating": 1500,
+    "baseRating": 1500,
+    "tournamentData": {
+      "isParticipant": false,
+      "isActive": true,
+      "currentRanking": 1500,
+      "initialRanking": 1500,
+      "division": null,
+      "notes": "",
+      "joinedAt": null,
+      "activeSince": null,
+      "totalMatches": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": 0,
+      "points": 0
+    },
+    "updatedAt": {
+      "_seconds": 1760375705,
+      "_nanoseconds": 387000000
+    }
+  },
+  "axd1d5ma": {
+    "losses": 0,
+    "wins": 0,
+    "clubName": "Sporting CAT",
+    "migratedAt": "2025-09-16T22:17:16.100Z",
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "matches": 0,
+    "id": "axd1d5ma",
+    "name": "Francesco Romano",
+    "_migrated": true,
+    "_originalId": "axd1d5ma",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "instructorData": null,
+    "notes": [],
+    "wallet": {
+      "balance": 0,
+      "currency": "EUR"
+    },
+    "displayName": "Francesco Romano",
+    "category": "member",
+    "email": "axd1d5ma@placeholder.com",
+    "tags": [],
+    "rating": 2000,
+    "baseRating": 2000,
+    "tournamentData": {
+      "isParticipant": false,
+      "losses": 0,
+      "joinedAt": {
+        "_seconds": 1759661535,
+        "_nanoseconds": 448000000
+      },
+      "currentRanking": 2000,
+      "initialRanking": 2000,
+      "activeSince": null,
+      "points": 0,
+      "winRate": 0,
+      "totalMatches": 0,
+      "wins": 0,
+      "division": null,
+      "isActive": true,
+      "notes": ""
+    },
+    "updatedAt": {
+      "_seconds": 1759662741,
+      "_nanoseconds": 457000000
+    }
+  },
+  "bh1ld5ew": {
+    "name": "Massimo Maillaro",
+    "wins": 0,
+    "baseRating": 1000,
+    "id": "bh1ld5ew",
+    "updatedAt": "2025-09-16T22:17:16.100Z",
+    "clubName": "Sporting CAT",
+    "migratedAt": "2025-09-16T22:17:16.100Z",
+    "rating": 1000,
+    "matches": 0,
+    "losses": 0,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "_migrated": true,
+    "_originalId": "bh1ld5ew",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  },
+  "hbbyqt6y": {
+    "losses": 0,
+    "migratedAt": "2025-09-16T22:17:16.099Z",
+    "matches": 0,
+    "clubName": "Sporting CAT",
+    "name": "Claudio Morgante",
+    "wins": 0,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "id": "hbbyqt6y",
+    "baseRating": 1000,
+    "rating": 1000,
+    "_migrated": true,
+    "_originalId": "hbbyqt6y",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "tournamentData": {
+      "isParticipant": true,
+      "initialRanking": 1000,
+      "currentRanking": 1000,
+      "division": null,
+      "notes": "",
+      "isActive": true,
+      "joinedAt": {
+        "_seconds": 1759663873,
+        "_nanoseconds": 377000000
+      },
+      "activeSince": {
+        "_seconds": 1759663873,
+        "_nanoseconds": 377000000
+      },
+      "totalMatches": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": 0,
+      "points": 0
+    },
+    "updatedAt": {
+      "_seconds": 1759663870,
+      "_nanoseconds": 138000000
+    }
+  },
+  "ixy2e6h8": {
+    "matches": 0,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "id": "ixy2e6h8",
+    "clubName": "Sporting CAT",
+    "baseRating": 1000,
+    "migratedAt": "2025-09-16T22:17:16.099Z",
+    "wins": 0,
+    "losses": 0,
+    "name": "Lorenzo Eligi",
+    "rating": 1000,
+    "updatedAt": "2025-09-16T22:17:16.099Z",
+    "_migrated": true,
+    "_originalId": "ixy2e6h8",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  },
+  "kb1xbwle": {
+    "losses": 0,
+    "communicationPreferences": {
+      "whatsapp": false,
+      "email": true,
+      "notifications": true,
+      "sms": false
+    },
+    "matchHistory": [],
+    "address": {
+      "country": "Italia",
+      "province": "",
+      "postalCode": "",
+      "street": "",
+      "city": ""
+    },
+    "fiscalCode": "",
+    "tags": [],
+    "category": "instructor",
+    "matches": 0,
+    "isAccountLinked": false,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "migratedAt": "2025-09-16T22:17:16.101Z",
+    "lastName": "Di Vito",
+    "wallet": {
+      "transactions": [],
+      "currency": "EUR",
+      "balance": 0,
+      "lastUpdate": null
+    },
+    "notes": [],
+    "lastActivity": null,
+    "subscriptions": [],
+    "instructorData": {
+      "specialties": [
+        "Padel",
+        "Tennis"
+      ],
+      "priceMatchLesson": 52,
+      "availability": {},
+      "bio": "",
+      "priceThree": 45,
+      "hourlyRate": 30,
+      "isInstructor": true,
+      "priceSingle": 25,
+      "priceCouple": 36,
+      "color": "#00fa53",
+      "certifications": []
+    },
+    "firstName": "Andrea ",
+    "wins": 0,
+    "linkedAccountEmail": null,
+    "customFields": {},
+    "createdAt": null,
+    "isActive": true,
+    "communications": [],
+    "dateOfBirth": null,
+    "bookingHistory": [],
+    "id": "kb1xbwle",
+    "clubName": "Sporting CAT",
+    "phone": "",
+    "linkedAccountId": null,
+    "_migrated": true,
+    "_originalId": "kb1xbwle",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "email": "kb1xbwle@placeholder.com",
+    "displayName": "Andrea  Di Vito",
+    "name": "Andrea  Di Vito",
+    "certificateStatus": {
+      "isValid": true,
+      "isExpiring": false,
+      "isExpired": false,
+      "daysUntilExpiry": 366,
+      "canBook": true,
+      "status": "valid"
+    },
+    "medicalCertificates": {
+      "history": [],
+      "current": {
+        "id": "cert_1760379585022",
+        "type": "agonistic",
+        "otherType": "",
+        "issueDate": "2025-10-14",
+        "expiryDate": "2026-10-14",
+        "notes": "",
+        "createdAt": "2025-10-13T18:19:45.022Z",
+        "updatedAt": "2025-10-13T18:19:45.022Z",
+        "updatedBy": ""
+      }
+    },
+    "tournamentData": {
+      "wins": 0,
+      "joinedAt": {
+        "_seconds": 1760377213,
+        "_nanoseconds": 267000000
+      },
+      "isActive": true,
+      "notes": "",
+      "totalMatches": 0,
+      "losses": 0,
+      "points": 0,
+      "initialRanking": 1500,
+      "isParticipant": true,
+      "winRate": 0,
+      "currentRanking": 1500,
+      "division": null,
+      "activeSince": {
+        "_seconds": 1760377213,
+        "_nanoseconds": 267000000
+      }
+    },
+    "rating": 1500,
+    "baseRating": 1500,
+    "updatedAt": {
+      "_seconds": 1760379655,
+      "_nanoseconds": 906000000
+    }
+  },
+  "kqvopxcj": {
+    "name": "Marco Idrofano",
+    "losses": 0,
+    "updatedAt": "2025-09-16T22:17:16.098Z",
+    "matches": 0,
+    "id": "kqvopxcj",
+    "rating": 1000,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "baseRating": 1000,
+    "clubName": "Sporting CAT",
+    "wins": 0,
+    "migratedAt": "2025-09-16T22:17:16.098Z",
+    "_migrated": true,
+    "_originalId": "kqvopxcj",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  },
+  "lax34vmf": {
+    "clubName": "Sporting CAT",
+    "wallet": {
+      "currency": "EUR",
+      "balance": 30,
+      "transactions": [
+        {
+          "type": "debit",
+          "amount": 20,
+          "reference": "",
+          "id": "h5vuepwd",
+          "createdAt": "2025-09-09T09:51:01.363Z",
+          "description": "partita",
+          "createdBy": "current-user"
+        },
+        {
+          "createdAt": "2025-09-09T09:50:21.559Z",
+          "amount": 50,
+          "reference": "",
+          "description": "cash",
+          "type": "credit",
+          "createdBy": "current-user",
+          "id": "tstz2xvp"
+        }
+      ],
+      "lastUpdate": "2025-09-09T09:51:01.363Z"
+    },
+    "matches": 0,
+    "rating": 1000,
+    "isActive": true,
+    "id": "lax34vmf",
+    "name": "Alfredo Di Donato",
+    "baseRating": 1000,
+    "losses": 0,
+    "wins": 0,
+    "migratedAt": "2025-09-16T22:17:16.097Z",
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "_migrated": true,
+    "_originalId": "lax34vmf",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "tournamentData": {
+      "isParticipant": true,
+      "isActive": true,
+      "currentRanking": 1000,
+      "initialRanking": 1027,
+      "division": null,
+      "notes": "",
+      "joinedAt": {
+        "_seconds": 1760377784,
+        "_nanoseconds": 786000000
+      },
+      "activeSince": {
+        "_seconds": 1760377784,
+        "_nanoseconds": 786000000
+      },
+      "totalMatches": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": 0,
+      "points": 0
+    },
+    "updatedAt": {
+      "_seconds": 1760377784,
+      "_nanoseconds": 635000000
+    }
+  },
+  "mevxhk7i": {
+    "address": {
+      "city": "",
+      "street": "",
+      "country": "Italia",
+      "province": "",
+      "postalCode": ""
+    },
+    "fiscalCode": "",
+    "baseRating": 1000,
+    "customFields": {},
+    "category": "instructor",
+    "email": "",
+    "createdAt": "2025-09-16T09:41:04.213Z",
+    "isActive": true,
+    "communications": [],
+    "clubName": "Sporting CAT",
+    "firstName": "Nicolò",
+    "instructorData": {
+      "isInstructor": true,
+      "priceCouple": 36,
+      "specialties": [
+        "Padel"
+      ],
+      "priceThree": 42,
+      "bio": "",
+      "availability": {},
+      "priceSingle": 25,
+      "certifications": [],
+      "color": "#3B82F6",
+      "priceMatchLesson": 52,
+      "hourlyRate": 0
+    },
+    "lastActivity": null,
+    "subscriptions": [],
+    "phone": "",
+    "matchHistory": [],
+    "lastName": "Mercogliano",
+    "linkedAccountId": null,
+    "notes": [],
+    "migratedAt": "2025-09-16T22:17:16.103Z",
+    "linkedAccountEmail": null,
+    "bookingHistory": [],
+    "dateOfBirth": null,
+    "tags": [],
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "isAccountLinked": false,
+    "rating": 1000,
+    "id": "mevxhk7i",
+    "updatedAt": "2025-09-16T22:17:16.103Z",
+    "name": "Nicolò Mercogliano",
+    "communicationPreferences": {
+      "sms": false,
+      "email": true,
+      "whatsapp": false,
+      "notifications": true
+    },
+    "wallet": {
+      "transactions": [],
+      "currency": "EUR",
+      "lastUpdate": null,
+      "balance": 0
+    },
+    "_migrated": true,
+    "_originalId": "mevxhk7i",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  },
+  "mkcqwzbs": {
+    "migratedAt": "2025-09-16T22:17:16.096Z",
+    "baseRating": 1000,
+    "wins": 0,
+    "matches": 0,
+    "clubName": "Sporting CAT",
+    "name": "Stefano Ruscitti",
+    "rating": 1000,
+    "id": "mkcqwzbs",
+    "losses": 0,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "_migrated": true,
+    "_originalId": "mkcqwzbs",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "tournamentData": {
+      "isParticipant": true,
+      "isActive": true,
+      "currentRanking": 1000,
+      "initialRanking": 1200,
+      "division": null,
+      "notes": "",
+      "joinedAt": {
+        "_seconds": 1760379127,
+        "_nanoseconds": 485000000
+      },
+      "activeSince": {
+        "_seconds": 1760379127,
+        "_nanoseconds": 485000000
+      },
+      "totalMatches": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": 0,
+      "points": 0
+    },
+    "updatedAt": {
+      "_seconds": 1760379127,
+      "_nanoseconds": 204000000
+    }
+  },
+  "ncroqybw": {
+    "losses": 0,
+    "wins": 0,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "matches": 0,
+    "id": "ncroqybw",
+    "rating": 1000,
+    "name": "Domenico Di Gianfilippo",
+    "migratedAt": "2025-09-16T22:17:16.096Z",
+    "clubName": "Sporting CAT",
+    "baseRating": 1000,
+    "_migrated": true,
+    "_originalId": "ncroqybw",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "tournamentData": {
+      "isParticipant": true,
+      "initialRanking": 1000,
+      "currentRanking": 1000,
+      "division": null,
+      "notes": "",
+      "isActive": true,
+      "joinedAt": {
+        "_seconds": 1759667824,
+        "_nanoseconds": 143000000
+      },
+      "activeSince": {
+        "_seconds": 1759667824,
+        "_nanoseconds": 143000000
+      },
+      "totalMatches": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": 0,
+      "points": 0
+    },
+    "updatedAt": {
+      "_seconds": 1759667820,
+      "_nanoseconds": 801000000
+    }
+  },
+  "p2v18iff": {
+    "wins": 0,
+    "baseRating": 1000,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "clubName": "Sporting CAT",
+    "id": "p2v18iff",
+    "migratedAt": "2025-09-16T22:17:16.100Z",
+    "name": "Antonio Esposito",
+    "matches": 0,
+    "rating": 1000,
+    "losses": 0,
+    "updatedAt": "2025-09-16T22:17:16.100Z",
+    "_migrated": true,
+    "_originalId": "p2v18iff",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  },
+  "p7psrcfh": {
+    "matches": 0,
+    "rating": 1000,
+    "losses": 0,
+    "name": "Paolo Chiola",
+    "migratedAt": "2025-09-16T22:17:16.098Z",
+    "wins": 0,
+    "clubName": "Sporting CAT",
+    "updatedAt": "2025-09-16T22:17:16.098Z",
+    "baseRating": 1000,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "id": "p7psrcfh",
+    "_migrated": true,
+    "_originalId": "p7psrcfh",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  },
+  "qazdz9zt": {
+    "matches": 0,
+    "migratedAt": "2025-09-16T22:17:16.097Z",
+    "id": "qazdz9zt",
+    "rating": 1000,
+    "clubName": "Sporting CAT",
+    "wins": 0,
+    "updatedAt": "2025-09-16T22:17:16.097Z",
+    "name": "Giorgio Contestabile",
+    "baseRating": 1000,
+    "losses": 0,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "_migrated": true,
+    "_originalId": "qazdz9zt",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  },
+  "s3cy2frr": {
+    "wallet": {
+      "transactions": [],
+      "balance": 0,
+      "lastUpdate": null,
+      "currency": "EUR"
+    },
+    "lastName": "Sirap",
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "communicationPreferences": {
+      "sms": false,
+      "email": true,
+      "whatsapp": false,
+      "notifications": true
+    },
+    "customFields": {},
+    "subscriptions": [],
+    "notes": [],
+    "migratedAt": "2025-09-16T22:17:16.103Z",
+    "isAccountLinked": true,
+    "communications": [],
+    "linkedAccountEmail": "parischit85@gmail.com",
+    "clubName": "Sporting CAT",
+    "createdAt": "2025-09-09T09:41:58.537Z",
+    "baseRating": 1000,
+    "dateOfBirth": null,
+    "name": "Dna Sirap",
+    "lastActivity": null,
+    "address": {
+      "country": "Italia",
+      "city": "",
+      "postalCode": "",
+      "street": "",
+      "province": ""
+    },
+    "matchHistory": [],
+    "bookingHistory": [],
+    "category": "member",
+    "email": "parischit85@gmail.com",
+    "fiscalCode": "",
+    "firstName": "Dna",
+    "linkedAccountId": "Y3o7UxPqUPRZSlLM3DA9sKr2SEB2",
+    "phone": "",
+    "id": "s3cy2frr",
+    "isActive": true,
+    "tags": [],
+    "rating": 1000,
+    "updatedAt": "2025-09-16T22:17:16.103Z",
+    "_migrated": true,
+    "_originalId": "s3cy2frr",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  },
+  "sRbW0KdZp2M0cTRULdbt": {
+    "name": "Paquito Navarro",
+    "displayName": "Paquito Navarro",
+    "email": "",
+    "phone": "",
+    "rating": 1000,
+    "baseRating": 1000,
+    "category": "member",
+    "role": "player",
+    "isActive": true,
+    "tags": [],
+    "subscriptions": [],
+    "wallet": {
+      "balance": 0,
+      "currency": "EUR",
+      "transactions": []
+    },
+    "notes": [
+      {
+        "text": [],
+        "createdAt": {
+          "_seconds": 1760396424,
+          "_nanoseconds": 389000000
+        }
+      }
+    ],
+    "bookingHistory": [],
+    "matchHistory": [],
+    "createdAt": {
+      "_seconds": 1760396424,
+      "_nanoseconds": 253000000
+    },
+    "updatedAt": {
+      "_seconds": 1760396424,
+      "_nanoseconds": 253000000
+    }
+  },
+  "sjqi9anh": {
+    "name": "Angelo Persia",
+    "id": "sjqi9anh",
+    "losses": 0,
+    "clubName": "Sporting CAT",
+    "matches": 0,
+    "migratedAt": "2025-09-16T22:17:16.098Z",
+    "wins": 0,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "_migrated": true,
+    "_originalId": "sjqi9anh",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "instructorData": null,
+    "certificateStatus": null,
+    "notes": [],
+    "wallet": {
+      "balance": 0,
+      "currency": "EUR"
+    },
+    "displayName": "Angelo Persia",
+    "medicalCertificates": {
+      "current": null,
+      "history": []
+    },
+    "tags": [],
+    "phone": "",
+    "category": "member",
+    "email": "sjqi9anh@placeholder.com",
+    "rating": 1000,
+    "baseRating": 1000,
+    "tournamentData": {
+      "points": 0,
+      "wins": 0,
+      "joinedAt": {
+        "_seconds": 1760379033,
+        "_nanoseconds": 228000000
+      },
+      "division": null,
+      "initialRanking": 1500,
+      "notes": "",
+      "winRate": 0,
+      "isActive": true,
+      "isParticipant": true,
+      "activeSince": {
+        "_seconds": 1760379033,
+        "_nanoseconds": 228000000
+      },
+      "totalMatches": 0,
+      "losses": 0,
+      "currentRanking": 1000
+    },
+    "updatedAt": {
+      "_seconds": 1760379032,
+      "_nanoseconds": 944000000
+    }
+  },
+  "t0aq8efd": {
+    "clubName": "Sporting CAT",
+    "name": "Gabriele Rossi",
+    "id": "t0aq8efd",
+    "matches": 0,
+    "migratedAt": "2025-09-16T22:17:16.099Z",
+    "wins": 0,
+    "losses": 0,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "_migrated": true,
+    "_originalId": "t0aq8efd",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "tournamentData": {
+      "points": 0,
+      "wins": 0,
+      "notes": "",
+      "isParticipant": false,
+      "totalMatches": 0,
+      "losses": 0,
+      "currentRanking": 3000,
+      "isActive": true,
+      "initialRanking": 3000,
+      "winRate": 0,
+      "joinedAt": {
+        "_seconds": 1759661285,
+        "_nanoseconds": 726000000
+      },
+      "activeSince": null,
+      "division": null
+    },
+    "rating": 3000,
+    "baseRating": 3000,
+    "updatedAt": {
+      "_seconds": 1759662780,
+      "_nanoseconds": 58000000
+    }
+  },
+  "tqd6o3o6": {
+    "migratedAt": "2025-09-16T22:17:16.099Z",
+    "updatedAt": "2025-09-16T22:17:16.099Z",
+    "id": "tqd6o3o6",
+    "baseRating": 1000,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "matches": 0,
+    "name": "Luca Bianchi",
+    "wins": 0,
+    "rating": 1000,
+    "losses": 0,
+    "clubName": "Sporting CAT",
+    "_migrated": true,
+    "_originalId": "tqd6o3o6",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  },
+  "uqnj3o1h": {
+    "clubName": "Sporting CAT",
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "rating": 1000,
+    "losses": 0,
+    "baseRating": 1000,
+    "migratedAt": "2025-09-16T22:17:16.096Z",
+    "wins": 0,
+    "name": "Nicola Di Marzio",
+    "matches": 0,
+    "updatedAt": "2025-09-16T22:17:16.096Z",
+    "id": "uqnj3o1h",
+    "_migrated": true,
+    "_originalId": "uqnj3o1h",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  },
+  "ux7o3edh": {
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "updatedAt": "2025-09-16T22:17:16.102Z",
+    "id": "ux7o3edh",
+    "matches": 0,
+    "name": "Filippo Colabianchi",
+    "migratedAt": "2025-09-16T22:17:16.103Z",
+    "rating": 1000,
+    "clubName": "Sporting CAT",
+    "baseRating": 1000,
+    "wins": 0,
+    "losses": 0,
+    "_migrated": true,
+    "_originalId": "ux7o3edh",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  },
+  "v8h4dgdh": {
+    "firstName": "Claudio",
+    "createdAt": null,
+    "isActive": true,
+    "customFields": {},
+    "migratedAt": "2025-09-16T22:17:16.101Z",
+    "losses": 0,
+    "wins": 0,
+    "email": "",
+    "bookingHistory": [],
+    "notes": [],
+    "communicationPreferences": {
+      "email": true,
+      "notifications": true,
+      "whatsapp": false,
+      "sms": false
+    },
+    "linkedAccountId": null,
+    "matches": 0,
+    "tags": [],
+    "linkedAccountEmail": null,
+    "wallet": {
+      "balance": 20,
+      "lastUpdate": "2025-09-09T09:53:12.556Z",
+      "currency": "EUR",
+      "transactions": [
+        {
+          "reference": "",
+          "description": "contanti",
+          "createdBy": "current-user",
+          "createdAt": "2025-09-09T09:53:12.556Z",
+          "type": "credit",
+          "id": "ws2v1a8i",
+          "amount": 20
+        }
+      ]
+    },
+    "matchHistory": [],
+    "instructorData": {
+      "availability": {},
+      "priceCouple": 36,
+      "priceThree": 45,
+      "certifications": [],
+      "isInstructor": true,
+      "priceSingle": 25,
+      "hourlyRate": 25,
+      "specialties": [
+        "Padel"
+      ],
+      "priceMatchLesson": 52,
+      "color": "#673AB7",
+      "bio": ""
+    },
+    "id": "v8h4dgdh",
+    "isAccountLinked": false,
+    "category": "instructor",
+    "subscriptions": [],
+    "phone": "",
+    "lastActivity": null,
+    "dateOfBirth": null,
+    "communications": [],
+    "address": {
+      "street": "",
+      "country": "Italia",
+      "province": "",
+      "city": "",
+      "postalCode": ""
+    },
+    "fiscalCode": "",
+    "lastName": "Di Biase",
+    "clubName": "Sporting CAT",
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "name": "Claudio Di Biase",
+    "_migrated": true,
+    "_originalId": "v8h4dgdh",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "tournamentData": {
+      "isParticipant": true,
+      "initialRanking": 1500,
+      "currentRanking": 1500,
+      "division": null,
+      "notes": "",
+      "isActive": true,
+      "joinedAt": {
+        "_seconds": 1759661036,
+        "_nanoseconds": 688000000
+      },
+      "activeSince": {
+        "_seconds": 1759661036,
+        "_nanoseconds": 688000000
+      },
+      "totalMatches": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": 0,
+      "points": 0
+    },
+    "rating": 1500,
+    "baseRating": 1500,
+    "updatedAt": {
+      "_seconds": 1759662701,
+      "_nanoseconds": 926000000
+    }
+  },
+  "zlez2hkh": {
+    "wins": 0,
+    "clubName": "Sporting CAT",
+    "name": "Simone Occhiuzzi",
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "matches": 0,
+    "migratedAt": "2025-09-16T22:17:16.102Z",
+    "losses": 0,
+    "id": "zlez2hkh",
+    "_migrated": true,
+    "_originalId": "zlez2hkh",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    },
+    "instructorData": null,
+    "notes": [],
+    "wallet": {
+      "balance": 0,
+      "currency": "EUR"
+    },
+    "displayName": "Simone Occhiuzzi",
+    "category": "member",
+    "email": "zlez2hkh@placeholder.com",
+    "tags": [],
+    "tournamentData": {
+      "isParticipant": true,
+      "initialRanking": 1500,
+      "currentRanking": 1500,
+      "division": null,
+      "notes": "",
+      "isActive": true,
+      "joinedAt": {
+        "_seconds": 1759662726,
+        "_nanoseconds": 507000000
+      },
+      "activeSince": {
+        "_seconds": 1759662726,
+        "_nanoseconds": 507000000
+      },
+      "totalMatches": 0,
+      "wins": 0,
+      "losses": 0,
+      "winRate": 0,
+      "points": 0
+    },
+    "rating": 1500,
+    "baseRating": 1500,
+    "updatedAt": {
+      "_seconds": 1759662723,
+      "_nanoseconds": 271000000
+    }
+  },
+  "zvuipoma": {
+    "rating": 1000,
+    "updatedAt": "2025-09-16T22:17:16.099Z",
+    "losses": 0,
+    "matches": 0,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "baseRating": 1000,
+    "id": "zvuipoma",
+    "clubName": "Sporting CAT",
+    "wins": 0,
+    "name": "Matteo Di Stefano",
+    "migratedAt": "2025-09-16T22:17:16.099Z",
+    "_migrated": true,
+    "_originalId": "zvuipoma",
+    "_clubId": "sporting-cat",
+    "_migratedAt": {
+      "_seconds": 1758208682,
+      "_nanoseconds": 338000000
+    }
+  }
+}

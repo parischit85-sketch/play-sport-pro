@@ -590,6 +590,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
 
   // Gestisce il click su uno slot orario
   const handleTimeSlotClick = async (timeSlot) => {
+    console.log('🕐 Click on time slot:', timeSlot.time, 'isAvailable:', timeSlot.isAvailable);
     if (!timeSlot.isAvailable) return;
 
     // Il servizio unificato gestisce automaticamente l'aggiornamento dei dati
@@ -943,20 +944,26 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
 
             <div className="space-y-3 sm:space-y-4">
               {filteredCourtsForDisplay.map((court) => {
+                console.log('🎾 Rendering court:', court.name, 'timeSlots:', court.timeSlots?.length || 0);
                 const slotDate = new Date(`${selectedDate}T${selectedTime}:00`);
                 const isWithinSchedule = isCourtBookableAt(slotDate, court.id, courtsFromState);
                 const free = checkSlotAvailability(court.id, selectedDate, selectedTime);
-                const createsHole =
-                  isWithinSchedule &&
-                  free &&
-                  wouldCreateHalfHourHole(court.id, selectedDate, selectedTime, duration);
+                const hole = wouldCreateHalfHourHole(court.id, selectedDate, selectedTime, duration);
+                const isTrapped = isTimeSlotTrapped(
+                  court.id,
+                  selectedDate,
+                  selectedTime,
+                  duration,
+                  allBookings
+                );
 
-                // Simplified logic: wouldCreateHalfHourHole already handles 120min exemption internally
-                const isAvailable = isWithinSchedule && free && !createsHole;
+                // Usa la stessa logica di handleTimeSlotClick per consistenza
+                const isAvailable = isWithinSchedule && free && (!hole || isTrapped);
                 return (
                   <div
                     key={court.id}
                     onClick={() => {
+                      console.log('🏓 Click on court:', court.name, 'isAvailable:', isAvailable, 'courtId:', court.id);
                       if (isAvailable) {
                         setSelectedCourt(court);
                         setShowBookingModal(true);
@@ -967,6 +974,8 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                           court_name: court.name,
                           court_type: court.type,
                         });
+                      } else {
+                        console.log('❌ Court not available:', { isWithinSchedule, free, hole, isTrapped });
                       }
                     }}
                     className={`border-2 rounded-xl p-4 sm:p-5 transition-all duration-300 touch-manipulation ${

@@ -1,0 +1,103 @@
+{
+  "timestamp": "2025-10-13T23:32:09.178Z",
+  "analysis": {
+    "rootUsers": 20,
+    "rootProfiles": 33,
+    "rootAffiliations": 7,
+    "clubUsers": 36,
+    "clubProfiles": 35,
+    "clubs": [
+      {
+        "id": "cLUtbWq5YLw5fQrUEj4B",
+        "name": "Dorado Padel Center",
+        "users": 0,
+        "profiles": 1
+      },
+      {
+        "id": "fsR013mMyHDg0L6DNNpn",
+        "name": "aaaaa",
+        "users": 1,
+        "profiles": 1
+      },
+      {
+        "id": "sporting-cat",
+        "name": "Sporting Cat",
+        "users": 35,
+        "profiles": 33
+      }
+    ]
+  },
+  "memberships": {
+    "byUserId": {
+      "6GYKbzwWkibWp0d5cTGEI2Wr2HY2": "cLUtbWq5YLw5fQrUEj4B",
+      "GGZeE3zn1GcsqxhCMDu1lEE2pwB2": "qQqeIanrFjOaKgvck9CS",
+      "IGBfS9aVYHSiPjnL10l46pPwftL2": "fsR013mMyHDg0L6DNNpn",
+      "eLwnMqJMrQZxcF1OeRGbfixVcar1": "Au6i2vzHRg9x7smPUQbc",
+      "fEpTzNyIhzS1ZEzzl9fSafUrPJx2": "6MXapJIbziPnQaFOqMoX",
+      "s6m4TeGSK9NYD2G5C2jJHLWsDq03": "GVzHPDIG19Hj5PCIVWbf"
+    },
+    "byEmail": {},
+    "orphanedCount": 14
+  },
+  "stats": {
+    "migrated": 7,
+    "skipped": 33,
+    "errors": 0,
+    "details": [
+      {
+        "type": "AFFILIATION",
+        "userId": "6GYKbzwWkibWp0d5cTGEI2Wr2HY2",
+        "clubId": "cLUtbWq5YLw5fQrUEj4B",
+        "action": "MIGRATED"
+      },
+      {
+        "type": "AFFILIATION",
+        "userId": "GGZeE3zn1GcsqxhCMDu1lEE2pwB2",
+        "clubId": "UIklVCfK9lyVYDNFBx94",
+        "action": "MIGRATED"
+      },
+      {
+        "type": "AFFILIATION",
+        "userId": "GGZeE3zn1GcsqxhCMDu1lEE2pwB2",
+        "clubId": "qQqeIanrFjOaKgvck9CS",
+        "action": "MIGRATED"
+      },
+      {
+        "type": "AFFILIATION",
+        "userId": "IGBfS9aVYHSiPjnL10l46pPwftL2",
+        "clubId": "fsR013mMyHDg0L6DNNpn",
+        "action": "MIGRATED"
+      },
+      {
+        "type": "AFFILIATION",
+        "userId": "eLwnMqJMrQZxcF1OeRGbfixVcar1",
+        "clubId": "Au6i2vzHRg9x7smPUQbc",
+        "action": "MIGRATED"
+      },
+      {
+        "type": "AFFILIATION",
+        "userId": "fEpTzNyIhzS1ZEzzl9fSafUrPJx2",
+        "clubId": "6MXapJIbziPnQaFOqMoX",
+        "action": "MIGRATED"
+      },
+      {
+        "type": "AFFILIATION",
+        "userId": "s6m4TeGSK9NYD2G5C2jJHLWsDq03",
+        "clubId": "GVzHPDIG19Hj5PCIVWbf",
+        "action": "MIGRATED"
+      }
+    ]
+  },
+  "verification": {
+    "rootCollections": {
+      "users": 20,
+      "profiles": 33,
+      "affiliations": 7
+    },
+    "subcollections": {
+      "users": 38,
+      "profiles": 35
+    },
+    "consistency": true
+  }
+}

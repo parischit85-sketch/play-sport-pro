@@ -393,6 +393,11 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
+  // Debug: Track modalOpen state changes
+  useEffect(() => {
+    console.log('🔄 modalOpen state changed:', modalOpen);
+  }, [modalOpen]);
+
   // Drag & Drop state (desktop only)
   const [draggedBooking, setDraggedBooking] = useState(null);
   const [dragOverSlot, setDragOverSlot] = useState(null);
@@ -426,6 +431,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   });
 
   function openCreate(courtId, start) {
+    console.log('🚀 openCreate called', { courtId, start });
     const startRounded = floorToSlot(start, cfg.slotMinutes);
     setEditingId(null);
     setForm({
@@ -445,10 +451,13 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       instructorId: '', // Empty by default
       participants: 1,
     });
+    console.log('📝 Form set, calling setModalOpen(true)');
     setModalOpen(true);
+    console.log('✅ setModalOpen(true) called');
   }
 
   function openEdit(booking) {
+    console.log('✏️ openEdit called', booking.id);
     setEditingId(booking.id);
     const start = new Date(booking.start);
     const namesFromIds = (booking.players || []).map(playersNameById);
@@ -1006,7 +1015,10 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       return (
         <button
           type="button"
-          onClick={() => openCreate(courtId, t)}
+          onClick={() => {
+            console.log('🎾 Click slot libero!', { courtId, time: t });
+            openCreate(courtId, t);
+          }}
           className={`relative w-full h-9 rounded-lg ring-1 text-[11px] font-medium transition-all duration-200 ${
             isDragTarget
               ? 'ring-2 ring-blue-500 ring-offset-1 scale-105'
@@ -1131,7 +1143,10 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       <div className="w-full h-9 relative">
         <button
           type="button"
-          onClick={() => openEdit(hit)}
+          onClick={() => {
+            console.log('📅 Click prenotazione!', hit);
+            openEdit(hit);
+          }}
           className={`absolute left-0 right-0 px-2 py-2 ring-1 text-left text-[13px] font-semibold flex flex-col justify-center transition-all duration-200 ${
             isDesktop ? 'cursor-grab hover:shadow-lg' : ''
           }`}
@@ -1506,7 +1521,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
           {/* Modal glassmorphism per prenotazione - FUTURISTIC DESIGN */}
           <Modal
-            open={modalOpen}
+            isOpen={modalOpen}
             onClose={() => setModalOpen(false)}
             title={editingId ? 'Modifica prenotazione' : 'Nuova prenotazione'}
             T={T}

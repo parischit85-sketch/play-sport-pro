@@ -185,221 +185,77 @@ export function ClubProvider({ children }) {
     try {
       console.log('🔍 [ClubContext] Loading players for club:', clubId);
 
-      // 🆕 NEW: Load users directly from club's users collection
+      // 🔄 OPTION A: Single source of truth - Load users directly from club's users collection
       const { getClubUsers } = await import('@services/club-users.js');
       const clubUsers = await getClubUsers(clubId);
 
       console.log('🔍 [ClubContext] Found club users:', clubUsers.length);
       if (clubUsers.length === 0) {
         console.log('⚠️ [ClubContext] No club users found for club:', clubId);
-      }
-
-      // 🆕 NEW: Load original club profiles to get additional data (category, instructorData, etc.)
-      // ⚠️ IMPORTANTE: Carichiamo profiles SEMPRE, anche se clubUsers è vuoto (backward compatibility)
-      let clubProfiles = new Map();
-      try {
-        const profilesSnapshot = await getDocs(collection(db, 'clubs', clubId, 'profiles'));
-        profilesSnapshot.docs.forEach((doc) => {
-          const data = doc.data();
-          clubProfiles.set(doc.id, data);
-          // Debug tournamentData
-          if (data.tournamentData) {
-            console.log(
-              '🏆 [ClubContext] Profile with tournamentData:',
-              doc.id,
-              data.tournamentData
-            );
-          }
-        });
-        console.log('✅ Loaded club profiles:', profilesSnapshot.docs.length);
-      } catch (error) {
-        console.log('⚠️ Could not load club profiles, continuing without additional data');
-      }
-
-      // 🔄 FALLBACK: Se non ci sono users ma ci sono profiles, usa i profiles (backward compatibility)
-      if (clubUsers.length === 0 && clubProfiles.size === 0) {
         setPlayers([]);
         setPlayersLoaded(true);
-        console.log('No players found for club');
         return;
       }
 
-      // 🔄 LEGACY SUPPORT: Se non ci sono users, crea players solo dai profiles
-      let playersData = [];
+      // 🔄 OPTION A: All user data is now stored in clubs/{clubId}/users collection
+      // No need to merge with separate profiles collection
 
-      if (clubUsers.length === 0 && clubProfiles.size > 0) {
-        console.log('🔄 [ClubContext] Using legacy profiles system (no users collection)');
+      // Transform club users to player format
+      const playersData = clubUsers.map((clubUser) => {
+        // 🔍 CRITICAL: userId might be undefined for legacy users
+        // In that case, use the club-user document ID as the player ID
+        const userId = clubUser.userId || clubUser.id;
 
-        playersData = Array.from(clubProfiles.entries()).map(([userId, profileData]) => ({
-          id: userId,
-          name: profileData.name || profileData.displayName || 'Unknown',
-          displayName: profileData.name || profileData.displayName || 'Unknown',
-          email: profileData.email || '',
-          phone: profileData.phone || '',
-          rating: profileData.rating || profileData.baseRating || 1500,
-          role: profileData.role || 'player',
-          isLinked: true, // Profiles have userId as document ID
-          clubUserId: null, // No club user document
-
-          // Additional data from profile
-          category: profileData.category || 'member',
-          instructorData: profileData.instructorData || null,
-          tournamentData: profileData.tournamentData
-            ? {
-                ...profileData.tournamentData,
-                currentRanking:
-                  profileData.tournamentData.currentRanking || profileData.rating || 1500,
-              }
-            : null,
-
-          baseRating: profileData.baseRating || profileData.rating || 1500,
-          tags: profileData.tags || [],
-          subscriptions: profileData.subscriptions || [],
-          wallet: profileData.wallet || { balance: 0, currency: 'EUR' },
-          notes: profileData.notes || [],
-          bookingHistory: profileData.bookingHistory || [],
-          matchHistory: profileData.matchHistory || [],
-          medicalCertificates: profileData.medicalCertificates || { current: null, history: [] }, // 🔧 FIX: Include certificati medici
-          certificateStatus: profileData.certificateStatus || null, // 🔧 FIX: Include status certificato
-          isActive: profileData.isActive !== false,
-
-          createdAt: profileData.createdAt || null,
-          updatedAt: profileData.updatedAt || null,
-          lastActivity: profileData.lastActivity || null,
-        }));
-
-        console.log('✅ [ClubContext] Created', playersData.length, 'players from legacy profiles');
-      } else {
-        // Transform club users to player format with merged profile data
-        playersData = clubUsers.map((clubUser) => {
-          // 🔍 CRITICAL: userId might be undefined for legacy users
-          // In that case, use the club-user document ID as the player ID
-          const userId = clubUser.userId || clubUser.id;
-          const originalProfile = clubProfiles.get(userId);
-
-          // 🔍 DEBUG: Log certificate data for player 70xe0dha
-          if (userId === '70xe0dha') {
-            console.log('🔍 [DEBUG] Player 70xe0dha BEFORE mapping:', {
-              clubUserId: clubUser.id,
-              userId,
-              hasProfile: !!originalProfile,
-              hasCertificate: !!originalProfile?.medicalCertificates,
-              certificateData: originalProfile?.medicalCertificates,
-              certificateRaw: originalProfile && 'medicalCertificates' in originalProfile,
-              profileKeys: originalProfile ? Object.keys(originalProfile) : 'no profile',
-              fullProfile: originalProfile
-            });
-          }
-
-          // Debug problematic users without userId
-          if (!clubUser.userId) {
-            console.log('⚠️ [ClubContext] Club user without userId, using doc ID:', {
-              docId: clubUser.id,
-              userName: clubUser.userName,
-              userEmail: clubUser.userEmail,
-              role: clubUser.role
-            });
-          }
-
-          // Debug tournamentData mapping
-          if (originalProfile?.tournamentData) {
-            console.log(
-              '🔄 [ClubContext] Mapping player with tournamentData:',
-              userId,
-              originalProfile.tournamentData
-            );
-          }
-
-          // Merge data from club profile if available
-          const mergedData = {
-            // Base data from club-user
-            id: userId,
-            name: clubUser.mergedData?.name || clubUser.userName || originalProfile?.name || 'Unknown User',
-            displayName: clubUser.mergedData?.name || clubUser.userName || originalProfile?.name || 'Unknown User',
-            email: clubUser.userEmail || originalProfile?.email,
-            phone: clubUser.userPhone || originalProfile?.phone,
-            rating: clubUser.mergedData?.rating || clubUser.originalProfileData?.rating || originalProfile?.rating || 1500,
-            role: clubUser.role,
-            isLinked: clubUser.isLinked || false,
-            clubUserId: clubUser.id, // Keep reference to club user document
-
-            // Additional data from original club profile
-            category: originalProfile?.category || 'member',
-            instructorData: originalProfile?.instructorData || null,
-            tournamentData: originalProfile?.tournamentData
-              ? {
-                  ...originalProfile.tournamentData,
-                  // 🔄 SINCRONIZZAZIONE: se currentRanking non esiste, usa rating
-                  currentRanking:
-                    originalProfile.tournamentData.currentRanking ||
-                    originalProfile?.rating ||
-                    1500,
-                }
-              : null,
-
-            // Preserve other profile data
-            baseRating: originalProfile?.baseRating || originalProfile?.rating || 1500,
-            tags: originalProfile?.tags || [],
-            subscriptions: originalProfile?.subscriptions || [],
-            wallet: originalProfile?.wallet || { balance: 0, currency: 'EUR' },
-            notes: originalProfile?.notes || [],
-            bookingHistory: originalProfile?.bookingHistory || [],
-            matchHistory: originalProfile?.matchHistory || [],
-            medicalCertificates: originalProfile?.medicalCertificates || { current: null, history: [] }, // 🔧 FIX: Include certificati medici
-            certificateStatus: originalProfile?.certificateStatus || null, // 🔧 FIX: Include status certificato
-            isActive: originalProfile?.isActive !== false, // Default to true if not specified
-
-            // Metadata
-            createdAt: originalProfile?.createdAt || clubUser.addedAt,
-            updatedAt: originalProfile?.updatedAt || null,
-            lastActivity: originalProfile?.lastActivity || null,
-          };
-
-          // 🔍 DEBUG: Log final mapped data for player 70xe0dha
-          if (userId === '70xe0dha') {
-            console.log('🔍 [DEBUG] Player 70xe0dha AFTER mapping:', {
-              id: mergedData.id,
-              name: mergedData.name,
-              hasCertificate: !!mergedData.medicalCertificates,
-              certificateData: mergedData.medicalCertificates,
-              certificateStatus: mergedData.certificateStatus,
-              allKeys: Object.keys(mergedData)
-            });
-          }
-
-          return mergedData;
+        console.log('🔍 [ClubContext] Processing club user:', userId, {
+          hasUserId: !!clubUser.userId,
+          isLinked: clubUser.isLinked || false
         });
-      }
 
-      // 🔍 DEBUG: Analizza i profili caricati per trovare quelli problematici
-      console.log('🔍 DEBUGGING PLAYERS DATA:');
-      playersData.forEach((player, index) => {
-        const name = player.name || '';
-        const displayName = player.displayName || '';
-        const hasValidName = (name.trim() + displayName.trim()).length > 0;
+        // Use merged data if available, otherwise fall back to individual fields
+        const mergedData = clubUser.mergedData || {};
 
-        if (!hasValidName || !name.trim()) {
-          console.log(`❌ PROBLEMATIC PLAYER [${index}]:`, {
-            id: player.id,
-            name: player.name,
-            displayName: player.displayName,
-            role: player.role,
-            hasValidName,
-            keys: Object.keys(player),
-          });
-        }
+        // Build player object from club user data
+        const playerData = {
+          // Base data from club-user
+          id: userId,
+          name: mergedData.name || clubUser.userName || 'Unknown User',
+          displayName: mergedData.name || clubUser.userName || 'Unknown User',
+          email: mergedData.email || clubUser.userEmail || '',
+          phone: mergedData.phone || clubUser.userPhone || '',
+          rating: mergedData.rating || clubUser.originalProfileData?.rating || 1500,
+          role: clubUser.role || 'player',
+          isLinked: clubUser.isLinked || !!clubUser.linkedUserId,
+          clubUserId: clubUser.id, // Keep reference to club user document
 
-        // Debug instructor data
-        if (player.category === 'instructor' || player.instructorData?.isInstructor) {
-          console.log(`🎯 INSTRUCTOR FOUND [${index}]:`, {
-            id: player.id,
-            name: player.name,
-            category: player.category,
-            isInstructor: player.instructorData?.isInstructor,
-            specialties: player.instructorData?.specialties,
-            hourlyRate: player.instructorData?.hourlyRate,
-          });
-        }
+          // Additional data from original profile data (if available)
+          category: clubUser.originalProfileData?.category || 'member',
+          instructorData: clubUser.originalProfileData?.instructorData || null,
+          tournamentData: clubUser.originalProfileData?.tournamentData || {
+            isParticipant: true,
+            isActive: true,
+            currentRanking: mergedData.rating || clubUser.originalProfileData?.rating || 1500,
+            initialRanking: mergedData.rating || clubUser.originalProfileData?.rating || 1500,
+          },
+
+          // Preserve other profile data
+          baseRating: clubUser.originalProfileData?.baseRating || mergedData.rating || clubUser.originalProfileData?.rating || 1500,
+          tags: clubUser.originalProfileData?.tags || [],
+          subscriptions: clubUser.originalProfileData?.subscriptions || [],
+          wallet: clubUser.originalProfileData?.wallet || { balance: 0, currency: 'EUR' },
+          notes: clubUser.originalProfileData?.notes || [],
+          bookingHistory: clubUser.originalProfileData?.bookingHistory || [],
+          matchHistory: clubUser.originalProfileData?.matchHistory || [],
+          medicalCertificates: clubUser.originalProfileData?.medicalCertificates || { current: null, history: [] },
+          certificateStatus: clubUser.originalProfileData?.certificateStatus || null,
+          isActive: clubUser.originalProfileData?.isActive !== false,
+
+          // Metadata
+          createdAt: clubUser.originalProfileData?.createdAt || clubUser.addedAt,
+          updatedAt: clubUser.originalProfileData?.updatedAt || null,
+          lastActivity: clubUser.originalProfileData?.lastActivity || null,
+        };
+
+        return playerData;
       });
 
       // 🧹 FILTRO FINALE: Rimuovi solo profili completamente invalidi
@@ -410,7 +266,7 @@ export function ClubProvider({ children }) {
           console.log('🚫 FILTERING OUT PLAYER (no ID):', player);
           return false;
         }
-        
+
         // Se non ha un name valido, logga un warning ma mantieni il player
         // (il fallback 'Unknown User' garantisce che ci sia sempre un nome)
         if (!player.name || player.name === 'Unknown User') {
@@ -421,33 +277,23 @@ export function ClubProvider({ children }) {
             role: player.role
           });
         }
-        
+
         return true;
       });
 
-      console.log('✅ Players loaded with merged profile data:', filteredPlayers.length);
-      console.log(
-        '🎯 Instructors found:',
-        filteredPlayers.filter((p) => p.category === 'instructor' || p.instructorData?.isInstructor)
-          .length
-      );
+      console.log('✅ Players loaded from single source:', filteredPlayers.length);
 
       setPlayers(filteredPlayers);
       setPlayersLoaded(true);
       console.log(
         'Players loaded:',
-        filteredPlayers.length,
-        '(filtered from',
-        playersData.length,
-        ')'
+        filteredPlayers.length
       );
     } catch (error) {
       console.error('Error loading players:', error);
       setPlayersLoaded(true);
     }
-  }, [clubId, playersLoaded]);
-
-  const loadMatches = useCallback(
+  }, [clubId, playersLoaded]);  const loadMatches = useCallback(
     async (forceReload = false) => {
       if (!clubId || (matchesLoaded && !forceReload)) return;
 
@@ -703,7 +549,7 @@ export function ClubProvider({ children }) {
 
   // Placeholder functions for player management (to be implemented if needed)
   const addPlayer = useCallback(
-    async (playerData) => {
+    async (playerData, currentUser = null) => {
       if (!clubId) {
         throw new Error('No club selected');
       }
@@ -731,11 +577,12 @@ export function ClubProvider({ children }) {
 
           return clubUser;
         } else {
-          // Create new profile in club's profiles collection (legacy system for non-registered users)
+          // 🔄 OPTION A: Create new user entry directly in club's users collection
+          // Single source of truth - no separate profiles collection
           const { db } = await import('@services/firebase.js');
           const { collection, addDoc, serverTimestamp } = await import('firebase/firestore');
 
-          const profileData = {
+          const userData = {
             name: playerData.name || '',
             displayName: playerData.name || '',
             email: playerData.email || '',
@@ -751,20 +598,53 @@ export function ClubProvider({ children }) {
             notes: playerData.notes ? [{ text: playerData.notes, createdAt: new Date() }] : [],
             bookingHistory: [],
             matchHistory: [],
+            medicalCertificates: { current: null, history: [] },
+            certificateStatus: null,
+            tournamentData: {
+              isParticipant: true,
+              isActive: true,
+              currentRanking: playerData.rating || 1500,
+              initialRanking: playerData.rating || 1500,
+            },
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
           };
 
-          const profilesRef = collection(db, 'clubs', clubId, 'profiles');
-          const docRef = await addDoc(profilesRef, profileData);
+          // Create club user entry with embedded profile data
+          const clubUserData = {
+            userId: null, // Will be set to the document ID
+            clubId: clubId,
+            userEmail: userData.email || '',
+            userName: userData.name || '',
+            userPhone: userData.phone || '',
+            role: 'player',
+            status: 'active',
+            addedAt: serverTimestamp(),
+            addedBy: currentUser?.uid || 'system',
+            notes: playerData.notes || '',
+            isLinked: false, // Not linked to a registered account
+            originalProfileData: userData, // Embed all profile data here
+          };
 
-          console.log('✅ [ClubContext] New profile created:', docRef.id);
+          const clubUsersRef = collection(db, 'clubs', clubId, 'users');
+          const clubUserDocRef = await addDoc(clubUsersRef, {
+            ...clubUserData,
+            userId: null, // Will be updated after creation
+          });
+
+          // Update the userId to be the document ID for non-registered users
+          await updateDoc(clubUserDocRef, {
+            userId: clubUserDocRef.id,
+            updatedAt: serverTimestamp(),
+          });
+
+          console.log('✅ [ClubContext] New club user created:', clubUserDocRef.id);
 
           // Reload players to get updated list
           setPlayersLoaded(false);
           await loadPlayers();
 
-          return { id: docRef.id, ...profileData };
+          return { id: clubUserDocRef.id, ...userData };
         }
       } catch (error) {
         console.error('❌ [ClubContext] Error adding player:', error);
@@ -786,37 +666,29 @@ export function ClubProvider({ children }) {
         const { db } = await import('@services/firebase.js');
         const { doc, updateDoc, serverTimestamp, getDoc } = await import('firebase/firestore');
 
-        // First, try to find the player in club users (new system)
+        // 🔄 OPTION A: Find the player in club users collection (single source of truth)
         const { getClubUsers } = await import('@services/club-users.js');
         const clubUsers = await getClubUsers(clubId);
         const clubUser = clubUsers.find((u) => u.userId === playerId);
 
         if (clubUser) {
-          // Player is in new club users system
-          // Update both the club user document and the profile document
-
-          // Update club user document if needed (role, status, etc.)
-          if (updates.role || updates.status) {
-            const clubUserRef = doc(db, 'clubs', clubId, 'users', clubUser.id);
-            const clubUserUpdates = {};
-
-            if (updates.role) clubUserUpdates.role = updates.role;
-            if (updates.status) clubUserUpdates.status = updates.status;
-            clubUserUpdates.updatedAt = serverTimestamp();
-
-            await updateDoc(clubUserRef, clubUserUpdates);
-            console.log('✅ [ClubContext] Updated club user document');
-          }
-
-          // Update profile document for other fields (category, instructorData, rating, etc.)
-          const profileRef = doc(db, 'clubs', clubId, 'profiles', playerId);
-          const profileSnap = await getDoc(profileRef);
-
-          const profileUpdates = {
+          // Update the club user document with all changes
+          const clubUserRef = doc(db, 'clubs', clubId, 'users', clubUser.id);
+          const clubUserUpdates = {
             updatedAt: serverTimestamp(),
           };
 
-          // Map updates to profile fields
+          // Update basic club user fields
+          if (updates.role) clubUserUpdates.role = updates.role;
+          if (updates.status) clubUserUpdates.status = updates.status;
+          if (updates.name) {
+            clubUserUpdates.userName = updates.name;
+          }
+          if (updates.email !== undefined) clubUserUpdates.userEmail = updates.email;
+          if (updates.phone !== undefined) clubUserUpdates.userPhone = updates.phone;
+
+          // Prepare profile data updates
+          const profileUpdates = {};
           if (updates.name) {
             profileUpdates.name = updates.name;
             profileUpdates.displayName = updates.name;
@@ -837,21 +709,11 @@ export function ClubProvider({ children }) {
           }
           if (updates.tournamentData !== undefined) {
             profileUpdates.tournamentData = updates.tournamentData;
-            // 🔄 SINCRONIZZAZIONE: rating = currentRanking del campionato
-            if (updates.tournamentData.currentRanking) {
+            // Sync rating with tournament ranking if not explicitly set
+            if (updates.tournamentData.currentRanking && updates.rating === undefined) {
               profileUpdates.rating = updates.tournamentData.currentRanking;
               profileUpdates.baseRating = updates.tournamentData.currentRanking;
             }
-            console.log('🏆 [ClubContext] tournamentData to save:', updates.tournamentData);
-            console.log(
-              '🏆 [ClubContext] tournamentData.initialRanking:',
-              updates.tournamentData.initialRanking
-            );
-            console.log(
-              '🏆 [ClubContext] tournamentData.currentRanking:',
-              updates.tournamentData.currentRanking
-            );
-            console.log('🔄 [ClubContext] Synced rating:', profileUpdates.rating);
           }
           if (updates.tags) profileUpdates.tags = updates.tags;
           if (updates.notes) profileUpdates.notes = updates.notes;
@@ -862,75 +724,53 @@ export function ClubProvider({ children }) {
           if (updates.certificateStatus !== undefined) {
             profileUpdates.certificateStatus = updates.certificateStatus;
           }
+          profileUpdates.updatedAt = serverTimestamp();
 
-          // 🔥 CRITICAL: Remove undefined values before saving to Firestore
-          Object.keys(profileUpdates).forEach(key => {
-            if (profileUpdates[key] === undefined) {
-              delete profileUpdates[key];
-            }
-          });
-
-          console.log('💾 [ClubContext] Profile updates to save:', profileUpdates);
-
-          if (profileSnap.exists()) {
-            // Update existing profile
-            await updateDoc(profileRef, profileUpdates);
-            console.log('✅ [ClubContext] Updated existing profile');
-          } else {
-            // Create profile if it doesn't exist
-            const { setDoc } = await import('firebase/firestore');
-            const newProfile = {
+          // Merge profile updates into originalProfileData
+          if (Object.keys(profileUpdates).length > 0) {
+            clubUserUpdates.originalProfileData = {
+              ...clubUser.originalProfileData,
               ...profileUpdates,
-              name: updates.name || clubUser.userName,
-              displayName: updates.name || clubUser.userName,
-              email: updates.email || clubUser.userEmail,
-              phone: updates.phone || clubUser.userPhone,
-              rating: updates.rating || 1500,
-              baseRating: updates.rating || 1500,
-              category: updates.category || 'member',
-              instructorData: updates.instructorData || null,
-              role: updates.role || 'player',
-              isActive: true,
-              tags: updates.tags || [],
-              subscriptions: [],
-              wallet: updates.wallet || { balance: 0, currency: 'EUR', transactions: [] },
-              notes: updates.notes || [],
-              bookingHistory: [],
-              matchHistory: [],
-              medicalCertificates: updates.medicalCertificates || { current: null, history: [] },
-              certificateStatus: updates.certificateStatus || null,
-              createdAt: serverTimestamp(),
             };
-            await setDoc(profileRef, newProfile);
-            console.log('✅ [ClubContext] Created new profile for club user');
-          }
-        } else {
-          // Player is in old profiles system only
-          const profileRef = doc(db, 'clubs', clubId, 'profiles', playerId);
-          const profileUpdates = {
-            ...updates,
-            updatedAt: serverTimestamp(),
-          };
-
-          // Special handling for name updates
-          if (updates.name) {
-            profileUpdates.displayName = updates.name;
           }
 
-          // Special handling for rating updates
-          if (updates.rating !== undefined) {
-            profileUpdates.baseRating = updates.rating;
-          }
-
-          // 🔥 CRITICAL: Remove undefined values before saving to Firestore
-          Object.keys(profileUpdates).forEach(key => {
-            if (profileUpdates[key] === undefined) {
-              delete profileUpdates[key];
+          // Remove undefined values
+          Object.keys(clubUserUpdates).forEach(key => {
+            if (clubUserUpdates[key] === undefined) {
+              delete clubUserUpdates[key];
             }
           });
 
-          await updateDoc(profileRef, profileUpdates);
-          console.log('✅ [ClubContext] Updated profile (old system)');
+          console.log('💾 [ClubContext] Club user updates to save:', clubUserUpdates);
+
+          await updateDoc(clubUserRef, clubUserUpdates);
+          console.log('✅ [ClubContext] Updated club user document');
+        }
+
+        // 🔄 SINCRONIZZAZIONE AUTOMATICA: Se il giocatore è collegato a un account globale,
+        // aggiorna anche il profilo globale con i dati rilevanti
+        const currentPlayer = players.find(p => p.id === playerId);
+        if (currentPlayer?.linkedAccountId && (updates.name || updates.email || updates.phone || updates.rating)) {
+          try {
+            const { updateUserProfile } = await import('@services/auth.jsx');
+            const globalUpdates = {};
+
+            if (updates.name) {
+              globalUpdates.displayName = updates.name;
+              globalUpdates.firstName = updates.name.split(' ')[0] || '';
+              globalUpdates.lastName = updates.name.split(' ').slice(1).join(' ') || '';
+            }
+            if (updates.email !== undefined) globalUpdates.email = updates.email;
+            if (updates.phone !== undefined) globalUpdates.phone = updates.phone;
+
+            if (Object.keys(globalUpdates).length > 0) {
+              await updateUserProfile(currentPlayer.linkedAccountId, globalUpdates);
+              console.log('🔄 [ClubContext] Synced updates to global user profile');
+            }
+          } catch (syncError) {
+            console.warn('⚠️ [ClubContext] Failed to sync to global profile:', syncError);
+            // Non bloccare l'aggiornamento locale per errori di sincronizzazione
+          }
         }
 
         // Reload players to get updated list
@@ -943,7 +783,7 @@ export function ClubProvider({ children }) {
         throw error;
       }
     },
-    [clubId, loadPlayers]
+    [clubId, loadPlayers, players]
   );
 
   const deletePlayer = useCallback(
@@ -956,17 +796,47 @@ export function ClubProvider({ children }) {
         throw new Error('Player ID is required');
       }
 
+      console.log('🗑️ [ClubContext] Starting delete process for player:', playerId);
+      console.log('🗑️ [ClubContext] Current clubId:', clubId);
+
       try {
-        console.log('🗑️ [ClubContext] Deleting player:', playerId);
+        // 🔄 OPTION A: Find the correct document in clubs/{clubId}/users collection
+        // The playerId might be userId field, not the document ID
+        const { getClubUsers } = await import('@services/club-users.js');
+        const clubUsers = await getClubUsers(clubId);
+        const clubUser = clubUsers.find((u) => u.userId === playerId || u.id === playerId);
 
-        // Delete from clubs/{clubId}/users collection
-        const userRef = doc(db, 'clubs', clubId, 'users', playerId);
+        if (!clubUser) {
+          console.warn('⚠️ [ClubContext] Club user not found for playerId:', playerId);
+          throw new Error('Player not found in club users');
+        }
+
+        console.log('🗑️ [ClubContext] Found club user document:', clubUser.id, 'for player:', playerId);
+
+        // Delete the club user document using the document ID
+        const userRef = doc(db, 'clubs', clubId, 'users', clubUser.id);
+        console.log('🗑️ [ClubContext] Attempting to delete document at path:', userRef.path);
+
+        // First check if document exists
+        const docSnap = await getDoc(userRef);
+        if (!docSnap.exists()) {
+          console.warn('⚠️ [ClubContext] Document does not exist:', userRef.path);
+          throw new Error('Player document does not exist');
+        }
+
+        console.log('🗑️ [ClubContext] Document exists, proceeding with deletion');
         await deleteDoc(userRef);
+        console.log('✅ [ClubContext] User document deleted successfully');
 
-        console.log('✅ [ClubContext] Player deleted from club users');
+        // Small delay to allow delete to propagate
+        console.log('⏳ [ClubContext] Waiting 2 seconds for deletion to propagate...');
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         // Reload players list
+        console.log('🔄 [ClubContext] Reloading players after deletion...');
+        setPlayersLoaded(false);
         await loadPlayers();
+        console.log('✅ [ClubContext] Players reloaded after deletion');
 
         console.log('✅ [ClubContext] Player deleted successfully');
       } catch (error) {

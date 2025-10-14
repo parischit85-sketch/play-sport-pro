@@ -509,7 +509,7 @@ function AppLayoutInner() {
           'pb-20 md:pb-5'
         }`}
       >
-        {/* Alert Certificato Medico - Solo per utenti in un club */}
+        {/* Alert Certificato Medico */}
         {user && clubId && <CertificateExpiryAlert />}
 
         <Outlet />

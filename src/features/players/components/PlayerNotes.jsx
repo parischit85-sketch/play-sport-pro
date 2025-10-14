@@ -1,6 +1,7 @@
 // =============================================
 // FILE: src/features/players/components/PlayerNotes.jsx
 // Gestione note del giocatore
+// Updated: 2025-10-13 - Fixed React key warning
 // =============================================
 
 import React, { useState } from 'react';
@@ -273,9 +274,9 @@ export default function PlayerNotes({ player, onUpdate, T }) {
 
                   {note.tags && note.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1">
-                      {note.tags.map((tag, index) => (
+                      {note.tags.map((tag) => (
                         <span
-                          key={index}
+                          key={tag}
                           className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full"
                         >
                           #{tag}

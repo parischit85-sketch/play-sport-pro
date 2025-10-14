@@ -84,9 +84,14 @@ export default function CreaPartita({
   // 🔄 NUOVO: Hook per migrazione automatica rating storici
   const { runMigrationIfNeeded } = useRatingMigration();
 
-  // Use derivedMatches if available, otherwise fallback to context
-  const actualMatches =
-    derivedMatches && derivedMatches.length > 0 ? derivedMatches : contextMatches || [];
+  // 🎯 USA SEMPRE rankingData.matches se disponibili (contengono i calcoli corretti)
+  // altrimenti fallback su derivedMatches o contextMatches
+  const actualMatches = 
+    rankingData?.matches && rankingData.matches.length > 0 
+      ? rankingData.matches 
+      : (derivedMatches && derivedMatches.length > 0 
+          ? derivedMatches 
+          : contextMatches || []);
 
   // Definizione di players PRIMA del suo utilizzo
   const players = state.players;
@@ -395,14 +400,7 @@ export default function CreaPartita({
     const rrLocal = computeFromSets(sets || []);
 
     if (!rrLocal.winner || sumA == null || sumB == null) {
-      onShowFormula(
-        <FormulaIntro
-          sumA={sumA}
-          sumB={sumB}
-          teamALabel={`${nameA1} + ${nameA2}`}
-          teamBLabel={`${nameB1} + ${nameB2}`}
-        />
-      );
+      onShowFormula(null); // Non mostrare formula se dati incompleti
       return;
     }
 
@@ -413,20 +411,15 @@ export default function CreaPartita({
     const base = (sumA + sumB) / 100;
     const P = Math.round((base + GD) * factor);
 
-    onShowFormula(
-      <FormulaExplainer
-        sumA={sumA}
-        sumB={sumB}
-        gap={gap}
-        factor={factor}
-        GD={GD}
-        P={P}
-        winner={rrLocal.winner}
-        sets={sets}
-        teamALabel={`${nameA1} + ${nameA2}`}
-        teamBLabel={`${nameB1} + ${nameB2}`}
-      />
-    );
+    onShowFormula({
+      sumA,
+      sumB,
+      gap,
+      base,
+      gd: GD,
+      factor,
+      pts: P
+    });
   };
 
   // Legacy addMatch function for backward compatibility
@@ -660,7 +653,9 @@ export default function CreaPartita({
             </div>
           ) : (
             (actualMatches || [])
-              .slice(0, 20) // Take first 20 matches (already sorted newest first)
+              .slice() // Crea copia per non modificare l'originale
+              .sort((a, b) => new Date(b.date) - new Date(a.date)) // Ordina dalla più recente alla più vecchia
+              .slice(0, 20) // Prendi le prime 20 partite (più recenti)
               .map((m, index) => {
                 // console.log(`🎾 MATCHROW DEBUG ${index}:`, {
                 //   id: m.id,

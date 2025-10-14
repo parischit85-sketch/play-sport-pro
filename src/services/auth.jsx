@@ -445,33 +445,6 @@ export async function getUserProfile(uid) {
   }
 }
 
-export async function saveUserProfile(uid, data) {
-  // Use new users service - handle both create and update
-  const { getUser, createUser, updateUser } = await import('./users.js');
-
-  try {
-    // Check if user exists first
-    const existingUser = await getUser(uid);
-
-    if (existingUser) {
-      // User exists - update it
-      const updatedUser = await updateUser(uid, data);
-      _userCache.delete(uid); // Invalidate cache
-      return updatedUser;
-    } else {
-      // User doesn't exist - create it
-      const newUser = await createUser(uid, data);
-      _userCache.delete(uid); // Invalidate cache
-      return newUser;
-    }
-  } catch (error) {
-    console.error('Error saving user profile:', error);
-    // Invalidate cache anyway
-    _userCache.delete(uid);
-    throw error;
-  }
-}
-
 export async function createUserProfileIfNeeded(firebaseUser) {
   if (!firebaseUser) return null;
 
@@ -542,15 +515,43 @@ export async function setDisplayName(user, name) {
 // (opzionale) esponi auth se serve in UI
 export { auth };
 
-// ====== LISTA PROFILI (per collegamento giocatori) ======
+// ====== LISTA PROFILI UTENTI REGISTRATI GLOBALI ======
 export async function listAllUserProfiles(max = 500) {
-  // Ritorna array di { uid, ...profile }
-  const ref = collection(db, 'clubs', MAIN_CLUB_ID, 'profiles');
-  const snap = await getDocs(query(ref, qLimit(max)));
-  const out = [];
-  snap.forEach((docSnap) => {
-    const data = docSnap.data() || {};
-    out.push({ uid: docSnap.id, ...data });
-  });
-  return out;
+  // Ritorna array di profili utente registrati globalmente
+  const { getAllUsers } = await import('./users.js');
+  return await getAllUsers(max);
+}
+
+// ====== GESTIONE PROFILI UTENTE REGISTRATI ======
+
+// Salva profilo utente globale alla registrazione (usa servizio users.js)
+export async function saveUserProfile(user, additionalData = {}) {
+  const { createUserIfNeeded } = await import('./users.js');
+  return await createUserIfNeeded(user, additionalData);
+}
+
+// Aggiorna profilo utente globale
+export async function updateUserProfile(uid, updates) {
+  const { updateUser } = await import('./users.js');
+  return await updateUser(uid, updates);
+}
+
+// Aggiunge collegamento circolo al profilo globale
+export async function linkUserToClub(uid, clubId, playerId, role = 'player') {
+  const { updateUser } = await import('./users.js');
+
+  // Prima ottiene collegamenti esistenti
+  const { getUser } = await import('./users.js');
+  const userData = await getUser(uid);
+  const existingLinks = userData?.clubLinks || [];
+
+  // Aggiunge nuovo collegamento
+  const updatedLinks = [...existingLinks, {
+    clubId,
+    playerId,
+    role,
+    linkedAt: new Date()
+  }];
+
+  return await updateUser(uid, { clubLinks: updatedLinks });
 }

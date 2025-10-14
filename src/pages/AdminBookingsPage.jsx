@@ -144,6 +144,9 @@ export default function AdminBookingsPage() {
                     // Identifica nuovi campi da aggiungere
                     const newCourts = newState.courts.filter((c) => !existingCourtsMap.has(c.id));
 
+                    // Identifica campi cancellati da rimuovere
+                    const deletedCourts = localCourts.filter((c) => !newCourtsMap.has(c.id));
+
                     // Identifica campi modificati da aggiornare
                     const updatedCourts = newState.courts.filter((newCourt) => {
                       const existingCourt = existingCourtsMap.get(newCourt.id);
@@ -155,6 +158,25 @@ export default function AdminBookingsPage() {
                     // Usa writeBatch per operazioni atomiche
                     const batch = writeBatch(db);
                     let hasOperations = false;
+
+                    // Elimina campi cancellati da Firebase
+                    for (const court of deletedCourts) {
+                      try {
+                        const courtRef = doc(
+                          db,
+                          'clubs',
+                          clubId,
+                          'courts',
+                          court.firebaseId || court.id
+                        );
+                        batch.delete(courtRef);
+                        hasOperations = true;
+                        console.log('🗑️ Deleting court from Firebase:', court.name, court.id);
+                      } catch (error) {
+                        console.error('Errore eliminazione campo:', error);
+                        alert(`Errore eliminazione campo ${court.name}: ${error.message}`);
+                      }
+                    }
 
                     // Aggiungi nuovi campi a Firebase e aggiorna gli ID locali
                     const updatedNewState = { ...newState };

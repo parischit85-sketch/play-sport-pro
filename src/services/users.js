@@ -313,6 +313,29 @@ export async function getUsersByIds(uids) {
   }
 }
 
+/**
+ * Get all users (for admin purposes)
+ * @param {number} maxResults - Maximum number of results to return
+ * @returns {Promise<Array>} Array of user data
+ */
+export async function getAllUsers(maxResults = 500) {
+  try {
+    const usersRef = collection(db, 'users');
+    const q = query(usersRef, orderBy('registeredAt', 'desc'), limit(maxResults));
+    const querySnapshot = await getDocs(q);
+
+    const users = [];
+    querySnapshot.forEach((doc) => {
+      users.push({ uid: doc.id, ...doc.data() });
+    });
+
+    return users;
+  } catch (error) {
+    console.error('Error getting all users:', error);
+    throw error;
+  }
+}
+
 // =============================================
 // UTILITIES
 // =============================================

@@ -7,7 +7,7 @@ import { themeTokens } from '@lib/theme.js';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useUI } from '@contexts/UIContext.jsx';
 import { useAuth } from '@contexts/AuthContext.jsx';
-import { computeClubRanking } from '@lib/ranking-club.js';
+import { useCalculatedPlayerRatings } from '@hooks/useCalculatedPlayerRatings.js';
 import PlayersCRM from '@features/players/PlayersCRM.jsx';
 
 export default function PlayersPage() {
@@ -32,36 +32,12 @@ export default function PlayersPage() {
   // Gli admin di club possono sempre accedere, anche senza clubMode attivato
   const canAccessPlayers = clubMode || isClubAdmin(clubId);
 
-  // 🎯 Calcola i ranking reali dalle partite (come in Classifica)
-  const playersWithRealRating = React.useMemo(() => {
-    if (!clubId || !players || !matchesLoaded) return players;
-
-    // Filtra i giocatori del torneo
-    const tournamentPlayers = players.filter(
-      (p) => p.tournamentData?.isParticipant === true && p.tournamentData?.isActive === true
-    );
-
-    if (tournamentPlayers.length === 0) return players;
-
-    // Calcola i ranking reali
-    const rankingData = computeClubRanking(tournamentPlayers, matches, clubId);
-    const rankingMap = new Map(rankingData.players.map((p) => [p.id, p.rating]));
-
-    // Applica i rating calcolati ai giocatori
-    return players.map((p) => ({
-      ...p,
-      calculatedRating: rankingMap.get(p.id) || p.rating,
-    }));
-  }, [clubId, players, matches, matchesLoaded]);
-
-  // Crea playersById con i rating calcolati
-  const playersByIdWithRating = React.useMemo(() => {
-    const map = {};
-    playersWithRealRating.forEach((p) => {
-      map[p.id] = p;
-    });
-    return map;
-  }, [playersWithRealRating]);
+  // 🎯 Calcola i ranking reali dalle partite usando hook ottimizzato
+  const { playersWithRatings, playersByIdWithRatings } = useCalculatedPlayerRatings(
+    players,
+    matches,
+    clubId
+  );
 
   // I dati si caricano automaticamente nel ClubContext quando cambia clubId
 
@@ -108,7 +84,7 @@ export default function PlayersPage() {
 
   const handleAddPlayer = async (playerData) => {
     try {
-      await addPlayer(playerData);
+      await addPlayer(playerData, user);
     } catch (error) {
       console.error('Error adding player:', error);
       alert("Errore durante l'aggiunta del giocatore: " + error.message);
@@ -141,16 +117,18 @@ export default function PlayersPage() {
 
   return (
     <PlayersCRM
+      key={playersWithRatings.length}
       T={T}
-      state={{ players: playersWithRealRating }}
+      state={{ players: playersWithRatings }}
       setState={() => {
         /* Legacy prop - now using direct Firebase functions */
       }}
       onOpenStats={handleOpenStats}
-      playersById={playersByIdWithRating}
+      playersById={playersByIdWithRatings}
       onAddPlayer={handleAddPlayer}
       onUpdatePlayer={handleUpdatePlayer}
       onDeletePlayer={handleDeletePlayer}
+      isLoading={isLoadingPlayers}
     />
   );
 }

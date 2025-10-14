@@ -321,8 +321,10 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
         customDomain: functions.customDomain
       });
 
-      // IMPORTANTE: Usa la regione corretta
-      const sendBulkNotifications = httpsCallable(functions, 'sendBulkCertificateNotifications');
+      // IMPORTANTE: Usa la regione corretta e aumenta timeout per funzioni che potrebbero richiedere tempo
+      const sendBulkNotifications = httpsCallable(functions, 'sendBulkCertificateNotifications', {
+        timeout: 300000, // 5 minuti (300 secondi) - stesso timeout della funzione server
+      });
       
       console.log('📞 [Debug] Calling function with params:', {
         clubId,

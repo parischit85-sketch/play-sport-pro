@@ -1,0 +1,212 @@
+{
+  "cLUtbWq5YLw5fQrUEj4B": {
+    "name": "Dorado Padel Center",
+    "description": "a",
+    "address": {
+      "street": "Via Ada Negri, 407",
+      "city": "Macerino Vecchio",
+      "province": "aq",
+      "postalCode": "67051",
+      "country": "Italia"
+    },
+    "contact": {
+      "phone": "3295426294",
+      "email": "doradopadel@gmail.com",
+      "website": "https://maps.app.goo.gl/FifT42SpQ8qZByYp6"
+    },
+    "googleMapsLink": "https://maps.app.goo.gl/FifT42SpQ8qZByYp6",
+    "logoUrl": "https://res.cloudinary.com/dlmi2epev/image/upload/v1759942250/playsport/logos/temp_1759942250085/logo_1759942250086.png",
+    "settings": {
+      "bookingDuration": 90,
+      "advanceBookingDays": 14,
+      "cancellationHours": 24,
+      "allowGuestBooking": false
+    },
+    "sports": [],
+    "courts": [],
+    "instructors": [],
+    "ownerId": "6GYKbzwWkibWp0d5cTGEI2Wr2HY2",
+    "ownerEmail": "doradopadel@gmail.com",
+    "createdAt": {
+      "_seconds": 1759942402,
+      "_nanoseconds": 458000000
+    },
+    "managers": [
+      "6GYKbzwWkibWp0d5cTGEI2Wr2HY2"
+    ],
+    "isActive": true,
+    "status": "approved",
+    "website": "",
+    "phone": "",
+    "location": {
+      "googleMapsUrl": "https://www.google.com/maps/place/Dorado+Padel+Center+Avezzano/@42.0667432,13.4337624,487m/data=!3m2!1e3!4b1!4m6!3m5!1s0x132fe7001ae8cbcb:0x76258afe8d51f70c!8m2!3d42.0667432!4d13.4337624!16s%2Fg%2F11y409fg4g?hl=it&entry=ttu&g_ep=EgoyMDI1MTAwNC4wIKXMDSoASAFQAw%3D%3D"
+    },
+    "name_lowercase": "dorado padel center",
+    "email": "",
+    "updatedAt": {
+      "_seconds": 1759942563,
+      "_nanoseconds": 299000000
+    }
+  },
+  "fsR013mMyHDg0L6DNNpn": {
+    "name": "aaaaa",
+    "description": "w",
+    "contact": {
+      "phone": "325550000",
+      "email": "aaaa@gmail.com",
+      "website": "https://www.google.com/maps/place/Mercure+Roma+West/@41.8151463,12.4369501,13013m/data=!3m2!1e3!5s0x1325f34d8444be57:0xf1197c08a670133a!4m9!3m8!1s0x1325f34d81f0884d:0xbe4e01582cbe609c!5m2!4m1!1i2!8m2!3d41.7856706!4d12.4345543!16s%2Fg%2F1hc2y3kl3?hl=it&entry=ttu&g_ep=EgoyMDI1MTAwNC4wIKXMDSoASAFQAw%3D%3D"
+    },
+    "googleMapsLink": "https://www.google.com/maps/place/Mercure+Roma+West/@41.8151463,12.4369501,13013m/data=!3m2!1e3!5s0x1325f34d8444be57:0xf1197c08a670133a!4m9!3m8!1s0x1325f34d81f0884d:0xbe4e01582cbe609c!5m2!4m1!1i2!8m2!3d41.7856706!4d12.4345543!16s%2Fg%2F1hc2y3kl3?hl=it&entry=ttu&g_ep=EgoyMDI1MTAwNC4wIKXMDSoASAFQAw%3D%3D",
+    "logoUrl": "https://res.cloudinary.com/dlmi2epev/image/upload/v1759943228/playsport/logos/temp_1759943227448/logo_1759943227449.jpg",
+    "settings": {
+      "bookingDuration": 90,
+      "advanceBookingDays": 14,
+      "cancellationHours": 24,
+      "allowGuestBooking": false
+    },
+    "sports": [],
+    "courts": [],
+    "instructors": [],
+    "isActive": false,
+    "status": "pending",
+    "ownerId": "IGBfS9aVYHSiPjnL10l46pPwftL2",
+    "ownerEmail": "aaaa@gmail.com",
+    "createdAt": {
+      "_seconds": 1759943344,
+      "_nanoseconds": 277000000
+    },
+    "managers": [
+      "IGBfS9aVYHSiPjnL10l46pPwftL2"
+    ],
+    "website": "https://www.google.com/maps/place/Mercure+Roma+West/@41.8151463,12.4369501,13013m/data=!3m2!1e3!5s0x1325f34d8444be57:0xf1197c08a670133a!4m9!3m8!1s0x1325f34d81f0884d:0xbe4e01582cbe609c!5m2!4m1!1i2!8m2!3d41.7856706!4d12.4345543!16s%2Fg%2F1hc2y3kl3?hl=it&entry=ttu&g_ep=EgoyMDI1MTAwNC4wIKXMDSoASAFQAw%3D%3D",
+    "address": "via roma, rom, rm 67000",
+    "phone": "325550000",
+    "location": {
+      "googleMapsUrl": "https://www.google.com/maps/place/Mercure+Roma+West/@41.8151463,12.4369501,13013m/data=!3m2!1e3!5s0x1325f34d8444be57:0xf1197c08a670133a!4m9!3m8!1s0x1325f34d81f0884d:0xbe4e01582cbe609c!5m2!4m1!1i2!8m2!3d41.7856706!4d12.4345543!16s%2Fg%2F1hc2y3kl3?hl=it&entry=ttu&g_ep=EgoyMDI1MTAwNC4wIKXMDSoASAFQAw%3D%3D"
+    },
+    "name_lowercase": "aaaaa",
+    "email": "aaaa@gmail.com",
+    "updatedAt": {
+      "_seconds": 1759943527,
+      "_nanoseconds": 881000000
+    }
+  },
+  "sporting-cat": {
+    "id": "sporting-cat",
+    "name": "Sporting Cat",
+    "displayName": "Sporting Cat Padel Club",
+    "description": "Club padel principale",
+    "country": "Italia",
+    "phone": "+39 02 123456789",
+    "email": "info@sportingcat.it",
+    "website": "https://sportingcat.it",
+    "settings": {
+      "bookingAdvanceDays": 7,
+      "cancelHours": 24,
+      "timezone": "Europe/Rome",
+      "currency": "EUR",
+      "defaultBookingDuration": 90
+    },
+    "openingHours": {
+      "monday": {
+        "open": "08:00",
+        "close": "23:00"
+      },
+      "tuesday": {
+        "open": "08:00",
+        "close": "23:00"
+      },
+      "wednesday": {
+        "open": "08:00",
+        "close": "23:00"
+      },
+      "thursday": {
+        "open": "08:00",
+        "close": "23:00"
+      },
+      "friday": {
+        "open": "08:00",
+        "close": "23:00"
+      },
+      "saturday": {
+        "open": "08:00",
+        "close": "23:00"
+      },
+      "sunday": {
+        "open": "08:00",
+        "close": "23:00"
+      }
+    },
+    "owners": [],
+    "staff": [],
+    "isPublic": true,
+    "allowRegistration": true,
+    "stats": {
+      "totalMembers": 0,
+      "totalCourts": 5,
+      "totalBookings": 0
+    },
+    "createdAt": {
+      "_seconds": 1758210704,
+      "_nanoseconds": 699000000
+    },
+    "address": "Via Sant'Andrea",
+    "closingTime": "00:00",
+    "city": "Avezzano",
+    "openingTime": "08:00",
+    "courts": 5,
+    "emailNotifications": true,
+    "depositAmount": 0,
+    "maxBookingDuration": 120,
+    "allowMultipleBookings": true,
+    "autoApproveMembers": false,
+    "smsNotifications": false,
+    "weekendPrice": 30,
+    "primaryColor": "#3B82F6",
+    "reminderHours": 24,
+    "weekdayPrice": 25,
+    "requireDeposit": false,
+    "allowGuestBookings": false,
+    "slotDuration": 30,
+    "requireMembershipApproval": true,
+    "maxAdvanceBookingDays": 7,
+    "memberDiscount": 10,
+    "minBookingDuration": 60,
+    "fiscalCode": "",
+    "facilities": [
+      "Noleggio racchette",
+      "Bar/Ristoro",
+      "Spogliatoi",
+      "Riscaldamento",
+      "Docce",
+      "Parcheggio",
+      "Negozio",
+      "Illuminazione LED",
+      "Istruttori"
+    ],
+    "vatNumber": "",
+    "_updatedAt": "2025-09-29T21:46:32.958Z",
+    "managers": [
+      "Y3o7UxPqUPRZSlLM3DA9sKr2SEB2",
+      "FoqdMJ6vCFfshRPlz4CYrCl0fpu1",
+      "466tjbfc"
+    ],
+    "courtTypes": [
+      "Padel",
+      "Padel",
+      "Tennis",
+      "Calcetto"
+    ],
+    "logoUrl": "https://res.cloudinary.com/dlmi2epev/image/upload/v1759478753/playsport/logos/sporting-cat/logo_1759478756414.jpg",
+    "name_lowercase": "sporting cat",
+    "location": {
+      "googleMapsUrl": "https://www.google.it/maps/place/Sporting+Cat/@42.0329635,13.4471428,199m/data=!3m1!1e3!4m14!1m7!3m6!1s0x132fe73787e4480f:0x12530735dfc8eddb!2sSporting+Cat!8m2!3d42.0329943!4d13.4475429!16s%2Fg%2F11fll9r9ds!3m5!1s0x132fe73787e4480f:0x12530735dfc8eddb!8m2!3d42.0329943!4d13.4475429!16s%2Fg%2F11fll9r9ds?entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D"
+    },
+    "isActive": true,
+    "status": "approved",
+    "updatedAt": {
+      "_seconds": 1759870183,
+      "_nanoseconds": 974000000
+    }
+  }
+}

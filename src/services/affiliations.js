@@ -78,40 +78,53 @@ const ROLE_PERMISSIONS = {
 
 /**
  * Get user affiliations with role information
+ * OPTION A: Single source of truth - affiliations are now embedded in club user documents
  */
 export async function getUserAffiliations(userId) {
   try {
-    const affiliationsRef = collection(db, 'affiliations');
-    const q = query(
-      affiliationsRef,
-      where('userId', '==', userId)
-      // TODO: Re-enable orderBy after creating Firestore index
-      // orderBy('requestedAt', 'desc')
-    );
+    console.log('🔍 [getUserAffiliations] Getting affiliations for user:', userId);
 
-    const snapshot = await getDocs(q);
+    // Get all clubs and check if user is in each club's users collection
+    const clubsSnap = await getDocs(collection(db, 'clubs'));
     const affiliations = [];
 
-    for (const docSnap of snapshot.docs) {
-      const data = { id: docSnap.id, ...docSnap.data() };
+    for (const clubDoc of clubsSnap.docs) {
+      const clubId = clubDoc.id;
+      const clubData = clubDoc.data();
 
-      // Get club info
-      try {
-        const clubDoc = await getDoc(doc(db, 'clubs', data.clubId));
-        if (clubDoc.exists()) {
-          data.clubName = clubDoc.data().name;
-          data.clubInfo = clubDoc.data();
-        }
-      } catch (error) {
-        console.warn('Error loading club info for', data.clubId, ':', error);
+      // Check if user exists in this club's users collection
+      const clubUsersRef = collection(db, 'clubs', clubId, 'users');
+      const userQuery = query(clubUsersRef, where('userId', '==', userId));
+      const userSnap = await getDocs(userQuery);
+
+      if (!userSnap.empty) {
+        const userDoc = userSnap.docs[0];
+        const userData = userDoc.data();
+
+        // Create affiliation object from club user data
+        const affiliation = {
+          id: userDoc.id,
+          userId,
+          clubId,
+          role: userData.role || AFFILIATION_ROLES.MEMBER,
+          status: AFFILIATION_STATUS.APPROVED, // All club users are approved
+          requestedAt: userData.addedAt || Timestamp.now(),
+          approvedAt: userData.addedAt || Timestamp.now(),
+          approvedBy: userData.addedBy || 'system',
+          permissions: getRolePermissions(userData.role || AFFILIATION_ROLES.MEMBER),
+          version: 1,
+          createdAt: userData.addedAt || Timestamp.now(),
+          updatedAt: userData.updatedAt || Timestamp.now(),
+          // Add club info
+          clubName: clubData.name,
+          clubInfo: clubData,
+        };
+
+        affiliations.push(affiliation);
       }
-
-      // Add permissions
-      data.permissions = getRolePermissions(data.role);
-
-      affiliations.push(data);
     }
 
+    console.log('✅ [getUserAffiliations] Found', affiliations.length, 'affiliations');
     return affiliations;
   } catch (error) {
     console.error('❌ Error getting user affiliations:', error);
@@ -120,74 +133,111 @@ export async function getUserAffiliations(userId) {
 }
 
 /**
- * Create new affiliation request
+ * Request affiliation (add user to club)
+ * OPTION A: Single source of truth - affiliations are created by adding users to clubs/{clubId}/users
  */
 export async function requestAffiliation(userId, clubId, requestedRole = AFFILIATION_ROLES.MEMBER) {
   try {
-    console.log('📝 Creating affiliation request:', { userId, clubId, requestedRole });
+    console.log('📝 [requestAffiliation] Adding user to club:', { userId, clubId, requestedRole });
 
-    // Check if already exists
-    const existingRef = collection(db, 'affiliations');
-    const existingQuery = query(
-      existingRef,
-      where('userId', '==', userId),
-      where('clubId', '==', clubId)
-    );
-
-    const existingSnap = await getDocs(existingQuery);
-    if (!existingSnap.empty) {
-      const existing = existingSnap.docs[0].data();
-      if (existing.status === AFFILIATION_STATUS.APPROVED) {
-        throw new Error('Sei già affiliato a questo club');
-      } else if (existing.status === AFFILIATION_STATUS.PENDING) {
-        throw new Error('Hai già una richiesta in attesa per questo club');
-      }
+    // Check if user is already in club
+    const existingUser = await getClubUser(userId, clubId);
+    if (existingUser) {
+      throw new Error('Sei già membro di questo club');
     }
 
-    const affiliation = {
+    // Get user data from root collection
+    const { getUser } = await import('./users.js');
+    const userData = await getUser(userId);
+    if (!userData) {
+      throw new Error('User not found');
+    }
+
+    // Add user to club's users collection
+    const clubUsersRef = collection(db, 'clubs', clubId, 'users');
+    const clubUserData = {
       userId,
       clubId,
+      userEmail: userData.email,
+      userName: `${userData.firstName || ''} ${userData.lastName || ''}`.trim(),
+      userPhone: userData.phone || '',
       role: requestedRole,
-      status: AFFILIATION_STATUS.PENDING,
-      requestedAt: Timestamp.now(),
+      status: 'active',
+      addedAt: Timestamp.now(),
+      addedBy: null, // System added
+      notes: '',
       permissions: getRolePermissions(requestedRole),
       version: 1,
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
 
-    const docRef = await addDoc(collection(db, 'affiliations'), affiliation);
+    const docRef = await addDoc(clubUsersRef, clubUserData);
 
-    console.log('✅ Affiliation request created:', docRef.id);
-    return { id: docRef.id, ...affiliation };
+    console.log('✅ [requestAffiliation] User added to club:', docRef.id);
+    return {
+      id: docRef.id,
+      userId,
+      clubId,
+      role: requestedRole,
+      status: AFFILIATION_STATUS.APPROVED,
+      requestedAt: Timestamp.now(),
+      approvedAt: Timestamp.now(),
+      approvedBy: 'system',
+      permissions: getRolePermissions(requestedRole),
+      version: 1,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    };
   } catch (error) {
-    console.error('❌ Error creating affiliation request:', error);
+    console.error('❌ Error requesting affiliation:', error);
     throw error;
   }
 }
 
+// Helper function to get club user
+async function getClubUser(userId, clubId) {
+  try {
+    const clubUsersRef = collection(db, 'clubs', clubId, 'users');
+    const q = query(clubUsersRef, where('userId', '==', userId));
+    const snapshot = await getDocs(q);
+    return snapshot.empty ? null : { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
+  } catch (error) {
+    console.error('Error getting club user:', error);
+    return null;
+  }
+}
+
 /**
- * Approve affiliation (admin only)
+ * Approve affiliation (update user role in club)
+ * OPTION A: Single source of truth - approval means updating role in clubs/{clubId}/users
  */
 export async function approveAffiliation(affiliationId, approverId) {
   try {
-    console.log('✅ Approving affiliation:', affiliationId, 'by:', approverId);
+    console.log('✅ [approveAffiliation] Updating user role in club:', affiliationId, 'by:', approverId);
 
-    const affiliationRef = doc(db, 'affiliations', affiliationId);
+    // Find the club user document
+    const clubsSnap = await getDocs(collection(db, 'clubs'));
 
-    await setDoc(
-      affiliationRef,
-      {
-        status: AFFILIATION_STATUS.APPROVED,
-        approvedAt: Timestamp.now(),
-        approvedBy: approverId,
-        updatedAt: Timestamp.now(),
-      },
-      { merge: true }
-    );
+    for (const clubDoc of clubsSnap.docs) {
+      const clubId = clubDoc.id;
+      const clubUsersRef = collection(db, 'clubs', clubId, 'users');
+      const userDoc = await getDoc(doc(clubUsersRef, affiliationId));
 
-    console.log('✅ Affiliation approved');
-    return true;
+      if (userDoc.exists()) {
+        // Update the user document with approval info
+        await updateDoc(userDoc.ref, {
+          status: 'active',
+          approvedAt: Timestamp.now(),
+          approvedBy: approverId,
+          updatedAt: Timestamp.now(),
+        });
+        console.log('✅ [approveAffiliation] User role updated in club');
+        return true;
+      }
+    }
+
+    throw new Error('Affiliation not found');
   } catch (error) {
     console.error('❌ Error approving affiliation:', error);
     throw error;
@@ -196,21 +246,17 @@ export async function approveAffiliation(affiliationId, approverId) {
 
 /**
  * Get club affiliations (for club admins)
+ * OPTION A: Single source of truth - affiliations are club users in clubs/{clubId}/users
  */
 export async function getClubAffiliations(clubId, status = null) {
   try {
-    console.log('🏟️ Getting club affiliations for:', clubId, 'status:', status);
+    console.log('🏟️ [getClubAffiliations] Getting users for club:', clubId, 'status:', status);
 
-    const affiliationsRef = collection(db, 'affiliations');
-    let q = query(affiliationsRef, where('clubId', '==', clubId), orderBy('requestedAt', 'desc'));
+    const clubUsersRef = collection(db, 'clubs', clubId, 'users');
+    let q = query(clubUsersRef, orderBy('addedAt', 'desc'));
 
     if (status) {
-      q = query(
-        affiliationsRef,
-        where('clubId', '==', clubId),
-        where('status', '==', status),
-        orderBy('requestedAt', 'desc')
-      );
+      q = query(clubUsersRef, where('status', '==', status), orderBy('addedAt', 'desc'));
     }
 
     const snapshot = await getDocs(q);
@@ -219,13 +265,12 @@ export async function getClubAffiliations(clubId, status = null) {
     for (const docSnap of snapshot.docs) {
       const data = { id: docSnap.id, ...docSnap.data() };
 
-      // Get user info
+      // Get user info from root users collection
       try {
-        const userDoc = await getDoc(doc(db, 'users', data.userId));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          data.userName =
-            `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || userData.email;
+        const { getUser } = await import('./users.js');
+        const userData = await getUser(data.userId);
+        if (userData) {
+          data.userName = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || userData.email;
           data.userEmail = userData.email;
           data.userInfo = userData;
         }
@@ -233,10 +278,24 @@ export async function getClubAffiliations(clubId, status = null) {
         console.warn('Error loading user info for', data.userId, ':', error);
       }
 
-      affiliations.push(data);
+      // Convert club user data to affiliation format
+      affiliations.push({
+        id: data.id,
+        userId: data.userId,
+        clubId,
+        role: data.role || AFFILIATION_ROLES.MEMBER,
+        status: AFFILIATION_STATUS.APPROVED,
+        requestedAt: data.addedAt,
+        approvedAt: data.addedAt,
+        approvedBy: data.addedBy,
+        permissions: getRolePermissions(data.role || AFFILIATION_ROLES.MEMBER),
+        userName: data.userName,
+        userEmail: data.userEmail,
+        userInfo: data.userInfo,
+      });
     }
 
-    console.log('✅ Found club affiliations:', affiliations.length);
+    console.log('✅ [getClubAffiliations] Found', affiliations.length, 'club users');
     return affiliations;
   } catch (error) {
     console.error('❌ Error getting club affiliations:', error);
@@ -281,26 +340,33 @@ export async function getUserAdminClubs(userId) {
 
 /**
  * Update affiliation role (admin only)
+ * OPTION A: Single source of truth - update role in clubs/{clubId}/users
  */
 export async function updateAffiliationRole(affiliationId, newRole, updaterId) {
   try {
-    console.log('🔄 Updating affiliation role:', affiliationId, 'to:', newRole);
+    console.log('🔄 [updateAffiliationRole] Updating role to:', newRole, 'for user:', affiliationId);
 
-    const affiliationRef = doc(db, 'affiliations', affiliationId);
+    // Find the club user document across all clubs
+    const clubsSnap = await getDocs(collection(db, 'clubs'));
 
-    await setDoc(
-      affiliationRef,
-      {
-        role: newRole,
-        permissions: getRolePermissions(newRole),
-        updatedAt: Timestamp.now(),
-        updatedBy: updaterId,
-      },
-      { merge: true }
-    );
+    for (const clubDoc of clubsSnap.docs) {
+      const clubId = clubDoc.id;
+      const clubUsersRef = collection(db, 'clubs', clubId, 'users');
+      const userDoc = await getDoc(doc(clubUsersRef, affiliationId));
 
-    console.log('✅ Affiliation role updated');
-    return true;
+      if (userDoc.exists()) {
+        await updateDoc(userDoc.ref, {
+          role: newRole,
+          permissions: getRolePermissions(newRole),
+          updatedAt: Timestamp.now(),
+          updatedBy: updaterId,
+        });
+        console.log('✅ [updateAffiliationRole] Role updated in club');
+        return true;
+      }
+    }
+
+    throw new Error('Affiliation not found');
   } catch (error) {
     console.error('❌ Error updating affiliation role:', error);
     throw error;
@@ -336,87 +402,14 @@ export async function userHasPermission(userId, clubId, permission) {
 // ==================== MIGRATION HELPERS ====================
 
 /**
- * Migrate old profile-based affiliations to new system
+ * Migrate old affiliations to new system
+ * OPTION A: Single source of truth - this function is now handled by the migration script
+ * @deprecated Use the migration script 11-migrate-users-to-subcollections.js instead
  */
 export async function migrateOldAffiliations() {
-  try {
-    console.log('🔄 Starting affiliation migration...');
-
-    // Get all clubs
-    const clubsSnap = await getDocs(collection(db, 'clubs'));
-    let migrated = 0;
-
-    for (const clubDoc of clubsSnap.docs) {
-      const clubId = clubDoc.id;
-      console.log(`📂 Processing club: ${clubId}`);
-
-      // Get profiles in this club
-      const profilesSnap = await getDocs(collection(db, 'clubs', clubId, 'profiles'));
-
-      for (const profileDoc of profilesSnap.docs) {
-        const profile = profileDoc.data();
-
-        // Skip if already migrated or invalid
-        if (!profile.email || profile.migrated) continue;
-
-        // Find corresponding user in new users collection
-        const usersQuery = query(collection(db, 'users'), where('email', '==', profile.email));
-
-        const usersSnap = await getDocs(usersQuery);
-        if (usersSnap.empty) {
-          console.warn(`⚠️ No user found for profile: ${profile.email}`);
-          continue;
-        }
-
-        const userId = usersSnap.docs[0].id;
-
-        // Determine role
-        let role = AFFILIATION_ROLES.MEMBER;
-        if (profile.isClubAdmin || profile.role === 'admin') {
-          role = AFFILIATION_ROLES.ADMIN;
-        } else if (profile.role === 'instructor') {
-          role = AFFILIATION_ROLES.INSTRUCTOR;
-        }
-
-        // Create affiliation
-        const affiliation = {
-          userId,
-          clubId,
-          role,
-          status: AFFILIATION_STATUS.APPROVED,
-          requestedAt: profile.createdAt || Timestamp.now(),
-          approvedAt: profile.createdAt || Timestamp.now(),
-          approvedBy: 'system_migration',
-          permissions: getRolePermissions(role),
-          migratedFrom: 'profiles',
-          version: 1,
-          createdAt: Timestamp.now(),
-          updatedAt: Timestamp.now(),
-        };
-
-        try {
-          await addDoc(collection(db, 'affiliations'), affiliation);
-
-          // Mark profile as migrated
-          await updateDoc(profileDoc.ref, {
-            migrated: true,
-            migratedAt: Timestamp.now(),
-          });
-
-          migrated++;
-          console.log(`✅ Migrated: ${profile.email} → ${role} in ${clubId}`);
-        } catch (error) {
-          console.error(`❌ Failed to migrate ${profile.email}:`, error);
-        }
-      }
-    }
-
-    console.log(`🎉 Migration completed! Migrated ${migrated} affiliations`);
-    return migrated;
-  } catch (error) {
-    console.error('❌ Migration failed:', error);
-    throw error;
-  }
+  console.warn('⚠️ migrateOldAffiliations is deprecated. Use the migration script instead.');
+  console.log('🔄 Please run: node scripts/database-cleanup/11-migrate-users-to-subcollections.js');
+  return 0;
 }
 
 // ==================== EXPORTS ====================

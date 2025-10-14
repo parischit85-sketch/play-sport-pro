@@ -376,6 +376,18 @@ export function AuthProvider({ children }) {
           } else {
             console.log('🌟 [AuthContext] User is super admin, skipping membership loading');
           }
+
+          // Subscribe to push notifications if SW is enabled
+          if (import.meta.env.PROD || new URLSearchParams(window.location.search).has('enableSW')) {
+            try {
+              console.log('🔔 [AuthContext] Subscribing to push notifications...');
+              const { subscribeToPush } = await import('@utils/push.js');
+              await subscribeToPush(firebaseUser.uid);
+              console.log('✅ [AuthContext] Push subscription completed');
+            } catch (error) {
+              console.warn('⚠️ [AuthContext] Push subscription failed:', error.message);
+            }
+          }
         } else {
           console.log('❌ No Firebase user, clearing any stale sessions');
 

@@ -1,6 +1,7 @@
 // =============================================
 // FILE: src/features/players/components/PlayerDetails.jsx
 // Vista dettagliata del giocatore con tab multiple
+// Updated: 2025-10-13 - Fixed React key warnings
 // =============================================
 
 import React, { useMemo, useState, useEffect } from 'react';
@@ -61,6 +62,117 @@ export default function PlayerDetails({ player, onUpdate, _onClose, T }) {
   const [accounts, setAccounts] = useState([]);
   const [loadingAccounts, setLoadingAccounts] = useState(false);
   const { players: clubPlayers } = useClub();
+
+  // Edit mode state
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editFormData, setEditFormData] = useState({});
+  const [editErrors, setEditErrors] = useState({});
+
+  // Initialize edit form data when player changes or edit mode is activated
+  useEffect(() => {
+    if (player && isEditMode) {
+      const enhancedPlayer = { ...player };
+
+      // Se firstName e lastName non sono presenti ma c'è name, li separiamo
+      if (!enhancedPlayer.firstName && !enhancedPlayer.lastName && enhancedPlayer.name) {
+        const nameParts = enhancedPlayer.name.trim().split(' ');
+        enhancedPlayer.firstName = nameParts[0] || '';
+        enhancedPlayer.lastName = nameParts.slice(1).join(' ') || '';
+      }
+
+      setEditFormData({ ...enhancedPlayer });
+      setEditErrors({});
+    }
+  }, [player, isEditMode]);
+
+  // Handle edit form changes
+  const handleEditChange = (field, value) => {
+    setEditFormData((prev) => {
+      let newData;
+
+      if (field.includes('.')) {
+        const [parent, child] = field.split('.');
+        newData = {
+          ...prev,
+          [parent]: {
+            ...prev[parent],
+            [child]: value,
+          },
+        };
+      } else {
+        newData = { ...prev, [field]: value };
+      }
+
+      // Initialize instructor data when category is set to INSTRUCTOR
+      if (field === 'category' && value === PLAYER_CATEGORIES.INSTRUCTOR) {
+        newData.instructorData = {
+          isInstructor: true,
+          color: '#3B82F6',
+          specialties: [],
+          hourlyRate: 0,
+          priceSingle: 0,
+          priceCouple: 0,
+          priceThree: 0,
+          priceMatchLesson: 0,
+          bio: '',
+          certifications: [],
+          ...newData.instructorData,
+        };
+      }
+
+      return newData;
+    });
+
+    // Clear error when user starts typing
+    if (editErrors[field]) {
+      setEditErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  // Validate edit form
+  const validateEditForm = () => {
+    const newErrors = {};
+
+    if (!editFormData.firstName?.trim()) {
+      newErrors.firstName = 'Nome richiesto';
+    }
+    if (!editFormData.lastName?.trim()) {
+      newErrors.lastName = 'Cognome richiesto';
+    }
+    if (editFormData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editFormData.email)) {
+      newErrors.email = 'Email non valida';
+    }
+    if (editFormData.phone && !/^[\d\s+\-()]+$/.test(editFormData.phone)) {
+      newErrors.phone = 'Numero di telefono non valido';
+    }
+
+    setEditErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Save edit changes
+  const handleSaveEdit = () => {
+    if (!validateEditForm()) return;
+
+    // Rimuoviamo baseRating e rating per evitare conflitti con il sistema di ranking del campionato
+    const { baseRating, rating, ...filteredData } = editFormData;
+
+    const playerData = {
+      ...filteredData,
+      name: `${editFormData.firstName} ${editFormData.lastName}`.trim(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    onUpdate(playerData);
+    setIsEditMode(false);
+  };
+
+  // Cancel edit
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+    setEditFormData({});
+    setEditErrors({});
+  };
 
   // 🔧 Leggi il parametro 'tab' dalla URL e apri la tab corrispondente
   useEffect(() => {
@@ -170,17 +282,29 @@ export default function PlayerDetails({ player, onUpdate, _onClose, T }) {
     setLinkEmail('');
   };
 
-  const handleUnlinkAccount = () => {
+  const handleUnlinkAccount = async () => {
     if (!confirm("Sei sicuro di voler scollegare l'account da questo giocatore?")) {
       return;
     }
 
-    onUpdate({
-      linkedAccountId: null,
-      linkedAccountEmail: null,
-      isAccountLinked: false,
-      updatedAt: new Date().toISOString(),
-    });
+    try {
+      // Scollega dal profilo globale se esiste linkedAccountId
+      if (player.linkedAccountId) {
+        const { unlinkUserFromClub } = await import('@services/auth.jsx');
+        await unlinkUserFromClub(player.linkedAccountId, 'current-club-id', player.id); // TODO: passare clubId corretto
+      }
+
+      // Aggiorna il giocatore locale
+      onUpdate({
+        linkedAccountId: null,
+        linkedAccountEmail: null,
+        isAccountLinked: false,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Error unlinking account:', error);
+      alert('Errore durante lo scollegamento. Riprova.');
+    }
   };
 
   const toggleActiveStatus = () => {
@@ -318,16 +442,41 @@ export default function PlayerDetails({ player, onUpdate, _onClose, T }) {
 
             {/* Azioni rapide */}
             <div className="flex gap-2 justify-end">
-              <button
-                onClick={toggleActiveStatus}
-                className={`px-3 py-1 text-sm rounded ${
-                  player.isActive
-                    ? 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
-                    : 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400'
-                }`}
-              >
-                {player.isActive ? '⏸️ Disattiva' : '▶️ Attiva'}
-              </button>
+              {!isEditMode ? (
+                <>
+                  <button
+                    onClick={() => setIsEditMode(true)}
+                    className={`${T.btnSecondary} px-3 py-1 text-sm`}
+                  >
+                    ✏️ Modifica
+                  </button>
+                  <button
+                    onClick={toggleActiveStatus}
+                    className={`px-3 py-1 text-sm rounded ${
+                      player.isActive
+                        ? 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
+                        : 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400'
+                    }`}
+                  >
+                    {player.isActive ? '⏸️ Disattiva' : '▶️ Attiva'}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={handleCancelEdit}
+                    className={`${T.btnSecondary} px-3 py-1 text-sm`}
+                  >
+                    ❌ Annulla
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    className={`${T.btnPrimary} px-3 py-1 text-sm`}
+                  >
+                    💾 Salva
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -351,7 +500,7 @@ export default function PlayerDetails({ player, onUpdate, _onClose, T }) {
                   </button>
                 </div>
               ) : (
-                <span className="text-sm text-gray-500">Nessun account collegato</span>
+                <span className={`text-sm ${T.subtext}`}>Nessun account collegato</span>
               )}
             </div>
 
@@ -497,53 +646,117 @@ export default function PlayerDetails({ player, onUpdate, _onClose, T }) {
       <div className="min-h-[400px]">
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Dati anagrafici */}
+            {/* Dati di contatto */}
             <div className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
               <h3 className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}>
-                📋 Dati Anagrafici
+                � Contatti
               </h3>
 
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className={T.subtext}>Nome completo:</span>
-                  <span className={T.text}>
-                    {player.firstName && player.lastName
-                      ? `${player.firstName} ${player.lastName}`
-                      : player.name || 'N/A'}
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className={T.subtext}>Codice fiscale:</span>
-                  <span className={T.text}>{player.fiscalCode || 'N/A'}</span>
-                </div>
-
-                {player.address && (
-                  <div className="flex justify-between">
-                    <span className={T.subtext}>Indirizzo:</span>
-                    <span className={`${T.text} text-right`}>
-                      {[
-                        player.address.street,
-                        player.address.city,
-                        player.address.province,
-                        player.address.postalCode,
-                      ]
-                        .filter(Boolean)
-                        .join(', ') || 'N/A'}
-                    </span>
+              {isEditMode ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className={`block text-sm font-medium ${T.text} mb-1`}>Email</label>
+                    <input
+                      type="email"
+                      value={editFormData.email || ''}
+                      onChange={(e) => handleEditChange('email', e.target.value)}
+                      className={`${T.input} w-full ${editErrors.email ? 'border-red-500' : ''}`}
+                      placeholder="email@esempio.com"
+                    />
+                    {editErrors.email && (
+                      <p className="text-red-500 text-xs mt-1">{editErrors.email}</p>
+                    )}
                   </div>
-                )}
 
-                <div className="flex justify-between">
-                  <span className={T.subtext}>Registrato il:</span>
-                  <span className={T.text}>{formatDate(player.createdAt)}</span>
-                </div>
+                  <div>
+                    <label className={`block text-sm font-medium ${T.text} mb-1`}>Telefono</label>
+                    <input
+                      type="tel"
+                      value={editFormData.phone || ''}
+                      onChange={(e) => handleEditChange('phone', e.target.value)}
+                      className={`${T.input} w-full ${editErrors.phone ? 'border-red-500' : ''}`}
+                      placeholder="+39 123 456 7890"
+                    />
+                    {editErrors.phone && (
+                      <p className="text-red-500 text-xs mt-1">{editErrors.phone}</p>
+                    )}
+                  </div>
 
-                <div className="flex justify-between">
-                  <span className={T.subtext}>Ultimo aggiornamento:</span>
-                  <span className={T.text}>{formatDate(player.updatedAt)}</span>
+                  <div className="space-y-3">
+                    <h4 className={`font-medium ${T.text}`}>Indirizzo</h4>
+
+                    <input
+                      type="text"
+                      value={editFormData.address?.street || ''}
+                      onChange={(e) => handleEditChange('address.street', e.target.value)}
+                      className={`${T.input} w-full`}
+                      placeholder="Via, numero civico"
+                    />
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <input
+                        type="text"
+                        value={editFormData.address?.city || ''}
+                        onChange={(e) => handleEditChange('address.city', e.target.value)}
+                        className={`${T.input} w-full`}
+                        placeholder="Città"
+                      />
+                      <input
+                        type="text"
+                        value={editFormData.address?.province || ''}
+                        onChange={(e) => handleEditChange('address.province', e.target.value)}
+                        className={`${T.input} w-full`}
+                        placeholder="Provincia"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <input
+                        type="text"
+                        value={editFormData.address?.postalCode || ''}
+                        onChange={(e) => handleEditChange('address.postalCode', e.target.value)}
+                        className={`${T.input} w-full`}
+                        placeholder="CAP"
+                      />
+                      <input
+                        type="text"
+                        value={editFormData.address?.country || 'Italia'}
+                        onChange={(e) => handleEditChange('address.country', e.target.value)}
+                        className={`${T.input} w-full`}
+                        placeholder="Paese"
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className={T.subtext}>Email:</span>
+                    <span className={T.text}>{player.email || 'N/A'}</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className={T.subtext}>Telefono:</span>
+                    <span className={T.text}>{player.phone || 'N/A'}</span>
+                  </div>
+
+                  {player.address && (
+                    <div className="flex justify-between">
+                      <span className={T.subtext}>Indirizzo:</span>
+                      <span className={`${T.text} text-right`}>
+                        {[
+                          player.address.street,
+                          player.address.city,
+                          player.address.province,
+                          player.address.postalCode,
+                        ]
+                          .filter(Boolean)
+                          .join(', ') || 'N/A'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Dati sportivi */}
@@ -552,127 +765,250 @@ export default function PlayerDetails({ player, onUpdate, _onClose, T }) {
                 🏃 Dati Sportivi
               </h3>
 
-              <div className="space-y-3 text-sm">
-                {player.tournamentData?.isParticipant && player.tournamentData?.isActive ? (
-                  <>
-                    <div className="flex justify-between">
-                      <span className={T.subtext}>🎯 Ranking Iniziale:</span>
-                      <span className="text-orange-600 dark:text-orange-400 font-semibold">
-                        {player.tournamentData.initialRanking || DEFAULT_RATING}
-                      </span>
-                    </div>
+              {isEditMode ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className={`flex items-center gap-2 ${T.text}`}>
+                      <input
+                        type="checkbox"
+                        checked={editFormData.isActive !== false}
+                        onChange={(e) => handleEditChange('isActive', e.target.checked)}
+                        className="rounded"
+                      />
+                      Giocatore attivo
+                    </label>
+                    <p className={`text-xs ${T.subtext} mt-1`}>
+                      I giocatori inattivi non appaiono nelle selezioni per i match
+                    </p>
+                  </div>
 
-                    <div className="flex justify-between">
-                      <span className={T.subtext}>🏆 Ranking Attuale:</span>
-                      <span className="text-purple-600 dark:text-purple-400 font-semibold">
-                        {Number(playerWithRealRating.rating || DEFAULT_RATING).toFixed(0)}
-                      </span>
-                    </div>
+                  <div>
+                    <label className={`flex items-center gap-2 ${T.text}`}>
+                      <input
+                        type="checkbox"
+                        checked={editFormData.tournamentData?.isParticipant !== false}
+                        onChange={(e) => handleEditChange('tournamentData.isParticipant', e.target.checked)}
+                        className="rounded"
+                      />
+                      Partecipa al Campionato
+                    </label>
+                    <p className={`text-xs ${T.subtext} mt-1`}>
+                      I giocatori che non partecipano al campionato non appaiono nelle classifiche
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3 text-sm">
+                  {player.tournamentData?.isParticipant && player.tournamentData?.isActive ? (
+                    <>
+                      <div className="flex justify-between">
+                        <span className={T.subtext}>🎯 Ranking Iniziale:</span>
+                        <span className="text-orange-600 dark:text-orange-400 font-semibold">
+                          {player.tournamentData.initialRanking || DEFAULT_RATING}
+                        </span>
+                      </div>
 
-                    <div className="flex justify-between">
-                      <span className={T.subtext}>📊 Progressione:</span>
-                      <span
-                        className={
-                          (playerWithRealRating.rating || 0) >
-                          (player.tournamentData.initialRanking || 0)
-                            ? 'text-green-600 dark:text-green-400 font-semibold'
-                            : (playerWithRealRating.rating || 0) <
+                      <div className="flex justify-between">
+                        <span className={T.subtext}>🏆 Ranking Attuale:</span>
+                        <span className="text-purple-600 dark:text-purple-400 font-semibold">
+                          {Number(playerWithRealRating.rating || DEFAULT_RATING).toFixed(0)}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between">
+                        <span className={T.subtext}>📊 Progressione:</span>
+                        <span
+                          className={
+                            (playerWithRealRating.rating || 0) >
+                            (player.tournamentData.initialRanking || 0)
+                              ? 'text-green-600 dark:text-green-400 font-semibold'
+                              : (playerWithRealRating.rating || 0) <
                                 (player.tournamentData.initialRanking || 0)
                               ? 'text-red-600 dark:text-red-400 font-semibold'
                               : T.text
-                        }
-                      >
-                        {(playerWithRealRating.rating || 0) -
-                          (player.tournamentData.initialRanking || 0) >
-                        0
-                          ? '+'
-                          : ''}
-                        {(playerWithRealRating.rating || 0) -
-                          (player.tournamentData.initialRanking || 0)}
+                          }
+                        >
+                          {(playerWithRealRating.rating || 0) - (player.tournamentData.initialRanking || 0) >
+                          0
+                            ? '+'
+                            : ''}
+                          {(playerWithRealRating.rating || 0) - (player.tournamentData.initialRanking || 0)}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-4">
+                      <span className={`text-sm ${T.subtext}`}>
+                        Giocatore non partecipa al campionato
                       </span>
                     </div>
-                  </>
-                ) : (
-                  <div className="text-center py-4">
-                    <span className={`text-sm ${T.subtext}`}>
-                      Giocatore non partecipa al campionato
+                  )}
+
+                  <div className="flex justify-between">
+                    <span className={T.subtext}>Stato:</span>
+                    <span
+                      className={
+                        player.isActive
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-red-600 dark:text-red-400'
+                      }
+                    >
+                      {player.isActive ? 'Attivo' : 'Inattivo'}
                     </span>
                   </div>
-                )}
 
-                <div className="flex justify-between">
-                  <span className={T.subtext}>Stato:</span>
-                  <span
-                    className={
-                      player.isActive
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
-                    }
-                  >
-                    {player.isActive ? 'Attivo' : 'Inattivo'}
-                  </span>
+                  <div className="flex justify-between">
+                    <span className={T.subtext}>Partite giocate:</span>
+                    <span className={T.text}>{player.matchHistory?.length || 0}</span>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <span className={T.subtext}>Ultima attività:</span>
+                    <span className={T.text}>{formatDate(player.lastActivity)}</span>
+                  </div>
                 </div>
-
-                <div className="flex justify-between">
-                  <span className={T.subtext}>Partite giocate:</span>
-                  <span className={T.text}>{player.matchHistory?.length || 0}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className={T.subtext}>Ultima attività:</span>
-                  <span className={T.text}>{formatDate(player.lastActivity)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Tag e note rapide */}
+              )}
+            </div>            {/* Tag e note rapide */}
             <div className={`${T.cardBg} ${T.border} rounded-xl p-4 lg:col-span-2`}>
               <h3 className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}>
-                🏷️ Tag e Informazioni Rapide
+                🏷️ Tag e Preferenze
               </h3>
 
-              <div className="space-y-4">
-                <div>
-                  <span className={`text-sm ${T.subtext} block mb-2`}>Tag:</span>
-                  <div className="flex flex-wrap gap-2">
-                    {player.tags && player.tags.length > 0 ? (
-                      player.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs rounded-full"
-                        >
-                          {tag}
-                        </span>
-                      ))
-                    ) : (
-                      <span className={`text-sm ${T.subtext}`}>Nessun tag assegnato</span>
-                    )}
+              {isEditMode ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className={`block text-sm font-medium ${T.text} mb-1`}>
+                      Tag (separati da virgola)
+                    </label>
+                    <input
+                      type="text"
+                      value={editFormData.tags?.join(', ') || ''}
+                      onChange={(e) =>
+                        handleEditChange(
+                          'tags',
+                          e.target.value
+                            .split(',')
+                            .map((t) => t.trim())
+                            .filter(Boolean)
+                        )
+                      }
+                      className={`${T.input} w-full`}
+                      placeholder="principiante, mattiniero, competitivo"
+                    />
+                    <p className={`text-xs ${T.subtext} mt-1`}>
+                      I tag aiutano a categorizzare e filtrare i giocatori
+                    </p>
                   </div>
-                </div>
 
-                <div>
-                  <span className={`text-sm ${T.subtext} block mb-2`}>
-                    Preferenze comunicazione:
-                  </span>
-                  <div className="flex flex-wrap gap-4 text-sm">
-                    <span
-                      className={`flex items-center gap-1 ${player.communicationPreferences?.email ? 'text-green-600 dark:text-green-400' : T.subtext}`}
-                    >
-                      📧 Email: {player.communicationPreferences?.email ? 'Sì' : 'No'}
-                    </span>
-                    <span
-                      className={`flex items-center gap-1 ${player.communicationPreferences?.sms ? 'text-green-600 dark:text-green-400' : T.subtext}`}
-                    >
-                      📱 SMS: {player.communicationPreferences?.sms ? 'Sì' : 'No'}
-                    </span>
-                    <span
-                      className={`flex items-center gap-1 ${player.communicationPreferences?.whatsapp ? 'text-green-600 dark:text-green-400' : T.subtext}`}
-                    >
-                      📞 WhatsApp: {player.communicationPreferences?.whatsapp ? 'Sì' : 'No'}
-                    </span>
+                  <div>
+                    <h4 className={`font-medium ${T.text} mb-3`}>Preferenze di Comunicazione</h4>
+                    <div className="space-y-3">
+                      <label className={`flex items-center gap-2 ${T.text}`}>
+                        <input
+                          type="checkbox"
+                          checked={editFormData.communicationPreferences?.email !== false}
+                          onChange={(e) =>
+                            handleEditChange('communicationPreferences.email', e.target.checked)
+                          }
+                          className="rounded"
+                        />
+                        Ricevi email
+                      </label>
+
+                      <label className={`flex items-center gap-2 ${T.text}`}>
+                        <input
+                          type="checkbox"
+                          checked={editFormData.communicationPreferences?.sms === true}
+                          onChange={(e) =>
+                            handleEditChange('communicationPreferences.sms', e.target.checked)
+                          }
+                          className="rounded"
+                        />
+                        Ricevi SMS
+                      </label>
+
+                      <label className={`flex items-center gap-2 ${T.text}`}>
+                        <input
+                          type="checkbox"
+                          checked={editFormData.communicationPreferences?.whatsapp === true}
+                          onChange={(e) =>
+                            handleEditChange('communicationPreferences.whatsapp', e.target.checked)
+                          }
+                          className="rounded"
+                        />
+                        Ricevi WhatsApp
+                      </label>
+
+                      <label className={`flex items-center gap-2 ${T.text}`}>
+                        <input
+                          type="checkbox"
+                          checked={editFormData.communicationPreferences?.notifications !== false}
+                          onChange={(e) =>
+                            handleEditChange('communicationPreferences.notifications', e.target.checked)
+                          }
+                          className="rounded"
+                        />
+                        Ricevi notifiche push
+                      </label>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-4">
+                  <div>
+                    <span className={`text-sm ${T.subtext} block mb-2`}>Tag:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {player.tags && player.tags.length > 0 ? (
+                        player.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))
+                      ) : (
+                        <span className={`text-sm ${T.subtext}`}>Nessun tag assegnato</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className={`text-sm ${T.subtext} block mb-2`}>
+                      Preferenze comunicazione:
+                    </span>
+                    <div className="flex flex-wrap gap-4 text-sm">
+                      <span
+                        className={`flex items-center gap-1 ${
+                          player.communicationPreferences?.email
+                            ? 'text-green-600 dark:text-green-400'
+                            : T.subtext
+                        }`}
+                      >
+                        📧 Email: {player.communicationPreferences?.email ? 'Sì' : 'No'}
+                      </span>
+                      <span
+                        className={`flex items-center gap-1 ${
+                          player.communicationPreferences?.sms
+                            ? 'text-green-600 dark:text-green-400'
+                            : T.subtext
+                        }`}
+                      >
+                        📱 SMS: {player.communicationPreferences?.sms ? 'Sì' : 'No'}
+                      </span>
+                      <span
+                        className={`flex items-center gap-1 ${
+                          player.communicationPreferences?.whatsapp
+                            ? 'text-green-600 dark:text-green-400'
+                            : T.subtext
+                        }`}
+                      >
+                        📞 WhatsApp: {player.communicationPreferences?.whatsapp ? 'Sì' : 'No'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

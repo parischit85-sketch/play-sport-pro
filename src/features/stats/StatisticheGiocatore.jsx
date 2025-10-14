@@ -8,6 +8,7 @@ import StatsCard from '@ui/StatsCard.jsx';
 import ShareButtons from '@ui/ShareButtons.jsx';
 import ModernAreaChart from '@ui/charts/ModernAreaChart.jsx';
 import Modal from '@ui/Modal.jsx';
+import FormulaModal from '@components/modals/FormulaModal.jsx';
 import { byPlayerFirstAlpha, surnameOf, IT_COLLATOR } from '@lib/names.js';
 import { DEFAULT_RATING } from '@lib/ids.js';
 import { computeFromSets, rpaFactor, rpaBracketText } from '@lib/rpa.js';
@@ -39,6 +40,13 @@ export default function StatisticheGiocatore({
   const nameById = (id) => players.find((p) => p.id === id)?.name || id;
   const player = players.find((p) => p.id === pid) || null;
   const comparePlayer = players.find((p) => p.id === comparePlayerId) || null;
+
+  // Crea mappa playersById per lookup veloce
+  const playersById = useMemo(() => {
+    const map = {};
+    players.forEach(p => { map[p.id] = p; });
+    return map;
+  }, [players]);
 
   // Filtro temporale per le partite
   const filteredMatches = useMemo(() => {
@@ -1525,10 +1533,13 @@ export default function StatisticheGiocatore({
                             setCurrentMatchForRpa(m);
                             setShowRpaModal(true);
                           }}
-                          className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm flex items-center justify-center hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm border border-white/20"
+                          className="flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md backdrop-blur-sm border border-white/20"
                           title="Spiegazione formula RPA"
                         >
-                          ?
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                          </svg>
+                          <span className="hidden sm:inline">Formula</span>
                         </button>
                         <div
                           className={`text-gray-400 dark:text-gray-300 text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
@@ -1548,7 +1559,7 @@ export default function StatisticheGiocatore({
                               className={`p-4 rounded-2xl border backdrop-blur-sm ${
                                 won
                                   ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/40 dark:to-emerald-800/30'
-                                  : 'border-gray-300/30 bg-gradient-to-br from-white/60 to-gray-50/40 dark:from-gray-700/40 dark:to-gray-800/30'
+                                  : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 dark:from-rose-900/40 dark:to-rose-800/30'
                               }`}
                             >
                               <div className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
@@ -1563,7 +1574,7 @@ export default function StatisticheGiocatore({
                               className={`p-4 rounded-2xl border backdrop-blur-sm ${
                                 !won
                                   ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/40 dark:to-emerald-800/30'
-                                  : 'border-gray-300/30 bg-gradient-to-br from-white/60 to-gray-50/40 dark:from-gray-700/40 dark:to-gray-800/30'
+                                  : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 dark:from-rose-900/40 dark:to-rose-800/30'
                               }`}
                             >
                               <div className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
@@ -1586,21 +1597,33 @@ export default function StatisticheGiocatore({
                                 Set per set:
                               </div>
                               <div className="flex gap-3 overflow-x-auto pb-2">
-                                {m.sets.map((s, i) => (
-                                  <div
-                                    key={`${m.id}-set-${i}`}
-                                    className="px-4 py-3 bg-gradient-to-br from-white/80 to-gray-50/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl text-sm border border-white/30 dark:border-gray-600/30 text-gray-900 dark:text-white font-semibold shrink-0 backdrop-blur-sm shadow-lg"
-                                  >
-                                    <div className="text-center">
-                                      <span className="text-xs text-gray-500 dark:text-gray-400 block mb-1">
-                                        Set {i + 1}
-                                      </span>
-                                      <span className="text-lg">
-                                        {s.a}–{s.b}
-                                      </span>
+                                {m.sets.map((s, i) => {
+                                  // Determina chi ha vinto questo set
+                                  const setWonByA = s.a > s.b;
+                                  // Se il giocatore ha vinto la partita e anche questo set, è verde
+                                  // Se il giocatore ha vinto la partita ma ha perso questo set, è rosso
+                                  const isWinningSet = won ? setWonByA === isA : setWonByA !== isA;
+                                  
+                                  return (
+                                    <div
+                                      key={`${m.id}-set-${i}`}
+                                      className={`px-4 py-3 rounded-2xl text-sm font-semibold shrink-0 backdrop-blur-sm shadow-lg border ${
+                                        isWinningSet
+                                          ? 'bg-gradient-to-br from-emerald-100/90 to-emerald-200/70 dark:from-emerald-800/70 dark:to-emerald-900/50 border-emerald-400/40 dark:border-emerald-500/40 text-emerald-900 dark:text-emerald-100'
+                                          : 'bg-gradient-to-br from-rose-100/90 to-rose-200/70 dark:from-rose-800/70 dark:to-rose-900/50 border-rose-400/40 dark:border-rose-500/40 text-rose-900 dark:text-rose-100'
+                                      }`}
+                                    >
+                                      <div className="text-center">
+                                        <span className="text-xs opacity-70 block mb-1">
+                                          Set {i + 1}
+                                        </span>
+                                        <span className="text-lg">
+                                          {s.a}–{s.b}
+                                        </span>
+                                      </div>
                                     </div>
-                                  </div>
-                                ))}
+                                  );
+                                })}
                               </div>
                             </div>
                           )}
@@ -1655,8 +1678,51 @@ export default function StatisticheGiocatore({
         </div>
       </div>
 
-      {/* Modal RPA */}
-      <RPAModal />
+      {/* Modal RPA con nuovo design */}
+      <FormulaModal
+        isOpen={showRpaModal}
+        onClose={() => {
+          setShowRpaModal(false);
+          setCurrentMatchForRpa(null);
+        }}
+        matchData={
+          currentMatchForRpa
+            ? {
+                sumA: currentMatchForRpa.sumA || 0,
+                sumB: currentMatchForRpa.sumB || 0,
+                gap: currentMatchForRpa.gap || 0,
+                base: currentMatchForRpa.base || 0,
+                gd: currentMatchForRpa.gd || 0,
+                factor: currentMatchForRpa.factor || 1,
+                pts: Math.abs(currentMatchForRpa.deltaA ?? currentMatchForRpa.deltaB ?? 0),
+                winner: currentMatchForRpa.winner,
+                setsA: currentMatchForRpa.setsA || 0,
+                setsB: currentMatchForRpa.setsB || 0,
+                gamesA: currentMatchForRpa.gamesA || 0,
+                gamesB: currentMatchForRpa.gamesB || 0,
+                sets: currentMatchForRpa.sets || [],
+                deltaA: currentMatchForRpa.deltaA ?? 0,
+                deltaB: currentMatchForRpa.deltaB ?? 0,
+                teamA: (currentMatchForRpa.teamA || []).map((id, index) => {
+                  const ratingKey = index === 0 ? 'ratingA1' : 'ratingA2';
+                  return {
+                    id,
+                    name: playersById[id]?.name || 'Unknown',
+                    rating: currentMatchForRpa.preMatchRatings?.[ratingKey] || playersById[id]?.rating || DEFAULT_RATING
+                  };
+                }),
+                teamB: (currentMatchForRpa.teamB || []).map((id, index) => {
+                  const ratingKey = index === 0 ? 'ratingB1' : 'ratingB2';
+                  return {
+                    id,
+                    name: playersById[id]?.name || 'Unknown',
+                    rating: currentMatchForRpa.preMatchRatings?.[ratingKey] || playersById[id]?.rating || DEFAULT_RATING
+                  };
+                }),
+              }
+            : null
+        }
+      />
     </Section>
   );
 }

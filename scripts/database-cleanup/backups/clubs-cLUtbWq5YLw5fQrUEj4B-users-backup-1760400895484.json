@@ -1,0 +1,23 @@
+{
+  "6vbgu2UmfD30uvuokXeX": {
+    "linkedUserId": "6GYKbzwWkibWp0d5cTGEI2Wr2HY2",
+    "email": "",
+    "userName": "",
+    "role": "club_admin",
+    "status": "active",
+    "migratedFromAffiliation": true,
+    "source": "affiliation_migration",
+    "createdAt": {
+      "_seconds": 1760398326,
+      "_nanoseconds": 844000000
+    },
+    "migratedAt": {
+      "_seconds": 1760398326,
+      "_nanoseconds": 844000000
+    },
+    "updatedAt": {
+      "_seconds": 1760398326,
+      "_nanoseconds": 844000000
+    }
+  }
+}

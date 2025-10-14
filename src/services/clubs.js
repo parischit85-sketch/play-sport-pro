@@ -490,35 +490,45 @@ export const requestAffiliation = async (clubId, userId, notes = '') => {
 
 /**
  * Approve/reject affiliation (club manager only)
+ * OPTION A: Single source of truth - update status in clubs/{clubId}/users
  */
 export const updateAffiliationStatus = async (affiliationId, status, approverId, notes = '') => {
   try {
-    const affiliationRef = doc(db, 'affiliations', affiliationId);
+    // Find the club user document across all clubs
+    const clubsSnap = await getDocs(collection(db, 'clubs'));
 
-    const updateData = {
-      status,
-      updatedAt: serverTimestamp(),
-    };
+    for (const clubDoc of clubsSnap.docs) {
+      const clubId = clubDoc.id;
+      const clubUsersRef = collection(db, 'clubs', clubId, 'users');
+      const userDoc = await getDoc(doc(clubUsersRef, affiliationId));
 
-    if (status === AFFILIATION_STATUS.APPROVED) {
-      updateData.approvedAt = serverTimestamp();
-      updateData.approvedBy = approverId;
+      if (userDoc.exists()) {
+        const updateData = {
+          status: status === AFFILIATION_STATUS.APPROVED ? 'active' : status,
+          updatedAt: serverTimestamp(),
+        };
 
-      // Update club member count
-      const affiliation = await getDoc(affiliationRef);
-      if (affiliation.exists()) {
-        const clubRef = doc(db, 'clubs', affiliation.data().clubId);
-        await updateDoc(clubRef, {
-          'stats.totalMembers': (await getDoc(clubRef)).data()?.stats?.totalMembers + 1 || 1,
-        });
+        if (status === AFFILIATION_STATUS.APPROVED) {
+          updateData.approvedAt = serverTimestamp();
+          updateData.approvedBy = approverId;
+
+          // Update club member count
+          const clubRef = doc(db, 'clubs', clubId);
+          await updateDoc(clubRef, {
+            'stats.totalMembers': (await getDoc(clubRef)).data()?.stats?.totalMembers + 1 || 1,
+          });
+        }
+
+        if (notes) {
+          updateData.adminNotes = notes;
+        }
+
+        await updateDoc(userDoc.ref, updateData);
+        return;
       }
     }
 
-    if (notes) {
-      updateData.adminNotes = notes;
-    }
-
-    await updateDoc(affiliationRef, updateData);
+    throw new Error('Affiliation not found');
   } catch (error) {
     console.error('Error updating affiliation status:', error);
     throw error;
@@ -632,21 +642,22 @@ export const getUserClubRoles = async (userId) => {
     return cached.data;
   }
   try {
-    // NEW: Use global affiliations collection instead of userClubRoles subcollection
-    const affiliationsRef = collection(db, 'affiliations');
-    const q = query(
-      affiliationsRef,
-      where('userId', '==', userId),
-      where('status', '==', 'approved')
-    );
-    const snapshot = await getDocs(q);
+    // OPTION A: Single source of truth - get roles from club users collections
+    const clubsSnap = await getDocs(collection(db, 'clubs'));
     const roles = {};
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      if (data?.clubId && data?.role) {
-        roles[data.clubId] = data.role;
+
+    for (const clubDoc of clubsSnap.docs) {
+      const clubId = clubDoc.id;
+      const clubUsersRef = collection(db, 'clubs', clubId, 'users');
+      const q = query(clubUsersRef, where('userId', '==', userId), where('status', '==', 'active'));
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        const userData = snapshot.docs[0].data();
+        roles[clubId] = userData.role || 'member';
       }
-    });
+    }
+
     _rolesCache.set(userId, { data: roles, ts: now });
     return roles;
   } catch (error) {
@@ -654,7 +665,7 @@ export const getUserClubRoles = async (userId) => {
     if (msg.includes('Missing or insufficient permissions')) {
       if (!_rolesPermissionWarned) {
         console.warn(
-          "[getUserClubRoles] permission denied – assicurarsi di aver definito regole Firestore per affiliations (lettura limitata all'utente). Cooldown 60s."
+          "[getUserClubRoles] permission denied – assicurarsi di aver definito regole Firestore per clubs/{clubId}/users (lettura limitata all'utente). Cooldown 60s."
         );
         _rolesPermissionWarned = true;
       }

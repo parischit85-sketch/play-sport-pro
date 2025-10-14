@@ -225,6 +225,24 @@ export async function createBooking(bookingData, user, options = {}) {
     }
   }
 
+  // 🔗 CROSS-CLUB BOOKING VISIBILITY - Aggiungi bookedForUserId se prenotazione per giocatore collegato
+  let bookedForUserId = null;
+  if (user?.uid && clubId && clubId !== 'default-club') {
+    try {
+      // Cerca se c'è un giocatore collegato all'utente corrente
+      const playersRef = collection(db, 'clubs', clubId, 'players');
+      const playerQuery = query(playersRef, where('linkedAccountId', '==', user.uid));
+      const playerSnapshot = await getDocs(playerQuery);
+
+      if (!playerSnapshot.empty) {
+        // L'utente sta prenotando per un giocatore collegato - includi il suo userId per cross-visibility
+        bookedForUserId = user.uid;
+      }
+    } catch (error) {
+      console.warn('[Cross-Club Visibility] Errore durante verifica collegamento giocatore:', error);
+    }
+  }
+
   // Get existing bookings for validation
   const existingBookings = await getPublicBookings({ forceRefresh: true });
 
@@ -258,6 +276,9 @@ export async function createBooking(bookingData, user, options = {}) {
     userPhone: bookingData.userPhone || '',
     players: bookingData.players || [],
     notes: bookingData.notes || '',
+
+    // Cross-club visibility
+    bookedForUserId: bookedForUserId,
 
     // Visual customization
     color: bookingData.color || null, // Custom booking color
@@ -452,17 +473,46 @@ export async function getUserBookings(user, options = {}) {
     clubId = null,
   } = options;
 
-  // Query ottimizzata: prenotazioni dell'utente
+  // Query ottimizzata: prenotazioni dell'utente (create o per cui è stato prenotato)
   const bookingsRef = collection(db, 'bookings');
-  let q = query(bookingsRef, where('bookedBy', '==', user.uid));
 
-  // Filtra per club se specificato
+  // Query 1: Prenotazioni create dall'utente
+  let q1 = query(bookingsRef, where('createdBy', '==', user.uid));
+
+  // Query 2: Prenotazioni fatte per l'utente (cross-club visibility)
+  let q2 = query(bookingsRef, where('bookedForUserId', '==', user.uid));
+
+  // Filtra per club se specificato (richiede indici composti per entrambe le query)
   if (clubId) {
-    q = query(bookingsRef, where('bookedBy', '==', user.uid), where('clubId', '==', clubId));
+    q1 = query(bookingsRef, where('createdBy', '==', user.uid), where('clubId', '==', clubId));
+    q2 = query(bookingsRef, where('bookedForUserId', '==', user.uid), where('clubId', '==', clubId));
   }
 
-  const snapshot = await getDocs(q);
-  let userBookings = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const [snapshot1, snapshot2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+
+  // Unisci i risultati rimuovendo duplicati
+  const bookingMap = new Map();
+
+  const processSnapshot = (snapshot) => {
+    snapshot.docs.forEach((doc) => {
+      const data = doc.data();
+      const legacyId = data.id && data.id !== doc.id ? data.id : data.legacyId;
+      const { id: _id, ...bookingData } = data;
+
+      bookingMap.set(doc.id, {
+        ...bookingData,
+        id: doc.id,
+        legacyId,
+        createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
+      });
+    });
+  };
+
+  processSnapshot(snapshot1);
+  processSnapshot(snapshot2);
+
+  let userBookings = Array.from(bookingMap.values());
 
   if (lessonOnly) {
     userBookings = userBookings.filter((b) => b.isLessonBooking);
@@ -1171,6 +1221,10 @@ export async function searchBookingsForPlayer({ userId, email, name }) {
       queries.push(
         getDocs(query(collection(db, COLLECTIONS.BOOKINGS), where('createdBy', '==', userId)))
       );
+      // Aggiungi anche prenotazioni fatte per l'utente
+      queries.push(
+        getDocs(query(collection(db, COLLECTIONS.BOOKINGS), where('bookedForUserId', '==', userId)))
+      );
     }
 
     if (email) {
@@ -1246,7 +1300,8 @@ export async function getActiveUserBookings(userId) {
   }
 
   try {
-    const q = query(
+    // Query 1: Prenotazioni create dall'utente
+    const q1 = query(
       collection(db, COLLECTIONS.BOOKINGS),
       where('createdBy', '==', userId),
       where('status', '==', BOOKING_STATUS.CONFIRMED),
@@ -1255,20 +1310,41 @@ export async function getActiveUserBookings(userId) {
       orderBy('time', 'asc')
     );
 
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => {
-      const data = doc.data() || {};
-      const legacyId = data.id && data.id !== doc.id ? data.id : data.legacyId;
-      const { id: _id, ...bookingData } = data; // eslint-disable-line no-unused-vars
+    // Query 2: Prenotazioni fatte per l'utente (cross-club visibility)
+    const q2 = query(
+      collection(db, COLLECTIONS.BOOKINGS),
+      where('bookedForUserId', '==', userId),
+      where('status', '==', BOOKING_STATUS.CONFIRMED),
+      where('date', '>=', today),
+      orderBy('date', 'asc'),
+      orderBy('time', 'asc')
+    );
 
-      return {
-        ...bookingData,
-        id: doc.id,
-        legacyId,
-        createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
-        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
-      };
-    });
+    const [snapshot1, snapshot2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+
+    // Unisci i risultati rimuovendo duplicati
+    const bookingMap = new Map();
+
+    const processSnapshot = (snapshot) => {
+      snapshot.docs.forEach((doc) => {
+        const data = doc.data() || {};
+        const legacyId = data.id && data.id !== doc.id ? data.id : data.legacyId;
+        const { id: _id, ...bookingData } = data; // eslint-disable-line no-unused-vars
+
+        bookingMap.set(doc.id, {
+          ...bookingData,
+          id: doc.id,
+          legacyId,
+          createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+          updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
+        });
+      });
+    };
+
+    processSnapshot(snapshot1);
+    processSnapshot(snapshot2);
+
+    return Array.from(bookingMap.values());
   } catch (error) {
     console.warn('Error getting active user bookings:', error);
     return getUserBookings({ uid: userId }, { includeHistory: true, includeCancelled: false });
@@ -1291,7 +1367,8 @@ export async function getUserBookingHistory(userId) {
   }
 
   try {
-    const q = query(
+    // Query 1: Prenotazioni create dall'utente
+    const q1 = query(
       collection(db, COLLECTIONS.BOOKINGS),
       where('createdBy', '==', userId),
       where('date', '<', today),
@@ -1299,20 +1376,40 @@ export async function getUserBookingHistory(userId) {
       orderBy('time', 'desc')
     );
 
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => {
-      const data = doc.data() || {};
-      const legacyId = data.id && data.id !== doc.id ? data.id : data.legacyId;
-      const { id: _id, ...bookingData } = data; // eslint-disable-line no-unused-vars
+    // Query 2: Prenotazioni fatte per l'utente (cross-club visibility)
+    const q2 = query(
+      collection(db, COLLECTIONS.BOOKINGS),
+      where('bookedForUserId', '==', userId),
+      where('date', '<', today),
+      orderBy('date', 'desc'),
+      orderBy('time', 'desc')
+    );
 
-      return {
-        ...bookingData,
-        id: doc.id,
-        legacyId,
-        createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
-        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
-      };
-    });
+    const [snapshot1, snapshot2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+
+    // Unisci i risultati rimuovendo duplicati
+    const bookingMap = new Map();
+
+    const processSnapshot = (snapshot) => {
+      snapshot.docs.forEach((doc) => {
+        const data = doc.data() || {};
+        const legacyId = data.id && data.id !== doc.id ? data.id : data.legacyId;
+        const { id: _id, ...bookingData } = data; // eslint-disable-line no-unused-vars
+
+        bookingMap.set(doc.id, {
+          ...bookingData,
+          id: doc.id,
+          legacyId,
+          createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+          updatedAt: data.updatedAt?.toDate?.()?.toISOString() || data.updatedAt,
+        });
+      });
+    };
+
+    processSnapshot(snapshot1);
+    processSnapshot(snapshot2);
+
+    return Array.from(bookingMap.values()).sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time));
   } catch (error) {
     console.warn('Error getting user booking history:', error);
     return (

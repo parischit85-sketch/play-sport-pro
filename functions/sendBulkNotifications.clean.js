@@ -58,22 +58,48 @@ const FROM_NAME = 'Play-Sport.pro';
 // =============================================
 // CONFIGURAZIONE WEB PUSH (VAPID)
 // =============================================
-const VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || '';
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '';
+// Sanitize VAPID keys from env (trim, strip quotes/newlines, enforce URL-safe)
+function sanitizeVapidKey(key) {
+  if (!key) return '';
+  let k = String(key).trim();
+  // rimuove apici accidentali
+  k = k.replace(/^"+|"+$/g, '').replace(/^'+|'+$/g, '');
+  // normalizza spazi e newline
+  k = k.replace(/\r|\n|\s+/g, '');
+  // forza URL-safe base64
+  k = k.replace(/\+/g, '-').replace(/\//g, '_');
+  // rimuovi padding '=' se presente (web-push richiede senza '=')
+  k = k.replace(/=+$/g, '');
+  return k;
+}
+
+const RAW_VAPID_PUBLIC_KEY = process.env.VAPID_PUBLIC_KEY || '';
+const RAW_VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY || '';
+const VAPID_PUBLIC_KEY = sanitizeVapidKey(RAW_VAPID_PUBLIC_KEY);
+const VAPID_PRIVATE_KEY = sanitizeVapidKey(RAW_VAPID_PRIVATE_KEY);
 const WEB_PUSH_ENABLED = !!(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY);
+let WEB_PUSH_READY = false;
 
 console.log('🔧 [Web Push Config]', {
   publicKeyPresent: !!VAPID_PUBLIC_KEY,
   privateKeyPresent: !!VAPID_PRIVATE_KEY,
   enabled: WEB_PUSH_ENABLED,
   publicKeyPreview: VAPID_PUBLIC_KEY ? `${VAPID_PUBLIC_KEY.substring(0, 20)}...` : 'MISSING',
+  diagnostics: {
+    rawPublicLen: (RAW_VAPID_PUBLIC_KEY || '').length,
+    rawPrivateLen: (RAW_VAPID_PRIVATE_KEY || '').length,
+    hasEqPublic: /=/.test(RAW_VAPID_PUBLIC_KEY || ''),
+    hasEqPrivate: /=/.test(RAW_VAPID_PRIVATE_KEY || ''),
+  },
 });
 
 if (WEB_PUSH_ENABLED) {
   try {
     webpush.setVapidDetails('mailto:support@play-sport.pro', VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+    WEB_PUSH_READY = true;
     console.log('✅ Web Push VAPID configured successfully');
   } catch (e) {
+    WEB_PUSH_READY = false;
     console.warn('⚠️ Web Push VAPID configuration failed:', e?.message || e);
   }
 } else {
@@ -162,6 +188,7 @@ async function sendPushNotificationToUser(userId, notification) {
     userId,
     notificationTitle: notification?.title,
     webPushEnabled: WEB_PUSH_ENABLED,
+    webPushReady: WEB_PUSH_READY,
     vapidConfigured: !!(VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY),
   });
 
@@ -174,11 +201,18 @@ async function sendPushNotificationToUser(userId, notification) {
     throw new Error('Servizio Push non configurato (VAPID mancante) [push-service-unconfigured]');
   }
 
+  if (!WEB_PUSH_READY) {
+    console.error('❌ [Push] Web Push not ready: VAPID configuration failed.');
+    throw new Error('Servizio Push non pronto (configurazione VAPID non valida) [push-service-misconfigured]');
+  }
+
   // Recupera tutte le sottoscrizioni da Firestore (stesso schema usato nelle Netlify Functions)
   console.log('🔍 [Push] Querying subscriptions for userId:', userId);
   const subsSnap = await db
     .collection('pushSubscriptions')
     .where('userId', '==', userId)
+    .where('isActive', '==', true)
+    .where('expiresAt', '>', new Date().toISOString()) // Solo subscriptions non scadute
     .get();
 
   console.log('📊 [Push] Subscriptions found:', subsSnap.size);
@@ -195,11 +229,30 @@ async function sendPushNotificationToUser(userId, notification) {
       const sub = doc.data().subscription;
       try {
         await webpush.sendNotification(sub, payload);
+
+        // Aggiorna lastUsedAt per questa subscription
+        await doc.ref.update({
+          lastUsedAt: new Date().toISOString(),
+          expiresAt: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)).toISOString() // Rinnova expiry
+        });
+
       } catch (err) {
         // Se la sottoscrizione non è più valida, segna per eliminazione
         const msg = String(err?.message || '').toLowerCase();
         const statusCode = err?.statusCode || err?.status || err?.code;
-        if (statusCode === 404 || statusCode === 410 || msg.includes('gone') || msg.includes('unsubscribed')) {
+        // Considera invalide anche 401/403 (VAPID mismatch o unauthorized) oltre a 404/410
+        if (
+          statusCode === 404 ||
+          statusCode === 410 ||
+          statusCode === 401 ||
+          statusCode === 403 ||
+          msg.includes('gone') ||
+          msg.includes('unsubscribed') ||
+          msg.includes('unauthorized') ||
+          msg.includes('forbidden') ||
+          msg.includes('unauth') ||
+          msg.includes('vapid')
+        ) {
           invalidDocs.push(doc.id);
         }
         throw err;
@@ -428,6 +481,8 @@ export const sendBulkCertificateNotifications = onCall(
             results.details.push({ playerId, playerName: player.name, success: false, error: err.message, code: mappedCode });
           }
         } else {
+          // Forza il provider corretto per chiarezza nel risultato quando si inviano PUSH
+          results.provider = 'push';
           try {
             // Costruisce una notifica generica certificato per push
             const pushNotification = {
@@ -455,12 +510,37 @@ export const sendBulkCertificateNotifications = onCall(
             results.sent++;
             results.details.push({ playerId, playerName: player.name, success: true, method: 'push' });
           } catch (err) {
-            results.failed++;
             let mappedCode = 'push-send-error';
             const msg = (err?.message || '').toLowerCase();
-            if (msg.includes('vapid') || msg.includes('not configured')) mappedCode = 'push-service-unconfigured';
-            if (msg.includes('no subscription') || msg.includes('nessuna sottoscrizione')) mappedCode = 'push-no-subscription';
-            results.details.push({ playerId, playerName: player.name, success: false, error: err.message, code: mappedCode });
+            if (msg.includes('push-service-unconfigured')) mappedCode = 'push-service-unconfigured';
+            else if (msg.includes('push-service-misconfigured') || msg.includes('vapid') || msg.includes('public key must be a url safe base 64')) mappedCode = 'push-service-misconfigured';
+            else if (msg.includes('no subscription') || msg.includes('nessuna sottoscrizione')) mappedCode = 'push-no-subscription';
+            const statusCode = err?.statusCode || err?.status || err?.code || null;
+
+            // Fallback automatico ad EMAIL se la push fallisce per mancanza di sottoscrizione
+            if (mappedCode === 'push-no-subscription' && EMAIL_PROVIDER !== 'none' && player?.email) {
+              try {
+                // Calcola status per email (come nel ramo email)
+                let status;
+                if (!expiryDate) {
+                  status = { type: 'missing', expiryDate: null, daysUntilExpiry: null };
+                } else {
+                  const expiry = expiryDate?.toDate ? expiryDate.toDate() : new Date(expiryDate);
+                  const daysUntilExpiry = Math.ceil((expiry.getTime() - Date.now()) / 86400000);
+                  status = { expiryDate: expiry.toLocaleDateString('it-IT'), daysUntilExpiry };
+                }
+                await sendEmailNotification(player, club, status);
+                // Conta come inviato via fallback
+                results.sent++;
+                results.details.push({ playerId, playerName: player.name, success: true, method: 'email-fallback', reason: 'push-no-subscription' });
+              } catch (emailErr) {
+                results.failed++;
+                results.details.push({ playerId, playerName: player.name, success: false, error: emailErr.message, code: 'email-fallback-error', fromPushError: mappedCode, statusCode });
+              }
+            } else {
+              results.failed++;
+              results.details.push({ playerId, playerName: player.name, success: false, error: err.message, code: mappedCode, statusCode, webPushReady: WEB_PUSH_READY });
+            }
           }
         }
       } catch (err) {

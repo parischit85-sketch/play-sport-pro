@@ -1,6 +1,7 @@
 // =============================================
 // FILE: src/features/players/components/PlayerMedicalTab.jsx
 // Tab certificato medico per PlayerDetails (SEMPLIFICATO - solo dati)
+// Updated: 2025-10-13 - Fixed React key warnings
 // =============================================
 
 import React, { useState, useEffect } from 'react';
@@ -503,7 +504,7 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
           <div className="space-y-3">
             {history.map((oldCert, index) => (
               <div
-                key={index}
+                key={oldCert.id || `cert-${oldCert.archivedAt || oldCert.uploadedAt || index}`}
                 className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
               >
                 <div className="flex-1">

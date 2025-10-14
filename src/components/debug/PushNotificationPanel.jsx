@@ -20,10 +20,12 @@ export default function PushNotificationPanel() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [serverCheck, setServerCheck] = useState(null);
+  const [isMockMode, setIsMockMode] = useState(false);
 
   useEffect(() => {
     checkSubscription();
     setPermission(getPushNotificationStatus());
+    setIsMockMode(!!window.__MOCK_PUSH_MODE__);
   }, []);
 
   const checkSubscription = async () => {
@@ -165,7 +167,14 @@ export default function PushNotificationPanel() {
       <CardContent className="p-4 space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold">Notifiche Push</h3>
-          {getPermissionBadge()}
+          <div className="flex items-center gap-2">
+            {isMockMode && (
+              <Badge className="bg-purple-500">
+                <span className="mr-1">🎭</span> Mock Mode
+              </Badge>
+            )}
+            {getPermissionBadge()}
+          </div>
         </div>
 
         <div className="space-y-2 text-sm">
@@ -173,6 +182,15 @@ export default function PushNotificationPanel() {
             Attiva le notifiche push per ricevere aggiornamenti in tempo reale sulle tue
             prenotazioni.
           </p>
+          {isMockMode && (
+            <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded text-sm text-purple-800 dark:text-purple-300">
+              <p className="font-medium">🎭 Modalità Mock Attiva</p>
+              <p className="text-xs">
+                Il Service Worker non è disponibile. Le notifiche vengono simulate in console.
+                Usa questa modalità per testare la logica di sottoscrizione senza problemi di storage.
+              </p>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <div
               className={`w-2 h-2 rounded-full ${isSubscribed ? 'bg-green-500' : 'bg-gray-300'}`}

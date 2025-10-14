@@ -356,6 +356,21 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                 I giocatori inattivi non appaiono nelle selezioni per i match
               </p>
             </div>
+
+            <div>
+              <label className={`flex items-center gap-2 ${T.text}`}>
+                <input
+                  type="checkbox"
+                  checked={formData.tournamentData?.isParticipant !== false}
+                  onChange={(e) => handleChange('tournamentData.isParticipant', e.target.checked)}
+                  className="rounded"
+                />
+                Partecipa al Campionato
+              </label>
+              <p className={`text-xs ${T.subtext} mt-1`}>
+                I giocatori che non partecipano al campionato non appaiono nelle classifiche
+              </p>
+            </div>
           </div>
         )}
 

@@ -1,0 +1,483 @@
+{
+  "0j7rYi1yK7uS0cX1bkQx": {
+    "teamB": [
+      "lax34vmf",
+      "hbbyqt6y"
+    ],
+    "gamesB": 3,
+    "teamA": [
+      "kb1xbwle",
+      "v8h4dgdh"
+    ],
+    "gamesA": 18,
+    "setsA": 3,
+    "date": "2025-09-20T21:37:38.043Z",
+    "sets": [
+      {
+        "b": 1,
+        "a": 6
+      },
+      {
+        "b": 2,
+        "a": 6
+      },
+      {
+        "a": 6,
+        "b": 0
+      }
+    ],
+    "setsB": 0,
+    "clubId": "sporting-cat",
+    "deltaA": 55,
+    "deltaB": -55,
+    "winner": "A",
+    "createdAt": {
+      "_seconds": 1758404255,
+      "_nanoseconds": 265000000
+    }
+  },
+  "Oo27v8AJNnbGke5FpRxi": {
+    "gamesA": 6,
+    "sets": [
+      {
+        "a": 1,
+        "b": 6
+      },
+      {
+        "a": 2,
+        "b": 6
+      },
+      {
+        "b": 6,
+        "a": 3
+      }
+    ],
+    "winner": "B",
+    "setsB": 3,
+    "teamB": [
+      "3sg14giw",
+      "ixy2e6h8"
+    ],
+    "deltaA": -101,
+    "setsA": 0,
+    "date": "2025-09-29T16:36:35.818Z",
+    "deltaB": 101,
+    "teamA": [
+      "kb1xbwle",
+      "ncroqybw"
+    ],
+    "clubId": "sporting-cat",
+    "gamesB": 18,
+    "createdAt": {
+      "_seconds": 1759163791,
+      "_nanoseconds": 904000000
+    }
+  },
+  "V4hi4bShH14i3TQhyGxc": {
+    "sets": [
+      {
+        "b": 2,
+        "a": 6
+      },
+      {
+        "a": 6,
+        "b": 0
+      },
+      {
+        "b": 0,
+        "a": 6
+      }
+    ],
+    "setsB": 0,
+    "gamesB": 2,
+    "gamesA": 18,
+    "teamB": [
+      "70xe0dha",
+      "ncroqybw"
+    ],
+    "deltaB": -56,
+    "teamA": [
+      "lax34vmf",
+      "kb1xbwle"
+    ],
+    "deltaA": 56,
+    "date": "2025-09-20T21:49:04.339Z",
+    "clubId": "sporting-cat",
+    "setsA": 3,
+    "winner": "A",
+    "createdAt": {
+      "_seconds": 1758404941,
+      "_nanoseconds": 632000000
+    }
+  },
+  "eMZXb7wKjyuxmlCC7mtJ": {
+    "setsA": 3,
+    "teamA": [
+      "ux7o3edh",
+      "v8h4dgdh"
+    ],
+    "gamesA": 18,
+    "deltaA": 53,
+    "setsB": 0,
+    "deltaB": -53,
+    "date": "2025-09-20T21:41:00.000Z",
+    "clubId": "sporting-cat",
+    "teamB": [
+      "ixy2e6h8",
+      "3sg14giw"
+    ],
+    "gamesB": 6,
+    "winner": "A",
+    "sets": [
+      {
+        "b": 1,
+        "a": 6
+      },
+      {
+        "a": 6,
+        "b": 2
+      },
+      {
+        "a": 6,
+        "b": 3
+      }
+    ],
+    "createdAt": {
+      "_seconds": 1758404689,
+      "_nanoseconds": 502000000
+    }
+  },
+  "gt0A5wF6P96vWQeUZZjp": {
+    "date": "2025-09-23T21:40:36.171Z",
+    "teamA": [
+      "kb1xbwle",
+      "70xe0dha"
+    ],
+    "deltaA": 53,
+    "setsB": 0,
+    "sets": [
+      {
+        "a": 6,
+        "b": 2
+      },
+      {
+        "b": 3,
+        "a": 6
+      },
+      {
+        "a": 6,
+        "b": 1
+      }
+    ],
+    "setsA": 3,
+    "teamB": [
+      "hbbyqt6y",
+      "ux7o3edh"
+    ],
+    "gamesA": 18,
+    "clubId": "sporting-cat",
+    "deltaB": -53,
+    "winner": "A",
+    "gamesB": 6,
+    "createdAt": {
+      "_seconds": 1758663635,
+      "_nanoseconds": 789000000
+    }
+  },
+  "o7vKdyTwI1LmbbVAt7Kd": {
+    "date": "2025-09-09T23:12:00.000Z",
+    "teamA": [
+      "v8h4dgdh",
+      "ux7o3edh"
+    ],
+    "teamB": [
+      "ixy2e6h8",
+      "qazdz9zt"
+    ],
+    "sets": [
+      {
+        "a": 6,
+        "b": 1
+      },
+      {
+        "a": 6,
+        "b": 2
+      },
+      {
+        "a": 6,
+        "b": 3
+      }
+    ],
+    "winner": "A",
+    "setsA": 3,
+    "setsB": 0,
+    "gamesA": 18,
+    "gamesB": 6,
+    "deltaA": 52,
+    "deltaB": -52,
+    "clubId": "sporting-cat",
+    "createdAt": {
+      "_seconds": 1758323595,
+      "_nanoseconds": 660000000
+    }
+  },
+  "ogLXv5UlUwyvglniUNZB": {
+    "date": "2025-09-20T00:13:00.000Z",
+    "teamA": [
+      "v8h4dgdh",
+      "hbbyqt6y"
+    ],
+    "teamB": [
+      "qazdz9zt",
+      "ixy2e6h8"
+    ],
+    "sets": [
+      {
+        "a": 6,
+        "b": 2
+      },
+      {
+        "a": 6,
+        "b": 3
+      },
+      {
+        "a": 6,
+        "b": 4
+      }
+    ],
+    "winner": "A",
+    "setsA": 3,
+    "setsB": 0,
+    "gamesA": 18,
+    "gamesB": 9,
+    "deltaA": 49,
+    "deltaB": -49,
+    "clubId": "sporting-cat",
+    "createdAt": {
+      "_seconds": 1758323644,
+      "_nanoseconds": 295000000
+    }
+  },
+  "p6eu1xEU4kK4w8n0efLb": {
+    "sets": [
+      {
+        "b": 1,
+        "a": 6
+      },
+      {
+        "a": 6,
+        "b": 2
+      },
+      {
+        "a": 6,
+        "b": 3
+      }
+    ],
+    "setsA": 3,
+    "teamB": [
+      "v8h4dgdh",
+      "ncroqybw"
+    ],
+    "gamesB": 6,
+    "date": "2025-09-29T16:08:44.064Z",
+    "winner": "A",
+    "teamA": [
+      "70xe0dha",
+      "hbbyqt6y"
+    ],
+    "gamesA": 18,
+    "deltaB": -72,
+    "clubId": "sporting-cat",
+    "deltaA": 72,
+    "setsB": 0,
+    "createdAt": {
+      "_seconds": 1759162120,
+      "_nanoseconds": 190000000
+    }
+  },
+  "pYcHjoGU5znHnQmNvAMx": {
+    "deltaA": 52,
+    "gamesB": 6,
+    "gamesA": 18,
+    "date": "2025-09-20T20:38:49.627Z",
+    "setsA": 3,
+    "teamA": [
+      "ncroqybw",
+      "qazdz9zt"
+    ],
+    "setsB": 0,
+    "teamB": [
+      "3sg14giw",
+      "ixy2e6h8"
+    ],
+    "clubId": "sporting-cat",
+    "winner": "A",
+    "deltaB": -52,
+    "sets": [
+      {
+        "a": 6,
+        "b": 1
+      },
+      {
+        "b": 2,
+        "a": 6
+      },
+      {
+        "b": 3,
+        "a": 6
+      }
+    ],
+    "createdAt": {
+      "_seconds": 1758400726,
+      "_nanoseconds": 975000000
+    }
+  },
+  "sGhXbpvPWoy8gGQByfda": {
+    "winner": "A",
+    "teamB": [
+      "hbbyqt6y",
+      "ncroqybw"
+    ],
+    "setsA": 2,
+    "teamA": [
+      "lax34vmf",
+      "70xe0dha"
+    ],
+    "sets": [
+      {
+        "b": 0,
+        "a": 6
+      },
+      {
+        "b": 0,
+        "a": 6
+      },
+      {
+        "b": 0,
+        "a": 0
+      }
+    ],
+    "deltaB": -47,
+    "setsB": 0,
+    "gamesB": 0,
+    "deltaA": 47,
+    "clubId": "sporting-cat",
+    "date": "2025-09-29T16:04:11.196Z",
+    "gamesA": 12,
+    "createdAt": {
+      "_seconds": 1759161847,
+      "_nanoseconds": 328000000
+    }
+  },
+  "sJMehjn5egcbCloiBprU": {
+    "teamB": [
+      "7m9oy3oo",
+      "ncroqybw"
+    ],
+    "gamesA": 18,
+    "teamA": [
+      "70xe0dha",
+      "zlez2hkh"
+    ],
+    "deltaA": 74,
+    "winner": "A",
+    "setsA": 3,
+    "clubId": "sporting-cat",
+    "date": "2025-09-29T16:23:38.620Z",
+    "setsB": 0,
+    "sets": [
+      {
+        "a": 6,
+        "b": 2
+      },
+      {
+        "b": 3,
+        "a": 6
+      },
+      {
+        "b": 4,
+        "a": 6
+      }
+    ],
+    "deltaB": -74,
+    "gamesB": 9,
+    "createdAt": {
+      "_seconds": 1759163014,
+      "_nanoseconds": 747000000
+    }
+  },
+  "u2h4PO9QyLJFGOhIsVsY": {
+    "date": "2025-09-19T23:10:00.000Z",
+    "teamA": [
+      "kb1xbwle",
+      "v8h4dgdh"
+    ],
+    "teamB": [
+      "70xe0dha",
+      "hbbyqt6y"
+    ],
+    "sets": [
+      {
+        "a": 6,
+        "b": 1
+      },
+      {
+        "a": 6,
+        "b": 2
+      },
+      {
+        "a": 6,
+        "b": 3
+      }
+    ],
+    "winner": "A",
+    "setsA": 3,
+    "setsB": 0,
+    "gamesA": 18,
+    "gamesB": 6,
+    "deltaA": 52,
+    "deltaB": -52,
+    "clubId": "sporting-cat",
+    "createdAt": {
+      "_seconds": 1758323484,
+      "_nanoseconds": 69000000
+    }
+  },
+  "wvH42WaEAZQ72SoTYY3R": {
+    "setsB": 0,
+    "teamB": [
+      "v8h4dgdh",
+      "hbbyqt6y"
+    ],
+    "gamesA": 18,
+    "setsA": 3,
+    "deltaB": -80,
+    "teamA": [
+      "lax34vmf",
+      "p2v18iff"
+    ],
+    "gamesB": 4,
+    "clubId": "sporting-cat",
+    "deltaA": 80,
+    "date": "2025-09-29T15:57:25.800Z",
+    "winner": "A",
+    "sets": [
+      {
+        "a": 6,
+        "b": 1
+      },
+      {
+        "b": 2,
+        "a": 6
+      },
+      {
+        "b": 1,
+        "a": 6
+      }
+    ],
+    "createdAt": {
+      "_seconds": 1759161441,
+      "_nanoseconds": 952000000
+    }
+  }
+}

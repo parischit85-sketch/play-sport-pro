@@ -50,13 +50,16 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
         ? formData.initialRanking
         : player.rating || 1500;
 
+    // Check if initialRanking has changed from the current value
+    const initialRankingChanged = player.tournamentData?.initialRanking !== validInitialRanking;
+
     const tournamentData = {
       ...player.tournamentData,
       isParticipant: formData.isParticipant,
       initialRanking: validInitialRanking,
-      // 🔄 currentRanking = player.rating (valore calcolato dalle partite)
-      // Se non esiste player.rating, usa initialRanking come fallback
-      currentRanking: player.rating || validInitialRanking,
+      // 🔄 If initialRanking changed, reset currentRanking to the new initial value
+      // Otherwise keep the current calculated rating
+      currentRanking: initialRankingChanged ? validInitialRanking : (player.rating || validInitialRanking),
       division: formData.division || null,
       notes: formData.notes || '',
       isActive: formData.isActive,
@@ -72,9 +75,12 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
     };
 
     console.log('💾 [PlayerTournamentTab] Final tournamentData to save:', tournamentData);
+    console.log('💾 [PlayerTournamentTab] initialRankingChanged:', initialRankingChanged);
 
     onUpdate({
       tournamentData,
+      // If initialRanking changed, also update the profile rating to reset it
+      ...(initialRankingChanged && { rating: validInitialRanking, baseRating: validInitialRanking })
     });
   };
 

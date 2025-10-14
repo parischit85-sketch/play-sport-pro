@@ -11,6 +11,7 @@ import { useUI } from '@contexts/UIContext.jsx';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { computeClubRanking } from '@lib/ranking-club.js';
 import CreaPartita from '@features/crea/CreaPartita.jsx';
+import FormulaModal from '../components/modals/FormulaModal';
 
 export default function MatchesPage() {
   const { clubId, loadPlayers, players, playersLoaded, loadMatches, matches, matchesLoaded } =
@@ -21,7 +22,7 @@ export default function MatchesPage() {
 
   // Gli admin di club possono sempre accedere, anche senza clubMode attivato
   const canAccessMatches = clubMode || isClubAdmin(clubId);
-  const [formulaText, setFormulaText] = useState('');
+  const [formulaData, setFormulaData] = useState(null);
   const navigate = useNavigate();
 
   if (!canAccessMatches) {
@@ -86,7 +87,7 @@ export default function MatchesPage() {
           /* legacy no-op: add match handled separately */
         }}
         playersById={playersById}
-        onShowFormula={setFormulaText}
+        onShowFormula={setFormulaData}
         derivedMatches={derivedLike.matches}
         rankingData={rankingData}
         onMatchCreated={() => {
@@ -94,29 +95,12 @@ export default function MatchesPage() {
         }}
       />
 
-      {/* Formula Modal - TODO: Convert to proper modal */}
-      {formulaText && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto border dark:border-gray-600">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Formula calcolo punti (RPA) – Spiegazione
-                </h3>
-                <button
-                  onClick={() => setFormulaText('')}
-                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-                >
-                  ×
-                </button>
-              </div>
-              <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200">
-                {formulaText}
-              </pre>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Formula Modal Moderno */}
+      <FormulaModal
+        isOpen={!!formulaData}
+        onClose={() => setFormulaData(null)}
+        matchData={formulaData}
+      />
     </>
   );
 }

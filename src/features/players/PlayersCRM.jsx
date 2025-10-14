@@ -7,15 +7,18 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Section from '@ui/Section.jsx';
 import Modal from '@ui/Modal.jsx';
+import ConfirmModal from '@ui/ConfirmModal.jsx';
+import ToastContainer, { toast } from '@ui/Toast.jsx';
+import ExportModal from '@ui/ExportModal.jsx';
+import VirtualizedList from '@ui/VirtualizedList.jsx';
 import { uid } from '@lib/ids.js';
 import { byPlayerFirstAlpha } from '@lib/names.js';
 import { createPlayerSchema, PLAYER_CATEGORIES } from './types/playerTypes.js';
 import PlayerCard from './components/PlayerCard';
-import PlayerForm from './components/PlayerForm';
 import PlayerDetails from './components/PlayerDetails';
 import CRMTools from './components/CRMTools';
 import { useAuth } from '@contexts/AuthContext.jsx';
-import { listAllUserProfiles } from '@services/auth.jsx';
+import { PlayerCardSkeleton } from '@ui/SkeletonLoader.jsx';
 
 export default function PlayersCRM({
   state,
@@ -26,19 +29,28 @@ export default function PlayersCRM({
   onAddPlayer,
   onUpdatePlayer,
   onDeletePlayer,
+  isLoading = false,
 }) {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [showPlayerForm, setShowPlayerForm] = useState(false);
-  const [editingPlayer, setEditingPlayer] = useState(null);
   const [filterCategory, setFilterCategory] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showTools, setShowTools] = useState(false);
+  const [filterStatus, setFilterStatus] = useState('all'); // 'all', 'active', 'inactive'
+  const [filterRegistrationDate, setFilterRegistrationDate] = useState('all'); // 'all', 'today', 'week', 'month', 'older'
+  const [filterLastActivity, setFilterLastActivity] = useState('all'); // 'all', 'today', 'week', 'month', 'older'
+  const [sortBy, setSortBy] = useState('name'); // 'name', 'registration', 'lastActivity', 'rating'
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showAccountPicker, setShowAccountPicker] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [loadingAccounts, setLoadingAccounts] = useState(false);
   const [accountSearch, setAccountSearch] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showTools, setShowTools] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [playerToDelete, setPlayerToDelete] = useState(null);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
 
   const players = Array.isArray(state?.players) ? state.players : [];
 
@@ -69,6 +81,21 @@ export default function PlayersCRM({
     return players.find((p) => p.id === selectedPlayerId) || null;
   }, [players, selectedPlayerId]);
 
+  // Utility per filtri data
+  const getDateFilter = (dateFilter) => {
+    const now = new Date();
+    switch (dateFilter) {
+      case 'today':
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      case 'week':
+        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      case 'month':
+        return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      default:
+        return null;
+    }
+  };
+
   // Filtri e ricerca
   const filteredPlayers = useMemo(() => {
     let filtered = [...players];
@@ -76,6 +103,37 @@ export default function PlayersCRM({
     // Filtro per categoria
     if (filterCategory !== 'all') {
       filtered = filtered.filter((p) => p.category === filterCategory);
+    }
+
+    // Filtro per stato
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter((p) => {
+        const isActive = p.isActive !== false;
+        return filterStatus === 'active' ? isActive : !isActive;
+      });
+    }
+
+    // Filtro per data registrazione
+    if (filterRegistrationDate !== 'all') {
+      const dateThreshold = getDateFilter(filterRegistrationDate);
+      if (dateThreshold) {
+        filtered = filtered.filter((p) => {
+          const regDate = new Date(p.createdAt || p.registrationDate);
+          return regDate >= dateThreshold;
+        });
+      }
+    }
+
+    // Filtro per ultimo accesso
+    if (filterLastActivity !== 'all') {
+      const dateThreshold = getDateFilter(filterLastActivity);
+      if (dateThreshold) {
+        filtered = filtered.filter((p) => {
+          if (!p.lastActivity) return false;
+          const lastActivity = new Date(p.lastActivity);
+          return lastActivity >= dateThreshold;
+        });
+      }
     }
 
     // Ricerca per nome, email, telefono
@@ -91,122 +149,198 @@ export default function PlayersCRM({
       );
     }
 
-    return filtered.sort(byPlayerFirstAlpha);
-  }, [players, filterCategory, searchTerm]);
+    // Filtro per ordinamento per rating: mostra solo chi partecipa al campionato
+    if (sortBy === 'rating') {
+      filtered = filtered.filter((p) => p.tournamentData?.isParticipant && p.tournamentData?.isActive);
+    }
+
+    // Ordinamento
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'registration':
+          const dateA = new Date(a.createdAt || a.registrationDate || 0);
+          const dateB = new Date(b.createdAt || b.registrationDate || 0);
+          return dateB - dateA; // Più recenti prima
+        case 'lastActivity':
+          const activityA = new Date(a.lastActivity || 0);
+          const activityB = new Date(b.lastActivity || 0);
+          return activityB - activityA; // Più recenti prima
+        case 'rating':
+          const ratingA = a.calculatedRating || a.rating || 0;
+          const ratingB = b.calculatedRating || b.rating || 0;
+          return ratingB - ratingA; // Più alti prima
+        case 'name':
+        default:
+          return byPlayerFirstAlpha(a, b);
+      }
+    });
+
+    return filtered;
+  }, [players, filterCategory, filterStatus, filterRegistrationDate, filterLastActivity, searchTerm, sortBy]);
 
   // Statistiche rapide
   const stats = useMemo(() => {
     const total = players.length;
+    const filtered = filteredPlayers.length;
     const members = players.filter((p) => p.category === PLAYER_CATEGORIES.MEMBER).length;
     const active = players.filter((p) => p.isActive !== false).length;
     const withAccount = players.filter((p) => p.isAccountLinked).length;
 
-    return { total, members, active, withAccount };
-  }, [players]);
+    return { total, filtered, members, active, withAccount };
+  }, [players, filteredPlayers.length]);
+
+  // Conteggio filtri attivi
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (filterCategory !== 'all') count++;
+    if (filterStatus !== 'all') count++;
+    if (filterRegistrationDate !== 'all') count++;
+    if (filterLastActivity !== 'all') count++;
+    if (searchTerm.trim()) count++;
+    return count;
+  }, [filterCategory, filterStatus, filterRegistrationDate, filterLastActivity, searchTerm]);
 
   const handleAddPlayer = async (playerData) => {
-    if (onAddPlayer) {
-      await onAddPlayer(playerData);
-    } else {
-      // Fallback to local state if no Firebase function provided
-      const newPlayer = {
-        ...createPlayerSchema(),
-        ...playerData,
-        id: uid(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      setState((s) => {
-        const cur = Array.isArray(s?.players) ? s.players : [];
-        return {
-          ...(s || { players: [], matches: [] }),
-          players: [...cur, newPlayer],
+    try {
+      if (onAddPlayer) {
+        await onAddPlayer(playerData, user);
+      } else {
+        // Fallback to local state if no Firebase function provided
+        const newPlayer = {
+          ...createPlayerSchema(),
+          ...playerData,
+          id: uid(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         };
-      });
-    }
 
-    setShowPlayerForm(false);
+        setState((s) => {
+          const cur = Array.isArray(s?.players) ? s.players : [];
+          return {
+            ...(s || { players: [], matches: [] }),
+            players: [...cur, newPlayer],
+          };
+        });
+      }
+
+      toast.success(`Giocatore "${playerData.name}" aggiunto con successo`);
+      setShowPlayerForm(false);
+    } catch (error) {
+      console.error('Error adding player:', error);
+      toast.error('Errore durante l\'aggiunta del giocatore. Riprova.');
+    }
   };
 
   const handleUpdatePlayer = async (playerId, updates) => {
-    if (onUpdatePlayer) {
-      await onUpdatePlayer(playerId, updates);
-    } else {
-      // Fallback to local state if no Firebase function provided
-      setState((s) => {
-        const cur = Array.isArray(s?.players) ? s.players : [];
-        return {
-          ...(s || { players: [], matches: [] }),
-          players: cur.map((p) =>
-            p.id === playerId ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
-          ),
-        };
-      });
+    try {
+      if (onUpdatePlayer) {
+        await onUpdatePlayer(playerId, updates);
+      } else {
+        // Fallback to local state if no Firebase function provided
+        setState((s) => {
+          const cur = Array.isArray(s?.players) ? s.players : [];
+          return {
+            ...(s || { players: [], matches: [] }),
+            players: cur.map((p) =>
+              p.id === playerId ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
+            ),
+          };
+        });
+      }
+
+      toast.success('Giocatore aggiornato con successo');
+    } catch (error) {
+      console.error('Error updating player:', error);
+      toast.error('Errore durante l\'aggiornamento del giocatore. Riprova.');
     }
   };
 
   const handleDeletePlayer = async (playerId) => {
-    if (onDeletePlayer) {
-      await onDeletePlayer(playerId);
-    } else {
-      // Fallback to local state if no Firebase function provided
-      if (
-        !confirm(
-          'Sei sicuro di voler eliminare questo giocatore? Questa azione non può essere annullata.'
-        )
-      ) {
-        return;
+    const player = players.find(p => p.id === playerId);
+    if (!player) return;
+
+    setPlayerToDelete(player);
+    setShowConfirmDelete(true);
+  };
+
+  const confirmDeletePlayer = async () => {
+    if (!playerToDelete) return;
+
+    try {
+      if (onDeletePlayer) {
+        await onDeletePlayer(playerToDelete.id);
+      } else {
+        // Fallback to local state if no Firebase function provided
+        setState((s) => {
+          const cur = Array.isArray(s?.players) ? s.players : [];
+          return {
+            ...(s || { players: [], matches: [] }),
+            players: cur.filter((p) => p.id !== playerToDelete.id),
+          };
+        });
       }
 
-      setState((s) => {
-        const cur = Array.isArray(s?.players) ? s.players : [];
-        return {
-          ...(s || { players: [], matches: [] }),
-          players: cur.filter((p) => p.id !== playerId),
-        };
-      });
+      toast.success(`Giocatore "${playerToDelete.name}" eliminato con successo`);
+      setSelectedPlayerId(null);
+    } catch (error) {
+      console.error('Error deleting player:', error);
+      toast.error('Errore durante l\'eliminazione del giocatore. Riprova.');
+    } finally {
+      setShowConfirmDelete(false);
+      setPlayerToDelete(null);
     }
-    setSelectedPlayerId(null);
   };
 
   const handleCreateFromAccount = async () => {
     try {
       setLoadingAccounts(true);
+      const { listAllUserProfiles } = await import('@services/auth.jsx');
       const res = await listAllUserProfiles(500);
       setAccounts(res || []);
       setAccountSearch('');
       setShowAccountPicker(true);
     } catch (error) {
       console.error('Error loading accounts:', error);
-      alert('Errore nel caricamento degli account. Riprova.');
+      toast.error('Errore nel caricamento degli account. Riprova.');
     } finally {
       setLoadingAccounts(false);
     }
   };
 
   const handleSelectAccount = async (account) => {
-    const playerData = {
-      firstName: account.firstName || account.displayName?.split(' ')[0] || '',
-      lastName: account.lastName || account.displayName?.split(' ')[1] || '',
-      name:
-        account.displayName ||
-        `${account.firstName} ${account.lastName}`.trim() ||
-        account.email?.split('@')[0] ||
-        '',
-      email: account.email || '',
-      linkedAccountId: account.uid,
-      linkedAccountEmail: account.email,
-      isAccountLinked: true,
-      category: PLAYER_CATEGORIES.MEMBER,
-      phone: account.phone || '',
-      dateOfBirth: account.dateOfBirth || null,
-    };
+    try {
+      const playerData = {
+        firstName: account.firstName || account.displayName?.split(' ')[0] || '',
+        lastName: account.lastName || account.displayName?.split(' ')[1] || '',
+        name:
+          account.displayName ||
+          `${account.firstName} ${account.lastName}`.trim() ||
+          account.email?.split('@')[0] ||
+          '',
+        email: account.email || '',
+        linkedAccountId: account.uid,
+        linkedAccountEmail: account.email,
+        isAccountLinked: true,
+        category: PLAYER_CATEGORIES.MEMBER,
+        phone: account.phone || '',
+        dateOfBirth: account.dateOfBirth || null,
+      };
 
-    await handleAddPlayer(playerData);
-    setShowAccountPicker(false);
-    setAccounts([]);
-    setAccountSearch('');
+      // Crea il giocatore nel club
+      const newPlayer = await handleAddPlayer(playerData);
+
+      // Collega l'account globale al giocatore del club
+      const { linkUserToClub } = await import('@services/auth.jsx');
+      await linkUserToClub(account.uid, state?.clubId, newPlayer.id);
+
+      toast.success(`Giocatore creato e collegato all'account ${account.email}`);
+      setShowAccountPicker(false);
+      setAccounts([]);
+      setAccountSearch('');
+    } catch (error) {
+      console.error('Error linking account to player:', error);
+      toast.error('Errore nel collegamento account-giocatore. Riprova.');
+    }
   };
 
   // Filtra gli account escludendo quelli già collegati
@@ -248,12 +382,20 @@ export default function PlayersCRM({
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 xl:p-3 mb-6`}>
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             {/* Statistiche */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-3 flex-1">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 xl:gap-3 flex-1">
               <div className="text-center">
                 <div className="text-2xl xl:text-xl font-bold text-blue-600 dark:text-blue-400">
-                  {stats.total}
+                  {stats.filtered}
+                  {stats.total !== stats.filtered && (
+                    <span className={`text-sm ${T.subtext}`}>/{stats.total}</span>
+                  )}
                 </div>
-                <div className={`text-xs ${T.subtext}`}>Totale</div>
+                <div className={`text-xs ${T.subtext}`}>
+                  {stats.total !== stats.filtered ? 'Filtrati' : 'Totale'}
+                  {activeFiltersCount > 0 && (
+                    <span className="ml-1 text-orange-500">({activeFiltersCount})</span>
+                  )}
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-2xl xl:text-xl font-bold text-green-600 dark:text-green-400">
@@ -273,10 +415,23 @@ export default function PlayersCRM({
                 </div>
                 <div className={`text-xs ${T.subtext}`}>Con Account</div>
               </div>
+              <div className="text-center">
+                <div className="text-2xl xl:text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                  {filteredPlayers.filter(p => p.tournamentData?.isParticipant).length}
+                </div>
+                <div className={`text-xs ${T.subtext}`}>Torneo</div>
+              </div>
             </div>
 
             {/* Azioni principali */}
             <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                className={`${T.btnSecondary} px-3 py-2 text-sm`}
+                title={viewMode === 'grid' ? 'Passa a vista lista' : 'Passa a vista griglia'}
+              >
+                {viewMode === 'grid' ? '📋 Lista' : '⊞ Griglia'}
+              </button>
               <button
                 onClick={() => setShowPlayerForm(true)}
                 className={`${T.btnPrimary} px-4 py-2 text-sm`}
@@ -303,55 +458,228 @@ export default function PlayersCRM({
               >
                 🛠️ Strumenti
               </button>
+              <button
+                onClick={() => setShowExportModal(true)}
+                className={`${T.btnSecondary} px-4 py-2 text-sm`}
+              >
+                📥 Esporta
+              </button>
             </div>
           </div>
         </div>
 
         {/* Filtri e ricerca */}
-        <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-6">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Cerca per nome, email, telefono..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`${T.input} w-full`}
-            />
+        <div className="space-y-4 mb-6">
+          {/* Riga principale: ricerca e filtri base */}
+          <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Cerca per nome, email, telefono..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={`${T.input} w-full`}
+              />
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <select
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                className={`${T.input} min-w-[150px]`}
+              >
+                <option value="all">Tutte le categorie</option>
+                <option value={PLAYER_CATEGORIES.MEMBER}>Membri</option>
+                <option value={PLAYER_CATEGORIES.NON_MEMBER}>Non Membri</option>
+                <option value={PLAYER_CATEGORIES.GUEST}>Ospiti</option>
+                <option value={PLAYER_CATEGORIES.VIP}>VIP</option>
+              </select>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className={`${T.input} min-w-[140px]`}
+              >
+                <option value="name">Ordina per Nome</option>
+                <option value="registration">Data Registrazione</option>
+                <option value="lastActivity">Ultimo Accesso</option>
+                <option value="rating">Rating</option>
+              </select>
+              <button
+                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                className={`${T.btnSecondary} px-3 py-2 text-sm whitespace-nowrap`}
+              >
+                🔍 Filtri {showAdvancedFilters ? '▲' : '▼'}
+              </button>
+            </div>
           </div>
-          <div className="flex gap-2 shrink-0">
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className={`${T.input} min-w-[150px]`}
-            >
-              <option value="all">Tutte le categorie</option>
-              <option value={PLAYER_CATEGORIES.MEMBER}>Membri</option>
-              <option value={PLAYER_CATEGORIES.NON_MEMBER}>Non Membri</option>
-              <option value={PLAYER_CATEGORIES.GUEST}>Ospiti</option>
-              <option value={PLAYER_CATEGORIES.VIP}>VIP</option>
-            </select>
-          </div>
+
+          {/* Filtri avanzati espandibili */}
+          {showAdvancedFilters && (
+            <div className={`${T.cardBg} ${T.border} rounded-lg p-4`}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Stato */}
+                <div>
+                  <label className={`text-sm font-medium ${T.text} mb-2 block`}>
+                    Stato Account
+                  </label>
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className={`${T.input} w-full`}
+                  >
+                    <option value="all">Tutti</option>
+                    <option value="active">Attivi</option>
+                    <option value="inactive">Inattivi</option>
+                  </select>
+                </div>
+
+                {/* Data registrazione */}
+                <div>
+                  <label className={`text-sm font-medium ${T.text} mb-2 block`}>
+                    Registrazione
+                  </label>
+                  <select
+                    value={filterRegistrationDate}
+                    onChange={(e) => setFilterRegistrationDate(e.target.value)}
+                    className={`${T.input} w-full`}
+                  >
+                    <option value="all">Tutte le date</option>
+                    <option value="today">Oggi</option>
+                    <option value="week">Questa settimana</option>
+                    <option value="month">Questo mese</option>
+                  </select>
+                </div>
+
+                {/* Ultimo accesso */}
+                <div>
+                  <label className={`text-sm font-medium ${T.text} mb-2 block`}>
+                    Ultimo Accesso
+                  </label>
+                  <select
+                    value={filterLastActivity}
+                    onChange={(e) => setFilterLastActivity(e.target.value)}
+                    className={`${T.input} w-full`}
+                  >
+                    <option value="all">Tutti</option>
+                    <option value="today">Oggi</option>
+                    <option value="week">Questa settimana</option>
+                    <option value="month">Questo mese</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Pulsante reset filtri */}
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={() => {
+                    setFilterStatus('all');
+                    setFilterRegistrationDate('all');
+                    setFilterLastActivity('all');
+                    setSearchTerm('');
+                  }}
+                  className={`${T.btnSecondary} px-4 py-2 text-sm`}
+                >
+                  🗑️ Reset Filtri
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Lista giocatori */}
         <div className="space-y-4">
-          {filteredPlayers.length === 0 ? (
+          {isLoading ? (
+            // Skeleton loaders durante il caricamento
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 [@media(min-width:2200px)]:grid-cols-5 items-stretch">
+              {Array.from({ length: 8 }, (_, i) => (
+                <PlayerCardSkeleton key={i} T={T} />
+              ))}
+            </div>
+          ) : filteredPlayers.length === 0 ? (
             <div className={`text-center py-12 ${T.cardBg} ${T.border} rounded-xl`}>
-              <div className="text-6xl mb-4">👥</div>
-              <h3 className={`text-xl font-bold mb-2 ${T.text}`}>Nessun giocatore trovato</h3>
+              <div className="text-6xl mb-4">�</div>
+              <h3 className={`text-xl font-bold mb-2 ${T.text}`}>
+                {activeFiltersCount > 0 ? 'Nessun giocatore trovato' : 'Nessun giocatore presente'}
+              </h3>
               <p className={`${T.subtext} mb-4`}>
-                {searchTerm || filterCategory !== 'all'
-                  ? 'Prova a modificare i filtri di ricerca'
+                {activeFiltersCount > 0
+                  ? 'Prova a modificare i filtri di ricerca o rimuovi alcuni filtri'
                   : 'Inizia aggiungendo il primo giocatore al tuo CRM'}
               </p>
-              <button
-                onClick={() => setShowPlayerForm(true)}
-                className={`${T.btnPrimary} px-6 py-3`}
-              >
-                ➕ Aggiungi Primo Giocatore
-              </button>
+              {activeFiltersCount > 0 ? (
+                <div className="flex gap-2 justify-center">
+                  <button
+                    onClick={() => {
+                      setFilterStatus('all');
+                      setFilterRegistrationDate('all');
+                      setFilterLastActivity('all');
+                      setSearchTerm('');
+                    }}
+                    className={`${T.btnSecondary} px-4 py-2`}
+                  >
+                    🗑️ Rimuovi Filtri
+                  </button>
+                  <button
+                    onClick={() => setShowPlayerForm(true)}
+                    className={`${T.btnPrimary} px-4 py-2`}
+                  >
+                    ➕ Nuovo Giocatore
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowPlayerForm(true)}
+                  className={`${T.btnPrimary} px-6 py-3`}
+                >
+                  ➕ Aggiungi Primo Giocatore
+                </button>
+              )}
+            </div>
+          ) : filteredPlayers.length > 50 ? (
+            // Virtualized list per molte righe
+            <VirtualizedList
+              items={filteredPlayers}
+              itemHeight={120} // Altezza stimata del PlayerCard
+              containerHeight={800}
+              className="border border-gray-200 dark:border-gray-700 rounded-lg"
+              T={T}
+              renderItem={(player, index) => (
+                <div className="p-2">
+                  <PlayerCard
+                    player={player}
+                    playersById={playersById}
+                    onEdit={() => {
+                      setSelectedPlayerId(player.id);
+                      setIsEditMode(true);
+                    }}
+                    onDelete={() => handleDeletePlayer(player.id)}
+                    onView={() => setSelectedPlayerId(player.id)}
+                    onStats={() => onOpenStats?.(player.id)}
+                    T={T}
+                  />
+                </div>
+              )}
+            />
+          ) : viewMode === 'list' ? (
+            // Vista lista
+            <div className="space-y-2">
+              {filteredPlayers.map((player) => (
+                <div key={player.id} className={`${T.cardBg} ${T.border} rounded-lg p-3`}>
+                  <PlayerCard
+                    player={player}
+                    playersById={playersById}
+                    onEdit={() => {
+                      setSelectedPlayerId(player.id);
+                    }}
+                    onDelete={() => handleDeletePlayer(player.id)}
+                    onView={() => setSelectedPlayerId(player.id)}
+                    onStats={() => onOpenStats?.(player.id)}
+                    T={T}
+                  />
+                </div>
+              ))}
             </div>
           ) : (
+            // Vista griglia
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 [@media(min-width:2200px)]:grid-cols-5 items-stretch">
               {filteredPlayers.map((player) => (
                 <PlayerCard
@@ -359,8 +687,7 @@ export default function PlayersCRM({
                   player={player}
                   playersById={playersById}
                   onEdit={() => {
-                    setEditingPlayer(player);
-                    setShowPlayerForm(true);
+                    setSelectedPlayerId(player.id);
                   }}
                   onDelete={() => handleDeletePlayer(player.id)}
                   onView={() => setSelectedPlayerId(player.id)}
@@ -379,7 +706,7 @@ export default function PlayersCRM({
           isOpen={true}
           onClose={() => setSelectedPlayerId(null)}
           title={`${selectedPlayer.name || 'Giocatore'} - Dettagli`}
-          size="large"
+          size="xxl"
         >
           <PlayerDetails
             player={selectedPlayer}
@@ -391,35 +718,6 @@ export default function PlayersCRM({
       )}
 
       {/* Modal form giocatore */}
-      {showPlayerForm && (
-        <Modal
-          isOpen={true}
-          onClose={() => {
-            setShowPlayerForm(false);
-            setEditingPlayer(null);
-          }}
-          title={editingPlayer ? 'Modifica Giocatore' : 'Nuovo Giocatore'}
-          size="large"
-        >
-          <PlayerForm
-            player={editingPlayer}
-            onSave={
-              editingPlayer
-                ? (updates) => {
-                    handleUpdatePlayer(editingPlayer.id, updates);
-                    setShowPlayerForm(false);
-                    setEditingPlayer(null);
-                  }
-                : handleAddPlayer
-            }
-            onCancel={() => {
-              setShowPlayerForm(false);
-              setEditingPlayer(null);
-            }}
-            T={T}
-          />
-        </Modal>
-      )}
 
       {/* Modal strumenti CRM */}
       {showTools && (
@@ -554,6 +852,33 @@ export default function PlayersCRM({
           </div>
         </Modal>
       )}
+
+      {/* Modal di conferma eliminazione */}
+      <ConfirmModal
+        isOpen={showConfirmDelete}
+        onClose={() => {
+          setShowConfirmDelete(false);
+          setPlayerToDelete(null);
+        }}
+        onConfirm={confirmDeletePlayer}
+        title="Conferma Eliminazione"
+        message={`Sei sicuro di voler eliminare il giocatore "${playerToDelete?.name}"? Questa azione non può essere annullata.`}
+        confirmText="Elimina"
+        cancelText="Annulla"
+        T={T}
+      />
+
+      {/* Modal di esportazione */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        players={players}
+        filteredPlayers={filteredPlayers}
+        T={T}
+      />
+
+      {/* Toast notifications */}
+      <ToastContainer />
     </>
   );
 }

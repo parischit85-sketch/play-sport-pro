@@ -8,6 +8,7 @@ import { themeTokens } from '@lib/theme.js';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { computeClubRanking } from '@lib/ranking-club.js';
 import StatisticheGiocatore from '@features/stats/StatisticheGiocatore.jsx';
+import FormulaModal from '../components/modals/FormulaModal';
 
 export default function StatsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,7 +17,7 @@ export default function StatsPage() {
   const T = React.useMemo(() => themeTokens(), []);
 
   const [selectedPlayerId, setSelectedPlayerId] = useState(searchParams.get('player') || '');
-  const [formulaText, setFormulaText] = useState('');
+  const [formulaData, setFormulaData] = useState(null);
 
   // I dati si caricano automaticamente nel ClubContext quando cambia clubId
 
@@ -54,56 +55,15 @@ export default function StatsPage() {
           matches={rankingData.matches}
           selectedPlayerId={selectedPlayerId}
           onSelectPlayer={handleSelectPlayer}
-          onShowFormula={setFormulaText}
+          onShowFormula={setFormulaData}
         />
 
-        {/* Formula Modal - Futuristic Design */}
-        {formulaText && (
-          <div className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-3xl max-w-4xl w-full max-h-[80vh] overflow-y-auto border border-white/20 dark:border-gray-700/20 shadow-2xl">
-              <div className="p-8">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </div>
-                    Formula calcolo punti (RPA)
-                  </h3>
-                  <button
-                    onClick={() => setFormulaText('')}
-                    className="w-10 h-10 bg-red-500/20 hover:bg-red-500/30 text-red-600 dark:text-red-400 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-                <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-600/50">
-                  <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200 font-mono leading-relaxed">
-                    {formulaText}
-                  </pre>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Formula Modal Moderno */}
+        <FormulaModal
+          isOpen={!!formulaData}
+          onClose={() => setFormulaData(null)}
+          matchData={formulaData}
+        />
       </>
     </div>
   );

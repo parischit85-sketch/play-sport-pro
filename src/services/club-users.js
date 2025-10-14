@@ -10,6 +10,7 @@ import {
   updateDoc,
   collection,
   getDocs,
+  getDocsFromServer,
   query,
   where,
   orderBy,
@@ -202,14 +203,17 @@ export async function getClubUsers(clubId) {
     // Temporarily remove orderBy to avoid index requirement
     const q = query(clubUsersRef, where('status', '==', 'active'));
 
-    const snapshot = await getDocs(q);
-    console.log('🔍 [getClubUsers] Found', snapshot.docs.length, 'active users in club:', clubId);
+    const snapshot = await getDocsFromServer(q);
+    console.log('🔍 [getClubUsers] Found', snapshot.docs.length, 'active users in club:', clubId, 'from users collection');
 
-    const users = [];
+    let users = [];
 
     snapshot.docs.forEach((doc) => {
       users.push({ id: doc.id, ...doc.data() });
     });
+
+    // 🔄 OPTION A: Single source of truth - Remove legacy club-users collection support
+    // All users are now stored only in clubs/{clubId}/users
 
     console.log('🔍 [getClubUsers] Returning', users.length, 'users');
     // Sort in memory instead of using orderBy
@@ -315,6 +319,11 @@ export async function linkProfileToUser(clubId, existingProfileId, registeredUse
 export async function getUserClubMemberships(userId) {
   if (!userId) {
     console.log('⚠️ [getUserClubMemberships] No userId provided');
+    return [];
+  }
+
+  if (!db) {
+    console.error('❌ [getUserClubMemberships] Firestore db not initialized');
     return [];
   }
 

@@ -7,35 +7,27 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { calculateCertificateStatus } from '@services/medicalCertificates.js';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '@services/firebase.js';
 import { themeTokens } from '@lib/theme.js';
 
 export default function CertificateExpiryAlert() {
   const { currentUser } = useAuth();
-  const { clubId } = useClub();
-  const [playerData, setPlayerData] = useState(null);
+  const { clubId, players } = useClub();
   const [certStatus, setCertStatus] = useState(null);
   const [dismissed, setDismissed] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const loadPlayerCertificate = React.useCallback(async () => {
-    if (!currentUser?.uid || !clubId) {
+    if (!currentUser?.uid || !clubId || !players || players.length === 0) {
       setLoading(false);
       return;
     }
 
     try {
-      // Cerca il giocatore nel club
-      const playersRef = collection(db, 'clubs', clubId, 'players');
-      const playerQuery = query(playersRef, where('linkedAccountId', '==', currentUser.uid));
-      const playerSnapshot = await getDocs(playerQuery);
+      // Trova il giocatore corrente nel contesto del club
+      const currentPlayer = players.find(player => player.id === currentUser.uid);
 
-      if (!playerSnapshot.empty) {
-        const player = playerSnapshot.docs[0].data();
-        setPlayerData(player);
-
-        const status = calculateCertificateStatus(player.medicalCertificates?.current?.expiryDate);
+      if (currentPlayer) {
+        const status = calculateCertificateStatus(currentPlayer.medicalCertificates?.current?.expiryDate);
         setCertStatus(status);
 
         // Auto-dismiss se tutto ok
@@ -48,11 +40,16 @@ export default function CertificateExpiryAlert() {
     } finally {
       setLoading(false);
     }
-  }, [currentUser, clubId]);
+  }, [currentUser, clubId, players]);
 
   useEffect(() => {
     loadPlayerCertificate();
   }, [loadPlayerCertificate]);
+
+  // Don't render anything if players are not loaded yet
+  if (!players || players.length === 0) {
+    return null;
+  }
 
   if (loading || !certStatus || dismissed) {
     return null;
@@ -124,7 +121,9 @@ export default function CertificateExpiryAlert() {
   const config = getAlertConfig();
   if (!config) return null;
 
-  const expiryDate = playerData?.medicalCertificates?.current?.expiryDate;
+  // Trova il giocatore corrente per ottenere la data di scadenza
+  const currentPlayer = players?.find(player => player.id === currentUser?.uid);
+  const expiryDate = currentPlayer?.medicalCertificates?.current?.expiryDate;
 
   return (
     <div

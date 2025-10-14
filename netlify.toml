@@ -16,6 +16,13 @@
   command = "npm run dev"
   targetPort = 5173
   port = 8888
+  functions = "netlify/functions"
+  publish = "dist"
+
+# Environment variables per development
+[dev.environment]
+  NODE_ENV = "development"
+  VITE_FUNCTIONS_URL = "http://localhost:8888/.netlify/functions"
 
 # Headers for security
 [[headers]]
