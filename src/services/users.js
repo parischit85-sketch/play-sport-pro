@@ -121,11 +121,18 @@ export async function createUser(uid, userData) {
 export async function updateUser(uid, updates) {
   if (!uid) throw new Error('UID is required');
 
+  console.log('🔍 [USERS] updateUser called:', { uid, updates: JSON.stringify(updates, null, 2) });
+
   try {
     // Verifica prima se l'utente esiste
     const exists = await userExists(uid);
+    console.log('🔍 [USERS] User exists check:', exists);
+    
     if (!exists) {
-      throw new Error(`Cannot update user: user ${uid} does not exist`);
+      console.log('⚠️ [USERS] User does not exist, creating new user...');
+      // Se l'utente non esiste, crealo invece di lanciare errore
+      // Questo permette di usare updateUser sia per create che per update
+      return await createUser(uid, updates);
     }
 
     const userRef = doc(db, 'users', uid);
@@ -135,12 +142,16 @@ export async function updateUser(uid, updates) {
       updatedAt: serverTimestamp(),
     };
 
+    console.log('🔍 [USERS] Writing to Firestore:', JSON.stringify(updateData, null, 2));
     await updateDoc(userRef, updateData);
+    console.log('✅ [USERS] Firestore write completed');
 
     // Return updated user data
-    return await getUser(uid);
+    const updatedUser = await getUser(uid);
+    console.log('🔍 [USERS] Retrieved updated user:', JSON.stringify(updatedUser, null, 2));
+    return updatedUser;
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error('❌ [USERS] Error updating user:', error);
     throw error;
   }
 }

@@ -6,21 +6,25 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
+import { useNotifications } from '@contexts/NotificationContext';
 import { themeTokens } from '@lib/theme.js';
 import { useClubSettings } from '@hooks/useClubSettings.js';
 import TimeSlotsSlidePanel from '@ui/TimeSlotsSlidePanel.jsx';
 import ExpiringCertificatesWidget from './components/ExpiringCertificatesWidget.jsx';
 import WeatherWidget from './components/WeatherWidget.jsx';
+import EmailVerificationFlow from '@components/registration/EmailVerificationFlow.jsx';
 
 // Import dei servizi per ottenere i dati reali
 import { loadAdminDashboardData } from '@services/adminDashboard.js';
 import UnifiedBookingService from '@services/unified-booking-service.js';
+import { logger } from '@/utils/logger';
 
 const AdminClubDashboard = () => {
   const { clubId } = useParams();
   const navigate = useNavigate();
   const { user, isClubAdmin } = useAuth();
   const { club, players, courts } = useClub();
+  const { showSuccess, showError, showWarning } = useNotifications();
   const T = React.useMemo(() => themeTokens(), []);
 
   // State per slide-out panel fasce orarie
@@ -52,10 +56,10 @@ const AdminClubDashboard = () => {
           });
         });
 
-        console.log('📚 [AdminDashboard] Loaded instructor slots:', slots.length);
+        logger.debug('Loaded instructor slots', slots.length);
         setInstructorTimeSlots(slots);
       } catch (error) {
-        console.error('❌ [AdminDashboard] Error loading instructor slots:', error);
+        logger.error('❌ [AdminDashboard] Error loading instructor slots:', error);
       }
     };
 
@@ -139,10 +143,10 @@ const AdminClubDashboard = () => {
         timeSlots: cleanTimeSlots,
       };
       await updateLessonConfig(updatedLessonConfig);
-      console.log(`🔄 Fascia oraria ${!slot.isActive ? 'attivata' : 'disattivata'}:`, slot.id);
+      logger.debug(`🔄 Fascia oraria ${!slot.isActive ? 'attivata' : 'disattivata'}:`, slot.id);
     } catch (error) {
-      console.error('Errore nel toggle della fascia oraria:', error);
-      alert('Errore nel cambiamento dello stato della fascia oraria');
+      logger.error('Errore nel toggle della fascia oraria:', error);
+      showError('Errore nel cambiamento dello stato della fascia oraria');
     }
   };
 
@@ -163,13 +167,13 @@ const AdminClubDashboard = () => {
         timeSlots: updatedTimeSlots,
       };
       updateLessonConfig(updatedLessonConfig);
-      console.log(
+      logger.debug(
         timeSlot.delete ? '🗑️ Fascia oraria eliminata:' : '💾 Fascia oraria aggiornata:',
         timeSlot
       );
     } catch (error) {
-      console.error('Errore nel salvataggio/cancellazione della fascia oraria:', error);
-      alert('Errore nel salvataggio/cancellazione della fascia oraria');
+      logger.error('Errore nel salvataggio/cancellazione della fascia oraria:', error);
+      showError('Errore nel salvataggio/cancellazione della fascia oraria');
     }
   };
 
@@ -185,7 +189,7 @@ const AdminClubDashboard = () => {
 
   const handleConfirmCreateTimeSlot = async () => {
     if (!newSlotDate || !newSlotInstructorId || newSlotCourtIds.length === 0) {
-      alert('Seleziona data, istruttore e almeno un campo');
+      showWarning('Seleziona data, istruttore e almeno un campo');
       return;
     }
     try {
@@ -211,10 +215,10 @@ const AdminClubDashboard = () => {
       setNewSlotInstructorId('');
       setNewSlotCourtIds([]);
       setNewSlotIsActive(false);
-      alert('✅ Fascia oraria creata con successo! Puoi ora modificarla e attivarla.');
+      showSuccess('✅ Fascia oraria creata con successo! Puoi ora modificarla e attivarla.');
     } catch (error) {
-      console.error('Errore nella creazione della fascia oraria:', error);
-      alert('Errore nella creazione della fascia oraria');
+      logger.error('Errore nella creazione della fascia oraria:', error);
+      showError('Errore nella creazione della fascia oraria');
     }
   };
 
@@ -237,14 +241,14 @@ const AdminClubDashboard = () => {
 
       await updateLessonConfig(updatedLessonConfig);
 
-      alert(
-        `✅ Fascia oraria duplicata con successo!\n\nLa nuova fascia è stata creata e disattivata.\nPuoi attivarla e configurare le date nella sezione "Lezioni".`
+      showSuccess(
+        '✅ Fascia oraria duplicata con successo!\n\nLa nuova fascia è stata creata e disattivata.\nPuoi attivarla e configurare le date nella sezione "Lezioni".'
       );
 
-      console.log(`📋 Fascia oraria duplicata:`, newTimeSlot);
+      logger.debug(`📋 Fascia oraria duplicata:`, newTimeSlot);
     } catch (error) {
-      console.error('Errore nella duplicazione della fascia oraria:', error);
-      alert('Errore nella duplicazione della fascia oraria');
+      logger.error('Errore nella duplicazione della fascia oraria:', error);
+      showError('Errore nella duplicazione della fascia oraria');
     }
   };
 
@@ -319,7 +323,7 @@ const AdminClubDashboard = () => {
       setDashboardData(realData);
       // Real dashboard data loaded successfully
     } catch (error) {
-      console.error('❌ Error loading dashboard data:', error);
+      logger.error('❌ Error loading dashboard data:', error);
       setDashboardData((prev) => ({
         ...prev,
         loading: false,
@@ -685,6 +689,30 @@ const AdminClubDashboard = () => {
 
   return (
     <div className="p-2 sm:p-4 space-y-4 sm:space-y-6 w-full">
+      {/* Email Verification Warning */}
+      <EmailVerificationFlow />
+
+      {/* Approval Status Banner */}
+      {club?.status === 'pending' && (
+        <div className="bg-yellow-50 dark:bg-yellow-900/30 border-2 border-yellow-300 dark:border-yellow-600 rounded-lg sm:rounded-xl p-4 sm:p-6">
+          <div className="flex items-start gap-4">
+            <div className="text-3xl flex-shrink-0">⏳</div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-yellow-900 dark:text-yellow-100 mb-1">
+                In Attesa di Approvazione
+              </h3>
+              <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-3">
+                Il circolo "{club?.name}" è registrato e in attesa dell'approvazione da parte del nostro team. 
+                Una volta approvato, sarà visibile a tutti gli utenti della piattaforma.
+              </p>
+              <p className="text-xs text-yellow-700 dark:text-yellow-300 opacity-75">
+                🔔 Ti notificheremo via email quando il circolo sarà approvato.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
         <div className="min-w-0">
@@ -731,7 +759,7 @@ const AdminClubDashboard = () => {
           {/* Pulsante Aggiorna */}
           <button
             onClick={() => {
-              console.log('🔄 Manual refresh triggered');
+              logger.debug('🔄 Manual refresh triggered');
               loadDashboardData();
             }}
             disabled={dashboardData.loading}

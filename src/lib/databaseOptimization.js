@@ -455,10 +455,17 @@ class BatchOperationManager {
       this.metrics.batchesExecuted++;
       this.metrics.operationsExecuted += operations.length;
 
-      // Invalidate relevant cache entries
+      // Invalidate relevant cache entries (guard undefined docRef/path in tests)
       operations.forEach(({ docRef }) => {
-        const collection = docRef.path.split('/')[0];
-        dbCache.invalidate(collection);
+        try {
+          const path = docRef && typeof docRef.path === 'string' ? docRef.path : null;
+          if (!path) return;
+          const collection = path.split('/')[0];
+          if (collection) dbCache.invalidate(collection);
+        } catch (_e) {
+          // noop: cache invalidation is best-effort
+          void _e;
+        }
       });
     } catch (error) {
       this.metrics.errors++;

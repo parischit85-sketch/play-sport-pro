@@ -4,6 +4,7 @@
 // =============================================
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useNotifications } from '@contexts/NotificationContext';
 import Section from '@ui/Section.jsx';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useUI } from '@contexts/UIContext.jsx';
@@ -16,6 +17,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
   const navigate = useNavigate();
   const { darkMode, toggleTheme } = useUI();
   const { logout } = useAuth();
+  const { showSuccess, showError, showWarning, confirm } = useNotifications();
   const { lessonConfig, updateLessonConfig } = useClubSettings({ clubId });
 
   // Stati per upload logo
@@ -171,16 +173,23 @@ export default function ClubAdminProfile({ T, club, clubId }) {
   };
 
   const handleLogout = async () => {
-    if (window.confirm('Sei sicuro di voler uscire?')) {
-      await logout();
-      navigate('/', { replace: true });
-      window.location.reload();
-    }
+    const confirmed = await confirm({
+      title: 'Esci dall\'account',
+      message: 'Sei sicuro di voler uscire?',
+      variant: 'warning',
+      confirmText: 'Esci',
+      cancelText: 'Annulla',
+    });
+    if (!confirmed) return;
+
+    await logout();
+    navigate('/', { replace: true });
+    window.location.reload();
   };
 
   const handleSaveCourtTypes = async () => {
     if (!clubId) {
-      alert('ID circolo non disponibile');
+      showError('ID circolo non disponibile');
       return;
     }
 
@@ -201,10 +210,10 @@ export default function ClubAdminProfile({ T, club, clubId }) {
         courtTypes: clubSettings.courtTypes || [],
       }));
 
-      alert('Tipologie campo salvate con successo!');
+      showSuccess('Tipologie campo salvate con successo!');
     } catch (error) {
       console.error('Errore nel salvataggio delle tipologie:', error);
-      alert('Errore nel salvataggio delle tipologie. Riprova.');
+      showError('Errore nel salvataggio delle tipologie. Riprova.');
     } finally {
       setClubSettings((prev) => ({ ...prev, loading: false }));
     }
@@ -257,7 +266,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
       return imageUrl;
     } catch (error) {
       console.error("❌ Errore durante l'upload del logo:", error);
-      alert('Errore upload: ' + error.message);
+      showError('Errore upload: ' + error.message);
       throw error;
     } finally {
       setUploading(false);
@@ -269,13 +278,13 @@ export default function ClubAdminProfile({ T, club, clubId }) {
     if (file) {
       // Verifica che sia un'immagine
       if (!file.type.startsWith('image/')) {
-        alert('Per favore seleziona un file immagine');
+        showWarning('Per favore seleziona un file immagine');
         return;
       }
 
       // Verifica dimensione (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('Il file è troppo grande. Dimensione massima: 5MB');
+        showWarning('Il file è troppo grande. Dimensione massima: 5MB');
         return;
       }
 
@@ -301,7 +310,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
   // Funzione per salvare le impostazioni generali del circolo
   const handleSaveSettings = async () => {
     if (!clubId) {
-      alert('❌ ID circolo non disponibile');
+      showError('❌ ID circolo non disponibile');
       return;
     }
 
@@ -330,13 +339,13 @@ export default function ClubAdminProfile({ T, club, clubId }) {
       await updateClub(clubId, updateData);
 
       console.log('✅ Club settings saved successfully');
-      alert('✅ Impostazioni salvate con successo!');
+      showSuccess('✅ Impostazioni salvate con successo!');
 
       // Ricarica i dati del circolo
       await loadClubData();
     } catch (error) {
       console.error('❌ Error saving club settings:', error);
-      alert('❌ Errore nel salvare le impostazioni. Riprova.');
+      showError('❌ Errore nel salvare le impostazioni. Riprova.');
     } finally {
       setClubSettings((prev) => ({ ...prev, loading: false }));
     }
@@ -344,12 +353,12 @@ export default function ClubAdminProfile({ T, club, clubId }) {
 
   const handleSaveLogo = async () => {
     if (!clubId) {
-      alert('ID circolo non disponibile');
+      showError('ID circolo non disponibile');
       return;
     }
 
     if (!logoFile) {
-      alert("Seleziona prima un'immagine");
+      showWarning("Seleziona prima un'immagine");
       return;
     }
 
@@ -369,10 +378,10 @@ export default function ClubAdminProfile({ T, club, clubId }) {
       setClubData((prev) => ({ ...prev, logoUrl }));
       setLogoFile(null);
 
-      alert('Logo caricato con successo!');
+      showSuccess('Logo caricato con successo!');
     } catch (error) {
       console.error('Errore nel salvataggio del logo:', error);
-      alert('Errore nel salvataggio del logo: ' + error.message);
+      showError('Errore nel salvataggio del logo: ' + error.message);
     } finally {
       setClubSettings((prev) => ({ ...prev, loading: false }));
     }
@@ -858,7 +867,8 @@ export default function ClubAdminProfile({ T, club, clubId }) {
               </div>
               <button
                 type="button"
-                onClick={() => {
+                onClick={async () => {
+                  // TODO: Replace prompt with custom input dialog
                   const newType = prompt('Nome della nuova tipologia:');
                   if (newType && newType.trim()) {
                     const trimmedType = newType.trim();
@@ -870,7 +880,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                           (type) => type.toLowerCase() === trimmedType.toLowerCase()
                         )
                       ) {
-                        alert(`La tipologia "${trimmedType}" esiste già!`);
+                        showWarning(`La tipologia "${trimmedType}" esiste già!`);
                         return prev;
                       }
                       return {
@@ -895,13 +905,20 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                   <span className="font-medium text-gray-900 dark:text-white">{type}</span>
                   <button
                     type="button"
-                    onClick={() => {
-                      if (confirm(`Rimuovere la tipologia "${type}"?`)) {
-                        setClubSettings((prev) => ({
-                          ...prev,
-                          courtTypes: prev.courtTypes.filter((_, i) => i !== index),
-                        }));
-                      }
+                    onClick={async () => {
+                      const confirmed = await confirm({
+                        title: 'Rimuovi tipologia',
+                        message: `Rimuovere la tipologia "${type}"?`,
+                        variant: 'danger',
+                        confirmText: 'Rimuovi',
+                        cancelText: 'Annulla',
+                      });
+                      if (!confirmed) return;
+
+                      setClubSettings((prev) => ({
+                        ...prev,
+                        courtTypes: prev.courtTypes.filter((_, i) => i !== index),
+                      }));
                     }}
                     className="text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 p-1 rounded transition-colors"
                     title="Rimuovi tipologia"

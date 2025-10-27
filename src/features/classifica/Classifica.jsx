@@ -8,26 +8,35 @@ import { TrendArrow } from '@ui/TrendArrow.jsx';
 import ModernAreaChart from '@ui/charts/ModernAreaChart.jsx';
 import ShareButtons from '@ui/ShareButtons.jsx';
 import { buildPodiumTimeline, buildDailyTimeline } from '@lib/ranking.js';
+import { useClub } from '@contexts/ClubContext.jsx';
 
 export default function Classifica({ players, matches, onOpenStats, T }) {
   const classificaRef = useRef(null);
   const [selectedTopCount, setSelectedTopCount] = useState(3);
   const [showAllPlayers, setShowAllPlayers] = useState(false);
+  const { playersById } = useClub();
 
   // Classifica generale (RPA) - RIPRISTINATO: usa rating calcolati dinamicamente
-  const rows = useMemo(
-    () =>
-      [...players]
-        .map((p) => ({
+  const rows = useMemo(() => {
+    // Usa il ranking effettivo calcolato nel ClubContext (inclusi Punti Campionato)
+    return [...players]
+      .map((p) => {
+        const effectiveRating =
+          playersById?.[p.id]?.calculatedRating ??
+          p.rating ??
+          p.baseRating ??
+          1500;
+        return {
           ...p,
+          rating: Number(effectiveRating),
           winRate:
             (p.wins || 0) + (p.losses || 0)
               ? ((p.wins || 0) / ((p.wins || 0) + (p.losses || 0))) * 100
               : 0,
-        }))
-        .sort((a, b) => b.rating - a.rating),
-    [players]
-  );
+        };
+      })
+      .sort((a, b) => b.rating - a.rating);
+  }, [players, playersById]);
 
   // Classifica Coppie - Algoritmo corretto per coppie reali
   const couplesStats = useMemo(() => {

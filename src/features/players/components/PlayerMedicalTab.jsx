@@ -226,10 +226,20 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
 
   return (
     <div className="space-y-6">
-      {/* Header con Status Badge */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h3 className={`text-lg font-semibold ${T.text}`}>🏥 Certificato Medico Sportivo</h3>
-        {getStatusBadge()}
+      {/* Hero Header */}
+      <div className={`${T.cardBg} ${T.border} rounded-2xl p-6 shadow-lg relative overflow-hidden`}>
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-500 to-pink-500" />
+        </div>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <span className="text-4xl">🏥</span>
+              <h3 className={`text-2xl font-bold ${T.text}`}>Certificato Medico Sportivo</h3>
+            </div>
+            {getStatusBadge()}
+          </div>
+        </div>
       </div>
 
       {/* Alert se scaduto */}

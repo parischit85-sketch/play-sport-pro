@@ -4,6 +4,7 @@
 // =============================================
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useNotifications } from '@contexts/NotificationContext';
 import Section from '@ui/Section.jsx';
 import { auth, getUserProfile, saveUserProfile, setDisplayName } from '@services/auth';
 import { useAuth } from '@contexts/AuthContext.jsx';
@@ -11,8 +12,10 @@ import { useClub } from '@contexts/ClubContext.jsx';
 import { useUI } from '@contexts/UIContext.jsx';
 import ClubAdminProfile from './ClubAdminProfile.jsx';
 import PushNotificationPanel from '@components/debug/PushNotificationPanel.jsx';
+import CertificateExpiryAlert from './CertificateExpiryAlert.jsx';
 
 export default function Profile({ T }) {
+  const { showSuccess, showError, confirm } = useNotifications();
   // Profile component rendered
   const user = auth.currentUser;
   const navigate = useNavigate();
@@ -123,7 +126,7 @@ export default function Profile({ T }) {
       // Ricarica anche i dati dell'utente (affiliazioni, ecc.)
       await reloadUserData();
 
-      alert('Profilo salvato!');
+      showSuccess('Profilo salvato!');
 
       // Se il profilo è ora completo, naviga alla dashboard
       if (updatedProfile.firstName && updatedProfile.phone) {
@@ -131,14 +134,21 @@ export default function Profile({ T }) {
         navigate('/dashboard');
       }
     } catch (e) {
-      alert('Errore salvataggio: ' + (e?.message || e));
+      showError('Errore salvataggio: ' + (e?.message || e));
     } finally {
       setSaving(false);
     }
   };
 
   const handleLogout = async () => {
-    if (window.confirm('Sei sicuro di voler uscire?')) {
+    const confirmed = await confirm({
+      title: 'Logout',
+      message: 'Sei sicuro di voler uscire?',
+      variant: 'warning',
+      confirmText: 'Esci',
+      cancelText: 'Annulla',
+    });
+    if (confirmed) {
       try {
         console.log('🚪 Initiating logout...');
         await logout();
@@ -149,7 +159,7 @@ export default function Profile({ T }) {
         window.location.reload();
       } catch (e) {
         console.error('❌ Logout error:', e);
-        alert('Errore durante il logout: ' + (e?.message || e));
+        showError('Errore durante il logout: ' + (e?.message || e));
       }
     }
   };
@@ -217,6 +227,9 @@ export default function Profile({ T }) {
 
   return (
     <div className="space-y-8">
+      {/* Certificate Expiry Alert */}
+      <CertificateExpiryAlert />
+
       {/* Banner per admin che visualizzano profilo normale */}
       {isActuallyAdmin && forceNormalProfile && (
         <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700/30 p-4 rounded-xl">

@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from 'react';
+import { useNotifications } from '@contexts/NotificationContext';
 import Section from '@ui/Section.jsx';
 import { DEFAULT_RATING, uid } from '@lib/ids.js';
 import { byPlayerFirstAlpha } from '@lib/names.js';
 
 export default function Giocatori({ state, setState, onOpenStats, playersById, T }) {
+  const { confirm } = useNotifications();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [startRank, setStartRank] = useState(String(DEFAULT_RATING));
@@ -31,8 +33,15 @@ export default function Giocatori({ state, setState, onOpenStats, playersById, T
     setStartRank(String(DEFAULT_RATING));
   };
 
-  const remove = (id) => {
-    if (!confirm('Rimuovere il giocatore?')) return;
+  const remove = async (id) => {
+    const confirmed = await confirm({
+      title: 'Rimuovi Giocatore',
+      message: 'Rimuovere il giocatore?',
+      variant: 'warning',
+      confirmText: 'Rimuovi',
+      cancelText: 'Annulla',
+    });
+    if (!confirmed) return;
     setState((s) => {
       const cur = Array.isArray(s?.players) ? s.players : [];
       return {

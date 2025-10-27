@@ -114,37 +114,50 @@ export default function PlayerWallet({ player, onUpdate, T }) {
 
   return (
     <div className="space-y-6">
-      {/* Saldo corrente */}
-      <div className={`${T.cardBg} ${T.border} rounded-xl p-6 text-center`}>
-        <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">
-          €{wallet.balance.toFixed(2)}
+      {/* Hero - Saldo corrente */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 dark:from-green-900/20 dark:via-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-8 border-2 border-green-200 dark:border-green-700 shadow-xl">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-500" />
         </div>
-        <div className={`text-sm ${T.subtext} mb-4`}>Saldo Disponibile • {wallet.currency}</div>
-        <div className="flex justify-center gap-3">
-          <button
-            onClick={() => {
-              setTransactionData({
-                ...createTransactionSchema(),
-                type: 'credit',
-              });
-              setShowAddTransaction(true);
-            }}
-            className={`${T.btnPrimary} px-4 py-2`}
-          >
-            💰 Ricarica
-          </button>
-          <button
-            onClick={() => {
-              setTransactionData({
-                ...createTransactionSchema(),
-                type: 'debit',
-              });
-              setShowAddTransaction(true);
-            }}
-            className={`${T.btnSecondary} px-4 py-2`}
-          >
-            💸 Addebito
-          </button>
+        <div className="relative z-10 text-center">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <span className="text-5xl">💰</span>
+            <div className="text-left">
+              <div className="text-xs font-bold text-green-900 dark:text-green-200 uppercase tracking-wider">Saldo Disponibile</div>
+              <div className="text-5xl font-black text-green-600 dark:text-green-400">
+                €{wallet.balance.toFixed(2)}
+              </div>
+            </div>
+          </div>
+          <div className={`text-sm font-semibold ${T.subtext} mb-5`}>Valuta: {wallet.currency}</div>
+          <div className="flex justify-center gap-3">
+            <button
+              onClick={() => {
+                setTransactionData({
+                  ...createTransactionSchema(),
+                  type: 'credit',
+                });
+                setShowAddTransaction(true);
+              }}
+              className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-xl font-bold hover:shadow-lg transition-shadow hover:scale-105 transform"
+            >
+              <span className="mr-2">�</span>
+              Ricarica
+            </button>
+            <button
+              onClick={() => {
+                setTransactionData({
+                  ...createTransactionSchema(),
+                  type: 'debit',
+                });
+                setShowAddTransaction(true);
+              }}
+              className="px-6 py-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-300 dark:border-gray-600 rounded-xl font-bold hover:shadow-lg transition-shadow hover:scale-105 transform"
+            >
+              <span className="mr-2">💸</span>
+              Addebito
+            </button>
+          </div>
         </div>
       </div>
 

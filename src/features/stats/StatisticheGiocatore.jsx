@@ -2,53 +2,146 @@
 // FILE: src/features/stats/StatisticheGiocatore.jsx
 // FUTURISTIC DESIGN - Modern UI with glassmorphism
 // =============================================
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Section from '@ui/Section.jsx';
-import StatsCard from '@ui/StatsCard.jsx';
 import ShareButtons from '@ui/ShareButtons.jsx';
 import ModernAreaChart from '@ui/charts/ModernAreaChart.jsx';
-import Modal from '@ui/Modal.jsx';
 import FormulaModal from '@components/modals/FormulaModal.jsx';
 import { byPlayerFirstAlpha, surnameOf, IT_COLLATOR } from '@lib/names.js';
 import { DEFAULT_RATING } from '@lib/ids.js';
-import { computeFromSets, rpaFactor, rpaBracketText } from '@lib/rpa.js';
-import { FormulaRPA } from '@ui/formulas/FormulaRPA.jsx';
+import { useClub } from '@contexts/ClubContext.jsx';
+import { db } from '@services/firebase.js';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { getTournament as getTournamentById } from '@features/tournaments/services/tournamentService.js';
 
 export default function StatisticheGiocatore({
   players,
   matches,
   selectedPlayerId,
   onSelectPlayer,
-  onShowFormula,
+  _onShowFormula,
   T,
 }) {
+  const { clubId, leaderboard } = useClub();
   const statsRef = useRef(null);
   const [pid, setPid] = useState(selectedPlayerId || players[0]?.id || '');
   const [comparePlayerId, setComparePlayerId] = useState('');
-  // Filtri periodo richiesti: 1w, 2w, 30d, 3m, 6m, all
   const [timeFilter, setTimeFilter] = useState('all');
-  // Match espanso nello storico
   const [expandedMatchId, setExpandedMatchId] = useState(null);
-  // Modal RPA formula
   const [showRpaModal, setShowRpaModal] = useState(false);
   const [currentMatchForRpa, setCurrentMatchForRpa] = useState(null);
+  const [champEntries, setChampEntries] = useState([]);
+  const [tournamentsById, setTournamentsById] = useState({});
 
   useEffect(() => {
     if (selectedPlayerId) setPid(selectedPlayerId);
   }, [selectedPlayerId]);
 
-  const nameById = (id) => players.find((p) => p.id === id)?.name || id;
-  const player = players.find((p) => p.id === pid) || null;
-  const comparePlayer = players.find((p) => p.id === comparePlayerId) || null;
+  // Ensure a valid default player is selected once players load
+  useEffect(() => {
+    // If current pid is empty or not present in the provided players list, pick a fallback
+    const pidExists = pid && players?.some?.((p) => p.id === pid);
+    const next = selectedPlayerId || players?.[0]?.id || '';
+    if (!pidExists && next) {
+      setPid(next);
+      onSelectPlayer?.(next);
+    }
+  }, [players, selectedPlayerId, pid, onSelectPlayer]);
 
-  // Crea mappa playersById per lookup veloce
+  // Subscribe to tournament points entries for this player
+  useEffect(() => {
+    if (!clubId || !pid) {
+      console.log(`📖 [champEntries useEffect] SKIP: clubId=${clubId}, pid=${pid}`);
+      return;
+    }
+    try {
+      console.log(`📖 [champEntries useEffect] Subscribing to leaderboard/${pid}/entries`);
+      const entriesRef = collection(db, 'clubs', clubId, 'leaderboard', pid, 'entries');
+      const q = query(entriesRef, orderBy('createdAt', 'desc'));
+      const unsub = onSnapshot(q, (snap) => {
+        const rows = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        console.log(`📖 [champEntries] Received ${rows.length} entries`);
+        if (rows.length > 0) {
+          console.log(`   First entry keys: ${Object.keys(rows[0]).join(', ')}`);
+          console.log(
+            `   First entry matchDetails: ${
+              Array.isArray(rows[0].matchDetails) ? rows[0].matchDetails.length : 'undefined'
+            }`
+          );
+        }
+        setChampEntries(rows);
+      });
+      return () => unsub();
+    } catch (e) {
+      console.warn('⚠️ [StatisticheGiocatore] Failed to subscribe champ entries:', e);
+    }
+  }, [clubId, pid]);
+
+  // Enrich tournament entries with tournament details from Tornei (by tournamentId)
+  useEffect(() => {
+    let active = true;
+    async function loadTournaments() {
+      if (!clubId) return;
+      const ids = Array.from(
+        new Set((champEntries || []).map((e) => e.tournamentId).filter(Boolean))
+      );
+      if (ids.length === 0) {
+        if (active) setTournamentsById({});
+        return;
+      }
+      try {
+        const results = await Promise.all(
+          ids.map(async (id) => {
+            try {
+              const t = await getTournamentById(clubId, id);
+              return t ? [id, t] : null;
+            } catch {
+              return null;
+            }
+          })
+        );
+        if (!active) return;
+        const map = {};
+        for (const pair of results) {
+          if (pair && pair[0] && pair[1]) map[pair[0]] = pair[1];
+        }
+        setTournamentsById(map);
+      } catch {
+        // ignore
+      }
+    }
+    loadTournaments();
+    return () => {
+      active = false;
+    };
+  }, [clubId, champEntries]);
+
+  const nameById = useCallback((id) => players.find((p) => p.id === id)?.name || id, [players]);
+  const player = players.find((p) => p.id === pid) || null;
+
+  // Punti campionato totali (stessa fonte della tab Giocatori)
+  const champTotals = useMemo(() => {
+    const lb = leaderboard?.[pid];
+    return {
+      totalPoints: typeof lb?.totalPoints === 'number' ? lb.totalPoints : 0,
+      entriesCount: typeof lb?.entriesCount === 'number' ? lb.entriesCount : 0,
+    };
+  }, [leaderboard, pid]);
+
+  // Fast lookup map
   const playersById = useMemo(() => {
     const map = {};
-    players.forEach(p => { map[p.id] = p; });
+    players.forEach((p) => (map[p.id] = p));
     return map;
   }, [players]);
 
-  // Filtro temporale per le partite
+  const getEffectiveRating = (id) => {
+    const p = playersById[id];
+    if (!p) return DEFAULT_RATING;
+    return p.calculatedRating ?? p.rating ?? DEFAULT_RATING;
+  };
+
+  // Time filter on matches
   const filteredMatches = useMemo(() => {
     if (timeFilter === 'all') return matches;
     const now = new Date();
@@ -75,47 +168,85 @@ export default function StatisticheGiocatore({
     return (matches || []).filter((m) => new Date(m.date) >= from);
   }, [matches, timeFilter]);
 
-  console.log('📊 [DEBUG] Filtered matches:', {
-    originalCount: matches?.length || 0,
-    filteredCount: filteredMatches?.length || 0,
-    timeFilter,
-    sampleMatch: filteredMatches?.[0],
-  });
+  // 🆕 Combine regular matches with tournament matches from champEntries
+  const allMatchesIncludingTournaments = useMemo(() => {
+    const regulars = filteredMatches || [];
+    const tourneyMatches = [];
+
+    // Extract matches from championship entries
+    if (Array.isArray(champEntries)) {
+      console.log(`🏆 [StatisticheGiocatore] champEntries encontrados: ${champEntries.length}`);
+      for (const entry of champEntries) {
+        console.log(
+          `  📋 Entry: tournamentId=${entry.tournamentId}, matchDetails=${
+            Array.isArray(entry.matchDetails) ? entry.matchDetails.length : 'undefined'
+          }`
+        );
+        if (Array.isArray(entry.matchDetails)) {
+          console.log(`    ✅ Agregando ${entry.matchDetails.length} matches de torneo`);
+          
+          // 🔍 DEBUG: Log tournament match dates
+          if (entry.matchDetails.length > 0) {
+            console.log(`    🔍 [DEBUG] Tournament match dates:`);
+            entry.matchDetails.slice(0, 3).forEach((m, idx) => {
+              console.log(
+                `      ${idx + 1}. date: ${m.date} (type: ${typeof m.date}) | matchId: ${m.matchId} | isTournamentMatch: ${m.isTournamentMatch}`
+              );
+            });
+          }
+          
+          tourneyMatches.push(...entry.matchDetails);
+        }
+      }
+    } else {
+      console.log('🏆 [StatisticheGiocatore] NO champEntries (undefined o not array)');
+    }
+
+    const combined = [...regulars, ...tourneyMatches];
+    
+    // 🔍 DEBUG: Log combined matches dates
+    console.log(
+      `📊 [StatisticheGiocatore] Total matches: ${combined.length} (regular: ${regulars.length}, torneo: ${tourneyMatches.length})`
+    );
+    
+    if (combined.length > 0) {
+      console.log(`🔍 [DEBUG] Sample regular match dates (first 3):`);
+      regulars.slice(0, 3).forEach((m, idx) => {
+        console.log(
+          `  ${idx + 1}. date: ${m.date} (type: ${typeof m.date}) | id: ${m.id}`
+        );
+      });
+    }
+    
+    // Combine and return
+    return combined;
+  }, [filteredMatches, champEntries]);
 
   const sortedByRating = useMemo(() => {
     return [...players]
       .map((p) => ({
         ...p,
-        liveRating: p.rating,
+        liveRating: p.calculatedRating ?? p.rating ?? DEFAULT_RATING,
       }))
       .sort((a, b) => b.liveRating - a.liveRating);
   }, [players]);
 
   const position = player ? sortedByRating.findIndex((p) => p.id === player.id) + 1 : null;
-  const totalPlayed = (player?.wins || 0) + (player?.losses || 0);
-  const winPct = totalPlayed ? Math.round((player.wins / totalPlayed) * 100) : 0;
 
-  // Statistiche avanzate del giocatore (usa filteredMatches)
+  // Advanced stats computed on filtered matches (now including tournament matches)
   const advancedStats = useMemo(() => {
-    console.log('📊 [DEBUG] Computing advanced stats for player:', pid);
-
     if (!pid) {
-      console.log('📊 [DEBUG] No player ID selected');
+      console.log('🔍 [advancedStats] NO pid');
       return null;
     }
-
-    const playerMatches = (filteredMatches || []).filter(
+    const playerMatches = (allMatchesIncludingTournaments || []).filter(
       (m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid)
     );
-
-    console.log('📊 [DEBUG] Player matches found:', {
-      playerId: pid,
-      matchesCount: playerMatches.length,
-      sampleMatch: playerMatches[0],
-    });
-
+    console.log(
+      `🎯 [advancedStats] Player ${pid}: ${playerMatches.length} matches from total ${allMatchesIncludingTournaments?.length || 0}`
+    );
     if (playerMatches.length === 0) {
-      console.log('📊 [DEBUG] No matches found for player');
+      console.log(`⚠️ [advancedStats] NO matches per player ${pid}`);
       return null;
     }
 
@@ -128,8 +259,8 @@ export default function StatisticheGiocatore({
     let totalDelta = 0;
     let gamesWon = 0;
     let gamesLost = 0;
-    let closeMatches = 0; // 2-1 o 1-2
-    let dominantWins = 0; // 2-0
+    let closeMatches = 0;
+    let dominantWins = 0;
 
     const sortedMatches = [...playerMatches].sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -137,15 +268,12 @@ export default function StatisticheGiocatore({
       const isA = (m.teamA || []).includes(pid);
       const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
       const delta = isA ? m.deltaA || 0 : m.deltaB || 0;
-
       totalDelta += delta;
-
       if (won) {
         wins++;
         currentWinStreak++;
         currentLoseStreak = 0;
         maxWinStreak = Math.max(maxWinStreak, currentWinStreak);
-
         if ((isA && m.setsA === 2 && m.setsB === 0) || (!isA && m.setsB === 2 && m.setsA === 0)) {
           dominantWins++;
         }
@@ -155,13 +283,9 @@ export default function StatisticheGiocatore({
         currentWinStreak = 0;
         maxLoseStreak = Math.max(maxLoseStreak, currentLoseStreak);
       }
-
-      // Calcola close matches (2-1 o 1-2)
       if ((m.setsA === 2 && m.setsB === 1) || (m.setsA === 1 && m.setsB === 2)) {
         closeMatches++;
       }
-
-      // Calcola games
       if (isA) {
         gamesWon += m.gamesA || 0;
         gamesLost += m.gamesB || 0;
@@ -171,7 +295,6 @@ export default function StatisticheGiocatore({
       }
     });
 
-    // Streak attuale sul periodo filtrato (continua finché non cambia risultato)
     let currentStreakCount = 0;
     let lastResult = null;
     for (let i = sortedMatches.length - 1; i >= 0; i--) {
@@ -209,42 +332,22 @@ export default function StatisticheGiocatore({
       closeMatches,
       dominantWins,
     };
-  }, [pid, filteredMatches]);
-
-  // Nessun radar o barre: design semplificato come richiesto
-
-  // Usa il nuovo componente StatsCard unificato
-  const StatCard = ({ label, value, sub, trend, color = 'default' }) => (
-    <StatsCard
-      label={label}
-      value={value}
-      subtitle={sub}
-      trend={trend}
-      color={color}
-      size="lg"
-      T={T}
-    />
-  );
+  }, [pid, allMatchesIncludingTournaments]);
 
   const playersAlpha = useMemo(() => [...players].sort(byPlayerFirstAlpha), [players]);
 
-  // Timeline rating personale
+  // Timelines (keep as-is based on matches only)
   const timeline = useMemo(() => {
     if (!pid) return [];
-
-    // Usa i rating computati da props
     const current = new Map(players.map((p) => [p.id, p.rating]));
-
     const points = [];
     points.push({
       date: null,
       label: 'Start',
       rating: Math.round(current.get(pid) ?? DEFAULT_RATING),
     });
-
-    const byDate = [...(filteredMatches || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const byDate = [...(allMatchesIncludingTournaments || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
     for (const m of byDate) {
-      const rr = computeFromSets(m.sets);
       const add = (id, d) => current.set(id, (current.get(id) ?? DEFAULT_RATING) + d);
       const deltaA = m.deltaA ?? 0,
         deltaB = m.deltaB ?? 0;
@@ -266,26 +369,19 @@ export default function StatisticheGiocatore({
       }
     }
     return points;
-  }, [pid, players, filteredMatches]);
+  }, [pid, players, allMatchesIncludingTournaments]);
 
-  // Timeline per il giocatore di confronto
   const compareTimeline = useMemo(() => {
     if (!comparePlayerId) return [];
-
-    // Usa i rating computati da props
     const current = new Map(players.map((p) => [p.id, p.rating]));
-
     const points = [];
     points.push({
       date: null,
       label: 'Start',
       rating: Math.round(current.get(comparePlayerId) ?? DEFAULT_RATING),
     });
-
-    const byDate = [...(filteredMatches || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
-
+    const byDate = [...(allMatchesIncludingTournaments || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
     for (const m of byDate) {
-      const rr = computeFromSets(m.sets);
       const add = (id, d) => current.set(id, (current.get(id) ?? DEFAULT_RATING) + d);
       const deltaA = m.deltaA ?? 0,
         deltaB = m.deltaB ?? 0;
@@ -293,7 +389,6 @@ export default function StatisticheGiocatore({
       add(m.teamA[1], deltaA);
       add(m.teamB[0], deltaB);
       add(m.teamB[1], deltaB);
-
       if (m.teamA.includes(comparePlayerId) || m.teamB.includes(comparePlayerId)) {
         points.push({
           date: new Date(m.date),
@@ -308,47 +403,33 @@ export default function StatisticheGiocatore({
       }
     }
     return points;
-  }, [comparePlayerId, players, filteredMatches]);
+  }, [comparePlayerId, players, allMatchesIncludingTournaments]);
 
-  // Timeline combinata per il grafico di confronto
   const combinedTimeline = useMemo(() => {
     if (!comparePlayerId)
       return timeline.map((point) => ({ ...point, playerRating: point.rating }));
-
-    // Crea un array di tutte le date uniche
     const allDates = new Set();
-    timeline.forEach((point) => {
-      if (point.date) allDates.add(point.date.getTime());
+    timeline.forEach((p) => {
+      if (p.date) allDates.add(p.date.getTime());
     });
-    compareTimeline.forEach((point) => {
-      if (point.date) allDates.add(point.date.getTime());
+    compareTimeline.forEach((p) => {
+      if (p.date) allDates.add(p.date.getTime());
     });
-
-    // Ordina le date
     const sortedDates = Array.from(allDates).sort();
-
-    // Mappa per tracking dei rating correnti
     let playerRating = timeline[0]?.rating ?? DEFAULT_RATING;
     let compareRating = compareTimeline[0]?.rating ?? DEFAULT_RATING;
-
     const combined = [];
-
-    // Punto iniziale
     combined.push({
       date: null,
       label: 'Start',
-      playerRating: playerRating,
-      compareRating: compareRating,
-      rating: playerRating, // Per compatibilità
+      playerRating,
+      compareRating,
+      rating: playerRating,
     });
-
-    let playerIndex = 1; // Skip del punto iniziale
-    let compareIndex = 1; // Skip del punto iniziale
-
+    let playerIndex = 1,
+      compareIndex = 1;
     for (const dateTime of sortedDates) {
       const date = new Date(dateTime);
-
-      // Aggiorna rating del player principale se c'è un punto in questa data
       while (
         playerIndex < timeline.length &&
         timeline[playerIndex].date &&
@@ -357,8 +438,6 @@ export default function StatisticheGiocatore({
         playerRating = timeline[playerIndex].rating;
         playerIndex++;
       }
-
-      // Aggiorna rating del player di confronto se c'è un punto in questa data
       while (
         compareIndex < compareTimeline.length &&
         compareTimeline[compareIndex].date &&
@@ -367,40 +446,30 @@ export default function StatisticheGiocatore({
         compareRating = compareTimeline[compareIndex].rating;
         compareIndex++;
       }
-
       combined.push({
-        date: date,
+        date,
         label: date.toLocaleString('it-IT', {
           day: '2-digit',
           month: '2-digit',
           hour: '2-digit',
           minute: '2-digit',
         }),
-        playerRating: playerRating,
-        compareRating: compareRating,
-        rating: playerRating, // Per compatibilità con la linea principale
+        playerRating,
+        compareRating,
+        rating: playerRating,
       });
     }
-
     return combined;
   }, [timeline, compareTimeline, comparePlayerId]);
 
   const partnerAndOppStats = useMemo(() => {
     if (!pid)
-      return {
-        mates: [],
-        opps: [],
-        topMates: [],
-        worstMates: [],
-        topOpps: [],
-        worstOpps: [],
-      };
-    const played = (filteredMatches || []).filter(
+      return { mates: [], opps: [], topMates: [], worstMates: [], topOpps: [], worstOpps: [] };
+    const played = (allMatchesIncludingTournaments || []).filter(
       (m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid)
     );
     const matesMap = new Map();
     const oppsMap = new Map();
-
     const bump = (map, id, won) => {
       if (!id) return;
       const cur = map.get(id) || { wins: 0, losses: 0 };
@@ -408,7 +477,6 @@ export default function StatisticheGiocatore({
       else cur.losses++;
       map.set(id, cur);
     };
-
     for (const m of played) {
       const isA = (m.teamA || []).includes(pid);
       const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
@@ -419,84 +487,43 @@ export default function StatisticheGiocatore({
       if (mate) bump(matesMap, mate, won);
       for (const f of foes) bump(oppsMap, f, won);
     }
-
     const toArr = (map) =>
       [...map.entries()]
         .map(([id, v]) => {
           const total = v.wins + v.losses;
           const wp = total ? Math.round((v.wins / total) * 100) : 0;
-          return {
-            id,
-            name: nameById(id),
-            wins: v.wins,
-            losses: v.losses,
-            total,
-            winPct: wp,
-          };
+          return { id, name: nameById(id), wins: v.wins, losses: v.losses, total, winPct: wp };
         })
         .sort(
           (a, b) => b.total - a.total || b.winPct - a.winPct || IT_COLLATOR.compare(a.name, b.name)
         );
-
     const mates = toArr(matesMap);
     const opps = toArr(oppsMap);
-
-    // Top 5 classifiche (senza vincolo minimo partite)
-    const topMates = mates.sort((a, b) => b.winPct - a.winPct).slice(0, 5);
-
-    const worstMates = mates.sort((a, b) => a.winPct - b.winPct).slice(0, 5);
-
-    const topOpps = opps.sort((a, b) => b.winPct - a.winPct).slice(0, 5);
-
-    const worstOpps = opps.sort((a, b) => a.winPct - b.winPct).slice(0, 5);
-
-    return {
-      mates,
-      opps,
-      topMates,
-      worstMates,
-      topOpps,
-      worstOpps,
-    };
-  }, [pid, filteredMatches, players]);
-
-  const RecordBar = ({ wins, losses }) => {
-    const total = wins + losses || 1;
-    const w = Math.round((wins / total) * 100);
-    const l = 100 - w;
-    return (
-      <div className="w-full h-1.5 sm:h-2 rounded-full overflow-hidden flex">
-        <div style={{ width: `${w}%` }} className="bg-emerald-500" />
-        <div style={{ width: `${l}%` }} className="bg-rose-500" />
-      </div>
-    );
-  };
-
-  const PersonRow = ({ item }) => (
-    <div className={`rounded-xl ${T.cardBg} ${T.border} p-3 flex items-center gap-3`}>
-      <div className="min-w-0 flex-1">
-        <div className="font-medium truncate">{item.name}</div>
-        <div className={`text-xs ${T.subtext}`}>
-          {item.total} partite • Win rate {item.winPct}%
-        </div>
-      </div>
-      <div className="w-24 sm:w-32">
-        <RecordBar wins={item.wins} losses={item.losses} />
-      </div>
-      <div className="text-xs shrink-0">
-        <span className="text-emerald-500 font-semibold">+{item.wins}</span>
-        <span className={`mx-1 ${T.subtext}`}>/</span>
-        <span className="text-rose-500 font-semibold">-{item.losses}</span>
-      </div>
-    </div>
-  );
-
-  // UI helpers
+    const topMates = [...mates]
+      .sort((a, b) => b.winPct - a.winPct || b.wins - a.wins || IT_COLLATOR.compare(a.name, b.name))
+      .slice(0, 5);
+    const worstMates = [...mates]
+      .filter((m) => m.losses > 0)
+      .sort(
+        (a, b) => a.winPct - b.winPct || a.losses - b.losses || IT_COLLATOR.compare(a.name, b.name)
+      )
+      .slice(0, 5);
+    const topOpps = [...opps]
+      .sort((a, b) => b.winPct - a.winPct || b.wins - a.wins || IT_COLLATOR.compare(a.name, b.name))
+      .slice(0, 5);
+    const worstOpps = [...opps]
+      .filter((o) => o.losses > 0)
+      .sort(
+        (a, b) => a.winPct - b.winPct || a.losses - b.losses || IT_COLLATOR.compare(a.name, b.name)
+      )
+      .slice(0, 5);
+    return { mates, opps, topMates, worstMates, topOpps, worstOpps };
+  }, [pid, allMatchesIncludingTournaments, nameById]);
 
   const buildCaption = () => {
     const lines = [
       `Statistiche — ${player ? player.name : ''}`,
-      `Ranking: ${player ? Math.round(player.rating) : '-'}`,
+      `Ranking: ${player ? Math.round(getEffectiveRating(player.id)) : '-'}`,
       `Record: ${advancedStats?.wins || 0}–${advancedStats?.losses || 0} (${Math.round(advancedStats?.winRate || 0)}%)`,
       `Game Eff.: ${advancedStats ? advancedStats.gameEfficiency : 0}% • Δ medio: ${advancedStats ? advancedStats.avgDelta : 0}`,
       '#SportingCat #Padel',
@@ -508,193 +535,115 @@ export default function StatisticheGiocatore({
       ? `${window.location.origin}${window.location.pathname}#stats-${pid || ''}`
       : '';
 
-  // Componente Modal RPA
-  const RPAModal = () => {
-    const match = currentMatchForRpa;
-    if (!match) return null;
+  // Combined history items (matches + tournament entries)
+  const combinedItems = useMemo(() => {
+    const toDate = (d) => {
+      if (!d) return null;
+      if (typeof d === 'number') return new Date(d);
+      if (d?.toDate) return d.toDate();
+      return new Date(d);
+    };
+    const fromDate = (() => {
+      if (timeFilter === 'all') return null;
+      const now = new Date();
+      const from = new Date();
+      switch (timeFilter) {
+        case '1w':
+          from.setDate(now.getDate() - 7);
+          break;
+        case '2w':
+          from.setDate(now.getDate() - 14);
+          break;
+        case '30d':
+          from.setDate(now.getDate() - 30);
+          break;
+        case '3m':
+          from.setMonth(now.getMonth() - 3);
+          break;
+        case '6m':
+          from.setMonth(now.getMonth() - 6);
+          break;
+        default:
+          return null;
+      }
+      return from;
+    })();
+    const matchItems = (filteredMatches || [])
+      .filter((m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid))
+      .map((m) => ({ type: 'match', date: toDate(m.date) || new Date(m.date), m }));
+    const entryItems = (champEntries || []).map((e) => ({
+      type: 'champ',
+      date: toDate(e.createdAt) || toDate(e.appliedAt) || new Date(),
+      e,
+    }));
+    const all = [...matchItems, ...entryItems];
+    const filtered = fromDate ? all.filter((it) => (it.date ? it.date >= fromDate : false)) : all;
+    return filtered.sort((a, b) => (b.date?.getTime?.() || 0) - (a.date?.getTime?.() || 0));
+  }, [filteredMatches, champEntries, pid, timeFilter]);
 
-    const isA = (match.teamA || []).includes(pid);
-    const won = (isA && match.winner === 'A') || (!isA && match.winner === 'B');
-    const delta = isA ? (match.deltaA ?? 0) : (match.deltaB ?? 0);
-    const selfTeamNames = (isA ? match.teamA : match.teamB).map((id) => nameById(id));
-    const oppTeamNames = (isA ? match.teamB : match.teamA).map((id) => nameById(id));
+  // Sezione Punti Torneo: totale, ultimi movimenti e breakdown per torneo
+  const tournamentPoints = useMemo(() => {
+    const toDate = (d) => {
+      if (!d) return null;
+      if (typeof d === 'number') return new Date(d);
+      if (d?.toDate) return d.toDate();
+      return new Date(d);
+    };
+    const fromDate = (() => {
+      if (timeFilter === 'all') return null;
+      const now = new Date();
+      const from = new Date();
+      switch (timeFilter) {
+        case '1w':
+          from.setDate(now.getDate() - 7);
+          break;
+        case '2w':
+          from.setDate(now.getDate() - 14);
+          break;
+        case '30d':
+          from.setDate(now.getDate() - 30);
+          break;
+        case '3m':
+          from.setMonth(now.getMonth() - 3);
+          break;
+        case '6m':
+          from.setMonth(now.getMonth() - 6);
+          break;
+        default:
+          return null;
+      }
+      return from;
+    })();
 
-    // Calcola i dettagli per questa partita specifica
-    const teamARating = Math.round(match.sumA || 0);
-    const teamBRating = Math.round(match.sumB || 0);
-    const gap = Math.round(match.gap || 0);
-    const factor = match.factor || 1;
-    const base = match.base || 0;
-    const gd = match.gd || 0;
-    const points = Math.abs(Math.round(delta));
+    const entries = (champEntries || [])
+      .map((e) => ({ ...e, _date: toDate(e.createdAt) || toDate(e.appliedAt) || null }))
+      .filter((e) => (fromDate ? (e._date ? e._date >= fromDate : false) : true))
+      .sort((a, b) => (b._date?.getTime?.() || 0) - (a._date?.getTime?.() || 0));
 
-    return (
-      <Modal
-        open={showRpaModal}
-        onClose={() => {
-          setShowRpaModal(false);
-          setCurrentMatchForRpa(null);
-        }}
-        title="Sistema RPA - Ranking Points Algorithm"
-        size="lg"
-        T={T}
-      >
-        <div className="space-y-6">
-          {/* Spiegazione Sistema RPA */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
-            <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
-              🎯 Cos'è il Sistema RPA?
-            </h4>
-            <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed mb-3">
-              Il <strong>Ranking Points Algorithm (RPA)</strong> è un sistema di punteggio dinamico
-              che assegna punti in base alla differenza di livello tra le squadre e al risultato
-              della partita. Più forte è l'avversario sconfitto, più punti si guadagnano!
-            </p>
+    const totalPoints = entries.reduce((sum, e) => sum + Number(e.points || 0), 0);
+    const byTournamentMap = new Map();
+    for (const e of entries) {
+      const key = e.tournamentId || e.tournamentName || 'Torneo';
+      const cur = byTournamentMap.get(key) || {
+        tournamentId: e.tournamentId || null,
+        tournamentName: e.tournamentName || 'Torneo',
+        points: 0,
+        count: 0,
+      };
+      // Keep the most reliable name (prefer details if available)
+      const tInfo = e.tournamentId ? tournamentsById?.[e.tournamentId] : null;
+      if (tInfo?.name) {
+        cur.tournamentName = tInfo.name;
+      }
+      cur.points += Number(e.points || 0);
+      cur.count += 1;
+      byTournamentMap.set(key, cur);
+    }
+    const byTournament = Array.from(byTournamentMap.values()).sort((a, b) => b.points - a.points);
+    const recent = entries.slice(0, 5).map((e) => ({ ...e, date: e._date }));
 
-            {/* Formula Base */}
-            <div className="bg-white dark:bg-blue-800/30 p-3 rounded border">
-              <div className="text-center text-lg font-bold text-blue-600 dark:text-blue-300 mb-2">
-                Punti = (Base + DG) × Factor
-              </div>
-              <div className="text-xs text-blue-700 dark:text-blue-200 space-y-1">
-                <div>
-                  <strong>Base</strong> = (Ranking TeamA + Ranking TeamB) ÷ 100
-                </div>
-                <div>
-                  <strong>DG</strong> = Differenza Game tra vincitori e perdenti
-                </div>
-                <div>
-                  <strong>Factor</strong> = Moltiplicatore basato sul Gap di ranking
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Scaglioni Factor - Versione Compatta */}
-          <div>
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
-              ⚖️ Scaglioni Factor
-            </h4>
-            <div className="grid grid-cols-3 gap-2 text-xs">
-              <div className="bg-red-50 dark:bg-red-900/20 p-2 rounded border text-center">
-                <div className="font-mono text-red-600 font-bold">≤-1500</div>
-                <div className="text-red-600 font-semibold">0.6-0.75</div>
-                <div className="text-[10px] text-red-700">Molto più debole</div>
-              </div>
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded border text-center">
-                <div className="font-mono text-yellow-700 font-bold">-300~+300</div>
-                <div className="text-yellow-700 font-semibold">0.9-1.1</div>
-                <div className="text-[10px] text-yellow-800">Equilibrato</div>
-              </div>
-              <div className="bg-green-50 dark:bg-green-900/20 p-2 rounded border text-center">
-                <div className="font-mono text-green-600 font-bold">≥+1500</div>
-                <div className="text-green-600 font-semibold">1.25-1.6</div>
-                <div className="text-[10px] text-green-700">Molto più forte</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Dettaglio Partita */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
-            <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-3">
-              � Partita Analizzata
-            </h4>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div
-                className={`p-3 rounded-lg ${won && isA ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-300' : !won && !isA ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-300' : 'bg-gray-100 dark:bg-gray-700 border-2 border-gray-300'}`}
-              >
-                <div className="font-semibold text-gray-900 dark:text-gray-100">Team A</div>
-                <div className="text-xs text-gray-600 dark:text-gray-300 mb-1">
-                  {match.teamA?.map((id) => nameById(id)).join(' & ')}
-                </div>
-                <div className="text-lg font-bold text-blue-600">Rating: {teamARating}</div>
-                <div className="text-xs">
-                  Sets: {match.setsA} • Games: {match.gamesA}
-                </div>
-              </div>
-              <div
-                className={`p-3 rounded-lg ${won && !isA ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-300' : !won && isA ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-300' : 'bg-gray-100 dark:bg-gray-700 border-2 border-gray-300'}`}
-              >
-                <div className="font-semibold text-gray-900 dark:text-gray-100">Team B</div>
-                <div className="text-xs text-gray-600 dark:text-gray-300 mb-1">
-                  {match.teamB?.map((id) => nameById(id)).join(' & ')}
-                </div>
-                <div className="text-lg font-bold text-blue-600">Rating: {teamBRating}</div>
-                <div className="text-xs">
-                  Sets: {match.setsB} • Games: {match.gamesB}
-                </div>
-              </div>
-            </div>
-            {match.date && (
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
-                📅{' '}
-                {new Date(match.date).toLocaleDateString('it-IT', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Risultato per il giocatore */}
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-4 rounded-lg border-2 border-purple-200 dark:border-purple-700">
-            <h4 className="font-semibold text-purple-900 dark:text-purple-100 mb-2 flex items-center gap-2">
-              🎯 Risultato per {nameById(pid)}
-            </h4>
-            <div className="text-center">
-              <div className="text-sm text-purple-700 dark:text-purple-300 mb-1">
-                {won ? '🏆 Vittoria!' : '💔 Sconfitta'}
-              </div>
-              <div
-                className={`text-3xl font-bold ${delta >= 0 ? 'text-green-600' : 'text-red-600'} mb-2`}
-              >
-                {delta >= 0 ? '+' : ''}
-                {Math.round(delta)} punti
-              </div>
-              <div className="text-xs text-purple-600 dark:text-purple-400 bg-white dark:bg-purple-900/20 p-2 rounded">
-                {won
-                  ? gap > 300
-                    ? '🚀 Ottima vittoria contro avversari più forti!'
-                    : gap < -300
-                      ? '⚠️ Vittoria facile, pochi punti guadagnati'
-                      : '✅ Vittoria equilibrata, punti standard'
-                  : gap > 300
-                    ? '😓 Sconfitta comprensibile contro avversari forti'
-                    : gap < -300
-                      ? '😱 Brutta sconfitta, molti punti persi!'
-                      : '📉 Sconfitta equilibrata, punti standard persi'}
-              </div>
-            </div>
-          </div>
-
-          {/* Punti Chiave Compatti */}
-          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border text-xs">
-            <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 text-sm">
-              💡 Punti Chiave
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-              <div>
-                • <strong>Battere i forti</strong>: Factor {'>'} 1.0 = Più punti
-              </div>
-              <div>
-                • <strong>Vittorie nette</strong>: DG alta = Bonus punti
-              </div>
-              <div>
-                • <strong>Avversari deboli</strong>: Factor {'<'} 1.0 = Meno punti
-              </div>
-              <div>
-                • <strong>Perdere</strong>: Stessi punti ma negativi
-              </div>
-            </div>
-          </div>
-        </div>
-      </Modal>
-    );
-  };
+    return { totalPoints, totalEntries: entries.length, byTournament, recent };
+  }, [champEntries, timeFilter, tournamentsById]);
 
   return (
     <Section
@@ -808,7 +757,7 @@ export default function StatisticheGiocatore({
               </span>
             </div>
             <div className="text-xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400">
-              {player ? Math.round(player.rating) : '-'}
+              {player ? Math.round(getEffectiveRating(player.id)) : '-'}
             </div>
           </div>
 
@@ -1086,20 +1035,6 @@ export default function StatisticheGiocatore({
                 }
                 cTotalDelta += delta;
               });
-              let cCurrentStreak = 0;
-              let last = null;
-              for (let i = cmpSorted.length - 1; i >= 0; i--) {
-                const m = cmpSorted[i];
-                const isA = (m.teamA || []).includes(cp.id);
-                const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
-                if (last === null) {
-                  last = won;
-                  cCurrentStreak = 1;
-                } else if (last === won) {
-                  cCurrentStreak++;
-                } else break;
-              }
-              cCurrentStreak = last === null ? 0 : last ? cCurrentStreak : -cCurrentStreak;
               const cWinRate =
                 cWins + cLosses > 0 ? Math.round((cWins / (cWins + cLosses)) * 100) : 0;
               const cGameEff =
@@ -1112,9 +1047,12 @@ export default function StatisticheGiocatore({
               const compareData = [
                 {
                   metric: 'Ranking',
-                  player1: player ? Math.round(player.rating) : '-',
-                  player2: cp ? Math.round(cp.rating) : '-',
-                  diff: player && cp ? Math.round(player.rating - cp.rating) : '-',
+                  player1: player ? Math.round(getEffectiveRating(player.id)) : '-',
+                  player2: cp ? Math.round(getEffectiveRating(cp.id)) : '-',
+                  diff:
+                    player && cp
+                      ? Math.round(getEffectiveRating(player.id) - getEffectiveRating(cp.id))
+                      : '-',
                 },
                 {
                   metric: 'Win Rate',
@@ -1200,6 +1138,132 @@ export default function StatisticheGiocatore({
               Seleziona un giocatore per confrontare le statistiche
             </div>
           )}
+        </div>
+
+        {/* Punti Torneo - sezione dedicata */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-yellow-600 rounded-lg flex items-center justify-center">
+                <span className="text-white">🏆</span>
+              </div>
+              Punti Torneo {timeFilter !== 'all' ? '(periodo filtrato)' : ''}
+            </h3>
+            <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full text-sm font-medium">
+              {tournamentPoints.totalEntries} movimenti
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Totale card (valore assoluto) */}
+            <div className="lg:col-span-1 bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/30 dark:to-yellow-900/20 rounded-2xl border border-amber-200/40 dark:border-amber-700/40 p-5">
+              <div className="text-sm font-medium text-amber-700 dark:text-amber-300 mb-2">
+                Totale punti Tornei
+              </div>
+              <div className="text-3xl font-extrabold text-amber-700 dark:text-amber-300">
+                {Math.round(champTotals.totalPoints || 0)}
+              </div>
+              <div className="flex items-center gap-2 mt-1 text-xs text-amber-800/70 dark:text-amber-300/70">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-100/70 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300">
+                  Movimenti totali: {champTotals.entriesCount}
+                </span>
+                <span className="opacity-80">•</span>
+                <span>Nel periodo: +{Math.round(tournamentPoints.totalPoints || 0)}</span>
+              </div>
+            </div>
+
+            {/* Ultimi movimenti */}
+            <div className="bg-white/70 dark:bg-gray-800/60 rounded-2xl border border-white/20 dark:border-gray-700/30 p-5">
+              <div className="font-medium mb-3 flex items-center gap-2">
+                <span>🕒</span> Ultimi movimenti
+              </div>
+              {tournamentPoints.recent.length > 0 ? (
+                <div className="space-y-3">
+                  {tournamentPoints.recent.map((e) => (
+                    <div key={e.id} className="flex items-center justify-between">
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium truncate">
+                          {e.tournamentId ? (
+                            <a
+                              href={`/club/${clubId}/tournaments/${e.tournamentId}`}
+                              className="text-amber-700 dark:text-amber-300 hover:underline"
+                              title="Vedi torneo"
+                            >
+                              {tournamentsById?.[e.tournamentId]?.name ||
+                                e.tournamentName ||
+                                'Punti torneo'}
+                            </a>
+                          ) : (
+                            e.tournamentName || 'Punti torneo'
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {e.date
+                            ? e.date.toLocaleDateString('it-IT', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: '2-digit',
+                              })
+                            : ''}
+                          {e.tournamentId && tournamentsById?.[e.tournamentId]?.status ? (
+                            <span className="ml-2 px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300">
+                              {tournamentsById[e.tournamentId].status}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                      <div className="text-amber-700 dark:text-amber-300 font-bold">
+                        +{Math.round(e.points || 0)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={`text-sm ${T.subtext}`}>Nessun movimento disponibile</div>
+              )}
+            </div>
+
+            {/* Per torneo */}
+            <div className="bg-white/70 dark:bg-gray-800/60 rounded-2xl border border-white/20 dark:border-gray-700/30 p-5">
+              <div className="font-medium mb-3 flex items-center gap-2">
+                <span>📚</span> Punti per torneo
+              </div>
+              {tournamentPoints.byTournament.length > 0 ? (
+                <div className="space-y-3">
+                  {tournamentPoints.byTournament.slice(0, 5).map((row) => (
+                    <div
+                      key={row.tournamentId || row.tournamentName}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium truncate">
+                          {row.tournamentId ? (
+                            <a
+                              href={`/club/${clubId}/tournaments/${row.tournamentId}`}
+                              className="text-amber-700 dark:text-amber-300 hover:underline"
+                              title="Vedi torneo"
+                            >
+                              {tournamentsById?.[row.tournamentId]?.name || row.tournamentName}
+                            </a>
+                          ) : (
+                            row.tournamentName
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {row.count} movimenti
+                        </div>
+                      </div>
+                      <div className="text-amber-700 dark:text-amber-300 font-bold">
+                        +{Math.round(row.points)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={`text-sm ${T.subtext}`}>Nessun torneo nel periodo</div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Mini Classifiche - Mobile Optimized */}
@@ -1291,7 +1355,7 @@ export default function StatisticheGiocatore({
               </div>
             ) : (
               <div className={`text-sm ${T.subtext} text-center py-6`}>
-                Nessun compagno disponibile
+                😄 Ancora nessun compagno riesce a farti perdere
               </div>
             )}
           </div>
@@ -1411,269 +1475,299 @@ export default function StatisticheGiocatore({
               Storico Partite {timeFilter !== 'all' ? '(periodo filtrato)' : ''}
             </h3>
             <div className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 px-3 py-1 rounded-full text-sm font-medium">
-              {
-                (filteredMatches || []).filter(
-                  (m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid)
-                ).length
-              }{' '}
-              partite
+              {combinedItems.length} elementi
             </div>
           </div>
           <div className="space-y-4">
-            {(filteredMatches || [])
-              .filter((m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid))
-              .slice()
-              .sort((a, b) => new Date(b.date) - new Date(a.date))
-              .map((m) => {
-                const isA = (m.teamA || []).includes(pid);
-                const delta = isA ? (m.deltaA ?? 0) : (m.deltaB ?? 0);
-                const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
-                const selfTeam = (isA ? m.teamA : m.teamB)
-                  .map((id) => surnameOf(nameById(id)))
-                  .join(' & ');
-                const oppTeam = (isA ? m.teamB : m.teamA)
-                  .map((id) => surnameOf(nameById(id)))
-                  .join(' & ');
-                const selfTeamFull = (isA ? m.teamA : m.teamB)
-                  .map((id) => nameById(id))
-                  .join(' & ');
-                const oppTeamFull = (isA ? m.teamB : m.teamA).map((id) => nameById(id)).join(' & ');
-                const selfCls = won
-                  ? 'text-emerald-600 font-semibold'
-                  : 'text-rose-600 font-semibold';
-                const oppCls = won
-                  ? 'text-rose-600 font-semibold'
-                  : 'text-emerald-600 font-semibold';
-                const isExpanded = expandedMatchId === m.id;
-
+            {combinedItems.map((item) => {
+              if (item.type === 'champ') {
+                const e = item.e;
+                const when = item.date
+                  ? item.date.toLocaleDateString('it-IT', {
+                      day: '2-digit',
+                      month: 'short',
+                      year: '2-digit',
+                    })
+                  : '';
                 return (
                   <div
-                    key={m.id}
-                    className={`relative rounded-3xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 ${isExpanded ? 'ring-2 ring-blue-500/60 shadow-blue-500/20' : ''}`}
+                    key={`entry-${e.id}`}
+                    className="relative rounded-3xl bg-amber-50/60 dark:bg-amber-900/20 backdrop-blur-xl border border-amber-200/50 dark:border-amber-700/40 shadow-xl overflow-hidden"
                   >
-                    {/* Subtle gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
-
-                    {/* Riga compatta mobile-optimized */}
-                    <div
-                      className="relative p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-gradient-to-r hover:from-white/10 hover:to-transparent transition-all duration-300"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => setExpandedMatchId(isExpanded ? null : m.id)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          setExpandedMatchId((prev) => (prev === m.id ? null : m.id));
-                        }
-                      }}
-                      aria-expanded={isExpanded}
-                    >
-                      <div className="min-w-0 flex-1 space-y-2">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                          <span
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm border ${
-                              won
-                                ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-700 dark:text-emerald-300'
-                                : 'bg-rose-500/20 border-rose-400/30 text-rose-700 dark:text-rose-300'
-                            }`}
-                          >
-                            {won ? '✨ Vittoria' : '❌ Sconfitta'}
-                          </span>
-                          {m.date && (
-                            <span className="text-xs text-gray-600 dark:text-gray-400 bg-gray-100/50 dark:bg-gray-700/50 px-2 py-1 rounded-lg backdrop-blur-sm">
-                              {new Date(m.date).toLocaleDateString('it-IT', {
-                                day: '2-digit',
-                                month: 'short',
-                                year: '2-digit',
-                              })}
-                            </span>
-                          )}
+                    <div className="p-4 flex items-center justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300 font-semibold">
+                          <span>🏆</span>
+                          <span className="truncate">{e.tournamentName || 'Punti torneo'}</span>
                         </div>
-                        <div className="text-sm">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                            <div
-                              className={`${selfCls} font-semibold bg-gradient-to-r from-current to-current bg-clip-text`}
-                            >
-                              {selfTeam}
-                            </div>
-                            <div className="hidden sm:block text-gray-400 dark:text-gray-500">
-                              vs
-                            </div>
-                            <div
-                              className={`${oppCls} font-semibold bg-gradient-to-r from-current to-current bg-clip-text`}
-                            >
-                              {oppTeam}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50/50 dark:bg-gray-700/30 px-3 py-1.5 rounded-xl backdrop-blur-sm">
-                          Sets {isA ? m.setsA : m.setsB}–{isA ? m.setsB : m.setsA} • Games{' '}
-                          {isA ? m.gamesA : m.gamesB}–{isA ? m.gamesB : m.gamesA}
+                        <div className="text-xs text-amber-800/70 dark:text-amber-300/70 mt-1">
+                          {when}
                         </div>
                       </div>
-                      <div className="shrink-0 text-right flex items-center gap-3">
-                        <div className="bg-gradient-to-br from-gray-50/80 to-gray-100/80 dark:from-gray-700/50 dark:to-gray-800/50 backdrop-blur-sm rounded-2xl px-3 py-2 border border-white/20 dark:border-gray-600/30">
-                          <div
-                            className={`text-lg font-bold bg-gradient-to-r ${
-                              delta >= 0
-                                ? 'from-emerald-500 to-green-600 text-transparent bg-clip-text'
-                                : 'from-rose-500 to-red-600 text-transparent bg-clip-text'
-                            }`}
-                          >
-                            {delta >= 0 ? '+' : ''}
-                            {Math.round(delta)}
-                          </div>
-                          <div className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">
-                            punti
-                          </div>
+                      <div className="shrink-0 text-right">
+                        <div className="text-lg font-bold text-amber-700 dark:text-amber-300">
+                          +{Math.round(e.points || 0)}
                         </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCurrentMatchForRpa(m);
-                            setShowRpaModal(true);
-                          }}
-                          className="flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md backdrop-blur-sm border border-white/20"
-                          title="Spiegazione formula RPA"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                          </svg>
-                          <span className="hidden sm:inline">Formula</span>
-                        </button>
-                        <div
-                          className={`text-gray-400 dark:text-gray-300 text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
-                        >
-                          ▼
+                        <div className="text-[10px] text-amber-800/70 dark:text-amber-300/70">
+                          punti campionato
                         </div>
                       </div>
                     </div>
+                  </div>
+                );
+              }
+              const m = item.m;
+              const isA = (m.teamA || []).includes(pid);
+              const delta = isA ? (m.deltaA ?? 0) : (m.deltaB ?? 0);
+              const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
+              const selfTeam = (isA ? m.teamA : m.teamB)
+                .map((id) => surnameOf(nameById(id)))
+                .join(' & ');
+              const oppTeam = (isA ? m.teamB : m.teamA)
+                .map((id) => surnameOf(nameById(id)))
+                .join(' & ');
+              const selfTeamFull = (isA ? m.teamA : m.teamB).map((id) => nameById(id)).join(' & ');
+              const oppTeamFull = (isA ? m.teamB : m.teamA).map((id) => nameById(id)).join(' & ');
+              const selfCls = won
+                ? 'text-emerald-600 font-semibold'
+                : 'text-rose-600 font-semibold';
+              const oppCls = won ? 'text-rose-600 font-semibold' : 'text-emerald-600 font-semibold';
+              const isExpanded = expandedMatchId === m.id;
 
-                    {/* Dettagli espansi - Mobile Optimized */}
-                    {isExpanded && (
-                      <div className="border-t border-white/20 dark:border-gray-700/30 bg-gradient-to-b from-gray-50/50 to-gray-100/50 dark:from-gray-800/40 dark:to-gray-900/40 backdrop-blur-sm">
-                        <div className="p-4 space-y-4">
-                          {/* Squadre - Stacked su mobile */}
-                          <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4 text-sm">
-                            <div
-                              className={`p-4 rounded-2xl border backdrop-blur-sm ${
-                                won
-                                  ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/40 dark:to-emerald-800/30'
-                                  : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 dark:from-rose-900/40 dark:to-rose-800/30'
-                              }`}
-                            >
-                              <div className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                                {won && <span className="text-emerald-500">👑</span>}
-                                {selfTeamFull}
-                              </div>
-                              <div className="text-xs text-gray-700 dark:text-gray-300 bg-white/40 dark:bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                                Sets: {isA ? m.setsA : m.setsB} • Games: {isA ? m.gamesA : m.gamesB}
-                              </div>
+              return (
+                <div
+                  key={m.id}
+                  className={`relative rounded-3xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 ${isExpanded ? 'ring-2 ring-blue-500/60 shadow-blue-500/20' : ''}`}
+                >
+                  {/* Subtle gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
+
+                  {/* Riga compatta mobile-optimized */}
+                  <div
+                    className="relative p-4 flex items-center justify-between gap-3 cursor-pointer hover:bg-gradient-to-r hover:from-white/10 hover:to-transparent transition-all duration-300"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setExpandedMatchId(isExpanded ? null : m.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setExpandedMatchId((prev) => (prev === m.id ? null : m.id));
+                      }
+                    }}
+                    aria-expanded={isExpanded}
+                  >
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <span
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm border ${
+                            won
+                              ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-700 dark:text-emerald-300'
+                              : 'bg-rose-500/20 border-rose-400/30 text-rose-700 dark:text-rose-300'
+                          }`}
+                        >
+                          {won ? '✨ Vittoria' : '❌ Sconfitta'}
+                        </span>
+                        {m.date && (
+                          <span className="text-xs text-gray-600 dark:text-gray-400 bg-gray-100/50 dark:bg-gray-700/50 px-2 py-1 rounded-lg backdrop-blur-sm">
+                            {new Date(m.date).toLocaleDateString('it-IT', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: '2-digit',
+                            })}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                          <div
+                            className={`${selfCls} font-semibold bg-gradient-to-r from-current to-current bg-clip-text`}
+                          >
+                            {selfTeam}
+                          </div>
+                          <div className="hidden sm:block text-gray-400 dark:text-gray-500">vs</div>
+                          <div
+                            className={`${oppCls} font-semibold bg-gradient-to-r from-current to-current bg-clip-text`}
+                          >
+                            {oppTeam}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50/50 dark:bg-gray-700/30 px-3 py-1.5 rounded-xl backdrop-blur-sm">
+                        Sets {isA ? m.setsA : m.setsB}–{isA ? m.setsB : m.setsA} • Games{' '}
+                        {isA ? m.gamesA : m.gamesB}–{isA ? m.gamesB : m.gamesA}
+                      </div>
+                    </div>
+                    <div className="shrink-0 text-right flex items-center gap-3">
+                      <div className="bg-gradient-to-br from-gray-50/80 to-gray-100/80 dark:from-gray-700/50 dark:to-gray-800/50 backdrop-blur-sm rounded-2xl px-3 py-2 border border-white/20 dark:border-gray-600/30">
+                        <div
+                          className={`text-lg font-bold bg-gradient-to-r ${
+                            delta >= 0
+                              ? 'from-emerald-500 to-green-600 text-transparent bg-clip-text'
+                              : 'from-rose-500 to-red-600 text-transparent bg-clip-text'
+                          }`}
+                        >
+                          {delta >= 0 ? '+' : ''}
+                          {Math.round(delta)}
+                        </div>
+                        <div className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">
+                          punti
+                        </div>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentMatchForRpa(m);
+                          setShowRpaModal(true);
+                        }}
+                        className="flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md backdrop-blur-sm border border-white/20"
+                        title="Spiegazione formula RPA"
+                      >
+                        <svg
+                          className="w-3.5 h-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                          />
+                        </svg>
+                        <span className="hidden sm:inline">Formula</span>
+                      </button>
+                      <div
+                        className={`text-gray-400 dark:text-gray-300 text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                      >
+                        ▼
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dettagli espansi - Mobile Optimized */}
+                  {isExpanded && (
+                    <div className="border-t border-white/20 dark:border-gray-700/30 bg-gradient-to-b from-gray-50/50 to-gray-100/50 dark:from-gray-800/40 dark:to-gray-900/40 backdrop-blur-sm">
+                      <div className="p-4 space-y-4">
+                        {/* Squadre - Stacked su mobile */}
+                        <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4 text-sm">
+                          <div
+                            className={`p-4 rounded-2xl border backdrop-blur-sm ${
+                              won
+                                ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/40 dark:to-emerald-800/30'
+                                : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 dark:from-rose-900/40 dark:to-rose-800/30'
+                            }`}
+                          >
+                            <div className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                              {won && <span className="text-emerald-500">👑</span>}
+                              {selfTeamFull}
                             </div>
-                            <div
-                              className={`p-4 rounded-2xl border backdrop-blur-sm ${
-                                !won
-                                  ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/40 dark:to-emerald-800/30'
-                                  : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 dark:from-rose-900/40 dark:to-rose-800/30'
-                              }`}
-                            >
-                              <div className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                                {!won && <span className="text-emerald-500">👑</span>}
-                                {oppTeamFull}
-                              </div>
-                              <div className="text-xs text-gray-700 dark:text-gray-300 bg-white/40 dark:bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                                Sets: {isA ? m.setsB : m.setsA} • Games: {isA ? m.gamesB : m.gamesA}
-                              </div>
+                            <div className="text-xs text-gray-700 dark:text-gray-300 bg-white/40 dark:bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                              Sets: {isA ? m.setsA : m.setsB} • Games: {isA ? m.gamesA : m.gamesB}
                             </div>
                           </div>
-
-                          {/* Set dettaglio - Mobile scroll */}
-                          {Array.isArray(m.sets) && m.sets.length > 0 && (
-                            <div>
-                              <div className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
-                                <span className="bg-gradient-to-r from-blue-500 to-indigo-600 text-transparent bg-clip-text">
-                                  📊
-                                </span>
-                                Set per set:
-                              </div>
-                              <div className="flex gap-3 overflow-x-auto pb-2">
-                                {m.sets.map((s, i) => {
-                                  // Determina chi ha vinto questo set
-                                  const setWonByA = s.a > s.b;
-                                  // Se il giocatore ha vinto la partita e anche questo set, è verde
-                                  // Se il giocatore ha vinto la partita ma ha perso questo set, è rosso
-                                  const isWinningSet = won ? setWonByA === isA : setWonByA !== isA;
-                                  
-                                  return (
-                                    <div
-                                      key={`${m.id}-set-${i}`}
-                                      className={`px-4 py-3 rounded-2xl text-sm font-semibold shrink-0 backdrop-blur-sm shadow-lg border ${
-                                        isWinningSet
-                                          ? 'bg-gradient-to-br from-emerald-100/90 to-emerald-200/70 dark:from-emerald-800/70 dark:to-emerald-900/50 border-emerald-400/40 dark:border-emerald-500/40 text-emerald-900 dark:text-emerald-100'
-                                          : 'bg-gradient-to-br from-rose-100/90 to-rose-200/70 dark:from-rose-800/70 dark:to-rose-900/50 border-rose-400/40 dark:border-rose-500/40 text-rose-900 dark:text-rose-100'
-                                      }`}
-                                    >
-                                      <div className="text-center">
-                                        <span className="text-xs opacity-70 block mb-1">
-                                          Set {i + 1}
-                                        </span>
-                                        <span className="text-lg">
-                                          {s.a}–{s.b}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
+                          <div
+                            className={`p-4 rounded-2xl border backdrop-blur-sm ${
+                              !won
+                                ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 dark:from-emerald-900/40 dark:to-emerald-800/30'
+                                : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 dark:from-rose-900/40 dark:to-rose-800/30'
+                            }`}
+                          >
+                            <div className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                              {!won && <span className="text-emerald-500">👑</span>}
+                              {oppTeamFull}
                             </div>
-                          )}
+                            <div className="text-xs text-gray-700 dark:text-gray-300 bg-white/40 dark:bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                              Sets: {isA ? m.setsB : m.setsA} • Games: {isA ? m.gamesB : m.gamesA}
+                            </div>
+                          </div>
+                        </div>
 
-                          {/* Formula compatta - Mobile collapsible */}
-                          <div className="border-t border-white/20 dark:border-gray-700/30 pt-4">
+                        {/* Set dettaglio - Mobile scroll */}
+                        {Array.isArray(m.sets) && m.sets.length > 0 && (
+                          <div>
                             <div className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
-                              <span className="bg-gradient-to-r from-violet-500 to-purple-600 text-transparent bg-clip-text">
-                                🧮
+                              <span className="bg-gradient-to-r from-blue-500 to-indigo-600 text-transparent bg-clip-text">
+                                📊
                               </span>
-                              Calcolo punti RPA:
+                              Set per set:
                             </div>
-                            <div className="text-sm space-y-3 text-gray-800 dark:text-gray-100">
-                              <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/60 dark:from-blue-900/20 dark:to-indigo-900/20 p-3 rounded-2xl border border-blue-200/30 dark:border-blue-700/30 backdrop-blur-sm">
-                                <strong className="text-blue-700 dark:text-blue-300">
-                                  Rating:
-                                </strong>{' '}
-                                A={Math.round(m.sumA || 0)} vs B=
-                                {Math.round(m.sumB || 0)} (Gap: {Math.round(m.gap || 0)})
-                              </div>
-                              <div className="bg-gradient-to-r from-purple-50/80 to-violet-50/60 dark:from-purple-900/20 dark:to-violet-900/20 p-3 rounded-2xl border border-purple-200/30 dark:border-purple-700/30 backdrop-blur-sm">
-                                <strong className="text-purple-700 dark:text-purple-300">
-                                  Calcolo:
-                                </strong>{' '}
-                                Base: {(m.base || 0).toFixed(1)} • DG: {m.gd || 0} • Factor:{' '}
-                                {(m.factor || 1).toFixed(2)}
-                              </div>
-                              <div className="bg-gradient-to-r from-emerald-50/80 to-green-50/60 dark:from-emerald-900/20 dark:to-green-900/20 p-3 rounded-2xl border border-emerald-200/30 dark:border-emerald-700/30 backdrop-blur-sm">
-                                <strong className="text-emerald-700 dark:text-emerald-300">
-                                  Risultato:
-                                </strong>{' '}
-                                <span
-                                  className={`font-bold text-lg ${
-                                    delta >= 0
-                                      ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-transparent bg-clip-text'
-                                      : 'bg-gradient-to-r from-rose-600 to-red-600 text-transparent bg-clip-text'
-                                  }`}
-                                >
-                                  {delta >= 0 ? '+' : ''}
-                                  {Math.round(delta)} punti
-                                </span>
-                              </div>
+                            <div className="flex gap-3 overflow-x-auto pb-2">
+                              {m.sets.map((s, i) => {
+                                // Determina chi ha vinto questo set
+                                const setWonByA = s.a > s.b;
+                                // Se il giocatore ha vinto la partita e anche questo set, è verde
+                                // Se il giocatore ha vinto la partita ma ha perso questo set, è rosso
+                                const isWinningSet = won ? setWonByA === isA : setWonByA !== isA;
+
+                                return (
+                                  <div
+                                    key={`${m.id}-set-${i}`}
+                                    className={`px-4 py-3 rounded-2xl text-sm font-semibold shrink-0 backdrop-blur-sm shadow-lg border ${
+                                      isWinningSet
+                                        ? 'bg-gradient-to-br from-emerald-100/90 to-emerald-200/70 dark:from-emerald-800/70 dark:to-emerald-900/50 border-emerald-400/40 dark:border-emerald-500/40 text-emerald-900 dark:text-emerald-100'
+                                        : 'bg-gradient-to-br from-rose-100/90 to-rose-200/70 dark:from-rose-800/70 dark:to-rose-900/50 border-rose-400/40 dark:border-rose-500/40 text-rose-900 dark:text-rose-100'
+                                    }`}
+                                  >
+                                    <div className="text-center">
+                                      <span className="text-xs opacity-70 block mb-1">
+                                        Set {i + 1}
+                                      </span>
+                                      <span className="text-lg">
+                                        {s.a}–{s.b}
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Formula compatta - Mobile collapsible */}
+                        <div className="border-t border-white/20 dark:border-gray-700/30 pt-4">
+                          <div className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
+                            <span className="bg-gradient-to-r from-violet-500 to-purple-600 text-transparent bg-clip-text">
+                              🧮
+                            </span>
+                            Calcolo punti RPA:
+                          </div>
+                          <div className="text-sm space-y-3 text-gray-800 dark:text-gray-100">
+                            <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/60 dark:from-blue-900/20 dark:to-indigo-900/20 p-3 rounded-2xl border border-blue-200/30 dark:border-blue-700/30 backdrop-blur-sm">
+                              <strong className="text-blue-700 dark:text-blue-300">Rating:</strong>{' '}
+                              A={Math.round(m.sumA || 0)} vs B=
+                              {Math.round(m.sumB || 0)} (Gap: {Math.round(m.gap || 0)})
+                            </div>
+                            <div className="bg-gradient-to-r from-purple-50/80 to-violet-50/60 dark:from-purple-900/20 dark:to-violet-900/20 p-3 rounded-2xl border border-purple-200/30 dark:border-purple-700/30 backdrop-blur-sm">
+                              <strong className="text-purple-700 dark:text-purple-300">
+                                Calcolo:
+                              </strong>{' '}
+                              Base: {(m.base || 0).toFixed(1)} • DG: {m.gd || 0} • Factor:{' '}
+                              {(m.factor || 1).toFixed(2)}
+                            </div>
+                            <div className="bg-gradient-to-r from-emerald-50/80 to-green-50/60 dark:from-emerald-900/20 dark:to-green-900/20 p-3 rounded-2xl border border-emerald-200/30 dark:border-emerald-700/30 backdrop-blur-sm">
+                              <strong className="text-emerald-700 dark:text-emerald-300">
+                                Risultato:
+                              </strong>{' '}
+                              <span
+                                className={`font-bold text-lg ${
+                                  delta >= 0
+                                    ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-transparent bg-clip-text'
+                                    : 'bg-gradient-to-r from-rose-600 to-red-600 text-transparent bg-clip-text'
+                                }`}
+                              >
+                                {delta >= 0 ? '+' : ''}
+                                {Math.round(delta)} punti
+                              </span>
                             </div>
                           </div>
                         </div>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -1708,7 +1802,10 @@ export default function StatisticheGiocatore({
                   return {
                     id,
                     name: playersById[id]?.name || 'Unknown',
-                    rating: currentMatchForRpa.preMatchRatings?.[ratingKey] || playersById[id]?.rating || DEFAULT_RATING
+                    rating:
+                      currentMatchForRpa.preMatchRatings?.[ratingKey] ||
+                      playersById[id]?.rating ||
+                      DEFAULT_RATING,
                   };
                 }),
                 teamB: (currentMatchForRpa.teamB || []).map((id, index) => {
@@ -1716,7 +1813,10 @@ export default function StatisticheGiocatore({
                   return {
                     id,
                     name: playersById[id]?.name || 'Unknown',
-                    rating: currentMatchForRpa.preMatchRatings?.[ratingKey] || playersById[id]?.rating || DEFAULT_RATING
+                    rating:
+                      currentMatchForRpa.preMatchRatings?.[ratingKey] ||
+                      playersById[id]?.rating ||
+                      DEFAULT_RATING,
                   };
                 }),
               }

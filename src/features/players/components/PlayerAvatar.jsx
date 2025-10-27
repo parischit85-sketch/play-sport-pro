@@ -6,7 +6,7 @@
 import React from 'react';
 import { getPlayerInitial } from '@lib/playerUtils.js';
 
-export default function PlayerAvatar({ player, size = 'md' }) {
+const PlayerAvatar = ({ player, size = 'md' }) => {
   const sizeClasses = {
     sm: 'w-8 h-8 text-sm',
     md: 'w-12 h-12 text-lg',
@@ -18,4 +18,7 @@ export default function PlayerAvatar({ player, size = 'md' }) {
       {getPlayerInitial(player)}
     </div>
   );
-}
+};
+
+// 🚀 OTTIMIZZAZIONE: Memoizza per evitare re-render inutili
+export default React.memo(PlayerAvatar);

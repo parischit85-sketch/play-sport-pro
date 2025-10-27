@@ -1,0 +1,30 @@
+{
+  "LjKLKA6sLpVA9Y5kHgfZ": {
+    "id": "1759942966897",
+    "name": "Padel 2",
+    "hasHeating": false,
+    "timeSlots": [],
+    "order": 2,
+    "courtType": "Indoor",
+    "maxPlayers": 4
+  },
+  "Od5Hi72vVTjLS5SiA2g3": {
+    "id": "1759942949247",
+    "name": "Padel 1",
+    "hasHeating": false,
+    "timeSlots": [],
+    "order": 1,
+    "courtType": "Indoor",
+    "maxPlayers": 4
+  },
+  "eJ5EWXcuZj4xv28qfY6A": {
+    "firebaseId": "Od5Hi72vVTjLS5SiA2g3",
+    "id": "1759942949247",
+    "name": "Padel 1",
+    "hasHeating": false,
+    "timeSlots": [],
+    "order": 1,
+    "courtType": "Indoor",
+    "maxPlayers": 4
+  }
+}

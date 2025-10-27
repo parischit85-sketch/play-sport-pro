@@ -5,6 +5,7 @@ import { auth, db } from './firebase.js';
 import { resetClubsCooldowns } from './clubs.js';
 // import { console.error, console.log } from "../lib/sentry.js";
 import { trackAuth } from '../lib/analytics.js';
+import { sanitizeAuthError, safeError } from '../utils/sanitizer.js';
 import {
   onAuthStateChanged,
   GoogleAuthProvider,
@@ -20,6 +21,7 @@ import {
   signInWithEmailAndPassword,
   sendPasswordResetEmail,
   updateProfile,
+  sendEmailVerification,
 } from 'firebase/auth';
 import { collection, getDocs, query, limit as qLimit } from 'firebase/firestore';
 
@@ -220,59 +222,37 @@ export async function sendMagicLink(email) {
 // ---- Email & Password ----
 export async function registerWithEmailPassword(email, password) {
   if (!email || !password) throw new Error('Email e password sono obbligatorie');
-  const res = await createUserWithEmailAndPassword(auth, email, password);
-  // crea profilo base se non esiste
-  if (res.user) {
-    const existingProfile = await getUserProfile(res.user.uid);
-    if (!existingProfile.email) {
-      await saveUserProfile(res.user.uid, {
-        email: res.user.email,
-        firstName: '',
-        lastName: '',
-        phone: '',
-        provider: 'password',
-        ...existingProfile,
-      });
-    }
+  
+  console.log('🔍 [registerWithEmailPassword] Starting registration for:', email);
+  
+  try {
+    const res = await createUserWithEmailAndPassword(auth, email, password);
+    console.log('✅ [registerWithEmailPassword] Firebase user created:', res.user.uid);
+    
+    // =============================================
+    // IMPORTANT: Do NOT create profile here
+    // RegisterPage.jsx will create the complete profile with all user data
+    // Creating an empty profile here would overwrite the complete data
+    // =============================================
+    
+    return res;
+  } catch (error) {
+    // Sanitize error to prevent password leakage
+    const sanitized = sanitizeAuthError(error);
+    safeError('Registration error:', sanitized);
+    throw sanitized;
   }
-  return res;
 }
 
 export async function loginWithEmailPassword(email, password) {
   if (!email || !password) throw new Error('Email e password sono obbligatorie');
 
-  // Special admin login bypass
-  if (email === 'parisadmin25@playsport.admin' && password === 'AdminParisPass25') {
-    console.log('🔑 Admin login detected - activating admin session');
+  // =============================================
+  // SECURITY FIX: Removed hardcoded admin password
+  // Admin authentication should go through Firebase Auth like normal users
+  // =============================================
 
-    console.log('admin_login_attempt', { email });
-    trackAuth.loginAttempt('admin');
-
-    // Create mock admin user
-    const adminUser = {
-      uid: 'admin-paris-25',
-      email: 'parisadmin25@playsport.admin',
-      displayName: 'Paris Admin',
-      isSpecialAdmin: true,
-    };
-
-    // Store admin session in localStorage
-    try {
-      localStorage.setItem('admin-session', JSON.stringify(adminUser));
-    } catch (e) {
-      console.warn('Could not save admin session to localStorage:', e);
-      console.error('Admin session storage error:', e, { operation: 'admin_session_storage' });
-    }
-
-    console.log('✅ Admin session activated successfully');
-    console.log('admin_login_success');
-    trackAuth.loginSuccess('admin', adminUser.uid);
-    return adminUser;
-  }
-
-  // Normal Firebase login
   console.log('🔑 Attempting Firebase login for:', email);
-  console.log('email_login_attempt', { email });
   trackAuth.loginAttempt('email');
 
   try {
@@ -288,17 +268,14 @@ export async function loginWithEmailPassword(email, password) {
         : 'null'
     );
 
-    console.log('email_login_success', {
-      userId: result.user?.uid,
-      emailVerified: result.user?.emailVerified,
-    });
     trackAuth.loginSuccess('email', result.user?.uid);
-
     return result;
   } catch (error) {
-    console.error(error, 'email_login', { email });
+    // Sanitize error to prevent password leakage in logs
+    const sanitized = sanitizeAuthError(error);
+    safeError('Login error:', sanitized);
     trackAuth.loginFailed('email', error.code || 'unknown_error');
-    throw error;
+    throw sanitized;
   }
 }
 
@@ -307,7 +284,7 @@ export async function sendResetPassword(email) {
   return sendPasswordResetEmail(auth, email);
 }
 
-// Da chiamare all’avvio della pagina per completare l’accesso via link
+// Da chiamare all'avvio della pagina per completare l'accesso via link
 export async function completeMagicLinkIfPresent() {
   try {
     const href = window.location.href;
@@ -512,6 +489,57 @@ export async function setDisplayName(user, name) {
   await updateProfile(user, { displayName: name });
 }
 
+// =============================================
+// EMAIL VERIFICATION
+// =============================================
+
+/**
+ * Send email verification to user
+ * @param {Object} user - Firebase user object
+ * @returns {Promise<void>}
+ */
+export async function sendVerificationEmail(user) {
+  if (!user) throw new Error('User is required');
+  
+  console.log('📧 [sendVerificationEmail] Sending verification email to:', user.email);
+  
+  try {
+    await sendEmailVerification(user, {
+      url: window.location.origin + '/dashboard',
+      handleCodeInApp: false,
+    });
+    console.log('✅ [sendVerificationEmail] Email sent successfully');
+  } catch (error) {
+    console.error('❌ [sendVerificationEmail] Error:', error);
+    throw error;
+  }
+}
+
+/**
+ * Check if user's email is verified
+ * @param {Object} user - Firebase user object
+ * @returns {boolean}
+ */
+export function isEmailVerified(user) {
+  return user?.emailVerified === true;
+}
+
+/**
+ * Resend verification email
+ * @param {Object} user - Firebase user object
+ * @returns {Promise<void>}
+ */
+export async function resendVerificationEmail(user) {
+  if (!user) throw new Error('User is required');
+  
+  if (user.emailVerified) {
+    console.log('ℹ️ Email already verified');
+    return;
+  }
+  
+  return await sendVerificationEmail(user);
+}
+
 // (opzionale) esponi auth se serve in UI
 export { auth };
 
@@ -532,8 +560,11 @@ export async function saveUserProfile(user, additionalData = {}) {
 
 // Aggiorna profilo utente globale
 export async function updateUserProfile(uid, updates) {
+  console.log('🔍 [AUTH] updateUserProfile called with:', { uid, updates: JSON.stringify(updates, null, 2) });
   const { updateUser } = await import('./users.js');
-  return await updateUser(uid, updates);
+  const result = await updateUser(uid, updates);
+  console.log('✅ [AUTH] updateUserProfile completed successfully');
+  return result;
 }
 
 // Aggiunge collegamento circolo al profilo globale

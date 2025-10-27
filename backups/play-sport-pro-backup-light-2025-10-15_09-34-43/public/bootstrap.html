@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Firestore</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 50px auto; 
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #3367d6; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Bootstrap Firestore</h1>
+        <p>Questo strumento crea i documenti base necessari per il funzionamento dell'app multi-club.</p>
+        
+        <div>
+            <button id="loginBtn">🔐 Login con Google</button>
+            <button id="bootstrapBtn" disabled>📊 Esegui Bootstrap</button>
+            <button id="clearBtn">🗑️ Cancella Log</button>
+        </div>
+
+        <div id="userInfo" style="margin: 15px 0; padding: 10px; background: #e3f2fd; border-radius: 4px; display: none;">
+            <strong>👤 Utente:</strong> <span id="userEmail"></span><br>
+            <strong>🆔 UID:</strong> <span id="userUid"></span>
+        </div>
+
+        <div id="log" class="log"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Configurazione Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDMP7772cyEY1oLzo8f9hMW7Leu4lWc6OU",
+            authDomain: "m-padelweb.firebaseapp.com",
+            projectId: "m-padelweb",
+            storageBucket: "m-padelweb.firebasestorage.app",
+            messagingSenderId: "1004722051733",
+            appId: "1:1004722051733:web:3ce3c4476a9e329d80999c"
+        };
+
+        // Inizializza Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Configurazione
+        const config = {
+            clubId: 'default-club',
+            uid: null,
+            email: 'parischit85@gmail.com'
+        };
+
+        // Elementi DOM
+        const loginBtn = document.getElementById('loginBtn');
+        const bootstrapBtn = document.getElementById('bootstrapBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const logDiv = document.getElementById('log');
+        const userInfo = document.getElementById('userInfo');
+        const userEmail = document.getElementById('userEmail');
+        const userUid = document.getElementById('userUid');
+
+        // Logging
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            logDiv.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Auth state listener
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                config.uid = user.uid;
+                config.email = user.email;
+                
+                loginBtn.textContent = '✅ Autenticato';
+                loginBtn.disabled = true;
+                bootstrapBtn.disabled = false;
+                
+                userEmail.textContent = user.email;
+                userUid.textContent = user.uid;
+                userInfo.style.display = 'block';
+                
+                log(`Autenticato come: ${user.email} (${user.uid})`, 'success');
+            } else {
+                loginBtn.textContent = '🔐 Login con Google';
+                loginBtn.disabled = false;
+                bootstrapBtn.disabled = true;
+                userInfo.style.display = 'none';
+            }
+        });
+
+        // Login
+        loginBtn.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    log('Login completato con successo!', 'success');
+                })
+                .catch((error) => {
+                    log(`Errore durante il login: ${error.message}`, 'error');
+                });
+        });
+
+        // Clear log
+        clearBtn.addEventListener('click', () => {
+            logDiv.innerHTML = '';
+        });
+
+        // Bootstrap
+        bootstrapBtn.addEventListener('click', async () => {
+            log('🚀 Avvio bootstrap Firestore...', 'info');
+            bootstrapBtn.disabled = true;
+            
+            try {
+                // 1. Crea club
+                log('📊 Creando club default...', 'info');
+                await db.collection('clubs').doc(config.clubId).set({
+                    name: 'Club Default',
+                    address: 'Via Default 123',
+                    city: 'Città Default',
+                    phone: '+39 123 456 7890',
+                    email: 'parischit85@gmail.com',
+                    active: true,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                log('✅ Club creato', 'success');
+
+                // 2. Crea settings
+                log('⚙️ Creando settings club...', 'info');
+                await db.collection('clubs').doc(config.clubId).collection('settings').doc('config').set({
+                    businessHours: {
+                        monday: { open: '09:00', close: '22:00', closed: false },
+                        tuesday: { open: '09:00', close: '22:00', closed: false },
+                        wednesday: { open: '09:00', close: '22:00', closed: false },
+                        thursday: { open: '09:00', close: '22:00', closed: false },
+                        friday: { open: '09:00', close: '22:00', closed: false },
+                        saturday: { open: '08:00', close: '23:00', closed: false },
+                        sunday: { open: '08:00', close: '21:00', closed: false }
+                    },
+                    pricing: {
+                        peak: { amount: 25, currency: 'EUR' },
+                        standard: { amount: 20, currency: 'EUR' },
+                        off_peak: { amount: 15, currency: 'EUR' }
+                    },
+                    bookingRules: {
+                        maxAdvanceDays: 14,
+                        minAdvanceHours: 2,
+                        maxDurationHours: 2,
+                        allowedSlots: ['09:00', '11:00', '13:00', '15:00', '17:00', '19:00', '21:00']
+                    },
+                    notifications: {
+                        emailEnabled: true,
+                        smsEnabled: false,
+                        pushEnabled: true
+                    },
+                    features: {
+                        darkModeEnabled: true,
+                        multiLanguageEnabled: false,
+                        advancedBookingEnabled: true
+                    }
+                });
+                log('✅ Settings creati', 'success');
+
+                // 3. Crea profilo utente
+                log('👤 Creando profilo utente...', 'info');
+                await db.collection('profiles').doc(config.uid).set({
+                    uid: config.uid,
+                    email: 'parischit85@gmail.com',
+                    displayName: 'Paris Andrea',
+                    firstName: 'Paris',
+                    lastName: 'Andrea',
+                    phone: '+39 123 456 7890',
+                    dateOfBirth: null,
+                    gender: 'M',
+                    preferences: {
+                        language: 'it',
+                        timezone: 'Europe/Rome',
+                        notifications: {
+                            email: true,
+                            push: true,
+                            sms: false
+                        },
+                        theme: 'light'
+                    },
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    active: true
+                });
+                log('✅ Profilo creato', 'success');
+
+                // 4. Crea userClubRoles
+                log('🔑 Creando ruoli utente...', 'info');
+                const roleData = {};
+                roleData[config.clubId] = {
+                    role: 'club_admin',
+                    permissions: ['read', 'write', 'admin'],
+                    assignedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    assignedBy: config.uid,
+                    active: true
+                };
+                
+                await db.collection('userClubRoles').doc(config.uid).set({
+                    userId: config.uid,
+                    roles: roleData,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                log('✅ Ruoli creati', 'success');
+
+                // 5. Crea affiliazione
+                log('🏢 Creando affiliazione...', 'info');
+                await db.collection('affiliations').doc(`${config.uid}_${config.clubId}`).set({
+                    userId: config.uid,
+                    clubId: config.clubId,
+                    status: 'active',
+                    membershipType: 'admin',
+                    joinedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    expiresAt: null,
+                    autoRenew: true,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                log('✅ Affiliazione creata', 'success');
+
+                log('🎉 Bootstrap completato con successo!', 'success');
+                log('Documenti creati:', 'info');
+                log(`- clubs/${config.clubId}`, 'info');
+                log(`- clubs/${config.clubId}/settings/config`, 'info');
+                log(`- profiles/${config.uid}`, 'info');
+                log(`- userClubRoles/${config.uid}`, 'info');
+                log(`- affiliations/${config.uid}_${config.clubId}`, 'info');
+
+            } catch (error) {
+                log(`❌ Bootstrap fallito: ${error.message}`, 'error');
+                console.error('Bootstrap error:', error);
+            } finally {
+                bootstrapBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

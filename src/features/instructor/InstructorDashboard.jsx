@@ -5,6 +5,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useAuth } from '@contexts/AuthContext.jsx';
+import { useNotifications } from '@contexts/NotificationContext';
 import { themeTokens } from '@lib/theme.js';
 import {
   format,
@@ -18,10 +19,12 @@ import {
 } from 'date-fns';
 import { it } from 'date-fns/locale';
 import Modal from '@ui/Modal.jsx';
+import { logger } from '@/utils/logger';
 
 export default function InstructorDashboard() {
   const { clubId, club, courts, matches } = useClub();
   const { user } = useAuth();
+  const { showSuccess, showError, showWarning, confirm } = useNotifications();
   const [allBookings, setAllBookings] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +54,7 @@ export default function InstructorDashboard() {
 
       try {
         setLoading(true);
-        console.log('🎓 [InstructorDashboard] Loading data for instructor:', user.uid);
+        logger.debug('Loading data for instructor', user.uid);
 
         // Load ALL club bookings to find lessons where this user is the instructor
         // (lessons have instructorId but user is NOT bookedBy - the student is bookedBy)
@@ -67,7 +70,7 @@ export default function InstructorDashboard() {
           }
         );
 
-        console.log('📚 [InstructorDashboard] Instructor lessons found:', instructorLessons.length);
+        logger.debug('Instructor lessons found', instructorLessons.length);
 
         // Load user's bookings for matches (where user is a player/participant)
         const { loadActiveUserBookings } = await import('@services/cloud-bookings.js');
@@ -82,7 +85,7 @@ export default function InstructorDashboard() {
             userProfile = userDoc.data();
           }
         } catch (error) {
-          console.warn('⚠️ [InstructorDashboard] Could not load user profile:', error);
+          logger.warn('⚠️ [InstructorDashboard] Could not load user profile:', error);
         }
 
         const userInfo = {
@@ -95,8 +98,8 @@ export default function InstructorDashboard() {
         // Load bookings where user is a player
         const userBookings = await loadActiveUserBookings(user.uid, clubId, userInfo);
 
-        console.log('📚 [InstructorDashboard] User bookings (as player):', userBookings.length);
-        console.log('📚 [InstructorDashboard] Matches from ClubContext:', matches?.length || 0);
+        logger.debug('User bookings (as player)', userBookings.length);
+        logger.debug('Matches from ClubContext', matches?.length || 0);
 
         // Filter matches to include only those where the user is involved
         const userMatches = (matches || []).filter(match => {
@@ -134,7 +137,7 @@ export default function InstructorDashboard() {
           return false;
         });
 
-        console.log('🏓 [InstructorDashboard] User matches found:', userMatches.length);
+        logger.debug('User matches found', userMatches.length);
 
         // Combine all bookings:
         // 1. Lessons where this user is the instructor
@@ -146,9 +149,9 @@ export default function InstructorDashboard() {
           ...userMatches,
         ];
 
-        console.log('📚 [InstructorDashboard] Total combined bookings:', allBookingsData.length);
+        logger.debug('Total combined bookings', allBookingsData.length);
         if (allBookingsData.length > 0) {
-          console.log('📚 [InstructorDashboard] Sample booking:', allBookingsData[0]);
+          logger.debug('Sample booking', allBookingsData[0]);
         }
 
         // Don't filter here - let the useMemo do the filtering
@@ -158,10 +161,10 @@ export default function InstructorDashboard() {
         // Load time slots
         const { getInstructorTimeSlots } = await import('@services/time-slots.js');
         const slots = await getInstructorTimeSlots(clubId, user.uid);
-        console.log('⏰ [InstructorDashboard] Found time slots:', slots.length);
+        logger.debug('Found time slots', slots.length);
         setTimeSlots(slots);
       } catch (error) {
-        console.error('❌ [InstructorDashboard] Error loading data:', error);
+        logger.error('❌ [InstructorDashboard] Error loading data:', error);
         setAllBookings([]);
         setTimeSlots([]);
       } finally {
@@ -174,8 +177,8 @@ export default function InstructorDashboard() {
 
   // Filter bookings by type (lessons vs matches)
   const { lessonBookings, matchBookings } = useMemo(() => {
-    console.log('🔍 [InstructorDashboard] Separating lessons and matches');
-    console.log('🔍 [InstructorDashboard] Total bookings:', allBookings.length);
+    logger.debug('Separating lessons and matches');
+    logger.debug('Total bookings', allBookings.length);
     
     // Lessons: already filtered - only those where user is instructor
     const lessons = allBookings.filter(
@@ -185,9 +188,9 @@ export default function InstructorDashboard() {
       }
     );
     
-    console.log('📚 [InstructorDashboard] Found lessons:', lessons.length);
+    logger.debug('Found lessons', lessons.length);
     if (lessons.length > 0) {
-      console.log('📚 [InstructorDashboard] Sample lesson dates:', lessons.slice(0, 3).map(l => ({
+      logger.debug('Sample lesson dates', lessons.slice(0, 3).map(l => ({
         id: l.id?.substring(0, 8),
         date: l.date,
         time: l.time,
@@ -201,9 +204,9 @@ export default function InstructorDashboard() {
       return !isLesson;
     });
     
-    console.log('🏓 [InstructorDashboard] Found matches:', matches.length);
+    logger.debug('Found matches', matches.length);
     if (matches.length > 0) {
-      console.log('🏓 [InstructorDashboard] Sample match dates:', matches.slice(0, 3).map(m => ({
+      logger.debug('Sample match dates', matches.slice(0, 3).map(m => ({
         id: m.id?.substring(0, 8),
         date: m.date,
         time: m.time,
@@ -283,7 +286,7 @@ export default function InstructorDashboard() {
     const now = new Date();
     const todayStart = startOfDay(now);
 
-    console.log('🔍 [InstructorDashboard] Filtering with:', {
+    logger.debug('Filtering with', {
       filterDate,
       totalBookings: bookings.length,
       today: format(now, 'yyyy-MM-dd'),
@@ -294,7 +297,7 @@ export default function InstructorDashboard() {
         const todayBookings = bookings.filter((b) => {
           // Log first 2 bookings to debug
           if (bookings.indexOf(b) < 2) {
-            console.log('🔎 [InstructorDashboard] Checking booking:', {
+            logger.debug('Checking booking', {
               id: b.id?.substring(0, 8),
               rawDate: b.date,
               dateType: typeof b.date,
@@ -310,7 +313,7 @@ export default function InstructorDashboard() {
           const date = b.date ? parseISO(b.date) : null;
           const isDateToday = date && isToday(date);
           if (isDateToday) {
-            console.log('✅ Today booking:', {
+            logger.debug('✅ Today booking:', {
               id: b.id?.substring(0, 8),
               date: b.date,
               parsedDate: date ? format(date, 'yyyy-MM-dd') : null,
@@ -318,7 +321,7 @@ export default function InstructorDashboard() {
           }
           return isDateToday;
         });
-        console.log('📅 Today bookings found:', todayBookings.length);
+        logger.debug('📅 Today bookings found:', todayBookings.length);
         return todayBookings;
         
       case 'upcoming':
@@ -326,7 +329,7 @@ export default function InstructorDashboard() {
           const date = b.date ? parseISO(b.date) : null;
           const isDateUpcoming = date && isFuture(date); // Solo future, non oggi
           if (isDateUpcoming) {
-            console.log('✅ Upcoming booking:', {
+            logger.debug('✅ Upcoming booking:', {
               id: b.id?.substring(0, 8),
               date: b.date,
               parsedDate: date ? format(date, 'yyyy-MM-dd') : null,
@@ -334,7 +337,7 @@ export default function InstructorDashboard() {
           }
           return isDateUpcoming;
         });
-        console.log('📅 Upcoming bookings found:', upcomingBookings.length);
+        logger.debug('📅 Upcoming bookings found:', upcomingBookings.length);
         return upcomingBookings;
         
       case 'past':
@@ -399,10 +402,10 @@ export default function InstructorDashboard() {
 
       if (editingSlot) {
         await updateTimeSlot(clubId, editingSlot.id, slotData);
-        console.log('✅ Slot updated:', editingSlot.id);
+        logger.debug('✅ Slot updated:', editingSlot.id);
       } else {
         await createTimeSlot(clubId, slotData);
-        console.log('✅ Slot created');
+        logger.debug('✅ Slot created');
       }
 
       // Reset and reload
@@ -422,8 +425,8 @@ export default function InstructorDashboard() {
       const updatedSlots = await getInstructorTimeSlots(clubId, user.uid);
       setTimeSlots(updatedSlots);
     } catch (error) {
-      console.error('❌ Error saving slot:', error);
-      alert('Errore nel salvare la fascia oraria. Riprova.');
+      logger.error('❌ Error saving slot:', error);
+      showError('Errore nel salvare la fascia oraria. Riprova.');
     }
   };
 
@@ -444,7 +447,16 @@ export default function InstructorDashboard() {
 
   // Handle delete slot
   const handleDeleteSlot = async (slot) => {
-    if (!confirm('Sei sicuro di voler eliminare questa fascia oraria?')) return;
+    const confirmed = await confirm({
+      title: 'Elimina fascia oraria',
+      message: 'Sei sicuro di voler eliminare questa fascia oraria?',
+      variant: 'danger',
+      confirmText: 'Elimina',
+      cancelText: 'Annulla',
+    });
+    
+    if (!confirmed) return;
+    
     try {
       // Usa la funzione corretta in base alla sorgente dello slot
       if (slot.source === 'lessonConfig') {
@@ -459,8 +471,8 @@ export default function InstructorDashboard() {
       const updatedSlots = await getInstructorTimeSlots(clubId, user.uid);
       setTimeSlots(updatedSlots);
     } catch (error) {
-      console.error('❌ Error deleting slot:', error);
-      alert("Errore nell'eliminare la fascia oraria. Riprova.");
+      logger.error('❌ Error deleting slot:', error);
+      showError("Errore nell'eliminare la fascia oraria. Riprova.");
     }
   };
 
@@ -469,7 +481,14 @@ export default function InstructorDashboard() {
     const newStatus = slot.isActive === false ? true : false;
     const action = newStatus ? 'attivare' : 'disattivare';
 
-    if (!confirm(`Sei sicuro di voler ${action} questa fascia oraria?`)) return;
+    const confirmed = await confirm({
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)} fascia oraria`,
+      message: `Sei sicuro di voler ${action} questa fascia oraria?`,
+      variant: 'warning',
+      confirmText: action.charAt(0).toUpperCase() + action.slice(1),
+      cancelText: 'Annulla',
+    });
+    if (!confirmed) return;
 
     try {
       // Usa la funzione corretta in base alla sorgente dello slot
@@ -485,8 +504,8 @@ export default function InstructorDashboard() {
       const updatedSlots = await getInstructorTimeSlots(clubId, user.uid);
       setTimeSlots(updatedSlots);
     } catch (error) {
-      console.error('❌ Error toggling slot:', error);
-      alert(`Errore nel ${action} la fascia oraria. Riprova.`);
+      logger.error('❌ Error toggling slot:', error);
+      showError(`Errore nel ${action} la fascia oraria. Riprova.`);
     }
   };
 
@@ -1544,22 +1563,22 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
     e.preventDefault();
 
     if (!slotForm.startTime || !slotForm.endTime) {
-      alert('Inserisci orario di inizio e fine');
+      showWarning('Inserisci orario di inizio e fine');
       return;
     }
 
     if (slotForm.startTime >= slotForm.endTime) {
-      alert("L'orario di fine deve essere dopo quello di inizio");
+      showWarning("L'orario di fine deve essere dopo quello di inizio");
       return;
     }
 
     if (!slotForm.date) {
-      alert('Seleziona una data dal calendario');
+      showWarning('Seleziona una data dal calendario');
       return;
     }
 
     if (!slotForm.courtIds || slotForm.courtIds.length === 0) {
-      alert('Seleziona almeno un campo');
+      showWarning('Seleziona almeno un campo');
       return;
     }
 

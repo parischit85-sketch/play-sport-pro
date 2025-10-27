@@ -1,0 +1,674 @@
+
+> play-sport-pro@1.0.4 test
+> vitest run --passWithNoTests src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx
+
+
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mC:/Users/paris/Downloads/play-sport-backup-2025-10-05_23-30-00[39m
+
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Export Flow (Art. 15)[2m > [22mExport as Admin[2m > [22mshould show GDPR Export section for admin[35m 69 MB heap used[39m
+[31m   ÔåÆ Unable to find an element with the text: /Esporta Dati/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"flex flex-col"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"relative bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900/20 border-b-2 border-gray-200 dark:border-gray-700"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"absolute inset-0 opacity-5"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"absolute inset-0"[31m
+            [33mstyle[31m=[32m"background-image: radial-gradient(circle at 2px 2px, currentcolor 1px, transparent 0); background-size: 32px 32px;"[31m
+          [36m/>[31m
+        [36m</div>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"relative px-6 py-6"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"mb-6 relative z-20"[31m
+          [36m>[31m
+            [36m<h2[31m
+              [33mclass[31m=[32m"text-3xl font-bold text-gray-900 dark:text-white mb-1"[31m
+              [33mid[31m=[32m"player-details-title"[31m
+            [36m>[31m
+              [0mMario Rossi[0m
+            [36m</h2>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex items-center gap-2 flex-wrap"[31m
+            [36m>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"inline-flex items-center gap-1 px-2.5 py-1 bg-gray-500 text-white text-xs font-semibold rounded-md shadow-sm"[31m
+              [36m>[31m
+                [0mInattivo[0m
+              [36m</span>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"text-sm text-gray-500"[31m
+              [36m>[31m
+                [0m­ƒôº [0m
+                [0mmario.rossi@example.com[0m
+              [36m</span>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"grid grid-cols-1 lg:grid-cols-7 gap-6"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"lg:col-span-5"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"grid grid-cols-3 gap-3 h-full"[31m
+              [36m>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-xl p-4 text-white shadow-lg relative overflow-hidden"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"[31m
+                  [36m/>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"relative"[31m
+                  [36m>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"text-xs font-semibold opacity-90 mb-1"[31m
+                    [36m>[31m
+                      [0m­ƒÅå Ranking[0m
+                    [36m</div>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"text-xl font-bold opacity-50"[31m
+                    [36m>[31m
+                      [0mNon iscritto[0m
+                    [36m</div>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"bg-gradient-to-br from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-xl p-4 text-white shadow-lg relative overflow-hidden"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"[31m
+                  [36m/>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"relative"[31m
+                  [36m>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"text-xs font-semibold opacity-90 mb-1"[31m
+                    [36m>[31m
+                      [0m­ƒÆ░ Credito[0m
+                    [36m</div>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"text-3xl font-bold mb-1"[31m
+                    [36m>[31m
+                      [0mÔé¼[0m
+                      [0m0.00[0m
+                    [36m</div>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"text-xs opacity-75"[31m
+                    [36m>[31m
+                      [0mDisponibile[0m
+                    [36m</div>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 rounded-xl p-4 text-white shadow-lg relative overflow-hidden"[31m
+                [36m>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"[31m
+                  [36m/>[31m
+                  [36m<div[31m
+                    [33mclass[31m=[32m"relative"[31m
+                  [36m>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"text-xs font-semibold opacity-90 mb-1"[31m
+                    [36m>[31m
+                      [0m­ƒôà Prenotazioni[0m
+                    [36m</div>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"text-3xl font-bold mb-1"[31m
+                    [36m>[31m
+                      [0m0[0m
+                    [36m</div>[31m
+                    [36m<div[31m
+                      [33mclass[31m=[32m"text-xs opacity-75"[31m
+                    [36m>[31m
+                      [0mTotali[0m
+                    [36m</div>[31m
+                  [36m</div>[31m
+                [36m</div>[31m
+              [36m</div>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"lg:col-span-2"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex flex-col gap-2 h-full justify-center"[31m
+              [36m>[31m
+                [36m<button[31m
+                  [33mclass[31m=[32m"w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all hover:scale-105 shadow-md flex items-center justify-center gap-2"[31m
+                [36m>[31m
+                  [36m<span>[31m
+                    [0mÔ£Å´©Å[0m
+                  [36m</span>[31m
+                  [36m<span>[31m
+                    [0mModifica Dati[0m
+                  [36m</span>[31m
+                [36m</button>[31m
+                [36m<button[31m
+                  [33mclass[31m=[32m"w-full px-4 py-2.5 font-semibold rounded-lg transition-all hover:scale-105 shadow-md flex items-center justify-center gap-2 bg-green-500...[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Export Flow (Art. 15)[2m > [22mExport as Admin[2m > [22mshould export JSON when button clicked[35m 69 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Export Flow (Art. 15)[2m > [22mExport as Admin[2m > [22mshould export CSV when button clicked[35m 70 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Export Flow (Art. 15)[2m > [22mExport as Admin[2m > [22mshould export TXT report when button clicked[35m 70 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Export Flow (Art. 15)[2m > [22mExport as Admin[2m > [22mshould show success toast after export[35m 70 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Export Flow (Art. 15)[2m > [22mExport as User (GDPR Self-Access)[2m > [22mshould allow user to export own data[35m 70 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Export Flow (Art. 15)[2m > [22mExport as User (GDPR Self-Access)[2m > [22mshould NOT allow user to export other users data[35m 71 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22mDelete Permission[2m > [22mshould show GDPR Delete section for admin only[35m 71 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22mDelete Permission[2m > [22mshould NOT show delete section for regular user[35m 71 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22mDelete Permission[2m > [22mshould NOT show delete section for club-admin[35m 71 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22m3-Step Confirmation Flow[2m > [22mshould require expansion before showing delete button[35m 71 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22m3-Step Confirmation Flow[2m > [22mshould show delete button after expanding section[35m 72 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22m3-Step Confirmation Flow[2m > [22mshould show confirmation input after clicking delete button[35m 72 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22m3-Step Confirmation Flow[2m > [22mshould require exact text match to enable final delete[35m 72 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22m3-Step Confirmation Flow[2m > [22mshould be case-sensitive for confirmation text[35m 72 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22mFirestore Deletion[2m > [22mshould call deleteDoc with correct player ID[35m 72 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22mFirestore Deletion[2m > [22mshould close modal after successful deletion[35m 73 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22mFirestore Deletion[2m > [22mshould show success toast after deletion[35m 73 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22mFirestore Deletion[2m > [22mshould show error toast if deletion fails[35m 73 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22mWarning Messages[2m > [22mshould display irreversibility warning[35m 73 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+ [31m├ù[39m src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx[2m > [22mGDPR Delete Flow (Art. 17)[2m > [22mWarning Messages[2m > [22mshould display data deletion consequences[35m 73 MB heap used[39m
+[31m   ÔåÆ Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.[39m
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ» Failed Tests 21 ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Export Flow (Art. 15) > Export as Admin > should show GDPR Export section for admin
+TestingLibraryElementError: Unable to find an element with the text: /Esporta Dati/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="flex flex-col"
+    >
+      <div
+        class="relative bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900/20 border-b-2 border-gray-200 dark:border-gray-700"
+      >
+        <div
+          class="absolute inset-0 opacity-5"
+        >
+          <div
+            class="absolute inset-0"
+            style="background-image: radial-gradient(circle at 2px 2px, currentcolor 1px, transparent 0); background-size: 32px 32px;"
+          />
+        </div>
+        <div
+          class="relative px-6 py-6"
+        >
+          <div
+            class="mb-6 relative z-20"
+          >
+            <h2
+              class="text-3xl font-bold text-gray-900 dark:text-white mb-1"
+              id="player-details-title"
+            >
+              Mario Rossi
+            </h2>
+            <div
+              class="flex items-center gap-2 flex-wrap"
+            >
+              <span
+                class="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-500 text-white text-xs font-semibold rounded-md shadow-sm"
+              >
+                Inattivo
+              </span>
+              <span
+                class="text-sm text-gray-500"
+              >
+                ­ƒôº 
+                mario.rossi@example.com
+              </span>
+            </div>
+          </div>
+          <div
+            class="grid grid-cols-1 lg:grid-cols-7 gap-6"
+          >
+            <div
+              class="lg:col-span-5"
+            >
+              <div
+                class="grid grid-cols-3 gap-3 h-full"
+              >
+                <div
+                  class="bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-xl p-4 text-white shadow-lg relative overflow-hidden"
+                >
+                  <div
+                    class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"
+                  />
+                  <div
+                    class="relative"
+                  >
+                    <div
+                      class="text-xs font-semibold opacity-90 mb-1"
+                    >
+                      ­ƒÅå Ranking
+                    </div>
+                    <div
+                      class="text-xl font-bold opacity-50"
+                    >
+                      Non iscritto
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-gradient-to-br from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-xl p-4 text-white shadow-lg relative overflow-hidden"
+                >
+                  <div
+                    class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"
+                  />
+                  <div
+                    class="relative"
+                  >
+                    <div
+                      class="text-xs font-semibold opacity-90 mb-1"
+                    >
+                      ­ƒÆ░ Credito
+                    </div>
+                    <div
+                      class="text-3xl font-bold mb-1"
+                    >
+                      Ôé¼
+                      0.00
+                    </div>
+                    <div
+                      class="text-xs opacity-75"
+                    >
+                      Disponibile
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="bg-gradient-to-br from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 rounded-xl p-4 text-white shadow-lg relative overflow-hidden"
+                >
+                  <div
+                    class="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"
+                  />
+                  <div
+                    class="relative"
+                  >
+                    <div
+                      class="text-xs font-semibold opacity-90 mb-1"
+                    >
+                      ­ƒôà Prenotazioni
+                    </div>
+                    <div
+                      class="text-3xl font-bold mb-1"
+                    >
+                      0
+                    </div>
+                    <div
+                      class="text-xs opacity-75"
+                    >
+                      Totali
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="lg:col-span-2"
+            >
+              <div
+                class="flex flex-col gap-2 h-full justify-center"
+              >
+                <button
+                  class="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all hover:scale-105 shadow-md flex items-center justify-center gap-2"
+                >
+                  <span>
+                    Ô£Å´©Å
+                  </span>
+                  <span>
+                    Modifica Dati
+                  </span>
+                </button>
+                <button
+                  class="w-full px-4 py-2.5 font-semibold rounded-lg transition-all hover:scale-105 shadow-md flex items-center justify-center gap-2 bg-green-500...
+ ÔØ» Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ÔØ» node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ÔØ» node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ÔØ» node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:81:21
+     79|       );
+     80| 
+     81|       expect(screen.getByText(/Esporta Dati/i)).toBeInTheDocument();
+       |                     ^
+     82|     });
+     83| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Export Flow (Art. 15) > Export as Admin > should export JSON when button clicked
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:96:7
+     94|       createElementSpy.mockReturnValue(mockLink);
+     95| 
+     96|       render(
+       |       ^
+     97|         <AuthContext.Provider value={mockAdminAuth}>
+     98|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Export Flow (Art. 15) > Export as Admin > should export CSV when button clicked
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:130:7
+    128|       createElementSpy.mockReturnValue(mockLink);
+    129| 
+    130|       render(
+       |       ^
+    131|         <AuthContext.Provider value={mockAdminAuth}>
+    132|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[3/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Export Flow (Art. 15) > Export as Admin > should export TXT report when button clicked
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:162:7
+    160|       createElementSpy.mockReturnValue(mockLink);
+    161| 
+    162|       render(
+       |       ^
+    163|         <AuthContext.Provider value={mockAdminAuth}>
+    164|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[4/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Export Flow (Art. 15) > Export as Admin > should show success toast after export
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:185:7
+    183|       const user = userEvent.setup();
+    184|       
+    185|       render(
+       |       ^
+    186|         <AuthContext.Provider value={mockAdminAuth}>
+    187|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[5/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Export Flow (Art. 15) > Export as User (GDPR Self-Access) > should allow user to export own data
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:210:7
+    208|       };
+    209| 
+    210|       render(
+       |       ^
+    211|         <AuthContext.Provider value={mockUserAuth}>
+    212|           <PlayerDetails player={ownPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[6/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Export Flow (Art. 15) > Export as User (GDPR Self-Access) > should NOT allow user to export other users data
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:225:7
+    223|       };
+    224| 
+    225|       render(
+       |       ^
+    226|         <AuthContext.Provider value={mockUserAuth}>
+    227|           <PlayerDetails player={otherPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[7/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > Delete Permission > should show GDPR Delete section for admin only
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:307:7
+    305|   describe('Delete Permission', () => {
+    306|     it('should show GDPR Delete section for admin only', async () => {
+    307|       render(
+       |       ^
+    308|         <AuthContext.Provider value={mockAdminAuth}>
+    309|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[8/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > Delete Permission > should NOT show delete section for regular user
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:322:7
+    320|       };
+    321| 
+    322|       render(
+       |       ^
+    323|         <AuthContext.Provider value={mockUserAuth}>
+    324|           <PlayerDetails player={ownPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[9/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > Delete Permission > should NOT show delete section for club-admin
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:340:7
+    338|       };
+    339| 
+    340|       render(
+       |       ^
+    341|         <AuthContext.Provider value={clubAdminAuth}>
+    342|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[10/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > 3-Step Confirmation Flow > should require expansion before showing delete button
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:352:7
+    350|   describe('3-Step Confirmation Flow', () => {
+    351|     it('should require expansion before showing delete button', async ÔÇª
+    352|       render(
+       |       ^
+    353|         <AuthContext.Provider value={mockAdminAuth}>
+    354|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[11/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > 3-Step Confirmation Flow > should show delete button after expanding section
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:365:7
+    363|       const user = userEvent.setup();
+    364| 
+    365|       render(
+       |       ^
+    366|         <AuthContext.Provider value={mockAdminAuth}>
+    367|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[12/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > 3-Step Confirmation Flow > should show confirmation input after clicking delete button
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:382:7
+    380|       const user = userEvent.setup();
+    381| 
+    382|       render(
+       |       ^
+    383|         <AuthContext.Provider value={mockAdminAuth}>
+    384|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[13/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > 3-Step Confirmation Flow > should require exact text match to enable final delete
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:401:7
+    399|       const user = userEvent.setup();
+    400| 
+    401|       render(
+       |       ^
+    402|         <AuthContext.Provider value={mockAdminAuth}>
+    403|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[14/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > 3-Step Confirmation Flow > should be case-sensitive for confirmation text
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:429:7
+    427|       const user = userEvent.setup();
+    428| 
+    429|       render(
+       |       ^
+    430|         <AuthContext.Provider value={mockAdminAuth}>
+    431|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[15/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > Firestore Deletion > should call deleteDoc with correct player ID
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:456:7
+    454|       deleteDoc.mockResolvedValue(undefined);
+    455| 
+    456|       render(
+       |       ^
+    457|         <AuthContext.Provider value={mockAdminAuth}>
+    458|           <PlayerDetails player={mockPlayer} onClose={onCloseSpy} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[16/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > Firestore Deletion > should close modal after successful deletion
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:486:7
+    484|       deleteDoc.mockResolvedValue(undefined);
+    485| 
+    486|       render(
+       |       ^
+    487|         <AuthContext.Provider value={mockAdminAuth}>
+    488|           <PlayerDetails player={mockPlayer} onClose={onCloseSpy} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[17/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > Firestore Deletion > should show success toast after deletion
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:514:7
+    512|       deleteDoc.mockResolvedValue(undefined);
+    513| 
+    514|       render(
+       |       ^
+    515|         <AuthContext.Provider value={mockAdminAuth}>
+    516|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[18/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > Firestore Deletion > should show error toast if deletion fails
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:541:7
+    539|       deleteDoc.mockRejectedValue(new Error('Firestore error'));
+    540| 
+    541|       render(
+       |       ^
+    542|         <AuthContext.Provider value={mockAdminAuth}>
+    543|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[19/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > Warning Messages > should display irreversibility warning
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:569:7
+    567|       const user = userEvent.setup();
+    568| 
+    569|       render(
+       |       ^
+    570|         <AuthContext.Provider value={mockAdminAuth}>
+    571|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[20/21]ÔÄ»
+
+ FAIL  src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx > GDPR Delete Flow (Art. 17) > Warning Messages > should display data deletion consequences
+TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+ ÔØ» Object.exports.convert node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9
+ ÔØ» HTMLBodyElement.appendChild node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26
+ ÔØ» Proxy.render node_modules/@testing-library/react/dist/pure.js:260:29
+ ÔØ» src/features/players/components/PlayerDetails/__tests__/PlayerDetails.integration.test.jsx:584:7
+    582|       const user = userEvent.setup();
+    583| 
+    584|       render(
+       |       ^
+    585|         <AuthContext.Provider value={mockAdminAuth}>
+    586|           <PlayerDetails player={mockPlayer} onClose={vi.fn()} />
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[21/21]ÔÄ»
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m21 failed[39m[22m[2m | [22m[33m1 skipped[39m[90m (22)[39m
+[2m   Start at [22m 22:29:25
+[2m   Duration [22m 3.18s[2m (transform 710ms, setup 344ms, collect 1.00s, tests 200ms, environment 1.26s, prepare 133ms)[22m
+
+JSON report written to C:/Users/paris/Downloads/play-sport-backup-2025-10-05_23-30-00/test-results/results.json
+[1m[7m[35m HTML [39m[27m[22m [35mReport is generated[39m
+[2m       You can run [22m[1mnpx vite preview --outDir test-results[22m[2m to see the test results.[22m

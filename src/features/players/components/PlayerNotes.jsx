@@ -90,19 +90,33 @@ export default function PlayerNotes({ player, onUpdate, T }) {
 
   return (
     <div className="space-y-6">
-      {/* Header con azione */}
-      <div className="flex justify-between items-center">
-        <h3 className={`text-lg font-semibold ${T.text}`}>Note Giocatore ({notes.length})</h3>
-        <button
-          onClick={() => {
-            setFormData(createNoteSchema());
-            setEditingNote(null);
-            setShowAddForm(true);
-          }}
-          className={`${T.btnPrimary} px-4 py-2`}
-        >
-          ➕ Nuova Nota
-        </button>
+      {/* Hero Header */}
+      <div className={`${T.cardBg} ${T.border} rounded-2xl p-6 shadow-lg relative overflow-hidden`}>
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-500 to-orange-500" />
+        </div>
+        <div className="relative z-10">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <span className="text-4xl">📝</span>
+              <div>
+                <h3 className={`text-2xl font-bold ${T.text}`}>Note Giocatore</h3>
+                <p className={`text-sm ${T.subtext}`}>{notes.length} {notes.length === 1 ? 'nota' : 'note'} registrate</p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setFormData(createNoteSchema());
+                setEditingNote(null);
+                setShowAddForm(true);
+              }}
+              className="px-5 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl font-bold hover:shadow-lg transition-shadow hover:scale-105 transform"
+            >
+              <span className="mr-2">➕</span>
+              Nuova Nota
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Form aggiunta/modifica */}

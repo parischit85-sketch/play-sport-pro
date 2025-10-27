@@ -17,7 +17,7 @@
  * @created 2025-10-06
  */
 
-import { db } from '@lib/firebase.js';
+import { db } from './firebase.js';
 import { collection, getDocs, query, where, orderBy, doc, getDoc } from 'firebase/firestore';
 
 /**
@@ -392,5 +392,242 @@ export async function getClubStats(clubId) {
   } catch (error) {
     console.error(`❌ Errore caricamento stats club ${clubId}:`, error);
     throw new Error(`Impossibile caricare le statistiche del club: ${error.message}`);
+  }
+}
+
+/**
+ * Carica i match di tutti i tornei di un club dalla subcollection tournaments.
+ *
+ * Include solo i match dei tornei con status 'completed' o 'in_progress'
+ * per le statistiche dei giocatori.
+ *
+ * Normalizza i match nel formato standard (teamA, teamB, winner, ecc.)
+ *
+ * @param {string} clubId - ID del club
+ * @returns {Promise<Array>} Array di match da tornei con campi normalizzati
+ * @throws {Error} Se il clubId non è valido o si verifica un errore Firestore
+ *
+ * @example
+ * const tournamentMatches = await getTournamentMatches('sporting-cat');
+ * // Restituisce match da tutti i tornei, con teamA, teamB, winner, sets, games, ecc.
+ */
+export async function getTournamentMatches(clubId) {
+  if (!clubId) {
+    throw new Error('clubId è richiesto per getTournamentMatches');
+  }
+
+  try {
+    // 1. Carica tutti i tornei del club
+    const tournamentsRef = collection(db, `clubs/${clubId}/tournaments`);
+    const tournamentsSnap = await getDocs(tournamentsRef);
+
+    if (tournamentsSnap.empty) {
+      console.log(`ℹ️ Nessun torneo trovato per club ${clubId}`);
+      return [];
+    }
+
+    console.log(`📋 Trovati ${tournamentsSnap.docs.length} tornei per club ${clubId}`);
+
+    // 2. Per ogni torneo, carica i suoi match E i suoi team (per espandere i giocatori)
+    const tournamentMatches = [];
+    const promises = [];
+
+    tournamentsSnap.docs.forEach((tDoc) => {
+      const tournament = { id: tDoc.id, ...tDoc.data() };
+      console.log(
+        `🏆 Torneo "${tournament.name}" (${tournament.id}): status="${tournament.status}"`
+      );
+
+      // Carica match e team del torneo solo se ha uno status idoneo
+      if (tournament.status === 'completed' || tournament.status === 'in_progress') {
+        console.log(`✅ Torneo "${tournament.name}" ha status valido, caricamento match...`);
+        const matchesRef = collection(db, `clubs/${clubId}/tournaments/${tournament.id}/matches`);
+        const teamsRef = collection(db, `clubs/${clubId}/tournaments/${tournament.id}/teams`);
+
+        // Carica match e team in parallelo per questo torneo
+        promises.push(
+          Promise.all([getDocs(matchesRef), getDocs(teamsRef)]).then(([matchesSnap, teamsSnap]) => {
+            console.log(
+              `  📊 Torneo "${tournament.name}": trovati ${matchesSnap.docs.length} match e ${teamsSnap.docs.length} team`
+            );
+
+            // Crea mappa dei team per quick lookup
+            const teamsMap = {};
+            teamsSnap.docs.forEach((tDoc) => {
+              teamsMap[tDoc.id] = { id: tDoc.id, ...tDoc.data() };
+            });
+
+            // Processa i match e li normalizza
+            const matches = matchesSnap.docs
+              .map((mDoc) => {
+                const match = { id: mDoc.id, ...mDoc.data() };
+
+                // Controlla se il match ha risultati (sets o score)
+                const hasResults = Array.isArray(match.sets) && match.sets.length > 0;
+                const hasWinner = !!match.winnerId;
+
+                // Filtra match che hanno risultati (sets o winner)
+                // Includi anche completate o in_progress con risultati
+                if (!hasResults && !hasWinner) {
+                  console.log(
+                    `    ⏭️ Match ${match.id} ignorato: nessun risultato (status="${match.status}", sets=${match.sets?.length || 0}, winnerId=${match.winnerId})`
+                  );
+                  return null;
+                }
+
+                // Recupera i team
+                const team1 = teamsMap[match.team1Id];
+                const team2 = teamsMap[match.team2Id];
+
+                if (!team1 || !team2) {
+                  console.warn(`⚠️ Team non trovato per match ${match.id}`);
+                  return null;
+                }
+
+                // Estrai i giocatori dai team
+                const team1Players = Array.isArray(team1.players)
+                  ? team1.players.map((p) => p.playerId || p.id || p).filter(Boolean)
+                  : [];
+                const team2Players = Array.isArray(team2.players)
+                  ? team2.players.map((p) => p.playerId || p.id || p).filter(Boolean)
+                  : [];
+
+                console.log(
+                  `    🎯 Match ${match.id}: team1=${team1.teamName}[${team1Players.join(
+                    ','
+                  )}] vs team2=${team2.teamName}[${team2Players.join(',')}] (sets=${match.sets?.length || 0}, winner=${match.winnerId})`
+                );
+
+                // Trasforma i sets dal formato torneo al formato standard
+                const normalizedSets = Array.isArray(match.sets)
+                  ? match.sets.map((s) => ({
+                      a: Number(s?.team1 || 0),
+                      b: Number(s?.team2 || 0),
+                    }))
+                  : [];
+
+                // Calcola i set e game totali
+                let setsA = 0,
+                  setsB = 0,
+                  gamesA = 0,
+                  gamesB = 0;
+                normalizedSets.forEach((s) => {
+                  if (s.a > s.b) setsA++;
+                  else if (s.b > s.a) setsB++;
+                  gamesA += s.a;
+                  gamesB += s.b;
+                });
+
+                // Determina il vincitore
+                let winner = null;
+                if (match.winnerId) {
+                  winner = match.winnerId === match.team1Id ? 'A' : 'B';
+                } else if (setsA > setsB) {
+                  winner = 'A';
+                } else if (setsB > setsA) {
+                  winner = 'B';
+                }
+
+                if (!winner) {
+                  console.warn(`⚠️ Match ${match.id}: impossibile determinare il vincitore`);
+                  return null;
+                }
+
+                // Normalize date to ISO string format (consistent with regular matches)
+                let matchDate;
+                if (match.completedAt) {
+                  matchDate = typeof match.completedAt === 'string' 
+                    ? match.completedAt 
+                    : match.completedAt?.toDate?.() 
+                    ? match.completedAt.toDate().toISOString() 
+                    : new Date(match.completedAt).toISOString();
+                } else if (match.scheduledDate) {
+                  matchDate = typeof match.scheduledDate === 'string' 
+                    ? match.scheduledDate 
+                    : match.scheduledDate?.toDate?.() 
+                    ? match.scheduledDate.toDate().toISOString() 
+                    : new Date(match.scheduledDate).toISOString();
+                } else {
+                  matchDate = new Date().toISOString();
+                }
+
+                // Restituisci il match normalizzato nel formato standard
+                return {
+                  id: match.id,
+                  date: matchDate, // ✅ Now always an ISO string
+                  teamA: team1Players,
+                  teamB: team2Players,
+                  winner,
+                  setsA,
+                  setsB,
+                  gamesA,
+                  gamesB,
+                  deltaA: 0, // Le partite di torneo non hanno deltaA/B nel DB
+                  deltaB: 0,
+                  sets: normalizedSets,
+                  // Metadata dal torneo
+                  tournamentId: tournament.id,
+                  tournamentName: tournament.name,
+                  tournamentMatch: true,
+                  isTournamentMatch: true, // 🏆 Explicit marker for RPA exclusion
+                  // Campi originali per compatibilità
+                  ...match,
+                };
+              })
+              .filter(Boolean); // Rimuovi i null
+
+            tournamentMatches.push(...matches);
+          })
+        );
+      }
+    });
+
+    await Promise.all(promises);
+
+    console.log(`✅ Caricati ${tournamentMatches.length} match da tornei per club ${clubId}`);
+    return tournamentMatches;
+  } catch (error) {
+    console.error(`❌ Errore caricamento match tornei club ${clubId}:`, error);
+    // Restituisci array vuoto invece di errore per non interrompere il flusso
+    return [];
+  }
+}
+
+/**
+ * Carica sia i match regolari che i match dei tornei di un club.
+ *
+ * Utile per statistiche che devono includere sia le partite normali che quelle di torneo.
+ *
+ * @param {string} clubId - ID del club
+ * @param {Object} options - Opzioni per getClubMatches
+ * @returns {Promise<Array>} Array combinato di match regolari e tournament match
+ *
+ * @example
+ * const allMatches = await getClubMatchesWithTournaments('sporting-cat');
+ * // Include sia match normali che match da tornei
+ */
+export async function getClubMatchesWithTournaments(clubId, options = {}) {
+  if (!clubId) {
+    throw new Error('clubId è richiesto per getClubMatchesWithTournaments');
+  }
+
+  try {
+    // Carica sia i match regolari che quelli dei tornei in parallelo
+    const [clubMatches, tourneyMatches] = await Promise.all([
+      getClubMatches(clubId, options),
+      getTournamentMatches(clubId),
+    ]);
+
+    // Combina gli array
+    const allMatches = [...clubMatches, ...tourneyMatches];
+
+    console.log(
+      `✅ Caricati ${clubMatches.length} match regolari + ${tourneyMatches.length} match tornei = ${allMatches.length} totali`
+    );
+
+    return allMatches;
+  } catch (error) {
+    console.error(`❌ Errore caricamento match combinati per ${clubId}:`, error);
+    throw new Error(`Impossibile caricare i match: ${error.message}`);
   }
 }

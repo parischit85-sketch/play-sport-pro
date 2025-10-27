@@ -2,7 +2,53 @@
 
 
 
-**Un'applicazione enterprise-grade per la gestione completa di club sportivi con funzionalità avanzate di prenotazione, gestione tornei, analytics e mobile app.****Modern Padel League Management Platform**
+# 🎾 PlaySport Pro - Club Management System
+
+> Important notes (2025-10-24/25)
+- Firebase initialization has been consolidated. Use only `src/services/firebase.js` (see `FIREBASE_INITIALIZATION_FIX.md`). Any legacy `cloud.js` usage has been removed.
+- The legacy "Cloud Backup (leagues)" panel in `Extra.jsx` is now gated by the `VITE_ENABLE_LEGACY_LEAGUES` env flag (default: false). Enable only if you explicitly need the old leagues backup UI.
+- React Router v7 future flags: not applicable here (we use `<BrowserRouter />`, not Data Router). No action required.
+
+
+**Un'applicazione enterprise-grade per la gestione completa di club sportivi con funzionalità avanzate di prenotazione, gestione tornei, analytics e mobile app.**
+
+[![Version](https://img.shields.io/badge/version-1.0.4-blue.svg)](package.json)
+[![React](https://img.shields.io/badge/React-18.3.1-blue.svg)](https://reactjs.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-12.2.1-orange.svg)](https://firebase.google.com/)
+[![Vite](https://img.shields.io/badge/Vite-7.1.9-646CFF.svg)](https://vitejs.dev/)
+[![Tests](https://img.shields.io/badge/tests-42%20passing-brightgreen.svg)]()
+[![Coverage](https://img.shields.io/badge/coverage-48%25-yellow.svg)]()
+
+---
+
+## ⚡ Quick Start
+
+**Setup completo in 30 minuti!** 🚀
+
+```bash
+# 1. Clone repository
+git clone https://github.com/your-org/play-sport-pro.git
+cd play-sport-pro
+
+# 2. Install dependencies
+npm install
+
+# 3. Setup environment
+cp .env.production.example .env
+# Edit .env with your Firebase credentials
+
+# 4. Validate configuration
+npm run validate-config
+
+# 5. Start development server
+npm run dev
+```
+
+**📖 Guida Dettagliata**: Vedi [QUICK_START.md](QUICK_START.md)
+
+---
+
+## ✨ Features
 
 
 

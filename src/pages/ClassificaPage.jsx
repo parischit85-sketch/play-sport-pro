@@ -1,8 +1,10 @@
 // =============================================
 // FILE: src/pages/ClassificaPage.jsx
 // =============================================
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '@services/firebase.js';
 import { themeTokens } from '@lib/theme.js';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { computeClubRanking } from '@lib/ranking-club.js';
@@ -10,8 +12,8 @@ import Classifica from '@features/classifica/Classifica.jsx';
 
 export default function ClassificaPage() {
   const navigate = useNavigate();
-  const { clubId, players, playersLoaded, loadPlayers, matches, matchesLoaded, loadMatches } =
-    useClub();
+  const { clubId, players, playersLoaded, matches, matchesLoaded, leaderboard } = useClub();
+  const [tournamentMatches, setTournamentMatches] = useState([]);
   const T = React.useMemo(() => themeTokens(), []);
 
   const handleOpenStats = (playerId) => {
@@ -21,6 +23,55 @@ export default function ClassificaPage() {
       navigate(`/stats?player=${playerId}`);
     }
   };
+
+  // Load tournament matchDetails from leaderboard entries
+  useEffect(() => {
+    if (!clubId || !playersLoaded) return;
+
+    const loadTournamentMatches = async () => {
+      try {
+        const allMatches = [];
+        const matchIds = new Set();
+
+        // For each player, load their entries and extract matchDetails
+        for (const player of players) {
+          try {
+            const entriesRef = collection(db, 'clubs', clubId, 'leaderboard', player.id, 'entries');
+            const entriesSnap = await getDocs(entriesRef);
+
+            for (const entryDoc of entriesSnap.docs) {
+              const entry = entryDoc.data();
+              if (Array.isArray(entry.matchDetails)) {
+                console.log(
+                  `📊 [ClassificaPage] Entry ${entryDoc.id}: ${entry.matchDetails.length} matchDetails`
+                );
+                for (const match of entry.matchDetails) {
+                  // Avoid duplicates
+                  if (!matchIds.has(match.matchId || match.id)) {
+                    console.log(`  ✅ Adding match: ${match.matchId || match.id}`);
+                    allMatches.push(match);
+                    matchIds.add(match.matchId || match.id);
+                  }
+                }
+              }
+            }
+          } catch (e) {
+            console.warn(`Failed to load entries for player ${player.id}:`, e);
+          }
+        }
+
+        console.log(`🏆 [ClassificaPage] Total tournament matches loaded: ${allMatches.length}`);
+        if (allMatches.length > 0) {
+          console.log(`  First match keys:`, Object.keys(allMatches[0]).join(', '));
+        }
+        setTournamentMatches(allMatches);
+      } catch (e) {
+        console.warn('Failed to load tournament matches:', e);
+      }
+    };
+
+    loadTournamentMatches();
+  }, [clubId, players, playersLoaded]);
 
   // I dati si caricano automaticamente nel ClubContext quando cambia clubId
 
@@ -35,8 +86,13 @@ export default function ClassificaPage() {
         player.tournamentData?.isParticipant === true && player.tournamentData?.isActive === true
     );
 
-    return computeClubRanking(tournamentPlayers, srcMatches, clubId);
-  }, [clubId, players, playersLoaded, matches, matchesLoaded]);
+    // Combine regular matches with tournament matches
+    const combinedMatches = [...srcMatches, ...tournamentMatches];
+
+    return computeClubRanking(tournamentPlayers, combinedMatches, clubId, {
+      leaderboardMap: leaderboard,
+    });
+  }, [clubId, players, playersLoaded, matches, matchesLoaded, leaderboard, tournamentMatches]);
 
   return (
     <Classifica

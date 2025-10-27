@@ -3,17 +3,15 @@
 // =============================================
 import { computeFromSets, calcParisDelta } from './rpa.js';
 import { DEFAULT_RATING } from './ids.js';
-export function recompute(players, matches) {
+export function recompute(players, matches, leaderboardMap = {}) {
   const map = new Map(
     players.map((p) => {
-      // 🎯 Usa rating corrente se disponibile, altrimenti baseRating/default
-      // tournamentData.currentRanking è il rating più aggiornato dal campionato
+      // 🎯 Start from base rating WITHOUT championship points
       const start = Number(
-        p.tournamentData?.currentRanking ?? 
-        p.rating ?? 
-        p.baseRating ?? 
-        p.startRating ?? 
-        DEFAULT_RATING
+        p.rating ??
+          p.baseRating ??
+          p.startRating ??
+          DEFAULT_RATING
       );
       return [
         p.id,
@@ -32,13 +30,128 @@ export function recompute(players, matches) {
   );
   const hist = new Map(players.map((p) => [p.id, []]));
   const enriched = [];
-  const byDate = [...(matches || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
-  for (const m of byDate) {
-    const a1 = map.get(m.teamA[0]),
-      a2 = map.get(m.teamA[1]);
-    const b1 = map.get(m.teamB[0]),
-      b2 = map.get(m.teamB[1]);
-    const rr = computeFromSets(m.sets);
+  
+  // 🆕 Build synthetic championship point events from leaderboardMap
+  // These will be treated as RPA deltas chronologically
+  const championshipEvents = [];
+  for (const [playerId, playerData] of Object.entries(leaderboardMap)) {
+    if (playerData?.entries && Array.isArray(playerData.entries)) {
+      for (const entry of playerData.entries) {
+        if (entry.tournamentId && entry.points && entry.createdAt) {
+          // Get the date from the entry's matchDetails (all should have same date for a tournament)
+          // OR use the createdAt timestamp
+          let eventDate = entry.createdAt;
+          
+          // Try to get tournament date from matchDetails if available
+          if (Array.isArray(entry.matchDetails) && entry.matchDetails.length > 0) {
+            eventDate = entry.matchDetails[0].date || entry.createdAt;
+          }
+          
+          championshipEvents.push({
+            type: 'championship_points',
+            playerId,
+            tournamentId: entry.tournamentId,
+            points: Number(entry.points),
+            date: eventDate,
+            entry: entry,
+          });
+        }
+      }
+    }
+  }
+  
+  // Combine regular matches with championship point events
+  const allEvents = [...matches.map((m) => ({ ...m, type: 'match' })), ...championshipEvents];
+  
+  const byDate = [...allEvents].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  // 🔍 DEBUG: Log all events to verify sorting
+  console.log(
+    '🔍 [RPA DEBUG] Total events to process:',
+    byDate.length,
+    '(matches:',
+    matches?.length || 0,
+    '+ championships:',
+    championshipEvents.length,
+    ')'
+  );
+  if (byDate.length > 0) {
+    console.log('🔍 [RPA DEBUG] First 5 events after sorting by date:');
+    byDate.slice(0, 5).forEach((e, idx) => {
+      if (e.type === 'championship_points') {
+        console.log(
+          `  ${idx + 1}. [CHAMPIONSHIP] Date: ${e.date} | Player: ${e.playerId} | Points: ${e.points} | Tournament: ${e.tournamentId}`
+        );
+      } else {
+        console.log(
+          `  ${idx + 1}. [MATCH] Date: ${e.date} | Type: ${e.id ? 'regular' : 'tournament'} | ID: ${e.id || e.matchId}`
+        );
+      }
+    });
+  }
+
+  for (const event of byDate) {
+    // 🆕 Handle championship point events (synthetic RPA deltas)
+    if (event.type === 'championship_points') {
+      const { playerId, points } = event;
+      
+      const player = map.get(playerId);
+      if (player && points !== 0) {
+        console.log(
+          `🏆 [RPA] Championship points for ${playerId} at ${event.date}: +${points} (${player.rating} → ${player.rating + points})`
+        );
+        player.rating += points;
+        
+        // Add to history as a delta
+        const arr = hist.get(playerId) || [];
+        arr.push(points);
+        hist.set(playerId, arr);
+      }
+      continue;
+    }
+
+    // 🎯 Process regular matches (including tournament matches from entries, but NOT as RPA)
+    // Tournament matches should only count wins/losses, NOT RPA deltas
+    const isTournamentMatch =
+      (event.matchId && !event.id) ||
+      event.isTournamentMatch === true ||
+      event.tournamentMatch === true;
+
+    if (isTournamentMatch) {
+      // Tournament match: count wins/losses but DON'T calculate RPA
+      const teamAIds = Array.isArray(event.teamA) ? event.teamA : [];
+      const teamBIds = Array.isArray(event.teamB) ? event.teamB : [];
+
+      if (event.winner === 'A') {
+        for (const id of teamAIds) {
+          const player = map.get(id);
+          if (player) player.wins++;
+        }
+        for (const id of teamBIds) {
+          const player = map.get(id);
+          if (player) player.losses++;
+        }
+      } else if (event.winner === 'B') {
+        for (const id of teamBIds) {
+          const player = map.get(id);
+          if (player) player.wins++;
+        }
+        for (const id of teamAIds) {
+          const player = map.get(id);
+          if (player) player.losses++;
+        }
+      }
+      
+      // Skip enrichment for tournament matches
+      continue;
+    }
+
+    // 🎯 Regular match: calculate RPA delta and update ratings
+    const a1 = map.get(event.teamA[0]),
+      a2 = map.get(event.teamA[1]);
+    const b1 = map.get(event.teamB[0]),
+      b2 = map.get(event.teamB[1]);
+    const rr = computeFromSets(event.sets);
     const res = calcParisDelta({
       ratingA1: a1?.rating ?? DEFAULT_RATING,
       ratingA2: a2?.rating ?? DEFAULT_RATING,
@@ -47,19 +160,19 @@ export function recompute(players, matches) {
       gamesA: rr.gamesA,
       gamesB: rr.gamesB,
       winner: rr.winner,
-      sets: m.sets,
+      sets: event.sets,
     });
     // 🎯 Salva i rating pre-match per visualizzarli correttamente in MatchRow
-    const rec = { 
-      ...m, 
-      ...rr, 
+    const rec = {
+      ...event,
+      ...rr,
       ...res,
       preMatchRatings: {
         ratingA1: a1?.rating ?? DEFAULT_RATING,
         ratingA2: a2?.rating ?? DEFAULT_RATING,
         ratingB1: b1?.rating ?? DEFAULT_RATING,
         ratingB2: b2?.rating ?? DEFAULT_RATING,
-      }
+      },
     };
     enriched.push(rec);
     const pushH = (id, d) => {

@@ -30,6 +30,7 @@ import {
   Image as ImageIcon,
 } from 'lucide-react';
 import ClubActivationBanner from '@ui/ClubActivationBanner.jsx';
+import LogoEditor from '@components/shared/LogoEditor.jsx';
 
 const ClubSettings = () => {
   const { clubId } = useParams();
@@ -41,6 +42,10 @@ const ClubSettings = () => {
   const [uploading, setUploading] = useState(false);
   const [logoFile, setLogoFile] = useState(null);
   const fileInputRef = useRef(null);
+
+  // Stati per Logo Editor
+  const [showLogoEditor, setShowLogoEditor] = useState(false);
+  const [originalLogoSrc, setOriginalLogoSrc] = useState(null);
 
   // Form data state
   const [settings, setSettings] = useState({
@@ -204,14 +209,40 @@ const ClubSettings = () => {
         return;
       }
 
-      setLogoFile(file);
-
-      // Crea anteprima
+      // Apri l'editor invece di impostare direttamente il file
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setSettings((prev) => ({ ...prev, logoUrl: e.target.result }));
+      reader.onloadend = () => {
+        setOriginalLogoSrc(reader.result);
+        setShowLogoEditor(true);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  // Gestione completamento editor logo
+  const handleLogoEditorComplete = async (croppedBlob) => {
+    try {
+      setShowLogoEditor(false);
+      
+      // Crea un File dal blob
+      const croppedFile = new File([croppedBlob], 'logo.jpg', { type: 'image/jpeg' });
+      setLogoFile(croppedFile);
+
+      // Anteprima del logo croppato
+      const previewUrl = URL.createObjectURL(croppedBlob);
+      setSettings((prev) => ({ ...prev, logoUrl: previewUrl }));
+    } catch (error) {
+      console.error('Errore durante il crop del logo:', error);
+      alert('Errore durante l\'elaborazione dell\'immagine');
+    }
+  };
+
+  // Gestione annullamento editor logo
+  const handleLogoEditorCancel = () => {
+    setShowLogoEditor(false);
+    setOriginalLogoSrc(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -847,6 +878,15 @@ const ClubSettings = () => {
           </div>
         </div>
       </main>
+
+      {/* Logo Editor Modal */}
+      {showLogoEditor && originalLogoSrc && (
+        <LogoEditor
+          imageSrc={originalLogoSrc}
+          onComplete={handleLogoEditorComplete}
+          onCancel={handleLogoEditorCancel}
+        />
+      )}
     </div>
   );
 };

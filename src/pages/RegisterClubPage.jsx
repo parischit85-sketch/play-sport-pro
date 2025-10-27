@@ -21,8 +21,9 @@ import {
 import { themeTokens, LOGO_URL } from '@lib/theme.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { auth, db } from '@services/firebase.js';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { collection, addDoc, doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth';
+import { collection, addDoc, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import LogoEditor from '@components/shared/LogoEditor.jsx';
 
 export default function RegisterClubPage() {
   const navigate = useNavigate();
@@ -48,20 +49,20 @@ export default function RegisterClubPage() {
       country: 'Italia',
     },
     googleMapsLink: '',
-
-    // STEP 3: Dati operatore/admin
-    adminFirstName: '',
-    adminLastName: '',
-    adminEmail: '',
-    adminPhone: '',
   });
 
   const [logoPreview, setLogoPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
-  const [step, setStep] = useState(1); // 1: Dati circolo, 2: Logo e dettagli, 3: Operatore
+  const [step, setStep] = useState(1); // 1: Dati circolo, 2: Logo e dettagli
   const [showMapsInstructions, setShowMapsInstructions] = useState(false);
+  const [extractingAddress, setExtractingAddress] = useState(false);
+  
+  // Stati per Logo Editor
+  const [showLogoEditor, setShowLogoEditor] = useState(false);
+  const [originalLogoSrc, setOriginalLogoSrc] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
 
   // Redirect if already logged in
   React.useEffect(() => {
@@ -69,6 +70,65 @@ export default function RegisterClubPage() {
       navigate('/dashboard');
     }
   }, [user, navigate]);
+
+  // Funzione per validare password (8 caratteri + 1 speciale)
+  const isPasswordValid = (pwd) => {
+    if (!pwd || pwd.length < 8) return false;
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
+    return hasSpecialChar;
+  };
+
+  // Funzione per estrarre indirizzo da link Google Maps
+  const extractAddressFromMapsLink = async (mapsLink) => {
+    if (!mapsLink) return;
+    
+    setExtractingAddress(true);
+    try {
+      // Estrai coordinate dal link
+      const coordsMatch = mapsLink.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (!coordsMatch) {
+        console.log('Coordinate non trovate nel link');
+        setExtractingAddress(false);
+        return;
+      }
+
+      const lat = coordsMatch[1];
+      const lng = coordsMatch[2];
+
+      // Usa Nominatim per reverse geocoding
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`,
+        {
+          headers: {
+            'User-Agent': 'PlaySportPro/1.0'
+          }
+        }
+      );
+
+      if (!response.ok) throw new Error('Errore nel recupero indirizzo');
+
+      const data = await response.json();
+      const addr = data.address;
+
+      // Auto-compila i campi indirizzo
+      setFormData((prev) => ({
+        ...prev,
+        address: {
+          street: `${addr.road || ''} ${addr.house_number || ''}`.trim() || prev.address.street,
+          city: addr.city || addr.town || addr.village || prev.address.city,
+          province: addr.state_code || addr.county?.substring(0, 2).toUpperCase() || prev.address.province,
+          postalCode: addr.postcode || prev.address.postalCode,
+          country: addr.country || 'Italia',
+        },
+      }));
+
+      console.log('✅ Indirizzo estratto con successo');
+    } catch (error) {
+      console.error('Errore estrazione indirizzo:', error);
+    } finally {
+      setExtractingAddress(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -104,26 +164,48 @@ export default function RegisterClubPage() {
         return;
       }
 
-      // Preview locale
+      // Apri l'editor invece di fare upload diretto
       const reader = new FileReader();
       reader.onloadend = () => {
-        setLogoPreview(reader.result);
+        setOriginalLogoSrc(reader.result);
+        setShowLogoEditor(true);
       };
       reader.readAsDataURL(file);
-
-      // Upload immediato su Cloudinary (usando ID temporaneo)
-      try {
-        setUploading(true);
-        const tempClubId = `temp_${Date.now()}`;
-        const logoUrl = await uploadLogo(file, tempClubId);
-        setFormData((prev) => ({ ...prev, logo: logoUrl }));
-      } catch (error) {
-        console.error('Errore upload logo:', error);
-        alert('Errore durante il caricamento del logo. Riprova.');
-      } finally {
-        setUploading(false);
-      }
     }
+  };
+
+  // Gestione completamento editor logo
+  const handleLogoEditorComplete = async (croppedBlob) => {
+    try {
+      setShowLogoEditor(false);
+      setUploading(true);
+
+      // Crea un File dal blob
+      const croppedFile = new File([croppedBlob], 'logo.jpg', { type: 'image/jpeg' });
+      setLogoFile(croppedFile);
+
+      // Preview locale del logo croppato
+      const previewUrl = URL.createObjectURL(croppedBlob);
+      setLogoPreview(previewUrl);
+
+      // Upload su Cloudinary (usando ID temporaneo)
+      const tempClubId = `temp_${Date.now()}`;
+      const logoUrl = await uploadLogo(croppedFile, tempClubId);
+      setFormData((prev) => ({ ...prev, logo: logoUrl }));
+
+      console.log('✅ Logo uploaded:', logoUrl);
+    } catch (error) {
+      console.error('Errore upload logo:', error);
+      alert('Errore durante il caricamento del logo. Riprova.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Gestione annullamento editor logo
+  const handleLogoEditorCancel = () => {
+    setShowLogoEditor(false);
+    setOriginalLogoSrc(null);
   };
 
   // Funzione per upload logo su Cloudinary
@@ -171,6 +253,13 @@ export default function RegisterClubPage() {
     setError(null);
 
     try {
+      // Validazione password
+      if (!isPasswordValid(formData.password)) {
+        setError('La password deve contenere almeno 8 caratteri e un carattere speciale');
+        setLoading(false);
+        return;
+      }
+
       // 1. Crea l'account Firebase Auth usando l'email del circolo
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -179,13 +268,37 @@ export default function RegisterClubPage() {
       );
       const newUser = userCredential.user;
 
-      // 2. Aggiorna il profilo con il nome completo dell'operatore
-      const adminFullName = `${formData.adminFirstName} ${formData.adminLastName}`.trim();
+      // 2. Aggiorna il profilo con il nome del circolo
       await updateProfile(newUser, {
-        displayName: adminFullName,
+        displayName: formData.clubName,
       });
 
-      // 3. Crea il circolo (status: pending)
+      // 2.5. Invia email di verifica
+      console.log('📧 Sending email verification...');
+      try {
+        await sendEmailVerification(newUser, {
+          url: `${window.location.origin}/club/${newUser.uid}/admin/dashboard`,
+          handleCodeInApp: false,
+        });
+        console.log('✅ Email verification sent');
+      } catch (emailError) {
+        console.warn('⚠️ Failed to send verification email:', emailError);
+        // Non bloccare la registrazione se l'email fallisce
+      }
+
+      // 3. Convert logo to Base64 for storing in Firestore
+      let logoBase64 = null;
+      if (formData.logo) {
+        // formData.logo should be a data URL from preview
+        logoBase64 = formData.logo;
+      }
+
+      // =============================================
+      // NEW FLOW: Create club immediately with 'pending' status
+      // User becomes admin immediately but club is not searchable
+      // =============================================
+
+      // 3. Create club document with 'pending' status
       const clubData = {
         name: formData.clubName,
         description: formData.description || '',
@@ -201,8 +314,13 @@ export default function RegisterClubPage() {
           email: formData.clubEmail,
           website: formData.googleMapsLink || '',
         },
+        logoUrl: logoBase64, // Store logo URL
         googleMapsLink: formData.googleMapsLink || '',
-        logoUrl: formData.logo || null, // URL già caricato su Cloudinary nello Step 2
+        status: 'pending', // 🔒 Club is NOT searchable by other users
+        isActive: false, // 🔒 Club is NOT active yet
+        ownerId: newUser.uid,
+        ownerEmail: formData.clubEmail,
+        managers: [newUser.uid],
         settings: {
           bookingDuration: 90,
           advanceBookingDays: 14,
@@ -214,78 +332,87 @@ export default function RegisterClubPage() {
         instructors: [],
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        isActive: false, // Non attivo fino all'approvazione
-        status: 'pending', // In attesa di approvazione
-        ownerId: newUser.uid,
-        ownerEmail: formData.clubEmail,
+        requestedAt: serverTimestamp(),
+        approvedAt: null,
       };
 
       const clubRef = await addDoc(collection(db, 'clubs'), clubData);
+      const clubId = clubRef.id;
+      console.log('✅ Club created with ID:', clubId, 'status: pending');
 
-      // 4. Crea il profilo utente con ruolo club_admin (underscore!)
+      // 4. Crea il profilo utente
       await setDoc(doc(db, 'users', newUser.uid), {
         uid: newUser.uid,
-        email: formData.clubEmail, // Email del circolo per login
-        displayName: adminFullName,
-        firstName: formData.adminFirstName,
-        lastName: formData.adminLastName,
-        phone: formData.adminPhone, // Telefono dell'operatore
-        role: 'club_admin', // ✅ UNDERSCORE non trattino!
-        clubId: clubRef.id,
-        clubName: formData.clubName,
+        email: formData.clubEmail,
+        displayName: formData.clubName,
+        firstName: formData.clubName.split(' ')[0] || 'Admin',
+        lastName: formData.clubName.split(' ').slice(1).join(' ') || '',
+        phone: formData.clubPhone,
+        provider: 'password',
         createdAt: serverTimestamp(),
         registeredAt: serverTimestamp(),
       });
+      console.log('✅ User profile created');
 
-      // 5. Crea il profilo nel club
-      await setDoc(doc(db, 'clubs', clubRef.id, 'profiles', newUser.uid), {
-        uid: newUser.uid,
-        firstName: formData.adminFirstName,
-        lastName: formData.adminLastName,
-        email: formData.adminEmail, // Email personale dell'operatore
-        phone: formData.adminPhone,
-        role: 'club_admin', // ✅ UNDERSCORE non 'admin'!
+      // 5. Create admin profile in clubs/{clubId}/profiles/{userId}
+      await setDoc(doc(db, 'clubs', clubId, 'profiles', newUser.uid), {
+        userId: newUser.uid,
+        clubId: clubId,
+        firstName: formData.clubName.split(' ')[0] || 'Admin',
+        lastName: formData.clubName.split(' ').slice(1).join(' ') || '',
+        email: formData.clubEmail,
+        phone: formData.clubPhone,
+        role: 'club_admin', // 👑 Admin role
         isClubAdmin: true,
         status: 'active',
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-      });
-
-      // 6. Crea il documento affiliation
-      const affiliationId = `${newUser.uid}_${clubRef.id}`;
-      await setDoc(doc(db, 'affiliations', affiliationId), {
-        userId: newUser.uid,
-        clubId: clubRef.id,
-        role: 'club_admin',
-        status: 'approved',
-        isClubAdmin: true,
-        requestedAt: serverTimestamp(),
-        approvedAt: serverTimestamp(),
         joinedAt: serverTimestamp(),
-        _createdAt: serverTimestamp(),
-        _updatedAt: serverTimestamp(),
+        addedBy: 'system',
       });
+      console.log('✅ Admin profile created in club');
 
-      // 7. Aggiungi l'utente all'array managers del club
-      await updateDoc(doc(db, 'clubs', clubRef.id), {
-        managers: [newUser.uid],
-        updatedAt: serverTimestamp(),
-      });
+      // 6. Save registration request for admin approval tracking
+      const registrationRequest = {
+        clubId: clubId,
+        name: formData.clubName,
+        status: 'pending',
+        requestedAt: serverTimestamp(),
+        approvedAt: null,
+        adminData: {
+          userId: newUser.uid,
+          email: formData.clubEmail,
+          phone: formData.clubPhone,
+        },
+      };
 
-      // 8. Successo! Redirect alla dashboard admin del circolo
-      const successMessage = formData.logo
-        ? `✅ Registrazione completata!\n\nIl circolo "${formData.clubName}" è stato creato con il logo.\n\nOperatore: ${adminFullName}\nEmail: ${formData.adminEmail}\nTelefono: ${formData.adminPhone}\n\nPotrai configurare campi, istruttori e orari dalla dashboard admin.`
-        : `✅ Registrazione completata!\n\nIl circolo "${formData.clubName}" è stato creato.\n\nOperatore: ${adminFullName}\nEmail: ${formData.adminEmail}\nTelefono: ${formData.adminPhone}\n\nPotrai aggiungere un logo dalle impostazioni del circolo.`;
+      await addDoc(collection(db, 'clubRegistrationRequests'), registrationRequest);
+      console.log('✅ Registration request saved for admin tracking');
 
-      alert(successMessage);
-      // Redirect alla dashboard ADMIN del circolo
-      navigate(`/club/${clubRef.id}/admin/dashboard`);
+      // 7. Success message and redirect to admin dashboard
+      alert(
+        `✅ Club Creato!\n\n` +
+        `Il circolo "${formData.clubName}" è stato creato.\n\n` +
+        `📧 IMPORTANTE: Controlla la tua email!\n` +
+        `Abbiamo inviato un'email di verifica a:\n` +
+        `${formData.clubEmail}\n\n` +
+        `Devi verificare l'email per accedere a tutte le funzionalità.\n\n` +
+        `⏳ Status: In attesa di approvazione\n\n` +
+        `Puoi già:\n` +
+        `• Configurare i campi\n` +
+        `• Aggiungere fasce orarie\n` +
+        `• Gestire le impostazioni\n\n` +
+        `Il circolo sarà visibile agli utenti dopo l'approvazione del super-admin.`
+      );
+
+      // Redirect to club admin dashboard
+      navigate(`/club/${clubId}/admin/dashboard`);
     } catch (err) {
       console.error('Error registering club:', err);
       if (err.code === 'auth/email-already-in-use') {
         setError("Questa email è già registrata. Usa un'altra email o accedi.");
       } else if (err.code === 'auth/weak-password') {
-        setError('La password deve essere di almeno 6 caratteri.');
+        setError('La password deve essere di almeno 8 caratteri con un carattere speciale.');
       } else if (err.code === 'auth/invalid-email') {
         setError('Email non valida.');
       } else {
@@ -304,12 +431,13 @@ export default function RegisterClubPage() {
     formData.password &&
     formData.confirmPassword &&
     formData.password === formData.confirmPassword &&
-    formData.password.length >= 6;
+    isPasswordValid(formData.password);
 
-  const canProceedToStep3 = formData.description && formData.address.city;
-
-  const canSubmit =
-    formData.adminFirstName && formData.adminLastName && formData.adminEmail && formData.adminPhone;
+  const canSubmit = 
+    formData.address.street &&
+    formData.address.city &&
+    formData.address.postalCode &&
+    formData.address.province;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -353,7 +481,7 @@ export default function RegisterClubPage() {
         {/* Progress Steps */}
         <div className="mb-12">
           <div className="flex items-center justify-center gap-4">
-            {[1, 2, 3].map((s) => (
+            {[1, 2].map((s) => (
               <React.Fragment key={s}>
                 <div className="flex items-center gap-2">
                   <div
@@ -370,10 +498,10 @@ export default function RegisterClubPage() {
                   <span
                     className={`text-sm font-medium ${step >= s ? 'text-neutral-900 dark:text-white' : 'text-gray-500'}`}
                   >
-                    {s === 1 ? 'Dati Circolo' : s === 2 ? 'Logo & Dettagli' : 'Operatore'}
+                    {s === 1 ? 'Dati Circolo' : 'Dettagli & Indirizzo'}
                   </span>
                 </div>
-                {s < 3 && (
+                {s < 2 && (
                   <div
                     className={`w-12 h-1 rounded ${step > s ? 'bg-emerald-500' : 'bg-gray-200 dark:bg-gray-700'}`}
                   />
@@ -477,10 +605,25 @@ export default function RegisterClubPage() {
                     value={formData.password}
                     onChange={handleInputChange}
                     required
-                    minLength={6}
+                    minLength={8}
                     className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Minimo 6 caratteri"
+                    placeholder="Minimo 8 caratteri con 1 speciale"
                   />
+                </div>
+                <div className="mt-1 space-y-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Deve contenere almeno 8 caratteri e un carattere speciale (!@#$%^&*...)
+                  </p>
+                  {formData.password && !isPasswordValid(formData.password) && (
+                    <p className="text-xs text-red-600 dark:text-red-400">
+                      ❌ Password non valida (serve 8 caratteri + 1 speciale)
+                    </p>
+                  )}
+                  {formData.password && isPasswordValid(formData.password) && (
+                    <p className="text-xs text-green-600 dark:text-green-400">
+                      ✅ Password valida
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -525,13 +668,13 @@ export default function RegisterClubPage() {
           {step === 2 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-6">
-                Logo e Dettagli
+                📍 Dettagli & Indirizzo
               </h2>
 
               {/* Logo Upload */}
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
-                  Logo del Circolo
+                  Logo del Circolo (opzionale)
                 </label>
                 <div className="flex flex-col items-center gap-4">
                   {formData.logo && (
@@ -560,7 +703,7 @@ export default function RegisterClubPage() {
                     />
                     {uploading && (
                       <p className="text-sm text-blue-600 dark:text-blue-400 mt-2">
-                        Caricamento in corso...
+                        📤 Caricamento in corso...
                       </p>
                     )}
                   </div>
@@ -570,224 +713,144 @@ export default function RegisterClubPage() {
               {/* Description */}
               <div>
                 <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
-                  Descrizione *
+                  Descrizione (opzionale)
                 </label>
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={4}
-                  required
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                   placeholder="Breve descrizione del tuo circolo sportivo..."
                 />
               </div>
 
-              {/* Address Fields */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
-                    Via e numero civico *
-                  </label>
-                  <input
-                    type="text"
-                    name="address.street"
-                    value={formData.address.street}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Via Roma, 123"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
-                    Città *
-                  </label>
-                  <input
-                    type="text"
-                    name="address.city"
-                    value={formData.address.city}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Milano"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
-                    Provincia
-                  </label>
-                  <input
-                    type="text"
-                    name="address.province"
-                    value={formData.address.province}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="MI"
-                    maxLength={2}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
-                    CAP
-                  </label>
-                  <input
-                    type="text"
-                    name="address.postalCode"
-                    value={formData.address.postalCode}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="20100"
-                    maxLength={5}
-                  />
-                </div>
-              </div>
-
-              {/* Google Maps Link */}
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
-                  Link Google Maps
+              {/* Google Maps Link con Auto-fill */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                <div className="flex items-start gap-3 mb-3">
+                  <Globe className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-neutral-900 dark:text-white mb-1">
+                      Link Google Maps (opzionale ma consigliato)
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Incolla il link completo da Google Maps per auto-compilare l'indirizzo
+                    </p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => setShowMapsInstructions(true)}
-                    className="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                   >
-                    <Info className="w-4 h-4 inline" />
+                    <Info className="w-5 h-5" />
                   </button>
-                </label>
+                </div>
                 <input
                   type="url"
                   name="googleMapsLink"
                   value={formData.googleMapsLink}
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    if (e.target.value && e.target.value.includes('google.com/maps')) {
+                      extractAddressFromMapsLink(e.target.value);
+                    }
+                  }}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="https://www.google.com/maps/place/..."
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Opzionale: Usa il link COMPLETO dalla barra indirizzi (clicca ℹ️ per istruzioni)
-                </p>
+                {extractingAddress && (
+                  <p className="text-sm text-blue-600 dark:text-blue-400 mt-2 flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                    Estrazione indirizzo in corso...
+                  </p>
+                )}
               </div>
 
-              <div className="flex justify-between">
+              {/* Address Fields */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h3 className="font-semibold text-neutral-900 dark:text-white mb-4">
+                  Indirizzo Completo *
+                </h3>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
+                      Via e numero civico *
+                    </label>
+                    <input
+                      type="text"
+                      name="address.street"
+                      value={formData.address.street}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Via Roma, 123"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
+                      Città *
+                    </label>
+                    <input
+                      type="text"
+                      name="address.city"
+                      value={formData.address.city}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Milano"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
+                      CAP *
+                    </label>
+                    <input
+                      type="text"
+                      name="address.postalCode"
+                      value={formData.address.postalCode}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="20100"
+                      maxLength={5}
+                      pattern="[0-9]{5}"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
+                      Provincia *
+                    </label>
+                    <input
+                      type="text"
+                      name="address.province"
+                      value={formData.address.province}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="MI"
+                      maxLength={2}
+                      style={{ textTransform: 'uppercase' }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-between pt-4">
                 <button
                   type="button"
                   onClick={() => setStep(1)}
                   className="border-2 border-gray-300 dark:border-gray-600 text-neutral-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-8 py-3 rounded-lg font-semibold transition-colors"
                 >
-                  Indietro
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStep(3)}
-                  disabled={!canProceedToStep3}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-                >
-                  Continua
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Dati dell'Operatore */}
-          {step === 3 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-6">
-                Dati dell'Operatore
-              </h2>
-
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Inserisci i tuoi dati personali. Questi saranno salvati nel tuo profilo utente.
-              </p>
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
-                    Nome *
-                  </label>
-                  <input
-                    type="text"
-                    name="adminFirstName"
-                    value={formData.adminFirstName}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Mario"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
-                    Cognome *
-                  </label>
-                  <input
-                    type="text"
-                    name="adminLastName"
-                    value={formData.adminLastName}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Rossi"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
-                  Email Personale *
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="email"
-                    name="adminEmail"
-                    value={formData.adminEmail}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="mario.rossi@email.com"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  La tua email personale (diversa dall'email del circolo)
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-gray-300 mb-2">
-                  Telefono Personale *
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="tel"
-                    name="adminPhone"
-                    value={formData.adminPhone}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-neutral-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="+39 333 123 4567"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Il tuo numero di telefono personale
-                </p>
-              </div>
-
-              <div className="flex justify-between">
-                <button
-                  type="button"
-                  onClick={() => setStep(2)}
-                  className="border-2 border-gray-300 dark:border-gray-600 text-neutral-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-8 py-3 rounded-lg font-semibold transition-colors"
-                >
-                  Indietro
+                  ← Indietro
                 </button>
                 <button
                   type="submit"
                   disabled={!canSubmit || loading}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-8 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2"
+                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-8 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2"
                 >
                   {loading ? (
                     <>
@@ -872,16 +935,18 @@ export default function RegisterClubPage() {
                       Copia il <strong>link COMPLETO</strong> dalla barra degli indirizzi del
                       browser
                     </p>
-                    <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                      ✅ Esempio corretto:
-                      <br />
-                      https://www.google.com/maps/place/...
-                    </p>
-                    <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-                      ❌ NON usare:
-                      <br />
-                      maps.app.goo.gl/xyz (link abbreviato)
-                    </p>
+                    <div className="mt-1 space-y-1">
+                      <p className="text-xs text-green-600 dark:text-green-400">
+                        ✅ Esempio corretto:
+                        <br />
+                        https://www.google.com/maps/place/...
+                      </p>
+                      <p className="text-xs text-red-600 dark:text-red-400">
+                        ❌ NON usare:
+                        <br />
+                        maps.app.goo.gl/xyz (link abbreviato)
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -919,6 +984,15 @@ export default function RegisterClubPage() {
           </Link>
         </div>
       </div>
+
+      {/* Logo Editor Modal */}
+      {showLogoEditor && originalLogoSrc && (
+        <LogoEditor
+          imageSrc={originalLogoSrc}
+          onComplete={handleLogoEditorComplete}
+          onCancel={handleLogoEditorCancel}
+        />
+      )}
     </div>
   );
 }

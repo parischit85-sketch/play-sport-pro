@@ -1,1033 +1,507 @@
 // =============================================
 // FILE: src/features/players/components/PlayerDetails.jsx
 // Vista dettagliata del giocatore con tab multiple
-// Updated: 2025-10-13 - Fixed React key warnings
+// REFACTORED: 2025-10-15 - Slim container con useReducer
+// FASE 2: 2025-10-16 - Added permissions & security
 // =============================================
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useReducer, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { listAllUserProfiles } from '@services/auth.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
-import { DEFAULT_RATING } from '@lib/ids.js';
 import { computeClubRanking } from '@lib/ranking-club.js';
-import { PLAYER_CATEGORIES } from '../types/playerTypes.js';
-import PlayerNotes from './PlayerNotes';
-import PlayerWallet from './PlayerWallet';
-import PlayerCommunications from './PlayerCommunications';
-import PlayerBookingHistory from './PlayerBookingHistory';
-import PlayerTournamentTab from './PlayerTournamentTab';
-import PlayerMedicalTab from './PlayerMedicalTab';
 
-export default function PlayerDetails({ player, onUpdate, _onClose, T }) {
-  console.log(
-    '👤 [PlayerDetails] Rendering with player:',
-    player?.id,
-    'tournamentData:',
-    player?.tournamentData
-  );
+// Hooks
+import { usePlayerPermissions } from '../hooks/usePlayerPermissions';
+import { useNotifications } from '../../../contexts/NotificationContext'; // FASE 2: Global notifications
 
-  const { clubId, players, matches } = useClub();
-  const [searchParams, setSearchParams] = useSearchParams();
+// Componenti refactored (sempre caricati - necessari per initial render)
+import PlayerDetailsHeader from './PlayerDetails/PlayerDetailsHeader';
+import PlayerAccountLinking from './PlayerDetails/PlayerAccountLinking';
+import PlayerEditMode from './PlayerDetails/PlayerEditMode';
+import PlayerOverviewTab from './PlayerDetails/PlayerOverviewTab';
+import PlayerDataExport from './PlayerDetails/PlayerDataExport'; // FASE 2: GDPR Export
+import PlayerDataDelete from './PlayerDetails/PlayerDataDelete'; // FASE 2: GDPR Delete
+import PlayerInfoPanel from './PlayerDetails/PlayerInfoPanel'; // FASE 3: Info Panel
 
-  // 🎯 Calcola il ranking reale dalle partite (come in Classifica e Stats)
+// 🎯 FASE 2: Code Splitting - Lazy load dei tab per ridurre bundle size
+const PlayerNotes = lazy(() => import('./PlayerNotes'));
+const PlayerWallet = lazy(() => import('./PlayerWallet'));
+const PlayerCommunications = lazy(() => import('./PlayerCommunications'));
+const PlayerBookingHistory = lazy(() => import('./PlayerBookingHistory'));
+const PlayerTournamentTab = lazy(() => import('./PlayerTournamentTab'));
+const PlayerMedicalTab = lazy(() => import('./PlayerMedicalTab'));
+
+// Reducer
+import playerDetailsReducer, {
+  createInitialState,
+  ACTIONS,
+} from './PlayerDetails/reducers/playerDetailsReducer';
+
+export default function PlayerDetails({ player, onUpdate, onClose, T }) {
+  // Provide a safe default theme classes object when not passed (tests often omit it)
+  const theme = T || {
+    border: 'border-gray-200 dark:border-gray-700',
+    text: 'text-gray-800 dark:text-gray-200',
+    muted: 'text-gray-500 dark:text-gray-400',
+  };
+  const { clubId, players, matches, leaderboard } = useClub();
+  // In integration tests, component may render outside a Router. Provide a safe fallback.
+  let searchParams;
+  let setSearchParams;
+  try {
+    [searchParams, setSearchParams] = useSearchParams();
+  } catch (e) {
+    const noop = () => {};
+    searchParams = new URLSearchParams();
+    setSearchParams = noop;
+  }
+
+  // 🔒 Permissions check (FASE 2 - Security)
+  const permissions = usePlayerPermissions(player);
+
+  // 🎨 Notifications (FASE 2 - UX): Toast + ConfirmDialog
+  const { showSuccess, showError, confirm } = useNotifications();
+
+  // 🎯 State management con useReducer (sostituisce 15+ useState)
+  const [state, dispatch] = useReducer(playerDetailsReducer, createInitialState(player));
+
+  // Note: ESC handling is managed by the parent Modal for consistency across the app
+
+  // 🏆 Calcola il ranking reale dalle partite
   const playerWithRealRating = useMemo(() => {
     if (!clubId || !player) return player;
 
-    // 🏆 FILTRO CAMPIONATO: Solo giocatori che partecipano attivamente
     const tournamentPlayers = players.filter(
       (p) => p.tournamentData?.isParticipant === true && p.tournamentData?.isActive === true
     );
 
-    // Calcola il ranking per TUTTI i giocatori del torneo (non solo questo)
-    const rankingData = computeClubRanking(tournamentPlayers, matches, clubId);
+    const rankingData = computeClubRanking(tournamentPlayers, matches, clubId, {
+      leaderboardMap: leaderboard,
+    });
     const calculatedPlayer = rankingData.players.find((p) => p.id === player.id);
 
     if (calculatedPlayer) {
-      console.log(
-        '🎯 [PlayerDetails] Real rating calculated:',
-        calculatedPlayer.rating,
-        'vs profile rating:',
-        player.rating
-      );
       return { ...player, rating: calculatedPlayer.rating };
     }
 
     return player;
-  }, [player, players, matches, clubId]);
+  }, [player, players, matches, clubId, leaderboard]);
 
-  const [activeTab, setActiveTab] = useState('overview');
-  const [linking, setLinking] = useState(false);
-  const [linkEmail, setLinkEmail] = useState('');
-  const [accountSearch, setAccountSearch] = useState('');
-  const [accounts, setAccounts] = useState([]);
-  const [loadingAccounts, setLoadingAccounts] = useState(false);
-  const { players: clubPlayers } = useClub();
-
-  // Edit mode state
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [editFormData, setEditFormData] = useState({});
-  const [editErrors, setEditErrors] = useState({});
-
-  // Initialize edit form data when player changes or edit mode is activated
-  useEffect(() => {
-    if (player && isEditMode) {
-      const enhancedPlayer = { ...player };
-
-      // Se firstName e lastName non sono presenti ma c'è name, li separiamo
-      if (!enhancedPlayer.firstName && !enhancedPlayer.lastName && enhancedPlayer.name) {
-        const nameParts = enhancedPlayer.name.trim().split(' ');
-        enhancedPlayer.firstName = nameParts[0] || '';
-        enhancedPlayer.lastName = nameParts.slice(1).join(' ') || '';
-      }
-
-      setEditFormData({ ...enhancedPlayer });
-      setEditErrors({});
-    }
-  }, [player, isEditMode]);
-
-  // Handle edit form changes
-  const handleEditChange = (field, value) => {
-    setEditFormData((prev) => {
-      let newData;
-
-      if (field.includes('.')) {
-        const [parent, child] = field.split('.');
-        newData = {
-          ...prev,
-          [parent]: {
-            ...prev[parent],
-            [child]: value,
-          },
-        };
-      } else {
-        newData = { ...prev, [field]: value };
-      }
-
-      // Initialize instructor data when category is set to INSTRUCTOR
-      if (field === 'category' && value === PLAYER_CATEGORIES.INSTRUCTOR) {
-        newData.instructorData = {
-          isInstructor: true,
-          color: '#3B82F6',
-          specialties: [],
-          hourlyRate: 0,
-          priceSingle: 0,
-          priceCouple: 0,
-          priceThree: 0,
-          priceMatchLesson: 0,
-          bio: '',
-          certifications: [],
-          ...newData.instructorData,
-        };
-      }
-
-      return newData;
-    });
-
-    // Clear error when user starts typing
-    if (editErrors[field]) {
-      setEditErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
-  };
-
-  // Validate edit form
-  const validateEditForm = () => {
-    const newErrors = {};
-
-    if (!editFormData.firstName?.trim()) {
-      newErrors.firstName = 'Nome richiesto';
-    }
-    if (!editFormData.lastName?.trim()) {
-      newErrors.lastName = 'Cognome richiesto';
-    }
-    if (editFormData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editFormData.email)) {
-      newErrors.email = 'Email non valida';
-    }
-    if (editFormData.phone && !/^[\d\s+\-()]+$/.test(editFormData.phone)) {
-      newErrors.phone = 'Numero di telefono non valido';
-    }
-
-    setEditErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Save edit changes
-  const handleSaveEdit = () => {
-    if (!validateEditForm()) return;
-
-    // Rimuoviamo baseRating e rating per evitare conflitti con il sistema di ranking del campionato
-    const { baseRating, rating, ...filteredData } = editFormData;
-
-    const playerData = {
-      ...filteredData,
-      name: `${editFormData.firstName} ${editFormData.lastName}`.trim(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    onUpdate(playerData);
-    setIsEditMode(false);
-  };
-
-  // Cancel edit
-  const handleCancelEdit = () => {
-    setIsEditMode(false);
-    setEditFormData({});
-    setEditErrors({});
-  };
-
-  // 🔧 Leggi il parametro 'tab' dalla URL e apri la tab corrispondente
+  // 🔧 URL tab parameter handling
   useEffect(() => {
     const tabParam = searchParams.get('tab');
     if (tabParam) {
-      setActiveTab(tabParam);
-      // Rimuovi il parametro 'tab' dalla URL dopo averlo letto
+      dispatch({ type: ACTIONS.SET_ACTIVE_TAB, payload: tabParam });
       const newParams = new URLSearchParams(searchParams);
       newParams.delete('tab');
       setSearchParams(newParams, { replace: true });
     }
   }, [searchParams, setSearchParams]);
 
+  // 📋 Account linking helpers
   const linkedEmailsSet = useMemo(
     () =>
       new Set(
-        (clubPlayers || [])
+        (players || [])
           .filter((p) => p.id !== player.id && (p.isAccountLinked || p.linkedAccountEmail))
           .map((p) => (p.linkedAccountEmail || '').toLowerCase())
           .filter(Boolean)
       ),
-    [clubPlayers, player.id]
+    [players, player.id]
   );
+
   const linkedIdsSet = useMemo(
     () =>
       new Set(
-        (clubPlayers || [])
+        (players || [])
           .filter((p) => p.id !== player.id && (p.isAccountLinked || p.linkedAccountId))
           .map((p) => p.linkedAccountId)
           .filter(Boolean)
       ),
-    [clubPlayers, player.id]
+    [players, player.id]
   );
 
-  const unlinkedAccounts = useMemo(() => {
-    return (accounts || []).filter((acc) => {
-      const email = (acc.email || '').toLowerCase();
-      const uid = acc.uid;
-      if (!email) return false;
-      if (uid && linkedIdsSet.has(uid)) return false;
-      return !linkedEmailsSet.has(email);
-    });
-  }, [accounts, linkedEmailsSet, linkedIdsSet]);
+  // 🔄 Handlers with useCallback
+  const handleToggleEditMode = useCallback(async () => {
+    if (!state.isEditMode) {
+      // Entering edit mode
+      dispatch({ type: ACTIONS.TOGGLE_EDIT_MODE, payload: { player } });
+    } else {
+      // Exiting edit mode - check unsaved changes
+      if (state.isDirty) {
+        const confirmed = await confirm({
+          title: 'Modifiche non salvate',
+          message: 'Hai modifiche non salvate. Sei sicuro di voler uscire senza salvare?',
+          variant: 'warning',
+          confirmText: 'Esci senza salvare',
+          cancelText: 'Continua a modificare',
+        });
 
-  const filteredAccounts = useMemo(() => {
-    const q = accountSearch.trim().toLowerCase();
-    if (!q) return unlinkedAccounts;
-    return unlinkedAccounts.filter((acc) => {
-      return (
-        (acc.email || '').toLowerCase().includes(q) ||
-        (acc.firstName || '').toLowerCase().includes(q) ||
-        (acc.lastName || '').toLowerCase().includes(q)
-      );
-    });
-  }, [unlinkedAccounts, accountSearch]);
-
-  const openAccountsPicker = async () => {
-    try {
-      setLoadingAccounts(true);
-      const res = await listAllUserProfiles(500);
-      setAccounts(res || []);
-      setAccountSearch('');
-      setLinking(true);
-    } finally {
-      setLoadingAccounts(false);
+        if (!confirmed) {
+          return;
+        }
+      }
+      dispatch({ type: ACTIONS.CANCEL_EDIT });
     }
-  };
+  }, [state.isEditMode, state.isDirty, player, confirm]);
 
-  const getCategoryLabel = (category) => {
-    switch (category) {
-      case PLAYER_CATEGORIES.MEMBER:
-        return 'Membro';
-      case PLAYER_CATEGORIES.VIP:
-        return 'VIP';
-      case PLAYER_CATEGORIES.GUEST:
-        return 'Ospite';
-      case PLAYER_CATEGORIES.NON_MEMBER:
-        return 'Non Membro';
-      default:
-        return 'N/A';
+  const handleSaveEdit = useCallback(async () => {
+    // Validate
+    const errors = {};
+    const { editFormData } = state;
+
+    if (!editFormData.firstName?.trim()) errors.firstName = 'Nome richiesto';
+    if (!editFormData.lastName?.trim()) errors.lastName = 'Cognome richiesto';
+    if (editFormData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editFormData.email)) {
+      errors.email = 'Email non valida';
     }
-  };
-
-  const getCategoryColor = (category) => {
-    switch (category) {
-      case PLAYER_CATEGORIES.MEMBER:
-        return 'text-green-600 dark:text-green-400';
-      case PLAYER_CATEGORIES.VIP:
-        return 'text-purple-600 dark:text-purple-400';
-      case PLAYER_CATEGORIES.GUEST:
-        return 'text-blue-600 dark:text-blue-400';
-      default:
-        return 'text-gray-600 dark:text-gray-400';
+    if (editFormData.phone && !/^[\d\s+\-()]+$/.test(editFormData.phone)) {
+      errors.phone = 'Numero di telefono non valido';
     }
-  };
 
-  const handleLinkAccount = () => {
-    if (!linkEmail.trim()) return;
-
-    onUpdate({
-      linkedAccountEmail: linkEmail.trim(),
-      isAccountLinked: true,
-      updatedAt: new Date().toISOString(),
-    });
-
-    setLinking(false);
-    setLinkEmail('');
-  };
-
-  const handleUnlinkAccount = async () => {
-    if (!confirm("Sei sicuro di voler scollegare l'account da questo giocatore?")) {
+    if (Object.keys(errors).length > 0) {
+      dispatch({ type: ACTIONS.SET_FORM_ERRORS, payload: errors });
       return;
     }
 
-    try {
-      // Scollega dal profilo globale se esiste linkedAccountId
-      if (player.linkedAccountId) {
-        const { unlinkUserFromClub } = await import('@services/auth.jsx');
-        await unlinkUserFromClub(player.linkedAccountId, 'current-club-id', player.id); // TODO: passare clubId corretto
-      }
+    // Save
+    dispatch({ type: ACTIONS.SET_LOADING, payload: { saving: true } });
 
-      // Aggiorna il giocatore locale
-      onUpdate({
+    try {
+      const { baseRating, rating, ...filteredData } = editFormData;
+      const playerData = {
+        ...filteredData,
+        name: `${editFormData.firstName} ${editFormData.lastName}`.trim(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      await onUpdate(playerData);
+      showSuccess('Modifiche salvate con successo');
+      setTimeout(() => {
+        dispatch({ type: ACTIONS.CANCEL_EDIT });
+      }, 1000);
+    } catch (error) {
+      showError(`Errore: ${error.message}`);
+    } finally {
+      dispatch({ type: ACTIONS.SET_LOADING, payload: { saving: false } });
+    }
+  }, [state.editFormData, onUpdate]);
+
+  const handleToggleStatus = useCallback(async () => {
+    const action = player.isActive ? 'disattivare' : 'attivare';
+    
+    const confirmed = await confirm({
+      title: `${player.isActive ? 'Disattiva' : 'Attiva'} giocatore`,
+      message: `Sei sicuro di voler ${action} "${player.firstName} ${player.lastName}"?`,
+      variant: player.isActive ? 'warning' : 'success',
+      confirmText: player.isActive ? 'Disattiva' : 'Attiva',
+    });
+
+    if (!confirmed) return;
+
+    try {
+      await onUpdate({ isActive: !player.isActive });
+      showSuccess(`Giocatore ${!player.isActive ? 'attivato' : 'disattivato'} con successo`);
+    } catch (error) {
+      showError(`Errore: ${error.message}`);
+    }
+  }, [player.isActive, player.firstName, player.lastName, onUpdate, confirm, showSuccess, showError]);
+
+  const handleLinkAccount = useCallback(
+    async (account) => {
+      if (!account?.uid || !account?.email) return;
+
+      dispatch({ type: ACTIONS.SET_LOADING, payload: { linking: true } });
+
+      try {
+        await onUpdate({
+          isAccountLinked: true,
+          linkedAccountId: account.uid,
+          linkedAccountEmail: account.email,
+        });
+
+        showSuccess('Account collegato con successo');
+        dispatch({ type: ACTIONS.CANCEL_LINKING });
+      } catch (error) {
+        showError(`Errore: ${error.message}`);
+      } finally {
+        dispatch({ type: ACTIONS.SET_LOADING, payload: { linking: false } });
+      }
+    },
+    [onUpdate]
+  );
+
+  const handleUnlinkAccount = useCallback(async () => {
+    const confirmed = await confirm({
+      title: 'Scollega account',
+      message: `Sei sicuro di voler scollegare l'account "${player.linkedAccountEmail}"?`,
+      variant: 'warning',
+      confirmText: 'Scollega',
+      cancelText: 'Annulla',
+    });
+
+    if (!confirmed) return;
+
+    dispatch({ type: ACTIONS.SET_LOADING, payload: { unlinking: true } });
+
+    try {
+      await onUpdate({
+        isAccountLinked: false,
         linkedAccountId: null,
         linkedAccountEmail: null,
-        isAccountLinked: false,
-        updatedAt: new Date().toISOString(),
       });
+
+      showSuccess('Account scollegato con successo');
     } catch (error) {
-      console.error('Error unlinking account:', error);
-      alert('Errore durante lo scollegamento. Riprova.');
+      showError(`Errore: ${error.message}`);
+    } finally {
+      dispatch({ type: ACTIONS.SET_LOADING, payload: { unlinking: false } });
     }
-  };
+  }, [onUpdate, player.linkedAccountEmail, confirm, showSuccess, showError]);
 
-  const toggleActiveStatus = () => {
-    onUpdate({
-      isActive: !player.isActive,
-      updatedAt: new Date().toISOString(),
-    });
-  };
+  const openAccountsPicker = useCallback(async () => {
+    dispatch({ type: ACTIONS.SET_LOADING, payload: { loadingAccounts: true } });
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('it-IT', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const calculateAge = (birthDate) => {
-    if (!birthDate) return null;
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
+    try {
+      const res = await listAllUserProfiles(500);
+      dispatch({ type: ACTIONS.SET_ACCOUNTS, payload: res || [] });
+      dispatch({ type: ACTIONS.START_LINKING });
+    } catch (error) {
+      showError(`Errore caricamento account: ${error.message}`);
+    } finally {
+      dispatch({ type: ACTIONS.SET_LOADING, payload: { loadingAccounts: false } });
     }
-    return age;
-  };
+  }, [showError]);
 
+  // 🎨 Tabs configuration con counter dinamici
   const tabs = [
-    { id: 'overview', label: '👤 Panoramica', icon: '👤' },
-    { id: 'tournament', label: '🏆 Campionato', icon: '🏆' },
-    { id: 'medical', label: '🏥 Certificato Medico', icon: '🏥' },
-    { id: 'notes', label: '📝 Note', icon: '📝' },
-    { id: 'wallet', label: '💰 Wallet', icon: '💰' },
-    { id: 'bookings', label: '📅 Prenotazioni', icon: '📅' },
-    { id: 'communications', label: '✉️ Comunicazioni', icon: '✉️' },
+    { 
+      id: 'overview', 
+      label: 'Overview', 
+      icon: '📊',
+      description: 'Dati principali'
+    },
+    { 
+      id: 'tournament', 
+      label: 'Torneo', 
+      icon: '🏆',
+      description: 'Classifica e match',
+      counter: player.tournamentData?.isParticipant ? '✓' : null
+    },
+    { 
+      id: 'bookings', 
+      label: 'Prenotazioni', 
+      icon: '📅',
+      description: 'Storico campi',
+      counter: player.bookingHistory?.length || 0
+    },
+    { 
+      id: 'wallet', 
+      label: 'Portafoglio', 
+      icon: '💰',
+      description: 'Credito e transazioni',
+      counter: `€${(player.wallet?.balance || 0).toFixed(2)}`
+    },
+    { 
+      id: 'medical', 
+      label: 'Certificati', 
+      icon: '🏥',
+      description: 'Documenti medici',
+      counter: player.medicalCertificate?.status === 'valid' ? '✓' : '⚠️'
+    },
+    { 
+      id: 'notes', 
+      label: 'Note', 
+      icon: '📝',
+      description: 'Note private',
+      counter: player.notes?.length || 0
+    },
+    { 
+      id: 'communications', 
+      label: 'Email', 
+      icon: '📧',
+      description: 'Storico comunicazioni',
+      counter: player.communications?.length || 0
+    },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Header con info principali */}
-      <div className={`${T.cardBg} ${T.border} rounded-xl p-6`}>
-        <div className="flex flex-col xl:flex-row xl:items-start gap-8">
-          {/* Avatar e info base */}
-          <div className="flex items-start gap-4">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
-              {player.name ? player.name.charAt(0).toUpperCase() : '?'}
+    <div className="flex flex-col">
+      {/* 🔒 Read-Only Warning (FASE 2 - Security) */}
+      {permissions.isReadOnly && (
+        <div className="mx-2 sm:mx-4 my-4 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-900/10 border border-amber-300 dark:border-amber-700 rounded-xl p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0 w-10 h-10 bg-amber-200 dark:bg-amber-800/50 rounded-full flex items-center justify-center">
+              <span className="text-amber-700 dark:text-amber-300 text-lg">🔒</span>
             </div>
-
             <div>
-              <h2 className={`text-2xl font-bold ${T.text} mb-2`}>
-                {player.name ||
-                  `${player.firstName || ''} ${player.lastName || ''}`.trim() ||
-                  'Nome non disponibile'}
-              </h2>
-
-              <div className="flex items-center gap-3 mb-2">
-                <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 ${getCategoryColor(player.category)}`}
-                >
-                  {getCategoryLabel(player.category)}
-                </span>
-
-                {!player.isActive && (
-                  <span className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400">
-                    Inattivo
-                  </span>
-                )}
-              </div>
-
-              <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                {player.email && (
-                  <div className="flex items-center gap-2">
-                    <span>📧</span>
-                    <span>{player.email}</span>
-                  </div>
-                )}
-                {player.phone && (
-                  <div className="flex items-center gap-2">
-                    <span>📱</span>
-                    <span>{player.phone}</span>
-                  </div>
-                )}
-                {player.dateOfBirth && (
-                  <div className="flex items-center gap-2">
-                    <span>🎂</span>
-                    <span>
-                      {new Date(player.dateOfBirth).toLocaleDateString('it-IT')}
-                      {calculateAge(player.dateOfBirth) &&
-                        ` (${calculateAge(player.dateOfBirth)} anni)`}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Stats e azioni */}
-          <div className="flex-1 xl:text-right">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-              <div className="text-center">
-                {player.tournamentData?.isParticipant && player.tournamentData?.isActive ? (
-                  <>
-                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                      {Number(playerWithRealRating.rating || DEFAULT_RATING).toFixed(0)}
-                    </div>
-                    <div className={`text-xs ${T.subtext}`}>Ranking Attuale</div>
-                  </>
-                ) : (
-                  <>
-                    <div className="text-2xl font-bold text-gray-400 dark:text-gray-600">-</div>
-                    <div className={`text-xs ${T.subtext}`}>Non partecipa</div>
-                  </>
-                )}
-              </div>
-
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  €{(player.wallet?.balance || 0).toFixed(2)}
-                </div>
-                <div className={`text-xs ${T.subtext}`}>Credito</div>
-              </div>
-
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                  {player.bookingHistory?.length || 0}
-                </div>
-                <div className={`text-xs ${T.subtext}`}>Prenotazioni</div>
-              </div>
-            </div>
-
-            {/* Azioni rapide */}
-            <div className="flex gap-2 justify-end">
-              {!isEditMode ? (
-                <>
-                  <button
-                    onClick={() => setIsEditMode(true)}
-                    className={`${T.btnSecondary} px-3 py-1 text-sm`}
-                  >
-                    ✏️ Modifica
-                  </button>
-                  <button
-                    onClick={toggleActiveStatus}
-                    className={`px-3 py-1 text-sm rounded ${
-                      player.isActive
-                        ? 'bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400'
-                        : 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400'
-                    }`}
-                  >
-                    {player.isActive ? '⏸️ Disattiva' : '▶️ Attiva'}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={handleCancelEdit}
-                    className={`${T.btnSecondary} px-3 py-1 text-sm`}
-                  >
-                    ❌ Annulla
-                  </button>
-                  <button
-                    onClick={handleSaveEdit}
-                    className={`${T.btnPrimary} px-3 py-1 text-sm`}
-                  >
-                    💾 Salva
-                  </button>
-                </>
-              )}
+              <p className="text-amber-900 dark:text-amber-200 font-semibold text-sm">Modalità Solo Lettura</p>
+              <p className="text-amber-700 dark:text-amber-400 text-xs mt-0.5">Non hai i permessi per modificare questi dati</p>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Account linking */}
-        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span className={`text-sm font-medium ${T.text}`}>Account Collegato:</span>
-              {player.isAccountLinked ? (
-                <div className="flex items-center gap-2">
-                  <span className="text-green-500">🔗</span>
-                  <span className="text-sm text-green-600 dark:text-green-400">
-                    {player.linkedAccountEmail}
-                  </span>
-                  <button
-                    onClick={handleUnlinkAccount}
-                    className="text-xs text-red-500 hover:text-red-700 ml-2"
-                  >
-                    Scollega
-                  </button>
-                </div>
-              ) : (
-                <span className={`text-sm ${T.subtext}`}>Nessun account collegato</span>
-              )}
-            </div>
+      {/* Header */}
+      <PlayerDetailsHeader
+        player={player}
+        playerWithRealRating={playerWithRealRating}
+        isEditMode={state.isEditMode}
+        isSaving={state.loading.saving}
+        permissions={permissions}
+        onToggleEditMode={handleToggleEditMode}
+        onSaveEdit={handleSaveEdit}
+        onCancelEdit={handleToggleEditMode}
+        onToggleStatus={handleToggleStatus}
+        onClose={onClose}
+        T={theme}
+      />
 
-            {!player.isAccountLinked && (
-              <div className="flex flex-col gap-2 w-full max-w-xl">
-                {!linking ? (
-                  <div className="flex items-center gap-2 justify-end">
-                    <button
-                      onClick={openAccountsPicker}
-                      className={`${T.btnSecondary} px-4 py-2 text-sm`}
-                      disabled={loadingAccounts}
-                    >
-                      {loadingAccounts ? 'Carico…' : '🔎 Cerca account'}
-                    </button>
-                    <button
-                      onClick={() => setLinking(true)}
-                      className={`${T.btnSecondary} px-4 py-2 text-sm`}
-                    >
-                      🔗 Collega via email
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-2">
-                    {/* Ricerca accounts */}
-                    {accounts.length > 0 ? (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={accountSearch}
-                            onChange={(e) => setAccountSearch(e.target.value)}
-                            placeholder="Cerca per nome o email…"
-                            className={`${T.input} text-sm flex-1`}
-                          />
-                          <button
-                            onClick={() => setAccounts([])}
-                            className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded"
-                          >
-                            Chiudi elenco
-                          </button>
-                        </div>
-                        <div
-                          className={`${T.cardBg} ${T.border} rounded-lg max-h-64 overflow-auto`}
-                        >
-                          {filteredAccounts.length === 0 ? (
-                            <div className={`p-3 text-sm ${T.subtext}`}>
-                              Nessun account disponibile
-                            </div>
-                          ) : (
-                            <ul className="divide-y divide-gray-200 dark:divide-gray-700">
-                              {filteredAccounts.map((acc) => (
-                                <li key={acc.uid} className="p-3 flex items-center justify-between">
-                                  <div className="min-w-0">
-                                    <div className={`${T.text} font-medium truncate`}>
-                                      {acc.firstName || acc.lastName
-                                        ? `${acc.firstName || ''} ${acc.lastName || ''}`.trim()
-                                        : acc.email || 'Senza nome'}
-                                    </div>
-                                    <div className={`text-xs ${T.subtext} truncate`}>
-                                      {acc.email}
-                                    </div>
-                                  </div>
-                                  <button
-                                    onClick={() => {
-                                      const email = acc.email || '';
-                                      if (!email) return;
-                                      onUpdate({
-                                        linkedAccountId: acc.uid,
-                                        linkedAccountEmail: email,
-                                        isAccountLinked: true,
-                                        updatedAt: new Date().toISOString(),
-                                      });
-                                      setLinking(false);
-                                      setAccounts([]);
-                                      setAccountSearch('');
-                                      setLinkEmail('');
-                                    }}
-                                    className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded ml-3 flex-shrink-0"
-                                  >
-                                    Collega
-                                  </button>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="email"
-                          value={linkEmail}
-                          onChange={(e) => setLinkEmail(e.target.value)}
-                          placeholder="email@esempio.com"
-                          className={`${T.input} text-sm`}
-                        />
-                        <button
-                          onClick={handleLinkAccount}
-                          className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded"
-                        >
-                          Collega
-                        </button>
-                        <button
-                          onClick={() => {
-                            setLinking(false);
-                            setLinkEmail('');
-                          }}
-                          className="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded"
-                        >
-                          Annulla
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+      {/* Account Linking Section */}
+      {permissions.canLinkAccount && (
+        <div className="px-4 sm:px-6 py-4">
+          <PlayerAccountLinking
+            player={player}
+            isLinking={state.linking.isOpen}
+            linkEmail={state.linking.email}
+            accountSearch={state.linking.search}
+            accounts={state.linking.accounts}
+            linkedEmailsSet={linkedEmailsSet}
+            linkedIdsSet={linkedIdsSet}
+            loadingAccounts={state.loading.loadingAccounts}
+            loadingLink={state.loading.linking}
+            loadingUnlink={state.loading.unlinking}
+            permissions={permissions}
+            onOpenPicker={openAccountsPicker}
+            onClosePicker={() => dispatch({ type: ACTIONS.CANCEL_LINKING })}
+            onSearchChange={(value) => dispatch({ type: ACTIONS.SET_ACCOUNT_SEARCH, payload: value })}
+            onEmailChange={(value) => dispatch({ type: ACTIONS.SET_LINK_EMAIL, payload: value })}
+            onLinkAccount={handleLinkAccount}
+            onUnlinkAccount={handleUnlinkAccount}
+            T={theme}
+          />
         </div>
-      </div>
+      )}
 
-      {/* Tabs */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
-        <nav className="flex space-x-8 overflow-x-auto">
+      {/* HORIZONTAL TABS NAVIGATION */}
+      <div className={`border-b ${theme.border} bg-gray-50 dark:bg-gray-800/50 px-4 sm:px-6 sticky top-0 z-10`}>
+        <nav className="flex gap-2 overflow-x-auto scrollbar-thin" role="tablist">
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-              }`}
+              onClick={() => {
+                dispatch({ type: ACTIONS.SET_ACTIVE_TAB, payload: tab.id });
+              }}
+              className={`
+                group relative px-4 py-3 whitespace-nowrap
+                transition-all duration-200 ease-out
+                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800
+                ${
+                  state.activeTab === tab.id
+                    ? 'text-blue-600 dark:text-blue-400 font-semibold'
+                    : `${theme.text} hover:text-blue-600 dark:hover:text-blue-400`
+                }
+              `}
+              role="tab"
+              aria-selected={state.activeTab === tab.id}
+              aria-controls={`panel-${tab.id}`}
             >
-              <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden text-lg">{tab.icon}</span>
+              <div className="flex items-center gap-2">
+                <span className={`text-xl transition-transform duration-200 ${
+                  state.activeTab === tab.id ? 'scale-110' : 'group-hover:scale-110'
+                }`}>
+                  {tab.icon}
+                </span>
+                <span className="text-sm font-medium">{tab.label}</span>
+                {tab.counter !== undefined && tab.counter !== null && tab.counter !== 0 && (
+                  <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                    state.activeTab === tab.id
+                      ? 'bg-blue-600 dark:bg-blue-500 text-white'
+                      : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                  }`}>
+                    {tab.counter}
+                  </span>
+                )}
+              </div>
+              {state.activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400" />
+              )}
             </button>
           ))}
         </nav>
       </div>
 
-      {/* Tab Content */}
-      <div className="min-h-[400px]">
-        {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Dati di contatto */}
-            <div className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
-              <h3 className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}>
-                � Contatti
-              </h3>
-
-              {isEditMode ? (
-                <div className="space-y-4">
-                  <div>
-                    <label className={`block text-sm font-medium ${T.text} mb-1`}>Email</label>
-                    <input
-                      type="email"
-                      value={editFormData.email || ''}
-                      onChange={(e) => handleEditChange('email', e.target.value)}
-                      className={`${T.input} w-full ${editErrors.email ? 'border-red-500' : ''}`}
-                      placeholder="email@esempio.com"
-                    />
-                    {editErrors.email && (
-                      <p className="text-red-500 text-xs mt-1">{editErrors.email}</p>
-                    )}
+      {/* LAYOUT: Content + Info Panel */}
+      <div className="flex relative">
+        {/* MAIN CONTENT AREA */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-6 min-h-[400px]">
+            {state.activeTab === 'overview' && (
+              <div className="animate-in fade-in slide-in-from-right-2 duration-300">
+                {state.isEditMode ? (
+                  <PlayerEditMode state={state} dispatch={dispatch} T={theme} />
+                ) : (
+                  <div className="space-y-6">
+                    <PlayerOverviewTab player={player} playerWithRealRating={playerWithRealRating} T={theme} />
+                    <PlayerDataExport player={player} permissions={permissions} additionalData={{}} T={theme} />
+                    <PlayerDataDelete player={player} permissions={permissions} onDeleted={onClose} T={theme} />
                   </div>
+                )}
+              </div>
+            )}
 
-                  <div>
-                    <label className={`block text-sm font-medium ${T.text} mb-1`}>Telefono</label>
-                    <input
-                      type="tel"
-                      value={editFormData.phone || ''}
-                      onChange={(e) => handleEditChange('phone', e.target.value)}
-                      className={`${T.input} w-full ${editErrors.phone ? 'border-red-500' : ''}`}
-                      placeholder="+39 123 456 7890"
-                    />
-                    {editErrors.phone && (
-                      <p className="text-red-500 text-xs mt-1">{editErrors.phone}</p>
-                    )}
-                  </div>
-
-                  <div className="space-y-3">
-                    <h4 className={`font-medium ${T.text}`}>Indirizzo</h4>
-
-                    <input
-                      type="text"
-                      value={editFormData.address?.street || ''}
-                      onChange={(e) => handleEditChange('address.street', e.target.value)}
-                      className={`${T.input} w-full`}
-                      placeholder="Via, numero civico"
-                    />
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <input
-                        type="text"
-                        value={editFormData.address?.city || ''}
-                        onChange={(e) => handleEditChange('address.city', e.target.value)}
-                        className={`${T.input} w-full`}
-                        placeholder="Città"
-                      />
-                      <input
-                        type="text"
-                        value={editFormData.address?.province || ''}
-                        onChange={(e) => handleEditChange('address.province', e.target.value)}
-                        className={`${T.input} w-full`}
-                        placeholder="Provincia"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <input
-                        type="text"
-                        value={editFormData.address?.postalCode || ''}
-                        onChange={(e) => handleEditChange('address.postalCode', e.target.value)}
-                        className={`${T.input} w-full`}
-                        placeholder="CAP"
-                      />
-                      <input
-                        type="text"
-                        value={editFormData.address?.country || 'Italia'}
-                        onChange={(e) => handleEditChange('address.country', e.target.value)}
-                        className={`${T.input} w-full`}
-                        placeholder="Paese"
-                      />
-                    </div>
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center h-64 animate-in fade-in duration-300">
+                  <div className="text-center">
+                    <div className={`inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 ${theme.text}`}></div>
+                    <p className={`mt-4 ${theme.muted} text-sm font-medium`}>Caricamento...</p>
                   </div>
                 </div>
-              ) : (
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className={T.subtext}>Email:</span>
-                    <span className={T.text}>{player.email || 'N/A'}</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span className={T.subtext}>Telefono:</span>
-                    <span className={T.text}>{player.phone || 'N/A'}</span>
-                  </div>
-
-                  {player.address && (
-                    <div className="flex justify-between">
-                      <span className={T.subtext}>Indirizzo:</span>
-                      <span className={`${T.text} text-right`}>
-                        {[
-                          player.address.street,
-                          player.address.city,
-                          player.address.province,
-                          player.address.postalCode,
-                        ]
-                          .filter(Boolean)
-                          .join(', ') || 'N/A'}
-                      </span>
-                    </div>
-                  )}
+              }
+            >
+              {state.activeTab === 'tournament' && (
+                <div className="animate-in fade-in slide-in-from-right-2 duration-300">
+                  <PlayerTournamentTab player={player} clubId={clubId} onUpdate={onUpdate} T={theme} />
                 </div>
               )}
-            </div>
 
-            {/* Dati sportivi */}
-            <div className={`${T.cardBg} ${T.border} rounded-xl p-4`}>
-              <h3 className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}>
-                🏃 Dati Sportivi
-              </h3>
-
-              {isEditMode ? (
-                <div className="space-y-4">
-                  <div>
-                    <label className={`flex items-center gap-2 ${T.text}`}>
-                      <input
-                        type="checkbox"
-                        checked={editFormData.isActive !== false}
-                        onChange={(e) => handleEditChange('isActive', e.target.checked)}
-                        className="rounded"
-                      />
-                      Giocatore attivo
-                    </label>
-                    <p className={`text-xs ${T.subtext} mt-1`}>
-                      I giocatori inattivi non appaiono nelle selezioni per i match
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className={`flex items-center gap-2 ${T.text}`}>
-                      <input
-                        type="checkbox"
-                        checked={editFormData.tournamentData?.isParticipant !== false}
-                        onChange={(e) => handleEditChange('tournamentData.isParticipant', e.target.checked)}
-                        className="rounded"
-                      />
-                      Partecipa al Campionato
-                    </label>
-                    <p className={`text-xs ${T.subtext} mt-1`}>
-                      I giocatori che non partecipano al campionato non appaiono nelle classifiche
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-3 text-sm">
-                  {player.tournamentData?.isParticipant && player.tournamentData?.isActive ? (
-                    <>
-                      <div className="flex justify-between">
-                        <span className={T.subtext}>🎯 Ranking Iniziale:</span>
-                        <span className="text-orange-600 dark:text-orange-400 font-semibold">
-                          {player.tournamentData.initialRanking || DEFAULT_RATING}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between">
-                        <span className={T.subtext}>🏆 Ranking Attuale:</span>
-                        <span className="text-purple-600 dark:text-purple-400 font-semibold">
-                          {Number(playerWithRealRating.rating || DEFAULT_RATING).toFixed(0)}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between">
-                        <span className={T.subtext}>📊 Progressione:</span>
-                        <span
-                          className={
-                            (playerWithRealRating.rating || 0) >
-                            (player.tournamentData.initialRanking || 0)
-                              ? 'text-green-600 dark:text-green-400 font-semibold'
-                              : (playerWithRealRating.rating || 0) <
-                                (player.tournamentData.initialRanking || 0)
-                              ? 'text-red-600 dark:text-red-400 font-semibold'
-                              : T.text
-                          }
-                        >
-                          {(playerWithRealRating.rating || 0) - (player.tournamentData.initialRanking || 0) >
-                          0
-                            ? '+'
-                            : ''}
-                          {(playerWithRealRating.rating || 0) - (player.tournamentData.initialRanking || 0)}
-                        </span>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center py-4">
-                      <span className={`text-sm ${T.subtext}`}>
-                        Giocatore non partecipa al campionato
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between">
-                    <span className={T.subtext}>Stato:</span>
-                    <span
-                      className={
-                        player.isActive
-                          ? 'text-green-600 dark:text-green-400'
-                          : 'text-red-600 dark:text-red-400'
-                      }
-                    >
-                      {player.isActive ? 'Attivo' : 'Inattivo'}
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span className={T.subtext}>Partite giocate:</span>
-                    <span className={T.text}>{player.matchHistory?.length || 0}</span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span className={T.subtext}>Ultima attività:</span>
-                    <span className={T.text}>{formatDate(player.lastActivity)}</span>
-                  </div>
+              {state.activeTab === 'bookings' && (
+                <div className="animate-in fade-in slide-in-from-right-2 duration-300">
+                  <PlayerBookingHistory player={player} T={theme} />
                 </div>
               )}
-            </div>            {/* Tag e note rapide */}
-            <div className={`${T.cardBg} ${T.border} rounded-xl p-4 lg:col-span-2`}>
-              <h3 className={`font-semibold ${T.text} mb-4 flex items-center gap-2`}>
-                🏷️ Tag e Preferenze
-              </h3>
 
-              {isEditMode ? (
-                <div className="space-y-4">
-                  <div>
-                    <label className={`block text-sm font-medium ${T.text} mb-1`}>
-                      Tag (separati da virgola)
-                    </label>
-                    <input
-                      type="text"
-                      value={editFormData.tags?.join(', ') || ''}
-                      onChange={(e) =>
-                        handleEditChange(
-                          'tags',
-                          e.target.value
-                            .split(',')
-                            .map((t) => t.trim())
-                            .filter(Boolean)
-                        )
-                      }
-                      className={`${T.input} w-full`}
-                      placeholder="principiante, mattiniero, competitivo"
-                    />
-                    <p className={`text-xs ${T.subtext} mt-1`}>
-                      I tag aiutano a categorizzare e filtrare i giocatori
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className={`font-medium ${T.text} mb-3`}>Preferenze di Comunicazione</h4>
-                    <div className="space-y-3">
-                      <label className={`flex items-center gap-2 ${T.text}`}>
-                        <input
-                          type="checkbox"
-                          checked={editFormData.communicationPreferences?.email !== false}
-                          onChange={(e) =>
-                            handleEditChange('communicationPreferences.email', e.target.checked)
-                          }
-                          className="rounded"
-                        />
-                        Ricevi email
-                      </label>
-
-                      <label className={`flex items-center gap-2 ${T.text}`}>
-                        <input
-                          type="checkbox"
-                          checked={editFormData.communicationPreferences?.sms === true}
-                          onChange={(e) =>
-                            handleEditChange('communicationPreferences.sms', e.target.checked)
-                          }
-                          className="rounded"
-                        />
-                        Ricevi SMS
-                      </label>
-
-                      <label className={`flex items-center gap-2 ${T.text}`}>
-                        <input
-                          type="checkbox"
-                          checked={editFormData.communicationPreferences?.whatsapp === true}
-                          onChange={(e) =>
-                            handleEditChange('communicationPreferences.whatsapp', e.target.checked)
-                          }
-                          className="rounded"
-                        />
-                        Ricevi WhatsApp
-                      </label>
-
-                      <label className={`flex items-center gap-2 ${T.text}`}>
-                        <input
-                          type="checkbox"
-                          checked={editFormData.communicationPreferences?.notifications !== false}
-                          onChange={(e) =>
-                            handleEditChange('communicationPreferences.notifications', e.target.checked)
-                          }
-                          className="rounded"
-                        />
-                        Ricevi notifiche push
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div>
-                    <span className={`text-sm ${T.subtext} block mb-2`}>Tag:</span>
-                    <div className="flex flex-wrap gap-2">
-                      {player.tags && player.tags.length > 0 ? (
-                        player.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs rounded-full"
-                          >
-                            {tag}
-                          </span>
-                        ))
-                      ) : (
-                        <span className={`text-sm ${T.subtext}`}>Nessun tag assegnato</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className={`text-sm ${T.subtext} block mb-2`}>
-                      Preferenze comunicazione:
-                    </span>
-                    <div className="flex flex-wrap gap-4 text-sm">
-                      <span
-                        className={`flex items-center gap-1 ${
-                          player.communicationPreferences?.email
-                            ? 'text-green-600 dark:text-green-400'
-                            : T.subtext
-                        }`}
-                      >
-                        📧 Email: {player.communicationPreferences?.email ? 'Sì' : 'No'}
-                      </span>
-                      <span
-                        className={`flex items-center gap-1 ${
-                          player.communicationPreferences?.sms
-                            ? 'text-green-600 dark:text-green-400'
-                            : T.subtext
-                        }`}
-                      >
-                        📱 SMS: {player.communicationPreferences?.sms ? 'Sì' : 'No'}
-                      </span>
-                      <span
-                        className={`flex items-center gap-1 ${
-                          player.communicationPreferences?.whatsapp
-                            ? 'text-green-600 dark:text-green-400'
-                            : T.subtext
-                        }`}
-                      >
-                        📞 WhatsApp: {player.communicationPreferences?.whatsapp ? 'Sì' : 'No'}
-                      </span>
-                    </div>
-                  </div>
+              {state.activeTab === 'wallet' && (
+                <div className="animate-in fade-in slide-in-from-right-2 duration-300">
+                  <PlayerWallet player={player} onUpdate={onUpdate} T={theme} />
                 </div>
               )}
-            </div>
+
+              {state.activeTab === 'medical' && (
+                <div className="animate-in fade-in slide-in-from-right-2 duration-300">
+                  <PlayerMedicalTab player={player} onUpdate={onUpdate} T={theme} />
+                </div>
+              )}
+
+              {state.activeTab === 'notes' && (
+                <div className="animate-in fade-in slide-in-from-right-2 duration-300">
+                  <PlayerNotes player={player} onUpdate={onUpdate} T={theme} />
+                </div>
+              )}
+
+              {state.activeTab === 'communications' && (
+                <div className="animate-in fade-in slide-in-from-right-2 duration-300">
+                  <PlayerCommunications player={player} T={theme} />
+                </div>
+              )}
+            </Suspense>
           </div>
-        )}
+        </div>
 
-        {activeTab === 'tournament' && (
-          <PlayerTournamentTab player={player} onUpdate={onUpdate} T={T} />
-        )}
-
-        {activeTab === 'medical' && <PlayerMedicalTab player={player} onUpdate={onUpdate} T={T} />}
-
-        {activeTab === 'notes' && <PlayerNotes player={player} onUpdate={onUpdate} T={T} />}
-
-        {activeTab === 'wallet' && <PlayerWallet player={player} onUpdate={onUpdate} T={T} />}
-
-        {activeTab === 'bookings' && <PlayerBookingHistory player={player} T={T} />}
-
-        {activeTab === 'communications' && (
-          <PlayerCommunications player={player} onUpdate={onUpdate} T={T} />
-        )}
+        {/* FASE 3: INFO PANEL - Right Side (Desktop Only) */}
+        <PlayerInfoPanel player={player} T={theme} />
       </div>
     </div>
   );

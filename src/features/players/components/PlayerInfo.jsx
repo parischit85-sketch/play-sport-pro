@@ -6,7 +6,7 @@
 import React from 'react';
 import { getPlayerFullName, getCategoryStyle, getCategoryLabel } from '@lib/playerUtils.js';
 
-export default function PlayerInfo({ player, onView, T, layout = 'desktop' }) {
+const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
   const tags = player.tags || [];
   const notesCount = player.notes?.length || 0;
   const subscription = player.subscriptions?.[player.subscriptions?.length - 1];
@@ -105,7 +105,7 @@ export default function PlayerInfo({ player, onView, T, layout = 'desktop' }) {
           </span>
         </div>
         <div className="flex gap-1 flex-wrap">
-          {tags.slice(0, 3).map((tag, i) => (
+          {tags.slice(0, 2).map((tag, i) => (
             <span
               key={i}
               className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-[11px] break-words max-w-[10rem]"
@@ -113,11 +113,14 @@ export default function PlayerInfo({ player, onView, T, layout = 'desktop' }) {
               {tag}
             </span>
           ))}
-          {tags.length > 3 && (
-            <span className={`text-[11px] ${T.subtext}`}>+{tags.length - 3}</span>
+          {tags.length > 2 && (
+            <span className={`text-[11px] ${T.subtext}`}>+{tags.length - 2}</span>
           )}
         </div>
       </div>
     </>
   );
-}
+};
+
+// 🚀 OTTIMIZZAZIONE: Memoizza per evitare re-render inutili
+export default React.memo(PlayerInfo);

@@ -3,6 +3,7 @@
 // Gestione richieste di registrazione circoli
 // =============================================
 import React, { useState, useEffect } from 'react';
+import { useNotifications } from '@contexts/NotificationContext';
 import { db } from '@services/firebase.js';
 import {
   collection,
@@ -28,6 +29,7 @@ import {
 } from 'lucide-react';
 
 export default function ClubRegistrationRequests() {
+  const { showSuccess, showError, confirm } = useNotifications();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -49,16 +51,21 @@ export default function ClubRegistrationRequests() {
       setRequests(data);
     } catch (error) {
       console.error('Error loading requests:', error);
-      alert('Errore nel caricamento delle richieste');
+      showError('Errore nel caricamento delle richieste');
     } finally {
       setLoading(false);
     }
   };
 
   const handleApprove = async (request) => {
-    if (!confirm(`Confermi di voler approvare la richiesta per "${request.name}"?`)) {
-      return;
-    }
+    const confirmed = await confirm({
+      title: 'Approva richiesta',
+      message: `Confermi di voler approvare la richiesta per "${request.name}"?`,
+      variant: 'success',
+      confirmText: 'Approva',
+      cancelText: 'Annulla',
+    });
+    if (!confirmed) return;
 
     setProcessing(true);
     try {
@@ -74,10 +81,10 @@ export default function ClubRegistrationRequests() {
         location: {
           city: request.address.city,
           province: request.address.province || '',
-          coordinates: null, // TODO: geocoding
+          coordinates: null,
         },
         contact: request.contact,
-        logo: request.logoBase64 || null, // Salva il logo in Base64 per ora
+        logo: request.logoBase64 || null,
         settings: {
           bookingDuration: 90,
           advanceBookingDays: 14,
@@ -90,31 +97,62 @@ export default function ClubRegistrationRequests() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         isActive: true,
+        status: 'approved',
+        ownerId: request.adminData?.userId,
+        ownerEmail: request.adminData?.email,
+        managers: [request.adminData?.userId],
       };
 
       const clubRef = await addDoc(collection(db, 'clubs'), clubData);
+      const clubId = clubRef.id;
 
-      // 2. Aggiorna lo status della richiesta
+      // 2. Crea il record affiliations per l'admin del circolo
+      if (request.adminData?.userId) {
+        await addDoc(collection(db, 'affiliations'), {
+          userId: request.adminData.userId,
+          clubId: clubId,
+          role: 'club_admin',
+          status: 'approved',
+          isClubAdmin: true,
+          
+          // Permission flags
+          canManageBookings: true,
+          canManageCourts: true,
+          canManageInstructors: true,
+          canViewReports: true,
+          canManageMembers: true,
+          canManageSettings: true,
+          
+          requestedAt: serverTimestamp(),
+          approvedAt: serverTimestamp(),
+          joinedAt: serverTimestamp(),
+          _createdAt: serverTimestamp(),
+          _updatedAt: serverTimestamp(),
+        });
+      }
+
+      // 3. Aggiorna lo status della richiesta
       await updateDoc(doc(db, 'clubRegistrationRequests', request.id), {
         status: 'approved',
         approvedAt: serverTimestamp(),
-        clubId: clubRef.id,
+        clubId: clubId,
       });
 
-      alert(
-        `✅ Circolo "${request.name}" approvato con successo!\n\nID Circolo: ${clubRef.id}\n\nNota: Il logo è salvato in Base64. Per migliorare le performance, puoi caricarlo su Firebase Storage dalle impostazioni del circolo.`
+      showSuccess(
+        `✅ Circolo "${request.name}" approvato con successo!\n\nID Circolo: ${clubId}\n${request.adminData ? `Admin: ${request.adminData.firstName} ${request.adminData.lastName}` : ''}`
       );
-      loadRequests(); // Ricarica la lista
+      loadRequests();
       setSelectedRequest(null);
     } catch (error) {
       console.error('Error approving request:', error);
-      alert("❌ Errore durante l'approvazione: " + error.message);
+      showError("❌ Errore durante l'approvazione: " + error.message);
     } finally {
       setProcessing(false);
     }
   };
 
   const handleReject = async (request) => {
+    // TODO: Replace prompt with custom dialog input
     const reason = prompt('Motivo del rifiuto (opzionale):');
     if (reason === null) return; // Cancellato
 
@@ -126,12 +164,12 @@ export default function ClubRegistrationRequests() {
         rejectionReason: reason || 'Non specificato',
       });
 
-      alert(`❌ Richiesta rifiutata`);
+      showSuccess(`❌ Richiesta rifiutata`);
       loadRequests();
       setSelectedRequest(null);
     } catch (error) {
       console.error('Error rejecting request:', error);
-      alert('Errore durante il rifiuto');
+      showError('Errore durante il rifiuto');
     } finally {
       setProcessing(false);
     }

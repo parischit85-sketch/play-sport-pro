@@ -5,11 +5,45 @@
 
 import React from 'react';
 
-export default function PlayerBadges({ player, certStatus, compact = false }) {
-  const badgeClass = compact ? 'text-sm' : 'text-sm';
+const PlayerBadges = ({ player, certStatus, _compact = false }) => {
+  const status = certStatus?.status;
+  const days = certStatus?.daysUntilExpiry;
+
+  // Decide label e stile per il badge certificato
+  let certLabel = 'Certificato';
+  let certClass = 'bg-gray-100 text-gray-700 dark:bg-gray-800/60 dark:text-gray-300';
+  if (status === 'expired') {
+    certLabel = days != null ? `Scaduto da ${Math.abs(days)}g` : 'Scaduto';
+    certClass = 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300';
+  } else if (status === 'expiring') {
+    certLabel = days != null ? `In scadenza ${days}g` : 'In scadenza';
+    certClass = 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300';
+  } else if (status === 'valid') {
+    certLabel = days != null ? `Valido ${days}g` : 'Valido';
+    certClass = 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300';
+  } else if (status === 'missing') {
+    certLabel = 'Mancante';
+    certClass = 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300';
+  }
 
   return (
-    <div className="flex items-center gap-1 flex-wrap">
+    <div className="flex items-center gap-2 flex-wrap">
+      {/* Badge Certificato Medico – sempre visibile */}
+      <span
+        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${certClass}`}
+        title={
+          status === 'expired'
+            ? `Certificato scaduto ${days != null ? Math.abs(days) : ''} giorni fa`
+            : status === 'expiring'
+            ? `Certificato in scadenza${days != null ? ` tra ${days} giorni` : ''}`
+            : status === 'valid'
+            ? `Certificato valido${days != null ? ` (${days} giorni rimanenti)` : ''}`
+            : 'Certificato non presente'
+        }
+      >
+        {certLabel}
+      </span>
+
       {/* Account collegato */}
       {player.isAccountLinked && (
         <span className="text-green-500" title="Account collegato">
@@ -23,29 +57,9 @@ export default function PlayerBadges({ player, certStatus, compact = false }) {
           ⏸️
         </span>
       )}
-
-      {/* Badge Certificato Medico */}
-      {certStatus.isExpired && (
-        <span
-          className="text-red-600"
-          title={`Certificato scaduto ${Math.abs(certStatus.daysUntilExpiry)} giorni fa`}
-        >
-          ⚠️
-        </span>
-      )}
-      {certStatus.isExpiring && certStatus.daysUntilExpiry <= 15 && !certStatus.isExpired && (
-        <span
-          className="text-orange-600 animate-pulse"
-          title={`Certificato scade tra ${certStatus.daysUntilExpiry} giorni`}
-        >
-          ⏰
-        </span>
-      )}
-      {certStatus.status === 'missing' && (
-        <span className="text-gray-500" title="Nessun certificato medico">
-          📄
-        </span>
-      )}
     </div>
   );
-}
+};
+
+// 🚀 OTTIMIZZAZIONE: Memoizza per evitare re-render inutili
+export default React.memo(PlayerBadges);

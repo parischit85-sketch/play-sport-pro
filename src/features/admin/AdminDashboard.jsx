@@ -7,6 +7,8 @@ import { useAuth } from '@contexts/AuthContext.jsx';
 import { getClubs, createClub } from '@services/clubs.js';
 import { getAdminStats, getRecentActivity, getPendingAffiliations } from '@services/admin.js';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
+import AdminAnnouncements from './AdminAnnouncements.jsx';
+import { revertTournamentChampionshipPoints } from '@features/tournaments/services/championshipApplyService.js';
 
 const StatCard = ({ title, value, icon, color = 'blue', subtitle, trend }) => {
   const colors = {
@@ -865,9 +867,15 @@ const AdminDashboard = () => {
               onReject={handleAffiliationReject}
             />
           </div>
-          <div>
+          <div className="space-y-6">
             <SystemStatus stats={stats} loading={loading} />
+            <AdminChampionshipRevertTool />
           </div>
+        </div>
+
+        {/* Admin Announcements Section */}
+        <div className="mt-8">
+          <AdminAnnouncements />
         </div>
       </div>
 
@@ -977,3 +985,95 @@ const SystemStatus = ({ stats, loading }) => {
 };
 
 export default AdminDashboard;
+
+// --- Admin utility: Revert Championship Points for a Tournament ---
+const AdminChampionshipRevertTool = () => {
+  const [clubId, setClubId] = useState('');
+  const [tournamentId, setTournamentId] = useState('');
+  const [running, setRunning] = useState(false);
+  const [message, setMessage] = useState(null);
+
+  const onRevert = async (e) => {
+    e.preventDefault();
+    setMessage(null);
+    if (!clubId || !tournamentId) {
+      setMessage({ type: 'error', text: 'Inserisci clubId e tournamentId' });
+      return;
+    }
+    if (!window.confirm('Confermi di voler annullare i punti campionato per questo torneo?')) {
+      return;
+    }
+    setRunning(true);
+    try {
+      const res = await revertTournamentChampionshipPoints(clubId.trim(), tournamentId.trim());
+      if (res.success) {
+        if (res.alreadyReverted) {
+          setMessage({ type: 'info', text: 'Nessun punto da annullare (già annullato o non applicato).' });
+        } else {
+          setMessage({ type: 'success', text: 'Punti annullati con successo.' });
+        }
+      } else {
+        setMessage({ type: 'error', text: res.error || 'Errore durante l\'annullamento.' });
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage({ type: 'error', text: err.message || 'Errore inatteso.' });
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Annulla Punti Campionato (Admin)</h2>
+      <form onSubmit={onRevert} className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="clubId">clubId</label>
+          <input
+            id="clubId"
+            type="text"
+            value={clubId}
+            onChange={(e) => setClubId(e.target.value)}
+            placeholder="es. Sporting-cat"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" htmlFor="tournamentId">tournamentId</label>
+          <input
+            id="tournamentId"
+            type="text"
+            value={tournamentId}
+            onChange={(e) => setTournamentId(e.target.value)}
+            placeholder="es. 0ldDFGoWU6dgHUcQJ1M7"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <div className="flex items-center gap-3 pt-2">
+          <button
+            type="submit"
+            disabled={running}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {running ? 'Annullamento...' : 'Annulla Punti Torneo'}
+          </button>
+        </div>
+
+        {message && (
+          <div
+            className={`mt-3 text-sm ${
+              message.type === 'success'
+                ? 'text-green-700'
+                : message.type === 'error'
+                ? 'text-red-700'
+                : 'text-gray-600'
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
+      </form>
+    </div>
+  );
+};

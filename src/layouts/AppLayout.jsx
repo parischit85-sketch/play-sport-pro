@@ -20,6 +20,7 @@ import PWAInstallPrompt from '@ui/PWAInstallPrompt.jsx';
 import BookingTypeModal from '@ui/BookingTypeModal.jsx';
 import CertificateExpiryAlert from '@features/players/components/CertificateExpiryAlert.jsx';
 import { logout } from '@services/auth.jsx';
+import { logger } from '@/utils/logger';
 
 function AppLayoutInner() {
   const { user, userRole, isClubAdmin, getFirstAdminClub } = useAuth();
@@ -70,7 +71,7 @@ function AppLayoutInner() {
             cacheTTL: 180000,
           });
           if (!cancelled && result.status === LocationStatus.SUCCESS) {
-            console.log(
+            logger.debug(
               '🌍 [AppLayout] Prefetched location (permission already granted). Accuracy:',
               result.accuracy
             );
@@ -79,8 +80,8 @@ function AppLayoutInner() {
         }
 
         // If denied we do nothing now (user can trigger manually in flows)
-        if (permissionState === 'denied') {
-          console.log('🚫 [AppLayout] Geolocation already denied. Skipping auto prompt.');
+        if (permission === 'denied') {
+          logger.debug('Geolocation already denied. Skipping auto prompt.');
           return;
         }
 
@@ -114,7 +115,7 @@ function AppLayoutInner() {
 
         switch (result.status) {
           case LocationStatus.SUCCESS:
-            console.log(
+            logger.debug(
               '✅ [AppLayout] Geolocation granted on first-run. Accuracy:',
               result.accuracy
             );
@@ -164,7 +165,7 @@ function AppLayoutInner() {
             break;
         }
       } catch (e) {
-        console.warn('⚠️ [AppLayout] First-run geolocation preflight error:', e);
+        logger.warn('⚠️ [AppLayout] First-run geolocation preflight error:', e);
       }
     };
 
@@ -177,7 +178,7 @@ function AppLayoutInner() {
 
   // Auto-scroll to top on route change (for programmatic navigation like clicking on players)
   React.useEffect(() => {
-    console.log('📍 [AppLayout] Route changed:', {
+    logger.debug('Route changed', {
       pathname: location.pathname,
       search: location.search,
       clubId,
@@ -194,7 +195,7 @@ function AppLayoutInner() {
       // Forza il reindirizzamento alla landing page dopo logout
       navigate('/', { replace: true });
     } catch (error) {
-      console.error('Errore durante il logout:', error);
+      logger.error('Errore durante il logout:', error);
     }
   };
 
@@ -275,6 +276,12 @@ function AppLayoutInner() {
             label: 'Statistiche',
             path: `/club/${validClubId}/stats`,
             public: true,
+          },
+          {
+            id: 'tournaments',
+            label: 'Tornei',
+            path: `/club/${validClubId}/tournaments`,
+            public: true,
           }
         );
 
@@ -291,12 +298,6 @@ function AppLayoutInner() {
               id: 'matches',
               label: 'Partite',
               path: `/club/${validClubId}/matches/create`,
-              clubAdmin: true,
-            },
-            {
-              id: 'tournaments',
-              label: 'Tornei',
-              path: `/club/${validClubId}/tournaments`,
               clubAdmin: true,
             },
             {
@@ -358,7 +359,7 @@ function AppLayoutInner() {
   const activeTab = navigation.find((nav) => nav.path === currentPath)?.id || '';
 
   const handleTabChange = (tabId) => {
-    console.log('🔄 [AppLayout] handleTabChange called:', {
+    logger.debug('handleTabChange called', {
       newTabId: tabId,
       currentTabId: activeTab,
       currentPath: location.pathname,
@@ -369,21 +370,21 @@ function AppLayoutInner() {
 
     // Intercept "prenota" tab to open BookingTypeModal instead of navigating
     if (tabId === 'prenota') {
-      console.log('🎯 [AppLayout] Opening BookingTypeModal for prenota tab');
+      logger.debug('Opening BookingTypeModal for prenota tab');
       setShowBookingModal(true);
       return;
     }
 
     // Prevent navigation if already on the same tab (iOS fix for refresh issue)
     if (activeTab === tabId) {
-      console.log('⚠️ [AppLayout] Already on tab, skipping navigation:', tabId);
+      logger.debug('Already on tab, skipping navigation', tabId);
       return;
     }
 
     const nav = navigation.find((n) => n.id === tabId);
 
     if (nav) {
-      console.log('✅ [AppLayout] Navigating to:', {
+      logger.debug('Navigating to', {
         tabId,
         path: nav.path,
         label: nav.label,
@@ -396,7 +397,7 @@ function AppLayoutInner() {
       // Use replace instead of push to prevent back stack issues on iOS
       navigate(nav.path, { replace: true });
     } else {
-      console.error('❌ [AppLayout] Tab not found in navigation:', tabId);
+      logger.error('❌ [AppLayout] Tab not found in navigation:', tabId);
     }
   };
 

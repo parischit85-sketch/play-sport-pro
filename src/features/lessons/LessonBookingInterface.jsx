@@ -4,6 +4,7 @@
 // =============================================
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useNotifications } from '@contexts/NotificationContext';
 import Section from '@ui/Section.jsx';
 import Badge from '@ui/Badge.jsx';
 import Modal from '@ui/Modal.jsx';
@@ -31,6 +32,7 @@ export default function LessonBookingInterface({
   clubMode,
   clubId,
 }) {
+  const { confirm } = useNotifications();
   const { user } = useAuth();
   const actualUser = user || propUser; // Use context user if available, fallback to prop user
   const [searchParams, setSearchParams] = useSearchParams();
@@ -253,11 +255,15 @@ export default function LessonBookingInterface({
 
   // Clear all test lesson bookings using unified service
   const handleClearAllLessons = useCallback(async () => {
-    if (
-      !window.confirm(
-        '⚠️ ATTENZIONE: Questa azione cancellerà TUTTE le prenotazioni di lezione e i relativi slot nei campi. Continuare?'
-      )
-    ) {
+    const confirmed = await confirm({
+      title: 'Cancella Tutte le Lezioni',
+      message: '⚠️ ATTENZIONE: Questa azione cancellerà TUTTE le prenotazioni di lezione e i relativi slot nei campi. Continuare?',
+      variant: 'danger',
+      confirmText: 'Cancella Tutte',
+      cancelText: 'Annulla',
+    });
+    
+    if (!confirmed) {
       return;
     }
 
@@ -281,7 +287,7 @@ export default function LessonBookingInterface({
         text: 'Errore durante la cancellazione delle prenotazioni.',
       });
     }
-  }, [clearAllLessons]);
+  }, [clearAllLessons, confirm]);
 
   // Function to update lesson config
   const updateLessonConfig = useCallback(
@@ -1047,7 +1053,14 @@ export default function LessonBookingInterface({
   // Handle lesson cancellation
   const handleCancelLesson = useCallback(
     async (lessonId) => {
-      if (!window.confirm('Sei sicuro di voler cancellare questa lezione?')) return;
+      const confirmed = await confirm({
+        title: 'Cancella Lezione',
+        message: 'Sei sicuro di voler cancellare questa lezione?',
+        variant: 'warning',
+        confirmText: 'Cancella',
+        cancelText: 'Annulla',
+      });
+      if (!confirmed) return;
 
       try {
         await cancelLessonBooking(lessonId);
@@ -1064,7 +1077,7 @@ export default function LessonBookingInterface({
         });
       }
     },
-    [cancelLessonBooking]
+    [cancelLessonBooking, confirm]
   );
 
   // Step navigation helpers

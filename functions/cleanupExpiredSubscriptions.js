@@ -18,7 +18,7 @@ const db = getFirestore();
 // =============================================
 export const cleanupExpiredSubscriptions = onSchedule(
   {
-    schedule: 'every 24 hours',
+    schedule: '0 2 * * *', // Daily at 2 AM
     timeZone: 'Europe/Rome',
     memory: '256MiB',
     timeoutSeconds: 300,
@@ -85,7 +85,7 @@ export const cleanupExpiredSubscriptions = onSchedule(
 // =============================================
 export const cleanupInactiveSubscriptions = onSchedule(
   {
-    schedule: 'every 7 days',
+    schedule: '0 3 * * 0', // Weekly on Sunday at 3 AM
     timeZone: 'Europe/Rome',
     memory: '256MiB',
     timeoutSeconds: 300,

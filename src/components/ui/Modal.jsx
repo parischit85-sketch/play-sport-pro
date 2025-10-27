@@ -38,7 +38,9 @@ export default function Modal({
     medium: 'max-w-lg',
     large: 'max-w-2xl',
     xl: 'max-w-4xl',
-    xxl: 'max-w-5xl'
+    xxl: 'max-w-5xl',
+    // ~30% più largo di 5xl (~64rem). 64rem * 1.3 ≈ 83.2rem → arrotondato a 84rem
+    xxxl: 'max-w-[84rem]'
   };
 
   return (
@@ -50,7 +52,7 @@ export default function Modal({
       />
 
       {/* Modal */}
-      <div className={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl ${sizeClasses[size]} w-full mx-4 max-h-[90vh] overflow-hidden`}>
+      <div className={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl ${sizeClasses[size] || sizeClasses.medium} w-full mx-4 max-h-[90vh] overflow-hidden`}>
         {/* Header */}
         {title && (
           <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">

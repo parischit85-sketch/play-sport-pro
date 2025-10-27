@@ -1,10 +1,10 @@
 // =============================================
 // FILE: src/features/clubs/ClubStats.jsx
 // =============================================
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
 import StatisticheGiocatore from '@features/stats/StatisticheGiocatore.jsx';
-import { getClubPlayers, getClubMatches } from '@services/club-data.js';
+import { getClubPlayers, getClubMatchesWithTournaments } from '@services/club-data.js';
 
 const ClubStats = ({ clubId, club }) => {
   const [players, setPlayers] = useState([]);
@@ -12,11 +12,7 @@ const ClubStats = ({ clubId, club }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadClubData();
-  }, [clubId]);
-
-  const loadClubData = async () => {
+  const loadClubData = useCallback(async () => {
     if (!clubId) return;
 
     setLoading(true);
@@ -24,20 +20,25 @@ const ClubStats = ({ clubId, club }) => {
 
     try {
       // Carica dati direttamente dalle subcollections del club
-      const [clubPlayers, clubMatches] = await Promise.all([
+      // Adesso getClubMatchesWithTournaments include sia match regolari che match da tornei
+      const [clubPlayers, combinedMatches] = await Promise.all([
         getClubPlayers(clubId),
-        getClubMatches(clubId),
+        getClubMatchesWithTournaments(clubId),
       ]);
 
       setPlayers(clubPlayers);
-      setMatches(clubMatches);
+      setMatches(combinedMatches);
     } catch (err) {
       console.error('Error loading club data:', err);
       setError('Errore nel caricamento dei dati del club');
     } finally {
       setLoading(false);
     }
-  };
+  }, [clubId]);
+
+  useEffect(() => {
+    loadClubData();
+  }, [loadClubData]);
 
   if (loading) {
     return (

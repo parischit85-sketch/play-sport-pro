@@ -1,0 +1,339 @@
+
+> play-sport-pro@1.0.4 test
+> vitest run --passWithNoTests
+
+
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mC:/Users/paris/Downloads/play-sport-backup-2025-10-05_23-30-00[39m
+
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mDatabaseCache[2m > [22mshould cache and retrieve data[35m 46 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mDatabaseCache[2m > [22mshould invalidate cache by pattern[35m 47 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mDatabaseCache[2m > [22mshould respect TTL and expire entries[35m 47 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mDatabaseCache[2m > [22mshould track cache performance metrics[35m 47 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mQuery Optimization[2m > [22mshould build correct Firestore queries[35m 47 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mdownloadPlayerJSON[2m > [22mshould generate valid JSON export[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mdownloadPlayerJSON[2m > [22mshould handle player with undefined fields[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mdownloadPlayerJSON[2m > [22mshould include audit timestamps[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mdownloadPlayerCSV[2m > [22mshould generate valid CSV export[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mdownloadPlayerCSV[2m > [22mshould escape CSV special characters[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mdownloadPlayerCSV[2m > [22mshould handle missing data gracefully[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mdownloadPlayerReport[2m > [22mshould generate human-readable TXT report[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mdownloadPlayerReport[2m > [22mshould format dates correctly[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mdownloadPlayerReport[2m > [22mshould include wallet transactions[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mdownloadPlayerReport[2m > [22mshould handle player without optional data[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mGDPR Compliance[2m > [22mshould include all personal data fields (Art. 15)[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mGDPR Compliance[2m > [22mshould generate unique filenames to avoid overwrites[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mGDPR Compliance[2m > [22mshould not expose internal IDs in readable reports[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mError Handling[2m > [22mshould handle null player gracefully[35m 46 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mError Handling[2m > [22mshould handle undefined player gracefully[35m 46 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/utils/__tests__/playerDataExporter.test.js[2m > [22mplayerDataExporter[2m > [22mError Handling[2m > [22mshould sanitize filename special characters[35m 46 MB heap used[39m
+stderr | VirtualConsole.forward (C:\Users\paris\Downloads\play-sport-backup-2025-10-05_23-30-00\node_modules\jsdom\lib\jsdom\virtual-console.js:28:20)
+Not implemented: navigation to another Document
+
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mQuery Optimization[2m > [22mshould track query performance[35m 47 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mBatch Operations[2m > [22mshould auto-flush when batch size is reached[35m 48 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mReal-time Subscriptions[2m > [22mshould update cache with real-time data[35m 48 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mOffline Support[2m > [22mshould toggle offline mode[35m 48 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mPerformance Monitoring[2m > [22mshould collect comprehensive metrics[35m 49 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mError Handling[2m > [22mshould handle query errors gracefully[35m 49 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mError Handling[2m > [22mshould handle batch operation errors[35m 49 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/databaseOptimization.test.js[2m > [22mDatabase Optimization Library[2m > [22mMemory Management[2m > [22mshould limit cache size and evict oldest entries[35m 49 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould send via push as first priority[35m 51 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould fallback to email when push fails[35m 52 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould try all channels in cascade until success[35m 52 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould fail if all channels fail[35m 52 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould respect user preferences[35m 52 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould respect maxCost threshold[35m 52 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mType-Specific Routing[2m > [22mshould include SMS for PAYMENT_DUE[35m 52 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mType-Specific Routing[2m > [22mshould use push+email only for PROMOTIONAL[35m 53 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mType-Specific Routing[2m > [22mshould prioritize push+email for BOOKING_CONFIRMED[35m 53 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mgetStats()[2m > [22mshould return correct statistics[35m 53 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mgetStats()[2m > [22mshould calculate channel efficiency correctly[35m 53 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mgetStats()[2m > [22mshould track total cost accurately[35m 53 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mError Handling[2m > [22mshould handle channel timeout gracefully[35m 53 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mError Handling[2m > [22mshould handle invalid user ID[35m 53 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mError Handling[2m > [22mshould handle missing notification data[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mPerformance[2m > [22mshould handle concurrent sends[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mPerformance[2m > [22mshould complete cascade quickly[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mIntegration[2m > [22mshould log delivery to Firestore[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mIntegration[2m > [22mshould track analytics events[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mChannel Cost Calculation[2m > [22mshould calculate push cost correctly[35m 57 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mChannel Cost Calculation[2m > [22mshould calculate email cost correctly[35m 57 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mChannel Cost Calculation[2m > [22mshould calculate SMS cost correctly[35m 57 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mChannel Cost Calculation[2m > [22mshould calculate in-app cost correctly[35m 57 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mToast Rendering[2m > [22mshould render success toast[33m 391[2mms[22m[39m[35m 66 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mToast Rendering[2m > [22mshould render error toast[35m 63 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mToast Rendering[2m > [22mshould render warning toast[35m 70 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mToast Rendering[2m > [22mshould render info toast[35m 64 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mToast Rendering[2m > [22mshould render with correct icons[35m 68 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/security.test.js[2m > [22mSecurity Library[2m > [22mInput Sanitization[2m > [22msanitizeHTML[2m > [22mshould remove script tags[35m 46 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/security.test.js[2m > [22mSecurity Library[2m > [22mInput Sanitization[2m > [22msanitizeHTML[2m > [22mshould remove dangerous attributes[35m 47 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/security.test.js[2m > [22mSecurity Library[2m > [22mInput Sanitization[2m > [22msanitizeHTML[2m > [22mshould preserve safe HTML[35m 47 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/security.test.js[2m > [22mSecurity Library[2m > [22mInput Sanitization[2m > [22msanitizeHTML[2m > [22mshould handle malformed HTML[35m 47 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/security.test.js[2m > [22mSecurity Library[2m > [22mInput Sanitization[2m > [22msanitizeText[2m > [22mshould trim whitespace[35m 47 MB heap used[39m
+ [31m├ù[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22msend()[2m > [22mshould send notification successfully[35m 51 MB heap used[39m
+[31m   ÔåÆ expected 0 to be greater than 0[39m
+ [31m├ù[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mAdmin Role[2m > [22mshould grant all permissions to admin users[35m 52 MB heap used[39m
+[31m   ÔåÆ expected false to be true // Object.is equality[39m
+ [31m├ù[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mAdmin Role[2m > [22mshould allow admin to edit any player from any club[35m 52 MB heap used[39m
+[31m   ÔåÆ expected false to be true // Object.is equality[39m
+ [31m├ù[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mClub-Admin Role[2m > [22mshould grant permissions only for players from same club[35m 53 MB heap used[39m
+[31m   ÔåÆ expected false to be true // Object.is equality[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mClub-Admin Role[2m > [22mshould deny permissions for players from different club[35m 53 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mClub-Admin Role[2m > [22mshould not allow club-admin to delete players[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mUser Role (GDPR)[2m > [22mshould allow user to export own player data[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mUser Role (GDPR)[2m > [22mshould deny export for other users data[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mUser Role (GDPR)[2m > [22mshould not allow user to delete own player data[35m 55 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mEdge Cases[2m > [22mshould handle undefined player gracefully[35m 55 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mEdge Cases[2m > [22mshould handle null player gracefully[35m 56 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mEdge Cases[2m > [22mshould handle player without clubId[35m 56 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mEdge Cases[2m > [22mshould handle player without linkedUserId[35m 56 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mEdge Cases[2m > [22mshould handle undefined currentUser[35m 56 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mEdge Cases[2m > [22mshould handle unknown role[35m 57 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mPermissions Consistency[2m > [22mshould return same object reference if inputs unchanged[35m 57 MB heap used[39m
+ [32mÔ£ô[39m src/features/players/hooks/__tests__/usePlayerPermissions.test.js[2m > [22musePlayerPermissions[2m > [22mPermissions Consistency[2m > [22mshould expose expected permission keys[35m 58 MB heap used[39m
+ [32mÔ£ô[39m src/tests/rating-history.test.js[2m > [22mRating Calculation Integration[2m > [22mshould calculate different RPA points with historical vs current ratings[35m 43 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22msend()[2m > [22mshould retry on failure with exponential backoff[33m 3244[2mms[22m[39m[35m 51 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mEvent Tracking[2m > [22mshould track basic events[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mEvent Tracking[2m > [22mshould track button clicks with proper transformations[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mEvent Tracking[2m > [22mshould track booking completion as conversion[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mEvent Tracking[2m > [22mshould handle events without parameters[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mPage View Tracking[2m > [22mshould track page views[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mPage View Tracking[2m > [22mshould track SPA navigation[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mPerformance Timing[2m > [22mshould track timing events[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mPerformance Timing[2m > [22mshould track Core Web Vitals[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mError Tracking[2m > [22mshould track JavaScript errors[35m 44 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mError Tracking[2m > [22mshould track fatal errors[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mUser Identification[2m > [22mshould set user ID[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mUser Identification[2m > [22mshould clear user data on logout[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mConversion Tracking[2m > [22mshould track conversion events[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mCustom Dimensions and Metrics[2m > [22mshould set custom dimensions[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mCustom Dimensions and Metrics[2m > [22mshould track custom metrics[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mSession Management[2m > [22mshould track session start[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mSession Management[2m > [22mshould track session end with duration[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mPrivacy and Consent[2m > [22mshould respect consent settings[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/analytics.test.js[2m > [22mAnalytics Library - Core Functionality[2m > [22mPrivacy and Consent[2m > [22mshould enable/disable tracking based on consent[35m 45 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22msend()[2m > [22mshould fail after max retries[33m 3387[2mms[22m[39m[35m 51 MB heap used[39m
+ [31m├ù[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mAuto-dismiss[2m > [22mshould auto-dismiss after 5 seconds[33m 10018[2mms[22m[39m[35m 69 MB heap used[39m
+[31m   ÔåÆ Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22msend()[2m > [22mshould handle 410 Gone by cleaning up subscription[33m 3427[2mms[22m[39m[35m 51 MB heap used[39m
+ [31m├ù[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22msend()[2m > [22mshould respect priority levels[33m 3187[2mms[22m[39m[35m 52 MB heap used[39m
+[31m   ÔåÆ expected false to be true // Object.is equality[39m
+ [31m├ù[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mAuto-dismiss[2m > [22mshould respect custom duration[33m 10022[2mms[22m[39m[35m 54 MB heap used[39m
+[31m   ÔåÆ Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mAuto-dismiss[2m > [22mshould not dismiss before timeout[35m 54 MB heap used[39m
+ [31m├ù[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mCircuitBreaker[2m > [22mshould open circuit breaker after threshold failures[33m 10008[2mms[22m[39m[35m 47 MB heap used[39m
+[31m   ÔåÆ Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+ [31m├ù[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mCircuitBreaker[2m > [22mshould transition from OPEN to HALF_OPEN after timeout[33m 3762[2mms[22m[39m[35m 48 MB heap used[39m
+[31m   ÔåÆ expected [ 'HALF_OPEN', 'CLOSED' ] to include 'OPEN'[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mCircuitBreaker[2m > [22mshould close circuit breaker after successful requests[35m 48 MB heap used[39m
+ [31m├ù[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mgetMetrics()[2m > [22mshould return correct metrics[35m 48 MB heap used[39m
+[31m   ÔåÆ expected 0 to be greater than 0[39m
+ [31m├ù[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mManual Close[2m > [22mshould close toast when X button clicked[33m 10024[2mms[22m[39m[35m 54 MB heap used[39m
+[31m   ÔåÆ Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mManual Close[2m > [22mshould have accessible close button[35m 56 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mMultiple Toasts[2m > [22mshould stack multiple toasts[35m 56 MB heap used[39m
+ [31m├ù[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mgetMetrics()[2m > [22mshould calculate delivery rate correctly[33m 1187[2mms[22m[39m[35m 48 MB heap used[39m
+[31m   ÔåÆ expected 95.65 to be less than or equal to 85[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mgetMetrics()[2m > [22mshould track latency percentiles[35m 48 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mError Handling[2m > [22mshould handle network timeout[33m 3396[2mms[22m[39m[35m 47 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mError Handling[2m > [22mshould handle invalid subscription[33m 3506[2mms[22m[39m[35m 48 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mError Handling[2m > [22mshould handle rate limiting (429)[33m 1084[2mms[22m[39m[35m 48 MB heap used[39m
+ [31m├ù[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mMultiple Toasts[2m > [22mshould dismiss toasts independently[33m 10009[2mms[22m[39m[35m 57 MB heap used[39m
+[31m   ÔåÆ Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mMultiple Toasts[2m > [22mshould limit maximum toasts to 5[35m 60 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mDark Mode[2m > [22mshould apply dark mode classes when enabled[35m 61 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mDark Mode[2m > [22mshould have readable text in dark mode[35m 60 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mAccessibility[2m > [22mshould have role="alert" for screen readers[35m 62 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mAccessibility[2m > [22mshould have aria-live="assertive" for important messages[35m 62 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mAccessibility[2m > [22mshould have aria-label on close button[35m 62 MB heap used[39m
+ [31m├ù[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mPerformance[2m > [22mshould handle high throughput[33m 3878[2mms[22m[39m[35m 49 MB heap used[39m
+[31m   ÔåÆ expected 0 to be greater than 90[39m
+ [31m├ù[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mAccessibility[2m > [22mshould be keyboard accessible[33m 10009[2mms[22m[39m[35m 55 MB heap used[39m
+[31m   ÔåÆ Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mPortal Rendering[2m > [22mshould render in a portal (fixed position)[35m 61 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mPortal Rendering[2m > [22mshould render above other content (high z-index)[35m 56 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mEdge Cases[2m > [22mshould handle empty message[35m 58 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mEdge Cases[2m > [22mshould handle very long messages[35m 58 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mEdge Cases[2m > [22mshould handle rapid successive toasts[35m 61 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22mEdge Cases[2m > [22mshould clean up timers on unmount[35m 62 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22museToast Hook[2m > [22mshould provide all toast methods[35m 62 MB heap used[39m
+ [32mÔ£ô[39m src/components/ui/__tests__/Toast.test.jsx[2m > [22mToast Component[2m > [22museToast Hook[2m > [22mshould maintain same reference across re-renders[35m 63 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/ranking-club.test.js[2m > [22mcomputeClubRanking[2m > [22mreturns empty if clubId missing[35m 50 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/ranking-club.test.js[2m > [22mcomputeClubRanking[2m > [22mfilters players and matches for a specific club[35m 51 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/ranking-club.test.js[2m > [22mcomputeClubRanking[2m > [22mincludes legacy players when club is default-club (legacy mode)[35m 51 MB heap used[39m
+ [32mÔ£ô[39m src/lib/__tests__/ranking-club.test.js[2m > [22mcomputeClubRanking[2m > [22mensures matches only with club players appear[35m 51 MB heap used[39m
+ [31m├ù[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mPerformance[2m > [22mshould not leak memory on repeated sends[33m 10004[2mms[22m[39m[35m 49 MB heap used[39m
+[31m   ÔåÆ Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mIntegration[2m > [22mshould integrate with Firebase correctly[35m 49 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mPushService[2m > [22mIntegration[2m > [22mshould update Firestore subscription status[35m 49 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mCircuitBreaker (Isolated)[2m > [22mshould start in CLOSED state[35m 50 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mCircuitBreaker (Isolated)[2m > [22mshould record success[35m 50 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mCircuitBreaker (Isolated)[2m > [22mshould record failure[35m 50 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mCircuitBreaker (Isolated)[2m > [22mshould open after threshold failures[35m 51 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mCircuitBreaker (Isolated)[2m > [22mshould calculate error rate correctly[35m 51 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/pushService.test.js[2m > [22mCircuitBreaker (Isolated)[2m > [22mshould reset counts[35m 51 MB heap used[39m
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ» Failed Tests 16 ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+
+ FAIL  src/services/__tests__/pushService.test.js > PushService > send() > should send notification successfully
+AssertionError: expected 0 to be greater than 0
+ ÔØ» src/services/__tests__/pushService.test.js:33:30
+     31|       expect(result.success).toBe(true);
+     32|       expect(result.notificationId).toBeDefined();
+     33|       expect(result.latency).toBeGreaterThan(0);
+       |                              ^
+     34|       expect(result.attempts).toBe(1);
+     35|       expect(result.channel).toBe('push');
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/16]ÔÄ»
+
+ FAIL  src/services/__tests__/pushService.test.js > PushService > send() > should respect priority levels
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ÔØ» src/services/__tests__/pushService.test.js:109:30
+    107|       });
+    108| 
+    109|       expect(result.success).toBe(true);
+       |                              ^
+    110|       // Critical notifications bypass some delays
+    111|     });
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/16]ÔÄ»
+
+ FAIL  src/services/__tests__/pushService.test.js > PushService > CircuitBreaker > should open circuit breaker after threshold failures
+ FAIL  src/services/__tests__/pushService.test.js > PushService > Performance > should not leak memory on repeated sends
+ FAIL  src/components/ui/__tests__/Toast.test.jsx > Toast Component > Auto-dismiss > should auto-dismiss after 5 seconds
+ FAIL  src/components/ui/__tests__/Toast.test.jsx > Toast Component > Auto-dismiss > should respect custom duration
+ FAIL  src/components/ui/__tests__/Toast.test.jsx > Toast Component > Manual Close > should close toast when X button clicked
+ FAIL  src/components/ui/__tests__/Toast.test.jsx > Toast Component > Multiple Toasts > should dismiss toasts independently
+ FAIL  src/components/ui/__tests__/Toast.test.jsx > Toast Component > Accessibility > should be keyboard accessible
+Error: Test timed out in 10000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[3/16]ÔÄ»
+
+ FAIL  src/services/__tests__/pushService.test.js > PushService > CircuitBreaker > should transition from OPEN to HALF_OPEN after timeout
+AssertionError: expected [ 'HALF_OPEN', 'CLOSED' ] to include 'OPEN'
+ ÔØ» src/services/__tests__/pushService.test.js:148:39
+    146| 
+    147|       const metrics = pushService.getMetrics();
+    148|       expect(['HALF_OPEN', 'CLOSED']).toContain(metrics.circuitBreakerÔÇª
+       |                                       ^
+    149|     });
+    150| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[4/16]ÔÄ»
+
+ FAIL  src/services/__tests__/pushService.test.js > PushService > getMetrics() > should return correct metrics
+AssertionError: expected 0 to be greater than 0
+ ÔØ» src/services/__tests__/pushService.test.js:192:35
+    190|       expect(metrics.errorRate).toBeDefined();
+    191|       expect(metrics.latency).toBeDefined();
+    192|       expect(metrics.latency.p95).toBeGreaterThan(0);
+       |                                   ^
+    193|       expect(metrics.circuitBreaker).toBeDefined();
+    194|       expect(metrics.circuitBreaker.state).toBe('CLOSED');
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[5/16]ÔÄ»
+
+ FAIL  src/services/__tests__/pushService.test.js > PushService > getMetrics() > should calculate delivery rate correctly
+AssertionError: expected 95.65 to be less than or equal to 85
+ ÔØ» src/services/__tests__/pushService.test.js:216:28
+    214|       
+    215|       expect(deliveryRate).toBeGreaterThanOrEqual(70);
+    216|       expect(deliveryRate).toBeLessThanOrEqual(85);
+       |                            ^
+    217|     });
+    218| 
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[6/16]ÔÄ»
+
+ FAIL  src/services/__tests__/pushService.test.js > PushService > Performance > should handle high throughput
+AssertionError: expected 0 to be greater than 90
+ ÔØ» src/services/__tests__/pushService.test.js:311:28
+    309|       const successCount = results.filter(r => r.success).length;
+    310|       
+    311|       expect(successCount).toBeGreaterThan(concurrentRequests * 0.9); ÔÇª
+       |                            ^
+    312|       expect(duration).toBeLessThan(10000); // Under 10 seconds for 10ÔÇª
+    313|     });
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[7/16]ÔÄ»
+
+ FAIL  src/features/players/hooks/__tests__/usePlayerPermissions.test.js > usePlayerPermissions > Admin Role > should grant all permissions to admin users
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ÔØ» src/features/players/hooks/__tests__/usePlayerPermissions.test.js:45:38
+     43| 
+     44|       // Core admin permissions
+     45|       expect(result.current.isAdmin).toBe(true);
+       |                                      ^
+     46|       expect(result.current.canEdit).toBe(true);
+     47|       expect(result.current.canDelete).toBe(true);
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[8/16]ÔÄ»
+
+ FAIL  src/features/players/hooks/__tests__/usePlayerPermissions.test.js > usePlayerPermissions > Admin Role > should allow admin to edit any player from any club
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ÔØ» src/features/players/hooks/__tests__/usePlayerPermissions.test.js:73:38
+     71|       const { result } = renderHook(() => usePlayerPermissions(player)ÔÇª
+     72| 
+     73|       expect(result.current.canEdit).toBe(true);
+       |                                      ^
+     74|       expect(result.current.canDelete).toBe(true);
+     75|     });
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[9/16]ÔÄ»
+
+ FAIL  src/features/players/hooks/__tests__/usePlayerPermissions.test.js > usePlayerPermissions > Club-Admin Role > should grant permissions only for players from same club
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ÔØ» src/features/players/hooks/__tests__/usePlayerPermissions.test.js:96:38
+     94|       const { result } = renderHook(() => usePlayerPermissions(player)ÔÇª
+     95| 
+     96|       expect(result.current.canEdit).toBe(true);
+       |                                      ^
+     97|       expect(result.current.canDelete).toBe(false); // No delete permiÔÇª
+     98|       expect(result.current.canActivateDeactivate).toBe(true);
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[10/16]ÔÄ»
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m7 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (11)[39m
+[2m      Tests [22m [1m[31m16 failed[39m[22m[2m | [22m[1m[32m132 passed[39m[22m[2m | [22m[33m45 skipped[39m[90m (193)[39m
+[2m   Start at [22m 22:37:01
+[2m   Duration [22m 60.93s[2m (transform 1.50s, setup 6.07s, collect 3.98s, tests 102.22s, environment 21.22s, prepare 2.40s)[22m
+
+JSON report written to C:/Users/paris/Downloads/play-sport-backup-2025-10-05_23-30-00/test-results/results.json
+[1m[7m[35m HTML [39m[27m[22m [35mReport is generated[39m
+[2m       You can run [22m[1mnpx vite preview --outDir test-results[22m[2m to see the test results.[22m

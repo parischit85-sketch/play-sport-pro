@@ -1,36 +1,61 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 // =============================================
 // FILE: src/features/extra/Extra.jsx
-//   // ADMIN F ONLY=====================
+//   // ADMIN ONLY =====================
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Section from '@ui/Section.jsx';
-import { loadLeague, saveLeague } from '@services/cloud.js';
-import { toCSV, downloadBlob } from '@lib/csv.js';
+// CSV/Download utilities non più utilizzati qui
 import { getDefaultBookingConfig } from '@data/seed.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
+import { useNotifications } from '@contexts/NotificationContext';
+import { logger } from '@/utils/logger';
 
 // Nuovo componente per gestione campi avanzata
 import AdvancedCourtsManager from './AdvancedCourtsManager.jsx';
 import AdvancedCourtsManager_Mobile from './AdvancedCourtsManager_Mobile.jsx';
+import ErrorBoundary from '@components/ErrorBoundary.jsx';
 
-// RulesEditor mantenuto per compatibilità legacy (se necessario)
-import RulesEditor from '@features/prenota/RulesEditor.jsx';
+// (Legacy RulesEditor rimosso)
+
+/**
+ * DEPRECATED FUNCTIONS - Kept for backward compatibility
+ * The leagues/ collection system is OBSOLETE - use club subcollections instead
+ * @see src/services/club-data.js
+ */
+const loadLeague = async (_leagueId) => {
+  console.warn('⚠️ loadLeague() è DEPRECATO - usa getClubData() da @services/club-data.js');
+  return { players: [], matches: [], courts: [], bookings: [], bookingConfig: {} };
+};
+
+const saveLeague = async (_leagueId, _data) => {
+  console.warn('⚠️ saveLeague() è DEPRECATO - NON salva più dati nel database');
+  console.warn('   Il sistema è migrato alle subcollections clubs/{clubId}/...');
+  return;
+};
+
+const listLeagues = async () => {
+  console.warn('⚠️ listLeagues() è DEPRECATO - il sistema leagues/ non è più utilizzato');
+  return [];
+};
 
 export default function Extra({
   state,
   setState,
-  derived,
   leagueId,
-  setLeagueId,
+  // setLeagueId not used
+  _setLeagueId,
   clubMode,
-  setClubMode,
+  // setClubMode not used
+  _setClubMode,
   isClubAdmin,
   clubId,
   T,
 }) {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
   const { cleanInvalidCourts, club, courts } = useClub();
+  const { showSuccess } = useNotifications();
   const [cloudMsg, setCloudMsg] = React.useState('');
   const navigate = useNavigate();
 
@@ -38,11 +63,20 @@ export default function Extra({
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 1024);
 
   useEffect(() => {
+    // CHK-007: Debounce resize listener per ottimizzare performance
+    let resizeTimer;
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 1024);
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        setIsMobile(window.innerWidth < 1024);
+      }, 150); // 150ms debounce
     };
+    
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   // Gli admin di club possono sempre accedere, anche senza clubMode attivato
@@ -81,22 +115,23 @@ export default function Extra({
   }
 
   // === Campi con nuovo sistema avanzato
-  const [newCourt, setNewCourt] = useState('');
 
   // Gestione campi con il nuovo sistema
   const updateCourts = (updatedCourts) => {
-    console.log('🔧 DEBUG Extra updateCourts - Ricevuti courts:', updatedCourts);
-    console.log('🔧 DEBUG Extra updateCourts - clubMode:', clubMode);
+    if (import.meta?.env?.DEV) {
+      logger.debug('🔧 DEBUG Extra updateCourts - Ricevuti courts:', updatedCourts);
+      logger.debug('🔧 DEBUG Extra updateCourts - clubMode:', clubMode);
+    }
 
     // Verifica se i courts sono effettivamente cambiati rispetto allo stato precedente
     if (JSON.stringify(updatedCourts) === JSON.stringify(courts)) {
-      console.log('🏢 [Extra] Courts not changed, skipping update');
+      logger.debug('Courts not changed, skipping update');
       return;
     }
 
     // In modalità club, salva tramite AdminBookingsPage
     if (clubMode) {
-      console.log('🏢 [Extra] Club mode - Saving courts via AdminBookingsPage');
+      logger.debug('Club mode - Saving courts via AdminBookingsPage');
       // Chiama setState per salvare i courts aggiornati
       setState({ courts: updatedCourts });
       return;
@@ -107,7 +142,9 @@ export default function Extra({
       ...state,
       courts: updatedCourts,
     };
-    console.log('🔧 DEBUG Extra updateCourts - League mode - Nuovo state:', newState);
+    if (import.meta?.env?.DEV) {
+      logger.debug('🔧 DEBUG Extra updateCourts - League mode - Nuovo state:', newState);
+    }
 
     // Passa l'oggetto stato aggiornato, non una funzione
     setState(newState);
@@ -116,13 +153,17 @@ export default function Extra({
   // Funzione per pulire campi non validi
   const handleCleanInvalidCourts = async () => {
     try {
-      console.log('🧹 Starting invalid courts cleanup...');
+    if (import.meta?.env?.DEV) {
+      logger.debug('🧹 Starting invalid courts cleanup...');
+    }
       await cleanInvalidCourts();
-      console.log('✅ Invalid courts cleanup completed');
+    if (import.meta?.env?.DEV) {
+      logger.debug('✅ Invalid courts cleanup completed');
+    }
       setCloudMsg('Campi non validi rimossi con successo');
       setTimeout(() => setCloudMsg(''), 3000);
     } catch (error) {
-      console.error('❌ Error cleaning invalid courts:', error);
+      logger.error('❌ Error cleaning invalid courts:', error);
       setCloudMsg('Errore durante la pulizia dei campi');
       setTimeout(() => setCloudMsg(''), 3000);
     }
@@ -168,7 +209,7 @@ export default function Extra({
         // Se sono diversi, aggiorna con la nuova configurazione
         return shouldUpdate ? mergedCfg : prev;
       } catch (e) {
-        console.error('❌ Error in Extra useEffect:', e);
+        logger.error('❌ Error in Extra useEffect:', e);
         return prev;
       }
     });
@@ -186,130 +227,12 @@ export default function Extra({
     );
   }
 
-  const tryUnlock = (e) => {
-    e?.preventDefault?.();
-    if (false) {
-      // ADMIN ACCESS DISABLED FOR SECURITY
-      setUnlocked(true);
-      try {
-        sessionStorage.setItem('ml-extra-unlocked', '1');
-      } catch {}
-      // opzionale: non forzo subito clubMode; l’utente lo attiva qui dentro
-    } else {
-      alert('Password errata');
-    }
-  };
-  const lockPanel = () => {
-    setUnlocked(false);
-    setPwd('');
-    try {
-      sessionStorage.removeItem('ml-extra-unlocked');
-    } catch {}
-    // lascio inalterato clubMode; l’utente può disattivarlo manualmente se vuole
-  };
-
-  async function forceSave() {
-    try {
-      await saveLeague(leagueId, { ...state, _updatedAt: Date.now() });
-      setCloudMsg(`✅ Salvato su cloud: leagues/${leagueId}`);
-    } catch (e) {
-      setCloudMsg(`❌ Errore salvataggio: ${e?.message || e}`);
-    }
-  }
-  async function forceLoad() {
-    try {
-      const cloud = await loadLeague(leagueId);
-      if (cloud && typeof cloud === 'object') {
-        setState(cloud);
-        setCloudMsg(`✅ Caricato dal cloud: leagues/${leagueId}`);
-      } else {
-        setCloudMsg('⚠️ Documento non trovato sul cloud');
-      }
-    } catch (e) {
-      setCloudMsg(`❌ Errore caricamento: ${e?.message || e}`);
-    }
-  }
-
-  const exportJSON = () =>
-    downloadBlob(
-      'paris-league-backup.json',
-      new Blob([JSON.stringify(state, null, 2)], {
-        type: 'application/json;charset=utf-8',
-      })
-    );
-  const importJSON = (file) => {
-    const fr = new FileReader();
-    fr.onload = () => {
-      try {
-        setState(JSON.parse(fr.result));
-        alert('Import riuscito!');
-      } catch {
-        alert('File non valido');
-      }
-    };
-    fr.readAsText(file);
-  };
-
-  const exportCSVClassifica = () => {
-    const rows = derived.players
-      .slice()
-      .sort((a, b) => b.rating - a.rating)
-      .map((p, i) => ({
-        pos: i + 1,
-        name: p.name,
-        rating: p.rating.toFixed(2),
-        wins: p.wins || 0,
-        losses: p.losses || 0,
-      }));
-    if (!rows.length) return alert('Nessun dato da esportare.');
-    downloadBlob('classifica.csv', new Blob([toCSV(rows)], { type: 'text/csv;charset=utf-8' }));
-  };
-  const exportCSVMatches = () => {
-    const rows = derived.matches.map((m) => ({
-      date: new Date(m.date).toLocaleString(),
-      teamA: m.teamA.join('+'),
-      teamB: m.teamB.join('+'),
-      sets: (m.sets || []).map((s) => `${s.a}-${s.b}`).join(' '),
-      gamesA: m.gamesA,
-      gamesB: m.gamesB,
-      winner: m.winner,
-      deltaA: m.deltaA?.toFixed(2) ?? '',
-      deltaB: m.deltaB?.toFixed(2) ?? '',
-    }));
-    if (!rows.length) return alert('Nessuna partita da esportare.');
-    downloadBlob('partite.csv', new Blob([toCSV(rows)], { type: 'text/csv;charset=utf-8' }));
-  };
-
-  const resetAll = () => {
-    if (!confirm('Rigenerare simulazione iniziale?')) return;
-    import('@data/seed.js').then(({ makeSeed }) => setState(makeSeed()));
-  };
-
-  const addCourt = () => {
-    const name = newCourt.trim();
-    if (!name) return;
-    setState((s) => ({
-      ...s,
-      courts: [
-        ...(s.courts || []),
-        {
-          id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2),
-          name,
-        },
-      ],
-    }));
-    setNewCourt('');
-  };
-  const removeCourt = (id) => {
-    if (!confirm('Rimuovere il campo? Le prenotazioni collegate saranno conservate.')) return;
-    setState((s) => ({
-      ...s,
-      courts: (s.courts || []).filter((c) => c.id !== id),
-    }));
-  };
+  // Rimosso: tryUnlock/lockPanel codice legacy non utilizzato
 
   const saveCfg = () => {
-    console.log('🔧 DEBUG saveCfg - cfgDraft prima della normalizzazione:', cfgDraft);
+    if (import.meta?.env?.DEV) {
+      logger.debug('🔧 DEBUG saveCfg - cfgDraft prima della normalizzazione:', cfgDraft);
+    }
 
     let durations = cfgDraft.defaultDurations;
     if (typeof durations === 'string')
@@ -325,24 +248,36 @@ export default function Extra({
       defaultDurations: durations && durations.length ? durations : [60, 90, 120],
     };
 
-    console.log('🔧 DEBUG saveCfg - configurazione normalizzata:', normalized);
-    console.log('🔧 DEBUG saveCfg - addons:', normalized.addons);
+    if (import.meta?.env?.DEV) {
+      logger.debug('🔧 DEBUG saveCfg - configurazione normalizzata:', normalized);
+      logger.debug('🔧 DEBUG saveCfg - addons:', normalized.addons);
+    }
 
     setState({ ...state, bookingConfig: normalized });
-    console.log('✅ DEBUG saveCfg - setState chiamato con bookingConfig');
+    if (import.meta?.env?.DEV) {
+      logger.debug('✅ DEBUG saveCfg - setState chiamato con bookingConfig');
+    }
     // Reset della flag dopo il salvataggio
     setUserHasModified(false);
-    alert('Parametri salvati!');
+    showSuccess('Parametri salvati!');
   };
   const resetCfg = () => setCfgDraft(getDefaultBookingConfig());
 
-  const pricing = cfgDraft.pricing || getDefaultBookingConfig().pricing;
-  const setPricing = (p) => setCfgDraft((c) => ({ ...c, pricing: p }));
   // Aggiornamento configurazione parametri base
   const addons = cfgDraft.addons || getDefaultBookingConfig().addons;
 
   return (
     <Section title="Extra – Impostazioni" T={T}>
+      {/* Pannello Backup Cloud (legacy) dietro feature flag */}
+      {import.meta?.env?.VITE_ENABLE_LEGACY_LEAGUES === 'true' && (
+        <CloudBackupPanel
+          T={T}
+          leagueId={leagueId}
+          setState={setState}
+          cloudMsg={cloudMsg}
+          setCloudMsg={setCloudMsg}
+        />
+      )}
       {/* Pulsante pulizia campi non validi */}
       {cloudMsg && (
         <div
@@ -362,35 +297,37 @@ export default function Extra({
       </div>
 
       {/* Gestione Campi Avanzata - Responsive: Mobile o Desktop */}
-      {isMobile ? (
-        <AdvancedCourtsManager_Mobile
-          courts={clubMode ? courts : state?.courts || []}
-          onChange={updateCourts}
-          T={T}
-          courtTypes={[...new Set(club?.courtTypes || ['Indoor', 'Outdoor', 'Covered'])]}
-        />
-      ) : (
-        <AdvancedCourtsManager
-          courts={clubMode ? courts : state?.courts || []}
-          onChange={updateCourts}
-          T={T}
-          courtTypes={[...new Set(club?.courtTypes || ['Indoor', 'Outdoor', 'Covered'])]}
-        />
-      )}
+      <ErrorBoundary>
+        {isMobile ? (
+          <AdvancedCourtsManager_Mobile
+            courts={clubMode ? courts : state?.courts || []}
+            onChange={updateCourts}
+            T={T}
+            courtTypes={[...new Set(club?.courtTypes || ['Indoor', 'Outdoor', 'Covered'])]}
+          />
+        ) : (
+          <AdvancedCourtsManager
+            courts={clubMode ? courts : state?.courts || []}
+            onChange={updateCourts}
+            T={T}
+            courtTypes={[...new Set(club?.courtTypes || ['Indoor', 'Outdoor', 'Covered'])]}
+          />
+        )}
+      </ErrorBoundary>
 
       {/* Parametri prenotazioni + Regole tariffarie per-campo */}
       <div
         className={`rounded-2xl ${T.cardBg} ${T.border} p-3`}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') e.preventDefault();
-        }}
+        role="group"
+        aria-label="Parametri prenotazioni"
       >
         <div className="font-medium mb-2">Prenotazioni — Parametri</div>
         <div className="grid sm:grid-cols-3 gap-3 mb-4">
           <div className="flex flex-col">
-            <label className={`text-xs ${T.subtext}`}>Minuti slot</label>
+            <label htmlFor="slotMinutes" className={`text-xs ${T.subtext}`}>Minuti slot</label>
             <input
               type="number"
+              id="slotMinutes"
               value={cfgDraft.slotMinutes}
               onChange={(e) =>
                 setCfgDraft((c) => ({
@@ -402,9 +339,10 @@ export default function Extra({
             />
           </div>
           <div className="flex flex-col">
-            <label className={`text-xs ${T.subtext}`}>Apertura (ora)</label>
+            <label htmlFor="dayStartHour" className={`text-xs ${T.subtext}`}>Apertura (ora)</label>
             <input
               type="number"
+              id="dayStartHour"
               value={cfgDraft.dayStartHour}
               onChange={(e) =>
                 setCfgDraft((c) => ({
@@ -416,9 +354,10 @@ export default function Extra({
             />
           </div>
           <div className="flex flex-col">
-            <label className={`text-xs ${T.subtext}`}>Chiusura (ora)</label>
+            <label htmlFor="dayEndHour" className={`text-xs ${T.subtext}`}>Chiusura (ora)</label>
             <input
               type="number"
+              id="dayEndHour"
               value={cfgDraft.dayEndHour}
               onChange={(e) =>
                 setCfgDraft((c) => ({
@@ -442,7 +381,9 @@ export default function Extra({
                 type="checkbox"
                 checked={!!addons.lightingEnabled}
                 onChange={(e) => {
-                  console.log('🔧 DEBUG - Changing lightingEnabled to:', e.target.checked);
+                  if (import.meta?.env?.DEV) {
+                    logger.debug('🔧 DEBUG - Changing lightingEnabled to:', e.target.checked);
+                  }
                   setUserHasModified(true);
                   setCfgDraft((c) => {
                     const newCfg = {
@@ -452,7 +393,9 @@ export default function Extra({
                         lightingEnabled: e.target.checked,
                       },
                     };
-                    console.log('🔧 DEBUG - New cfgDraft:', newCfg);
+                    if (import.meta?.env?.DEV) {
+                      logger.debug('🔧 DEBUG - New cfgDraft:', newCfg);
+                    }
                     return newCfg;
                   });
                 }}
@@ -485,7 +428,9 @@ export default function Extra({
                 type="checkbox"
                 checked={!!addons.heatingEnabled}
                 onChange={(e) => {
-                  console.log('🔧 DEBUG - Changing heatingEnabled to:', e.target.checked);
+                  if (import.meta?.env?.DEV) {
+                    logger.debug('🔧 DEBUG - Changing heatingEnabled to:', e.target.checked);
+                  }
                   setUserHasModified(true);
                   setCfgDraft((c) => {
                     const newCfg = {
@@ -495,7 +440,9 @@ export default function Extra({
                         heatingEnabled: e.target.checked,
                       },
                     };
-                    console.log('🔧 DEBUG - New cfgDraft:', newCfg);
+                    if (import.meta?.env?.DEV) {
+                      logger.debug('🔧 DEBUG - New cfgDraft:', newCfg);
+                    }
                     return newCfg;
                   });
                 }}
@@ -539,14 +486,7 @@ export default function Extra({
         </div>
       </div>
 
-      {/* Sezione Cloud Backup/Restore - Protetto */}
-      <CloudBackupPanel
-        T={T}
-        leagueId={leagueId}
-        setState={setState}
-        cloudMsg={cloudMsg}
-        setCloudMsg={setCloudMsg}
-      />
+      {/* Sezione Cloud Backup/Restore - Protetto (spostata sopra con feature flag) */}
 
       <div className={`text-xs ${T.subtext} mt-3`}>
         I dati sono salvati <b>in locale</b> (localStorage) e, se configurato,{' '}
@@ -558,6 +498,9 @@ export default function Extra({
 
 // Componente separato per il pannello cloud protetto
 function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
+  // Hook dentro il componente
+  const navigate = useNavigate();
+  const { showError, showSuccess, showWarning } = useNotifications();
   const [availableBackups, setAvailableBackups] = React.useState([]);
   const [selectedBackup, setSelectedBackup] = React.useState('');
   const [loadingBackups, setLoadingBackups] = React.useState(false);
@@ -576,9 +519,11 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
       setCloudUnlocked(true);
       try {
         sessionStorage.setItem('ml-cloud-unlocked', '1');
-      } catch {}
+      } catch {
+        /* no-op */
+      }
     } else {
-      alert('Password cloud errata');
+      showError('Password cloud errata');
     }
   };
 
@@ -587,13 +532,15 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
     setCloudPwd('');
     try {
       sessionStorage.removeItem('ml-cloud-unlocked');
-    } catch {}
+    } catch {
+      /* no-op */
+    }
   };
 
   async function loadBackupsList() {
     setLoadingBackups(true);
     try {
-      const { listLeagues } = await import('@services/cloud.js');
+      // Use local deprecated stub instead of removed @services/cloud.js
       const backups = await listLeagues();
       setAvailableBackups(backups);
       setCloudMsg(`✅ Trovati ${backups.length} backup su Firebase`);
@@ -606,7 +553,6 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
 
   async function forceSave() {
     try {
-      const { saveLeague } = await import('@services/cloud.js');
       const state = JSON.parse(localStorage.getItem('ml-persist') || '{}');
       await saveLeague(leagueId, { ...state, _updatedAt: Date.now() });
       setCloudMsg(`✅ Salvato su cloud: leagues/${leagueId}`);
@@ -619,7 +565,6 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
   async function forceLoad() {
     const backupId = selectedBackup || leagueId;
     try {
-      const { loadLeague } = await import('@services/cloud.js');
       const cloud = await loadLeague(backupId);
       if (cloud && typeof cloud === 'object') {
         setState(cloud);
@@ -648,10 +593,11 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
           </div>
           <form onSubmit={tryUnlockCloud} className="space-y-4">
             <div>
-              <label className={`text-sm font-medium ${T.text} mb-2 block`}>
+              <label htmlFor="cloudPwd" className={`text-sm font-medium ${T.text} mb-2 block`}>
                 🔑 Password Cloud
               </label>
               <input
+                id="cloudPwd"
                 type="password"
                 value={cloudPwd}
                 onChange={(e) => setCloudPwd(e.target.value)}
@@ -702,10 +648,11 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
 
             {availableBackups.length > 0 && (
               <div className="space-y-2">
-                <label className={`text-sm font-medium ${T.text}`}>
+                <label htmlFor="backupSelect" className={`text-sm font-medium ${T.text}`}>
                   📋 Seleziona Backup da Caricare:
                 </label>
                 <select
+                  id="backupSelect"
                   value={selectedBackup}
                   onChange={(e) => setSelectedBackup(e.target.value)}
                   className={`${T.input} w-full`}
@@ -835,7 +782,7 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
                     const { default: updateService } = await import('@services/updateService.js');
                     await updateService.forceUpdate();
                   } catch (error) {
-                    alert("Errore durante l'aggiornamento: " + error.message);
+                    showError("Errore durante l'aggiornamento: " + error.message);
                   }
                 }}
                 className={`${T.btnSecondary} w-full flex items-center justify-center gap-2`}
@@ -849,14 +796,14 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
                     if ('caches' in window) {
                       const cacheNames = await caches.keys();
                       await Promise.all(cacheNames.map((name) => caches.delete(name)));
-                      alert(
-                        '✅ Cache PWA cancellata! Ricarica per scaricare la versione più recente.'
+                      showSuccess(
+                        'Cache PWA cancellata! Ricarica per scaricare la versione più recente.'
                       );
                     } else {
-                      alert('Cache API non supportata in questo browser');
+                      showWarning('Cache API non supportata in questo browser');
                     }
                   } catch (error) {
-                    alert('Errore durante la cancellazione cache: ' + error.message);
+                    showError('Errore durante la cancellazione cache: ' + error.message);
                   }
                 }}
                 className={`${T.btnDanger} w-full flex items-center justify-center gap-2`}
@@ -868,8 +815,8 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
                 <p>
                   <b>Per problemi di cache mobile:</b>
                 </p>
-                <p>1. Usa "Forza Aggiornamento App" per aggiornamento automatico</p>
-                <p>2. Se non funziona, usa "Cancella Cache PWA" e ricarica</p>
+                <p>1. Usa &quot;Forza Aggiornamento App&quot; per aggiornamento automatico</p>
+                <p>2. Se non funziona, usa &quot;Cancella Cache PWA&quot; e ricarica</p>
                 <p>3. Su iOS: Impostazioni → Safari → Cancella Cronologia</p>
                 <p>4. Su Android: Browser → Impostazioni → Storage → Cancella Dati</p>
               </div>

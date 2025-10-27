@@ -3,6 +3,7 @@
 // =============================================
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useNotifications } from '@contexts/NotificationContext';
 import Section from '@ui/Section.jsx';
 import {
   loginWithGoogle,
@@ -15,6 +16,7 @@ import {
 } from '@services/auth.jsx';
 
 export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
+  const { showSuccess, showError, showWarning, showInfo } = useNotifications();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [sending, setSending] = useState(false);
@@ -67,7 +69,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
         message = 'Popup bloccato dal browser. Abilita i popup per questo sito.';
       }
 
-      alert('Errore Google: ' + message);
+            showError('Errore Google: ' + message);
     }
   };
 
@@ -76,7 +78,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
       await loginWithFacebook();
       // Il profilo verrà caricato automaticamente dall'App
     } catch (e) {
-      alert('Errore Facebook: ' + (e?.message || e));
+      showError('Errore Facebook: ' + (e?.message || e));
     }
   };
 
@@ -84,9 +86,9 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
     try {
       setSending(true);
       await sendMagicLink(email.trim());
-      alert('Ti abbiamo inviato un link di accesso via email. Aprilo da questo dispositivo.');
+      showInfo('Ti abbiamo inviato un link di accesso via email. Aprilo da questo dispositivo.');
     } catch (e) {
-      alert('Errore invio link: ' + (e?.message || e));
+      showError('Errore invio link: ' + (e?.message || e));
     } finally {
       setSending(false);
     }
@@ -118,7 +120,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
           'Accesso con email/password non abilitato. Controlla la configurazione Firebase Console.';
       }
 
-      alert('Errore accesso: ' + message);
+      showError('Errore accesso: ' + message);
     } finally {
       setSending(false);
     }
@@ -128,19 +130,19 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
     try {
       const { sendResetPassword } = await import('@services/auth.jsx');
       await sendResetPassword(email.trim());
-      alert('Email per il reset inviata (se l’account esiste).');
+      showInfo("Email per il reset inviata (se l'account esiste).");
     } catch (e) {
-      alert('Errore reset password: ' + (e?.message || e));
+      showError('Errore reset password: ' + (e?.message || e));
     }
   };
 
   const handleSaveProfile = async () => {
     if (!profileForm.firstName.trim()) {
-      alert('Il nome è obbligatorio');
+      showWarning("Il nome è obbligatorio");
       return;
     }
     if (!profileForm.phone.trim()) {
-      alert('Il numero di telefono è obbligatorio');
+      showWarning("Il numero di telefono è obbligatorio");
       return;
     }
 
@@ -166,7 +168,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
       setUserProfile(updatedProfile);
       setShowProfileForm(false);
     } catch (e) {
-      alert('Errore salvataggio profilo: ' + (e?.message || e));
+      showError('Errore salvataggio profilo: ' + (e?.message || e));
     } finally {
       setSavingProfile(false);
     }

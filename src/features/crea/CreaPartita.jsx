@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import { useNotifications } from '@contexts/NotificationContext';
 import { createClubMatch, deleteClubMatch } from '@services/club-matches.js';
 import { getHistoricalRatings, savePreMatchRatings } from '@services/rating-history.js';
 import {
@@ -78,6 +79,7 @@ export default function CreaPartita({
   onMatchCreated, // callback opzionale per refresh esterno
   onMatchDeleted,
 }) {
+  const { showError, confirm } = useNotifications();
   const { selectedClub, matches: contextMatches, loadPlayers, loadMatches } = useClub();
   const clubId = propClubId || selectedClub?.id;
 
@@ -441,7 +443,14 @@ export default function CreaPartita({
   };
 
   const delMatch = async (id) => {
-    if (!confirm('Cancellare la partita?')) return;
+    const confirmed = await confirm({
+      title: 'Cancella Partita',
+      message: 'Cancellare la partita?',
+      variant: 'warning',
+      confirmText: 'Cancella',
+      cancelText: 'Annulla',
+    });
+    if (!confirmed) return;
     try {
       if (clubId) {
         await deleteClubMatch(clubId, id);
@@ -464,7 +473,7 @@ export default function CreaPartita({
       }
     } catch (e) {
       console.error('Errore cancellazione partita:', e);
-      alert('Errore durante la cancellazione della partita.');
+      showError('Errore durante la cancellazione della partita.');
     }
   };
 

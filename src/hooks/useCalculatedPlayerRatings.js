@@ -14,7 +14,7 @@ import { DEFAULT_RATING } from '@lib/ids.js';
  * @param {string} clubId - ID del club
  * @returns {Object} Oggetto con playersWithRatings e playersByIdWithRatings
  */
-export const useCalculatedPlayerRatings = (players, matches, clubId) => {
+export const useCalculatedPlayerRatings = (players, matches, clubId, leaderboardMap = {}) => {
   const playersWithRealRating = useMemo(() => {
     if (!clubId || !players || !matches) return players;
 
@@ -26,8 +26,10 @@ export const useCalculatedPlayerRatings = (players, matches, clubId) => {
     if (tournamentPlayers.length === 0) return players;
 
     try {
-      // Calcola i ranking reali
-      const rankingData = computeClubRanking(tournamentPlayers, matches, clubId);
+      // Calcola i ranking reali (inclusi punti campionato se disponibili)
+      const rankingData = computeClubRanking(tournamentPlayers, matches, clubId, {
+        leaderboardMap,
+      });
       const rankingMap = new Map(rankingData.players.map((p) => [p.id, p.rating]));
 
       // Applica i rating calcolati ai giocatori
@@ -39,7 +41,7 @@ export const useCalculatedPlayerRatings = (players, matches, clubId) => {
       console.warn('Error calculating player ratings:', error);
       return players;
     }
-  }, [clubId, players, matches]);
+  }, [clubId, players, matches, leaderboardMap]);
 
   // Crea playersById con i rating calcolati
   const playersByIdWithRating = useMemo(() => {

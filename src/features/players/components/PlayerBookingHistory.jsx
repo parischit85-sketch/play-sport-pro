@@ -170,37 +170,47 @@ export default function PlayerBookingHistory({ player, T }) {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div className={`${T.cardBg} ${T.border} rounded-2xl p-6 shadow-lg relative overflow-hidden`}>
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-pink-500" />
+        </div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-2">
+            <span className="text-4xl">📅</span>
+            <h3 className={`text-2xl font-bold ${T.text}`}>Storico Prenotazioni</h3>
+          </div>
+          <p className={`text-sm ${T.subtext}`}>
+            Tutte le prenotazioni effettuate dal giocatore
+          </p>
+        </div>
+      </div>
+
       {/* Statistiche */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.total}</div>
-          <div className={`text-xs ${T.subtext}`}>Totale</div>
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-5 border border-blue-200 dark:border-blue-700 text-center hover:shadow-lg transition-shadow">
+          <div className="text-3xl font-black text-blue-600 dark:text-blue-400">{stats.total}</div>
+          <div className="text-xs text-blue-700 dark:text-blue-300 mt-1 font-semibold">Totali</div>
         </div>
 
-        <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-            {stats.completed}
-          </div>
-          <div className={`text-xs ${T.subtext}`}>Completate</div>
+        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-5 border border-green-200 dark:border-green-700 text-center hover:shadow-lg transition-shadow">
+          <div className="text-3xl font-black text-green-600 dark:text-green-400">{stats.completed}</div>
+          <div className="text-xs text-green-700 dark:text-green-300 mt-1 font-semibold">Completate</div>
         </div>
 
-        <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-            {stats.upcoming}
-          </div>
-          <div className={`text-xs ${T.subtext}`}>Future</div>
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-5 border border-purple-200 dark:border-purple-700 text-center hover:shadow-lg transition-shadow">
+          <div className="text-3xl font-black text-purple-600 dark:text-purple-400">{stats.upcoming}</div>
+          <div className="text-xs text-purple-700 dark:text-purple-300 mt-1 font-semibold">Future</div>
         </div>
 
-        <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.cancelled}</div>
-          <div className={`text-xs ${T.subtext}`}>Cancellate</div>
+        <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 rounded-xl p-5 border border-red-200 dark:border-red-700 text-center hover:shadow-lg transition-shadow">
+          <div className="text-3xl font-black text-red-600 dark:text-red-400">{stats.cancelled}</div>
+          <div className="text-xs text-red-700 dark:text-red-300 mt-1 font-semibold">Cancellate</div>
         </div>
 
-        <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-            €{stats.totalSpent.toFixed(2)}
-          </div>
-          <div className={`text-xs ${T.subtext}`}>Totale Speso</div>
+        <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-xl p-5 border border-emerald-200 dark:border-emerald-700 text-center hover:shadow-lg transition-shadow">
+          <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">€{stats.totalSpent.toFixed(0)}</div>
+          <div className="text-xs text-emerald-700 dark:text-emerald-300 mt-1 font-semibold">Spesi</div>
         </div>
       </div>
 

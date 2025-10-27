@@ -22,7 +22,7 @@ export const AFFILIATION_STATUS = {
   REJECTED: 'rejected',
 };
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

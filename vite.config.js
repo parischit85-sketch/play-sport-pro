@@ -30,20 +30,21 @@ export default defineConfig({
       'firebase/storage',
     ], // Force single instance
     alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@utils': path.resolve(__dirname, 'src/utils'),
       '@app': path.resolve(__dirname, 'src/app'),
       '@features': path.resolve(__dirname, 'src/features'),
       '@ui': path.resolve(__dirname, 'src/components/ui'),
       '@lib': path.resolve(__dirname, 'src/lib'),
       '@data': path.resolve(__dirname, 'src/data'),
       '@services': path.resolve(__dirname, 'src/services'),
+      // Some modules expect "@config/firebase" to resolve to our firebase service
+      '@config': path.resolve(__dirname, 'src/services'),
       '@contexts': path.resolve(__dirname, 'src/contexts'),
       '@hooks': path.resolve(__dirname, 'src/hooks'),
       '@pages': path.resolve(__dirname, 'src/pages'),
       '@layouts': path.resolve(__dirname, 'src/layouts'),
       '@components': path.resolve(__dirname, 'src/components'),
-      '@utils': path.resolve(__dirname, 'src/utils'),
-      // (opzionale) se vuoi anche lo stile "@/qualcosa"
-      // '@': path.resolve(__dirname, 'src'),
     },
   },
   server: {
@@ -53,9 +54,9 @@ export default defineConfig({
     headers: {
       'Cross-Origin-Opener-Policy': 'unsafe-none',
       'Cross-Origin-Embedder-Policy': 'unsafe-none',
-      // CSP for development - allows Firebase Cloud Functions
+      // CSP for development - allows Firebase Cloud Functions + Cloudinary uploads
       'Content-Security-Policy':
-        "frame-src 'self' https://accounts.google.com https://m-padelweb.firebaseapp.com https://*.firebaseapp.com https://*.googleapis.com; default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://apis.google.com https://*.firebaseapp.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://res.cloudinary.com https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.cloudfunctions.net https://play-sport-pro-v2-2025.netlify.app https://res.cloudinary.com https://www.google-analytics.com https://www.google.com https://nominatim.openstreetmap.org https://api.open-meteo.com wss://*.firebaseio.com ws://localhost:5173; worker-src 'self' blob:;",
+        "frame-src 'self' https://accounts.google.com https://m-padelweb.firebaseapp.com https://*.firebaseapp.com https://*.googleapis.com; default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://apis.google.com https://*.firebaseapp.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://res.cloudinary.com https://www.google.com; connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://*.cloudfunctions.net https://play-sport-pro-v2-2025.netlify.app https://res.cloudinary.com https://api.cloudinary.com https://www.google-analytics.com https://www.google.com https://nominatim.openstreetmap.org https://api.open-meteo.com wss://*.firebaseio.com ws://localhost:5173; worker-src 'self' blob:;",
     },
     cors: {
       origin: ['http://localhost:5173', 'https://*.firebaseapp.com', 'https://*.googleapis.com'],

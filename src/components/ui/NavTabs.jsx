@@ -2,6 +2,7 @@
 // FILE: src/components/ui/NavTabs.jsx
 // =============================================
 import React from 'react';
+import { logger } from '@/utils/logger';
 
 export default function NavTabs({
   active,
@@ -29,7 +30,7 @@ export default function NavTabs({
             key={t.id}
             type="button"
             onClick={() => {
-              console.log('🔘 [NavTabs] Tab clicked:', {
+              logger.debug('Tab clicked', {
                 tabId: t.id,
                 label: t.label,
                 path: t.path,
@@ -56,7 +57,7 @@ export default function NavTabs({
                 key={t.id}
                 type="button"
                 onClick={() => {
-                  console.log('🔘 [NavTabs] Admin tab clicked:', {
+                  logger.debug('Admin tab clicked', {
                     tabId: t.id,
                     label: t.label,
                     path: t.path,

@@ -24,6 +24,7 @@ export default function PlayersPage() {
     loadingStates,
     matches,
     matchesLoaded,
+    leaderboard,
   } = useClub();
   const { clubMode } = useUI();
   const { userRole, user, isClubAdmin } = useAuth();
@@ -36,7 +37,8 @@ export default function PlayersPage() {
   const { playersWithRatings, playersByIdWithRatings } = useCalculatedPlayerRatings(
     players,
     matches,
-    clubId
+    clubId,
+    leaderboard
   );
 
   // I dati si caricano automaticamente nel ClubContext quando cambia clubId

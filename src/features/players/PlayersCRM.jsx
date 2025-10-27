@@ -4,11 +4,12 @@
 // =============================================
 
 import React, { useMemo, useState, useEffect } from 'react';
+import { getEffectiveRanking } from './utils/playerRanking.js';
 import { Link, useSearchParams } from 'react-router-dom';
 import Section from '@ui/Section.jsx';
 import Modal from '@ui/Modal.jsx';
 import ConfirmModal from '@ui/ConfirmModal.jsx';
-import ToastContainer, { toast } from '@ui/Toast.jsx';
+import { toast } from '@ui/Toast.jsx';
 import ExportModal from '@ui/ExportModal.jsx';
 import VirtualizedList from '@ui/VirtualizedList.jsx';
 import { uid } from '@lib/ids.js';
@@ -16,9 +17,11 @@ import { byPlayerFirstAlpha } from '@lib/names.js';
 import { createPlayerSchema, PLAYER_CATEGORIES } from './types/playerTypes.js';
 import PlayerCard from './components/PlayerCard';
 import PlayerDetails from './components/PlayerDetails';
+import PlayerForm from './components/PlayerForm';
 import CRMTools from './components/CRMTools';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { PlayerCardSkeleton } from '@ui/SkeletonLoader.jsx';
+import { useDebounce } from '@hooks/useDebounce.js';
 
 export default function PlayersCRM({
   state,
@@ -52,6 +55,9 @@ export default function PlayersCRM({
   const [showExportModal, setShowExportModal] = useState(false);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
 
+  // 🚀 OTTIMIZZAZIONE: Debounce del search term (riduce filtri dell'80%)
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
   const players = Array.isArray(state?.players) ? state.players : [];
 
   // 🔧 Leggi il parametro 'selected' dalla URL all'avvio
@@ -81,6 +87,20 @@ export default function PlayersCRM({
     return players.find((p) => p.id === selectedPlayerId) || null;
   }, [players, selectedPlayerId]);
 
+  // 🚀 OTTIMIZZAZIONE: Pre-calcola indice di ricerca per filtri più veloci
+  const playersWithSearchIndex = useMemo(() => {
+    return players.map(player => ({
+      ...player,
+      _searchIndex: [
+        player.name,
+        player.firstName,
+        player.lastName,
+        player.email,
+        player.phone
+      ].filter(Boolean).join(' ').toLowerCase()
+    }));
+  }, [players]);
+
   // Utility per filtri data
   const getDateFilter = (dateFilter) => {
     const now = new Date();
@@ -98,7 +118,8 @@ export default function PlayersCRM({
 
   // Filtri e ricerca
   const filteredPlayers = useMemo(() => {
-    let filtered = [...players];
+    // 🚀 OTTIMIZZAZIONE: Usa players con indice di ricerca preprocessato
+    let filtered = [...playersWithSearchIndex];
 
     // Filtro per categoria
     if (filterCategory !== 'all') {
@@ -136,17 +157,10 @@ export default function PlayersCRM({
       }
     }
 
-    // Ricerca per nome, email, telefono
-    if (searchTerm.trim()) {
-      const term = searchTerm.toLowerCase();
-      filtered = filtered.filter(
-        (p) =>
-          p.name?.toLowerCase().includes(term) ||
-          p.email?.toLowerCase().includes(term) ||
-          p.phone?.includes(term) ||
-          p.firstName?.toLowerCase().includes(term) ||
-          p.lastName?.toLowerCase().includes(term)
-      );
+    // 🚀 OTTIMIZZAZIONE: Ricerca usando indice preprocessato (più veloce)
+    if (debouncedSearchTerm.trim()) {
+      const term = debouncedSearchTerm.toLowerCase();
+      filtered = filtered.filter((p) => p._searchIndex?.includes(term));
     }
 
     // Filtro per ordinamento per rating: mostra solo chi partecipa al campionato
@@ -165,10 +179,12 @@ export default function PlayersCRM({
           const activityA = new Date(a.lastActivity || 0);
           const activityB = new Date(b.lastActivity || 0);
           return activityB - activityA; // Più recenti prima
-        case 'rating':
-          const ratingA = a.calculatedRating || a.rating || 0;
-          const ratingB = b.calculatedRating || b.rating || 0;
+        case 'rating': {
+          // Usa il ranking effettivo (calcolato dal contesto + leaderboard)
+          const ratingA = getEffectiveRanking(a, playersById) || 0;
+          const ratingB = getEffectiveRanking(b, playersById) || 0;
           return ratingB - ratingA; // Più alti prima
+        }
         case 'name':
         default:
           return byPlayerFirstAlpha(a, b);
@@ -176,7 +192,7 @@ export default function PlayersCRM({
     });
 
     return filtered;
-  }, [players, filterCategory, filterStatus, filterRegistrationDate, filterLastActivity, searchTerm, sortBy]);
+  }, [playersWithSearchIndex, filterCategory, filterStatus, filterRegistrationDate, filterLastActivity, debouncedSearchTerm, sortBy]);
 
   // Statistiche rapide
   const stats = useMemo(() => {
@@ -587,6 +603,31 @@ export default function PlayersCRM({
 
         {/* Lista giocatori */}
         <div className="space-y-4">
+          {/* 🚀 OTTIMIZZAZIONE: Counter chiaro dei giocatori filtrati */}
+          {!isLoading && filteredPlayers.length > 0 && (
+            <div className="flex items-center justify-between px-2">
+              <p className={`text-sm ${T.subtext}`}>
+                Visualizzati <span className="font-semibold text-blue-600 dark:text-blue-400">{filteredPlayers.length}</span>
+                {filteredPlayers.length !== players.length && (
+                  <> di <span className="font-semibold">{players.length}</span></>
+                )} giocatori
+                {activeFiltersCount > 0 && (
+                  <span className="ml-2 text-orange-500">
+                    (con {activeFiltersCount} filtro{activeFiltersCount > 1 ? 'i' : ''} attivo{activeFiltersCount > 1 ? 'i' : ''})
+                  </span>
+                )}
+              </p>
+              <p className={`text-xs ${T.subtext}`}>
+                Ordinamento: <span className="font-medium">
+                  {sortBy === 'name' && 'Alfabetico'}
+                  {sortBy === 'registration' && 'Data registrazione'}
+                  {sortBy === 'lastActivity' && 'Ultima attività'}
+                  {sortBy === 'rating' && 'Ranking'}
+                </span>
+              </p>
+            </div>
+          )}
+
           {isLoading ? (
             // Skeleton loaders durante il caricamento
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 [@media(min-width:2200px)]:grid-cols-5 items-stretch">
@@ -706,7 +747,7 @@ export default function PlayersCRM({
           isOpen={true}
           onClose={() => setSelectedPlayerId(null)}
           title={`${selectedPlayer.name || 'Giocatore'} - Dettagli`}
-          size="xxl"
+          size="xxxl"
         >
           <PlayerDetails
             player={selectedPlayer}
@@ -853,6 +894,23 @@ export default function PlayersCRM({
         </Modal>
       )}
 
+      {/* Modal Form Giocatore */}
+      {showPlayerForm && (
+        <Modal
+          isOpen={showPlayerForm}
+          onClose={() => setShowPlayerForm(false)}
+          title="Aggiungi Nuovo Giocatore"
+          maxWidth="2xl"
+        >
+          <PlayerForm
+            player={null}
+            onSave={handleAddPlayer}
+            onCancel={() => setShowPlayerForm(false)}
+            T={T}
+          />
+        </Modal>
+      )}
+
       {/* Modal di conferma eliminazione */}
       <ConfirmModal
         isOpen={showConfirmDelete}
@@ -877,8 +935,7 @@ export default function PlayersCRM({
         T={T}
       />
 
-      {/* Toast notifications */}
-      <ToastContainer />
+  {/* Toast notifications rendered globally by NotificationProvider */}
     </>
   );
 }

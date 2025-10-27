@@ -1,0 +1,46 @@
+name: Auto Release
+
+on:
+  push:
+    branches: [ master, main ]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    # Evita loop quando i commit sono generati dal bot
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+      - name: Configure Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Dry-run standard-version to detect if release is needed
+        id: check
+        run: |
+          npx standard-version --dry-run > out.txt 2>&1 || true
+          echo "--- standard-version dry run output ---"
+          cat out.txt
+          if grep -q "bumping version in" out.txt; then
+            echo "release=true" >> $GITHUB_OUTPUT
+          else
+            echo "release=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Create version, changelog and tag
+        if: steps.check.outputs.release == 'true'
+        run: npx standard-version -m "chore(release): %s [skip ci]"
+      - name: Push commit and tags
+        if: steps.check.outputs.release == 'true'
+        run: |
+          CURRENT_BRANCH=${{ github.ref_name }}
+          git push --follow-tags origin "HEAD:${CURRENT_BRANCH}"

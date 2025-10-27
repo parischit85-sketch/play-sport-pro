@@ -27,6 +27,7 @@ const UnifiedBookingFlow = React.lazy(() => import('@components/booking/UnifiedB
 const PlayersPage = React.lazy(() => import('@pages/PlayersPage.jsx'));
 const MatchesPage = React.lazy(() => import('@pages/MatchesPage.jsx'));
 const TournamentsPage = React.lazy(() => import('@pages/TournamentsPage.jsx'));
+const TournamentDetailsPageWrapper = React.lazy(() => import('@pages/TournamentDetailsPageWrapper.jsx'));
 import ProfilePage from '@pages/ProfilePage.jsx';
 // ExtraPage removed - functionality integrated into AdminBookingsPage settings
 const AdminBookingsPage = React.lazy(() => import('@pages/AdminBookingsPage.jsx'));
@@ -143,6 +144,7 @@ export default function AppRouter() {
                   <Route path="club/:clubId/players" element={<PlayersPage />} />
                   <Route path="club/:clubId/matches/*" element={<MatchesPage />} />
                   <Route path="club/:clubId/tournaments" element={<TournamentsPage />} />
+                  <Route path="club/:clubId/tournaments/:tournamentId" element={<TournamentDetailsPageWrapper />} />
                   <Route path="club/:clubId/admin/bookings" element={<AdminBookingsPage />} />
                   <Route path="club/:clubId/admin/dashboard" element={<AdminClubDashboard />} />
 

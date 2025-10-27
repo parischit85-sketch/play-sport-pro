@@ -8,10 +8,16 @@ import { useAuth } from '@contexts/AuthContext.jsx';
 import {
   registerWithEmailPassword,
   loginWithGoogle,
-  saveUserProfile,
+  updateUserProfile,
   setDisplayName,
   getUserProfile,
+  sendVerificationEmail,
 } from '@services/auth.jsx';
+import { validateRegistrationData, normalizeEmail, getE164Format, validateAndNormalizeEmail } from '@utils/validators';
+import PasswordStrengthMeter from '@components/registration/PasswordStrengthMeter.jsx';
+import EmailValidator from '@components/registration/EmailValidator.jsx';
+import PhoneInput from '@components/registration/PhoneInput.jsx';
+import TermsOfService from '@components/registration/TermsOfService.jsx';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -35,6 +41,12 @@ export default function RegisterPage() {
   const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isGoogleRegistration, setIsGoogleRegistration] = useState(false);
+  
+  // New validation states
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showTermsError, setShowTermsError] = useState(false);
+  const [emailValidation, setEmailValidation] = useState(null);
+  const [phoneValidation, setPhoneValidation] = useState(null);
 
   // Se l'utente è già autenticato, reindirizza alla dashboard
   useEffect(() => {
@@ -42,6 +54,23 @@ export default function RegisterPage() {
       navigate('/dashboard');
     }
   }, [user, navigate, isGoogleRegistration]);
+
+  // =============================================
+  // FIX: Prevent user from leaving page during registration
+  // Prevents data loss if user closes tab while async operations are running
+  // =============================================
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (loading) {
+        e.preventDefault();
+        e.returnValue = 'Registrazione in corso... sei sicuro di voler uscire?';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [loading]);
 
   // Mappa gli errori Firebase a messaggi user-friendly in italiano
   const getErrorMessage = (error) => {
@@ -63,48 +92,49 @@ export default function RegisterPage() {
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    // =============================================
+    // UPDATED: Use validators from validators/index.js
+    // =============================================
+    const validation = validateRegistrationData({
+      email: formData.email,
+      password: formData.password,
+      confirmPassword: formData.confirmPassword,
+      phone: formData.phone,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+    });
 
-    // Campi obbligatori
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email è obbligatoria';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email non valida';
+    if (!validation.isValid) {
+      // Convert validation errors to old format
+      const newErrors = {};
+      Object.keys(validation.errors).forEach(field => {
+        if (Array.isArray(validation.errors[field])) {
+          newErrors[field] = validation.errors[field][0]; // Take first error
+        }
+      });
+      setErrors(newErrors);
+      return false;
     }
 
-    if (!isGoogleRegistration) {
-      if (!formData.password) {
-        newErrors.password = 'Password è obbligatoria';
-      } else if (formData.password.length < 6) {
-        newErrors.password = 'Password deve essere di almeno 6 caratteri';
-      }
-
-      if (!formData.confirmPassword) {
-        newErrors.confirmPassword = 'Conferma password è obbligatoria';
-      } else if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = 'Le password non coincidono';
-      }
+    // Additional validation for email and phone from real-time validators
+    if (emailValidation && !emailValidation.isValid) {
+      setErrors(prev => ({ ...prev, email: emailValidation.errors[0] }));
+      return false;
     }
 
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'Nome è obbligatorio';
+    if (emailValidation?.isDisposable) {
+      setErrors(prev => ({ ...prev, email: 'Email temporanee non sono accettate' }));
+      return false;
     }
 
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Cognome è obbligatorio';
+    if (phoneValidation && !phoneValidation.isValid) {
+      setErrors(prev => ({ ...prev, phone: phoneValidation.errors[0] }));
+      return false;
     }
 
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Numero di telefono è obbligatorio';
-    } else if (!/^\+?\d{8,15}$/.test(formData.phone.replace(/\s/g, ''))) {
-      newErrors.phone = 'Numero di telefono non valido';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleInputChange = (field, value) => {
+    setErrors({});
+    return true;
+  };  const handleInputChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -124,6 +154,14 @@ export default function RegisterPage() {
 
     // Reset API error
     setApiError('');
+    
+    // Check Terms of Service acceptance
+    if (!termsAccepted) {
+      setShowTermsError(true);
+      alert('Devi accettare i Termini e Condizioni per procedere');
+      return;
+    }
+    setShowTermsError(false);
 
     if (!validateForm()) {
       alert('Compila tutti i campi obbligatori correttamente');
@@ -145,44 +183,100 @@ export default function RegisterPage() {
       if (userId) {
         console.log('🔍 Form data before saving:', formData);
 
+        // =============================================
+        // UPDATED: Normalize data using validators before saving
+        // =============================================
+        const normalizedEmail = normalizeEmail(formData.email);
+        const normalizedPhone = getE164Format(formData.phone);
+
         const profileData = {
+          email: normalizedEmail,
           firstName: formData.firstName.trim(),
           lastName: formData.lastName.trim(),
-          phone: formData.phone.trim(),
+          phone: normalizedPhone,
           fiscalCode: formData.fiscalCode.trim(),
           birthDate: formData.birthDate,
           address: formData.address.trim(),
+          provider: isGoogleRegistration ? 'google' : 'password',
+          termsAcceptedAt: new Date().toISOString(),
           registrationCompleted: true,
         };
 
         console.log('🔍 Profile data to save:', profileData);
 
-        await saveUserProfile(userId, profileData);
+        // =============================================
+        // FIX: Properly chain all async operations BEFORE redirect
+        // Prevents race condition where redirect happens before data saves
+        // =============================================
 
-        // Imposta display name
-        const displayName = `${formData.firstName} ${formData.lastName}`.trim();
-        if (displayName && (userCredential?.user || user)) {
-          await setDisplayName(userCredential?.user || user, displayName);
+        console.log('🔍 [DEBUG] Starting profile save process...');
+        console.log('🔍 [DEBUG] User ID:', userId);
+        console.log('🔍 [DEBUG] Profile data to save:', JSON.stringify(profileData, null, 2));
+
+        // Step 1: Save user profile and wait for completion
+        // Use updateUserProfile instead of saveUserProfile to ensure data is saved
+        try {
+          await updateUserProfile(userId, profileData);
+          console.log('✅ [DEBUG] Profile saved successfully to Firestore');
+        } catch (saveError) {
+          console.error('❌ [DEBUG] Error saving profile:', saveError);
+          throw saveError;
         }
 
-        console.log('🔄 Reloading user data after profile save...');
+        // Step 2: Set display name and wait for completion
+        const displayName = `${formData.firstName} ${formData.lastName}`.trim();
+        console.log('🔍 [DEBUG] Setting display name:', displayName);
+        if (displayName && (userCredential?.user || user)) {
+          try {
+            await setDisplayName(userCredential?.user || user, displayName);
+            console.log('✅ [DEBUG] Display name set successfully');
+          } catch (nameError) {
+            console.error('❌ [DEBUG] Error setting display name:', nameError);
+          }
+        }
 
-        // Aggiorna il profilo nel context utilizzando reloadUserData
+        // Step 3: Send email verification
+        console.log('📧 [DEBUG] Sending verification email...');
+        try {
+          await sendVerificationEmail(userCredential?.user || user);
+          console.log('✅ [DEBUG] Verification email sent successfully');
+        } catch (emailError) {
+          console.error('⚠️ [DEBUG] Error sending verification email:', emailError);
+          // Non-blocking error - continue with registration
+        }
+
+        // Step 4: Reload user data and wait for completion
+        console.log('🔄 [DEBUG] Reloading user data after profile save...');
         await reloadUserData();
+        console.log('✅ [DEBUG] User data reloaded successfully');
 
-        // Debug: verifica lo stato del profilo dopo il reload
+        // Step 5: Verify data was saved correctly (debug check)
         const currentUserId = userCredential?.user?.uid || user?.uid;
+        console.log('🔍 [DEBUG] Fetching profile to verify save...');
         const debugProfile = await getUserProfile(currentUserId, true);
-        console.log('🔍 Debug profile after reload:', {
+        console.log('🔍 [DEBUG] Profile fetched from Firestore:', JSON.stringify(debugProfile, null, 2));
+        console.log('🔍 [DEBUG] Profile verification:', {
+          hasFirstName: !!debugProfile?.firstName,
+          hasLastName: !!debugProfile?.lastName,
+          hasPhone: !!debugProfile?.phone,
+          hasEmail: !!debugProfile?.email,
           firstName: debugProfile?.firstName,
+          lastName: debugProfile?.lastName,
           phone: debugProfile?.phone,
+          email: debugProfile?.email,
+          registrationCompleted: debugProfile?.registrationCompleted,
           isComplete: debugProfile?.firstName && debugProfile?.phone,
         });
 
+        // Step 5: Add buffer time to ensure React Context updates propagate
+        // This is critical because reloadUserData() updates state asynchronously
+        await new Promise(resolve => setTimeout(resolve, 800));
+
         console.log('✅ Registration completed successfully');
 
-        // Force page reload per assicurarsi che tutto lo stato sia aggiornato
-        console.log('🔄 Forcing page reload to ensure fresh state...');
+        // Step 6: Use window.location for full page reload to ensure clean state
+        // This forces AuthContext to re-initialize with fresh data from Firestore
+        console.log('🔄 Redirecting to dashboard with full page reload...');
         window.location.href = '/dashboard';
       }
     } catch (error) {
@@ -298,6 +392,15 @@ export default function RegisterPage() {
                     onChange={(e) => handleInputChange('email', e.target.value)}
                   />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                  
+                  {/* Email Validator */}
+                  {!isGoogleRegistration && (
+                    <EmailValidator 
+                      email={formData.email}
+                      onChange={(normalized) => handleInputChange('email', normalized)}
+                      onValidationChange={setEmailValidation}
+                    />
+                  )}
                 </div>
 
                 {/* Password (nascosta per registrazione Google) */}
@@ -317,13 +420,16 @@ export default function RegisterPage() {
                         autoComplete="new-password"
                         required
                         className={`${T.input} w-full ${errors.password ? 'border-red-500' : ''}`}
-                        placeholder="Password (almeno 6 caratteri)"
+                        placeholder="Password (almeno 8 caratteri)"
                         value={formData.password}
                         onChange={(e) => handleInputChange('password', e.target.value)}
                       />
                       {errors.password && (
                         <p className="text-red-500 text-xs mt-1">{errors.password}</p>
                       )}
+                      
+                      {/* Password Strength Meter */}
+                      <PasswordStrengthMeter password={formData.password} />
                     </div>
 
                     <div>
@@ -398,16 +504,12 @@ export default function RegisterPage() {
                   <label htmlFor="phone" className={`block text-sm font-medium ${T.text} mb-1`}>
                     Numero di telefono *
                   </label>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    autoComplete="tel"
+                  <PhoneInput
+                    value={formData.phone}
+                    onChange={(value) => handleInputChange('phone', value)}
+                    onValidationChange={setPhoneValidation}
                     required
                     className={`${T.input} w-full ${errors.phone ? 'border-red-500' : ''}`}
-                    placeholder="+39 123 456 7890"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
                   />
                   {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>
@@ -473,6 +575,15 @@ export default function RegisterPage() {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Terms of Service */}
+              <div className="pt-4">
+                <TermsOfService 
+                  accepted={termsAccepted}
+                  onAcceptanceChange={setTermsAccepted}
+                  showError={showTermsError}
+                />
               </div>
 
               <div className="space-y-4">

@@ -181,6 +181,14 @@ export class PushSendError extends PushServiceError {
   }
 }
 
+// Added for test/runtime compatibility with PushService
+export class SubscriptionExpiredError extends PushServiceError {
+  constructor(message = 'Subscription expired or not found') {
+    super(message, { code: 'subscription-expired' });
+    this.name = 'SubscriptionExpiredError';
+  }
+}
+
 /**
  * Utility per formattare errori in modo user-friendly
  */

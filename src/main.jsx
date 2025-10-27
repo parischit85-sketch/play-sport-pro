@@ -7,10 +7,11 @@ import { createRoot } from 'react-dom/client';
 import AppRouter from './router/AppRouter.jsx';
 import updateService from './services/updateService.js';
 import hashChecker from './services/hashChecker.js';
-// import { initSentry } from './lib/sentry.js';
+import './monitoring/sentry.js'; // Sentry monitoring for Push Notifications v2.0
 import { initializeGA } from './lib/analytics.js';
 import { initWebVitals } from './lib/web-vitals.js';
 import SecurityProvider from './contexts/SecurityContext.jsx';
+import { NotificationProvider } from './contexts/NotificationContext.jsx';
 
 // Global Firebase quota error handler
 window.addEventListener('unhandledrejection', (event) => {
@@ -440,6 +441,8 @@ if (!container) {
 
 createRoot(container).render(
   <SecurityProvider>
-    <AppRouter />
+    <NotificationProvider>
+      <AppRouter />
+    </NotificationProvider>
   </SecurityProvider>
 );

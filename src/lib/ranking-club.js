@@ -16,6 +16,7 @@ export function computeClubRanking(players = [], matches = [], clubId, options =
   }
   const legacy = clubId === 'default-club' || clubId === 'sporting-cat';
   const filteredPlayers = players.filter((p) => p.clubId === clubId || (legacy && !p.clubId));
+  
   const playerIds = new Set(filteredPlayers.map((p) => p.id));
   const filteredMatches = matches.filter((m) => {
     const sameClub = m.clubId === clubId || (legacy && !m.clubId);
@@ -23,5 +24,10 @@ export function computeClubRanking(players = [], matches = [], clubId, options =
     // ensure at least one player belongs to club filtered set (defensive)
     return m.teamA?.some((id) => playerIds.has(id)) || m.teamB?.some((id) => playerIds.has(id));
   });
-  return baseRecompute(filteredPlayers, filteredMatches);
+  
+  // 🎯 Pass leaderboardMap to recompute so it can apply championship points chronologically
+  const lbMap = options?.leaderboardMap || {};
+  const result = baseRecompute(filteredPlayers, filteredMatches, lbMap);
+  
+  return result;
 }

@@ -2,8 +2,75 @@
 // FILE: src/features/extra/AdvancedCourtsManager_Mobile.jsx
 // Versione Mobile-First Ottimizzata
 // =============================================
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { useNotifications } from '@contexts/NotificationContext';
 import { euro2 } from '@lib/format.js';
+import {
+  validateCourt,
+  validateTimeSlot,
+  detectTimeSlotOverlaps,
+  sanitizeCourt
+} from '@utils/court-validation.js';
+
+// ============================================
+// COMPONENTE: ValidationAlert - Mobile Optimized
+// ============================================
+const ValidationAlert = ({ errors, type = 'error' }) => {
+  if (!errors || errors.length === 0) return null;
+  
+  const bgColor = type === 'error' ? 'bg-red-500/10' : 'bg-amber-500/10';
+  const borderColor = type === 'error' ? 'border-red-500/30' : 'border-amber-500/30';
+  const textColor = type === 'error' ? 'text-red-400' : 'text-amber-400';
+  const icon = type === 'error' ? '❌' : '⚠️';
+  
+  return (
+    <div className={`${bgColor} ${borderColor} border-l-4 p-3 rounded mb-3 text-sm`}>
+      <div className={`font-semibold ${textColor} mb-1 flex items-center gap-2`}>
+        <span className="text-lg">{icon}</span>
+        <span>{type === 'error' ? 'Errori di validazione' : 'Attenzione'}</span>
+      </div>
+      <ul className={`${textColor} list-disc list-inside space-y-1 ml-6`}>
+        {errors.map((error, idx) => (
+          <li key={idx}>{error}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+// ============================================
+// COMPONENTE: SaveIndicator - Mobile Compact
+// ============================================
+const SaveIndicator = ({ isSaving, lastSaved, hasUnsavedChanges }) => {
+  const formatRelativeTime = (timestamp) => {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if (seconds < 60) return 'ora';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m fa`;
+    const hours = Math.floor(minutes / 60);
+    return `${hours}h fa`;
+  };
+
+  return (
+    <div className="flex items-center gap-2 text-xs">
+      {isSaving && (
+        <div className="flex items-center gap-1.5 text-blue-400">
+          <div className="animate-spin">⏳</div>
+          <span>Salvo...</span>
+        </div>
+      )}
+      {!isSaving && lastSaved && (
+        <div className="text-green-400 flex items-center gap-1">
+          <span>✓</span>
+          <span>{formatRelativeTime(lastSaved)}</span>
+        </div>
+      )}
+      {hasUnsavedChanges && !isSaving && (
+        <div className="text-amber-400">●</div>
+      )}
+    </div>
+  );
+};
 
 // ============================================
 // COMPONENTE: Bottom Sheet Modal per editing fasce orarie
@@ -318,6 +385,7 @@ const MobileCourtCard = ({
   onMoveDown,
   isFirst,
   isLast,
+  confirm,
   T,
   courtTypes = ['Indoor', 'Outdoor', 'Covered'],
 }) => {
@@ -325,6 +393,11 @@ const MobileCourtCard = ({
   const [activeTab, setActiveTab] = useState('info'); // 'info' | 'slots'
   const [editingSlot, setEditingSlot] = useState(null);
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+
+  // Rilevazione sovrapposizioni
+  const timeSlotOverlaps = useMemo(() => {
+    return detectTimeSlotOverlaps(court.timeSlots || []);
+  }, [court.timeSlots]);
 
   const addTimeSlot = () => {
     const newSlot = {
@@ -359,8 +432,15 @@ const MobileCourtCard = ({
     }
   };
 
-  const handleRemoveSlot = (slotIndex) => {
-    if (!confirm('Eliminare questa fascia oraria?')) return;
+  const handleRemoveSlot = async (slotIndex) => {
+    const confirmed = await confirm({
+      title: 'Elimina Fascia Oraria',
+      message: 'Eliminare questa fascia oraria?',
+      variant: 'danger',
+      confirmText: 'Elimina',
+      cancelText: 'Annulla',
+    });
+    if (!confirmed) return;
     const updatedSlots = (court.timeSlots || []).filter((_, index) => index !== slotIndex);
     onUpdate({ timeSlots: updatedSlots });
   };
@@ -563,6 +643,14 @@ const MobileCourtCard = ({
               {/* TAB: Fasce Orarie */}
               {activeTab === 'slots' && (
                 <div className="space-y-4">
+                  {/* Overlap Warning */}
+                  {timeSlotOverlaps.length > 0 && (
+                    <ValidationAlert
+                      type="warning"
+                      errors={timeSlotOverlaps.map(overlap => overlap.message)}
+                    />
+                  )}
+
                   {/* Add Button */}
                   <button
                     onClick={addTimeSlot}
@@ -628,10 +716,42 @@ export default function AdvancedCourtsManager_Mobile({
   T,
   courtTypes = ['Indoor', 'Outdoor', 'Covered'],
 }) {
+  const { showWarning, confirm } = useNotifications();
   const [newCourtName, setNewCourtName] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const courtsWithOrder = courts.map((court, index) => ({
+  // Safe guards per dati corrotti
+  const safeCourts = useMemo(() => {
+    if (!Array.isArray(courts)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('⚠️ Courts is not an array, returning empty array');
+      }
+      return [];
+    }
+    
+    return courts.map(court => {
+      try {
+        return sanitizeCourt(court);
+      } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.error('❌ Error sanitizing court:', court, error);
+        }
+        return {
+          id: `error-${Date.now()}-${Math.random()}`,
+          name: 'Campo con errori (da ricontrollare)',
+          courtType: 'Indoor',
+          timeSlots: [],
+          hasHeating: false,
+          maxPlayers: 4
+        };
+      }
+    });
+  }, [courts]);
+
+  const courtsWithOrder = safeCourts.map((court, index) => ({
     ...court,
     order: court.order || index + 1,
   }));
@@ -656,34 +776,87 @@ export default function AdvancedCourtsManager_Mobile({
   const handleAddCourt = () => {
     if (!newCourtName.trim()) return;
 
-    const maxOrder = courtsWithOrder.length > 0 
-      ? Math.max(...courtsWithOrder.map((c) => c.order || 0)) 
-      : 0;
-    const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    setIsSaving(true);
+    setHasUnsavedChanges(false);
 
-    const newCourt = {
-      id: tempId,
-      name: newCourtName.trim(),
-      hasHeating: false,
-      timeSlots: [],
-      order: maxOrder + 1,
-      courtType: 'Indoor',
-      maxPlayers: 4,
-    };
+    try {
+      const maxOrder = courtsWithOrder.length > 0 
+        ? Math.max(...courtsWithOrder.map((c) => c.order || 0)) 
+        : 0;
+      const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    onChange([...courts, newCourt]);
-    setNewCourtName('');
+      const newCourt = {
+        id: tempId,
+        name: newCourtName.trim(),
+        hasHeating: false,
+        timeSlots: [],
+        order: maxOrder + 1,
+        courtType: 'Indoor',
+        maxPlayers: 4,
+      };
+
+      // Validazione
+      const validation = validateCourt(newCourt);
+      if (!validation.isValid) {
+        showWarning('Errori nel campo:\n' + validation.errors.join('\n'));
+        setIsSaving(false);
+        return;
+      }
+
+      onChange([...courts, newCourt]);
+      setNewCourtName('');
+      setLastSaved(Date.now());
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error adding court:', error);
+      }
+      setHasUnsavedChanges(true);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleUpdateCourt = (courtIndex, updates) => {
-    const updatedCourts = courts.map((c, index) =>
-      index === courtIndex ? { ...c, ...updates } : c
-    );
-    onChange(updatedCourts);
+    setIsSaving(true);
+    setHasUnsavedChanges(false);
+
+    try {
+      const updatedCourts = courts.map((c, index) =>
+        index === courtIndex ? { ...c, ...updates } : c
+      );
+
+      // Validazione del campo aggiornato
+      const updatedCourt = updatedCourts[courtIndex];
+      const validation = validateCourt(updatedCourt);
+      
+      if (!validation.isValid) {
+        showWarning('Errori nel campo:\n' + validation.errors.join('\n'));
+        setIsSaving(false);
+        setHasUnsavedChanges(true);
+        return;
+      }
+
+      onChange(updatedCourts);
+      setLastSaved(Date.now());
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error updating court:', error);
+      }
+      setHasUnsavedChanges(true);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleRemoveCourt = (courtIndex) => {
-    if (!confirm('Rimuovere il campo? Tutte le configurazioni saranno perse.')) return;
+  const handleRemoveCourt = async (courtIndex) => {
+    const confirmed = await confirm({
+      title: 'Rimuovi Campo',
+      message: 'Rimuovere il campo? Tutte le configurazioni saranno perse.',
+      variant: 'danger',
+      confirmText: 'Rimuovi',
+      cancelText: 'Annulla',
+    });
+    if (!confirmed) return;
     const updatedCourts = courts.filter((_, index) => index !== courtIndex);
     onChange(updatedCourts);
   };
@@ -714,11 +887,18 @@ export default function AdvancedCourtsManager_Mobile({
     <div className="space-y-4">
       {/* Header Sticky */}
       <div className="sticky top-0 z-40 bg-white dark:bg-gray-900 pb-4 pt-2">
-        {/* Title */}
+        {/* Title with Save Indicator */}
         <div className="mb-4">
-          <h3 className="font-bold text-2xl flex items-center gap-2 mb-2">
-            🏟️ Gestione Campi
-          </h3>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-bold text-2xl flex items-center gap-2">
+              🏟️ Gestione Campi
+            </h3>
+            <SaveIndicator
+              isSaving={isSaving}
+              lastSaved={lastSaved}
+              hasUnsavedChanges={hasUnsavedChanges}
+            />
+          </div>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Configura campi, fasce orarie e prezzi
           </p>
@@ -814,6 +994,7 @@ export default function AdvancedCourtsManager_Mobile({
                 onMoveDown={() => moveCourt(court.id, 'down')}
                 isFirst={sortedIndex === 0}
                 isLast={sortedIndex === sortedCourts.length - 1}
+                confirm={confirm}
                 T={T}
                 courtTypes={courtTypes}
               />

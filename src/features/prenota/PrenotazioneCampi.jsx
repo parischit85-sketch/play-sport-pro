@@ -13,6 +13,8 @@ import { computePrice, getRateInfo, isCourtBookableAt } from '@lib/pricing.js';
 import { calculateLessonPrice } from '@services/bookings.js';
 import { useUnifiedBookings } from '@hooks/useUnifiedBookings.js';
 import { PLAYER_CATEGORIES } from '@features/players/types/playerTypes.js';
+import { useNotifications } from '@contexts/NotificationContext';
+import { sendBookingConfirmationPush } from '@/services/push-notifications-integration';
 
 // Componente calendario personalizzato
 function CalendarGrid({ currentDay, onSelectDay, T }) {
@@ -144,6 +146,7 @@ function CalendarGrid({ currentDay, onSelectDay, T }) {
 
 export default function PrenotazioneCampi({ state, setState, players, playersById, T, clubId }) {
   const { user } = useAuth();
+  const { showSuccess, showError, showWarning, confirm } = useNotifications();
 
   // Use unified booking service
   const {
@@ -593,30 +596,30 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
   async function saveBooking() {
     if (!form.courtId || !form.start) {
-      alert('Seleziona campo e orario.');
+      showWarning('Seleziona campo e orario.');
       return;
     }
 
     // Validate instructor selection for lessons
     if (form.bookingType === 'lezione' && !form.instructorId) {
-      alert('Seleziona un maestro per le lezioni.');
+      showWarning('Seleziona un maestro per le lezioni.');
       return;
     }
 
     const start = floorToSlot(form.start, cfg.slotMinutes);
     // Verifica fascia per-campo: gli slot fuori fascia non sono prenotabili anche in admin
     if (!isCourtBookableAt(start, form.courtId, courts)) {
-      alert('Orario fuori dalle fasce prenotabili per questo campo.');
+      showWarning('Orario fuori dalle fasce prenotabili per questo campo.');
       return;
     }
     const now = new Date();
     if (start < now) {
-      alert('Non puoi prenotare nel passato.');
+      showWarning('Non puoi prenotare nel passato.');
       return;
     }
     const ignoreId = editingId || null;
     if (existingOverlap(form.courtId, start, form.duration, ignoreId)) {
-      alert('Esiste già una prenotazione che si sovrappone su questo campo.');
+      showWarning('Esiste già una prenotazione che si sovrappone su questo campo.');
       return;
     }
 
@@ -696,6 +699,19 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         if (bookedByName) {
           await updateUnifiedBooking(created.id, { bookedBy: bookedByName });
         }
+
+        // Send push notification for new booking
+        if (user?.uid) {
+          try {
+            await sendBookingConfirmationPush(user.uid, {
+              ...bookingData,
+              id: created.id,
+              start: start,
+            });
+          } catch (pushError) {
+            console.log('Push notification failed (non-blocking):', pushError);
+          }
+        }
       } else {
         // Update existing booking using unified service
         const updateData = {
@@ -735,29 +751,47 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       // La sottoscrizione realtime aggiornerà la griglia
       setModalOpen(false);
     } catch (e) {
-      alert('Errore nel salvataggio della prenotazione.');
+      showError('Errore nel salvataggio della prenotazione.');
     }
   }
 
   async function cancelBooking(id) {
-    if (!confirm('Cancellare la prenotazione?')) return;
+    const confirmed = await confirm({
+      title: 'Cancella prenotazione',
+      message: 'Sei sicuro di voler cancellare questa prenotazione?',
+      variant: 'warning',
+      confirmText: 'Cancella',
+      cancelText: 'Annulla',
+    });
+    
+    if (!confirmed) return;
+    
     try {
       await updateUnifiedBooking(id, {
         status: 'cancelled',
         cancelledAt: new Date().toISOString(),
       });
     } catch (e) {
-      alert('Errore durante la cancellazione.');
+      showError('Errore durante la cancellazione.');
     }
   }
 
   async function hardDeleteBooking(id) {
-    if (!confirm('Eliminare definitivamente la prenotazione?')) return;
+    const confirmed = await confirm({
+      title: 'Elimina definitivamente',
+      message: 'Sei sicuro di voler eliminare definitivamente questa prenotazione?\n\nQuesta azione non può essere annullata.',
+      variant: 'danger',
+      confirmText: 'Elimina',
+      cancelText: 'Annulla',
+    });
+    
+    if (!confirmed) return;
+    
     try {
       await deleteUnifiedBooking(id);
       setModalOpen(false);
     } catch (e) {
-      alert("Errore durante l'eliminazione.");
+      showError("Errore durante l'eliminazione.");
     }
   }
 
@@ -875,7 +909,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       const targetDate = time.toDateString();
 
       if (draggedDate !== targetDate) {
-        alert("Puoi spostare le prenotazioni solo all'interno dello stesso giorno.");
+        showWarning("Puoi spostare le prenotazioni solo all'interno dello stesso giorno.");
         return;
       }
 
@@ -896,7 +930,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       // Verify all slots are within court schedule
       for (const slotTime of slotsToOccupy) {
         if (!isCourtBookableAt(slotTime, courtId, courts)) {
-          alert(
+          showWarning(
             'Uno o più slot di destinazione sono fuori dalle fasce prenotabili per questo campo.'
           );
           return;
@@ -917,7 +951,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
       if (conflictingBooking) {
         console.log('🚫 Conflict detected with booking:', conflictingBooking.id);
-        alert("Lo slot di destinazione è già occupato da un'altra prenotazione.");
+        showWarning("Lo slot di destinazione è già occupato da un'altra prenotazione.");
         return;
       }
 
@@ -935,7 +969,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         });
 
         if (slotConflict) {
-          alert("Lo slot di destinazione è già occupato da un'altra prenotazione.");
+          showWarning("Lo slot di destinazione è già occupato da un'altra prenotazione.");
           return;
         }
       }
@@ -962,7 +996,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       }
     } catch (error) {
       console.error('❌ Error moving booking:', error);
-      alert('Errore durante lo spostamento della prenotazione.');
+      showError('Errore durante lo spostamento della prenotazione.');
     }
 
     setDraggedBooking(null);

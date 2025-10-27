@@ -4,41 +4,79 @@
 // =============================================
 
 import '@testing-library/jest-dom';
-import { cleanup } from '@testing-library/react';
+import { cleanup, fireEvent } from '@testing-library/react';
 import { afterEach, vi, beforeAll, afterAll } from 'vitest';
 
-// Global test setup
-beforeAll(() => {
-  // Mock environment variables
-  vi.stubEnv('VITE_FIREBASE_API_KEY', 'test-api-key');
-  vi.stubEnv('VITE_FIREBASE_AUTH_DOMAIN', 'test-project.firebaseapp.com');
-  vi.stubEnv('VITE_FIREBASE_PROJECT_ID', 'test-project');
-  vi.stubEnv('VITE_FIREBASE_APP_ID', 'test-app-id');
-  // vi.stubEnv('VITE_SENTRY_DSN', 'https://test@sentry.io/test');
-  vi.stubEnv('VITE_GOOGLE_ANALYTICS_ID', 'GA-TEST-123');
+// Provide a lightweight mock for @testing-library/user-event to avoid timing deadlocks
+// with fake timers. This mock implements the subset used in our tests and runs synchronously.
+vi.mock('@testing-library/user-event', () => {
+  return {
+    default: {
+      // userEvent.setup({ delay, advanceTimers })
+      setup: () => {
+        return {
+          // Basic click implementation using Testing Library's fireEvent
+          click: async (element) => {
+            if (!element) throw new Error('userEvent.click: element is undefined');
+            fireEvent.click(element);
+          },
+          // Minimal keyboard support for '{Enter}' used in tests
+          keyboard: async (seq) => {
+            const target = document.activeElement || document.body;
+            if (seq && seq.includes('{Enter}')) {
+              fireEvent.keyDown(target, { key: 'Enter', code: 'Enter', charCode: 13, keyCode: 13 });
+              fireEvent.keyUp(target, { key: 'Enter', code: 'Enter', charCode: 13, keyCode: 13 });
+              // Trigger click on focused button to mirror browser behavior
+              if (target && target.tagName === 'BUTTON') {
+                fireEvent.click(target);
+              }
+            }
+          },
+        };
+      },
+    },
+  };
+});
 
-  // Mock Firebase
-  vi.mock('firebase/app', () => ({
-    initializeApp: vi.fn(() => ({ name: 'test-app' })),
-    getApps: vi.fn(() => []),
-    getApp: vi.fn(() => ({ name: 'test-app' })),
-  }));
+// Flag to force toast immediate rendering in tests if detection fails
+globalThis.__TEST_FORCE_TOAST_IMMEDIATE__ = true;
 
-  vi.mock('firebase/auth', () => ({
-    getAuth: vi.fn(() => ({
-      currentUser: null,
-      onAuthStateChanged: vi.fn(),
-      signInWithPopup: vi.fn(),
-      signOut: vi.fn(),
-    })),
-    GoogleAuthProvider: vi.fn(),
+// Set up test GA_MEASUREMENT_ID before any modules are imported
+globalThis.__TEST_GA_MEASUREMENT_ID__ = 'GA-TEST-123';
+
+// Mock Google Analytics gtag function at module level (before any imports)
+const mockGtag = vi.fn();
+globalThis.gtag = mockGtag;
+if (typeof window !== 'undefined') {
+  window.gtag = mockGtag;
+  window.dataLayer = window.dataLayer || [];
+}
+
+// Mock Firebase modules at the top level
+vi.mock('firebase/app', () => ({
+  initializeApp: vi.fn(() => ({ name: 'test-app' })),
+  getApps: vi.fn(() => []),
+  getApp: vi.fn(() => ({ name: 'test-app' })),
+}));
+
+vi.mock('firebase/auth', () => ({
+  getAuth: vi.fn(() => ({
+    currentUser: null,
+    onAuthStateChanged: vi.fn(),
     signInWithPopup: vi.fn(),
     signOut: vi.fn(),
-    onAuthStateChanged: vi.fn(),
-    connectAuthEmulator: vi.fn(),
-  }));
+  })),
+  GoogleAuthProvider: vi.fn(),
+  signInWithPopup: vi.fn(),
+  signOut: vi.fn(),
+  onAuthStateChanged: vi.fn(),
+  connectAuthEmulator: vi.fn(),
+}));
 
-  vi.mock('firebase/firestore', () => ({
+vi.mock('firebase/firestore', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
     getFirestore: vi.fn(),
     initializeFirestore: vi.fn(() => ({ app: { name: 'test-app' } })),
     doc: vi.fn(),
@@ -65,23 +103,31 @@ beforeAll(() => {
     runTransaction: vi.fn(),
     enableNetwork: vi.fn(),
     disableNetwork: vi.fn(),
-  }));
+  };
+});
 
-  // Mock Google Analytics
-  vi.mock('../lib/analytics.js', () => ({
-    initAnalytics: vi.fn(),
-    trackEvent: vi.fn(),
-    trackPageView: vi.fn(),
-    trackConversion: vi.fn(),
-    trackError: vi.fn(),
-    trackPerformance: vi.fn(),
-    setUserId: vi.fn(),
-    setUserProperties: vi.fn(),
-    analytics: {
-      isInitialized: true,
-      track: vi.fn(),
-    },
-  }));
+vi.mock('firebase/analytics', () => ({
+  getAnalytics: vi.fn(() => ({ app: { name: 'test-app' } })),
+  logEvent: vi.fn(),
+  isSupported: vi.fn(() => true),
+}));
+
+// Mock Firebase Storage to avoid getProvider errors in tests
+vi.mock('firebase/storage', () => ({
+  getStorage: vi.fn(() => ({ app: { name: 'test-app' } })),
+  ref: vi.fn(),
+  uploadBytes: vi.fn(),
+  getDownloadURL: vi.fn(async () => 'https://example.com/fake-url'),
+}));
+
+// Global test setup
+beforeAll(() => {
+  // Mock environment variables
+  vi.stubEnv('VITE_FIREBASE_API_KEY', 'test-api-key');
+  vi.stubEnv('VITE_FIREBASE_AUTH_DOMAIN', 'test-project.firebaseapp.com');
+  vi.stubEnv('VITE_FIREBASE_PROJECT_ID', 'test-project');
+  vi.stubEnv('VITE_FIREBASE_APP_ID', 'test-app-id');
+  vi.stubEnv('VITE_GA_MEASUREMENT_ID', 'GA-TEST-123');
 
   // Mock Web APIs
   Object.defineProperty(window, 'matchMedia', {
@@ -136,6 +182,13 @@ beforeAll(() => {
   // Mock fetch for API calls
   globalThis.fetch = vi.fn();
 
+  // Mock URL.createObjectURL / revokeObjectURL used in download helpers
+  if (!globalThis.URL) {
+    globalThis.URL = {};
+  }
+  globalThis.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
+  globalThis.URL.revokeObjectURL = vi.fn();
+
   // Mock console methods in tests
   globalThis.console = {
     ...console,
@@ -145,6 +198,8 @@ beforeAll(() => {
     info: vi.fn(),
     debug: vi.fn(),
   };
+
+  // Additional setup continues below
 });
 
 // Cleanup after each test

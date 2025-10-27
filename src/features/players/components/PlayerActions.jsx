@@ -5,7 +5,7 @@
 
 import React from 'react';
 
-export default function PlayerActions({ onView, onEdit, onStats, onDelete, T, layout = 'desktop' }) {
+const PlayerActions = ({ onView, _onEdit, onStats, onDelete, T, layout = 'desktop' }) => {
   if (layout === 'mobile') {
     return (
       <div className="flex gap-2">
@@ -14,9 +14,6 @@ export default function PlayerActions({ onView, onEdit, onStats, onDelete, T, la
         </button>
         <button onClick={onStats} className={`${T.btnSecondary} flex-1 py-2 text-sm`}>
           📊 Stats
-        </button>
-        <button onClick={onEdit} className={`${T.btnSecondary} px-4 py-2 text-sm`}>
-          ✏️
         </button>
         <button
           onClick={onDelete}
@@ -39,13 +36,6 @@ export default function PlayerActions({ onView, onEdit, onStats, onDelete, T, la
         👁️
       </button>
       <button
-        onClick={onEdit}
-        className={`${T.btnSecondary} px-3 py-1 text-sm`}
-        title="Modifica"
-      >
-        ✏️
-      </button>
-      <button
         onClick={onStats}
         className={`${T.btnSecondary} px-3 py-1 text-sm`}
         title="Statistiche"
@@ -61,4 +51,7 @@ export default function PlayerActions({ onView, onEdit, onStats, onDelete, T, la
       </button>
     </div>
   );
-}
+};
+
+// 🚀 OTTIMIZZAZIONE: Memoizza per evitare re-render inutili
+export default React.memo(PlayerActions);

@@ -3,6 +3,7 @@
 // Pannello amministrazione per la gestione delle lezioni
 // =============================================
 import React, { useState, useMemo, useEffect } from 'react';
+import { useNotifications } from '@contexts/NotificationContext';
 import Section from '@ui/Section.jsx';
 import Badge from '@ui/Badge.jsx';
 import Modal from '@ui/Modal.jsx';
@@ -27,6 +28,7 @@ export default function LessonAdminPanel({
   lessonBookingsCount,
 }) {
   const { updatePlayer, club } = useClub();
+  const { showSuccess, showError, showWarning, showInfo, confirm } = useNotifications();
   const [activeSection, setActiveSection] = useState('config');
 
   // Debug logging per vedere i dati caricati
@@ -228,14 +230,19 @@ export default function LessonAdminPanel({
       setEditingTimeSlot(null);
     } catch (error) {
       console.error('❌ Errore salvataggio fascia oraria:', error);
-      alert('Errore durante il salvataggio della fascia oraria');
+      showError('Errore durante il salvataggio della fascia oraria');
     }
   };
 
   const handleDeleteTimeSlot = async (timeSlotId) => {
-    if (!confirm('Sei sicuro di voler eliminare questa fascia oraria?')) {
-      return;
-    }
+    const confirmed = await confirm({
+      title: 'Elimina fascia oraria',
+      message: 'Sei sicuro di voler eliminare questa fascia oraria?',
+      variant: 'danger',
+      confirmText: 'Elimina',
+      cancelText: 'Annulla',
+    });
+    if (!confirmed) return;
 
     try {
       // Trova la fascia da eliminare
@@ -259,7 +266,7 @@ export default function LessonAdminPanel({
       });
     } catch (error) {
       console.error('❌ Errore eliminazione fascia oraria:', error);
-      alert("Errore durante l'eliminazione della fascia oraria");
+      showError("Errore durante l'eliminazione della fascia oraria");
     }
   };
 
@@ -292,7 +299,7 @@ export default function LessonAdminPanel({
       setEditingPlayer(null);
     } catch (error) {
       console.error("❌ Errore durante l'aggiornamento dell'istruttore:", error);
-      alert('Errore durante il salvataggio delle modifiche. Riprova.');
+      showError('Errore durante il salvataggio delle modifiche. Riprova.');
     }
   };
 
@@ -304,12 +311,20 @@ export default function LessonAdminPanel({
     );
 
     if (inactiveInstructors.length === 0) {
-      alert('Tutti gli istruttori sono già attivi!');
+      showInfo('Tutti gli istruttori sono già attivi!');
       return;
     }
 
-    if (confirm(`Vuoi attivare ${inactiveInstructors.length} istruttore/i inattivo/i?`)) {
-      try {
+    const confirmed = await confirm({
+      title: 'Attiva istruttori',
+      message: `Vuoi attivare ${inactiveInstructors.length} istruttore/i inattivo/i?`,
+      variant: 'info',
+      confirmText: 'Attiva',
+      cancelText: 'Annulla',
+    });
+    if (!confirmed) return;
+
+    try {
         // Attiva ogni istruttore su Firebase
         if (!updatePlayer) {
           throw new Error('updatePlayer non disponibile - impossibile salvare su Firebase');
@@ -335,17 +350,24 @@ export default function LessonAdminPanel({
 
           await updatePlayer(instructor.id, updatedInstructorData);
         }
-        alert(`${inactiveInstructors.length} istruttore/i attivato/i con successo!`);
+        showSuccess(`${inactiveInstructors.length} istruttore/i attivato/i con successo!`);
       } catch (error) {
         console.error("❌ Errore durante l'attivazione degli istruttori:", error);
-        alert("Errore durante l'attivazione degli istruttori. Riprova.");
+        showError("Errore durante l'attivazione degli istruttori. Riprova.");
       }
-    }
   };
 
   const handleRemoveInstructor = async (playerId) => {
-    if (confirm('Sei sicuro di voler rimuovere questo giocatore come istruttore?')) {
-      try {
+    const confirmed = await confirm({
+      title: 'Rimuovi istruttore',
+      message: 'Sei sicuro di voler rimuovere questo giocatore come istruttore?',
+      variant: 'warning',
+      confirmText: 'Rimuovi',
+      cancelText: 'Annulla',
+    });
+    if (!confirmed) return;
+
+    try {
         const playerToUpdate = (players || []).find((p) => p.id === playerId);
         if (!playerToUpdate) return;
 
@@ -367,9 +389,8 @@ export default function LessonAdminPanel({
         console.log('✅ Istruttore rimosso su Firebase:', updatedPlayerData);
       } catch (error) {
         console.error("❌ Errore durante la rimozione dell'istruttore:", error);
-        alert("Errore durante la rimozione dell'istruttore. Riprova.");
+        showError("Errore durante la rimozione dell'istruttore. Riprova.");
       }
-    }
   };
 
   return (
@@ -1121,6 +1142,7 @@ export default function LessonAdminPanel({
           courts={courts}
           weekDays={weekDays}
           onSave={handleSaveTimeSlot}
+          showWarning={showWarning}
           T={T}
           ds={ds}
         />
@@ -1153,6 +1175,7 @@ function TimeSlotModal({
   courts,
   weekDays,
   onSave,
+  showWarning,
   T,
   ds,
 }) {
@@ -1269,27 +1292,27 @@ function TimeSlotModal({
     e.preventDefault();
 
     if (!formData.startTime || !formData.endTime) {
-      alert('Inserisci orario di inizio e fine');
+      showWarning('Inserisci orario di inizio e fine');
       return;
     }
 
     if (formData.startTime >= formData.endTime) {
-      alert("L'orario di fine deve essere dopo quello di inizio");
+      showWarning("L'orario di fine deve essere dopo quello di inizio");
       return;
     }
 
     if (!formData.selectedDate) {
-      alert('Seleziona una data dal calendario');
+      showWarning('Seleziona una data dal calendario');
       return;
     }
 
     if (!formData.instructorId) {
-      alert('Seleziona un istruttore');
+      showWarning('Seleziona un istruttore');
       return;
     }
 
     if (formData.courtIds.length === 0) {
-      alert('Seleziona almeno un campo');
+      showWarning('Seleziona almeno un campo');
       return;
     }
 

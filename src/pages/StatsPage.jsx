@@ -12,8 +12,16 @@ import FormulaModal from '../components/modals/FormulaModal';
 
 export default function StatsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { players, matches, clubId, playersLoaded, loadPlayers, matchesLoaded, loadMatches } =
-    useClub();
+  const {
+    players,
+    matches,
+    clubId,
+    playersLoaded,
+    loadPlayers,
+    matchesLoaded,
+    loadMatches,
+    leaderboard,
+  } = useClub();
   const T = React.useMemo(() => themeTokens(), []);
 
   const [selectedPlayerId, setSelectedPlayerId] = useState(searchParams.get('player') || '');
@@ -34,8 +42,10 @@ export default function StatsPage() {
         player.tournamentData?.isParticipant === true && player.tournamentData?.isActive === true
     );
 
-    return computeClubRanking(tournamentPlayers, srcMatches, clubId);
-  }, [clubId, players, playersLoaded, matches, matchesLoaded]);
+    return computeClubRanking(tournamentPlayers, srcMatches, clubId, {
+      leaderboardMap: leaderboard,
+    });
+  }, [clubId, players, playersLoaded, matches, matchesLoaded, leaderboard]);
 
   const handleSelectPlayer = (playerId) => {
     setSelectedPlayerId(playerId);

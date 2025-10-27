@@ -1,0 +1,61 @@
+// =============================================
+// FILE: storage.rules
+// REGOLE DI SICUREZZA PER FIREBASE STORAGE
+// =============================================
+
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Regole per i loghi dei club (nuovo path)
+    match /logos/{clubId}/{fileName} {
+      // Logo pubblicamente visibile
+      allow read: if true;
+      // Solo utenti autenticati possono caricare (verifica ownership fatta a livello app)
+      allow write: if request.auth != null 
+        && request.resource.size < 5 * 1024 * 1024 // Max 5MB
+        && request.resource.contentType.matches('image/.*'); // Solo immagini
+      allow delete: if request.auth != null;
+    }
+    
+    // Regole per i loghi dei club (vecchio path - compatibilità)
+    match /clubs/{clubId}/logo {
+      // Solo admin del club possono caricare/modificare il logo
+      allow read: if true; // Logo pubblicamente visibile
+      allow write: if request.auth != null 
+        && (request.auth.token.role == 'super_admin' 
+        || (request.auth.token.role == 'club_admin' 
+        && request.auth.token.clubId == clubId))
+        && request.resource.size < 5 * 1024 * 1024 // Max 5MB
+        && request.resource.contentType.matches('image/.*'); // Solo immagini
+    }
+    
+    // Regole per altri file dei club
+    match /clubs/{clubId}/{allPaths=**} {
+      // Solo admin del club possono gestire i file
+      allow read, write: if request.auth != null 
+        && (request.auth.token.role == 'super_admin' 
+        || (request.auth.token.role == 'club_admin' 
+        && request.auth.token.clubId == clubId));
+    }
+    
+    // Regole per file utente
+    match /users/{userId}/{allPaths=**} {
+      // Solo l'utente stesso può gestire i suoi file
+      allow read, write: if request.auth != null 
+        && (request.auth.uid == userId 
+        || request.auth.token.role == 'super_admin');
+    }
+    
+    // Regole di backup (solo super admin)
+    match /backups/{allPaths=**} {
+      allow read, write: if request.auth != null 
+        && request.auth.token.role == 'super_admin';
+    }
+    
+    // Negare tutto il resto
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

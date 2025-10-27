@@ -8,6 +8,7 @@ import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useClubAdminRedirect } from '../hooks/useClubAdminRedirect.js';
 import PWABanner from '../components/ui/PWABanner.jsx';
+import EmailVerificationBanner from '../components/auth/EmailVerificationBanner.jsx';
 // import StatsCard from '@ui/StatsCard.jsx';
 import BookingTypeModal from '../components/ui/BookingTypeModal.jsx';
 
@@ -149,6 +150,9 @@ export default function DashboardPage() {
     <div className="space-y-1 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 overflow-x-hidden">
       {/* PWA Install Banner */}
       <PWABanner />
+      
+      {/* Email Verification Banner */}
+      <EmailVerificationBanner />
 
       {/* Instructor Dashboard - Full Width */}
       {isInstructor ? (

@@ -2,41 +2,78 @@
 // FILE: src/pages/TournamentsPage.jsx
 // =============================================
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { themeTokens } from '@lib/theme.js';
 import { useUI } from '@contexts/UIContext.jsx';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
-import CreaTornei from '@features/tornei/CreaTornei.jsx';
+import TournamentsPageComponent from '@features/tournaments/components/TournamentsPage.jsx';
 
+/**
+ * Tournament System Entry Point (Page Wrapper)
+ * 
+ * This page wraps the tournament management system with authentication
+ * and club context checks. It ensures only authorized users can access
+ * tournament management features.
+ * 
+ * @returns {JSX.Element} Tournament management page
+ */
 export default function TournamentsPage() {
   const navigate = useNavigate();
-  const { clubId } = useClub();
+  const { clubId: urlClubId } = useParams();
+  const { clubId: contextClubId } = useClub();
   const { clubMode } = useUI();
   const { userRole, user, isClubAdmin } = useAuth();
   const T = React.useMemo(() => themeTokens(), []);
 
-  // Gli admin di club possono sempre accedere, anche senza clubMode attivato
-  const canAccessTournaments = clubMode || isClubAdmin(clubId);
+  // Determine which clubId to use (prefer URL param)
+  const activeClubId = urlClubId || contextClubId;
 
+  // Gli admin di club possono sempre accedere, gli utenti normali possono visualizzare
+  const canAccessTournaments = clubMode || isClubAdmin(activeClubId) || userRole !== 'super_admin';
+
+  // Show access denied message if user doesn't have permissions
   if (!canAccessTournaments) {
     return (
       <div className={`text-center py-12 ${T.cardBg} ${T.border} rounded-xl m-4`}>
         <div className="text-6xl mb-4">🔒</div>
-        <h3 className={`text-xl font-bold mb-2 ${T.text}`}>Modalità Club Richiesta</h3>
+        <h3 className={`text-xl font-bold mb-2 ${T.text}`}>Autorizzazione Richiesta</h3>
         <p className={`${T.subtext} mb-4`}>
           {userRole === 'super_admin' || (user && user.userProfile?.role === 'admin')
-            ? 'Per accedere alla creazione tornei, devi prima sbloccare la modalità club nella sezione Extra.'
-            : 'Per accedere alla creazione tornei, è necessario avere privilegi di amministratore del club.'}
+            ? 'Per gestire i tornei, devi attivare la modalità club.'
+            : 'Per gestire i tornei è necessario essere amministratore del club.'}
         </p>
-        {(userRole === 'super_admin' || (user && user.userProfile?.role === 'admin')) && (
-          <button onClick={() => navigate('/extra')} className={`${T.btnPrimary} px-6 py-3`}>
-            Vai a Extra per sbloccare
+        {activeClubId && (
+          <button 
+            onClick={() => navigate(`/club/${activeClubId}/dashboard`)} 
+            className={`${T.btnPrimary} px-6 py-3`}
+          >
+            Torna alla Dashboard
           </button>
         )}
       </div>
     );
   }
 
-  return <CreaTornei T={T} />;
+  // Show error if no club context
+  if (!activeClubId) {
+    return (
+      <div className={`text-center py-12 ${T.cardBg} ${T.border} rounded-xl m-4`}>
+        <div className="text-6xl mb-4">⚠️</div>
+        <h3 className={`text-xl font-bold mb-2 ${T.text}`}>Club Non Selezionato</h3>
+        <p className={`${T.subtext} mb-4`}>
+          Devi selezionare un club per gestire i tornei.
+        </p>
+        <button 
+          onClick={() => navigate('/clubs/search')} 
+          className={`${T.btnPrimary} px-6 py-3`}
+        >
+          Cerca Club
+        </button>
+      </div>
+    );
+  }
+
+  // Render the main tournament management component
+  return <TournamentsPageComponent clubId={activeClubId} />;
 }
