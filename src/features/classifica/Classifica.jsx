@@ -2,17 +2,14 @@
 // FILE: src/features/classifica/Classifica.jsx
 // FUTURISTIC REDESIGN: Glassmorphism design with dark mode support
 // =============================================
-import React, { useMemo, useRef, useState } from 'react';
-import Section from '@ui/Section.jsx';
-import { TrendArrow } from '@ui/TrendArrow.jsx';
-import ModernAreaChart from '@ui/charts/ModernAreaChart.jsx';
-import ShareButtons from '@ui/ShareButtons.jsx';
-import { buildPodiumTimeline, buildDailyTimeline } from '@lib/ranking.js';
+import { useMemo, useRef, useState } from 'react';
+import Section from '@components/ui/Section.jsx';
+import ShareButtons from '@components/ui/ShareButtons.jsx';
+import { TrendArrow } from '@components/ui/TrendArrow.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 
 export default function Classifica({ players, matches, onOpenStats, T }) {
   const classificaRef = useRef(null);
-  const [selectedTopCount, setSelectedTopCount] = useState(3);
   const [showAllPlayers, setShowAllPlayers] = useState(false);
   const { playersById } = useClub();
 
@@ -22,10 +19,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
     return [...players]
       .map((p) => {
         const effectiveRating =
-          playersById?.[p.id]?.calculatedRating ??
-          p.rating ??
-          p.baseRating ??
-          1500;
+          playersById?.[p.id]?.calculatedRating ?? p.rating ?? p.baseRating ?? 1500;
         return {
           ...p,
           rating: Number(effectiveRating),
@@ -84,7 +78,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
       const coupleB = [...match.teamB].sort().join('_');
 
       // Inizializza le coppie se non esistono
-      [coupleA, coupleB].forEach((coupleKey, index) => {
+      [coupleA, coupleB].forEach((coupleKey) => {
         if (!coupleResults.has(coupleKey)) {
           const teamIds = coupleKey.split('_');
           const player1 = players.find((p) => p.id === teamIds[0]);
@@ -229,12 +223,8 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
     const playerStats = new Map();
 
     matches.forEach((match) => {
-      const allPlayers = [...match.teamA, ...match.teamB];
       const teamAWins = match.sets.reduce((acc, set) => acc + (set.a > set.b ? 1 : 0), 0);
       const teamBWins = match.sets.reduce((acc, set) => acc + (set.b > set.a ? 1 : 0), 0);
-
-      const winningTeam = teamAWins > teamBWins ? match.teamA : match.teamB;
-      const losingTeam = teamAWins > teamBWins ? match.teamB : match.teamA;
 
       // Calcola i game totali per efficienza
       const totalGamesA = match.sets.reduce((acc, set) => acc + set.a, 0);
@@ -320,7 +310,6 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
       const teamBWins = match.sets.reduce((acc, set) => acc + (set.b > set.a ? 1 : 0), 0);
 
       const winners = teamAWins > teamBWins ? match.teamA : match.teamB;
-      const losers = teamAWins > teamBWins ? match.teamB : match.teamA;
 
       [...match.teamA, ...match.teamB].forEach((playerId) => {
         if (!playerStreaks.has(playerId)) {
@@ -396,40 +385,10 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
     return { positive: positiveStreaks, ingiocabili: ingiocabili };
   }, [players, matches]);
 
-  const topPlayers = rows.slice(0, selectedTopCount);
-  const topIds = topPlayers.map((p) => p.id);
-  const topKeys = topPlayers.map((p) => p.name);
-  const topRankings = topPlayers.map((p, index) => ({
-    name: p.name,
-    position: index + 1,
-  }));
-
-  // Usa i rating attuali della classifica per sincronizzare con il grafico
-  const chartData = useMemo(() => {
-    const timeline = buildPodiumTimeline(players, matches, topIds);
-
-    // Aggiunge un indice per l'asse X e verifica l'ultimo punto
-    const indexedTimeline = timeline.map((point, index) => ({
-      ...point,
-      matchNumber: index,
-    }));
-
-    // Verifica che l'ultimo punto del grafico corrisponda ai rating attuali
-    if (indexedTimeline.length > 0) {
-      const lastPoint = indexedTimeline[indexedTimeline.length - 1];
-      topPlayers.forEach((player) => {
-        // Sincronizza l'ultimo valore del grafico con il rating attuale della classifica
-        lastPoint[player.name] = Math.round(player.rating);
-      });
-    }
-
-    return indexedTimeline;
-  }, [players, matches, topIds, topPlayers]);
-
   const buildCaption = () => {
     const lines = [
       'Classifica Sporting Cat',
-      ...topPlayers.map((p, i) => `${i + 1}. ${p.name} — ${Math.round(p.rating)} pt`),
+      ...rows.slice(0, 10).map((p, i) => `${i + 1}. ${p.name} — ${Math.round(p.rating)} pt`),
       '#SportingCat #Padel',
     ];
     return lines.join('\n');
@@ -539,47 +498,6 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                 </div>
               )}
             </div>
-
-            <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
-              <div className="font-semibold text-lg bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                Andamento del ranking
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                  Mostra:
-                </span>
-                <select
-                  value={selectedTopCount}
-                  onChange={(e) => setSelectedTopCount(Number(e.target.value))}
-                  className="text-sm px-3 py-2 rounded-xl border border-white/30 dark:border-gray-600/30 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200"
-                >
-                  <option value={3}>Top 3</option>
-                  <option value={5}>Top 5</option>
-                  <option value={10}>Top 10</option>
-                </select>
-              </div>
-            </div>
-            {/* Usa il nuovo grafico per l'andamento del ranking */}
-            {chartData.length > 0 ? (
-              <ModernAreaChart
-                data={chartData}
-                xKey="matchNumber"
-                yKey="rating"
-                title={`Evoluzione del Ranking Top ${selectedTopCount}`}
-                gradient={{
-                  from: 'rgba(59, 130, 246, 0.8)',
-                  to: 'rgba(147, 51, 234, 0.1)',
-                }}
-                color="#3B82F6"
-                multiPlayer={true}
-                top5Players={topPlayers}
-                chartId="classifica-ranking"
-              />
-            ) : (
-              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                <p>Nessun dato disponibile per il grafico del ranking</p>
-              </div>
-            )}
           </div>
         </div>
 

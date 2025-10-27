@@ -5,7 +5,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Section from '@ui/Section.jsx';
 import ShareButtons from '@ui/ShareButtons.jsx';
-import ModernAreaChart from '@ui/charts/ModernAreaChart.jsx';
 import FormulaModal from '@components/modals/FormulaModal.jsx';
 import { byPlayerFirstAlpha, surnameOf, IT_COLLATOR } from '@lib/names.js';
 import { DEFAULT_RATING } from '@lib/ids.js';
@@ -184,7 +183,7 @@ export default function StatisticheGiocatore({
         );
         if (Array.isArray(entry.matchDetails)) {
           console.log(`    ✅ Agregando ${entry.matchDetails.length} matches de torneo`);
-          
+
           // 🔍 DEBUG: Log tournament match dates
           if (entry.matchDetails.length > 0) {
             console.log(`    🔍 [DEBUG] Tournament match dates:`);
@@ -194,7 +193,7 @@ export default function StatisticheGiocatore({
               );
             });
           }
-          
+
           tourneyMatches.push(...entry.matchDetails);
         }
       }
@@ -203,21 +202,19 @@ export default function StatisticheGiocatore({
     }
 
     const combined = [...regulars, ...tourneyMatches];
-    
+
     // 🔍 DEBUG: Log combined matches dates
     console.log(
       `📊 [StatisticheGiocatore] Total matches: ${combined.length} (regular: ${regulars.length}, torneo: ${tourneyMatches.length})`
     );
-    
+
     if (combined.length > 0) {
       console.log(`🔍 [DEBUG] Sample regular match dates (first 3):`);
       regulars.slice(0, 3).forEach((m, idx) => {
-        console.log(
-          `  ${idx + 1}. date: ${m.date} (type: ${typeof m.date}) | id: ${m.id}`
-        );
+        console.log(`  ${idx + 1}. date: ${m.date} (type: ${typeof m.date}) | id: ${m.id}`);
       });
     }
-    
+
     // Combine and return
     return combined;
   }, [filteredMatches, champEntries]);
@@ -335,132 +332,6 @@ export default function StatisticheGiocatore({
   }, [pid, allMatchesIncludingTournaments]);
 
   const playersAlpha = useMemo(() => [...players].sort(byPlayerFirstAlpha), [players]);
-
-  // Timelines (keep as-is based on matches only)
-  const timeline = useMemo(() => {
-    if (!pid) return [];
-    const current = new Map(players.map((p) => [p.id, p.rating]));
-    const points = [];
-    points.push({
-      date: null,
-      label: 'Start',
-      rating: Math.round(current.get(pid) ?? DEFAULT_RATING),
-    });
-    const byDate = [...(allMatchesIncludingTournaments || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
-    for (const m of byDate) {
-      const add = (id, d) => current.set(id, (current.get(id) ?? DEFAULT_RATING) + d);
-      const deltaA = m.deltaA ?? 0,
-        deltaB = m.deltaB ?? 0;
-      add(m.teamA[0], deltaA);
-      add(m.teamA[1], deltaA);
-      add(m.teamB[0], deltaB);
-      add(m.teamB[1], deltaB);
-      if (m.teamA.includes(pid) || m.teamB.includes(pid)) {
-        points.push({
-          date: new Date(m.date),
-          label: new Date(m.date).toLocaleString('it-IT', {
-            day: '2-digit',
-            month: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-          }),
-          rating: Math.round(current.get(pid) ?? DEFAULT_RATING),
-        });
-      }
-    }
-    return points;
-  }, [pid, players, allMatchesIncludingTournaments]);
-
-  const compareTimeline = useMemo(() => {
-    if (!comparePlayerId) return [];
-    const current = new Map(players.map((p) => [p.id, p.rating]));
-    const points = [];
-    points.push({
-      date: null,
-      label: 'Start',
-      rating: Math.round(current.get(comparePlayerId) ?? DEFAULT_RATING),
-    });
-    const byDate = [...(allMatchesIncludingTournaments || [])].sort((a, b) => new Date(a.date) - new Date(b.date));
-    for (const m of byDate) {
-      const add = (id, d) => current.set(id, (current.get(id) ?? DEFAULT_RATING) + d);
-      const deltaA = m.deltaA ?? 0,
-        deltaB = m.deltaB ?? 0;
-      add(m.teamA[0], deltaA);
-      add(m.teamA[1], deltaA);
-      add(m.teamB[0], deltaB);
-      add(m.teamB[1], deltaB);
-      if (m.teamA.includes(comparePlayerId) || m.teamB.includes(comparePlayerId)) {
-        points.push({
-          date: new Date(m.date),
-          label: new Date(m.date).toLocaleString('it-IT', {
-            day: '2-digit',
-            month: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-          }),
-          rating: Math.round(current.get(comparePlayerId) ?? DEFAULT_RATING),
-        });
-      }
-    }
-    return points;
-  }, [comparePlayerId, players, allMatchesIncludingTournaments]);
-
-  const combinedTimeline = useMemo(() => {
-    if (!comparePlayerId)
-      return timeline.map((point) => ({ ...point, playerRating: point.rating }));
-    const allDates = new Set();
-    timeline.forEach((p) => {
-      if (p.date) allDates.add(p.date.getTime());
-    });
-    compareTimeline.forEach((p) => {
-      if (p.date) allDates.add(p.date.getTime());
-    });
-    const sortedDates = Array.from(allDates).sort();
-    let playerRating = timeline[0]?.rating ?? DEFAULT_RATING;
-    let compareRating = compareTimeline[0]?.rating ?? DEFAULT_RATING;
-    const combined = [];
-    combined.push({
-      date: null,
-      label: 'Start',
-      playerRating,
-      compareRating,
-      rating: playerRating,
-    });
-    let playerIndex = 1,
-      compareIndex = 1;
-    for (const dateTime of sortedDates) {
-      const date = new Date(dateTime);
-      while (
-        playerIndex < timeline.length &&
-        timeline[playerIndex].date &&
-        timeline[playerIndex].date.getTime() <= dateTime
-      ) {
-        playerRating = timeline[playerIndex].rating;
-        playerIndex++;
-      }
-      while (
-        compareIndex < compareTimeline.length &&
-        compareTimeline[compareIndex].date &&
-        compareTimeline[compareIndex].date.getTime() <= dateTime
-      ) {
-        compareRating = compareTimeline[compareIndex].rating;
-        compareIndex++;
-      }
-      combined.push({
-        date,
-        label: date.toLocaleString('it-IT', {
-          day: '2-digit',
-          month: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-        playerRating,
-        compareRating,
-        rating: playerRating,
-      });
-    }
-    return combined;
-  }, [timeline, compareTimeline, comparePlayerId]);
 
   const partnerAndOppStats = useMemo(() => {
     if (!pid)
@@ -931,48 +802,6 @@ export default function StatisticheGiocatore({
             </div>
           </div>
         )}
-
-        {/* Grafico ranking - Futuristic Design */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <svg
-                  className="w-5 h-5 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
-              </div>
-              Andamento Ranking
-            </h3>
-            <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
-              {timeFilter === 'all' ? 'Tutte le partite' : 'Periodo selezionato'}
-            </span>
-          </div>
-          <ModernAreaChart
-            data={combinedTimeline}
-            dataKey="playerRating"
-            compareDataKey={comparePlayerId ? 'compareRating' : null}
-            comparePlayerName={
-              comparePlayerId ? players.find((p) => p.id === comparePlayerId)?.name : null
-            }
-            chartId={`player-${pid}`}
-            color="success"
-            title="Evoluzione del rating"
-            multiPlayer={false}
-            xKey="label"
-            yKey="rating"
-            top5Players={[]}
-          />
-        </div>
 
         {/* Confronto diretto - Mobile Optimized */}
         <div className={`rounded-2xl ${T.cardBg} ${T.border} p-3 sm:p-4 mb-6`}>
