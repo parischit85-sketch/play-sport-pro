@@ -86,12 +86,28 @@ export default function ClassificaPage() {
         player.tournamentData?.isParticipant === true && player.tournamentData?.isActive === true
     );
 
+    console.log('🎯 [ClassificaPage] ========== CALCOLO RANKING ==========');
+    console.log('📊 Tournament players:', tournamentPlayers.length);
+    console.log('📊 Regular matches:', srcMatches.length);
+    console.log('📊 Tournament matches:', tournamentMatches.length);
+    console.log('📊 Leaderboard entries:', Object.keys(leaderboard || {}).length);
+
     // Combine regular matches with tournament matches
     const combinedMatches = [...srcMatches, ...tournamentMatches];
 
-    return computeClubRanking(tournamentPlayers, combinedMatches, clubId, {
+    const ranking = computeClubRanking(tournamentPlayers, combinedMatches, clubId, {
       leaderboardMap: leaderboard,
     });
+
+    console.log('🏆 [ClassificaPage] Ranking calcolato:');
+    ranking.players.slice(0, 5).forEach((p, i) => {
+      console.log(
+        `  ${i + 1}. ${p.name}: rating=${p.rating}, baseRating=${p.baseRating || p.rating}`
+      );
+    });
+    console.log('==========================================');
+
+    return ranking;
   }, [clubId, players, playersLoaded, matches, matchesLoaded, leaderboard, tournamentMatches]);
 
   return (

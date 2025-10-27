@@ -6,24 +6,69 @@ import { useNavigate } from 'react-router-dom';
 import { themeTokens } from '@lib/theme.js';
 // Removed legacy LeagueContext in favour of ClubContext + per-club loaders
 import { useClub } from '@contexts/ClubContext.jsx';
-import { createClubMatch, deleteClubMatch } from '@services/club-matches.js';
+import { computeClubRanking } from '@lib/ranking-club.js';
 import { useUI } from '@contexts/UIContext.jsx';
 import { useAuth } from '@contexts/AuthContext.jsx';
-import { computeClubRanking } from '@lib/ranking-club.js';
 import CreaPartita from '@features/crea/CreaPartita.jsx';
 import FormulaModal from '../components/modals/FormulaModal';
 
 export default function MatchesPage() {
-  const { clubId, loadPlayers, players, playersLoaded, loadMatches, matches, matchesLoaded } =
-    useClub();
+  const {
+    clubId,
+    loadPlayers,
+    players,
+    playersLoaded,
+    loadMatches,
+    matches,
+    matchesLoaded,
+    leaderboard, // ✅ Serve per computeClubRanking
+  } = useClub();
   const { clubMode } = useUI();
   const { userRole, user, isClubAdmin } = useAuth();
   const T = React.useMemo(() => themeTokens(), []);
+  const navigate = useNavigate();
+  const [formulaData, setFormulaData] = useState(null);
 
   // Gli admin di club possono sempre accedere, anche senza clubMode attivato
   const canAccessMatches = clubMode || isClubAdmin(clubId);
-  const [formulaData, setFormulaData] = useState(null);
-  const navigate = useNavigate();
+
+  // ✅ USA computeClubRanking() IDENTICO a StatsPage per ricalcolare i match con rating storici corretti
+  const rankingData = useMemo(() => {
+    if (!clubId) return { players: [], matches: [] };
+    const srcPlayers = playersLoaded ? players : [];
+    const srcMatches = matchesLoaded ? matches : [];
+
+    // � FILTRO CAMPIONATO: Solo giocatori che partecipano attivamente al campionato
+    const tournamentPlayers = srcPlayers.filter(
+      (player) =>
+        player.tournamentData?.isParticipant === true && player.tournamentData?.isActive === true
+    );
+
+    // 🎯 computeClubRanking RICALCOLA tutti i match con:
+    // - Rating storici (al momento della partita)
+    // - sumA, sumB corretti
+    // - gap, factor, base corretti
+    // - Identico a Tab Statistiche
+    return computeClubRanking(tournamentPlayers, srcMatches, clubId, {
+      leaderboardMap: leaderboard,
+    });
+  }, [clubId, players, playersLoaded, matches, matchesLoaded, leaderboard]);
+
+  // ✅ Prepara playersById usando i giocatori con rating calcolati da rankingData
+  const playersById = React.useMemo(
+    () => Object.fromEntries((rankingData?.players || players).map((p) => [p.id, p])),
+    [rankingData, players]
+  );
+
+  const stateLike = React.useMemo(() => ({ players }), [players]);
+  const derivedLike = React.useMemo(() => ({ matches }), [matches]);
+
+  React.useEffect(() => {
+    if (clubId) {
+      if (!playersLoaded) loadPlayers();
+      if (!matchesLoaded) loadMatches();
+    }
+  }, [clubId, playersLoaded, matchesLoaded, loadPlayers, loadMatches]);
 
   if (!canAccessMatches) {
     return (
@@ -43,30 +88,6 @@ export default function MatchesPage() {
       </div>
     );
   }
-
-  // Prepara playersById derivato lato client
-  const playersById = React.useMemo(
-    () => Object.fromEntries(players.map((p) => [p.id, p])),
-    [players]
-  );
-
-  React.useEffect(() => {
-    if (clubId) {
-      if (!playersLoaded) loadPlayers();
-      if (!matchesLoaded) loadMatches();
-    }
-  }, [clubId, playersLoaded, matchesLoaded, loadPlayers, loadMatches]);
-
-  // Calcola ranking data con rating computati come in StatsPage
-  const rankingData = useMemo(() => {
-    if (!players.length || !matches.length) {
-      return { players: [], matches: [] };
-    }
-    return computeClubRanking(players, matches, clubId);
-  }, [players, matches, clubId]);
-
-  const stateLike = React.useMemo(() => ({ players }), [players]);
-  const derivedLike = React.useMemo(() => ({ matches }), [matches]);
 
   // DEBUG MIRATO: Verifica cosa passa a CreaPartita
   // console.log('🎾 MATCHES DEBUG:', {

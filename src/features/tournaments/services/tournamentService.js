@@ -18,11 +18,7 @@ import {
   limit,
   Timestamp,
 } from 'firebase/firestore';
-import {
-  TOURNAMENT_STATUS,
-  DEFAULT_TOURNAMENT_CONFIG,
-  COLLECTIONS,
-} from '../utils/tournamentConstants.js';
+import { TOURNAMENT_STATUS, COLLECTIONS } from '../utils/tournamentConstants.js';
 import { getTeamsByTournament } from './teamsService.js';
 import { generateBalancedGroups } from '../algorithms/groupsGenerator.js';
 import { getTeamsByGroup } from './teamsService.js';
@@ -35,6 +31,7 @@ import {
   sanitizeTournamentName,
 } from '../utils/tournamentValidation.js';
 import { revertTournamentChampionshipPoints } from './championshipApplyService.js';
+import { computeClubRanking } from '../../../lib/ranking-club.js';
 
 /**
  * Create a new tournament
@@ -77,7 +74,7 @@ export async function createTournament(tournamentData, userId) {
       description: tournamentData.description || null,
       status: TOURNAMENT_STATUS.DRAFT,
       participantType: tournamentData.participantType,
-      
+
       configuration: {
         numberOfGroups: tournamentData.numberOfGroups,
         teamsPerGroup: tournamentData.teamsPerGroup,
@@ -100,30 +97,44 @@ export async function createTournament(tournamentData, userId) {
             4: Number(tournamentData?.championshipPoints?.groupPlacementPoints?.[4] ?? 20),
           },
           knockoutProgressPoints: {
-            round_of_16: Number(tournamentData?.championshipPoints?.knockoutProgressPoints?.round_of_16 ?? 10),
-            quarter_finals: Number(tournamentData?.championshipPoints?.knockoutProgressPoints?.quarter_finals ?? 20),
-            semi_finals: Number(tournamentData?.championshipPoints?.knockoutProgressPoints?.semi_finals ?? 40),
-            finals: Number(tournamentData?.championshipPoints?.knockoutProgressPoints?.finals ?? 80),
-            third_place: Number(tournamentData?.championshipPoints?.knockoutProgressPoints?.third_place ?? 15),
+            round_of_16: Number(
+              tournamentData?.championshipPoints?.knockoutProgressPoints?.round_of_16 ?? 10
+            ),
+            quarter_finals: Number(
+              tournamentData?.championshipPoints?.knockoutProgressPoints?.quarter_finals ?? 20
+            ),
+            semi_finals: Number(
+              tournamentData?.championshipPoints?.knockoutProgressPoints?.semi_finals ?? 40
+            ),
+            finals: Number(
+              tournamentData?.championshipPoints?.knockoutProgressPoints?.finals ?? 80
+            ),
+            third_place: Number(
+              tournamentData?.championshipPoints?.knockoutProgressPoints?.third_place ?? 15
+            ),
           },
         },
       },
-      
+
       pointsSystem: tournamentData.pointsSystem,
-      
+
       registration: {
-        opensAt: tournamentData.registrationOpensAt ? Timestamp.fromDate(new Date(tournamentData.registrationOpensAt)) : null,
-        closesAt: tournamentData.registrationClosesAt ? Timestamp.fromDate(new Date(tournamentData.registrationClosesAt)) : null,
+        opensAt: tournamentData.registrationOpensAt
+          ? Timestamp.fromDate(new Date(tournamentData.registrationOpensAt))
+          : null,
+        closesAt: tournamentData.registrationClosesAt
+          ? Timestamp.fromDate(new Date(tournamentData.registrationClosesAt))
+          : null,
         currentTeamsCount: 0,
         isOpen: false,
       },
-      
+
       groups: null,
       knockoutBracket: null,
 
       registeredTeams: 0,
       maxTeams: maxTeams,
-      
+
       statistics: {
         totalTeams: 0,
         totalMatches: 0,
@@ -135,7 +146,7 @@ export async function createTournament(tournamentData, userId) {
         firstMatchDate: null,
         lastMatchDate: null,
       },
-      
+
       createdAt: Timestamp.now(),
       createdBy: userId,
       updatedAt: Timestamp.now(),
@@ -162,11 +173,11 @@ export async function getTournament(clubId, tournamentId) {
   try {
     const tournamentRef = doc(db, 'clubs', clubId, COLLECTIONS.TOURNAMENTS, tournamentId);
     const tournamentSnap = await getDoc(tournamentRef);
-    
+
     if (!tournamentSnap.exists()) {
       return null;
     }
-    
+
     return {
       id: tournamentSnap.id,
       ...tournamentSnap.data(),
@@ -190,25 +201,25 @@ export async function getTournaments(clubId, options = {}) {
   try {
     const tournamentsRef = collection(db, 'clubs', clubId, COLLECTIONS.TOURNAMENTS);
     let q = query(tournamentsRef);
-    
+
     // Apply filters
     if (options.status) {
       q = query(q, where('status', '==', options.status));
     }
-    
+
     // Apply sorting
     const sortBy = options.sortBy || 'createdAt';
     const sortOrder = options.sortOrder || 'desc';
     q = query(q, orderBy(sortBy, sortOrder));
-    
+
     // Apply limit
     if (options.limit) {
       q = query(q, limit(options.limit));
     }
-    
+
     const snapshot = await getDocs(q);
-    
-    return snapshot.docs.map(doc => ({
+
+    return snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
     }));
@@ -228,15 +239,15 @@ export async function getTournaments(clubId, options = {}) {
 export async function updateTournament(clubId, tournamentId, updates) {
   try {
     const tournamentRef = doc(db, 'clubs', clubId, COLLECTIONS.TOURNAMENTS, tournamentId);
-    
+
     // Add updated timestamp
     const updateData = {
       ...updates,
       updatedAt: Timestamp.now(),
     };
-    
+
     await updateDoc(tournamentRef, updateData);
-    
+
     return { success: true };
   } catch (error) {
     console.error('Error updating tournament:', error);
@@ -258,36 +269,36 @@ export async function updateTournamentStatus(clubId, tournamentId, newStatus) {
     if (!tournament) {
       return { success: false, error: 'Torneo non trovato' };
     }
-    
+
     // Validate status transition
     const validation = validateStatusTransition(tournament.status, newStatus);
     if (!validation.valid) {
       return { success: false, error: validation.error };
     }
-    
+
     // Update status
     const previousStatus = tournament.status;
-    const updates = { 
+    const updates = {
       status: newStatus,
       phaseHistory: [
         ...(tournament.phaseHistory || []),
         { from: previousStatus, to: newStatus, timestamp: Timestamp.now() },
       ],
     };
-    
+
     // Handle special status transitions
     if (newStatus === TOURNAMENT_STATUS.REGISTRATION_OPEN) {
       updates['registration.isOpen'] = true;
     }
-    
+
     if (newStatus === TOURNAMENT_STATUS.REGISTRATION_CLOSED) {
       updates['registration.isOpen'] = false;
     }
-    
+
     if (newStatus === TOURNAMENT_STATUS.COMPLETED) {
       updates.completedAt = Timestamp.now();
     }
-    
+
     return await updateTournament(clubId, tournamentId, updates);
   } catch (error) {
     console.error('Error updating tournament status:', error);
@@ -312,17 +323,29 @@ export async function autoGenerateGroups(clubId, tournamentId) {
       return { success: false, error: 'Torneo non trovato' };
     }
 
-    const numberOfGroups = tournament.configuration?.numberOfGroups || tournament.groupsConfig?.numberOfGroups;
-    const teamsPerGroup = tournament.configuration?.teamsPerGroup || tournament.groupsConfig?.teamsPerGroup;
+    const numberOfGroups =
+      tournament.configuration?.numberOfGroups || tournament.groupsConfig?.numberOfGroups;
+    const teamsPerGroup =
+      tournament.configuration?.teamsPerGroup || tournament.groupsConfig?.teamsPerGroup;
 
     if (!numberOfGroups || !teamsPerGroup) {
-      return { success: false, error: 'Configurazione gironi non valida (numero gironi o squadre per girone mancante)' };
+      return {
+        success: false,
+        error: 'Configurazione gironi non valida (numero gironi o squadre per girone mancante)',
+      };
     }
 
     // Clean up old data before generating new groups
     // Delete all existing group stage matches
     try {
-      const matchesColl = collection(db, 'clubs', clubId, COLLECTIONS.TOURNAMENTS, tournamentId, COLLECTIONS.MATCHES);
+      const matchesColl = collection(
+        db,
+        'clubs',
+        clubId,
+        COLLECTIONS.TOURNAMENTS,
+        tournamentId,
+        COLLECTIONS.MATCHES
+      );
       const qGroups = query(matchesColl, where('type', '==', 'group'));
       const snap = await getDocs(qGroups);
 
@@ -346,7 +369,14 @@ export async function autoGenerateGroups(clubId, tournamentId) {
       }
 
       // Delete all standings
-      const standingsColl = collection(db, 'clubs', clubId, COLLECTIONS.TOURNAMENTS, tournamentId, 'standings');
+      const standingsColl = collection(
+        db,
+        'clubs',
+        clubId,
+        COLLECTIONS.TOURNAMENTS,
+        tournamentId,
+        'standings'
+      );
       const snapStandings = await getDocs(standingsColl);
 
       if (!snapStandings.empty) {
@@ -410,6 +440,112 @@ export async function autoGenerateGroups(clubId, tournamentId) {
 }
 
 /**
+ * Get current player rankings (snapshot at match creation time)
+ * This includes base rating + tournament points from leaderboard
+ * @param {string} clubId
+ * @param {string} tournamentId
+ * @returns {Promise<Object>} Map of playerId to current ranking
+ */
+async function getCurrentPlayersRanking(clubId, tournamentId) {
+  try {
+    console.log('🎯 [getCurrentPlayersRanking] ========== INIZIO ==========');
+    console.log('📊 ClubId:', clubId);
+    console.log('📊 TournamentId:', tournamentId);
+
+    // Get all club players
+    const playersRef = collection(db, 'clubs', clubId, 'users');
+    const playersSnapshot = await getDocs(playersRef);
+    const players = [];
+
+    playersSnapshot.forEach((doc) => {
+      const data = doc.data();
+      // Only include tournament participants
+      if (data.tournamentData?.isParticipant === true && data.tournamentData?.isActive === true) {
+        players.push({
+          id: doc.id,
+          ...data,
+        });
+      }
+    });
+
+    console.log('📊 Tournament players found:', players.length);
+    players.slice(0, 3).forEach((p) => {
+      console.log(`  - ${p.name}: baseRating=${p.rating || 1500}`);
+    });
+
+    // Get all matches (both regular and tournament)
+    const regularMatchesRef = collection(db, 'clubs', clubId, 'matches');
+    const regularMatchesSnapshot = await getDocs(regularMatchesRef);
+    const regularMatches = [];
+    regularMatchesSnapshot.forEach((doc) => {
+      regularMatches.push({ id: doc.id, ...doc.data() });
+    });
+
+    console.log('📊 Regular matches:', regularMatches.length);
+
+    // Get tournament matches
+    const tournamentMatchesRef = collection(
+      db,
+      'clubs',
+      clubId,
+      COLLECTIONS.TOURNAMENTS,
+      tournamentId,
+      COLLECTIONS.MATCHES
+    );
+    const tournamentMatchesSnapshot = await getDocs(tournamentMatchesRef);
+    const tournamentMatches = [];
+    tournamentMatchesSnapshot.forEach((doc) => {
+      tournamentMatches.push({ id: doc.id, ...doc.data() });
+    });
+
+    console.log('📊 Tournament matches:', tournamentMatches.length);
+
+    // Get leaderboard for tournament points
+    const leaderboardRef = collection(db, 'clubs', clubId, 'leaderboard');
+    const leaderboardSnapshot = await getDocs(leaderboardRef);
+    const leaderboard = {};
+    leaderboardSnapshot.forEach((doc) => {
+      leaderboard[doc.id] = doc.data();
+    });
+
+    console.log('📊 Leaderboard entries:', Object.keys(leaderboard).length);
+
+    // Combine all matches
+    const combinedMatches = [...regularMatches, ...tournamentMatches];
+
+    console.log('📊 Combined matches total:', combinedMatches.length);
+
+    // Calculate rankings using the same logic as ClubContext
+    const rankingData = computeClubRanking(players, combinedMatches, clubId, {
+      leaderboardMap: leaderboard,
+    });
+
+    console.log('🏆 Ranking calculated, total players:', rankingData.players?.length || 0);
+
+    // Create map of playerId to ranking
+    const playersRanking = {};
+    (rankingData.players || []).forEach((p) => {
+      playersRanking[p.id] = p.rating || 1500;
+    });
+
+    console.log('🏆 Players ranking snapshot (top 5):');
+    Object.entries(playersRanking)
+      .slice(0, 5)
+      .forEach(([id, rating]) => {
+        const player = players.find((p) => p.id === id);
+        console.log(`  ${player?.name || id}: ${rating}`);
+      });
+    console.log('========================================================');
+
+    return playersRanking;
+  } catch (error) {
+    console.error('❌ Error getting current player rankings:', error);
+    // Return empty map on error - matches will use team's stored ranking
+    return {};
+  }
+}
+
+/**
  * Generate group-stage matches based on current tournament groups
  * @param {string} clubId
  * @param {string} tournamentId
@@ -430,15 +566,21 @@ export async function generateGroupStageMatches(clubId, tournamentId) {
       const teams = (teamDocs || []).map((t) => ({
         teamId: t.id,
         teamName: t.teamName || t.name || 'Senza Nome',
+        players: t.players || [], // Include players with their ranking
       }));
       groupsWithTeams.push({ id: g.id, name: g.name || `Girone ${g.id}`, teams });
     }
+
+    // Get current player rankings (snapshot at match creation time)
+    // This includes base rating + tournament points from leaderboard
+    const playersRanking = await getCurrentPlayersRanking(clubId, tournamentId);
 
     const options = {
       startDate: tournament.startDate ? new Date(tournament.startDate) : new Date(),
       matchDuration: tournament.configuration?.matchDuration || 60,
       breakBetweenMatches: tournament.configuration?.breakBetweenMatches || 15,
       matchesPerDay: tournament.configuration?.matchesPerDay || 4,
+      playersRanking, // Pass ranking snapshot
     };
 
     const res = await generateGroupMatches(clubId, tournamentId, groupsWithTeams, options);
@@ -447,7 +589,8 @@ export async function generateGroupStageMatches(clubId, tournamentId) {
     // Update stats (best-effort)
     await updateTournament(clubId, tournamentId, {
       totalMatches: (tournament.totalMatches || 0) + (res.totalMatches || 0),
-      'statistics.totalMatches': (tournament.statistics?.totalMatches || 0) + (res.totalMatches || 0),
+      'statistics.totalMatches':
+        (tournament.statistics?.totalMatches || 0) + (res.totalMatches || 0),
       updatedAt: Timestamp.now(),
     });
 
@@ -551,14 +694,14 @@ export async function updateStatistics(clubId, tournamentId, statisticsUpdate) {
     if (!tournament) {
       return { success: false, error: 'Torneo non trovato' };
     }
-    
+
     const updates = {
       statistics: {
         ...tournament.statistics,
         ...statisticsUpdate,
       },
     };
-    
+
     return await updateTournament(clubId, tournamentId, updates);
   } catch (error) {
     console.error('Error updating statistics:', error);

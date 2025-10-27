@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { DEFAULT_RATING } from '@lib/ids.js';
 import { surnameOf } from '@lib/names.js';
-import { rpaFactor } from '@lib/rpa.js';
 
 export default function MatchRow({ m, playersById, onShowFormula, onDelete, T }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   // DEBUG MIRATO: MatchRow rendering
   // console.log('🎾 MATCHROW RENDER:', {
   //   matchId: m?.id,
@@ -72,23 +71,25 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
       : '';
 
     // Calcoli per la formula
-    // 🎯 Usa i rating e somme già calcolati e salvati nel match, se disponibili
-    // Questo garantisce che vengano usati i rating corretti al momento della partita
-    
-    // Estrai i rating individuali usati per il calcolo
-    const ratingA1 = m.preMatchRatings?.ratingA1 ?? playersById[m.teamA[0]]?.rating ?? DEFAULT_RATING;
-    const ratingA2 = m.preMatchRatings?.ratingA2 ?? playersById[m.teamA[1]]?.rating ?? DEFAULT_RATING;
-    const ratingB1 = m.preMatchRatings?.ratingB1 ?? playersById[m.teamB[0]]?.rating ?? DEFAULT_RATING;
-    const ratingB2 = m.preMatchRatings?.ratingB2 ?? playersById[m.teamB[1]]?.rating ?? DEFAULT_RATING;
-    
-    const sumA = m.sumA ?? (ratingA1 + ratingA2);
-    const sumB = m.sumB ?? (ratingB1 + ratingB2);
-    
-    // Usa gli altri valori già calcolati se disponibili
-    const gap = m.gap ?? (m.winner === 'A' ? sumB - sumA : sumA - sumB);
-    const factor = m.factor ?? rpaFactor(gap);
-    const base = m.base ?? (sumA + sumB) / 100;
-    const GD = m.gd ?? (m.winner === 'A' ? m.gamesA - m.gamesB : m.gamesB - m.gamesA);
+    // 🎯 Usa i valori già calcolati e salvati nel match da computeClubRanking()
+    // Questi rappresentano i rating storici AL MOMENTO della partita (snapshot corretti)
+    // IDENTICO a StatisticheGiocatore.jsx
+
+    // ✅ USA i valori dal match (già ricalcolati da computeClubRanking)
+    const sumA = m.sumA ?? 0;
+    const sumB = m.sumB ?? 0;
+    const gap = m.gap ?? 0;
+    const factor = m.factor ?? 1;
+    const base = m.base ?? 0;
+    const GD = m.gd ?? 0;
+    const deltaA = m.deltaA ?? 0;
+    const deltaB = m.deltaB ?? 0;
+
+    // Rating individuali per mostrare nella formula dettagliata
+    const ratingA1 = m.preMatchRatings?.ratingA1 ?? DEFAULT_RATING;
+    const ratingA2 = m.preMatchRatings?.ratingA2 ?? DEFAULT_RATING;
+    const ratingB1 = m.preMatchRatings?.ratingB1 ?? DEFAULT_RATING;
+    const ratingB2 = m.preMatchRatings?.ratingB2 ?? DEFAULT_RATING;
 
     return (
       <div
@@ -126,11 +127,15 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
             </div>
             <div className="text-sm">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-                <div className={`${aCls} font-semibold bg-gradient-to-r from-current to-current bg-clip-text`}>
+                <div
+                  className={`${aCls} font-semibold bg-gradient-to-r from-current to-current bg-clip-text`}
+                >
                   {A}
                 </div>
                 <div className="hidden sm:block text-gray-400 dark:text-gray-500">vs</div>
-                <div className={`${bCls} font-semibold bg-gradient-to-r from-current to-current bg-clip-text`}>
+                <div
+                  className={`${bCls} font-semibold bg-gradient-to-r from-current to-current bg-clip-text`}
+                >
                   {B}
                 </div>
               </div>
@@ -143,17 +148,17 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
             <div className="bg-gradient-to-br from-gray-50/80 to-gray-100/80 dark:from-gray-700/50 dark:to-gray-800/50 backdrop-blur-sm rounded-2xl px-3 py-2 border border-white/20 dark:border-gray-600/30">
               <div className="flex gap-2 items-center text-xs mb-1">
                 <span
-                  className={`font-bold ${Math.round(m.deltaA ?? 0) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}
+                  className={`font-bold ${Math.round(deltaA) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}
                 >
-                  A: {Math.round(m.deltaA ?? 0) >= 0 ? '+' : ''}
-                  {Math.round(m.deltaA ?? 0)}
+                  A: {Math.round(deltaA) >= 0 ? '+' : ''}
+                  {Math.round(deltaA)}
                 </span>
                 <span className="text-gray-400">|</span>
                 <span
-                  className={`font-bold ${Math.round(m.deltaB ?? 0) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}
+                  className={`font-bold ${Math.round(deltaB) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}
                 >
-                  B: {Math.round(m.deltaB ?? 0) >= 0 ? '+' : ''}
-                  {Math.round(m.deltaB ?? 0)}
+                  B: {Math.round(deltaB) >= 0 ? '+' : ''}
+                  {Math.round(deltaB)}
                 </span>
               </div>
               <div className="text-[10px] text-gray-500 dark:text-gray-400 font-medium text-center">
@@ -214,7 +219,7 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
                       // Se la squadra A ha vinto la partita e anche questo set, è verde
                       // Se la squadra A ha vinto la partita ma ha perso questo set, è rosso
                       const isWinningSet = winA ? setWonByA : !setWonByA;
-                      
+
                       return (
                         <div
                           key={`${m.id}-set-${i}`}
@@ -225,9 +230,7 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
                           }`}
                         >
                           <div className="text-center">
-                            <span className="text-xs opacity-70 block mb-1">
-                              Set {i + 1}
-                            </span>
+                            <span className="text-xs opacity-70 block mb-1">Set {i + 1}</span>
                             <span className="text-lg">
                               {s.a}–{s.b}
                             </span>
@@ -252,7 +255,9 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
                     <strong className="text-gray-900 dark:text-white">Rating:</strong>{' '}
                     <span className="text-gray-700 dark:text-gray-200">
                       A={Math.round(sumA)} vs B={Math.round(sumB)}{' '}
-                      <span className="text-xs text-gray-500 dark:text-gray-400">(Gap: {Math.round(gap)})</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        (Gap: {Math.round(gap)})
+                      </span>
                     </span>
                   </div>
                   <div className="bg-gradient-to-r from-white/60 to-gray-50/40 dark:from-gray-700/40 dark:to-gray-800/30 backdrop-blur-sm p-3 rounded-xl border border-white/30 dark:border-gray-600/20">
@@ -265,16 +270,16 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
                     <strong className="text-gray-900 dark:text-white block mb-2">Risultato:</strong>
                     <div className="flex gap-4 text-sm flex-wrap">
                       <span
-                        className={`font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm ${Math.round(m.deltaA ?? 0) >= 0 ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300' : 'bg-rose-500/20 text-rose-700 dark:text-rose-300'}`}
+                        className={`font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm ${Math.round(deltaA) >= 0 ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300' : 'bg-rose-500/20 text-rose-700 dark:text-rose-300'}`}
                       >
-                        Team A: {Math.round(m.deltaA ?? 0) >= 0 ? '+' : ''}
-                        {Math.round(m.deltaA ?? 0)}
+                        Team A: {Math.round(deltaA) >= 0 ? '+' : ''}
+                        {Math.round(deltaA)}
                       </span>
                       <span
-                        className={`font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm ${Math.round(m.deltaB ?? 0) >= 0 ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300' : 'bg-rose-500/20 text-rose-700 dark:text-rose-300'}`}
+                        className={`font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm ${Math.round(deltaB) >= 0 ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300' : 'bg-rose-500/20 text-rose-700 dark:text-rose-300'}`}
                       >
-                        Team B: {Math.round(m.deltaB ?? 0) >= 0 ? '+' : ''}
-                        {Math.round(m.deltaB ?? 0)}
+                        Team B: {Math.round(deltaB) >= 0 ? '+' : ''}
+                        {Math.round(deltaB)}
                       </span>
                     </div>
                   </div>
@@ -293,30 +298,35 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
                       base,
                       gd: GD,
                       factor,
-                      pts: m.pts ?? Math.round((base + GD) * factor),
                       winner: m.winner,
                       setsA: m.setsA,
                       setsB: m.setsB,
                       gamesA: m.gamesA,
                       gamesB: m.gamesB,
                       sets: m.sets || [],
-                      deltaA: m.deltaA ?? 0,
-                      deltaB: m.deltaB ?? 0,
+                      deltaA,
+                      deltaB,
                       teamA: m.teamA?.map((id, index) => ({
                         id,
                         name: playersById[id]?.name || 'Unknown',
-                        rating: index === 0 ? ratingA1 : ratingA2
+                        rating: index === 0 ? ratingA1 : ratingA2,
                       })),
                       teamB: m.teamB?.map((id, index) => ({
                         id,
                         name: playersById[id]?.name || 'Unknown',
-                        rating: index === 0 ? ratingB1 : ratingB2
-                      }))
+                        rating: index === 0 ? ratingB1 : ratingB2,
+                      })),
                     });
                   }}
-                  className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md backdrop-blur-sm">
+                  className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md backdrop-blur-sm"
+                >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
                   </svg>
                   Formula dettagliata
                 </button>
@@ -327,7 +337,12 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
                   onClick={onDelete}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
                   </svg>
                   Elimina
                 </button>

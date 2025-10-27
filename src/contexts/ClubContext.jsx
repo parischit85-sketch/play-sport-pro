@@ -163,26 +163,26 @@ export function ClubProvider({ children }) {
       const lbRef = collection(db, 'clubs', clubId, 'leaderboard');
       const unsubscribe = onSnapshot(lbRef, async (snapshot) => {
         const map = {};
-        
+
         // Load each player's leaderboard data AND their entries sub-collection
         const promises = snapshot.docs.map(async (playerDoc) => {
           const playerId = playerDoc.id;
           const playerData = { id: playerId, ...playerDoc.data() };
-          
+
           // Load entries sub-collection for this player
           try {
             const entriesRef = collection(db, 'clubs', clubId, 'leaderboard', playerId, 'entries');
             const entriesSnap = await getDocs(entriesRef);
             const entries = entriesSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
             playerData.entries = entries;
-          } catch (e) {
+          } catch {
             console.warn(`⚠️ Failed to load entries for player ${playerId}`);
             playerData.entries = [];
           }
-          
+
           map[playerId] = playerData;
         });
-        
+
         await Promise.all(promises);
         setLeaderboard(map);
       });
@@ -219,7 +219,7 @@ export function ClubProvider({ children }) {
                 }
               }
             }
-          } catch (e) {
+          } catch {
             // Silent fail per player
           }
         }
@@ -434,7 +434,7 @@ export function ClubProvider({ children }) {
             ...doc.data(),
           }));
           console.log('🆕 Regular matches found:', regularMatches.length);
-        } catch (error) {
+        } catch {
           console.log('⚠️ No regular matches collection for club:', clubId);
         }
 
@@ -667,6 +667,13 @@ export function ClubProvider({ children }) {
       const tournamentPlayers = players.filter(
         (p) => p.tournamentData?.isParticipant === true && p.tournamentData?.isActive === true
       );
+
+      console.log('🎯 [ClubContext] ========== CALCOLO calculatedRatings ==========');
+      console.log('📊 Tournament players:', tournamentPlayers.length);
+      console.log('📊 Regular matches:', matches.length);
+      console.log('📊 Tournament matches:', tournamentMatches.length);
+      console.log('📊 Leaderboard entries:', Object.keys(leaderboard || {}).length);
+
       // Combine regular matches with tournament matches from leaderboard
       const combinedMatches = [...matches, ...tournamentMatches];
       const data = computeClubRanking(tournamentPlayers, combinedMatches, clubId, {
@@ -676,6 +683,16 @@ export function ClubProvider({ children }) {
       (data.players || []).forEach((p) => {
         map[p.id] = p.rating;
       });
+
+      console.log('🏆 [ClubContext] Calculated ratings (top 5):');
+      Object.entries(map)
+        .slice(0, 5)
+        .forEach(([id, rating]) => {
+          const player = players.find((p) => p.id === id);
+          console.log(`  ${player?.name || id}: ${rating}`);
+        });
+      console.log('========================================================');
+
       return map;
     } catch (e) {
       console.warn('⚠️ [ClubContext] computeClubRanking failed:', e);
@@ -812,7 +829,7 @@ export function ClubProvider({ children }) {
         console.log('📝 [ClubContext] Updating player:', playerId, updates);
 
         const { db } = await import('@services/firebase.js');
-        const { doc, updateDoc, serverTimestamp, getDoc } = await import('firebase/firestore');
+        const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
 
         // 🔄 OPTION A: Find the player in club users collection (single source of truth)
         const { getClubUsers } = await import('@services/club-users.js');
@@ -1046,6 +1063,8 @@ export function ClubProvider({ children }) {
     updatePlayer,
     deletePlayer,
     isUserInstructor,
+    calculatedRatingsById, // ✅ Export calculated ratings with tournament points
+    tournamentMatches, // ✅ Export tournament matches for ranking calculation
   };
 
   return <ClubContext.Provider value={value}>{children}</ClubContext.Provider>;
