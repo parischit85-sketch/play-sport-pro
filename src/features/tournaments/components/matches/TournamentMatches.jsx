@@ -384,119 +384,125 @@ function TournamentMatches({ tournament, clubId }) {
     return (
       <div
         key={match.id}
-        className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:border-primary-300 dark:hover:border-primary-700 transition-colors"
+        className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 hover:border-primary-300 dark:hover:border-primary-700 transition-colors"
       >
-        <div className="flex items-center justify-between mb-3">
+        {/* Match header - Mobile optimized */}
+        <div className="flex items-center justify-between mb-2 sm:mb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             {getStatusIcon(match.status)}
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
               {getStatusText(match.status)}
             </span>
           </div>
-          {/* Match format badge if available */}
-          {match.bestOf && (
-            <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-              {match.bestOf === 1 ? '1 set' : '2 su 3'}
-            </span>
-          )}
-          {match.courtNumber && (
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              Campo {match.courtNumber}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {/* Match format badge if available */}
+            {match.bestOf && (
+              <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                {match.bestOf === 1 ? '1 set' : '2 su 3'}
+              </span>
+            )}
+            {match.courtNumber && (
+              <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                Campo {match.courtNumber}
+              </span>
+            )}
+          </div>
         </div>
 
+        {/* Teams - Mobile optimized */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-1">
+          {/* Team 1 */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
               <span
-                className={`font-medium ${isCompleted && match.winnerId === team1.id ? 'text-green-600 dark:text-green-400' : 'text-gray-900 dark:text-white'}`}
+                className={`font-medium text-sm sm:text-base truncate ${isCompleted && match.winnerId === team1.id ? 'text-green-600 dark:text-green-400' : 'text-gray-900 dark:text-white'}`}
               >
                 {team1Name}
               </span>
               {typeof team1Avg === 'number' && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
                   • {Math.round(team1Avg)}
                 </span>
               )}
               {team1.seed && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">(#{team1.seed})</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                  (#{team1.seed})
+                </span>
               )}
             </div>
             {isCompleted && (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                 {hasSets
                   ? renderSetPills(1)
                   : match.score && (
                       <span
-                        className={`text-2xl font-bold ${match.winnerId === team1.id ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}
+                        className={`text-xl sm:text-2xl font-bold ${match.winnerId === team1.id ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}
                       >
                         {match.score.team1}
                       </span>
                     )}
-                <button
-                  onClick={() => handleShowRPAFormula(match, team1, team2)}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  title="Visualizza formula RPA"
-                >
-                  <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                </button>
               </div>
             )}
           </div>
 
+          {/* VS divider */}
           <div className="flex items-center gap-2">
             <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
             <span className="text-xs text-gray-400 dark:text-gray-600 font-medium">VS</span>
             <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-1">
+          {/* Team 2 */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
               <span
-                className={`font-medium ${isCompleted && match.winnerId === team2.id ? 'text-green-600 dark:text-green-400' : 'text-gray-900 dark:text-white'}`}
+                className={`font-medium text-sm sm:text-base truncate ${isCompleted && match.winnerId === team2.id ? 'text-green-600 dark:text-green-400' : 'text-gray-900 dark:text-white'}`}
               >
                 {team2Name}
               </span>
               {typeof team2Avg === 'number' && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
+                <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
                   • {Math.round(team2Avg)}
                 </span>
               )}
               {team2.seed && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">(#{team2.seed})</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                  (#{team2.seed})
+                </span>
               )}
             </div>
             {isCompleted && (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                 {hasSets
                   ? renderSetPills(2)
                   : match.score && (
                       <span
-                        className={`text-2xl font-bold ${match.winnerId === team2.id ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}
+                        className={`text-xl sm:text-2xl font-bold ${match.winnerId === team2.id ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}
                       >
                         {match.score.team2}
                       </span>
                     )}
-                <button
-                  onClick={() => handleShowRPAFormula(match, team1, team2)}
-                  className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  title="Visualizza formula RPA"
-                >
-                  <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                </button>
               </div>
             )}
           </div>
         </div>
 
-        {/* Lower set summary removed to avoid duplication since per-set pills are shown next to team rows */}
+        {/* Action buttons - Mobile optimized */}
+        {isCompleted && (
+          <button
+            onClick={() => handleShowRPAFormula(match, team1, team2)}
+            className="w-full mt-3 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors text-xs sm:text-sm font-medium flex items-center justify-center gap-2"
+          >
+            <Info className="w-4 h-4" />
+            Visualizza Formula RPA
+          </button>
+        )}
 
         {canRecordResult && (
           <button
             onClick={() => canEditResults && setSelectedMatch(match)}
             disabled={!canEditResults}
-            className="w-full mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+            className="w-full mt-3 px-3 sm:px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
           >
             Inserisci Risultato
           </button>
@@ -506,12 +512,13 @@ function TournamentMatches({ tournament, clubId }) {
           <button
             onClick={() => canEditResults && setSelectedMatch(match)}
             disabled={!canEditResults}
-            className="w-full mt-2 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+            className="w-full mt-2 px-3 sm:px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
           >
             Modifica Risultato
           </button>
         )}
 
+        {/* Scheduled date */}
         {match.scheduledDate && (
           <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
@@ -552,15 +559,16 @@ function TournamentMatches({ tournament, clubId }) {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2 flex-wrap">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Filters - Mobile Optimized */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
         {['all', 'scheduled', 'in-progress', 'completed'].map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
               filter === f
-                ? 'bg-primary-600 text-white'
+                ? 'bg-primary-600 text-white shadow-sm'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >

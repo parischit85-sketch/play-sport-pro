@@ -2,7 +2,7 @@
  * Tournament Bracket - Display knockout bracket tree
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Trophy, Crown, Medal, ChevronRight } from 'lucide-react';
 import { useAuth, USER_ROLES } from '../../../../contexts/AuthContext';
 import { getMatches } from '../../services/matchService';
@@ -26,11 +26,7 @@ function TournamentBracket({ tournament, clubId }) {
   const isClubAdmin = userRole === USER_ROLES.CLUB_ADMIN || userRole === USER_ROLES.SUPER_ADMIN;
   const canEditResults = isClubAdmin;
 
-  useEffect(() => {
-    loadBracket();
-  }, [tournament.id, clubId]);
-
-  const loadBracket = async () => {
+  const loadBracket = useCallback(async () => {
     setLoading(true);
     try {
       const [matchesData, teamsData] = await Promise.all([
@@ -50,7 +46,11 @@ function TournamentBracket({ tournament, clubId }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [clubId, tournament.id]);
+
+  useEffect(() => {
+    loadBracket();
+  }, [loadBracket]);
 
   const handleRecordResult = async (matchId, score, bestOf, sets) => {
     try {
@@ -109,7 +109,7 @@ function TournamentBracket({ tournament, clubId }) {
     return <Trophy className="w-5 h-5 text-primary-600" />;
   };
 
-  const renderMatch = (match, roundIndex) => {
+  const renderMatch = (match) => {
     const team1 = teams[match.team1Id];
     const team2 = teams[match.team2Id];
     const isCompleted = match.status === MATCH_STATUS.COMPLETED;
@@ -151,32 +151,34 @@ function TournamentBracket({ tournament, clubId }) {
     };
 
     return (
-      <div
+      <button
+        type="button"
         key={match.id}
-        className="relative bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-3 hover:border-primary-400 dark:hover:border-primary-600 transition-all min-w-[200px] cursor-pointer"
+        disabled={!canRecordResult}
+        className="relative bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-2 sm:p-3 hover:border-primary-400 dark:hover:border-primary-600 transition-all w-full lg:min-w-[200px] lg:w-[200px] cursor-pointer active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed text-left"
         onClick={() => canRecordResult && setSelectedMatch(match)}
       >
         {/* Match Number */}
-        <div className="absolute -top-2 -left-2 w-6 h-6 bg-primary-600 text-white rounded-full flex items-center justify-center text-xs font-bold">
+        <div className="absolute -top-2 -left-2 w-5 h-5 sm:w-6 sm:h-6 bg-primary-600 text-white rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold">
           {match.matchNumber || '?'}
         </div>
 
         {/* Team 1 */}
         <div
-          className={`flex items-center justify-between p-2 rounded ${
+          className={`flex items-center justify-between p-1.5 sm:p-2 rounded ${
             isCompleted && match.winnerId === team1?.id
               ? 'bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700'
               : 'bg-gray-50 dark:bg-gray-700'
           }`}
         >
-          <div className="flex items-center gap-2 flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
             {team1?.seed && (
-              <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+              <span className="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 flex-shrink-0">
                 #{team1.seed}
               </span>
             )}
             <span
-              className={`text-sm font-medium truncate ${
+              className={`text-xs sm:text-sm font-medium truncate ${
                 team1Name === 'BYE'
                   ? 'text-orange-600 dark:text-orange-400 font-bold'
                   : isCompleted && match.winnerId === team1?.id
@@ -194,7 +196,7 @@ function TournamentBracket({ tournament, clubId }) {
               ? renderSetPills(1)
               : match.score && (
                   <span
-                    className={`text-lg font-bold ml-2 ${
+                    className={`text-base sm:text-lg font-bold ml-2 flex-shrink-0 ${
                       match.winnerId === team1?.id
                         ? 'text-green-700 dark:text-green-300'
                         : 'text-gray-400 dark:text-gray-500'
@@ -206,28 +208,30 @@ function TournamentBracket({ tournament, clubId }) {
         </div>
 
         {/* VS Divider */}
-        <div className="flex items-center justify-center py-1">
+        <div className="flex items-center justify-center py-0.5 sm:py-1">
           <div className="h-px bg-gray-300 dark:bg-gray-600 flex-1"></div>
-          <span className="px-2 text-xs text-gray-400 dark:text-gray-500 font-medium">VS</span>
+          <span className="px-1.5 sm:px-2 text-[10px] sm:text-xs text-gray-400 dark:text-gray-500 font-medium">
+            VS
+          </span>
           <div className="h-px bg-gray-300 dark:bg-gray-600 flex-1"></div>
         </div>
 
         {/* Team 2 */}
         <div
-          className={`flex items-center justify-between p-2 rounded ${
+          className={`flex items-center justify-between p-1.5 sm:p-2 rounded ${
             isCompleted && match.winnerId === team2?.id
               ? 'bg-green-100 dark:bg-green-900/30 border border-green-300 dark:border-green-700'
               : 'bg-gray-50 dark:bg-gray-700'
           }`}
         >
-          <div className="flex items-center gap-2 flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
             {team2?.seed && (
-              <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+              <span className="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 flex-shrink-0">
                 #{team2.seed}
               </span>
             )}
             <span
-              className={`text-sm font-medium truncate ${
+              className={`text-xs sm:text-sm font-medium truncate ${
                 team2Name === 'BYE'
                   ? 'text-orange-600 dark:text-orange-400 font-bold'
                   : isCompleted && match.winnerId === team2?.id
@@ -245,7 +249,7 @@ function TournamentBracket({ tournament, clubId }) {
               ? renderSetPills(2)
               : match.score && (
                   <span
-                    className={`text-lg font-bold ml-2 ${
+                    className={`text-base sm:text-lg font-bold ml-2 flex-shrink-0 ${
                       match.winnerId === team2?.id
                         ? 'text-green-700 dark:text-green-300'
                         : 'text-gray-400 dark:text-gray-500'
@@ -264,7 +268,7 @@ function TournamentBracket({ tournament, clubId }) {
             </span>
           </div>
         )}
-      </div>
+      </button>
     );
   };
 
@@ -281,20 +285,27 @@ function TournamentBracket({ tournament, clubId }) {
       return String(a.id).localeCompare(String(b.id));
     });
     return (
-      <div key={roundName} className="flex flex-col items-center gap-4 min-w-[240px]">
+      <div key={roundName} className="flex flex-col lg:min-w-[240px]">
         {/* Round Header */}
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-primary-100 to-blue-100 dark:from-primary-900/40 dark:to-blue-900/40 rounded-lg px-4 py-3 shadow-md border border-primary-200 dark:border-primary-800">
-          <div className="flex items-center gap-2 justify-center">
-            {getRoundIcon(roundName)}
-            <h3 className="font-bold text-gray-900 dark:text-white">{roundName}</h3>
+        <div className="sticky top-0 z-10 bg-gradient-to-r from-primary-100 to-blue-100 dark:from-primary-900/40 dark:to-blue-900/40 rounded-lg px-3 sm:px-4 py-2 sm:py-3 shadow-md border border-primary-200 dark:border-primary-800">
+          <div className="flex items-center gap-2 justify-between sm:justify-center">
+            <div className="flex items-center gap-2 min-w-0 flex-1 sm:flex-none">
+              {getRoundIcon(roundName)}
+              <h3 className="font-bold text-sm sm:text-base text-gray-900 dark:text-white truncate">
+                {roundName}
+              </h3>
+            </div>
+            <p className="text-xs text-gray-600 dark:text-gray-400 flex-shrink-0 sm:hidden">
+              {roundMatches.length} {roundMatches.length === 1 ? 'partita' : 'partite'}
+            </p>
           </div>
-          <p className="text-xs text-gray-600 dark:text-gray-400 text-center mt-1">
+          <p className="hidden sm:block text-xs text-gray-600 dark:text-gray-400 text-center mt-1">
             {roundMatches.length} {roundMatches.length === 1 ? 'partita' : 'partite'}
           </p>
         </div>
 
         {/* Matches */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3 sm:gap-6 mt-3 sm:mt-4">
           {sortedMatches.map((match) => renderMatch(match, roundIndex))}
         </div>
       </div>
@@ -311,12 +322,12 @@ function TournamentBracket({ tournament, clubId }) {
 
   if (orderedRounds.length === 0) {
     return (
-      <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-        <Trophy className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+      <div className="text-center py-8 sm:py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+        <Trophy className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+        <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2 px-4">
           Tabellone Non Disponibile
         </h3>
-        <p className="text-gray-500 dark:text-gray-400 mb-4">
+        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-4 px-4">
           Il tabellone eliminazione diretta verrà generato al termine della fase a gironi
         </p>
       </div>
@@ -324,10 +335,16 @@ function TournamentBracket({ tournament, clubId }) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Bracket Tree */}
-      <div className="overflow-x-auto pb-4">
-        <div className="inline-flex gap-4 md:gap-8 p-3 md:p-4 min-w-full">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Bracket Tree - Mobile: Vertical Stack, Desktop: Horizontal Scroll */}
+      <div className="lg:overflow-x-auto lg:pb-4">
+        {/* Mobile: Vertical Stack */}
+        <div className="lg:hidden space-y-6">
+          {orderedRounds.map((roundName) => renderRound(roundName, rounds[roundName], 0))}
+        </div>
+
+        {/* Desktop: Horizontal Scroll */}
+        <div className="hidden lg:inline-flex gap-4 md:gap-8 p-3 md:p-4 min-w-full">
           {orderedRounds.map((roundName, index) => (
             <React.Fragment key={roundName}>
               {renderRound(roundName, rounds[roundName], index)}
@@ -346,24 +363,24 @@ function TournamentBracket({ tournament, clubId }) {
         rounds[KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.FINALS]][0] &&
         rounds[KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.FINALS]][0].status ===
           MATCH_STATUS.COMPLETED && (
-          <div className="bg-gradient-to-br from-yellow-100 via-yellow-50 to-orange-100 dark:from-yellow-900/30 dark:via-yellow-800/20 dark:to-orange-900/30 rounded-lg p-8 border-2 border-yellow-300 dark:border-yellow-700 shadow-xl">
+          <div className="bg-gradient-to-br from-yellow-100 via-yellow-50 to-orange-100 dark:from-yellow-900/30 dark:via-yellow-800/20 dark:to-orange-900/30 rounded-lg p-4 sm:p-6 md:p-8 border-2 border-yellow-300 dark:border-yellow-700 shadow-xl">
             <div className="text-center">
-              <Crown className="w-16 h-16 text-yellow-600 dark:text-yellow-400 mx-auto mb-4 animate-bounce" />
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <Crown className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 text-yellow-600 dark:text-yellow-400 mx-auto mb-3 sm:mb-4 animate-bounce" />
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                 🏆 Campione Torneo
               </h2>
-              <p className="text-2xl font-bold text-yellow-700 dark:text-yellow-300">
+              <p className="text-lg sm:text-xl md:text-2xl font-bold text-yellow-700 dark:text-yellow-300 px-4">
                 {teams[rounds[KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.FINALS]][0].winnerId]?.teamName ||
                   'Unknown'}
               </p>
               {teams[rounds[KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.FINALS]][0].winnerId]?.players && (
-                <div className="mt-4 flex flex-wrap justify-center gap-2">
+                <div className="mt-3 sm:mt-4 flex flex-wrap justify-center gap-1.5 sm:gap-2 px-4">
                   {teams[
                     rounds[KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.FINALS]][0].winnerId
                   ].players.map((player, idx) => (
                     <span
                       key={idx}
-                      className="px-3 py-1 bg-yellow-200 dark:bg-yellow-800 text-yellow-900 dark:text-yellow-100 rounded-full text-sm"
+                      className="px-2 sm:px-3 py-0.5 sm:py-1 bg-yellow-200 dark:bg-yellow-800 text-yellow-900 dark:text-yellow-100 rounded-full text-xs sm:text-sm"
                     >
                       {player.playerName || player.name}
                     </span>
