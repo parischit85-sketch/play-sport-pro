@@ -2,7 +2,7 @@
  * Tournament Matches - Display and manage tournament matches
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Trophy,
   Calendar,
@@ -57,6 +57,14 @@ function TournamentMatches({ tournament, clubId }) {
       setLoading(false);
     }
   };
+
+  // Load data when component mounts or tournament changes
+  useEffect(() => {
+    if (tournament && clubId) {
+      loadData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tournament?.id, clubId]);
 
   const handleRecordResult = async (matchId, score, bestOf, sets) => {
     try {

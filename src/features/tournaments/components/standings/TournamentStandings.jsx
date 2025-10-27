@@ -25,13 +25,15 @@ function TournamentStandings({ tournament, clubId }) {
         teamsData.map((t) => ({ teamName: t.teamName, groupId: t.groupId }))
       );
 
-      // Se il torneo non è in una fase di girone, non mostrare classifiche
+      // Mostra classifiche per tornei in fase di girone, knockout o completati
       if (
         !tournament.status ||
-        !['groups_generation', 'groups_phase', 'knockout_phase'].includes(tournament.status)
+        !['groups_generation', 'groups_phase', 'knockout_phase', 'completed'].includes(
+          tournament.status
+        )
       ) {
         console.log(
-          '📊 [TournamentStandings] Tournament status not in group phase:',
+          '📊 [TournamentStandings] Tournament status not compatible with standings:',
           tournament.status
         );
         setStandings({});
