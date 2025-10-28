@@ -96,24 +96,13 @@ export async function loadUserBookings(userId, clubId = MAIN_CLUB_ID) {
  * Carica prenotazioni attive di un utente
  */
 export async function loadActiveUserBookings(userId, clubId = MAIN_CLUB_ID, userInfo = {}) {
-  console.log(
-    '🔍 [loadActiveUserBookings] Searching for user:',
-    userId,
-    'in club:',
-    clubId,
-    'with info:',
-    userInfo
-  );
-
   try {
     const today = new Date().toISOString().split('T')[0];
-    console.log('📅 [loadActiveUserBookings] Today:', today);
 
     // Calcola la data di 7 giorni fa per includere prenotazioni recenti
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const startDate = sevenDaysAgo.toISOString().split('T')[0];
-    console.log('📅 [loadActiveUserBookings] Start date (7 days ago):', startDate);
 
     // Prepara gli identificatori dell'utente per cercare in più campi
     const userIdentifiers = {
@@ -121,8 +110,6 @@ export async function loadActiveUserBookings(userId, clubId = MAIN_CLUB_ID, user
       name: userInfo.displayName || userInfo.name,
       email: userInfo.email,
     };
-
-    console.log('� [loadActiveUserBookings] User identifiers:', userIdentifiers);
 
     // Crea multiple query per cercare l'utente in diversi campi
     const queries = [];
@@ -159,18 +146,6 @@ export async function loadActiveUserBookings(userId, clubId = MAIN_CLUB_ID, user
 
     queryResults.forEach((result, index) => {
       if (result.status === 'fulfilled') {
-        const queryType =
-          index === 0
-            ? 'bookedBy_id'
-            : index === 1
-              ? 'bookedBy_name'
-              : index === 2
-                ? 'userEmail'
-                : 'createdBy';
-        console.log(
-          `📊 [loadActiveUserBookings] Query ${queryType}: ${result.value.docs.length} results`
-        );
-
         result.value.docs.forEach((doc) => {
           const booking = { id: doc.id, ...doc.data() };
           bookingMap.set(doc.id, booking);
@@ -181,7 +156,6 @@ export async function loadActiveUserBookings(userId, clubId = MAIN_CLUB_ID, user
     });
 
     const allBookings = Array.from(bookingMap.values());
-    console.log('📊 [loadActiveUserBookings] Total unique bookings found:', allBookings.length);
 
     // Filtra client-side: confirmed + date >= startDate + check if user is in players array
     const bookings = allBookings
@@ -203,30 +177,12 @@ export async function loadActiveUserBookings(userId, clubId = MAIN_CLUB_ID, user
             booking.players.some((p) => typeof p === 'object' && p?.id === userId));
         const isUserEmail = booking.userEmail === userIdentifiers.email;
 
-        const isUserInvolved = isBookedBy || isInPlayers || isUserEmail;
-
-        if (!isUserInvolved) {
-          console.log('❌ [loadActiveUserBookings] Filtering out booking not involving user:', {
-            id: booking.id,
-            bookedBy: booking.bookedBy,
-            createdBy: booking.createdBy,
-            userEmail: booking.userEmail,
-            players: booking.players,
-          });
-        }
-
-        return isUserInvolved;
+        return isBookedBy || isInPlayers || isUserEmail;
       })
       .sort((a, b) => {
         if (a.date !== b.date) return a.date.localeCompare(b.date);
         return (a.time || '').localeCompare(b.time || '');
       });
-
-    console.log('✅ [loadActiveUserBookings] Final filtered bookings:', bookings.length);
-
-    if (bookings.length > 0) {
-      console.log('📋 [loadActiveUserBookings] Sample booking:', bookings[0]);
-    }
 
     return bookings;
   } catch (error) {

@@ -377,6 +377,20 @@ const _userCache = new Map(); // uid -> { data, ts }
 let _userPermissionDeniedUntil = 0; // timestamp ms
 const USER_COOLDOWN_MS = 60000; // 60s cooldown after permission denied
 
+/**
+ * Invalidate user profile cache (use after updating user data)
+ * @param {string} uid - User ID to invalidate (optional, if not provided clears all cache)
+ */
+export function invalidateUserProfileCache(uid = null) {
+  if (uid) {
+    console.log('🔄 [invalidateUserProfileCache] Invalidating cache for user:', uid);
+    _userCache.delete(uid);
+  } else {
+    console.log('🔄 [invalidateUserProfileCache] Clearing all user cache');
+    _userCache.clear();
+  }
+}
+
 export async function getUserProfile(uid) {
   if (!uid) return {};
   const now = Date.now();
@@ -516,12 +530,27 @@ export async function sendVerificationEmail(user) {
 }
 
 /**
- * Check if user's email is verified
+ * Check if user email is verified
+ * Bypassa il controllo se l'utente ha il flag skipEmailVerification
  * @param {Object} user - Firebase user object
  * @returns {boolean}
  */
 export function isEmailVerified(user) {
-  return user?.emailVerified === true;
+  console.log('🔍 [isEmailVerified] Checking email verification:', {
+    email: user?.email,
+    emailVerified: user?.emailVerified,
+    skipEmailVerification: user?.skipEmailVerification,
+  });
+  
+  // Se il super admin ha disabilitato la validazione per questo utente
+  if (user?.skipEmailVerification === true) {
+    console.log('✅ [isEmailVerified] Email verification SKIPPED (admin override)');
+    return true;
+  }
+  
+  const verified = user?.emailVerified === true;
+  console.log(`${verified ? '✅' : '❌'} [isEmailVerified] Email ${verified ? 'verified' : 'NOT verified'}`);
+  return verified;
 }
 
 /**

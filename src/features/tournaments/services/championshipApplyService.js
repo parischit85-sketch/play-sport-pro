@@ -26,15 +26,45 @@ export async function getChampionshipApplyStatus(clubId, tournamentId) {
 }
 
 /**
+ * Get the most recent applied tournament date for temporal validation
+ * @param {string} clubId
+ * @returns {Promise<{lastDate: string | null, lastTournamentName: string | null}>}
+ */
+async function getLastAppliedTournamentDate(clubId) {
+  try {
+    const appliedColl = collection(db, 'clubs', clubId, COLLECTIONS.CHAMPIONSHIP_APPLIED);
+    const appliedSnap = await getDocs(appliedColl);
+    
+    if (appliedSnap.empty) {
+      return { lastDate: null, lastTournamentName: null };
+    }
+
+    // Find most recent by appliedAt date
+    let mostRecent = null;
+    appliedSnap.docs.forEach((doc) => {
+      const data = doc.data();
+      if (!mostRecent || (data.appliedAt && data.appliedAt > mostRecent.appliedAt)) {
+        mostRecent = data;
+      }
+    });
+
+    return {
+      lastDate: mostRecent?.appliedAt || null,
+      lastTournamentName: mostRecent?.tournamentName || null,
+    };
+  } catch (error) {
+    console.warn('⚠️ Failed to get last applied tournament date:', error);
+    return { lastDate: null, lastTournamentName: null };
+  }
+}
+
+/**
  * Load all tournament matches with team data
  * Normalizes them to standard format for statistics
  * @private
  */
 async function loadTournamentMatchesForStats(clubId, tournamentId) {
   try {
-    console.log(
-      `🎯 [loadTournamentMatchesForStats] Loading matches for tournament ${tournamentId}`
-    );
     const matchesRef = collection(
       db,
       'clubs',
@@ -53,10 +83,6 @@ async function loadTournamentMatchesForStats(clubId, tournamentId) {
     );
 
     const [matchesSnap, teamsSnap] = await Promise.all([getDocs(matchesRef), getDocs(teamsRef)]);
-
-    console.log(
-      `🎯 [loadTournamentMatchesForStats] Found ${matchesSnap.docs.length} matches, ${teamsSnap.docs.length} teams`
-    );
 
     // Build team map
     const teamsMap = {};
@@ -120,17 +146,19 @@ async function loadTournamentMatchesForStats(clubId, tournamentId) {
         // Ensure date is in ISO string format for consistent serialization
         let matchDate;
         if (match.completedAt) {
-          matchDate = typeof match.completedAt === 'string' 
-            ? match.completedAt 
-            : match.completedAt?.toDate?.() 
-            ? match.completedAt.toDate().toISOString() 
-            : new Date(match.completedAt).toISOString();
+          matchDate =
+            typeof match.completedAt === 'string'
+              ? match.completedAt
+              : match.completedAt?.toDate?.()
+                ? match.completedAt.toDate().toISOString()
+                : new Date(match.completedAt).toISOString();
         } else if (match.scheduledDate) {
-          matchDate = typeof match.scheduledDate === 'string' 
-            ? match.scheduledDate 
-            : match.scheduledDate?.toDate?.() 
-            ? match.scheduledDate.toDate().toISOString() 
-            : new Date(match.scheduledDate).toISOString();
+          matchDate =
+            typeof match.scheduledDate === 'string'
+              ? match.scheduledDate
+              : match.scheduledDate?.toDate?.()
+                ? match.scheduledDate.toDate().toISOString()
+                : new Date(match.scheduledDate).toISOString();
         } else {
           matchDate = new Date().toISOString();
         }
@@ -169,15 +197,24 @@ async function loadTournamentMatchesForStats(clubId, tournamentId) {
  */
 export async function applyTournamentChampionshipPoints(clubId, tournament, options = {}) {
   try {
-    console.log('🎯 [championshipApplyService] applyTournamentChampionshipPoints - Inizio:', {
-      clubId,
-      tournamentId: tournament?.id,
-      tournamentName: tournament?.name,
-      options,
-      matchDate: options.matchDate,
-    });
-
     if (!clubId || !tournament?.id) throw new Error('Dati torneo mancanti');
+
+    // ✅ FIX #4: Temporal validation - check if tournament date is after last applied
+    const { lastDate, lastTournamentName } = await getLastAppliedTournamentDate(clubId);
+    
+    if (lastDate && options.matchDate) {
+      const tournamentDate = new Date(options.matchDate);
+      const lastAppliedDate = new Date(lastDate);
+      
+      if (tournamentDate < lastAppliedDate) {
+        const errorMsg = `Non puoi applicare un torneo con data ${tournamentDate.toLocaleDateString('it-IT')} precedente all'ultimo torneo applicato "${lastTournamentName}" (${lastAppliedDate.toLocaleDateString('it-IT')})`;
+        return {
+          success: false,
+          error: errorMsg,
+          temporalValidationFailed: true,
+        };
+      }
+    }
 
     // Recompute draft to avoid client tampering
     const draft = await computeTournamentChampionshipPoints(clubId, tournament.id, tournament);
@@ -185,21 +222,8 @@ export async function applyTournamentChampionshipPoints(clubId, tournament, opti
     // 🆕 Load tournament matches for stats inclusion
     const allTournamentMatches = await loadTournamentMatchesForStats(clubId, tournament.id);
     
-    console.log('📊 [championshipApplyService] Match caricati:', {
-      totalMatches: allTournamentMatches.length,
-      firstMatchDate: allTournamentMatches[0]?.date,
-      firstMatchDateType: typeof allTournamentMatches[0]?.date,
-    });
-    
     // Use provided date or current date
     const matchDate = options.matchDate || new Date().toISOString();
-    
-    console.log('🗓️ [championshipApplyService] Data da usare per i match:', {
-      matchDate,
-      matchDateType: typeof matchDate,
-      isFromOptions: !!options.matchDate,
-      fallbackUsed: !options.matchDate,
-    });
 
     // Applied audit doc: clubs/{clubId}/applied/{tournamentId}
     const appliedRef = doc(db, 'clubs', clubId, COLLECTIONS.CHAMPIONSHIP_APPLIED, tournament.id);
@@ -283,38 +307,14 @@ export async function applyTournamentChampionshipPoints(clubId, tournament, opti
               (Array.isArray(m.teamA) && m.teamA.includes(playerId)) ||
               (Array.isArray(m.teamB) && m.teamB.includes(playerId))
           )
-          .map((m, index) => {
-            const updatedMatch = {
+          .map((m) => {
+            return {
               ...m,
-              date: matchDate, // Override with user-selected date
+              // ✅ FIX: Preserve original match date instead of overriding
+              // Use matchDate only as fallback if original date is missing
+              date: m.date || matchDate,
             };
-            
-            if (index === 0) {
-              // Log solo per il primo match di ogni giocatore per evitare spam
-              console.log('🔄 [championshipApplyService] Match aggiornato:', {
-                playerId,
-                originalDate: m.date,
-                originalDateType: typeof m.date,
-                newDate: matchDate,
-                newDateType: typeof matchDate,
-                matchId: m.matchId,
-                isTournamentMatch: updatedMatch.isTournamentMatch,
-              });
-              
-              // 🔍 DEBUG: Verify date conversion
-              console.log('🔍 [DEBUG] Date comparison:', {
-                originalParsed: new Date(m.date).toISOString(),
-                newParsed: new Date(matchDate).toISOString(),
-                areDifferent: m.date !== matchDate,
-              });
-            }
-            
-            return updatedMatch;
           });
-
-        console.log(
-          `  ✅ Player ${playerId}: ${playerMatches.length} matches da salvare in matchDetails con data ${matchDate}`
-        );
 
         // Stats entry under player document (idempotent per tournament)
         const statsEntryRef = statsEntryRefs.get(playerId);
@@ -332,19 +332,7 @@ export async function applyTournamentChampionshipPoints(clubId, tournament, opti
             matchDetails: playerMatches,
           };
           
-          console.log(
-            `  📝 Saving entry for ${playerId}:`,
-            {
-              matchDetailsCount: playerMatches.length,
-              firstMatchDate: playerMatches[0]?.date,
-              allMatchDates: playerMatches.map(m => m.date),
-              entryPath: statsEntryRef.path,
-            }
-          );
-          
           tx.set(statsEntryRef, entryData);
-        } else {
-          console.log(`  ⚠️ Entry already exists for ${playerId} (skipping)`);
         }
       }
 

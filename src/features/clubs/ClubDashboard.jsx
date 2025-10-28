@@ -60,19 +60,9 @@ const ClubDashboard = () => {
   // IMPORTANTE: verifica solo dopo che i players sono caricati per evitare falsi positivi
   const isInstructor = playersLoaded && isUserInstructor(user?.uid);
 
-  console.log('🏢 [ClubDashboard] Instructor check:', {
-    clubId,
-    userId: user?.uid,
-    playersLoaded,
-    playersCount: players?.length,
-    isInstructor,
-    userInPlayers: players?.find((p) => p.id === user?.uid),
-  });
-
   // Track club view quando l'utente accede alla dashboard
   useEffect(() => {
     if (user && clubId && club) {
-      console.log('📊 [ClubDashboard] Tracking club view:', { clubId, clubName: club.name });
       trackClubView(user.uid, clubId, club.name);
     }
   }, [user, clubId, club]);
@@ -82,11 +72,6 @@ const ClubDashboard = () => {
       const loadActiveBookings = async () => {
         setLoadingBookings(true);
         try {
-          console.log('🔍 [ClubDashboard] Loading bookings for user in club:', {
-            userId: user.uid,
-            clubId,
-          });
-
           // Usa il sistema di prenotazioni unificate con multi-identificatore
           const { loadActiveUserBookings } = await import('@services/cloud-bookings.js');
 
@@ -95,8 +80,6 @@ const ClubDashboard = () => {
             displayName: user.displayName,
             email: user.email,
           });
-
-          console.log('📊 [ClubDashboard] All user bookings loaded:', allUserBookings.length);
 
           // Filtra per prenotazioni future solo (incluso oggi attivo)
           const now = new Date();
@@ -119,12 +102,8 @@ const ClubDashboard = () => {
             return false;
           });
 
-          console.log('🎯 [ClubDashboard] Future bookings only:', futureBookings.length);
-
           // Filtra per questo club specifico
           const clubBookings = futureBookings.filter((booking) => booking.clubId === clubId);
-
-          console.log('✅ [ClubDashboard] Filtered bookings for this club:', clubBookings.length);
 
           setActiveBookings(clubBookings);
         } catch (error) {
@@ -148,11 +127,6 @@ const ClubDashboard = () => {
     if (user && clubId) {
       setLoadingBookings(true);
       try {
-        console.log('🔄 [ClubDashboard] Refreshing bookings for user in club:', {
-          userId: user.uid,
-          clubId,
-        });
-
         // Usa il sistema di prenotazioni unificate con multi-identificatore
         const { loadActiveUserBookings } = await import('@services/cloud-bookings.js');
 
@@ -186,8 +160,6 @@ const ClubDashboard = () => {
         // Filtra per questo club specifico
         const clubBookings = futureBookings.filter((booking) => booking.clubId === clubId);
 
-        console.log('✅ [ClubDashboard] Refreshed bookings for this club:', clubBookings.length);
-
         setActiveBookings(clubBookings);
       } catch (error) {
         console.error('❌ [ClubDashboard] Error refreshing bookings:', error);
@@ -207,7 +179,7 @@ const ClubDashboard = () => {
           url: window.location.href,
         });
       } catch (error) {
-        console.log('Share cancelled');
+        // Share cancelled by user
       }
     }
   }, []);

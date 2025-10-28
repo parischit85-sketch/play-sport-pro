@@ -210,7 +210,13 @@ export async function getTournaments(clubId, options = {}) {
     // Apply sorting
     const sortBy = options.sortBy || 'createdAt';
     const sortOrder = options.sortOrder || 'desc';
-    q = query(q, orderBy(sortBy, sortOrder));
+    // Important: Combining where(status ==) with orderBy(createdAt) requires a composite index.
+    // To avoid breaking local/staging without indexes, skip Firestore orderBy when filtering by status
+    // and sort client-side instead. When no status filter is used, apply orderBy directly.
+    const shouldSortServerSide = !options.status;
+    if (shouldSortServerSide) {
+      q = query(q, orderBy(sortBy, sortOrder));
+    }
 
     // Apply limit
     if (options.limit) {
@@ -218,11 +224,25 @@ export async function getTournaments(clubId, options = {}) {
     }
 
     const snapshot = await getDocs(q);
+    let items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+    // Client-side sort when needed (e.g., status filtered queries)
+    if (!shouldSortServerSide) {
+      items.sort((a, b) => {
+        const av = a?.[sortBy];
+        const bv = b?.[sortBy];
+        // Handle Firestore Timestamp or Date
+        const aTime = typeof av?.toMillis === 'function' ? av.toMillis() : av?.getTime?.() || 0;
+        const bTime = typeof bv?.toMillis === 'function' ? bv.toMillis() : bv?.getTime?.() || 0;
+        const cmp = aTime - bTime;
+        return sortOrder === 'asc' ? cmp : -cmp;
+      });
+      if (options.limit && items.length > options.limit) {
+        items = items.slice(0, options.limit);
+      }
+    }
+
+    return items;
   } catch (error) {
     console.error('Error getting tournaments:', error);
     return [];
@@ -448,10 +468,6 @@ export async function autoGenerateGroups(clubId, tournamentId) {
  */
 async function getCurrentPlayersRanking(clubId, tournamentId) {
   try {
-    console.log('🎯 [getCurrentPlayersRanking] ========== INIZIO ==========');
-    console.log('📊 ClubId:', clubId);
-    console.log('📊 TournamentId:', tournamentId);
-
     // Get all club players
     const playersRef = collection(db, 'clubs', clubId, 'users');
     const playersSnapshot = await getDocs(playersRef);
@@ -468,11 +484,6 @@ async function getCurrentPlayersRanking(clubId, tournamentId) {
       }
     });
 
-    console.log('📊 Tournament players found:', players.length);
-    players.slice(0, 3).forEach((p) => {
-      console.log(`  - ${p.name}: baseRating=${p.rating || 1500}`);
-    });
-
     // Get all matches (both regular and tournament)
     const regularMatchesRef = collection(db, 'clubs', clubId, 'matches');
     const regularMatchesSnapshot = await getDocs(regularMatchesRef);
@@ -480,8 +491,6 @@ async function getCurrentPlayersRanking(clubId, tournamentId) {
     regularMatchesSnapshot.forEach((doc) => {
       regularMatches.push({ id: doc.id, ...doc.data() });
     });
-
-    console.log('📊 Regular matches:', regularMatches.length);
 
     // Get tournament matches
     const tournamentMatchesRef = collection(
@@ -498,8 +507,6 @@ async function getCurrentPlayersRanking(clubId, tournamentId) {
       tournamentMatches.push({ id: doc.id, ...doc.data() });
     });
 
-    console.log('📊 Tournament matches:', tournamentMatches.length);
-
     // Get leaderboard for tournament points
     const leaderboardRef = collection(db, 'clubs', clubId, 'leaderboard');
     const leaderboardSnapshot = await getDocs(leaderboardRef);
@@ -508,34 +515,19 @@ async function getCurrentPlayersRanking(clubId, tournamentId) {
       leaderboard[doc.id] = doc.data();
     });
 
-    console.log('📊 Leaderboard entries:', Object.keys(leaderboard).length);
-
     // Combine all matches
     const combinedMatches = [...regularMatches, ...tournamentMatches];
-
-    console.log('📊 Combined matches total:', combinedMatches.length);
 
     // Calculate rankings using the same logic as ClubContext
     const rankingData = computeClubRanking(players, combinedMatches, clubId, {
       leaderboardMap: leaderboard,
     });
 
-    console.log('🏆 Ranking calculated, total players:', rankingData.players?.length || 0);
-
     // Create map of playerId to ranking
     const playersRanking = {};
     (rankingData.players || []).forEach((p) => {
       playersRanking[p.id] = p.rating || 1500;
     });
-
-    console.log('🏆 Players ranking snapshot (top 5):');
-    Object.entries(playersRanking)
-      .slice(0, 5)
-      .forEach(([id, rating]) => {
-        const player = players.find((p) => p.id === id);
-        console.log(`  ${player?.name || id}: ${rating}`);
-      });
-    console.log('========================================================');
 
     return playersRanking;
   } catch (error) {

@@ -68,11 +68,6 @@ export function ClubProvider({ children }) {
   // 🏅 Championship leaderboard (playerId -> doc data)
   const [leaderboard, setLeaderboard] = useState({});
 
-  console.log('🏢 [ClubProvider] Params from route:', {
-    allParams: params,
-    clubId,
-    timestamp: new Date().toISOString(),
-  });
   const [playersLoaded, setPlayersLoaded] = useState(false);
   const [matchesLoaded, setMatchesLoaded] = useState(false);
   const [tournamentMatches, setTournamentMatches] = useState([]);
@@ -84,12 +79,10 @@ export function ClubProvider({ children }) {
       return;
     }
 
-    console.log('🔍 [ClubContext] Loading club data for:', clubId);
     const clubRef = doc(db, 'clubs', clubId);
     const unsubscribeClub = onSnapshot(clubRef, (snapshot) => {
       if (snapshot.exists()) {
         const clubData = { id: snapshot.id, ...snapshot.data() };
-        console.log('✅ [ClubContext] Club loaded:', clubData.name || clubData.id);
         setClub(clubData);
       } else {
         console.error('❌ [ClubContext] Club not found:', clubId);
@@ -147,7 +140,6 @@ export function ClubProvider({ children }) {
         return (a.name || '').localeCompare(b.name || '');
       });
 
-      console.log('Courts loaded:', sortedCourts.length);
       setCourts(sortedCourts);
       setLoading(false);
     });
@@ -224,9 +216,6 @@ export function ClubProvider({ children }) {
           }
         }
 
-        console.log(
-          `🏆 [ClubContext] Loaded ${allMatches.length} tournament matches from leaderboard`
-        );
         setTournamentMatches(allMatches);
       } catch (e) {
         console.warn('⚠️ [ClubContext] Failed to load tournament matches:', e);
@@ -244,17 +233,12 @@ export function ClubProvider({ children }) {
         throw new Error('Club ID and Court ID required');
       }
 
-      console.log('Deleting court:', courtId);
-
       const court = courts.find((c) => c.id === courtId);
       const firebaseDocId = court?.firebaseId || courtId;
-
-      console.log('ID Mapping:', courtId, '->', firebaseDocId);
 
       try {
         const courtRef = doc(db, 'clubs', clubId, 'courts', firebaseDocId);
         await deleteDoc(courtRef);
-        console.log('Court deleted:', courtId);
       } catch (error) {
         console.error('Error deleting court:', error);
         throw error;
@@ -270,7 +254,6 @@ export function ClubProvider({ children }) {
       try {
         const courtsRef = collection(db, 'clubs', clubId, 'courts');
         const docRef = await addDoc(courtsRef, courtData);
-        console.log('Court added:', docRef.id);
         return docRef.id;
       } catch (error) {
         console.error('Error adding court:', error);
@@ -290,7 +273,6 @@ export function ClubProvider({ children }) {
       try {
         const courtRef = doc(db, 'clubs', clubId, 'courts', firebaseDocId);
         await updateDoc(courtRef, updates);
-        console.log('Court updated:', courtId);
       } catch (error) {
         console.error('Error updating court:', error);
         throw error;
@@ -303,15 +285,11 @@ export function ClubProvider({ children }) {
     if (!clubId || playersLoaded) return;
 
     try {
-      console.log('🔍 [ClubContext] Loading players for club:', clubId);
-
       // 🔄 OPTION A: Single source of truth - Load users directly from club's users collection
       const { getClubUsers } = await import('@services/club-users.js');
       const clubUsers = await getClubUsers(clubId);
 
-      console.log('🔍 [ClubContext] Found club users:', clubUsers.length);
       if (clubUsers.length === 0) {
-        console.log('⚠️ [ClubContext] No club users found for club:', clubId);
         setPlayers([]);
         setPlayersLoaded(true);
         return;
@@ -325,11 +303,6 @@ export function ClubProvider({ children }) {
         // 🔍 CRITICAL: userId might be undefined for legacy users
         // In that case, use the club-user document ID as the player ID
         const userId = clubUser.userId || clubUser.id;
-
-        console.log('🔍 [ClubContext] Processing club user:', userId, {
-          hasUserId: !!clubUser.userId,
-          isLinked: clubUser.isLinked || false,
-        });
 
         // Use merged data if available, otherwise fall back to individual fields
         const mergedData = clubUser.mergedData || {};
@@ -387,14 +360,13 @@ export function ClubProvider({ children }) {
         // Deve avere almeno un ID valido
         const hasValidId = player.id && player.id.trim().length > 0;
         if (!hasValidId) {
-          console.log('🚫 FILTERING OUT PLAYER (no ID):', player);
           return false;
         }
 
         // Se non ha un name valido, logga un warning ma mantieni il player
         // (il fallback 'Unknown User' garantisce che ci sia sempre un nome)
         if (!player.name || player.name === 'Unknown User') {
-          console.log('⚠️ KEEPING PLAYER WITH PLACEHOLDER NAME:', {
+          console.warn('⚠️ Player with placeholder name kept:', {
             id: player.id,
             name: player.name,
             email: player.email,
@@ -405,11 +377,8 @@ export function ClubProvider({ children }) {
         return true;
       });
 
-      console.log('✅ Players loaded from single source:', filteredPlayers.length);
-
       setPlayers(filteredPlayers);
       setPlayersLoaded(true);
-      console.log('Players loaded:', filteredPlayers.length);
     } catch (error) {
       console.error('Error loading players:', error);
       setPlayersLoaded(true);
@@ -420,8 +389,6 @@ export function ClubProvider({ children }) {
       if (!clubId || (matchesLoaded && !forceReload)) return;
 
       try {
-        console.log('Loading matches for club:', clubId);
-
         // 🆕 LOGICA: Carica SOLO partite regolari + legacy bookings (NO tornei qui)
         // I tornei vengono aggregati in championshipApplyService quando premi "Applica Punti"
 
@@ -433,9 +400,8 @@ export function ClubProvider({ children }) {
             id: doc.id,
             ...doc.data(),
           }));
-          console.log('🆕 Regular matches found:', regularMatches.length);
         } catch {
-          console.log('⚠️ No regular matches collection for club:', clubId);
+          // Silent fail for regular matches
         }
 
         // 2️⃣ Carica dalle vecchie bookings (legacy)
@@ -447,50 +413,8 @@ export function ClubProvider({ children }) {
           }))
           .filter((booking) => booking.clubId === clubId);
 
-        console.log('📊 Total legacy bookings for club:', allClubBookings.length);
-
         // 3️⃣ Combina SOLO partite regolari + legacy bookings (i tornei sono gestiti separatamente)
         const allMatches = [...regularMatches, ...allClubBookings];
-        console.log('🔍 Combined matches from regular + legacy:', {
-          regularMatches: regularMatches.length,
-          legacyBookings: allClubBookings.length,
-          total: allMatches.length,
-        });
-
-        if (allClubBookings.length > 0) {
-          const sample = allClubBookings[0];
-          console.log('📋 Sample booking keys:', Object.keys(sample));
-          console.log('📋 Sample booking:', {
-            id: sample.id,
-            status: sample.status,
-            hasResult: !!sample.result,
-            hasSets: !!sample.sets,
-            setsLength: sample.sets?.length,
-          });
-
-          // Analizza tutti gli status
-          const statusCounts = {};
-          const bookingsWithResults = [];
-          allClubBookings.forEach((booking) => {
-            statusCounts[booking.status] = (statusCounts[booking.status] || 0) + 1;
-            if (booking.result || booking.sets?.length > 0 || booking.score) {
-              bookingsWithResults.push({
-                id: booking.id,
-                status: booking.status,
-                hasResult: !!booking.result,
-                hasSets: !!booking.sets,
-                hasScore: !!booking.score,
-                players: booking.players?.length || 0,
-              });
-            }
-          });
-
-          console.log('📊 Status distribution:', statusCounts);
-          console.log('🏆 Bookings with results/sets/score:', bookingsWithResults.length);
-          if (bookingsWithResults.length > 0) {
-            console.log('📋 Sample match:', bookingsWithResults[0]);
-          }
-        }
 
         // 4️⃣ Filtra le partite valide da entrambe le fonti
         const rawMatches = allMatches.filter((match) => {
@@ -509,17 +433,6 @@ export function ClubProvider({ children }) {
             match.status === 'completed' || match.result || match.sets?.length > 0 || match.score
           );
         });
-
-        console.log('🎯 Raw matches found:', rawMatches.length);
-        if (rawMatches.length > 0) {
-          console.log('📋 Sample raw match:', {
-            id: rawMatches[0].id,
-            players: rawMatches[0].players,
-            participants: rawMatches[0].participants,
-            teamA: rawMatches[0].teamA,
-            teamB: rawMatches[0].teamB,
-          });
-        }
 
         // Trasforma le bookings in partite con teamA/teamB
         const matchesData = rawMatches
@@ -552,8 +465,6 @@ export function ClubProvider({ children }) {
           })
           .filter(Boolean);
 
-        console.log('🎯 Processed matches:', matchesData.length);
-
         // 🗓️ Ordina le partite dalla più recente alla più vecchia
         const sortedMatches = matchesData.sort((a, b) => {
           // Funzione helper per ottenere la data da diversi formati
@@ -585,11 +496,8 @@ export function ClubProvider({ children }) {
           return dateB.getTime() - dateA.getTime();
         });
 
-        console.log('📅 Matches sorted by date (newest first):', sortedMatches.length);
-
         setMatches(sortedMatches);
         setMatchesLoaded(true);
-        console.log('Matches loaded:', sortedMatches.length);
       } catch (error) {
         console.error('Error loading matches:', error);
       }
@@ -599,11 +507,6 @@ export function ClubProvider({ children }) {
 
   // Reset players and matches when clubId changes
   useEffect(() => {
-    console.log('🔄 [ClubContext] clubId changed, resetting state:', {
-      clubId,
-      timestamp: new Date().toISOString(),
-    });
-
     // Reset players state when clubId changes
     setPlayersLoaded(false);
     setPlayers([]);
@@ -616,47 +519,31 @@ export function ClubProvider({ children }) {
   // Carica automaticamente players e matches quando cambia clubId (dopo definizione funzioni)
   useEffect(() => {
     if (clubId && !playersLoaded) {
-      console.log('Auto-loading players for club:', clubId);
       loadPlayers();
     }
   }, [clubId, playersLoaded, loadPlayers]);
 
   useEffect(() => {
     if (clubId && !matchesLoaded) {
-      console.log('Auto-loading matches for club:', clubId);
       loadMatches();
     }
   }, [clubId, matchesLoaded, loadMatches]);
 
   const selectClub = useCallback(
     (newClubId) => {
-      console.log('🏢 [ClubContext] selectClub called:', {
-        newClubId,
-        currentClubId: clubId,
-        timestamp: new Date().toISOString(),
-      });
-
       if (!newClubId) {
-        console.log('⚠️ [ClubContext] No clubId provided, navigating to /');
         navigate('/');
         return;
       }
 
-      console.log('✅ [ClubContext] Navigating to club:', `/club/${newClubId}`);
       navigate(`/club/${newClubId}`);
     },
-    [navigate, clubId]
+    [navigate]
   );
 
   const exitClub = useCallback(() => {
-    console.log('🚪 [ClubContext] exitClub called:', {
-      currentClubId: clubId,
-      timestamp: new Date().toISOString(),
-    });
-
-    console.log('✅ [ClubContext] Navigating to /dashboard');
     navigate('/dashboard');
-  }, [navigate, clubId]);
+  }, [navigate]);
 
   const hasClub = Boolean(clubId);
 
@@ -668,12 +555,6 @@ export function ClubProvider({ children }) {
         (p) => p.tournamentData?.isParticipant === true && p.tournamentData?.isActive === true
       );
 
-      console.log('🎯 [ClubContext] ========== CALCOLO calculatedRatings ==========');
-      console.log('📊 Tournament players:', tournamentPlayers.length);
-      console.log('📊 Regular matches:', matches.length);
-      console.log('📊 Tournament matches:', tournamentMatches.length);
-      console.log('📊 Leaderboard entries:', Object.keys(leaderboard || {}).length);
-
       // Combine regular matches with tournament matches from leaderboard
       const combinedMatches = [...matches, ...tournamentMatches];
       const data = computeClubRanking(tournamentPlayers, combinedMatches, clubId, {
@@ -683,15 +564,6 @@ export function ClubProvider({ children }) {
       (data.players || []).forEach((p) => {
         map[p.id] = p.rating;
       });
-
-      console.log('🏆 [ClubContext] Calculated ratings (top 5):');
-      Object.entries(map)
-        .slice(0, 5)
-        .forEach(([id, rating]) => {
-          const player = players.find((p) => p.id === id);
-          console.log(`  ${player?.name || id}: ${rating}`);
-        });
-      console.log('========================================================');
 
       return map;
     } catch (e) {
@@ -720,8 +592,6 @@ export function ClubProvider({ children }) {
       }
 
       try {
-        console.log('📝 [ClubContext] Adding player to club:', clubId, playerData);
-
         // Import the club users service
         const { addUserToClub } = await import('@services/club-users.js');
 
@@ -733,8 +603,6 @@ export function ClubProvider({ children }) {
             addedBy: 'current-user',
             notes: playerData.notes || '',
           });
-
-          console.log('✅ [ClubContext] Registered user added to club:', clubUser);
 
           // Reload players to get updated list
           setPlayersLoaded(false);
@@ -803,8 +671,6 @@ export function ClubProvider({ children }) {
             updatedAt: serverTimestamp(),
           });
 
-          console.log('✅ [ClubContext] New club user created:', clubUserDocRef.id);
-
           // Reload players to get updated list
           setPlayersLoaded(false);
           await loadPlayers();
@@ -826,8 +692,6 @@ export function ClubProvider({ children }) {
       }
 
       try {
-        console.log('📝 [ClubContext] Updating player:', playerId, updates);
-
         const { db } = await import('@services/firebase.js');
         const { doc, updateDoc, serverTimestamp } = await import('firebase/firestore');
 
@@ -907,10 +771,7 @@ export function ClubProvider({ children }) {
             }
           });
 
-          console.log('💾 [ClubContext] Club user updates to save:', clubUserUpdates);
-
           await updateDoc(clubUserRef, clubUserUpdates);
-          console.log('✅ [ClubContext] Updated club user document');
         }
 
         // 🔄 SINCRONIZZAZIONE AUTOMATICA: Se il giocatore è collegato a un account globale,
@@ -934,7 +795,6 @@ export function ClubProvider({ children }) {
 
             if (Object.keys(globalUpdates).length > 0) {
               await updateUserProfile(currentPlayer.linkedAccountId, globalUpdates);
-              console.log('🔄 [ClubContext] Synced updates to global user profile');
             }
           } catch (syncError) {
             console.warn('⚠️ [ClubContext] Failed to sync to global profile:', syncError);
@@ -945,8 +805,6 @@ export function ClubProvider({ children }) {
         // Reload players to get updated list
         setPlayersLoaded(false);
         await loadPlayers();
-
-        console.log('✅ [ClubContext] Player updated successfully');
       } catch (error) {
         console.error('❌ [ClubContext] Error updating player:', error);
         throw error;
@@ -965,9 +823,6 @@ export function ClubProvider({ children }) {
         throw new Error('Player ID is required');
       }
 
-      console.log('🗑️ [ClubContext] Starting delete process for player:', playerId);
-      console.log('🗑️ [ClubContext] Current clubId:', clubId);
-
       try {
         // 🔄 OPTION A: Find the correct document in clubs/{clubId}/users collection
         // The playerId might be userId field, not the document ID
@@ -980,16 +835,8 @@ export function ClubProvider({ children }) {
           throw new Error('Player not found in club users');
         }
 
-        console.log(
-          '🗑️ [ClubContext] Found club user document:',
-          clubUser.id,
-          'for player:',
-          playerId
-        );
-
         // Delete the club user document using the document ID
         const userRef = doc(db, 'clubs', clubId, 'users', clubUser.id);
-        console.log('🗑️ [ClubContext] Attempting to delete document at path:', userRef.path);
 
         // First check if document exists
         const docSnap = await getDoc(userRef);
@@ -998,21 +845,14 @@ export function ClubProvider({ children }) {
           throw new Error('Player document does not exist');
         }
 
-        console.log('🗑️ [ClubContext] Document exists, proceeding with deletion');
         await deleteDoc(userRef);
-        console.log('✅ [ClubContext] User document deleted successfully');
 
         // Small delay to allow delete to propagate
-        console.log('⏳ [ClubContext] Waiting 2 seconds for deletion to propagate...');
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         // Reload players list
-        console.log('🔄 [ClubContext] Reloading players after deletion...');
         setPlayersLoaded(false);
         await loadPlayers();
-        console.log('✅ [ClubContext] Players reloaded after deletion');
-
-        console.log('✅ [ClubContext] Player deleted successfully');
       } catch (error) {
         console.error('❌ [ClubContext] Error deleting player:', error);
         throw error;

@@ -22,7 +22,7 @@ import MatchResultModal from './MatchResultModal';
 import FormulaModal from '../../../../components/modals/FormulaModal.jsx';
 
 function TournamentMatches({ tournament, clubId }) {
-  const { userRole } = useAuth();
+  const { userRole, userClubRoles } = useAuth();
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState({});
   const [loading, setLoading] = useState(true);
@@ -32,8 +32,9 @@ function TournamentMatches({ tournament, clubId }) {
   const [formulaModalOpen, setFormulaModalOpen] = useState(false);
   const [formulaMatchData, setFormulaMatchData] = useState(null);
 
-  // Solo gli admin possono modificare i risultati
-  const isClubAdmin = userRole === USER_ROLES.CLUB_ADMIN || userRole === USER_ROLES.SUPER_ADMIN;
+  // ✅ FIX: Check club-specific admin role, not global userRole
+  const clubRole = userClubRoles?.[clubId];
+  const isClubAdmin = userRole === USER_ROLES.SUPER_ADMIN || clubRole === 'admin' || clubRole === 'club_admin';
   const canEditResults = isClubAdmin;
 
   const loadData = async () => {

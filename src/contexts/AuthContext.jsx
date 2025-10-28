@@ -77,21 +77,17 @@ export function AuthProvider({ children }) {
   // Load user club memberships (replaces affiliations)
   const loadUserAffiliations = async (userId) => {
     if (!userId) return;
-    console.log('🔄 [AuthContext] Starting to load memberships for user:', userId);
     try {
       // 🆕 NEW: Load clubs where user is a member instead of affiliations
       const { getUserClubMemberships } = await import('@services/club-users.js');
 
       let memberships = [];
       try {
-        console.log('📞 [AuthContext] Calling getUserClubMemberships...');
         // This would load all clubs where the user is in the users collection
         memberships = (await getUserClubMemberships(userId)) || [];
-        console.log('✅ [AuthContext] Memberships loaded:', memberships);
         setUserAffiliations(memberships); // Keep same state name for compatibility
       } catch (e) {
-        console.warn('[AuthContext] Club memberships service failed:', e.message);
-        console.error('[AuthContext] Full error:', e);
+        console.error('❌ Error loading club memberships:', e);
         setUserAffiliations([]);
       }
 
@@ -102,14 +98,12 @@ export function AuthProvider({ children }) {
           clubRoles[membership.clubId] = membership.role;
         }
       });
-      console.log('👥 [AuthContext] Club roles extracted:', clubRoles);
       setUserClubRoles(clubRoles || {});
 
       // Auto-set club for CLUB_ADMIN users
       const clubAdminRoles = Object.entries(clubRoles || {}).filter(
         ([_clubId, role]) => role === 'club_admin'
       );
-      console.log('🏛️ [AuthContext] Club admin roles found:', clubAdminRoles);
 
       if (clubAdminRoles.length === 1) {
         // Se l'utente è CLUB_ADMIN di un solo club, impostalo automaticamente
@@ -132,7 +126,7 @@ export function AuthProvider({ children }) {
         }
       }
     } catch (err) {
-      console.error('Error loading memberships (outer):', err);
+      console.error('❌ Error loading user memberships:', err);
       setUserAffiliations([]);
       setUserClubRoles({});
     }
@@ -252,18 +246,35 @@ export function AuthProvider({ children }) {
 
           // Handle special admin login
           if (firebaseUser?.isSpecialAdmin) {
-            console.log('✅ AuthContext: Admin user detected, setting up admin context');
             // Save admin session to localStorage
             localStorage.setItem('adminSession', JSON.stringify(firebaseUser));
-            setUser(firebaseUser);
+            
             try {
               const profile = await getUserProfile(firebaseUser.uid);
+              console.log('🔍 [AuthContext] Admin profile loaded:', {
+                userId: firebaseUser.uid,
+                email: firebaseUser.email,
+                skipEmailVerification: profile?.skipEmailVerification,
+                profile,
+              });
               setUserProfile(profile);
+              
+              // Merge profile data with Firebase user (include skipEmailVerification)
+              const enrichedUser = {
+                ...firebaseUser,
+                skipEmailVerification: profile?.skipEmailVerification || false,
+              };
+              console.log('✅ [AuthContext] Admin enriched user:', {
+                uid: enrichedUser.uid,
+                email: enrichedUser.email,
+                skipEmailVerification: enrichedUser.skipEmailVerification,
+              });
+              setUser(enrichedUser);
             } catch (error) {
-              console.warn('Errore nel recuperare profilo admin:', error);
-              console.error(error, { operation: 'admin_profile_fetch', userId: firebaseUser.uid });
-              setUserProfile({});
+              console.error('❌ Error loading admin profile:', error);
+              setUser(firebaseUser);
             }
+            
             setUserRole(USER_ROLES.SUPER_ADMIN);
             setUserAffiliations([]);
             setUserClubRoles({});
@@ -275,14 +286,8 @@ export function AuthProvider({ children }) {
             try {
               initializeBookingService({ cloudEnabled: true, user: firebaseUser });
             } catch (error) {
-              console.warn(
-                '⚠️ [AuthContext] Failed to initialize booking service for admin:',
-                error
-              );
+              console.warn('⚠️ Failed to initialize booking service for admin:', error);
             }
-
-            // Set Sentry user context for admin
-            console.log(firebaseUser);
 
             // Set Google Analytics user context for admin
             setUserId(firebaseUser.uid);
@@ -292,21 +297,37 @@ export function AuthProvider({ children }) {
             });
             trackAuth.loginSuccess('admin', firebaseUser.uid);
 
-            console.log('admin_context_setup', { userId: firebaseUser.uid });
             return;
           }
 
           // Handle normal user
-          setUser(firebaseUser);
           let profile = {};
           try {
             // Tenta di ottenere il profilo esistente o crearne uno nuovo
             const { createUserProfileIfNeeded } = await import('@services/auth.jsx');
             profile = await createUserProfileIfNeeded(firebaseUser);
+            console.log('🔍 [AuthContext] User profile loaded:', {
+              userId: firebaseUser.uid,
+              email: firebaseUser.email,
+              emailVerified: firebaseUser.emailVerified,
+              skipEmailVerification: profile?.skipEmailVerification,
+            });
+            console.log('🔍 [AuthContext] Full profile object:', profile);
             setUserProfile(profile);
 
-            // Set Sentry user context
-            console.log(firebaseUser);
+            // Merge profile data with Firebase user (include skipEmailVerification)
+            const enrichedUser = {
+              ...firebaseUser,
+              skipEmailVerification: profile?.skipEmailVerification || false,
+            };
+            console.log('✅ [AuthContext] User enriched user:', {
+              uid: enrichedUser.uid,
+              email: enrichedUser.email,
+              emailVerified: enrichedUser.emailVerified,
+              skipEmailVerification: enrichedUser.skipEmailVerification,
+            });
+            console.log('✅ [AuthContext] Full enriched user object:', enrichedUser);
+            setUser(enrichedUser);
 
             // Set Google Analytics user context
             setUserId(firebaseUser.uid);
@@ -317,14 +338,8 @@ export function AuthProvider({ children }) {
             });
             trackAuth.loginSuccess('auto', firebaseUser.uid);
 
-            console.log('user_profile_loaded', { userId: firebaseUser.uid });
           } catch (error) {
-            console.warn('Errore nel recuperare/creare profilo utente:', error);
-            console.error(error, {
-              operation: 'user_profile_creation',
-              userId: firebaseUser.uid,
-              email: firebaseUser.email,
-            });
+            console.error('❌ Error loading/creating user profile:', error);
 
             // In caso di errore, crea un profilo di base dall'utente Firebase
             const fallbackProfile = {
@@ -335,9 +350,6 @@ export function AuthProvider({ children }) {
             };
             setUserProfile(fallbackProfile);
 
-            // Still set Sentry user context even with fallback profile
-            console.log(firebaseUser);
-
             // Set Google Analytics user context for fallback
             setUserId(firebaseUser.uid);
             setUserProperties({
@@ -346,87 +358,62 @@ export function AuthProvider({ children }) {
               fallback_profile: true,
             });
 
-            console.log('fallback_profile_created', { userId: firebaseUser.uid });
           }
 
           // Determine user role
           const customClaims = firebaseUser.customClaims || {};
           const role = determineUserRole(profile, customClaims, firebaseUser);
-          console.log(
-            '🎭 [AuthContext] User role determined:',
-            role,
-            'from profile:',
-            profile,
-            'claims:',
-            customClaims
-          );
           setUserRole(role);
 
           // Initialize booking service with cloud storage enabled for authenticated users
           try {
             initializeBookingService({ cloudEnabled: true, user: firebaseUser });
           } catch (error) {
-            console.warn('⚠️ [AuthContext] Failed to initialize booking service:', error);
+            console.warn('⚠️ Failed to initialize booking service:', error);
           }
 
           // Load memberships for non-super-admin users
           if (role !== USER_ROLES.SUPER_ADMIN) {
-            console.log('📋 [AuthContext] Loading memberships for non-super-admin user');
             await loadUserAffiliations(firebaseUser.uid);
-          } else {
-            console.log('🌟 [AuthContext] User is super admin, skipping membership loading');
           }
 
           // Subscribe to push notifications if SW is enabled
           if (import.meta.env.PROD || new URLSearchParams(window.location.search).has('enableSW')) {
             try {
-              console.log('🔔 [AuthContext] Subscribing to push notifications...');
               const { subscribeToPush } = await import('@utils/push.js');
               await subscribeToPush(firebaseUser.uid);
-              console.log('✅ [AuthContext] Push subscription completed');
             } catch (error) {
-              console.warn('⚠️ [AuthContext] Push subscription failed:', error.message);
+              console.warn('⚠️ Push subscription failed:', error.message);
             }
           }
         } else {
-          console.log('❌ No Firebase user, clearing any stale sessions');
-
-          // Clear Sentry user context
-          console.log();
-
           // Track logout in Google Analytics
           trackAuth.logout();
-          console.log('user_logged_out');
 
           // Pulisci sempre le sessioni non valide quando non c'è un utente Firebase
           let hadStaleSession = false;
           try {
             const savedAdminSession = localStorage.getItem('adminSession');
             if (savedAdminSession) {
-              console.log('🧹 Clearing stale admin session from localStorage');
               localStorage.removeItem('adminSession');
               hadStaleSession = true;
             }
             const currentClub = localStorage.getItem('currentClub');
             if (currentClub) {
-              console.log('🧹 Clearing stale club selection from localStorage');
               localStorage.removeItem('currentClub');
               hadStaleSession = true;
             }
           } catch (e) {
-            console.log('Error clearing stale session:', e);
-            console.error(e, { operation: 'clear_stale_session' });
+            console.error('❌ Error clearing stale session:', e);
           }
 
           // Se avevamo sessioni non valide, forza un refresh per evitare stati inconsistenti
           if (hadStaleSession) {
-            console.log('🔄 Forcing page refresh due to stale session cleanup');
             window.location.reload();
             return;
           }
 
           // No user found, clear state
-          console.log('❌ No user and no admin session, clearing state');
           setUser(null);
           setUserProfile(null);
           setUserRole(USER_ROLES.USER);
@@ -438,22 +425,14 @@ export function AuthProvider({ children }) {
           try {
             initializeBookingService({ cloudEnabled: false, user: null });
           } catch (error) {
-            console.warn(
-              '⚠️ [AuthContext] Failed to disable booking service cloud storage:',
-              error
-            );
+            console.warn('⚠️ Failed to disable booking service cloud storage:', error);
           }
         }
 
         setError(null);
         setLoading(false);
       } catch (err) {
-        console.error('Auth error:', err);
-        console.error(err, {
-          operation: 'auth_state_change',
-          hasUser: !!firebaseUser,
-          userEmail: firebaseUser?.email,
-        });
+        console.error('❌ Auth error:', err);
 
         setError(err);
         setUserProfile(null);
@@ -461,9 +440,6 @@ export function AuthProvider({ children }) {
         setUserAffiliations([]);
         setUserClubRoles({});
         setCurrentClub(null);
-
-        // Clear Sentry user context on error
-        console.log();
 
         // Track auth error in Google Analytics
         trackAuth.loginFailed('auto', err.code || 'unknown_error');
@@ -473,8 +449,7 @@ export function AuthProvider({ children }) {
           localStorage.removeItem('adminSession');
           localStorage.removeItem('currentClub');
         } catch (e) {
-          console.log('Error clearing localStorage on auth error:', e);
-          console.error(e, { operation: 'clear_storage_on_error' });
+          console.error('❌ Error clearing localStorage on auth error:', e);
         }
       } finally {
         setLoading(false);
@@ -488,16 +463,6 @@ export function AuthProvider({ children }) {
 
   const isAuthenticated = !!user;
   const isProfileComplete = userProfile?.firstName && userProfile?.phone;
-
-  // Debug: log when isProfileComplete changes
-  React.useEffect(() => {
-    console.log('🔍 AuthContext: isProfileComplete changed', {
-      isProfileComplete,
-      userProfile,
-      firstName: userProfile?.firstName,
-      phone: userProfile?.phone,
-    });
-  }, [isProfileComplete, userProfile]);
 
   const value = {
     // Original auth state
@@ -540,8 +505,6 @@ export function AuthProvider({ children }) {
     // Force reload user data (useful after promotion/demotion)
     reloadUserData: async () => {
       if (user?.uid) {
-        console.log('🔄 Reloading user data for', user.uid);
-
         // Reload memberships
         await loadUserAffiliations(user.uid);
 
@@ -550,7 +513,6 @@ export function AuthProvider({ children }) {
           const { getUserProfile } = await import('@services/auth.jsx');
           const freshProfile = await getUserProfile(user.uid, true); // Force cache bypass
           setUserProfile(freshProfile);
-          console.log('✅ User profile reloaded:', freshProfile);
         } catch (error) {
           console.error('❌ Error reloading user profile:', error);
         }

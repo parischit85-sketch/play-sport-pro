@@ -65,31 +65,6 @@ export function recompute(players, matches, leaderboardMap = {}) {
   
   const byDate = [...allEvents].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  // 🔍 DEBUG: Log all events to verify sorting
-  console.log(
-    '🔍 [RPA DEBUG] Total events to process:',
-    byDate.length,
-    '(matches:',
-    matches?.length || 0,
-    '+ championships:',
-    championshipEvents.length,
-    ')'
-  );
-  if (byDate.length > 0) {
-    console.log('🔍 [RPA DEBUG] First 5 events after sorting by date:');
-    byDate.slice(0, 5).forEach((e, idx) => {
-      if (e.type === 'championship_points') {
-        console.log(
-          `  ${idx + 1}. [CHAMPIONSHIP] Date: ${e.date} | Player: ${e.playerId} | Points: ${e.points} | Tournament: ${e.tournamentId}`
-        );
-      } else {
-        console.log(
-          `  ${idx + 1}. [MATCH] Date: ${e.date} | Type: ${e.id ? 'regular' : 'tournament'} | ID: ${e.id || e.matchId}`
-        );
-      }
-    });
-  }
-
   for (const event of byDate) {
     // 🆕 Handle championship point events (synthetic RPA deltas)
     if (event.type === 'championship_points') {
@@ -97,9 +72,6 @@ export function recompute(players, matches, leaderboardMap = {}) {
       
       const player = map.get(playerId);
       if (player && points !== 0) {
-        console.log(
-          `🏆 [RPA] Championship points for ${playerId} at ${event.date}: +${points} (${player.rating} → ${player.rating + points})`
-        );
         player.rating += points;
         
         // Add to history as a delta

@@ -12,6 +12,7 @@ import {
   orderBy,
 } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext.jsx';
+import { invalidateUserProfileCache } from '../../services/auth.jsx';
 import {
   Users,
   ArrowLeft,
@@ -46,6 +47,7 @@ const UsersManagement = () => {
     phone: '',
     isActive: true,
     notes: '',
+    skipEmailVerification: false,
   });
 
   useEffect(() => {
@@ -108,7 +110,17 @@ const UsersManagement = () => {
                 clubs: userAffiliations,
                 isAdmin: isClubAdmin,
                 adminClubs: adminClubs,
+                skipEmailVerification: profileData.skipEmailVerification || false,
+                phone: profileData.phone || '',
+                isActive: profileData.isActive !== false,
+                notes: profileData.notes || '',
               };
+
+              console.log('👤 [UsersManagement] Loaded user:', {
+                id: userId,
+                email: userData.email,
+                skipEmailVerification: userData.skipEmailVerification,
+              });
 
               userMap.set(userId, userData);
             } else {
@@ -142,11 +154,62 @@ const UsersManagement = () => {
                   existingUser.adminClubs.push(club.id);
                 }
               }
+
+              // Aggiorna anche skipEmailVerification se presente nel profilo
+              if (profileData.skipEmailVerification !== undefined) {
+                existingUser.skipEmailVerification = profileData.skipEmailVerification;
+              }
             }
           }
         } catch (error) {
           console.warn(`Errore nel caricare i profili per ${club.id}:`, error);
         }
+      }
+
+      // Carica anche gli utenti dalla collezione globale 'users'
+      // per includere utenti senza affiliazioni a club
+      console.log('🔍 [UsersManagement] Loading users from global collection...');
+      try {
+        const globalUsersSnap = await getDocs(collection(db, 'users'));
+        console.log(`📊 [UsersManagement] Found ${globalUsersSnap.docs.length} users in global collection`);
+        
+        for (const userDoc of globalUsersSnap.docs) {
+          const userId = userDoc.id;
+          const userData = userDoc.data();
+          
+          if (!userMap.has(userId)) {
+            // Utente non trovato nei club, aggiungilo dalla collezione globale
+            console.log('➕ [UsersManagement] Adding user from global collection:', {
+              id: userId,
+              email: userData.email,
+              skipEmailVerification: userData.skipEmailVerification,
+            });
+            
+            userMap.set(userId, {
+              id: userId,
+              email: userData.email || 'Non disponibile',
+              displayName: userData.displayName || userData.firstName + ' ' + userData.lastName || 'Nome non disponibile',
+              createdAt: userData.registeredAt || userData._createdAt,
+              lastLogin: userData._updatedAt,
+              clubs: [], // Nessuna affiliazione a club
+              isAdmin: false,
+              adminClubs: [],
+              skipEmailVerification: userData.skipEmailVerification || false,
+              phone: userData.phone || '',
+              isActive: userData.isActive !== false,
+              notes: userData.notes || '',
+            });
+          } else {
+            // Utente già esistente, aggiorna skipEmailVerification dalla collezione globale
+            const existingUser = userMap.get(userId);
+            if (userData.skipEmailVerification !== undefined) {
+              console.log('🔄 [UsersManagement] Updating skipEmailVerification from global for:', userId, userData.skipEmailVerification);
+              existingUser.skipEmailVerification = userData.skipEmailVerification;
+            }
+          }
+        }
+      } catch (error) {
+        console.warn('⚠️ Errore nel caricare gli utenti dalla collezione globale:', error);
       }
 
       setUsers(Array.from(userMap.values()));
@@ -293,6 +356,7 @@ const UsersManagement = () => {
       phone: user.phone || '',
       isActive: user.isActive !== false,
       notes: user.notes || '',
+      skipEmailVerification: user.skipEmailVerification || false,
     });
     setShowEditModal(true);
   };
@@ -300,21 +364,123 @@ const UsersManagement = () => {
   const handleSaveUserChanges = async () => {
     if (!selectedUser) return;
 
+    console.log('🔧 [UsersManagement] Saving user changes:', {
+      userId: selectedUser.id,
+      email: selectedUser.email,
+      skipEmailVerification: editFormData.skipEmailVerification,
+      formData: editFormData,
+    });
+
     try {
       // Aggiorna il profilo utente in tutti i circoli dove è presente
+      console.log('📝 [UsersManagement] Updating club profiles...', selectedUser.clubs.length, 'clubs');
       for (const clubAffiliation of selectedUser.clubs) {
         const profileRef = doc(db, 'clubs', clubAffiliation.clubId, 'profiles', selectedUser.id);
+        console.log('📝 [UsersManagement] Updating club:', clubAffiliation.clubId);
         await updateDoc(profileRef, {
           displayName: editFormData.displayName,
           email: editFormData.email,
           phone: editFormData.phone,
           isActive: editFormData.isActive,
           notes: editFormData.notes,
+          skipEmailVerification: editFormData.skipEmailVerification,
           _updatedAt: new Date().toISOString(),
         });
+        console.log('✅ [UsersManagement] Club profile updated:', clubAffiliation.clubId);
       }
 
-      alert('Utente aggiornato con successo!');
+      // Aggiorna anche il profilo globale se esiste
+      console.log('📝 [UsersManagement] Updating global profile for user:', selectedUser.id);
+      try {
+        const globalProfileRef = doc(db, 'users', selectedUser.id);
+        const updateData = {
+          skipEmailVerification: editFormData.skipEmailVerification,
+          displayName: editFormData.displayName,
+          email: editFormData.email,
+          phone: editFormData.phone,
+          isActive: editFormData.isActive,
+          notes: editFormData.notes,
+          _updatedAt: new Date().toISOString(),
+        };
+        console.log('📝 [UsersManagement] Global profile update data:', updateData);
+        await updateDoc(globalProfileRef, updateData);
+        console.log('✅ [UsersManagement] Global profile updated successfully');
+      } catch (error) {
+        console.warn('⚠️ [UsersManagement] Global profile update failed, trying to create:', error);
+        // Se non esiste, prova a crearlo
+        try {
+          const globalProfileRef = doc(db, 'users', selectedUser.id);
+          const createData = {
+            skipEmailVerification: editFormData.skipEmailVerification,
+            displayName: editFormData.displayName,
+            email: editFormData.email,
+            phone: editFormData.phone,
+            isActive: editFormData.isActive,
+            notes: editFormData.notes,
+            _createdAt: new Date().toISOString(),
+            _updatedAt: new Date().toISOString(),
+          };
+          console.log('📝 [UsersManagement] Creating global profile with data:', createData);
+          await setDoc(globalProfileRef, createData);
+          console.log('✅ [UsersManagement] Global profile created successfully');
+        } catch (createError) {
+          console.error('❌ [UsersManagement] Failed to create global profile:', createError);
+        }
+      }
+
+      console.log('✅ [UsersManagement] All updates completed successfully');
+      
+      // Se l'utente modificato è quello corrente (controlla sia UID che email)
+      const isCurrentUser =
+        currentUser &&
+        (currentUser.uid === selectedUser.id || currentUser.email === selectedUser.email);
+
+      if (isCurrentUser) {
+        alert('Utente aggiornato con successo! La pagina verrà ricaricata per applicare le modifiche.');
+      } else {
+        alert('Utente aggiornato con successo! L\'utente dovrà disconnettersi e riconnettersi per vedere le modifiche applicate.');
+      }
+      
+      // Invalida la cache del profilo utente per forzare il reload
+      console.log('🔄 [UsersManagement] Invalidating profile cache for user:', selectedUser.id);
+      invalidateUserProfileCache(selectedUser.id);
+
+      if (isCurrentUser) {
+        console.log('🔄 [UsersManagement] Reloading current user data...');
+        // Invalida anche la cache del current user se è diverso
+        if (currentUser.uid !== selectedUser.id) {
+          console.log(
+            '🔄 [UsersManagement] Also invalidating cache for current user:',
+            currentUser.uid
+          );
+          invalidateUserProfileCache(currentUser.uid);
+          
+          // Aggiorna anche il profilo del current user (duplicato con stessa email)
+          console.log('📝 [UsersManagement] Also updating current user profile with same email');
+          try {
+            const currentUserProfileRef = doc(db, 'users', currentUser.uid);
+            await updateDoc(currentUserProfileRef, {
+              skipEmailVerification: editFormData.skipEmailVerification,
+              _updatedAt: new Date().toISOString(),
+            });
+            console.log('✅ [UsersManagement] Current user profile also updated');
+            
+            // Aspetta un attimo per permettere a Firebase di sincronizzare
+            await new Promise(resolve => setTimeout(resolve, 500));
+          } catch (err) {
+            console.warn('⚠️ [UsersManagement] Failed to update current user profile:', err);
+          }
+        }
+        await reloadUserData();
+        console.log('✅ [UsersManagement] Current user data reloaded');
+        
+        // Force page reload per essere sicuri che il profilo venga ricaricato
+        console.log('🔄 [UsersManagement] Force reloading page to refresh profile...');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+      
       loadData();
       setShowEditModal(false);
       setSelectedUser(null);
@@ -378,6 +544,12 @@ const UsersManagement = () => {
               {user.isAdmin && (
                 <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
                   Admin
+                </span>
+              )}
+              {user.skipEmailVerification && (
+                <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full font-medium flex items-center space-x-1">
+                  <Mail className="w-3 h-3" />
+                  <span>No Verifica Email</span>
                 </span>
               )}
             </div>
@@ -658,6 +830,29 @@ const UsersManagement = () => {
                   />
                   <span className="text-sm text-gray-700">Account Attivo</span>
                 </label>
+              </div>
+
+              {/* Skip Email Verification */}
+              <div className="space-y-2">
+                <div className="flex items-center space-x-3">
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={editFormData.skipEmailVerification}
+                      onChange={(e) =>
+                        setEditFormData({ ...editFormData, skipEmailVerification: e.target.checked })
+                      }
+                      className="w-4 h-4 text-yellow-600 rounded focus:ring-yellow-500"
+                    />
+                    <span className="text-sm text-gray-700 flex items-center space-x-1">
+                      <Mail className="w-4 h-4 text-yellow-600" />
+                      <span>Disabilita Verifica Email</span>
+                    </span>
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 ml-6">
+                  ⚠️ L'utente dovrà disconnettersi e riconnettersi per applicare questa modifica
+                </p>
               </div>
 
               {/* Note amministrative */}

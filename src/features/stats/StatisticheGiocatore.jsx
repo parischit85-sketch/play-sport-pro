@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Section from '@ui/Section.jsx';
 import ShareButtons from '@ui/ShareButtons.jsx';
 import FormulaModal from '@components/modals/FormulaModal.jsx';
+import ModernAreaChart from '@ui/charts/ModernAreaChart.jsx';
 import { byPlayerFirstAlpha, surnameOf, IT_COLLATOR } from '@lib/names.js';
 import { DEFAULT_RATING } from '@lib/ids.js';
 import { useClub } from '@contexts/ClubContext.jsx';
@@ -50,24 +51,13 @@ export default function StatisticheGiocatore({
   // Subscribe to tournament points entries for this player
   useEffect(() => {
     if (!clubId || !pid) {
-      console.log(`📖 [champEntries useEffect] SKIP: clubId=${clubId}, pid=${pid}`);
       return;
     }
     try {
-      console.log(`📖 [champEntries useEffect] Subscribing to leaderboard/${pid}/entries`);
       const entriesRef = collection(db, 'clubs', clubId, 'leaderboard', pid, 'entries');
       const q = query(entriesRef, orderBy('createdAt', 'desc'));
       const unsub = onSnapshot(q, (snap) => {
         const rows = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-        console.log(`📖 [champEntries] Received ${rows.length} entries`);
-        if (rows.length > 0) {
-          console.log(`   First entry keys: ${Object.keys(rows[0]).join(', ')}`);
-          console.log(
-            `   First entry matchDetails: ${
-              Array.isArray(rows[0].matchDetails) ? rows[0].matchDetails.length : 'undefined'
-            }`
-          );
-        }
         setChampEntries(rows);
       });
       return () => unsub();
@@ -174,50 +164,284 @@ export default function StatisticheGiocatore({
 
     // Extract matches from championship entries
     if (Array.isArray(champEntries)) {
-      console.log(`🏆 [StatisticheGiocatore] champEntries encontrados: ${champEntries.length}`);
       for (const entry of champEntries) {
-        console.log(
-          `  📋 Entry: tournamentId=${entry.tournamentId}, matchDetails=${
-            Array.isArray(entry.matchDetails) ? entry.matchDetails.length : 'undefined'
-          }`
-        );
         if (Array.isArray(entry.matchDetails)) {
-          console.log(`    ✅ Agregando ${entry.matchDetails.length} matches de torneo`);
-
-          // 🔍 DEBUG: Log tournament match dates
-          if (entry.matchDetails.length > 0) {
-            console.log(`    🔍 [DEBUG] Tournament match dates:`);
-            entry.matchDetails.slice(0, 3).forEach((m, idx) => {
-              console.log(
-                `      ${idx + 1}. date: ${m.date} (type: ${typeof m.date}) | matchId: ${m.matchId} | isTournamentMatch: ${m.isTournamentMatch}`
-              );
-            });
-          }
-
           tourneyMatches.push(...entry.matchDetails);
         }
       }
-    } else {
-      console.log('🏆 [StatisticheGiocatore] NO champEntries (undefined o not array)');
     }
 
     const combined = [...regulars, ...tourneyMatches];
 
-    // 🔍 DEBUG: Log combined matches dates
-    console.log(
-      `📊 [StatisticheGiocatore] Total matches: ${combined.length} (regular: ${regulars.length}, torneo: ${tourneyMatches.length})`
-    );
-
-    if (combined.length > 0) {
-      console.log(`🔍 [DEBUG] Sample regular match dates (first 3):`);
-      regulars.slice(0, 3).forEach((m, idx) => {
-        console.log(`  ${idx + 1}. date: ${m.date} (type: ${typeof m.date}) | id: ${m.id}`);
-      });
-    }
-
     // Combine and return
     return combined;
   }, [filteredMatches, champEntries]);
+
+  // Timeline rating personale per grafico evoluzione (include tornei)
+  const timeline = useMemo(() => {
+    if (!pid) return [];
+
+    // Helper per convertire date Firestore/string/number
+    const toDate = (d) => {
+      if (!d) return null;
+      if (typeof d === 'number') return new Date(d);
+      if (d?.toDate) return d.toDate();
+      return new Date(d);
+    };
+
+    // Combina match normali e tornei come "movimenti"
+    const movements = [];
+
+    // 1. Aggiungi match normali (non di torneo)
+    const regularMatches = (filteredMatches || []).filter((m) => 
+      (m.teamA?.includes(pid) || m.teamB?.includes(pid)) && !m.isTournamentMatch
+    );
+    
+    regularMatches.forEach((m) => {
+      const isTeamA = m.teamA?.includes(pid);
+      const delta = isTeamA ? (m.deltaA ?? 0) : (m.deltaB ?? 0);
+      movements.push({
+        date: new Date(m.date),
+        delta: delta,
+        type: 'match',
+        label: 'Match',
+      });
+    });
+
+    // 2. Aggiungi tornei come singoli movimenti
+    if (Array.isArray(champEntries)) {
+      champEntries.forEach((entry) => {
+        const tournamentPoints = Number(entry.points || 0);
+        const date = toDate(entry.createdAt) || toDate(entry.appliedAt) || new Date();
+        movements.push({
+          date: date,
+          delta: tournamentPoints,
+          type: 'tournament',
+          label: entry.tournamentName || 'Torneo',
+        });
+      });
+    }
+
+    // Ordina per data
+    movements.sort((a, b) => a.date - b.date);
+
+    // Prendi solo gli ultimi 5 movimenti
+    const lastMovements = movements.slice(-5);
+
+    // Rating attuale (finale) del giocatore
+    const currentRating = players.find((p) => p.id === pid)?.rating ?? DEFAULT_RATING;
+
+    if (lastMovements.length === 0) {
+      // Nessun movimento: solo Start con rating attuale
+      return [{ date: null, label: 'Start', rating: Math.round(currentRating) }];
+    }
+
+    // **NUOVA LOGICA: Mov. 5 = rating attuale, andiamo INDIETRO**
+    const points = [];
+
+    // Calcola rating iniziale sottraendo tutti i delta dal rating attuale
+    let startRating = currentRating;
+    for (let i = lastMovements.length - 1; i >= 0; i--) {
+      startRating -= lastMovements[i].delta;
+    }
+
+    // Punto iniziale (Start)
+    points.push({
+      date: null,
+      label: 'Start',
+      rating: Math.round(startRating),
+    });
+
+    // Se ci sono meno di 5 movimenti, crea una linea retta fino al primo movimento
+    const numMovements = lastMovements.length;
+    if (numMovements < 5) {
+      // Crea movimenti fittizi da Mov. 1 a Mov. (5 - numMovements) con rating = startRating
+      for (let i = 1; i <= 5 - numMovements; i++) {
+        points.push({
+          date: null,
+          label: `Mov. ${i}`,
+          rating: Math.round(startRating),
+        });
+      }
+    }
+
+    // Ora aggiungi i movimenti REALI partendo dal rating iniziale
+    let rating = startRating;
+    const offset = 5 - numMovements; // Offset per etichette corrette
+    for (let i = 0; i < lastMovements.length; i++) {
+      rating += lastMovements[i].delta;
+      points.push({
+        date: null,
+        label: `Mov. ${offset + i + 1}`,
+        rating: Math.round(rating),
+      });
+    }
+
+    return points;
+  }, [pid, players, filteredMatches, champEntries]);
+
+  // Timeline per il giocatore di confronto (include tornei)
+  const compareTimeline = useMemo(() => {
+    if (!comparePlayerId) return [];
+
+    // Combina match normali e tornei come "movimenti"
+    const movements = [];
+
+    // 1. Aggiungi match normali (non di torneo)
+    const regularMatches = (filteredMatches || []).filter((m) =>
+      (m.teamA?.includes(comparePlayerId) || m.teamB?.includes(comparePlayerId)) &&
+      !m.isTournamentMatch
+    );
+
+    regularMatches.forEach((m) => {
+      const isTeamA = m.teamA?.includes(comparePlayerId);
+      const delta = isTeamA ? (m.deltaA ?? 0) : (m.deltaB ?? 0);
+      movements.push({
+        date: new Date(m.date),
+        delta: delta,
+        type: 'match',
+        label: 'Match',
+      });
+    });
+
+    // 2. Aggiungi tornei del giocatore di confronto
+    // Nota: champEntries contiene tornei del giocatore principale (pid)
+    // Per il confronto dovremmo avere champEntries separati, ma per ora usiamo gli stessi
+    // TODO: Implementare champEntries per comparePlayerId se necessario
+
+    // Ordina per data
+    movements.sort((a, b) => a.date - b.date);
+
+    // Prendi solo gli ultimi 5 movimenti
+    const lastMovements = movements.slice(-5);
+
+    // Rating attuale (finale) del giocatore di confronto
+    const currentRating =
+      players.find((p) => p.id === comparePlayerId)?.rating ?? DEFAULT_RATING;
+
+    if (lastMovements.length === 0) {
+      // Nessun movimento: solo Start con rating attuale
+      return [{ date: null, label: 'Start', rating: Math.round(currentRating) }];
+    }
+
+    // **NUOVA LOGICA: Mov. 5 = rating attuale, andiamo INDIETRO**
+    const points = [];
+
+    // Calcola rating iniziale sottraendo tutti i delta dal rating attuale
+    let startRating = currentRating;
+    for (let i = lastMovements.length - 1; i >= 0; i--) {
+      startRating -= lastMovements[i].delta;
+    }
+
+    // Punto iniziale (Start)
+    points.push({
+      date: null,
+      label: 'Start',
+      rating: Math.round(startRating),
+    });
+
+    // Se ci sono meno di 5 movimenti, crea una linea retta fino al primo movimento
+    const numMovements = lastMovements.length;
+    if (numMovements < 5) {
+      // Crea movimenti fittizi da Mov. 1 a Mov. (5 - numMovements) con rating = startRating
+      for (let i = 1; i <= 5 - numMovements; i++) {
+        points.push({
+          date: null,
+          label: `Mov. ${i}`,
+          rating: Math.round(startRating),
+        });
+      }
+    }
+
+    // Ora aggiungi i movimenti REALI partendo dal rating iniziale
+    let rating = startRating;
+    const offset = 5 - numMovements; // Offset per etichette corrette
+    for (let i = 0; i < lastMovements.length; i++) {
+      rating += lastMovements[i].delta;
+      points.push({
+        date: null,
+        label: `Mov. ${offset + i + 1}`,
+        rating: Math.round(rating),
+      });
+    }
+
+    return points;
+  }, [comparePlayerId, players, filteredMatches]);
+
+  // Timeline combinata per il grafico di confronto
+  const combinedTimeline = useMemo(() => {
+    if (!comparePlayerId)
+      return timeline.map((point) => ({ ...point, playerRating: point.rating }));
+
+    // Crea un array di tutte le date uniche
+    const allDates = new Set();
+    timeline.forEach((point) => {
+      if (point.date) allDates.add(point.date.getTime());
+    });
+    compareTimeline.forEach((point) => {
+      if (point.date) allDates.add(point.date.getTime());
+    });
+
+    // Ordina le date
+    const sortedDates = Array.from(allDates).sort();
+
+    // Mappa per tracking dei rating correnti
+    let playerRating = timeline[0]?.rating ?? DEFAULT_RATING;
+    let compareRating = compareTimeline[0]?.rating ?? DEFAULT_RATING;
+
+    const combined = [];
+
+    // Punto iniziale
+    combined.push({
+      date: null,
+      label: 'Start',
+      playerRating: playerRating,
+      compareRating: compareRating,
+      rating: playerRating, // Per compatibilità
+    });
+
+    let playerIndex = 1; // Skip del punto iniziale
+    let compareIndex = 1; // Skip del punto iniziale
+
+    for (const dateTime of sortedDates) {
+      const date = new Date(dateTime);
+
+      // Aggiorna rating del player principale se c'è un punto in questa data
+      while (
+        playerIndex < timeline.length &&
+        timeline[playerIndex].date &&
+        timeline[playerIndex].date.getTime() <= dateTime
+      ) {
+        playerRating = timeline[playerIndex].rating;
+        playerIndex++;
+      }
+
+      // Aggiorna rating del player di confronto se c'è un punto in questa data
+      while (
+        compareIndex < compareTimeline.length &&
+        compareTimeline[compareIndex].date &&
+        compareTimeline[compareIndex].date.getTime() <= dateTime
+      ) {
+        compareRating = compareTimeline[compareIndex].rating;
+        compareIndex++;
+      }
+
+      combined.push({
+        date: date,
+        label: date.toLocaleString('it-IT', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+        playerRating: playerRating,
+        compareRating: compareRating,
+        rating: playerRating, // Per compatibilità con la linea principale
+      });
+    }
+
+    return combined;
+  }, [timeline, compareTimeline, comparePlayerId]);
 
   const sortedByRating = useMemo(() => {
     return [...players]
@@ -233,17 +457,12 @@ export default function StatisticheGiocatore({
   // Advanced stats computed on filtered matches (now including tournament matches)
   const advancedStats = useMemo(() => {
     if (!pid) {
-      console.log('🔍 [advancedStats] NO pid');
       return null;
     }
     const playerMatches = (allMatchesIncludingTournaments || []).filter(
       (m) => (m.teamA || []).includes(pid) || (m.teamB || []).includes(pid)
     );
-    console.log(
-      `🎯 [advancedStats] Player ${pid}: ${playerMatches.length} matches from total ${allMatchesIncludingTournaments?.length || 0}`
-    );
     if (playerMatches.length === 0) {
-      console.log(`⚠️ [advancedStats] NO matches per player ${pid}`);
       return null;
     }
 
@@ -967,6 +1186,48 @@ export default function StatisticheGiocatore({
               Seleziona un giocatore per confrontare le statistiche
             </div>
           )}
+        </div>
+
+        {/* Grafico Evoluzione Rating */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                  />
+                </svg>
+              </div>
+              Evoluzione Rating
+            </h3>
+            <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+              {timeFilter === 'all' ? 'Tutte le partite' : 'Periodo selezionato'}
+            </span>
+          </div>
+          <ModernAreaChart
+            data={combinedTimeline}
+            dataKey="playerRating"
+            compareDataKey={comparePlayerId ? 'compareRating' : null}
+            comparePlayerName={
+              comparePlayerId ? players.find((p) => p.id === comparePlayerId)?.name : null
+            }
+            chartId={`player-${pid}`}
+            color="success"
+            title="Andamento ranking nel tempo"
+            multiPlayer={false}
+            xKey="label"
+            yKey="rating"
+            top5Players={[]}
+          />
         </div>
 
         {/* Punti Torneo - sezione dedicata */}

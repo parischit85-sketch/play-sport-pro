@@ -40,7 +40,7 @@ export default function PWAInstallPrompt() {
   useEffect(() => {
     if (
       isInstalled &&
-      !permissions.notifications &&
+      permissions.notifications !== 'granted' &&
       !localStorage.getItem('permissions-requested')
     ) {
       setCurrentStep('permissions');

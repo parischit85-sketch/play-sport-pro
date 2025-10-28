@@ -82,8 +82,6 @@ const ROLE_PERMISSIONS = {
  */
 export async function getUserAffiliations(userId) {
   try {
-    console.log('🔍 [getUserAffiliations] Getting affiliations for user:', userId);
-
     // Get all clubs and check if user is in each club's users collection
     const clubsSnap = await getDocs(collection(db, 'clubs'));
     const affiliations = [];
@@ -124,7 +122,6 @@ export async function getUserAffiliations(userId) {
       }
     }
 
-    console.log('✅ [getUserAffiliations] Found', affiliations.length, 'affiliations');
     return affiliations;
   } catch (error) {
     console.error('❌ Error getting user affiliations:', error);
@@ -138,8 +135,6 @@ export async function getUserAffiliations(userId) {
  */
 export async function requestAffiliation(userId, clubId, requestedRole = AFFILIATION_ROLES.MEMBER) {
   try {
-    console.log('📝 [requestAffiliation] Adding user to club:', { userId, clubId, requestedRole });
-
     // Check if user is already in club
     const existingUser = await getClubUser(userId, clubId);
     if (existingUser) {
@@ -174,7 +169,6 @@ export async function requestAffiliation(userId, clubId, requestedRole = AFFILIA
 
     const docRef = await addDoc(clubUsersRef, clubUserData);
 
-    console.log('✅ [requestAffiliation] User added to club:', docRef.id);
     return {
       id: docRef.id,
       userId,
@@ -214,8 +208,6 @@ async function getClubUser(userId, clubId) {
  */
 export async function approveAffiliation(affiliationId, approverId) {
   try {
-    console.log('✅ [approveAffiliation] Updating user role in club:', affiliationId, 'by:', approverId);
-
     // Find the club user document
     const clubsSnap = await getDocs(collection(db, 'clubs'));
 
@@ -232,7 +224,6 @@ export async function approveAffiliation(affiliationId, approverId) {
           approvedBy: approverId,
           updatedAt: Timestamp.now(),
         });
-        console.log('✅ [approveAffiliation] User role updated in club');
         return true;
       }
     }
@@ -250,8 +241,6 @@ export async function approveAffiliation(affiliationId, approverId) {
  */
 export async function getClubAffiliations(clubId, status = null) {
   try {
-    console.log('🏟️ [getClubAffiliations] Getting users for club:', clubId, 'status:', status);
-
     const clubUsersRef = collection(db, 'clubs', clubId, 'users');
     let q = query(clubUsersRef, orderBy('addedAt', 'desc'));
 
@@ -295,7 +284,6 @@ export async function getClubAffiliations(clubId, status = null) {
       });
     }
 
-    console.log('✅ [getClubAffiliations] Found', affiliations.length, 'club users');
     return affiliations;
   } catch (error) {
     console.error('❌ Error getting club affiliations:', error);
@@ -344,8 +332,6 @@ export async function getUserAdminClubs(userId) {
  */
 export async function updateAffiliationRole(affiliationId, newRole, updaterId) {
   try {
-    console.log('🔄 [updateAffiliationRole] Updating role to:', newRole, 'for user:', affiliationId);
-
     // Find the club user document across all clubs
     const clubsSnap = await getDocs(collection(db, 'clubs'));
 
@@ -361,7 +347,6 @@ export async function updateAffiliationRole(affiliationId, newRole, updaterId) {
           updatedAt: Timestamp.now(),
           updatedBy: updaterId,
         });
-        console.log('✅ [updateAffiliationRole] Role updated in club');
         return true;
       }
     }

@@ -71,7 +71,6 @@ export default function ClubAdminProfile({ T, club, clubId }) {
 
     try {
       setLoadingClub(true);
-      console.log('🔄 Loading club data for:', clubId);
 
       // Import clubs service dynamically
       const { getClub } = await import('@services/clubs.js');
@@ -97,10 +96,9 @@ export default function ClubAdminProfile({ T, club, clubId }) {
           courtTypes: club.courtTypes || ['Indoor', 'Outdoor', 'Covered'],
           loading: false,
         });
-        console.log('✅ Club data loaded:', club.name);
       } else {
-        console.warn('⚠️ Club not found:', clubId);
-        // Fallback: create minimal club object for admin interface
+        console.error('⚠️ Club not found:', clubId);
+        // Create minimal fallback if club not found
         const fallbackClub = {
           id: clubId,
           name: clubId === 'sporting-cat' ? 'Sporting CAT' : `Club ${clubId}`,
@@ -128,7 +126,6 @@ export default function ClubAdminProfile({ T, club, clubId }) {
           courtTypes: ['Indoor', 'Outdoor', 'Covered'],
           loading: false,
         });
-        console.log('✅ Using fallback club data');
       }
     } catch (error) {
       console.error('❌ Error loading club data:', error);
@@ -139,7 +136,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
 
   const loadClubStats = async () => {
     if (!clubId) {
-      console.warn('ClubId non disponibile per caricare le statistiche');
+      console.error('ClubId non disponibile per caricare le statistiche');
       setClubStats((prev) => ({ ...prev, loading: false }));
       return;
     }
@@ -235,7 +232,6 @@ export default function ClubAdminProfile({ T, club, clubId }) {
       formData.append('public_id', `logo_${Date.now()}`);
 
       // Upload su Cloudinary
-      console.log('📤 Uploading logo to Cloudinary...');
       const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
         method: 'POST',
         body: formData,
@@ -249,19 +245,6 @@ export default function ClubAdminProfile({ T, club, clubId }) {
 
       const data = await response.json();
       const imageUrl = data.secure_url;
-
-      console.log('✅ Logo caricato con successo su Cloudinary:', imageUrl);
-
-      // Elimina il vecchio logo da Cloudinary se esiste
-      if (clubSettings.logoUrl && clubSettings.logoUrl.includes('cloudinary.com')) {
-        try {
-          // Estrai public_id dall'URL per eliminarlo (opzionale, Cloudinary ha quote generose)
-          console.log('⚠️ Vecchio logo su Cloudinary:', clubSettings.logoUrl);
-          // L'eliminazione richiederebbe chiamata autenticata server-side
-        } catch (error) {
-          console.log('⚠️ Impossibile eliminare il vecchio logo:', error);
-        }
-      }
 
       return imageUrl;
     } catch (error) {
@@ -317,8 +300,6 @@ export default function ClubAdminProfile({ T, club, clubId }) {
     setClubSettings((prev) => ({ ...prev, loading: true }));
 
     try {
-      console.log('💾 Saving club settings for:', clubId);
-
       // Import updateClub service dynamically
       const { updateClub } = await import('@services/clubs.js');
 
@@ -338,7 +319,6 @@ export default function ClubAdminProfile({ T, club, clubId }) {
 
       await updateClub(clubId, updateData);
 
-      console.log('✅ Club settings saved successfully');
       showSuccess('✅ Impostazioni salvate con successo!');
 
       // Ricarica i dati del circolo

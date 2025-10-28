@@ -6,6 +6,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Trophy, TrendingUp, ChevronDown, ChevronUp, Medal } from 'lucide-react';
 import { calculateGroupStandings } from '../../services/standingsService';
 import { getTeamsByTournament } from '../../services/teamsService';
+import { calculateTeamAverageRanking } from '../../utils/teamRanking.js';
 
 function TournamentStandings({ tournament, clubId }) {
   const [standings, setStandings] = useState({});
@@ -19,12 +20,6 @@ function TournamentStandings({ tournament, clubId }) {
       const teamsData = await getTeamsByTournament(clubId, tournament.id);
       setTeams(teamsData);
 
-      console.log('📊 [TournamentStandings] Teams loaded:', teamsData.length, 'teams');
-      console.log(
-        '📊 [TournamentStandings] Team groupIds:',
-        teamsData.map((t) => ({ teamName: t.teamName, groupId: t.groupId }))
-      );
-
       // Mostra classifiche per tornei in fase di girone, knockout o completati
       if (
         !tournament.status ||
@@ -32,17 +27,12 @@ function TournamentStandings({ tournament, clubId }) {
           tournament.status
         )
       ) {
-        console.log(
-          '📊 [TournamentStandings] Tournament status not compatible with standings:',
-          tournament.status
-        );
         setStandings({});
         setLoading(false);
         return;
       }
 
       const groupIds = [...new Set(teamsData.map((t) => t.groupId).filter(Boolean))];
-      console.log('📊 [TournamentStandings] Unique group IDs found:', groupIds);
 
       const standingsData = {};
       for (const groupId of groupIds) {
@@ -53,14 +43,8 @@ function TournamentStandings({ tournament, clubId }) {
           tournament.pointsSystem || { win: 3, draw: 1, loss: 0 }
         );
         standingsData[groupId] = groupStandings;
-        console.log(
-          `📊 [TournamentStandings] Loaded standings for group ${groupId}:`,
-          groupStandings.length,
-          'teams'
-        );
       }
 
-      console.log('📊 [TournamentStandings] Final standings:', standingsData);
       setStandings(standingsData);
     } catch (error) {
       console.error('Error loading standings:', error);
@@ -102,12 +86,8 @@ function TournamentStandings({ tournament, clubId }) {
     const getAvgRanking = (teamId) => {
       const team = teamsMap[teamId];
       if (!team) return null;
-      if (typeof team.averageRanking === 'number') return team.averageRanking;
-      if (Array.isArray(team.players) && team.players.length) {
-        const vals = team.players.map((p) => p?.ranking).filter((r) => typeof r === 'number');
-        if (vals.length) return vals.reduce((a, b) => a + b, 0) / vals.length;
-      }
-      return null;
+      // Use centralized utility function
+      return calculateTeamAverageRanking(team, null) || null;
     };
 
     // Ordina le squadre per: Punti (descending), DG (descending), Punti RPA (descending), Ranking (descending)

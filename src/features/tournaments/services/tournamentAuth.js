@@ -6,6 +6,8 @@
 import { USER_ROLES } from '../../contexts/AuthContext.jsx';
 import { getTournament } from './tournamentService.js';
 import { isUserClubAdmin, userHasPermission } from '../../../services/affiliations.js';
+import { db } from '../../../services/firebase.js';
+import { doc, getDoc } from 'firebase/firestore';
 
 /**
  * Permission constants for tournaments
@@ -20,6 +22,35 @@ export const TOURNAMENT_PERMISSIONS = {
   VIEW_ADMIN: 'tournaments:view_admin',
   SUBMIT_RESULTS: 'tournaments:submit_results',
 };
+
+/**
+ * Helper function to check if user is admin directly from club profile
+ * This is more reliable than using affiliations
+ */
+async function isUserAdminInClub(userId, clubId) {
+  try {
+    // Check user profile in club
+    const profileRef = doc(db, 'clubs', clubId, 'profiles', userId);
+    const profileSnap = await getDoc(profileRef);
+    
+    if (!profileSnap.exists()) {
+      return false;
+    }
+    
+    const profileData = profileSnap.data();
+    
+    // Check if user is admin
+    const isAdmin =
+      profileData.role === 'club_admin' ||
+      profileData.role === 'admin' ||
+      profileData.isClubAdmin === true;
+    
+    return isAdmin;
+  } catch (error) {
+    console.error('❌ [isUserAdminInClub] Error:', error);
+    return false;
+  }
+}
 
 /**
  * Check if user can create tournaments in club
@@ -128,11 +159,41 @@ export async function canAdvancePhase(userId, clubId, tournamentId, userRole) {
  * @param {string} userId
  * @param {string} clubId
  * @param {string} tournamentId
- * @param {string} userRole
+ * @param {string} userRole - Optional, will check club admin status directly
  * @returns {Promise<{authorized: boolean, reason?: string}>}
  */
 export async function canSubmitMatchResults(userId, clubId, tournamentId, userRole) {
-  return canManageTournament(userId, clubId, tournamentId, userRole, TOURNAMENT_PERMISSIONS.SUBMIT_RESULTS);
+  try {
+    // Super admin can always submit results (from global Auth context)
+    if (userRole === USER_ROLES.SUPER_ADMIN) {
+      return { authorized: true };
+    }
+
+    // Verify tournament exists and belongs to club
+    const tournament = await getTournament(clubId, tournamentId);
+    if (!tournament) {
+      return { authorized: false, reason: 'Torneo non trovato' };
+    }
+
+    if (tournament.clubId !== clubId) {
+      return { authorized: false, reason: 'Torneo non appartiene a questo circolo' };
+    }
+
+    // ✅ FIX: Use direct club profile check instead of affiliations
+    const isAdmin = await isUserAdminInClub(userId, clubId);
+
+    if (!isAdmin) {
+      return {
+        authorized: false,
+        reason: 'Solo gli amministratori del circolo possono inserire risultati',
+      };
+    }
+
+    return { authorized: true };
+  } catch (error) {
+    console.error('❌ [canSubmitMatchResults] Error checking submit results permission:', error);
+    return { authorized: false, reason: 'Errore durante la verifica dei permessi' };
+  }
 }
 
 /**

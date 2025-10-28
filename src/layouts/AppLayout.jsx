@@ -178,16 +178,8 @@ function AppLayoutInner() {
 
   // Auto-scroll to top on route change (for programmatic navigation like clicking on players)
   React.useEffect(() => {
-    logger.debug('Route changed', {
-      pathname: location.pathname,
-      search: location.search,
-      clubId,
-      hasClub,
-      club: club?.name,
-      timestamp: new Date().toISOString(),
-    });
     window.scrollTo(0, 0);
-  }, [location.pathname, location.search, clubId, hasClub, club]);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     try {

@@ -2,16 +2,30 @@
 // FILE: src/features/classifica/Classifica.jsx
 // FUTURISTIC REDESIGN: Glassmorphism design with dark mode support
 // =============================================
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
+import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
+import { db } from '@services/firebase.js';
 import Section from '@components/ui/Section.jsx';
 import ShareButtons from '@components/ui/ShareButtons.jsx';
 import { TrendArrow } from '@components/ui/TrendArrow.jsx';
+import ModernAreaChart from '@components/ui/charts/ModernAreaChart.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
+import { DEFAULT_RATING } from '@lib/ids.js';
 
 export default function Classifica({ players, matches, onOpenStats, T }) {
   const classificaRef = useRef(null);
   const [showAllPlayers, setShowAllPlayers] = useState(false);
-  const { playersById } = useClub();
+  const { playersById, matches: clubMatches, clubId, tournamentMatches } = useClub();
+  
+  // State per champEntries di tutti i giocatori
+  const [allChampEntries, setAllChampEntries] = useState({});
+
+  // Combina match normali + match di torneo (come in StatisticheGiocatore)
+  const allMatchesIncludingTournaments = useMemo(() => {
+    const regular = clubMatches || matches || [];
+    const tournament = tournamentMatches || [];
+    return [...regular, ...tournament];
+  }, [clubMatches, matches, tournamentMatches]);
 
   // Classifica generale (RPA) - RIPRISTINATO: usa rating calcolati dinamicamente
   const rows = useMemo(() => {
@@ -32,13 +46,43 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
       .sort((a, b) => b.rating - a.rating);
   }, [players, playersById]);
 
+  // Carica champEntries per tutti i top 5 giocatori
+  useEffect(() => {
+    if (!clubId || !rows || rows.length === 0) {
+      setAllChampEntries({});
+      return;
+    }
+
+    const top5 = rows.slice(0, 5);
+    const unsubscribers = [];
+
+    top5.forEach((player) => {
+      const entriesRef = collection(db, 'clubs', clubId, 'leaderboard', player.id, 'entries');
+      const q = query(entriesRef, orderBy('createdAt', 'desc'));
+      
+      const unsub = onSnapshot(q, (snap) => {
+        const entries = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        setAllChampEntries((prev) => ({
+          ...prev,
+          [player.id]: entries,
+        }));
+      });
+
+      unsubscribers.push(unsub);
+    });
+
+    return () => {
+      unsubscribers.forEach((unsub) => unsub());
+    };
+  }, [clubId, rows]);
+
   // Classifica Coppie - Algoritmo corretto per coppie reali
   const couplesStats = useMemo(() => {
     const coupleResults = new Map(); // key: "playerId1_playerId2", value: statistiche
     const MIN_MATCHES = 2; // Ridotto a 2 per mostrare più coppie
 
     // Step 1: Analizza ogni match per trovare tutte le coppie e i loro risultati
-    for (const match of matches) {
+    for (const match of allMatchesIncludingTournaments) {
       // Validazione match
       if (
         !Array.isArray(match.teamA) ||
@@ -188,12 +232,6 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
     // Step 3: Filtra e ordina
     const filteredCouples = couplesArray.filter((couple) => couple.matches >= MIN_MATCHES);
 
-    // Log per debug - mostra il numero totale di coppie
-    console.log(`🔍 DEBUG Coppie:
-    - Coppie totali trovate: ${couplesArray.length}
-    - Coppie con ≥${MIN_MATCHES} partite: ${filteredCouples.length}
-    - Coppie filtrate da mostrare: ${Math.min(15, filteredCouples.length)}`);
-
     return filteredCouples.sort((a, b) => {
       // 1. Prima per win rate (percentuale vittorie)
       if (Math.abs(b.winRate - a.winRate) > 0.1) {
@@ -216,13 +254,13 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
       const nameB = `${b.players[0]} & ${b.players[1]}`.toLowerCase();
       return nameA.localeCompare(nameB);
     });
-  }, [players, matches]);
+  }, [players, allMatchesIncludingTournaments]);
 
   // Classifica Efficienza
   const efficiencyStats = useMemo(() => {
     const playerStats = new Map();
 
-    matches.forEach((match) => {
+    allMatchesIncludingTournaments.forEach((match) => {
       const teamAWins = match.sets.reduce((acc, set) => acc + (set.a > set.b ? 1 : 0), 0);
       const teamBWins = match.sets.reduce((acc, set) => acc + (set.b > set.a ? 1 : 0), 0);
 
@@ -296,14 +334,16 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
           100,
       }))
       .sort((a, b) => b.efficiency - a.efficiency);
-  }, [players, matches]);
+  }, [players, allMatchesIncludingTournaments]);
 
   // Classifica Streak positive e Ingiocabili
   const streakStats = useMemo(() => {
     const playerStreaks = new Map();
 
     // Ordina le partite per data
-    const sortedMatches = [...matches].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const sortedMatches = [...allMatchesIncludingTournaments].sort(
+      (a, b) => new Date(a.date) - new Date(b.date)
+    );
 
     sortedMatches.forEach((match) => {
       const teamAWins = match.sets.reduce((acc, set) => acc + (set.a > set.b ? 1 : 0), 0);
@@ -383,7 +423,174 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
       });
 
     return { positive: positiveStreaks, ingiocabili: ingiocabili };
-  }, [players, matches]);
+  }, [players, allMatchesIncludingTournaments]);
+
+  // Timeline per grafico evoluzione Top 5
+  const { podiumTimeline, topPlayers } = useMemo(() => {
+    const allMatches = clubMatches || matches || [];
+
+    // 🔍 DEBUG: Verifica allChampEntries
+    // Debug logging removed for production
+
+    // Helper per convertire date Firestore/string/number
+    const toDate = (d) => {
+      if (!d) return null;
+      if (typeof d === 'number') return new Date(d);
+      if (d?.toDate) return d.toDate();
+      return new Date(d);
+    };
+
+    // Prendi i top 5 giocatori
+    const top5 = rows.slice(0, 5);
+    if (top5.length === 0) return { podiumTimeline: [], topPlayers: [] };
+
+    const topPlayers = top5.map((p) => ({ id: p.id, name: p.name, rating: p.rating }));
+
+    // Costruisci timeline per ogni giocatore del top 5 (ESATTAMENTE come in Statistiche)
+    const allTimelines = top5.map((player) => {
+      const pid = player.id;
+
+      // Combina match normali e tornei come "movimenti"
+      const movements = [];
+
+      // 1. Match normali (non di torneo) - USA deltaA/deltaB
+      const regularMatches = allMatches.filter(
+        (m) => (m.teamA?.includes(pid) || m.teamB?.includes(pid)) && !m.isTournamentMatch
+      );
+
+      regularMatches.forEach((m) => {
+        const isTeamA = m.teamA?.includes(pid);
+        const delta = isTeamA ? (m.deltaA ?? 0) : (m.deltaB ?? 0);
+        movements.push({
+          date: new Date(m.date),
+          delta: delta,
+          type: 'match',
+          label: 'Match',
+        });
+      });
+
+      // 2. Tornei come SINGOLO MOVIMENTO - USA entry.points TOTALI
+      const playerEntries = allChampEntries[pid] || [];
+      if (Array.isArray(playerEntries)) {
+        playerEntries.forEach((entry) => {
+          // Verifica se il giocatore ha partecipato a questo torneo
+          const participated = entry.matchDetails?.some(
+            (m) => m.teamA?.includes(pid) || m.teamB?.includes(pid)
+          );
+
+          if (participated) {
+            // USA I PUNTI TOTALI DEL TORNEO (entry.points), NON i delta dei singoli match
+            const tournamentPoints = Number(entry.points || 0);
+            const date = toDate(entry.createdAt) || toDate(entry.appliedAt) || new Date();
+            
+            movements.push({
+              date: date,
+              delta: tournamentPoints,
+              type: 'tournament',
+              label: entry.tournamentName || 'Torneo',
+            });
+          }
+        });
+      }
+
+      // Ordina per data
+      movements.sort((a, b) => a.date - b.date);
+
+      // Prendi solo gli ultimi 5 movimenti
+      const lastMovements = movements.slice(-5);
+
+      // Rating attuale (finale) del giocatore
+      const currentRating = player.rating ?? DEFAULT_RATING;
+
+      // Se non ha movimenti, restituisci solo il rating attuale
+      if (lastMovements.length === 0) {
+        return {
+          playerId: pid,
+          playerName: player.name,
+          points: [{ date: null, label: 'Start', rating: Math.round(currentRating) }],
+        };
+      }
+
+      // **NUOVA LOGICA: Mov. 5 = rating attuale, andiamo INDIETRO**
+      const points = [];
+
+      // Calcola rating iniziale sottraendo tutti i delta dal rating attuale
+      let startRating = currentRating;
+      for (let i = lastMovements.length - 1; i >= 0; i--) {
+        startRating -= lastMovements[i].delta;
+      }
+
+      // Punto iniziale (Start)
+      points.push({
+        date: null,
+        label: 'Start',
+        rating: Math.round(startRating),
+      });
+
+      // Se ci sono meno di 5 movimenti, crea una linea retta fino al primo movimento
+      const numMovements = lastMovements.length;
+      if (numMovements < 5) {
+        // Crea movimenti fittizi da Mov. 1 a Mov. (5 - numMovements) con rating = startRating
+        for (let i = 1; i <= 5 - numMovements; i++) {
+          points.push({
+            date: null,
+            label: `Mov. ${i}`,
+            rating: Math.round(startRating),
+          });
+        }
+      }
+
+      // Ora aggiungi i movimenti REALI partendo dal rating iniziale
+      let rating = startRating;
+      const offset = 5 - numMovements; // Offset per etichette corrette
+      for (let i = 0; i < lastMovements.length; i++) {
+        rating += lastMovements[i].delta;
+        points.push({
+          date: null,
+          label: `Mov. ${offset + i + 1}`,
+          rating: Math.round(rating),
+        });
+      }
+
+      return {
+        playerId: pid,
+        playerName: player.name,
+        points: points,
+      };
+    });
+
+    // Trova il numero massimo di punti tra tutti i giocatori
+    const maxPoints = Math.max(...allTimelines.map((tl) => tl.points.length));
+
+    // Costruisci array combinato con LABEL come xKey (esattamente come Statistiche)
+    const combinedData = [];
+
+    for (let i = 0; i < maxPoints; i++) {
+      // Usa la label del primo giocatore che ha questo punto
+      const firstPlayerWithPoint = allTimelines.find((tl) => i < tl.points.length);
+      const label = firstPlayerWithPoint ? firstPlayerWithPoint.points[i].label : `Mov. ${i}`;
+
+      const dataPoint = { label: label };
+
+      // Aggiungi il rating di ogni giocatore per questo punto
+      allTimelines.forEach((tl) => {
+        if (i < tl.points.length) {
+          // Il giocatore ha dati per questo punto
+          dataPoint[tl.playerName] = tl.points[i].rating;
+        } else {
+          // Il giocatore non ha dati - usa il primo valore (linea piatta indietro)
+          dataPoint[tl.playerName] = tl.points[0].rating;
+        }
+      });
+
+      combinedData.push(dataPoint);
+    }
+
+    // DEBUG: Log dei dati del grafico
+    // Debug logging removed for production
+
+    return { podiumTimeline: combinedData, topPlayers };
+  }, [rows, clubMatches, allChampEntries, matches]);
 
   const buildCaption = () => {
     const lines = [
@@ -498,6 +705,29 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                 </div>
               )}
             </div>
+
+            {/* Grafico Evoluzione Rating Top 5 */}
+            {podiumTimeline.length > 0 && (
+              <div className="mt-6 bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm rounded-2xl border border-white/10 dark:border-gray-600/20 p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-lg shadow-md">
+                    📈
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">
+                    Evoluzione Rating - Top 5
+                  </h4>
+                </div>
+                <ModernAreaChart
+                  data={podiumTimeline}
+                  chartId="classifica-top5"
+                  title="Ultimi 10 movimenti"
+                  multiPlayer={true}
+                  top5Players={topPlayers}
+                  xKey="label"
+                  yKey="rating"
+                />
+              </div>
+            )}
           </div>
         </div>
 

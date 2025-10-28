@@ -9,10 +9,10 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   increment,
   serverTimestamp,
   query,
-  where,
   getDocs,
   orderBy,
   limit,
@@ -35,8 +35,6 @@ export async function trackClubView(userId, clubId, clubName = null) {
   }
 
   try {
-    console.log(`📊 [trackClubView] Tracking view: user=${userId}, club=${clubId}`);
-
     // Documento: users/{userId}/clubViews/{clubId}
     const viewDocRef = doc(db, 'users', userId, 'clubViews', clubId);
 
@@ -49,8 +47,6 @@ export async function trackClubView(userId, clubId, clubName = null) {
         viewCount: increment(1),
         lastViewedAt: serverTimestamp(),
       });
-
-      console.log(`✅ [trackClubView] Updated view count for club ${clubId}`);
     } else {
       // Documento non esiste: crealo
       await setDoc(viewDocRef, {
@@ -60,8 +56,6 @@ export async function trackClubView(userId, clubId, clubName = null) {
         firstViewedAt: serverTimestamp(),
         lastViewedAt: serverTimestamp(),
       });
-
-      console.log(`✅ [trackClubView] Created first view for club ${clubId}`);
     }
   } catch (error) {
     console.error('❌ [trackClubView] Error tracking club view:', error);
@@ -159,7 +153,6 @@ export async function getAllUserClubViews(userId) {
       ...doc.data(),
     }));
 
-    console.log(`📊 [getAllUserClubViews] Found ${clubViews.length} total club views`);
     return clubViews;
   } catch (error) {
     console.error('❌ [getAllUserClubViews] Error getting all club views:', error);
@@ -180,15 +173,11 @@ export async function resetUserClubViews(userId) {
   }
 
   try {
-    console.log(`🗑️ [resetUserClubViews] Resetting all club views for user: ${userId}`);
-
     const clubViewsRef = collection(db, 'users', userId, 'clubViews');
     const snapshot = await getDocs(clubViewsRef);
 
-    const deletePromises = snapshot.docs.map((doc) => deleteDoc(doc.ref));
+    const deletePromises = snapshot.docs.map((docSnap) => deleteDoc(docSnap.ref));
     await Promise.all(deletePromises);
-
-    console.log(`✅ [resetUserClubViews] Deleted ${snapshot.docs.length} club views`);
   } catch (error) {
     console.error('❌ [resetUserClubViews] Error resetting club views:', error);
   }

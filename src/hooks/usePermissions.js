@@ -2,7 +2,7 @@
 // FILE: src/hooks/usePermissions.js
 // Gestione centralizzata dei permessi PWA
 // =============================================
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export function usePermissions() {
   const [permissions, setPermissions] = useState({
@@ -14,6 +14,9 @@ export function usePermissions() {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
+  // Ref to track if geolocation event listener has been added
+  const geoListenerAdded = useRef(false);
+
   // Rileva le capacità del dispositivo
   const capabilities = {
     hasNotifications: 'Notification' in window && 'serviceWorker' in navigator,
@@ -24,7 +27,11 @@ export function usePermissions() {
 
   // Controlla lo stato attuale dei permessi
   const checkPermissions = useCallback(async () => {
-    const newPermissions = { ...permissions };
+    const newPermissions = {
+      notifications: 'default',
+      geolocation: 'default',
+      contacts: 'default',
+    };
 
     // Notifiche
     if (capabilities.hasNotifications) {
@@ -32,25 +39,26 @@ export function usePermissions() {
     }
 
     // Geolocalizzazione
-    if (capabilities.hasGeolocation && navigator.permissions) {
+    if (capabilities.hasGeolocation && navigator.permissions && !geoListenerAdded.current) {
       try {
         const geoPermission = await navigator.permissions.query({ name: 'geolocation' });
         newPermissions.geolocation = geoPermission.state;
 
-        // Ascolta cambiamenti
+        // Ascolta cambiamenti - solo una volta
         geoPermission.addEventListener('change', () => {
           setPermissions((prev) => ({
             ...prev,
             geolocation: geoPermission.state,
           }));
         });
+        geoListenerAdded.current = true;
       } catch (error) {
         console.warn('⚠️ Unable to query geolocation permission:', error);
       }
     }
 
     setPermissions(newPermissions);
-  }, [capabilities.hasGeolocation, capabilities.hasNotifications, permissions]);
+  }, [capabilities.hasGeolocation, capabilities.hasNotifications]);
 
   useEffect(() => {
     checkPermissions();

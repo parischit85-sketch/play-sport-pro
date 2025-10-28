@@ -3,7 +3,7 @@
 // =============================================
 import React, { useState } from 'react';
 import { useAuth } from '@contexts/AuthContext.jsx';
-import { resendVerificationEmail } from '@services/auth.jsx';
+import { resendVerificationEmail, isEmailVerified } from '@services/auth.jsx';
 
 export default function EmailVerificationBanner() {
   const { user } = useAuth();
@@ -15,7 +15,7 @@ export default function EmailVerificationBanner() {
   // - Email già verificata
   // - Nessun utente loggato
   // - Banner dismissato
-  if (!user || user.emailVerified || dismissed) {
+  if (!user || isEmailVerified(user) || dismissed) {
     return null;
   }
 

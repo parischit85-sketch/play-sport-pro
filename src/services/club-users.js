@@ -156,8 +156,6 @@ export async function addUserToClub(clubId, userId, options = {}) {
     const clubUsersRef = collection(db, 'clubs', clubId, 'users');
     const docRef = await addDoc(clubUsersRef, clubUserData);
 
-    console.log('✅ User added to club:', userId, 'to club:', clubId);
-
     return { id: docRef.id, ...clubUserData };
   } catch (error) {
     console.error('Error adding user to club:', error);
@@ -198,13 +196,11 @@ export async function getClubUsers(clubId) {
   if (!clubId) return [];
 
   try {
-    console.log('🔍 [getClubUsers] Getting users for club:', clubId);
     const clubUsersRef = collection(db, 'clubs', clubId, 'users');
     // Temporarily remove orderBy to avoid index requirement
     const q = query(clubUsersRef, where('status', '==', 'active'));
 
     const snapshot = await getDocsFromServer(q);
-    console.log('🔍 [getClubUsers] Found', snapshot.docs.length, 'active users in club:', clubId, 'from users collection');
 
     let users = [];
 
@@ -215,7 +211,6 @@ export async function getClubUsers(clubId) {
     // 🔄 OPTION A: Single source of truth - Remove legacy club-users collection support
     // All users are now stored only in clubs/{clubId}/users
 
-    console.log('🔍 [getClubUsers] Returning', users.length, 'users');
     // Sort in memory instead of using orderBy
     return users.sort((a, b) => (a.userName || '').localeCompare(b.userName || ''));
   } catch (error) {
@@ -302,8 +297,6 @@ export async function linkProfileToUser(clubId, existingProfileId, registeredUse
       linkedAt: serverTimestamp(),
     });
 
-    console.log('✅ Profile linked to user:', existingProfileId, '->', registeredUserId);
-
     return { id: docRef.id, ...linkedUserData };
   } catch (error) {
     console.error('Error linking profile to user:', error);
@@ -318,7 +311,7 @@ export async function linkProfileToUser(clubId, existingProfileId, registeredUse
  */
 export async function getUserClubMemberships(userId) {
   if (!userId) {
-    console.log('⚠️ [getUserClubMemberships] No userId provided');
+    console.warn('⚠️ [getUserClubMemberships] No userId provided');
     return [];
   }
 
@@ -327,22 +320,16 @@ export async function getUserClubMemberships(userId) {
     return [];
   }
 
-  console.log('🔍 [getUserClubMemberships] Starting search for user:', userId);
-
   try {
     // Search across all clubs for this user
     const clubsRef = collection(db, 'clubs');
     const clubsSnapshot = await getDocs(clubsRef);
-
-    console.log('🏛️ [getUserClubMemberships] Total clubs to search:', clubsSnapshot.docs.length);
 
     const memberships = [];
 
     for (const clubDoc of clubsSnapshot.docs) {
       const clubId = clubDoc.id;
       const clubData = clubDoc.data();
-
-      console.log(`🔎 [getUserClubMemberships] Checking club: ${clubData.name} (${clubId})`);
 
       // Check if user profile exists in this club (direct document ID match)
       const profileRef = doc(db, 'clubs', clubId, 'profiles', userId);
@@ -360,16 +347,8 @@ export async function getUserClubMemberships(userId) {
         // ⚠️ SECURITY: Only show approved clubs to regular users
         // Club admins/owners can see their own pending clubs
         if (clubData.status !== 'approved' && !isClubAdmin) {
-          console.log(
-            `⏭️ [getUserClubMemberships] Skipping non-approved club for regular user: ${clubData.name} (status: ${clubData.status})`
-          );
           continue;
         }
-
-        console.log(
-          `✅ [getUserClubMemberships] Found membership in ${clubData.name}:`,
-          profileData
-        );
 
         memberships.push({
           clubId,
@@ -380,12 +359,9 @@ export async function getUserClubMemberships(userId) {
           isClubAdmin,
           clubStatus: clubData.status, // Include club approval status
         });
-      } else {
-        console.log(`❌ [getUserClubMemberships] No membership found in ${clubData.name}`);
       }
     }
 
-    console.log('🎯 [getUserClubMemberships] Final memberships:', memberships);
     return memberships;
   } catch (error) {
     console.error('❌ [getUserClubMemberships] Error getting user club memberships:', error);
@@ -405,8 +381,6 @@ export async function removeUserFromClub(clubId, clubUserId) {
   try {
     const clubUserRef = doc(db, 'clubs', clubId, 'users', clubUserId);
     await deleteDoc(clubUserRef);
-
-    console.log('✅ User removed from club:', clubUserId);
   } catch (error) {
     console.error('Error removing user from club:', error);
     throw error;

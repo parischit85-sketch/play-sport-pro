@@ -28,18 +28,8 @@ export function ProtectedRoute({ children, requireProfile = true, allowedRoles =
   } = useAuth();
   const location = useLocation();
 
-  console.log('🛡️ [ProtectedRoute] Rendering:', {
-    path: location.pathname,
-    isAuthenticated,
-    loading,
-    requireProfile,
-    allowedRoles,
-    timestamp: new Date().toISOString(),
-  });
-
   // Show loading while auth state is being determined
   if (loading) {
-    console.log('⏳ [ProtectedRoute] Loading auth state...');
     return <LoadingPage message="Verifica autenticazione..." />;
   }
 
@@ -65,14 +55,6 @@ export function ProtectedRoute({ children, requireProfile = true, allowedRoles =
     !isUserClubAdmin &&
     !userProfile?.firstName // Only redirect if they don"t even have a firstName
   ) {
-    console.log('🔄 ProtectedRoute: Profile incomplete, redirecting to profile', {
-      requireProfile,
-      userProfile,
-      isProfileComplete,
-      isUserClubAdmin,
-      hasFirstName: !!userProfile?.firstName,
-      currentPath: location.pathname,
-    });
     const redirectPath = '/profile';
     if (shouldRedirect(location.pathname, redirectPath, true)) {
       return <Navigate to={redirectPath} state={{ from: location }} replace />;
@@ -82,14 +64,12 @@ export function ProtectedRoute({ children, requireProfile = true, allowedRoles =
   // Check role-based access if allowedRoles is specified
   if (allowedRoles) {
     if (!allowedRoles.includes(userRole)) {
-      console.warn('❌ ProtectedRoute: access denied, redirecting to /dashboard', {
+      console.error('❌ ProtectedRoute: access denied', {
         path: location.pathname,
         required: allowedRoles,
         have: userRole,
       });
       return <Navigate to="/dashboard" replace />;
-    } else {
-      console.log('✅ ProtectedRoute: access granted', { path: location.pathname, role: userRole });
     }
   }
 

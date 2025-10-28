@@ -2,8 +2,8 @@
  * Tournament Bracket - Display knockout bracket tree
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { Trophy, Crown, Medal, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { Trophy, Crown, Medal, ChevronRight, ChevronDown } from 'lucide-react';
 import { useAuth, USER_ROLES } from '../../../../contexts/AuthContext';
 import { getMatches } from '../../services/matchService';
 import { getTeamsByTournament } from '../../services/teamsService';
@@ -16,14 +16,18 @@ import {
 } from '../../utils/tournamentConstants';
 
 function TournamentBracket({ tournament, clubId }) {
-  const { userRole } = useAuth();
+  const { userRole, userClubRoles, user } = useAuth();
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState(null);
+  const [collapsedByRound, setCollapsedByRound] = useState({});
+  const roundRefs = useRef({});
 
-  // Solo gli admin possono modificare i risultati
-  const isClubAdmin = userRole === USER_ROLES.CLUB_ADMIN || userRole === USER_ROLES.SUPER_ADMIN;
+  // ✅ FIX: Check club-specific admin role, not global userRole
+  const clubRole = userClubRoles?.[clubId];
+  const isAdminClubRole = clubRole === 'admin' || clubRole === 'club_admin';
+  const isClubAdmin = userRole === USER_ROLES.SUPER_ADMIN || isAdminClubRole;
   const canEditResults = isClubAdmin;
 
   const loadBracket = useCallback(async () => {
@@ -51,6 +55,21 @@ function TournamentBracket({ tournament, clubId }) {
   useEffect(() => {
     loadBracket();
   }, [loadBracket]);
+
+  // NOTE: Round grouping and ordering must be defined before any effect uses them to avoid TDZ errors
+
+  const toggleRound = (roundName) => {
+    setCollapsedByRound((prev) => ({ ...prev, [roundName]: !prev[roundName] }));
+  };
+
+  const scrollToRound = (roundName) => {
+    const el = roundRefs.current[roundName];
+    if (el && el.scrollIntoView) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+    }
+    // ensure expanded on mobile
+    setCollapsedByRound((prev) => ({ ...prev, [roundName]: false }));
+  };
 
   const handleRecordResult = async (matchId, score, bestOf, sets) => {
     try {
@@ -86,22 +105,45 @@ function TournamentBracket({ tournament, clubId }) {
   };
 
   // Group matches by display round label
-  const rounds = matches.reduce((acc, match) => {
-    const key = toDisplayRound(match);
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(match);
-    return acc;
-  }, {});
+  const rounds = useMemo(
+    () =>
+      matches.reduce((acc, match) => {
+        const key = toDisplayRound(match);
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(match);
+        return acc;
+      }, {}),
+    [matches]
+  );
 
   // Define canonical round order using constants, then keep only those present
-  const canonicalOrder = [
-    KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.ROUND_OF_16],
-    KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.QUARTER_FINALS],
-    KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.SEMI_FINALS],
-    KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.FINALS],
-    KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.THIRD_PLACE],
-  ];
-  const orderedRounds = canonicalOrder.filter((label) => rounds[label] && rounds[label].length > 0);
+  const canonicalOrder = useMemo(
+    () => [
+      KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.ROUND_OF_16],
+      KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.QUARTER_FINALS],
+      KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.SEMI_FINALS],
+      KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.FINALS],
+      KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.THIRD_PLACE],
+    ],
+    []
+  );
+  const orderedRounds = useMemo(
+    () => canonicalOrder.filter((label) => rounds[label] && rounds[label].length > 0),
+    [canonicalOrder, rounds]
+  );
+
+  // Initialize mobile-friendly collapsed state: expand the first round with matches to play
+  useEffect(() => {
+    if (!matches || matches.length === 0) return;
+    const nextRound = orderedRounds.find((roundName) =>
+      (rounds[roundName] || []).some((m) => m.status !== MATCH_STATUS.COMPLETED)
+    );
+    const initial = {};
+    orderedRounds.forEach((r) => {
+      initial[r] = r !== (nextRound || orderedRounds[0]);
+    });
+    setCollapsedByRound(initial);
+  }, [matches, orderedRounds, rounds]);
 
   const getRoundIcon = (round) => {
     if (round === 'Finale') return <Crown className="w-5 h-5 text-yellow-500" />;
@@ -284,10 +326,23 @@ function TournamentBracket({ tournament, clubId }) {
       if (ad !== bd) return ad - bd;
       return String(a.id).localeCompare(String(b.id));
     });
+    const isCollapsed = !!collapsedByRound[roundName];
     return (
-      <div key={roundName} className="flex flex-col lg:min-w-[240px]">
+      <div
+        key={roundName}
+        ref={(el) => {
+          roundRefs.current[roundName] = el;
+        }}
+        className="flex flex-col lg:min-w-[240px]"
+      >
         {/* Round Header */}
-        <div className="sticky top-0 z-10 bg-gradient-to-r from-primary-100 to-blue-100 dark:from-primary-900/40 dark:to-blue-900/40 rounded-lg px-3 sm:px-4 py-2 sm:py-3 shadow-md border border-primary-200 dark:border-primary-800">
+        <button
+          type="button"
+          onClick={() => toggleRound(roundName)}
+          className="sticky top-0 z-10 bg-gradient-to-r from-primary-100 to-blue-100 dark:from-primary-900/40 dark:to-blue-900/40 rounded-lg px-3 sm:px-4 py-2 sm:py-3 shadow-md border border-primary-200 dark:border-primary-800 text-left"
+          aria-expanded={!isCollapsed}
+          aria-controls={`round-panel-${roundIndex}`}
+        >
           <div className="flex items-center gap-2 justify-between sm:justify-center">
             <div className="flex items-center gap-2 min-w-0 flex-1 sm:flex-none">
               {getRoundIcon(roundName)}
@@ -295,17 +350,25 @@ function TournamentBracket({ tournament, clubId }) {
                 {roundName}
               </h3>
             </div>
-            <p className="text-xs text-gray-600 dark:text-gray-400 flex-shrink-0 sm:hidden">
-              {roundMatches.length} {roundMatches.length === 1 ? 'partita' : 'partite'}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-gray-600 dark:text-gray-400 flex-shrink-0">
+                {roundMatches.length} {roundMatches.length === 1 ? 'partita' : 'partite'}
+              </p>
+              <ChevronDown
+                className={`w-4 h-4 text-gray-600 dark:text-gray-300 transition-transform ${
+                  isCollapsed ? '' : 'rotate-180'
+                }`}
+                aria-hidden="true"
+              />
+            </div>
           </div>
-          <p className="hidden sm:block text-xs text-gray-600 dark:text-gray-400 text-center mt-1">
-            {roundMatches.length} {roundMatches.length === 1 ? 'partita' : 'partite'}
-          </p>
-        </div>
+        </button>
 
         {/* Matches */}
-        <div className="flex flex-col gap-3 sm:gap-6 mt-3 sm:mt-4">
+        <div
+          id={`round-panel-${roundIndex}`}
+          className={`flex flex-col gap-3 sm:gap-6 mt-3 sm:mt-4 ${isCollapsed ? 'hidden lg:flex' : ''}`}
+        >
           {sortedMatches.map((match) => renderMatch(match, roundIndex))}
         </div>
       </div>
@@ -336,11 +399,29 @@ function TournamentBracket({ tournament, clubId }) {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Bracket Tree - Mobile: Vertical Stack, Desktop: Horizontal Scroll */}
+      {/* Mobile: Quick round chips navigator */}
+      <div className="lg:hidden -mx-3 px-3">
+        <div className="flex gap-2 overflow-x-auto py-1 scrollbar-hide">
+          {orderedRounds.map((roundName) => (
+            <button
+              key={`chip-${roundName}`}
+              onClick={() => scrollToRound(roundName)}
+              className="px-3 py-1.5 rounded-full text-xs font-medium bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 whitespace-nowrap hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              {roundName}
+              <span className="ml-1 text-[10px] text-gray-500">
+                {rounds[roundName]?.length || 0}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Bracket Tree - Mobile: Collapsible rounds, Desktop: Horizontal Scroll */}
       <div className="lg:overflow-x-auto lg:pb-4">
-        {/* Mobile: Vertical Stack */}
+        {/* Mobile: Collapsible Rounds Stack */}
         <div className="lg:hidden space-y-6">
-          {orderedRounds.map((roundName) => renderRound(roundName, rounds[roundName], 0))}
+          {orderedRounds.map((roundName, idx) => renderRound(roundName, rounds[roundName], idx))}
         </div>
 
         {/* Desktop: Horizontal Scroll */}

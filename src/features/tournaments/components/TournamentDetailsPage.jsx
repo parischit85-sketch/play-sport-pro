@@ -48,6 +48,7 @@ function TournamentDetailsPage({ clubId }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [error, setError] = useState(null);
   const [pointsApplied, setPointsApplied] = useState(false);
+  const [animateIn, setAnimateIn] = useState(true);
 
   // Determina se l'utente è un club admin
   // Note: club role can be either 'admin' or 'club_admin' depending on the data source
@@ -93,6 +94,15 @@ function TournamentDetailsPage({ clubId }) {
   useEffect(() => {
     loadTournament();
   }, [loadTournament]);
+
+  // Simple slide-in animation on tab change (mobile focus)
+  useEffect(() => {
+    setAnimateIn(false);
+    const id = requestAnimationFrame(() => setAnimateIn(true));
+    return () => cancelAnimationFrame(id);
+  }, [activeTab]);
+
+  // No side arrows: horizontal tab bar is used across breakpoints
 
   const handleBack = () => {
     navigate(`/club/${clubId}/tournaments`);
@@ -195,7 +205,7 @@ function TournamentDetailsPage({ clubId }) {
             </div>
           </div>
 
-          {/* Tabs - Mobile Optimized with smooth scrolling */}
+          {/* Tabs - Orizzontali su mobile e desktop */}
           <nav className="-mx-3 sm:mx-0">
             <div className="flex gap-1 overflow-x-auto border-t border-gray-200 dark:border-gray-800 pt-2 px-3 sm:px-0 pb-1 scrollbar-hide snap-x snap-mandatory scroll-smooth">
               {visibleTabs.map((tab) => {
@@ -229,27 +239,34 @@ function TournamentDetailsPage({ clubId }) {
         </div>
       </div>
 
-      {/* Content - Mobile Optimized */}
+      {/* Content area */}
       <div className="px-3 sm:px-4 md:px-6 py-4 sm:py-6">
-        {activeTab === 'overview' && (
-          <TournamentOverview tournament={tournament} onUpdate={loadTournament} clubId={clubId} />
-        )}
+        {/* Main content (animated on mobile) */}
+        <div
+          className={`transition-all duration-300 ease-out transform ${
+            animateIn ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
+          }`}
+        >
+          {activeTab === 'overview' && (
+            <TournamentOverview tournament={tournament} onUpdate={loadTournament} clubId={clubId} />
+          )}
 
-        {activeTab === 'teams' && (
-          <TournamentTeams tournament={tournament} onUpdate={loadTournament} clubId={clubId} />
-        )}
+          {activeTab === 'teams' && (
+            <TournamentTeams tournament={tournament} onUpdate={loadTournament} clubId={clubId} />
+          )}
 
-        {activeTab === 'matches' && (
-          <TournamentMatches tournament={tournament} onUpdate={loadTournament} clubId={clubId} />
-        )}
+          {activeTab === 'matches' && (
+            <TournamentMatches tournament={tournament} onUpdate={loadTournament} clubId={clubId} />
+          )}
 
-        {activeTab === 'standings' && (
-          <TournamentStandings tournament={tournament} clubId={clubId} />
-        )}
+          {activeTab === 'standings' && (
+            <TournamentStandings tournament={tournament} clubId={clubId} />
+          )}
 
-        {activeTab === 'bracket' && <TournamentBracket tournament={tournament} clubId={clubId} />}
+          {activeTab === 'bracket' && <TournamentBracket tournament={tournament} clubId={clubId} />}
 
-        {activeTab === 'points' && <TournamentPoints clubId={clubId} tournament={tournament} />}
+          {activeTab === 'points' && <TournamentPoints clubId={clubId} tournament={tournament} />}
+        </div>
       </div>
     </div>
   );

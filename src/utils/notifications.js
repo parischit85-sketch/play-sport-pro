@@ -19,7 +19,7 @@ export async function notifyBookingConfirmed(bookingDetails) {
   }
 
   try {
-    const { court, date, time, price, userName } = bookingDetails;
+    const { court, date, time, price } = bookingDetails;
 
     new Notification('🎾 Prenotazione Confermata!', {
       body: `Campo ${court} prenotato per ${date} alle ${time} - €${price}`,
@@ -47,7 +47,6 @@ export async function notifyBookingConfirmed(bookingDetails) {
       vibrate: [200, 100, 200, 100, 200],
     });
 
-    console.log('✅ Booking notification sent');
     return true;
   } catch (error) {
     console.error('❌ Booking notification failed:', error);
@@ -64,7 +63,7 @@ export async function notifyMatchReminder(matchDetails) {
   }
 
   try {
-    const { court, time, players, minutesLeft = 30 } = matchDetails;
+    const { court, minutesLeft = 30 } = matchDetails;
 
     new Notification('⏰ Partita in arrivo!', {
       body: `La tua partita al Campo ${court} inizia tra ${minutesLeft} minuti`,
@@ -88,7 +87,6 @@ export async function notifyMatchReminder(matchDetails) {
       timestamp: Date.now(),
     });
 
-    console.log('✅ Match reminder sent');
     return true;
   } catch (error) {
     console.error('❌ Match reminder failed:', error);
@@ -105,7 +103,7 @@ export async function notifyRankingUpdate(rankingData) {
   }
 
   try {
-    const { playerName, newPosition, change } = rankingData;
+    const { newPosition, change } = rankingData;
 
     let body = `Sei ora ${newPosition}° in classifica`;
     if (change > 0) {
@@ -133,7 +131,6 @@ export async function notifyRankingUpdate(rankingData) {
       vibrate: [100, 50, 100],
     });
 
-    console.log('✅ Ranking notification sent');
     return true;
   } catch (error) {
     console.error('❌ Ranking notification failed:', error);
@@ -172,7 +169,6 @@ export async function notifyTournamentUpdate(tournamentData) {
       vibrate: [150, 100, 150],
     });
 
-    console.log('✅ Tournament notification sent');
     return true;
   } catch (error) {
     console.error('❌ Tournament notification failed:', error);
@@ -204,7 +200,6 @@ export function scheduleMatchReminder(matchDetails, minutesBefore = 30) {
     });
   }, reminderTime - now);
 
-  console.log(`✅ Match reminder scheduled for ${new Date(reminderTime).toLocaleString()}`);
   return timeoutId;
 }
 
@@ -214,7 +209,6 @@ export function scheduleMatchReminder(matchDetails, minutesBefore = 30) {
 export function cancelScheduledReminder(timeoutId) {
   if (timeoutId) {
     clearTimeout(timeoutId);
-    console.log('✅ Scheduled reminder cancelled');
   }
 }
 
@@ -256,7 +250,6 @@ export function loadNotificationPreferences() {
 export function saveNotificationPreferences(preferences) {
   try {
     localStorage.setItem(NOTIFICATION_PREFERENCES_KEY, JSON.stringify(preferences));
-    console.log('✅ Notification preferences saved');
     return true;
   } catch (error) {
     console.error('Error saving notification preferences:', error);
@@ -358,6 +351,5 @@ export async function sendAllTestNotifications() {
   const results = await Promise.all(tests.map((test) => test()));
   const successful = results.filter(Boolean).length;
 
-  console.log(`✅ Sent ${successful}/${tests.length} test notifications`);
   return successful;
 }

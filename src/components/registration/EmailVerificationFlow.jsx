@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { sendEmailVerification } from 'firebase/auth';
 import { useAuth } from '@contexts/AuthContext.jsx';
+import { isEmailVerified } from '@services/auth.jsx';
 
 export default function EmailVerificationFlow() {
   const { user } = useAuth();
@@ -58,7 +59,7 @@ export default function EmailVerificationFlow() {
   };
 
   // Don't show if user is already verified or not logged in
-  if (!user || user.emailVerified) {
+  if (!user || isEmailVerified(user)) {
     return null;
   }
 

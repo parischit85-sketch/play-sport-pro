@@ -31,6 +31,7 @@ export default function TournamentsPage() {
 
   // Gli admin di club possono sempre accedere, gli utenti normali possono visualizzare
   const canAccessTournaments = clubMode || isClubAdmin(activeClubId) || userRole !== 'super_admin';
+  const adminForClub = isClubAdmin(activeClubId);
 
   // Show access denied message if user doesn't have permissions
   if (!canAccessTournaments) {
@@ -75,5 +76,5 @@ export default function TournamentsPage() {
   }
 
   // Render the main tournament management component
-  return <TournamentsPageComponent clubId={activeClubId} />;
+  return <TournamentsPageComponent clubId={activeClubId} isAdmin={adminForClub} />;
 }

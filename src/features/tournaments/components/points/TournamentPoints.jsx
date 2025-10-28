@@ -66,27 +66,13 @@ export default function TournamentPoints({ clubId, tournament }) {
       .toISOString()
       .slice(0, 16);
     
-    console.log('🗓️ [TournamentPoints] handleApply - Inizializzazione modal:', {
-      now: now.toISOString(),
-      localDateTime,
-      clubId,
-      tournamentId: tournament?.id,
-      tournamentName: tournament?.name,
-    });
-    
     setMatchDateTime(localDateTime);
     setShowDateModal(true);
   };
 
   const handleConfirmApply = async () => {
-    console.log('✅ [TournamentPoints] handleConfirmApply - Inizio:', {
-      matchDateTime,
-      matchDateTimeType: typeof matchDateTime,
-    });
-
     if (!matchDateTime) {
       setError('Seleziona data e orario');
-      console.error('❌ [TournamentPoints] Data non selezionata');
       return;
     }
 
@@ -97,33 +83,28 @@ export default function TournamentPoints({ clubId, tournament }) {
     try {
       const selectedDate = new Date(matchDateTime).toISOString();
       
-      console.log('📅 [TournamentPoints] Data convertita:', {
-        input: matchDateTime,
-        output: selectedDate,
-        dateObj: new Date(matchDateTime),
-      });
-      
       const res = await applyTournamentChampionshipPoints(clubId, tournament, {
         matchDate: selectedDate,
       });
       
-      console.log('📊 [TournamentPoints] Risposta da applyTournamentChampionshipPoints:', res);
-      
       if (res.success) {
         if (res.alreadyApplied) {
           setApplyInfo({ applied: true, appliedAt: res.appliedAt || null });
-          console.log('ℹ️ [TournamentPoints] Punti già applicati in precedenza');
         } else {
           setApplyInfo({ applied: true, appliedAt: new Date().toISOString() });
-          console.log('✅ [TournamentPoints] Punti applicati con successo');
         }
       } else {
-        setError(res.error || 'Errore durante applicazione punti');
-        console.error('❌ [TournamentPoints] Errore applicazione:', res.error);
+        // ✅ FIX #4: Gestione specifica errore validazione temporale
+        if (res.temporalValidationFailed) {
+          setError(`⚠️ Validazione temporale fallita: ${res.error}`);
+        } else {
+          setError(res.error || 'Errore durante applicazione punti');
+          console.error('❌ Errore applicazione punti torneo:', res.error);
+        }
       }
     } catch (e) {
       setError(e?.message || 'Errore durante applicazione punti');
-      console.error('❌ [TournamentPoints] Exception:', e);
+      console.error('❌ Exception applicazione punti torneo:', e);
     } finally {
       setApplyLoading(false);
     }
@@ -539,7 +520,7 @@ export default function TournamentPoints({ clubId, tournament }) {
               Seleziona Data e Orario Match
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Inserisci la data e l'orario in cui sono state giocate le partite del torneo.
+              Inserisci la data e l&apos;orario in cui sono state giocate le partite del torneo.
               Questa data verrà usata per tutti i match nei dettagli statistici.
             </p>
             <div className="mb-6">
@@ -550,13 +531,7 @@ export default function TournamentPoints({ clubId, tournament }) {
                 type="datetime-local"
                 value={matchDateTime}
                 onChange={(e) => {
-                  const newValue = e.target.value;
-                  console.log('📅 [TournamentPoints] Input data modificato:', {
-                    oldValue: matchDateTime,
-                    newValue,
-                    valueType: typeof newValue,
-                  });
-                  setMatchDateTime(newValue);
+                  setMatchDateTime(e.target.value);
                 }}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white

@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { themeTokens } from '@lib/theme.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
-import { resendVerificationEmail } from '@services/auth.jsx';
+import { resendVerificationEmail, isEmailVerified } from '@services/auth.jsx';
 import ModernBookingInterface from '@features/booking/ModernBookingInterface.jsx';
 import ClubSelectionForBooking from '@components/booking/ClubSelectionForBooking.jsx';
 
@@ -17,7 +17,7 @@ export default function BookingPage() {
   const [message, setMessage] = useState('');
 
   // BLOCCO: Email non verificata
-  if (user && !user.emailVerified) {
+  if (user && !isEmailVerified(user)) {
     const handleResend = async () => {
       setSending(true);
       setMessage('');

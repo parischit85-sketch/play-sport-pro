@@ -3,11 +3,23 @@
 // Modal semplice per modificare le informazioni base del torneo
 // =============================================
 
-import React, { useMemo, useState } from 'react';
-import { X, Save } from 'lucide-react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { X, Save, AlertTriangle } from 'lucide-react';
 import { updateTournament } from '../../services/tournamentService';
+import { getChampionshipApplyStatus } from '../../services/championshipApplyService';
 
 export default function TournamentEditModal({ clubId, tournament, onClose, onSaved }) {
+  const [isApplied, setIsApplied] = useState(false);
+  const [checkingApplied, setCheckingApplied] = useState(true);
+
+  useEffect(() => {
+    async function checkApplied() {
+      const status = await getChampionshipApplyStatus(clubId, tournament.id);
+      setIsApplied(status.applied);
+      setCheckingApplied(false);
+    }
+    checkApplied();
+  }, [clubId, tournament.id]);
   const initial = useMemo(() => ({
     name: tournament?.name || '',
     description: tournament?.description || '',
@@ -210,6 +222,22 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
           {/* Sezione: Punti Campionato */}
           <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <div className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Punti Campionato (bozza)</div>
+            
+            {/* ⚠️ WARNING: Se il torneo è già applicato */}
+            {isApplied && (
+              <div className="mb-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-700 rounded-lg p-3 flex items-start gap-2">
+                <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-500 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-red-800 dark:text-red-200">
+                  <div className="font-semibold mb-1">🔒 Configurazione Bloccata - Punti Già Applicati</div>
+                  <p className="text-xs">
+                    I campi sono <strong>disabilitati</strong> perché i punti campionato sono stati già applicati. 
+                    Per modificare la configurazione, devi prima <strong>annullare l'applicazione</strong> dei punti, 
+                    poi modificare i valori, e infine <strong>riapplicare</strong> i punti campionato.
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Moltiplicatore RPA</label>
@@ -222,7 +250,8 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
                     ...form.championshipPoints,
                     rpaMultiplier: Number(e.target.value) || 0,
                   })}
-                  className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  disabled={isApplied}
+                  className={`w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent ${isApplied ? 'opacity-50 cursor-not-allowed' : ''}`}
                 />
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Somma dei delta RPA per match × moltiplicatore</p>
               </div>
@@ -243,7 +272,8 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
                             [pos]: Number(e.target.value) || 0,
                           },
                         })}
-                        className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        disabled={isApplied}
+                        className={`px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent ${isApplied ? 'opacity-50 cursor-not-allowed' : ''}`}
                       />
                     </div>
                   ))}
@@ -273,7 +303,8 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
                           [r.key]: Number(e.target.value) || 0,
                         },
                       })}
-                      className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      disabled={isApplied}
+                      className={`px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent ${isApplied ? 'opacity-50 cursor-not-allowed' : ''}`}
                     />
                   </div>
                 ))}
