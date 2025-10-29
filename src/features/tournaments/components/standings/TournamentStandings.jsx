@@ -32,7 +32,7 @@ function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicV
       }
 
       const groupIds = [...new Set(teamsData.map((t) => t.groupId).filter(Boolean))];
-      
+
       // Se groupFilter è specificato, carica solo quel girone
       const groupsToLoad = groupFilter ? [groupFilter] : groupIds;
 
@@ -92,8 +92,8 @@ function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicV
         return b.points - a.points;
       }
       // 2. Ordina per differenza game (descending)
-      const dgA = a.matchesWon - a.matchesLost;
-      const dgB = b.matchesWon - b.matchesLost;
+      const dgA = a.gamesDifference || 0;
+      const dgB = b.gamesDifference || 0;
       if (dgA !== dgB) {
         return dgB - dgA;
       }
@@ -117,14 +117,14 @@ function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicV
             {sortedStandings.map((standing, index) => {
               const rank = index + 1;
               const isQualified = rank <= (tournament.teamsPerGroup || 2);
-              const dg = standing.matchesWon - standing.matchesLost;
+              const dg = standing.gamesDifference || 0;
 
               return (
                 <div
                   key={standing.teamId}
                   className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
-                    isQualified 
-                      ? 'bg-gradient-to-r from-emerald-900/40 to-emerald-800/20 border-l-4 border-emerald-500' 
+                    isQualified
+                      ? 'bg-gradient-to-r from-emerald-900/40 to-emerald-800/20 border-l-4 border-emerald-500'
                       : 'bg-gray-800/50 hover:bg-gray-800'
                   }`}
                 >
@@ -151,14 +151,18 @@ function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicV
                     {/* Matches */}
                     <div className="text-center">
                       <div className="text-xs text-gray-500 uppercase">G</div>
-                      <div className="text-sm font-medium text-gray-300">{standing.matchesPlayed}</div>
+                      <div className="text-sm font-medium text-gray-300">
+                        {standing.matchesPlayed}
+                      </div>
                     </div>
 
                     {/* Win/Loss */}
                     <div className="flex items-center gap-2">
                       <div className="text-center">
                         <div className="text-xs text-gray-500 uppercase">V</div>
-                        <div className="text-sm font-bold text-green-400">{standing.matchesWon}</div>
+                        <div className="text-sm font-bold text-green-400">
+                          {standing.matchesWon}
+                        </div>
                       </div>
                       <span className="text-gray-600">-</span>
                       <div className="text-center">
@@ -175,7 +179,8 @@ function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicV
                           dg > 0 ? 'text-green-400' : dg < 0 ? 'text-red-400' : 'text-gray-400'
                         }`}
                       >
-                        {dg > 0 ? '+' : ''}{dg}
+                        {dg > 0 ? '+' : ''}
+                        {dg}
                       </div>
                     </div>
 
@@ -193,11 +198,21 @@ function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicV
           {/* Legend */}
           <div className="mt-4 pt-4 border-t border-gray-700">
             <div className="flex flex-wrap gap-4 text-xs text-gray-400">
-              <div><span className="font-semibold">G</span> = Giocate</div>
-              <div><span className="font-semibold">V</span> = Vinte</div>
-              <div><span className="font-semibold">P</span> = Perse</div>
-              <div><span className="font-semibold">DG</span> = Diff. Game</div>
-              <div><span className="font-semibold">Pts</span> = Punti</div>
+              <div>
+                <span className="font-semibold">G</span> = Giocate
+              </div>
+              <div>
+                <span className="font-semibold">V</span> = Vinte
+              </div>
+              <div>
+                <span className="font-semibold">P</span> = Perse
+              </div>
+              <div>
+                <span className="font-semibold">DG</span> = Diff. Game
+              </div>
+              <div>
+                <span className="font-semibold">Pts</span> = Punti
+              </div>
             </div>
           </div>
         </div>
@@ -209,160 +224,158 @@ function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicV
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         {/* Group Header */}
         <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-t-lg">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Girone {groupId}
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Girone {groupId}</h3>
         </div>
 
         {/* Table */}
         <div className="overflow-x-auto -mx-3 sm:mx-0">
           <div className="inline-block min-w-full align-middle px-3 sm:px-0">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-900">
-              <tr>
-                <th className="sticky left-0 z-10 bg-gray-50 dark:bg-gray-900 text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  #
-                </th>
-                <th className="sticky left-8 sm:left-12 z-10 bg-gray-50 dark:bg-gray-900 text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[120px] sm:min-w-0">
-                  Squadra
-                </th>
-                <th className="text-center py-2 sm:py-3 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  G
-                </th>
-                <th className="text-center py-2 sm:py-3 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  V
-                </th>
-                <th className="text-center py-2 sm:py-3 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  P
-                </th>
-                <th className="text-center py-2 sm:py-3 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  DG
-                </th>
-                <th className="text-center py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Pts
-                </th>
-                <th className="text-center py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">
-                  <span className="hidden sm:inline">Pts RPA</span>
-                  <span className="sm:hidden">RPA</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-800">
-              {sortedStandings.map((standing, index) => {
-                const rank = index + 1;
-                const isQualified = rank <= (tournament.teamsPerGroup || 2);
+              <thead className="bg-gray-50 dark:bg-gray-900">
+                <tr>
+                  <th className="sticky left-0 z-10 bg-gray-50 dark:bg-gray-900 text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    #
+                  </th>
+                  <th className="sticky left-8 sm:left-12 z-10 bg-gray-50 dark:bg-gray-900 text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300 min-w-[120px] sm:min-w-0">
+                    Squadra
+                  </th>
+                  <th className="text-center py-2 sm:py-3 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    G
+                  </th>
+                  <th className="text-center py-2 sm:py-3 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    V
+                  </th>
+                  <th className="text-center py-2 sm:py-3 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    P
+                  </th>
+                  <th className="text-center py-2 sm:py-3 px-1 sm:px-2 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    DG
+                  </th>
+                  <th className="text-center py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    Pts
+                  </th>
+                  <th className="text-center py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">
+                    <span className="hidden sm:inline">Pts RPA</span>
+                    <span className="sm:hidden">RPA</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800 bg-white dark:bg-gray-800">
+                {sortedStandings.map((standing, index) => {
+                  const rank = index + 1;
+                  const isQualified = rank <= (tournament.teamsPerGroup || 2);
 
-                return (
-                  <tr
-                    key={standing.teamId}
-                    className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
-                      isQualified ? 'bg-green-50/50 dark:bg-green-900/10' : ''
-                    }`}
-                  >
-                    <td className="sticky left-0 z-10 bg-white dark:bg-gray-800 py-2 sm:py-3 px-2 sm:px-4">
-                      <div className="flex items-center justify-center">{getRankIcon(rank)}</div>
-                    </td>
-                    <td className="sticky left-8 sm:left-12 z-10 bg-white dark:bg-gray-800 py-2 sm:py-3 px-2 sm:px-4">
-                      <div className="flex items-center gap-1 sm:gap-2">
-                        <span className="font-medium text-xs sm:text-sm text-gray-900 dark:text-white truncate max-w-[100px] sm:max-w-none">
-                          {standing.teamName}
-                        </span>
-                        {(() => {
-                          const avg = getAvgRanking(standing.teamId);
-                          return typeof avg === 'number' ? (
-                            <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
-                              • {Math.round(avg)}
-                            </span>
-                          ) : null;
-                        })()}
-                        {isQualified && (
-                          <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-2 sm:py-3 px-1 sm:px-2 text-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                      {standing.matchesPlayed}
-                    </td>
-                    <td className="py-2 sm:py-3 px-1 sm:px-2 text-center text-xs sm:text-sm font-medium text-green-600 dark:text-green-400">
-                      {standing.matchesWon}
-                    </td>
-                    <td className="py-2 sm:py-3 px-1 sm:px-2 text-center text-xs sm:text-sm font-medium text-red-600 dark:text-red-400">
-                      {standing.matchesLost}
-                    </td>
-                    <td className="py-2 sm:py-3 px-1 sm:px-2 text-center text-xs sm:text-sm">
-                      <span
-                        className={`font-medium ${
-                          standing.matchesWon - standing.matchesLost > 0
-                            ? 'text-green-600 dark:text-green-400'
-                            : standing.matchesWon - standing.matchesLost < 0
-                              ? 'text-red-600 dark:text-red-400'
-                              : 'text-gray-500 dark:text-gray-400'
-                        }`}
-                      >
-                        {standing.matchesWon - standing.matchesLost > 0 ? '+' : ''}
-                        {standing.matchesWon - standing.matchesLost}
-                      </span>
-                    </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-center">
-                      <span className="text-base sm:text-lg font-bold text-primary-600 dark:text-primary-400">
-                        {standing.points}
-                      </span>
-                    </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 text-center">
-                      <span
-                        className={`text-xs sm:text-sm font-semibold whitespace-nowrap ${
-                          standing.rpaPoints !== undefined && standing.rpaPoints !== null
-                            ? standing.rpaPoints > 0
+                  return (
+                    <tr
+                      key={standing.teamId}
+                      className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${
+                        isQualified ? 'bg-green-50/50 dark:bg-green-900/10' : ''
+                      }`}
+                    >
+                      <td className="sticky left-0 z-10 bg-white dark:bg-gray-800 py-2 sm:py-3 px-2 sm:px-4">
+                        <div className="flex items-center justify-center">{getRankIcon(rank)}</div>
+                      </td>
+                      <td className="sticky left-8 sm:left-12 z-10 bg-white dark:bg-gray-800 py-2 sm:py-3 px-2 sm:px-4">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <span className="font-medium text-xs sm:text-sm text-gray-900 dark:text-white truncate max-w-[100px] sm:max-w-none">
+                            {standing.teamName}
+                          </span>
+                          {(() => {
+                            const avg = getAvgRanking(standing.teamId);
+                            return typeof avg === 'number' ? (
+                              <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                                • {Math.round(avg)}
+                              </span>
+                            ) : null;
+                          })()}
+                          {isQualified && (
+                            <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500 flex-shrink-0" />
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-2 sm:py-3 px-1 sm:px-2 text-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                        {standing.matchesPlayed}
+                      </td>
+                      <td className="py-2 sm:py-3 px-1 sm:px-2 text-center text-xs sm:text-sm font-medium text-green-600 dark:text-green-400">
+                        {standing.matchesWon}
+                      </td>
+                      <td className="py-2 sm:py-3 px-1 sm:px-2 text-center text-xs sm:text-sm font-medium text-red-600 dark:text-red-400">
+                        {standing.matchesLost}
+                      </td>
+                      <td className="py-2 sm:py-3 px-1 sm:px-2 text-center text-xs sm:text-sm">
+                        <span
+                          className={`font-medium ${
+                            (standing.gamesDifference || 0) > 0
                               ? 'text-green-600 dark:text-green-400'
-                              : standing.rpaPoints < 0
+                              : (standing.gamesDifference || 0) < 0
                                 ? 'text-red-600 dark:text-red-400'
                                 : 'text-gray-500 dark:text-gray-400'
-                            : 'text-gray-400 dark:text-gray-500'
-                        }`}
-                      >
-                        {standing.rpaPoints !== undefined && standing.rpaPoints !== null
-                          ? standing.rpaPoints > 0
-                            ? `+${Math.round(standing.rpaPoints * 10) / 10}`
-                            : Math.round(standing.rpaPoints * 10) / 10
-                          : '—'}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                          }`}
+                        >
+                          {(standing.gamesDifference || 0) > 0 ? '+' : ''}
+                          {standing.gamesDifference || 0}
+                        </span>
+                      </td>
+                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-center">
+                        <span className="text-base sm:text-lg font-bold text-primary-600 dark:text-primary-400">
+                          {standing.points}
+                        </span>
+                      </td>
+                      <td className="py-2 sm:py-3 px-2 sm:px-4 text-center">
+                        <span
+                          className={`text-xs sm:text-sm font-semibold whitespace-nowrap ${
+                            standing.rpaPoints !== undefined && standing.rpaPoints !== null
+                              ? standing.rpaPoints > 0
+                                ? 'text-green-600 dark:text-green-400'
+                                : standing.rpaPoints < 0
+                                  ? 'text-red-600 dark:text-red-400'
+                                  : 'text-gray-500 dark:text-gray-400'
+                              : 'text-gray-400 dark:text-gray-500'
+                          }`}
+                        >
+                          {standing.rpaPoints !== undefined && standing.rpaPoints !== null
+                            ? standing.rpaPoints > 0
+                              ? `+${Math.round(standing.rpaPoints * 10) / 10}`
+                              : Math.round(standing.rpaPoints * 10) / 10
+                            : '—'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-        {/* Legend - Mobile Optimized */}
-        <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-4 text-xs text-gray-600 dark:text-gray-400">
-            <div>
-              <strong>G</strong> = Giocate
+          {/* Legend - Mobile Optimized */}
+          <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-4 text-xs text-gray-600 dark:text-gray-400">
+              <div>
+                <strong>G</strong> = Giocate
+              </div>
+              <div>
+                <strong>V</strong> = Vinte
+              </div>
+              <div>
+                <strong>P</strong> = Perse
+              </div>
+              <div>
+                <strong>DG</strong> = Diff. Game
+              </div>
+              <div>
+                <strong>Pts</strong> = Punti
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <strong className="text-orange-600 dark:text-orange-400">RPA</strong> = Punti Rating
+              </div>
             </div>
-            <div>
-              <strong>V</strong> = Vinte
-            </div>
-            <div>
-              <strong>P</strong> = Perse
-            </div>
-            <div>
-              <strong>DG</strong> = Diff. Game
-            </div>
-            <div>
-              <strong>Pts</strong> = Punti
-            </div>
-            <div className="col-span-2 sm:col-span-1">
-              <strong className="text-orange-600 dark:text-orange-400">RPA</strong> = Punti Rating
+            <div className="mt-2 flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 bg-green-100 dark:bg-green-900/20 rounded flex-shrink-0"></div>
+                <span>Qualificate</span>
+              </div>
             </div>
           </div>
-          <div className="mt-2 flex items-center gap-2 text-xs">
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-green-100 dark:bg-green-900/20 rounded flex-shrink-0"></div>
-              <span>Qualificate</span>
-            </div>
-          </div>
-        </div>
         </div>
       </div>
     );
@@ -399,11 +412,7 @@ function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicV
           .map(([groupId, groupStandings]) => {
             if (!groupStandings || groupStandings.length === 0) return null;
 
-            return (
-              <div key={groupId}>
-                {renderStandingsTable(groupId, groupStandings)}
-              </div>
-            );
+            return <div key={groupId}>{renderStandingsTable(groupId, groupStandings)}</div>;
           })}
       </div>
     );
@@ -417,9 +426,7 @@ function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicV
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
       {groupEntries.map(([groupId, groupStandings]) => (
-        <div key={groupId}>
-          {renderStandingsTable(groupId, groupStandings)}
-        </div>
+        <div key={groupId}>{renderStandingsTable(groupId, groupStandings)}</div>
       ))}
     </div>
   );

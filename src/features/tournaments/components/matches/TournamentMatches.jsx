@@ -391,7 +391,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
         key={match.id}
         className={`${isPublicView ? 'bg-gray-800' : 'bg-white dark:bg-gray-800'} rounded-lg p-3 sm:p-4 transition-colors ${
           isPublicView
-            ? 'border-[2.5px] border-fuchsia-500'
+            ? `border-[2.5px] ${isCompleted ? 'border-fuchsia-500' : 'border-fuchsia-700/60'}`
             : 'border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700'
         }`}
       >
@@ -400,7 +400,13 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
           <div className="flex items-center gap-2">
             {getStatusIcon(match.status)}
             <span
-              className={`text-xs sm:text-sm ${isPublicView ? 'text-gray-300' : 'text-gray-500 dark:text-gray-400'}`}
+              className={`text-xs sm:text-sm ${
+                isPublicView
+                  ? match.status === MATCH_STATUS.SCHEDULED
+                    ? 'text-amber-500 font-semibold'
+                    : 'text-gray-300'
+                  : 'text-gray-500 dark:text-gray-400'
+              }`}
             >
               {getStatusText(match.status)}
             </span>
@@ -478,15 +484,15 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
           {/* VS divider */}
           <div className="flex items-center gap-2">
             <div
-              className={`flex-1 h-px ${isPublicView ? 'bg-fuchsia-500' : 'bg-gray-200 dark:bg-gray-700'}`}
+              className={`flex-1 h-px ${isPublicView ? (isCompleted ? 'bg-fuchsia-500' : 'bg-fuchsia-700/60') : 'bg-gray-200 dark:bg-gray-700'}`}
             ></div>
             <span
-              className={`text-xs font-medium ${isPublicView ? 'text-fuchsia-500' : 'text-gray-400 dark:text-gray-600'}`}
+              className={`text-xs font-medium ${isPublicView ? (isCompleted ? 'text-fuchsia-500' : 'text-fuchsia-700/60') : 'text-gray-400 dark:text-gray-600'}`}
             >
               VS
             </span>
             <div
-              className={`flex-1 h-px ${isPublicView ? 'bg-fuchsia-500' : 'bg-gray-200 dark:bg-gray-700'}`}
+              className={`flex-1 h-px ${isPublicView ? (isCompleted ? 'bg-fuchsia-500' : 'bg-fuchsia-700/60') : 'bg-gray-200 dark:bg-gray-700'}`}
             ></div>
           </div>
 

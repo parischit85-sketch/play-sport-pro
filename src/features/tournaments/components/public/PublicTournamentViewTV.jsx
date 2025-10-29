@@ -102,9 +102,7 @@ function PublicTournamentViewTV() {
           tournament.pointsSystem || { win: 3, draw: 1, loss: 0 }
         );
 
-        const groupMatches = matches.filter(
-          (m) => m.type === 'group' && m.groupId === groupId
-        );
+        const groupMatches = matches.filter((m) => m.type === 'group' && m.groupId === groupId);
 
         // Map team data
         const teamsMap = {};
@@ -138,11 +136,14 @@ function PublicTournamentViewTV() {
   // Fullscreen toggle
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().then(() => {
-        setIsFullscreen(true);
-      }).catch((err) => {
-        console.error('Error attempting to enable fullscreen:', err);
-      });
+      document.documentElement
+        .requestFullscreen()
+        .then(() => {
+          setIsFullscreen(true);
+        })
+        .catch((err) => {
+          console.error('Error attempting to enable fullscreen:', err);
+        });
     } else {
       document.exitFullscreen().then(() => {
         setIsFullscreen(false);
@@ -293,82 +294,81 @@ function PublicTournamentViewTV() {
     const { standings, matches, teams } = data;
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Standings */}
         <div>
-          <h3 className="text-4xl font-bold text-white mb-4 flex items-center gap-3">
-            <Trophy className="w-10 h-10" />
+          <h3 className="text-3xl font-bold text-white mb-3 flex items-center gap-3">
+            <Trophy className="w-8 h-8" />
             Classifica - Girone {groupId.toUpperCase()}
           </h3>
           <div className="bg-gray-800 rounded-2xl overflow-hidden shadow-2xl border border-gray-700">
             <table className="w-full">
               <thead className="bg-gray-900">
                 <tr>
-                  <th className="text-center py-3 px-4 text-white font-bold text-2xl">#</th>
-                  <th className="text-left py-3 px-4 text-white font-bold text-2xl">Squadra</th>
-                  <th className="text-center py-3 px-3 text-white font-bold text-2xl">G</th>
-                  <th className="text-center py-3 px-3 text-white font-bold text-2xl">V</th>
-                  <th className="text-center py-3 px-3 text-white font-bold text-2xl">P</th>
-                  <th className="text-center py-3 px-3 text-white font-bold text-2xl">DG</th>
-                  <th className="text-center py-3 px-4 text-white font-bold text-2xl">Pts</th>
-                  <th className="text-center py-3 px-4 text-white font-bold text-2xl">RPA</th>
+                  <th className="text-center py-2 px-3 text-white font-bold text-xl">#</th>
+                  <th className="text-left py-2 px-3 text-white font-bold text-xl">Squadra</th>
+                  <th className="text-center py-2 px-2 text-white font-bold text-xl">G</th>
+                  <th className="text-center py-2 px-2 text-white font-bold text-xl">V</th>
+                  <th className="text-center py-2 px-2 text-white font-bold text-xl">P</th>
+                  <th className="text-center py-2 px-2 text-white font-bold text-xl">DG</th>
+                  <th className="text-center py-2 px-3 text-white font-bold text-xl">Pts</th>
+                  <th className="text-center py-2 px-3 text-white font-bold text-xl">RPA</th>
                 </tr>
               </thead>
               <tbody>
                 {standings
                   .sort((a, b) => {
                     if (a.points !== b.points) return b.points - a.points;
-                    const dgA = a.matchesWon - a.matchesLost;
-                    const dgB = b.matchesWon - b.matchesLost;
+                    const dgA = a.gamesDifference || 0;
+                    const dgB = b.gamesDifference || 0;
                     if (dgA !== dgB) return dgB - dgA;
                     return (b.rpaPoints || 0) - (a.rpaPoints || 0);
                   })
                   .map((standing, index) => {
                     const rank = index + 1;
-                    const dg = standing.matchesWon - standing.matchesLost;
+                    const dg = standing.gamesDifference || 0;
                     const rpa = standing.rpaPoints || 0;
 
                     return (
-                      <tr
-                        key={standing.teamId}
-                        className="border-b border-gray-700 bg-gray-800"
-                      >
-                        <td className="py-3 px-4">
-                          <div className="flex items-center justify-center">{getRankIcon(rank)}</div>
+                      <tr key={standing.teamId} className="border-b border-gray-700 bg-gray-800">
+                        <td className="py-2 px-3">
+                          <div className="flex items-center justify-center">
+                            {getRankIcon(rank)}
+                          </div>
                         </td>
-                        <td className="py-3 px-4 text-3xl font-semibold text-white">
+                        <td className="py-2 px-3 text-2xl font-semibold text-white">
                           {standing.teamName}
                         </td>
-                        <td className="py-3 px-3 text-center text-2xl text-gray-300">
+                        <td className="py-2 px-2 text-center text-xl text-gray-300">
                           {standing.matchesPlayed}
                         </td>
-                        <td className="py-3 px-3 text-center text-2xl font-bold text-green-400">
+                        <td className="py-2 px-2 text-center text-xl font-bold text-green-400">
                           {standing.matchesWon}
                         </td>
-                        <td className="py-3 px-3 text-center text-2xl font-bold text-red-400">
+                        <td className="py-2 px-2 text-center text-xl font-bold text-red-400">
                           {standing.matchesLost}
                         </td>
-                        <td className="py-3 px-3 text-center text-2xl font-bold">
+                        <td className="py-2 px-2 text-center text-xl font-bold">
                           <span
                             className={
-                              dg > 0
-                                ? 'text-green-400'
-                                : dg < 0
-                                  ? 'text-red-400'
-                                  : 'text-gray-400'
+                              dg > 0 ? 'text-green-400' : dg < 0 ? 'text-red-400' : 'text-gray-400'
                             }
                           >
                             {dg > 0 ? '+' : ''}
                             {dg}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-center text-3xl font-bold text-emerald-400">
+                        <td className="py-2 px-3 text-center text-2xl font-bold text-emerald-400">
                           {standing.points}
                         </td>
-                        <td className="py-3 px-4 text-center text-2xl font-bold">
+                        <td className="py-2 px-3 text-center text-xl font-bold">
                           <span
                             className={
-                              rpa > 0 ? 'text-green-400' : rpa < 0 ? 'text-red-400' : 'text-gray-400'
+                              rpa > 0
+                                ? 'text-green-400'
+                                : rpa < 0
+                                  ? 'text-red-400'
+                                  : 'text-gray-400'
                             }
                           >
                             {rpa > 0 ? '+' : ''}
@@ -385,7 +385,7 @@ function PublicTournamentViewTV() {
 
         {/* Matches - 6 per row */}
         <div>
-          <h3 className="text-4xl font-bold text-white mb-4">Partite</h3>
+          <h3 className="text-3xl font-bold text-white mb-3">Partite</h3>
           <div className="grid grid-cols-6 gap-3">
             {matches.map((match) => {
               const team1 = teams[match.team1Id];
@@ -406,7 +406,7 @@ function PublicTournamentViewTV() {
               const renderSetPills = (teamIndex) => {
                 if (!hasSets) return null;
                 return (
-                  <div className="flex items-center gap-1 mt-1">
+                  <div className="flex items-center gap-1 mt-0.5">
                     {match.sets.map((s, i) => {
                       const a = Number(s?.team1 ?? 0);
                       const b = Number(s?.team2 ?? 0);
@@ -415,10 +415,8 @@ function PublicTournamentViewTV() {
                       return (
                         <span
                           key={`set-${match.id}-${teamIndex}-${i}`}
-                          className={`text-4xl font-bold ${
-                            win
-                              ? 'text-emerald-400'
-                              : 'text-red-400'
+                          className={`text-3xl font-bold ${
+                            win ? 'text-emerald-400' : 'text-red-400'
                           }`}
                           title={`Set ${i + 1}`}
                         >
@@ -429,76 +427,81 @@ function PublicTournamentViewTV() {
                   </div>
                 );
               };
-
               return (
                 <div
                   key={match.id}
-                  className="bg-gray-800 rounded-xl p-5 shadow-lg min-h-[180px] flex flex-col justify-center border-[3px] border-fuchsia-500"
+                  className={`bg-gray-800 rounded-xl p-3 shadow-lg min-h-[140px] flex flex-col justify-center border-[2.5px] ${
+                    isCompleted ? 'border-fuchsia-500' : 'border-fuchsia-700/60'
+                  }`}
                 >
                   {/* Team 1 */}
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-2">
                     <div className="flex-1">
                       {team1Players.map((player, idx) => (
                         <div
                           key={idx}
-                          className={`font-medium text-2xl ${isCompleted && match.winnerId === team1.id ? 'text-emerald-400' : isCompleted ? 'text-red-400' : 'text-white'}`}
+                          className={`font-medium text-lg ${isCompleted && match.winnerId === team1.id ? 'text-emerald-400' : isCompleted ? 'text-red-400' : 'text-white'}`}
                         >
                           {player}
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-col items-end ml-4">
+                    <div className="flex flex-col items-end ml-3">
                       {isCompleted && (
                         <>
-                          {hasSets ? (
-                            renderSetPills(1)
-                          ) : (
-                            match.score && (
-                              <span
-                                className={`text-5xl font-bold ${match.winnerId === team1.id ? 'text-emerald-400' : 'text-red-400'}`}
-                              >
-                                {match.score.team1}
-                              </span>
-                            )
-                          )}
+                          {hasSets
+                            ? renderSetPills(1)
+                            : match.score && (
+                                <span
+                                  className={`text-4xl font-bold ${match.winnerId === team1.id ? 'text-emerald-400' : 'text-red-400'}`}
+                                >
+                                  {match.score.team1}
+                                </span>
+                              )}
                         </>
                       )}
                     </div>
                   </div>
 
                   {/* VS Divider */}
-                  <div className="relative flex items-center my-4">
-                    <div className="flex-grow border-t-2 border-fuchsia-500"></div>
-                    <span className="px-3 text-sm font-bold text-fuchsia-500">VS</span>
-                    <div className="flex-grow border-t-2 border-fuchsia-500"></div>
+                  <div className="relative flex items-center my-2">
+                    <div
+                      className={`flex-grow border-t-2 ${isCompleted ? 'border-fuchsia-500' : 'border-fuchsia-700/60'}`}
+                    ></div>
+                    <span
+                      className={`px-2 text-xs font-bold ${isCompleted ? 'text-fuchsia-500' : 'text-fuchsia-700/80'}`}
+                    >
+                      VS
+                    </span>
+                    <div
+                      className={`flex-grow border-t-2 ${isCompleted ? 'border-fuchsia-500' : 'border-fuchsia-700/60'}`}
+                    ></div>
                   </div>
 
                   {/* Team 2 */}
-                  <div className="flex items-center justify-between mt-4">
+                  <div className="flex items-center justify-between mt-2">
                     <div className="flex-1">
                       {team2Players.map((player, idx) => (
                         <div
                           key={idx}
-                          className={`font-medium text-2xl ${isCompleted && match.winnerId === team2.id ? 'text-emerald-400' : isCompleted ? 'text-red-400' : 'text-white'}`}
+                          className={`font-medium text-lg ${isCompleted && match.winnerId === team2.id ? 'text-emerald-400' : isCompleted ? 'text-red-400' : 'text-white'}`}
                         >
                           {player}
                         </div>
                       ))}
                     </div>
-                    <div className="flex flex-col items-end ml-4">
+                    <div className="flex flex-col items-end ml-3">
                       {isCompleted && (
                         <>
-                          {hasSets ? (
-                            renderSetPills(2)
-                          ) : (
-                            match.score && (
-                              <span
-                                className={`text-5xl font-bold ${match.winnerId === team2.id ? 'text-emerald-400' : 'text-red-400'}`}
-                              >
-                                {match.score.team2}
-                              </span>
-                            )
-                          )}
+                          {hasSets
+                            ? renderSetPills(2)
+                            : match.score && (
+                                <span
+                                  className={`text-4xl font-bold ${match.winnerId === team2.id ? 'text-emerald-400' : 'text-red-400'}`}
+                                >
+                                  {match.score.team2}
+                                </span>
+                              )}
                         </>
                       )}
                     </div>
@@ -507,7 +510,9 @@ function PublicTournamentViewTV() {
                   {/* Status */}
                   {!isCompleted && (
                     <div className="mt-2 text-center">
-                      <span className="text-xs text-gray-400 uppercase">In programma</span>
+                      <span className="text-xs text-amber-500 font-semibold uppercase">
+                        In programma
+                      </span>
                     </div>
                   )}
                 </div>
@@ -521,70 +526,78 @@ function PublicTournamentViewTV() {
 
   const renderQRPage = () => {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh]">
-        {/* Logo */}
-        <div className="mb-8">
-          <img 
-            src="/play-sport-pro_horizontal.svg" 
-            alt="Play Sport Pro" 
-            className="h-24 w-auto"
-          />
+      <div className="flex items-center justify-center h-full py-4">
+        <div className="flex items-center gap-12 max-w-6xl mx-auto">
+          {/* Left side: Info */}
+          <div className="flex-1 text-center">
+            {/* Logo */}
+            <div className="mb-6">
+              <img
+                src="/play-sport-pro_horizontal.svg"
+                alt="Play Sport Pro"
+                className="h-24 w-auto mx-auto"
+              />
+            </div>
+
+            {/* Tournament name */}
+            <h2 className="text-4xl font-bold text-white mb-6">{tournament.name}</h2>
+
+            {/* Instructions */}
+            <div className="space-y-4">
+              <p className="text-3xl text-emerald-400 font-bold">Segui il torneo in tempo reale</p>
+              <p className="text-2xl text-gray-300">Scansiona il QR Code con il tuo smartphone</p>
+            </div>
+          </div>
+
+          {/* Right side: QR Code */}
+          <div className="flex-shrink-0">
+            <div className="bg-white rounded-3xl p-8 shadow-2xl">
+              <QRCode value={publicUrlMobile} size={300} />
+            </div>
+          </div>
         </div>
-
-        {/* Tournament name */}
-        <p className="text-3xl text-gray-300 mb-12">{tournament.name}</p>
-
-        {/* QR Code */}
-        <div className="bg-white rounded-3xl p-12 shadow-2xl">
-          <QRCode value={publicUrlMobile} size={320} />
-        </div>
-
-        {/* Instructions */}
-        <p className="text-3xl text-gray-300 font-semibold mt-12">
-          Scansiona per aprire sul tuo smartphone
-        </p>
       </div>
     );
   };
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
-      {/* Header - NO QR CODE */}
+      {/* Header - NO QR CODE - Ottimizzato per 16:9 */}
       <div className="bg-gray-800 border-b border-gray-700">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
             {/* Left: Logo */}
             <div className="flex items-center">
-              <img 
-                src="/play-sport-pro_horizontal.svg" 
-                alt="Play Sport Pro" 
-                className="h-16 w-auto"
+              <img
+                src="/play-sport-pro_horizontal.svg"
+                alt="Play Sport Pro"
+                className="h-12 w-auto"
               />
             </div>
 
             {/* Center: Tournament name */}
             <div className="flex-1 text-center">
-              <h1 className="text-4xl font-bold text-white">{tournament.name}</h1>
+              <h1 className="text-3xl font-bold text-white">{tournament.name}</h1>
             </div>
 
             {/* Right side: LIVE Badge + Fullscreen button */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {/* LIVE Badge */}
-              <div className="flex items-center gap-4 px-6 py-3 bg-red-500 rounded-full shadow-lg">
-                <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
-                <span className="text-white font-bold text-2xl">LIVE</span>
+              <div className="flex items-center gap-3 px-4 py-2 bg-red-500 rounded-full shadow-lg">
+                <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
+                <span className="text-white font-bold text-xl">LIVE</span>
               </div>
 
               {/* Fullscreen button */}
               <button
                 onClick={toggleFullscreen}
-                className="p-3 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors"
+                className="p-2 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors"
                 title={isFullscreen ? 'Esci da schermo intero' : 'Schermo intero'}
               >
                 {isFullscreen ? (
-                  <Minimize className="w-6 h-6 text-white" />
+                  <Minimize className="w-5 h-5 text-white" />
                 ) : (
-                  <Maximize className="w-6 h-6 text-white" />
+                  <Maximize className="w-5 h-5 text-white" />
                 )}
               </button>
             </div>
@@ -593,15 +606,15 @@ function PublicTournamentViewTV() {
       </div>
 
       {/* Progress bar */}
-      <div className="h-2 bg-gray-800">
+      <div className="h-1.5 bg-gray-800">
         <div
           className="h-full bg-emerald-500 transition-all duration-100 ease-linear"
           style={{ width: `${progress}%` }}
         ></div>
       </div>
 
-      {/* Main content */}
-      <div className="container mx-auto px-4 py-6 flex-1">
+      {/* Main content - Padding ridotto per 16:9 */}
+      <div className="container mx-auto px-4 py-3 flex-1">
         {pages.length === 0 ? (
           <div className="text-center py-32">
             <Trophy className="w-24 h-24 text-gray-600 mx-auto mb-6" />
@@ -609,15 +622,13 @@ function PublicTournamentViewTV() {
           </div>
         ) : (
           <>
-            {/* Page indicators */}
-            <div className="flex justify-center gap-3 mb-6">
+            {/* Page indicators - Più compatti */}
+            <div className="flex justify-center gap-2 mb-3">
               {pages.map((page, index) => (
                 <div
                   key={index}
-                  className={`h-4 rounded-full transition-all ${
-                    index === currentPageIndex
-                      ? 'bg-emerald-500 w-12'
-                      : 'bg-gray-700 w-4'
+                  className={`h-3 rounded-full transition-all ${
+                    index === currentPageIndex ? 'bg-emerald-500 w-10' : 'bg-gray-700 w-3'
                   }`}
                 ></div>
               ))}
@@ -641,15 +652,11 @@ function PublicTournamentViewTV() {
         )}
       </div>
 
-      {/* Footer */}
-      <div className="py-6 bg-gray-800 border-t border-gray-700">
-        <div className="flex items-center justify-center gap-3">
-          <p className="text-gray-400 text-lg">Powered by</p>
-          <img 
-            src="/play-sport-pro_horizontal.svg" 
-            alt="Play Sport Pro" 
-            className="h-8 w-auto"
-          />
+      {/* Footer - Più compatto */}
+      <div className="py-3 bg-gray-800 border-t border-gray-700">
+        <div className="flex items-center justify-center gap-2">
+          <p className="text-gray-400 text-sm">Powered by</p>
+          <img src="/play-sport-pro_horizontal.svg" alt="Play Sport Pro" className="h-6 w-auto" />
         </div>
       </div>
     </div>
