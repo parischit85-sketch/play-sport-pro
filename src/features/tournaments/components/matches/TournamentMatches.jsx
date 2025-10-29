@@ -371,12 +371,10 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
             return (
               <span
                 key={`tpill-${match.id}-${teamIndex}-${i}`}
-                className={`rounded ${
-                  isPublicView ? 'px-3 py-2 text-xl font-bold' : 'px-1.5 py-0.5 text-xs'
-                } ${
-                  win
-                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
-                    : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+                className={`${
+                  isPublicView
+                    ? `text-4xl font-bold ${win ? 'text-green-400' : 'text-gray-400'}`
+                    : `rounded px-1.5 py-0.5 text-xs ${win ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`
                 }`}
                 title={`Set ${i + 1}`}
               >
@@ -409,10 +407,8 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
           </div>
           <div className="flex items-center gap-2">
             {/* Match format badge if available */}
-            {match.bestOf && (
-              <span
-                className={`text-xs px-2 py-1 rounded ${isPublicView ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
-              >
+            {match.bestOf && !isPublicView && (
+              <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
                 {match.bestOf === 1 ? '1 set' : '2 su 3'}
               </span>
             )}
@@ -437,7 +433,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                   {team1Name.split('/').map((playerName, idx) => (
                     <div
                       key={idx}
-                      className={`text-sm font-semibold truncate ${isCompleted && match.winnerId === team1.id ? 'text-green-600 dark:text-green-400' : 'text-white'}`}
+                      className={`text-lg font-semibold truncate ${isCompleted && match.winnerId === team1.id ? 'text-green-600 dark:text-green-400' : 'text-white'}`}
                     >
                       {playerName.trim()}
                     </div>
@@ -470,7 +466,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                   ? renderSetPills(1)
                   : match.score && (
                       <span
-                        className={`text-xl sm:text-2xl font-bold ${match.winnerId === team1.id ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}
+                        className={`${isPublicView ? 'text-4xl' : 'text-xl sm:text-2xl'} font-bold ${match.winnerId === team1.id ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}
                       >
                         {match.score.team1}
                       </span>
@@ -503,7 +499,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                   {team2Name.split('/').map((playerName, idx) => (
                     <div
                       key={idx}
-                      className={`text-sm font-semibold truncate ${isCompleted && match.winnerId === team2.id ? 'text-green-600 dark:text-green-400' : 'text-white'}`}
+                      className={`text-lg font-semibold truncate ${isCompleted && match.winnerId === team2.id ? 'text-green-600 dark:text-green-400' : 'text-white'}`}
                     >
                       {playerName.trim()}
                     </div>
@@ -536,7 +532,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                   ? renderSetPills(2)
                   : match.score && (
                       <span
-                        className={`text-xl sm:text-2xl font-bold ${match.winnerId === team2.id ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}
+                        className={`${isPublicView ? 'text-4xl' : 'text-xl sm:text-2xl'} font-bold ${match.winnerId === team2.id ? 'text-green-600 dark:text-green-400' : 'text-gray-400'}`}
                       >
                         {match.score.team2}
                       </span>
