@@ -61,6 +61,10 @@ const AdminClubDetailPage = React.lazy(() => import('@features/admin/AdminClubDe
 const AdminUsersPage = React.lazy(() => import('@features/admin/AdminUsersPage.jsx'));
 const ClubUsersPage = React.lazy(() => import('@features/admin/ClubUsersPage.jsx'));
 
+// Public tournament views (no auth required)
+const PublicTournamentView = React.lazy(() => import('@features/tournaments/components/public/PublicTournamentView.jsx'));
+const PublicTournamentViewTV = React.lazy(() => import('@features/tournaments/components/public/PublicTournamentViewTV.jsx'));
+
 // Analytics page tracking component
 function AnalyticsPageTracker() {
   const location = useLocation();
@@ -107,6 +111,16 @@ export default function AppRouter() {
                       <RegisterClubPage />
                     </PublicRoute>
                   }
+                />
+
+                {/* Public Tournament Views - No authentication required */}
+                <Route
+                  path="/public/tournament/:clubId/:tournamentId/:token"
+                  element={<PublicTournamentView />}
+                />
+                <Route
+                  path="/public/tournament-tv/:clubId/:tournamentId/:token"
+                  element={<PublicTournamentViewTV />}
                 />
 
                 {/* Main App Routes - Landing page for unauthenticated, protected routes for authenticated */}

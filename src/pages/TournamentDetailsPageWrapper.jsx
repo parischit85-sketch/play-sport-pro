@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import TournamentDetailsPage from '../features/tournaments/components/TournamentDetailsPage';
+import TournamentDetailsPage from '@features/tournaments/components/TournamentDetailsPage.jsx';
 
 export default function TournamentDetailsPageWrapper() {
   const { clubId } = useParams();

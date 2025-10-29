@@ -4,29 +4,30 @@
 
 import React, { useEffect, useState } from 'react';
 import { Calendar, Users, Trophy, Play, Pause, CheckCircle, Edit, Trash2 } from 'lucide-react';
-import { useAuth, USER_ROLES } from '../../../../contexts/AuthContext';
+import { useAuth, USER_ROLES } from '@contexts/AuthContext.jsx';
 import {
   updateTournamentStatus,
   deleteTournament,
   autoGenerateGroups,
   generateGroupStageMatches,
-} from '../../services/tournamentService';
-import { updateStandingsAfterMatch } from '../../services/standingsService';
+} from '../../services/tournamentService.js';
+import { updateStandingsAfterMatch } from '../../services/standingsService.js';
 import TournamentEditModal from './TournamentEditModal.jsx';
-import { createWorkflowManager } from '../../services/tournamentWorkflow';
-import KnockoutSetupModal from '../knockout/KnockoutSetupModal';
-import { rollbackToPreviousPhase } from '../../services/tournamentTransactions';
+import { createWorkflowManager } from '../../services/tournamentWorkflow.js';
+import KnockoutSetupModal from '../knockout/KnockoutSetupModal.jsx';
+import PublicViewSettings from '../admin/PublicViewSettings.jsx';
+import { rollbackToPreviousPhase } from '../../services/tournamentTransactions.js';
 import {
   TOURNAMENT_STATUS,
   TOURNAMENT_FORMAT,
   DEFAULT_STANDARD_POINTS,
   DEFAULT_RANKING_BASED_POINTS,
-} from '../../utils/tournamentConstants';
-import { formatDate, formatTournamentFormat } from '../../utils/tournamentFormatters';
+} from '../../utils/tournamentConstants.js';
+import { formatDate, formatTournamentFormat } from '../../utils/tournamentFormatters.js';
 import {
   getChampionshipApplyStatus,
   revertTournamentChampionshipPoints,
-} from '../../services/championshipApplyService';
+} from '../../services/championshipApplyService.js';
 import { db } from '@services/firebase.js';
 import { collection, getDocs, query, doc, onSnapshot } from 'firebase/firestore';
 
@@ -550,6 +551,19 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
           </div>
         </div>
       </div>
+
+      {/* Public View Settings - Only for admins */}
+      {isAdmin && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div className="px-6 py-4">
+            <PublicViewSettings 
+              tournament={tournament}
+              clubId={clubId}
+              onUpdate={onUpdate}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Actions */}
       {console.log('🎬 [Actions Section] isAdmin:', isAdmin) ||

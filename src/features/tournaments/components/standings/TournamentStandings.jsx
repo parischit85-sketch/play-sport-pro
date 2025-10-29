@@ -3,16 +3,15 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Trophy, TrendingUp, ChevronDown, ChevronUp, Medal } from 'lucide-react';
+import { Trophy, TrendingUp, Medal } from 'lucide-react';
 import { calculateGroupStandings } from '../../services/standingsService';
 import { getTeamsByTournament } from '../../services/teamsService';
 import { calculateTeamAverageRanking } from '../../utils/teamRanking.js';
 
-function TournamentStandings({ tournament, clubId }) {
+function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicView = false }) {
   const [standings, setStandings] = useState({});
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [expandedGroups, setExpandedGroups] = useState({});
 
   const loadStandings = useCallback(async () => {
     setLoading(true);
@@ -33,9 +32,12 @@ function TournamentStandings({ tournament, clubId }) {
       }
 
       const groupIds = [...new Set(teamsData.map((t) => t.groupId).filter(Boolean))];
+      
+      // Se groupFilter è specificato, carica solo quel girone
+      const groupsToLoad = groupFilter ? [groupFilter] : groupIds;
 
       const standingsData = {};
-      for (const groupId of groupIds) {
+      for (const groupId of groupsToLoad) {
         const groupStandings = await calculateGroupStandings(
           clubId,
           tournament.id,
@@ -51,18 +53,11 @@ function TournamentStandings({ tournament, clubId }) {
     } finally {
       setLoading(false);
     }
-  }, [clubId, tournament.id, tournament.status, tournament.pointsSystem]);
+  }, [clubId, tournament.id, tournament.status, tournament.pointsSystem, groupFilter]);
 
   useEffect(() => {
     loadStandings();
   }, [loadStandings]);
-
-  const toggleGroup = (groupId) => {
-    setExpandedGroups((prev) => ({
-      ...prev,
-      [groupId]: !prev[groupId],
-    }));
-  };
 
   const getRankIcon = (rank) => {
     switch (rank) {
@@ -114,10 +109,115 @@ function TournamentStandings({ tournament, clubId }) {
       return rankingB - rankingA;
     });
 
+    // Public view - Card design
+    if (isPublicView) {
+      return (
+        <div className="overflow-x-auto">
+          <div className="space-y-2">
+            {sortedStandings.map((standing, index) => {
+              const rank = index + 1;
+              const isQualified = rank <= (tournament.teamsPerGroup || 2);
+              const dg = standing.matchesWon - standing.matchesLost;
+
+              return (
+                <div
+                  key={standing.teamId}
+                  className={`flex items-center gap-3 p-3 rounded-lg transition-all ${
+                    isQualified 
+                      ? 'bg-gradient-to-r from-emerald-900/40 to-emerald-800/20 border-l-4 border-emerald-500' 
+                      : 'bg-gray-800/50 hover:bg-gray-800'
+                  }`}
+                >
+                  {/* Rank */}
+                  <div className="flex-shrink-0 w-8 flex items-center justify-center">
+                    {rank <= 3 ? (
+                      getRankIcon(rank)
+                    ) : (
+                      <span className="text-sm font-bold text-gray-400">#{rank}</span>
+                    )}
+                  </div>
+
+                  {/* Team Name */}
+                  <div className="flex-1 min-w-0">
+                    {standing.teamName.split('/').map((playerName, idx) => (
+                      <div key={idx} className="text-sm font-semibold text-white truncate">
+                        {playerName.trim()}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Stats Grid */}
+                  <div className="flex items-center gap-4 flex-shrink-0">
+                    {/* Matches */}
+                    <div className="text-center">
+                      <div className="text-xs text-gray-500 uppercase">G</div>
+                      <div className="text-sm font-medium text-gray-300">{standing.matchesPlayed}</div>
+                    </div>
+
+                    {/* Win/Loss */}
+                    <div className="flex items-center gap-2">
+                      <div className="text-center">
+                        <div className="text-xs text-gray-500 uppercase">V</div>
+                        <div className="text-sm font-bold text-green-400">{standing.matchesWon}</div>
+                      </div>
+                      <span className="text-gray-600">-</span>
+                      <div className="text-center">
+                        <div className="text-xs text-gray-500 uppercase">P</div>
+                        <div className="text-sm font-bold text-red-400">{standing.matchesLost}</div>
+                      </div>
+                    </div>
+
+                    {/* DG */}
+                    <div className="text-center">
+                      <div className="text-xs text-gray-500 uppercase">DG</div>
+                      <div
+                        className={`text-sm font-bold ${
+                          dg > 0 ? 'text-green-400' : dg < 0 ? 'text-red-400' : 'text-gray-400'
+                        }`}
+                      >
+                        {dg > 0 ? '+' : ''}{dg}
+                      </div>
+                    </div>
+
+                    {/* Points */}
+                    <div className="text-center bg-emerald-900/50 rounded-lg px-3 py-1.5">
+                      <div className="text-xs text-emerald-400 uppercase font-semibold">Pts</div>
+                      <div className="text-lg font-bold text-white">{standing.points}</div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Legend */}
+          <div className="mt-4 pt-4 border-t border-gray-700">
+            <div className="flex flex-wrap gap-4 text-xs text-gray-400">
+              <div><span className="font-semibold">G</span> = Giocate</div>
+              <div><span className="font-semibold">V</span> = Vinte</div>
+              <div><span className="font-semibold">P</span> = Perse</div>
+              <div><span className="font-semibold">DG</span> = Diff. Game</div>
+              <div><span className="font-semibold">Pts</span> = Punti</div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Admin view - Classic table design
     return (
-      <div className="overflow-x-auto -mx-3 sm:mx-0">
-        <div className="inline-block min-w-full align-middle px-3 sm:px-0">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        {/* Group Header */}
+        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-t-lg">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Girone {groupId}
+          </h3>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-x-auto -mx-3 sm:mx-0">
+          <div className="inline-block min-w-full align-middle px-3 sm:px-0">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
                 <th className="sticky left-0 z-10 bg-gray-50 dark:bg-gray-900 text-left py-2 sm:py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -263,6 +363,7 @@ function TournamentStandings({ tournament, clubId }) {
             </div>
           </div>
         </div>
+        </div>
       </div>
     );
   };
@@ -270,123 +371,56 @@ function TournamentStandings({ tournament, clubId }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
       </div>
     );
   }
 
   if (Object.keys(standings).length === 0) {
     return (
-      <div className="text-center py-8 sm:py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 mx-3 sm:mx-0">
-        <Trophy className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-        <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2 px-4">
+      <div className="text-center py-8 sm:py-12 bg-gray-800 rounded-lg border border-gray-700 mx-3 sm:mx-0">
+        <Trophy className="w-10 h-10 sm:w-12 sm:h-12 text-gray-500 mx-auto mb-3 sm:mb-4" />
+        <h3 className="text-base sm:text-lg font-medium text-white mb-2 px-4">
           Nessuna Classifica
         </h3>
-        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 px-4">
+        <p className="text-sm sm:text-base text-gray-400 px-4">
           Le classifiche verranno calcolate dopo le prime partite completate
         </p>
       </div>
     );
   }
 
-  return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Mobile: Stack vertically, Desktop: Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+  // For public view: single column layout with space-y
+  if (isPublicView) {
+    return (
+      <div className="space-y-4 sm:space-y-6">
         {Object.entries(standings)
           .sort(([groupIdA], [groupIdB]) => groupIdA.localeCompare(groupIdB))
           .map(([groupId, groupStandings]) => {
             if (!groupStandings || groupStandings.length === 0) return null;
 
-            const isExpanded = expandedGroups[groupId] !== false;
-
             return (
-              <div
-                key={groupId}
-                className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden"
-              >
-                <button
-                  onClick={() => toggleGroup(groupId)}
-                  className="w-full flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 hover:from-primary-100 hover:to-blue-100 dark:hover:from-primary-900/30 dark:hover:to-blue-900/30 transition-colors active:scale-[0.99]"
-                  aria-expanded={isExpanded}
-                  aria-controls={`group-${groupId}-content`}
-                >
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600 dark:text-primary-400 flex-shrink-0" />
-                    <div className="text-left">
-                      <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
-                        Girone {groupId.toUpperCase()}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                        {groupStandings.length} squadre
-                      </p>
-                    </div>
-                  </div>
-                  {isExpanded ? (
-                    <ChevronUp className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                  )}
-                </button>
-
-                {isExpanded && (
-                  <div
-                    id={`group-${groupId}-content`}
-                    className="p-2 sm:p-4 bg-white dark:bg-gray-800"
-                  >
-                    {renderStandingsTable(groupId, groupStandings)}
-                  </div>
-                )}
+              <div key={groupId}>
+                {renderStandingsTable(groupId, groupStandings)}
               </div>
             );
           })}
       </div>
+    );
+  }
 
-      {/* Statistics - Mobile Optimized */}
-      <div className="bg-gradient-to-br from-primary-50 to-blue-50 dark:from-primary-900/20 dark:to-blue-900/20 rounded-lg p-4 sm:p-6 border border-primary-100 dark:border-primary-800">
-        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">
-          Statistiche Generali
-        </h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div className="text-center p-2 sm:p-0">
-            <div className="text-xl sm:text-2xl font-bold text-primary-600 dark:text-primary-400">
-              {Object.keys(standings).length}
-            </div>
-            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Gironi</div>
-          </div>
-          <div className="text-center p-2 sm:p-0">
-            <div className="text-xl sm:text-2xl font-bold text-primary-600 dark:text-primary-400">
-              {teams.length}
-            </div>
-            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              <span className="hidden sm:inline">Squadre Totali</span>
-              <span className="sm:hidden">Squadre</span>
-            </div>
-          </div>
-          <div className="text-center p-2 sm:p-0">
-            <div className="text-xl sm:text-2xl font-bold text-primary-600 dark:text-primary-400">
-              {Object.values(standings)
-                .flat()
-                .reduce((sum, s) => sum + s.matchesPlayed, 0)}
-            </div>
-            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              <span className="hidden sm:inline">Partite Giocate</span>
-              <span className="sm:hidden">Partite</span>
-            </div>
-          </div>
-          <div className="text-center p-2 sm:p-0">
-            <div className="text-xl sm:text-2xl font-bold text-primary-600 dark:text-primary-400">
-              {Object.values(standings)
-                .flat()
-                .reduce((sum, s) => sum + s.setsWon, 0)}
-            </div>
-            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-              <span className="hidden sm:inline">Set Totali</span>
-              <span className="sm:hidden">Set</span>
-            </div>
-          </div>
+  // For admin view: 2 groups per row using grid
+  const groupEntries = Object.entries(standings)
+    .sort(([groupIdA], [groupIdB]) => groupIdA.localeCompare(groupIdB))
+    .filter(([, groupStandings]) => groupStandings && groupStandings.length > 0);
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      {groupEntries.map(([groupId, groupStandings]) => (
+        <div key={groupId}>
+          {renderStandingsTable(groupId, groupStandings)}
         </div>
-      </div>
+      ))}
     </div>
   );
 }

@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth, USER_ROLES } from '../../../contexts/AuthContext';
+import { useAuth, USER_ROLES } from '@contexts/AuthContext.jsx';
 import {
   ArrowLeft,
   Trophy,
@@ -16,18 +16,18 @@ import {
   Settings,
   CheckCircle,
 } from 'lucide-react';
-import { getTournamentById } from '../services/tournamentService';
-import { getChampionshipApplyStatus } from '../services/championshipApplyService';
-import { TOURNAMENT_STATUS } from '../utils/tournamentConstants';
-import { formatTournamentStatus, formatDateRange } from '../utils/tournamentFormatters';
+import { getTournamentById } from '../services/tournamentService.js';
+import { getChampionshipApplyStatus } from '../services/championshipApplyService.js';
+import { TOURNAMENT_STATUS } from '../utils/tournamentConstants.js';
+import { formatTournamentStatus, formatDateRange } from '../utils/tournamentFormatters.js';
 
 // Tab components (will create these next)
-import TournamentOverview from './dashboard/TournamentOverview';
-import TournamentTeams from './registration/TournamentTeams';
-import TournamentMatches from './matches/TournamentMatches';
-import TournamentStandings from './standings/TournamentStandings';
-import TournamentBracket from './knockout/TournamentBracket';
-import TournamentPoints from './points/TournamentPoints';
+import TournamentOverview from './dashboard/TournamentOverview.jsx';
+import TournamentTeams from './registration/TournamentTeams.jsx';
+import TournamentMatches from './matches/TournamentMatches.jsx';
+import TournamentStandings from './standings/TournamentStandings.jsx';
+import TournamentBracket from './knockout/TournamentBracket.jsx';
+import TournamentPoints from './points/TournamentPoints.jsx';
 
 const TABS = [
   { id: 'overview', label: 'Panoramica', icon: Trophy },
