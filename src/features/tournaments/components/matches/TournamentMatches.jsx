@@ -34,7 +34,8 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
 
   // ✅ FIX: Check club-specific admin role, not global userRole
   const clubRole = userClubRoles?.[clubId];
-  const isClubAdmin = userRole === USER_ROLES.SUPER_ADMIN || clubRole === 'admin' || clubRole === 'club_admin';
+  const isClubAdmin =
+    userRole === USER_ROLES.SUPER_ADMIN || clubRole === 'admin' || clubRole === 'club_admin';
   const canEditResults = isClubAdmin;
 
   const loadData = async () => {
@@ -113,7 +114,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
         const groupId = match.groupId || 'ungrouped';
         // Se groupFilter è specificato, salta i gironi non richiesti
         if (groupFilter && groupId !== groupFilter) return acc;
-        
+
         if (!acc.groups[groupId]) {
           acc.groups[groupId] = [];
         }
@@ -371,9 +372,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
               <span
                 key={`tpill-${match.id}-${teamIndex}-${i}`}
                 className={`rounded ${
-                  isPublicView
-                    ? 'px-3 py-2 text-xl font-bold'
-                    : 'px-1.5 py-0.5 text-xs'
+                  isPublicView ? 'px-3 py-2 text-xl font-bold' : 'px-1.5 py-0.5 text-xs'
                 } ${
                   win
                     ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
@@ -392,7 +391,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
     return (
       <div
         key={match.id}
-        className={`bg-white dark:bg-gray-800 rounded-lg p-3 sm:p-4 transition-colors ${
+        className={`${isPublicView ? 'bg-gray-800' : 'bg-white dark:bg-gray-800'} rounded-lg p-3 sm:p-4 transition-colors ${
           isPublicView
             ? 'border-[2.5px] border-fuchsia-500'
             : 'border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700'
@@ -402,19 +401,25 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
         <div className="flex items-center justify-between mb-2 sm:mb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             {getStatusIcon(match.status)}
-            <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+            <span
+              className={`text-xs sm:text-sm ${isPublicView ? 'text-gray-300' : 'text-gray-500 dark:text-gray-400'}`}
+            >
               {getStatusText(match.status)}
             </span>
           </div>
           <div className="flex items-center gap-2">
             {/* Match format badge if available */}
             {match.bestOf && (
-              <span className="text-xs px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+              <span
+                className={`text-xs px-2 py-1 rounded ${isPublicView ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
+              >
                 {match.bestOf === 1 ? '1 set' : '2 su 3'}
               </span>
             )}
             {match.courtNumber && (
-              <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              <span
+                className={`text-xs sm:text-sm ${isPublicView ? 'text-gray-300' : 'text-gray-500 dark:text-gray-400'}`}
+              >
                 Campo {match.courtNumber}
               </span>
             )}
@@ -476,9 +481,17 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
 
           {/* VS divider */}
           <div className="flex items-center gap-2">
-            <div className={`flex-1 h-px ${isPublicView ? 'bg-fuchsia-500' : 'bg-gray-200 dark:bg-gray-700'}`}></div>
-            <span className={`text-xs font-medium ${isPublicView ? 'text-fuchsia-500' : 'text-gray-400 dark:text-gray-600'}`}>VS</span>
-            <div className={`flex-1 h-px ${isPublicView ? 'bg-fuchsia-500' : 'bg-gray-200 dark:bg-gray-700'}`}></div>
+            <div
+              className={`flex-1 h-px ${isPublicView ? 'bg-fuchsia-500' : 'bg-gray-200 dark:bg-gray-700'}`}
+            ></div>
+            <span
+              className={`text-xs font-medium ${isPublicView ? 'text-fuchsia-500' : 'text-gray-400 dark:text-gray-600'}`}
+            >
+              VS
+            </span>
+            <div
+              className={`flex-1 h-px ${isPublicView ? 'bg-fuchsia-500' : 'bg-gray-200 dark:bg-gray-700'}`}
+            ></div>
           </div>
 
           {/* Team 2 */}
