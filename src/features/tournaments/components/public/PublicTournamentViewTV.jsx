@@ -32,8 +32,10 @@ function PublicTournamentViewTV() {
 
   const intervalRef = useRef(null);
   const progressIntervalRef = useRef(null);
-  const contentRef = useRef(null);
-  const scrollIntervalRef = useRef(null);
+  const matchesScrollRef = useRef(null);
+  const matchesScrollIntervalRef = useRef(null);
+  const scrollPositionRef = useRef(0);
+  const isPausedRef = useRef(false);
 
   // Validate token and load tournament
   useEffect(() => {
@@ -272,86 +274,97 @@ function PublicTournamentViewTV() {
     };
   }, [pages.length, tournament]);
 
-  // Auto-scroll for content that overflows viewport
+  // Auto-scroll orizzontale per le partite
   useEffect(() => {
-    if (!contentRef.current) return;
+    // Reset refs when page changes
+    scrollPositionRef.current = 0;
+    isPausedRef.current = false;
 
-    const checkAndScroll = () => {
-      const container = contentRef.current;
-      if (!container) return;
+    // Clear any existing scroll interval
+    if (matchesScrollIntervalRef.current) {
+      clearInterval(matchesScrollIntervalRef.current);
+      matchesScrollIntervalRef.current = null;
+      console.log('🧹 Cleared previous scroll interval');
+    }
 
-      const containerHeight = container.clientHeight;
-      const scrollHeight = container.scrollHeight;
-      const isOverflowing = scrollHeight > containerHeight;
-
-      // Clear any existing scroll interval
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
-        scrollIntervalRef.current = null;
+    // Attendi che il DOM si aggiorni e poi inizia lo scroll
+    const startDelay = setTimeout(() => {
+      if (!matchesScrollRef.current) {
+        console.log('⚠️ matchesScrollRef still not available after delay, page:', currentPageIndex);
+        return;
       }
 
-      if (isOverflowing) {
-        console.log('📜 Content overflows, starting auto-scroll', {
-          containerHeight,
-          scrollHeight,
-          overflow: scrollHeight - containerHeight,
-        });
+      const container = matchesScrollRef.current;
 
-        let scrollPosition = 0;
-        const scrollStep = 1; // pixels per interval
-        const scrollDelay = 50; // ms between steps (slower = smoother)
-        const pauseAtBottom = 2000; // ms to pause at bottom
-        const pauseAtTop = 1000; // ms to pause at top
-        let isPaused = false;
-        let scrollDirection = 'down'; // 'down' or 'up'
+      // Forza un piccolo ritardo aggiuntivo per permettere al browser di renderizzare
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const scrollWidth = container.scrollWidth;
+          const containerWidth = container.clientWidth;
+          const isOverflowing = scrollWidth > containerWidth;
 
-        scrollIntervalRef.current = setInterval(() => {
-          if (isPaused || !container) return;
+          console.log('📏 Scroll check:', {
+            scrollWidth,
+            containerWidth,
+            isOverflowing,
+            page: currentPageIndex,
+          });
 
-          if (scrollDirection === 'down') {
-            scrollPosition += scrollStep;
-            container.scrollTop = scrollPosition;
+          if (isOverflowing) {
+            const totalScroll = scrollWidth - containerWidth;
+            const scrollStep = 3; // pixel per step
+            const scrollDelay = 55; // ms tra gli step
+            const pauseAtEnd = 1000; // pausa alla fine prima di ricominciare
 
-            // Check if reached bottom
-            if (scrollPosition >= scrollHeight - containerHeight) {
-              scrollDirection = 'up';
-              isPaused = true;
-              setTimeout(() => {
-                isPaused = false;
-              }, pauseAtBottom);
-            }
+            console.log('🎬 Starting horizontal scroll for matches', {
+              scrollWidth,
+              containerWidth,
+              totalScroll,
+              scrollStep,
+              scrollDelay,
+              page: currentPageIndex,
+            });
+
+            matchesScrollIntervalRef.current = setInterval(() => {
+              if (isPausedRef.current || !container) return;
+
+              scrollPositionRef.current += scrollStep;
+              container.scrollLeft = scrollPositionRef.current;
+
+              // Se arriva alla fine, pausa e ricomincia
+              if (scrollPositionRef.current >= totalScroll) {
+                isPausedRef.current = true;
+                console.log('🔄 Reached end, restarting after', pauseAtEnd, 'ms');
+                setTimeout(() => {
+                  scrollPositionRef.current = 0;
+                  if (container) {
+                    container.scrollLeft = 0;
+                  }
+                  isPausedRef.current = false;
+                  console.log('▶️ Restarting scroll');
+                }, pauseAtEnd);
+              }
+            }, scrollDelay);
+
+            console.log('✅ Scroll interval created:', matchesScrollIntervalRef.current);
           } else {
-            // Scrolling up
-            scrollPosition -= scrollStep;
-            container.scrollTop = scrollPosition;
-
-            // Check if reached top
-            if (scrollPosition <= 0) {
-              scrollDirection = 'down';
-              isPaused = true;
-              setTimeout(() => {
-                isPaused = false;
-              }, pauseAtTop);
-            }
+            // Reset scroll to start if content doesn't overflow
+            console.log('ℹ️ Content does not overflow, no scroll needed');
+            container.scrollLeft = 0;
           }
-        }, scrollDelay);
-      } else {
-        // Reset scroll to top if content doesn't overflow
-        container.scrollTop = 0;
-      }
-    };
-
-    // Check after content loads and when page changes
-    const timeoutId = setTimeout(checkAndScroll, 500);
+        });
+      });
+    }, 1600); // Ritardo aumentato a 1.6 secondi per dare più tempo al DOM
 
     return () => {
-      clearTimeout(timeoutId);
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
-        scrollIntervalRef.current = null;
+      console.log('🧹 Cleanup: page', currentPageIndex);
+      clearTimeout(startDelay);
+      if (matchesScrollIntervalRef.current) {
+        clearInterval(matchesScrollIntervalRef.current);
+        matchesScrollIntervalRef.current = null;
       }
     };
-  }, [currentPageIndex, groupData, pages]);
+  }, [currentPageIndex, groupData]);
 
   if (loading) {
     return (
@@ -494,10 +507,16 @@ function PublicTournamentViewTV() {
           </div>
         </div>
 
-        {/* Matches - 6 per row */}
+        {/* Matches - Scroll orizzontale */}
         <div>
           <h3 className="text-3xl font-bold text-white mb-3">Partite</h3>
-          <div className="grid grid-cols-6 gap-3">
+          <div
+            ref={matchesScrollRef}
+            className="flex gap-4 overflow-x-scroll hide-scrollbar pb-2"
+            style={{
+              scrollBehavior: 'smooth',
+            }}
+          >
             {matches.map((match) => {
               const team1 = teams[match.team1Id];
               const team2 = teams[match.team2Id];
@@ -541,7 +560,7 @@ function PublicTournamentViewTV() {
               return (
                 <div
                   key={match.id}
-                  className={`bg-gray-800 rounded-xl p-3 shadow-lg min-h-[140px] flex flex-col justify-center border-[2.5px] ${
+                  className={`bg-gray-800 rounded-xl p-3 shadow-lg min-h-[140px] min-w-[180px] flex-shrink-0 flex flex-col justify-center border-[2.5px] ${
                     isCompleted ? 'border-fuchsia-500' : 'border-fuchsia-700/60'
                   }`}
                 >
@@ -793,116 +812,129 @@ function PublicTournamentViewTV() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col">
-      {/* Header - NO QR CODE - Ottimizzato per 16:9 */}
-      <div className="bg-gray-800 border-b border-gray-700">
-        <div className="container mx-auto px-4 py-2">
-          <div className="flex items-center justify-between">
-            {/* Left: Logo */}
-            <div className="flex items-center">
-              <img
-                src="/play-sport-pro_horizontal.svg"
-                alt="Play Sport Pro"
-                className="h-12 w-auto"
-              />
-            </div>
-
-            {/* Center: Tournament name */}
-            <div className="flex-1 text-center">
-              <h1 className="text-3xl font-bold text-white">{tournament.name}</h1>
-            </div>
-
-            {/* Right side: LIVE Badge + Fullscreen button */}
-            <div className="flex items-center gap-3">
-              {/* LIVE Badge */}
-              <div className="flex items-center gap-3 px-4 py-2 bg-red-500 rounded-full shadow-lg">
-                <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
-                <span className="text-white font-bold text-xl">
-                  {currentTime.toLocaleTimeString('it-IT', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit',
-                  })}{' '}
-                  LIVE
-                </span>
+    <>
+      <style>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
+      <div className="min-h-screen bg-gray-900 flex flex-col">
+        {/* Header - NO QR CODE - Ottimizzato per 16:9 */}
+        <div className="bg-gray-800 border-b border-gray-700">
+          <div className="container mx-auto px-4 py-2">
+            <div className="flex items-center justify-between">
+              {/* Left: Logo */}
+              <div className="flex items-center">
+                <img
+                  src="/play-sport-pro_horizontal.svg"
+                  alt="Play Sport Pro"
+                  className="h-12 w-auto"
+                />
               </div>
 
-              {/* Fullscreen button */}
-              <button
-                onClick={toggleFullscreen}
-                className="p-2 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors"
-                title={isFullscreen ? 'Esci da schermo intero' : 'Schermo intero'}
-              >
-                {isFullscreen ? (
-                  <Minimize className="w-5 h-5 text-white" />
-                ) : (
-                  <Maximize className="w-5 h-5 text-white" />
-                )}
-              </button>
+              {/* Center: Tournament name */}
+              <div className="flex-1 text-center">
+                <h1 className="text-3xl font-bold text-white">{tournament.name}</h1>
+              </div>
+
+              {/* Right side: LIVE Badge + Fullscreen button */}
+              <div className="flex items-center gap-3">
+                {/* LIVE Badge */}
+                <div className="flex items-center gap-3 px-4 py-2 bg-red-500 rounded-full shadow-lg animate-pulse">
+                  <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
+                  <span className="text-white font-bold text-xl">
+                    {currentTime.toLocaleTimeString('it-IT', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit',
+                    })}{' '}
+                    LIVE
+                  </span>
+                </div>
+
+                {/* Fullscreen button */}
+                <button
+                  onClick={toggleFullscreen}
+                  className="p-2 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors"
+                  title={isFullscreen ? 'Esci da schermo intero' : 'Schermo intero'}
+                >
+                  {isFullscreen ? (
+                    <Minimize className="w-5 h-5 text-white" />
+                  ) : (
+                    <Maximize className="w-5 h-5 text-white" />
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Progress bar */}
-      <div className="h-1.5 bg-gray-800">
-        <div
-          className="h-full bg-emerald-500 transition-all duration-100 ease-linear"
-          style={{ width: `${progress}%` }}
-        ></div>
-      </div>
+        {/* Progress bar */}
+        <div className="h-1.5 bg-gray-800">
+          <div
+            className="h-full bg-emerald-500 transition-all duration-100 ease-linear"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
 
-      {/* Main content - Padding ridotto per 16:9 */}
-      <div ref={contentRef} className="container mx-auto px-4 py-3 flex-1 overflow-hidden">
-        {pages.length === 0 ? (
-          <div className="text-center py-32">
-            <Trophy className="w-24 h-24 text-gray-600 mx-auto mb-6" />
-            <p className="text-gray-400 text-3xl">Nessun contenuto disponibile</p>
+        {/* Main content - Padding ridotto per 16:9 */}
+        <div className="container mx-auto px-4 py-3 flex-1 overflow-hidden relative">
+          <div className="h-full">
+            {pages.length === 0 ? (
+              <div className="text-center py-32">
+                <Trophy className="w-24 h-24 text-gray-600 mx-auto mb-6" />
+                <p className="text-gray-400 text-3xl">Nessun contenuto disponibile</p>
+              </div>
+            ) : (
+              <>
+                {/* Page indicators - Più compatti */}
+                <div className="flex justify-center gap-2 mb-3">
+                  {pages.map((page, index) => (
+                    <div
+                      key={index}
+                      className={`h-3 rounded-full transition-all ${
+                        index === currentPageIndex ? 'bg-emerald-500 w-10' : 'bg-gray-700 w-3'
+                      }`}
+                    ></div>
+                  ))}
+                </div>
+
+                {/* Animated page content */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentPageIndex}
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -100 }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                  >
+                    {currentPage?.type === 'group'
+                      ? renderGroupPage(currentPage.groupId)
+                      : currentPage?.type === 'overall-standings'
+                        ? renderBracketPage()
+                        : currentPage?.type === 'points'
+                          ? renderPointsPage()
+                          : renderQRPage()}
+                  </motion.div>
+                </AnimatePresence>
+              </>
+            )}
           </div>
-        ) : (
-          <>
-            {/* Page indicators - Più compatti */}
-            <div className="flex justify-center gap-2 mb-3">
-              {pages.map((page, index) => (
-                <div
-                  key={index}
-                  className={`h-3 rounded-full transition-all ${
-                    index === currentPageIndex ? 'bg-emerald-500 w-10' : 'bg-gray-700 w-3'
-                  }`}
-                ></div>
-              ))}
-            </div>
+        </div>
 
-            {/* Animated page content */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentPageIndex}
-                initial={{ opacity: 0, x: 100 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.5, ease: 'easeInOut' }}
-              >
-                {currentPage?.type === 'group'
-                  ? renderGroupPage(currentPage.groupId)
-                  : currentPage?.type === 'overall-standings'
-                    ? renderBracketPage()
-                    : currentPage?.type === 'points'
-                      ? renderPointsPage()
-                      : renderQRPage()}
-              </motion.div>
-            </AnimatePresence>
-          </>
-        )}
-      </div>
-
-      {/* Footer - Più compatto */}
-      <div className="py-3 bg-gray-800 border-t border-gray-700">
-        <div className="flex items-center justify-center gap-2">
-          <p className="text-gray-400 text-sm">Powered by</p>
-          <img src="/play-sport-pro_horizontal.svg" alt="Play Sport Pro" className="h-6 w-auto" />
+        {/* Footer - Più compatto */}
+        <div className="py-3 bg-gray-800 border-t border-gray-700">
+          <div className="flex items-center justify-center gap-2">
+            <p className="text-gray-400 text-sm">Powered by</p>
+            <img src="/play-sport-pro_horizontal.svg" alt="Play Sport Pro" className="h-6 w-auto" />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
