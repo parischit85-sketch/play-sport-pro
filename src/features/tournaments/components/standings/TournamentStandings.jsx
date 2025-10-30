@@ -3,15 +3,89 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Trophy, TrendingUp, Medal } from 'lucide-react';
+import { Trophy, TrendingUp, Medal, Edit2, Check, X } from 'lucide-react';
 import { calculateGroupStandings } from '../../services/standingsService';
 import { getTeamsByTournament } from '../../services/teamsService';
+import { updateTournament } from '../../services/tournamentService';
 import { calculateTeamAverageRanking } from '../../utils/teamRanking.js';
+import { useAuth, USER_ROLES } from '@contexts/AuthContext.jsx';
 
-function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicView = false }) {
+function TournamentStandings({
+  tournament,
+  clubId,
+  groupFilter = null,
+  isPublicView = false,
+  onUpdate,
+}) {
+  const { userRole, userClubRoles } = useAuth();
   const [standings, setStandings] = useState({});
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editingGroup, setEditingGroup] = useState(null);
+  const [editedGroupName, setEditedGroupName] = useState('');
+  const [groupNames, setGroupNames] = useState({});
+
+  // Determina se l'utente è un club admin
+  const isClubAdmin =
+    userRole === USER_ROLES.CLUB_ADMIN ||
+    userRole === USER_ROLES.SUPER_ADMIN ||
+    (clubId &&
+      (userClubRoles?.[clubId] === USER_ROLES.CLUB_ADMIN || userClubRoles?.[clubId] === 'admin'));
+
+  // Carica i nomi personalizzati dei gironi dal tournament
+  useEffect(() => {
+    if (tournament?.groupNames) {
+      setGroupNames(tournament.groupNames);
+    }
+  }, [tournament]);
+
+  const handleEditGroupName = (groupId) => {
+    setEditingGroup(groupId);
+    setEditedGroupName(groupNames[groupId] || `Girone ${groupId}`);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingGroup(null);
+    setEditedGroupName('');
+  };
+
+  const handleSaveGroupName = async (groupId) => {
+    if (!editedGroupName.trim()) {
+      handleCancelEdit();
+      return;
+    }
+
+    try {
+      const newGroupNames = {
+        ...groupNames,
+        [groupId]: editedGroupName.trim(),
+      };
+
+      const result = await updateTournament(clubId, tournament.id, {
+        groupNames: newGroupNames,
+      });
+
+      if (result.success) {
+        setGroupNames(newGroupNames);
+        setEditingGroup(null);
+        setEditedGroupName('');
+
+        // Ricarica il torneo dal parent per aggiornare i dati
+        if (onUpdate) {
+          await onUpdate();
+        }
+      } else {
+        throw new Error(result.error || 'Errore sconosciuto');
+      }
+    } catch (error) {
+      console.error('Error updating group name:', error);
+      alert('Errore nel salvataggio del nome del girone');
+    }
+  };
+
+  const getGroupDisplayName = (groupId) => {
+    return groupNames[groupId] || `Girone ${groupId}`;
+  };
 
   const loadStandings = useCallback(async () => {
     setLoading(true);
@@ -222,9 +296,51 @@ function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicV
     // Admin view - Classic table design
     return (
       <div className="bg-gray-800 rounded-lg shadow-sm border border-gray-700">
-        {/* Group Header */}
-        <div className="px-4 py-3 border-b border-gray-700 bg-gray-700 rounded-t-lg">
-          <h3 className="text-lg font-semibold text-white">Girone {groupId}</h3>
+        {/* Group Header - Editable */}
+        <div className="px-4 py-3 border-b border-gray-700 bg-gray-700 rounded-t-lg flex items-center justify-between gap-3">
+          {editingGroup === groupId ? (
+            // Editing mode
+            <div className="flex items-center gap-2 flex-1">
+              <input
+                type="text"
+                value={editedGroupName}
+                onChange={(e) => setEditedGroupName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSaveGroupName(groupId);
+                  if (e.key === 'Escape') handleCancelEdit();
+                }}
+                className="flex-1 px-3 py-1.5 bg-gray-800 border border-gray-600 rounded text-white focus:outline-none focus:border-emerald-500"
+              />
+              <button
+                onClick={() => handleSaveGroupName(groupId)}
+                className="p-1.5 text-green-400 hover:bg-gray-600 rounded transition-colors"
+                title="Salva"
+              >
+                <Check className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleCancelEdit}
+                className="p-1.5 text-red-400 hover:bg-gray-600 rounded transition-colors"
+                title="Annulla"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          ) : (
+            // Display mode
+            <>
+              <h3 className="text-lg font-semibold text-white">{getGroupDisplayName(groupId)}</h3>
+              {isClubAdmin && !isPublicView && (
+                <button
+                  onClick={() => handleEditGroupName(groupId)}
+                  className="p-1.5 text-gray-400 hover:text-emerald-400 hover:bg-gray-600 rounded transition-colors"
+                  title="Modifica nome girone"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+              )}
+            </>
+          )}
         </div>
 
         {/* Table */}
@@ -433,4 +549,3 @@ function TournamentStandings({ tournament, clubId, groupFilter = null, isPublicV
 }
 
 export default TournamentStandings;
-

@@ -60,6 +60,11 @@ function PublicTournamentView() {
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
+  // Funzione per ottenere il nome personalizzato del girone
+  const getGroupDisplayName = (groupId) => {
+    return tournament?.groupNames?.[groupId] || `Girone ${groupId.toUpperCase()}`;
+  };
+
   // Validate token and load tournament
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -330,7 +335,7 @@ function PublicTournamentView() {
       <div className="space-y-6">
         {/* Title */}
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white">Girone {groupId.toUpperCase()}</h2>
+          <h2 className="text-2xl font-bold text-white">{getGroupDisplayName(groupId)}</h2>
         </div>
 
         {/* Standings */}

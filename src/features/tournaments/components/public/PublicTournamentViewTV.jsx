@@ -6,12 +6,11 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, collection } from 'firebase/firestore';
 import { db } from '@services/firebase.js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, AlertCircle, Medal, Maximize, Minimize } from 'lucide-react';
 import QRCode from 'react-qr-code';
-import { getMatches } from '../../services/matchService.js';
 import { getTeamsByTournament } from '../../services/teamsService.js';
 import { calculateGroupStandings } from '../../services/standingsService.js';
 import TournamentBracket from '../knockout/TournamentBracket.jsx';
@@ -36,6 +35,14 @@ function PublicTournamentViewTV() {
   const matchesScrollIntervalRef = useRef(null);
   const scrollPositionRef = useRef(0);
   const isPausedRef = useRef(false);
+
+  // State for real-time matches
+  const [matches, setMatches] = useState([]);
+
+  // Funzione per ottenere il nome personalizzato del girone
+  const getGroupDisplayName = (groupId) => {
+    return tournament?.groupNames?.[groupId] || `Girone ${groupId.toUpperCase()}`;
+  };
 
   // Validate token and load tournament
   useEffect(() => {
@@ -76,15 +83,35 @@ function PublicTournamentViewTV() {
     return () => unsubscribe();
   }, [clubId, tournamentId, token]);
 
-  // Load groups and data when tournament changes
+  // Real-time listener for matches
+  useEffect(() => {
+    if (!clubId || !tournamentId) return;
+
+    const matchesRef = collection(db, 'clubs', clubId, 'tournaments', tournamentId, 'matches');
+
+    const unsubscribe = onSnapshot(
+      matchesRef,
+      (snapshot) => {
+        const matchesData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setMatches(matchesData);
+      },
+      (err) => {
+        console.error('Error loading matches:', err);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [clubId, tournamentId]);
+
+  // Load groups and data when tournament or matches changes
   const loadGroupsAndData = useCallback(async () => {
-    if (!tournament) return;
+    if (!tournament || matches.length === 0) return;
 
     try {
-      const [matches, teams] = await Promise.all([
-        getMatches(clubId, tournamentId),
-        getTeamsByTournament(clubId, tournamentId),
-      ]);
+      const teams = await getTeamsByTournament(clubId, tournamentId);
 
       // Combine groupIds from matches (type === 'group') and teams
       const groupIdsFromMatches = matches
@@ -127,7 +154,7 @@ function PublicTournamentViewTV() {
     } catch (err) {
       console.error('Error loading groups:', err);
     }
-  }, [tournament, clubId, tournamentId]);
+  }, [tournament, matches, clubId, tournamentId]);
 
   useEffect(() => {
     loadGroupsAndData();
@@ -423,7 +450,7 @@ function PublicTournamentViewTV() {
         <div>
           <h3 className="text-3xl font-bold text-white mb-3 flex items-center gap-3">
             <Trophy className="w-8 h-8" />
-            Classifica - Girone {groupId.toUpperCase()}
+            Classifica - {getGroupDisplayName(groupId)}
           </h3>
           <div className="bg-gray-800 rounded-2xl overflow-hidden shadow-2xl border border-gray-700">
             <table className="w-full">
@@ -526,6 +553,7 @@ function PublicTournamentViewTV() {
               const team1Name = team1?.teamName || team1?.name || '—';
               const team2Name = team2?.teamName || team2?.name || '—';
               const isCompleted = match.status === 'completed';
+              const isInProgress = match.status === 'in_progress';
 
               // Split team names to get individual players (assuming format "Player1 / Player2")
               const team1Players = team1Name.split('/').map((p) => p.trim());
@@ -561,9 +589,22 @@ function PublicTournamentViewTV() {
                 <div
                   key={match.id}
                   className={`bg-gray-800 rounded-xl p-3 shadow-lg min-h-[140px] min-w-[180px] flex-shrink-0 flex flex-col justify-center border-[2.5px] ${
-                    isCompleted ? 'border-fuchsia-500' : 'border-fuchsia-700/60'
+                    isCompleted
+                      ? 'border-fuchsia-500'
+                      : isInProgress
+                        ? 'border-red-500'
+                        : 'border-fuchsia-700/60'
                   }`}
                 >
+                  {/* Status Badge - Only for IN PROGRESS */}
+                  {isInProgress && (
+                    <div className="mb-2 flex justify-center">
+                      <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full animate-pulse">
+                        IN CORSO
+                      </span>
+                    </div>
+                  )}
+
                   {/* Team 1 */}
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex-1">
@@ -638,7 +679,7 @@ function PublicTournamentViewTV() {
                   </div>
 
                   {/* Status */}
-                  {!isCompleted && (
+                  {!isCompleted && !isInProgress && (
                     <div className="mt-2 text-center">
                       <span className="text-xs text-amber-500 font-semibold uppercase">
                         In programma

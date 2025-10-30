@@ -14,7 +14,7 @@ import {
   Info,
 } from 'lucide-react';
 import { useAuth, USER_ROLES } from '../../../../contexts/AuthContext';
-import { getMatches, recordMatchResult } from '../../services/matchService';
+import { getMatches, recordMatchResult, updateMatchStatus } from '../../services/matchService';
 import { getTeamsByTournament } from '../../services/teamsService';
 import { MATCH_STATUS, KNOCKOUT_ROUND_NAMES } from '../../utils/tournamentConstants';
 import { computeFromSets, calcParisDelta } from '../../../../lib/rpa.js';
@@ -88,6 +88,66 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
     } catch (error) {
       console.error('Error recording result:', error);
       alert('Errore nel salvataggio del risultato');
+    }
+  };
+
+  const handleMarkAsInProgress = async (matchId) => {
+    try {
+      // Aggiornamento ottimistico: aggiorna subito l'interfaccia
+      setMatches((prevMatches) =>
+        prevMatches.map((m) => (m.id === matchId ? { ...m, status: MATCH_STATUS.IN_PROGRESS } : m))
+      );
+
+      const result = await updateMatchStatus(
+        clubId,
+        tournament.id,
+        matchId,
+        MATCH_STATUS.IN_PROGRESS
+      );
+
+      if (result.success) {
+        // Ricarica i dati dal server per confermare
+        await loadData();
+      } else {
+        // Se fallisce, ricarica i dati per ripristinare lo stato corretto
+        await loadData();
+        alert(result.error || "Errore nell'aggiornamento dello stato");
+      }
+    } catch (error) {
+      console.error('Error updating match status:', error);
+      // Ricarica i dati per ripristinare lo stato corretto
+      await loadData();
+      alert("Errore nell'aggiornamento dello stato");
+    }
+  };
+
+  const handleMarkAsScheduled = async (matchId) => {
+    try {
+      // Aggiornamento ottimistico: aggiorna subito l'interfaccia
+      setMatches((prevMatches) =>
+        prevMatches.map((m) => (m.id === matchId ? { ...m, status: MATCH_STATUS.SCHEDULED } : m))
+      );
+
+      const result = await updateMatchStatus(
+        clubId,
+        tournament.id,
+        matchId,
+        MATCH_STATUS.SCHEDULED
+      );
+
+      if (result.success) {
+        // Ricarica i dati dal server per confermare
+        await loadData();
+      } else {
+        // Se fallisce, ricarica i dati per ripristinare lo stato corretto
+        await loadData();
+        alert(result.error || "Errore nell'aggiornamento dello stato");
+      }
+    } catch (error) {
+      console.error('Error updating match status:', error);
+      // Ricarica i dati per ripristinare lo stato corretto
+      await loadData();
+      alert("Errore nell'aggiornamento dello stato");
     }
   };
 
@@ -400,17 +460,28 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
         <div className="flex items-center justify-between mb-2 sm:mb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             {getStatusIcon(match.status)}
-            <span
-              className={`text-xs sm:text-sm ${
-                isPublicView
-                  ? match.status === MATCH_STATUS.SCHEDULED
-                    ? 'text-amber-500 font-semibold'
-                    : 'text-gray-300'
-                  : 'text-gray-400'
-              }`}
-            >
-              {getStatusText(match.status)}
-            </span>
+            {/* Show status text only if not IN_PROGRESS in public view */}
+            {!(isPublicView && match.status === MATCH_STATUS.IN_PROGRESS) && (
+              <span
+                className={`text-xs sm:text-sm ${
+                  isPublicView
+                    ? match.status === MATCH_STATUS.IN_PROGRESS
+                      ? 'text-red-500 font-bold animate-pulse'
+                      : match.status === MATCH_STATUS.SCHEDULED
+                        ? 'text-amber-500 font-semibold'
+                        : 'text-gray-300'
+                    : 'text-gray-400'
+                }`}
+              >
+                {getStatusText(match.status)}
+              </span>
+            )}
+            {/* Show IN CORSO badge for public view when in progress */}
+            {isPublicView && match.status === MATCH_STATUS.IN_PROGRESS && (
+              <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
+                IN CORSO
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2">
             {/* Match format badge if available */}
@@ -460,9 +531,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                     </span>
                   )}
                   {team1.seed && (
-                    <span className="text-xs text-gray-400 flex-shrink-0">
-                      (#{team1.seed})
-                    </span>
+                    <span className="text-xs text-gray-400 flex-shrink-0">(#{team1.seed})</span>
                   )}
                 </>
               )}
@@ -526,9 +595,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                     </span>
                   )}
                   {team2.seed && (
-                    <span className="text-xs text-gray-400 flex-shrink-0">
-                      (#{team2.seed})
-                    </span>
+                    <span className="text-xs text-gray-400 flex-shrink-0">(#{team2.seed})</span>
                   )}
                 </>
               )}
@@ -561,13 +628,37 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
         )}
 
         {!isPublicView && canRecordResult && (
-          <button
-            onClick={() => canEditResults && setSelectedMatch(match)}
-            disabled={!canEditResults}
-            className="w-full mt-3 px-3 sm:px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
-          >
-            Inserisci Risultato
-          </button>
+          <>
+            {match.status === MATCH_STATUS.SCHEDULED && (
+              <button
+                onClick={() => canEditResults && handleMarkAsInProgress(match.id)}
+                disabled={!canEditResults}
+                className="w-full mt-3 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center justify-center gap-2"
+              >
+                <PlayCircle className="w-4 h-4" />
+                Segna In Corso
+              </button>
+            )}
+
+            {match.status === MATCH_STATUS.IN_PROGRESS && (
+              <button
+                onClick={() => canEditResults && handleMarkAsScheduled(match.id)}
+                disabled={!canEditResults}
+                className="w-full mt-3 px-3 sm:px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center justify-center gap-2"
+              >
+                <Clock className="w-4 h-4" />
+                Riporta a Programmato
+              </button>
+            )}
+
+            <button
+              onClick={() => canEditResults && setSelectedMatch(match)}
+              disabled={!canEditResults}
+              className="w-full mt-3 px-3 sm:px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+            >
+              Inserisci Risultato
+            </button>
+          </>
         )}
 
         {!isPublicView && isCompleted && (
@@ -650,9 +741,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
       {/* Group Matches - Different rendering for public vs admin view */}
       {Object.keys(groupedMatches.groups).length > 0 && (
         <div className="space-y-4">
-          {!isPublicView && (
-            <h3 className="text-lg font-semibold text-white">Gironi</h3>
-          )}
+          {!isPublicView && <h3 className="text-lg font-semibold text-white">Gironi</h3>}
           {isPublicView ? (
             // Public view: Simple list without headers or collapsible sections
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -672,10 +761,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
               const isExpanded = expandedGroups[groupId] !== false;
 
               return (
-                <div
-                  key={groupId}
-                  className="border border-gray-700 rounded-lg overflow-hidden"
-                >
+                <div key={groupId} className="border border-gray-700 rounded-lg overflow-hidden">
                   <button
                     onClick={() => toggleGroup(groupId)}
                     className="w-full flex items-center justify-between p-4 bg-gray-700 hover:bg-gray-750 transition-colors"
@@ -711,9 +797,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
       {/* Knockout matches - Hidden in public view */}
       {!isPublicView && Object.keys(groupedMatches.knockout).length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-white">
-            Eliminazione Diretta
-          </h3>
+          <h3 className="text-lg font-semibold text-white">Eliminazione Diretta</h3>
           {sortedKnockoutKeys.map((round) => {
             const roundMatches = groupedMatches.knockout[round];
             const filteredMatches = roundMatches.filter(filterMatch);
@@ -757,4 +841,3 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
 }
 
 export default TournamentMatches;
-

@@ -124,9 +124,7 @@ function TournamentDetailsPage({ clubId }) {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="text-6xl mb-4">⚠️</div>
-          <h3 className="text-xl font-bold text-white mb-2">
-            {error || 'Torneo non trovato'}
-          </h3>
+          <h3 className="text-xl font-bold text-white mb-2">{error || 'Torneo non trovato'}</h3>
           <button
             onClick={handleBack}
             className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
@@ -141,18 +139,12 @@ function TournamentDetailsPage({ clubId }) {
   const statusColor =
     {
       [TOURNAMENT_STATUS.DRAFT]: 'bg-gray-700 text-gray-300',
-      [TOURNAMENT_STATUS.REGISTRATION_OPEN]:
-        'bg-green-900 text-green-300',
-      [TOURNAMENT_STATUS.REGISTRATION_CLOSED]:
-        'bg-yellow-900 text-yellow-300',
-      [TOURNAMENT_STATUS.GROUPS_GENERATION]:
-        'bg-blue-900 text-blue-300',
-      [TOURNAMENT_STATUS.GROUPS_PHASE]:
-        'bg-blue-900 text-blue-300',
-      [TOURNAMENT_STATUS.KNOCKOUT_PHASE]:
-        'bg-purple-900 text-purple-300',
-      [TOURNAMENT_STATUS.COMPLETED]:
-        'bg-green-900 text-green-300',
+      [TOURNAMENT_STATUS.REGISTRATION_OPEN]: 'bg-green-900 text-green-300',
+      [TOURNAMENT_STATUS.REGISTRATION_CLOSED]: 'bg-yellow-900 text-yellow-300',
+      [TOURNAMENT_STATUS.GROUPS_GENERATION]: 'bg-blue-900 text-blue-300',
+      [TOURNAMENT_STATUS.GROUPS_PHASE]: 'bg-blue-900 text-blue-300',
+      [TOURNAMENT_STATUS.KNOCKOUT_PHASE]: 'bg-purple-900 text-purple-300',
+      [TOURNAMENT_STATUS.COMPLETED]: 'bg-green-900 text-green-300',
       [TOURNAMENT_STATUS.CANCELLED]: 'bg-red-900 text-red-300',
     }[tournament.status] || 'bg-gray-700 text-gray-300';
 
@@ -260,7 +252,11 @@ function TournamentDetailsPage({ clubId }) {
           )}
 
           {activeTab === 'standings' && (
-            <TournamentStandings tournament={tournament} clubId={clubId} />
+            <TournamentStandings
+              tournament={tournament}
+              clubId={clubId}
+              onUpdate={loadTournament}
+            />
           )}
 
           {activeTab === 'bracket' && <TournamentBracket tournament={tournament} clubId={clubId} />}
@@ -273,4 +269,3 @@ function TournamentDetailsPage({ clubId }) {
 }
 
 export default TournamentDetailsPage;
-
