@@ -40,8 +40,41 @@ export default function LiveTournamentsModal({ isOpen, onClose }) {
   };
 
   const getDeviceType = () => {
-    // Simple device detection based on screen width and touch capability
-    const isMobile = window.innerWidth < 768 || 'ontouchstart' in window;
+    const userAgent = navigator.userAgent.toLowerCase();
+    const screenWidth = window.innerWidth;
+
+    // Check if it's a TV device (Google TV, Android TV, Smart TV, etc.)
+    const isTVDevice =
+      userAgent.includes('tv') ||
+      userAgent.includes('googletv') ||
+      userAgent.includes('androidtv') ||
+      userAgent.includes('smarttv') ||
+      userAgent.includes('appletv') ||
+      userAgent.includes('hbbtv') ||
+      userAgent.includes('roku') ||
+      userAgent.includes('viera') ||
+      userAgent.includes('opera tv') ||
+      userAgent.includes('netcast') ||
+      userAgent.includes('philips') ||
+      userAgent.includes('web0s');
+
+    // If it's a TV device, treat as desktop
+    if (isTVDevice) {
+      console.log('🖥️ TV device detected:', userAgent);
+      return 'desktop';
+    }
+
+    // Check for mobile devices
+    const isMobile =
+      screenWidth < 768 || ('ontouchstart' in window && screenWidth < 1024 && !isTVDevice);
+
+    console.log('📱 Device detection:', {
+      userAgent,
+      screenWidth,
+      isMobile,
+      isTVDevice,
+    });
+
     return isMobile ? 'mobile' : 'desktop';
   };
 
@@ -115,10 +148,7 @@ export default function LiveTournamentsModal({ isOpen, onClose }) {
               <p className="text-gray-400 text-sm">Tornei con visualizzazione pubblica attiva</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -155,17 +185,25 @@ export default function LiveTournamentsModal({ isOpen, onClose }) {
                   key={`${tournament.clubId}-${tournament.id}`}
                   className="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors cursor-pointer"
                   onClick={() => openTournamentView(tournament)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      openTournamentView(tournament);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <h3 className="text-lg font-semibold text-white truncate mb-1">
                         {tournament.name}
                       </h3>
-                      <p className="text-gray-300 text-sm mb-2">
-                        {tournament.clubName}
-                      </p>
+                      <p className="text-gray-300 text-sm mb-2">{tournament.clubName}</p>
                       <div className="flex items-center gap-4 text-sm">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(tournament.status)}`}>
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(tournament.status)}`}
+                        >
                           {getStatusText(tournament.status)}
                         </span>
                         {tournament.registeredTeams && (
@@ -209,4 +247,3 @@ export default function LiveTournamentsModal({ isOpen, onClose }) {
     </Modal>
   );
 }
-

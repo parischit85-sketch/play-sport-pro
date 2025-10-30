@@ -9,7 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@services/firebase.js';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, AlertCircle, ChevronLeft, ChevronRight, Medal, QrCode } from 'lucide-react';
+import { Trophy, AlertCircle, ChevronLeft, ChevronRight, Medal } from 'lucide-react';
 import TournamentStandings from '../standings/TournamentStandings.jsx';
 import TournamentMatches from '../matches/TournamentMatches.jsx';
 import TournamentBracket from '../knockout/TournamentBracket.jsx';
@@ -25,6 +25,29 @@ function PublicTournamentView() {
   const [tournament, setTournament] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Auto-redirect TV devices to TV view
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isTVDevice =
+      userAgent.includes('tv') ||
+      userAgent.includes('googletv') ||
+      userAgent.includes('androidtv') ||
+      userAgent.includes('smarttv') ||
+      userAgent.includes('appletv') ||
+      userAgent.includes('hbbtv') ||
+      userAgent.includes('roku') ||
+      userAgent.includes('viera') ||
+      userAgent.includes('opera tv') ||
+      userAgent.includes('netcast') ||
+      userAgent.includes('philips') ||
+      userAgent.includes('web0s');
+
+    if (isTVDevice) {
+      console.log('🖥️ TV device detected, redirecting to TV view...');
+      navigate(`/public/tournament-tv/${clubId}/${tournamentId}/${token}`, { replace: true });
+    }
+  }, [clubId, tournamentId, token, navigate]);
   const [groups, setGroups] = useState([]);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [showSwipeHint, setShowSwipeHint] = useState(true);
@@ -138,7 +161,8 @@ function PublicTournamentView() {
 
   // Add group pages if enabled in settings
   const displaySettings = tournament?.publicView?.settings?.displaySettings || {};
-  if (displaySettings.groupsMatches !== false) { // Default to true if not set
+  if (displaySettings.groupsMatches !== false) {
+    // Default to true if not set
     pages.push(...groups.map((g) => ({ type: 'group', groupId: g })));
   }
 
@@ -302,15 +326,11 @@ function PublicTournamentView() {
     const data = groupData[groupId];
     if (!data) return null;
 
-    const { standings, matches, teams } = data;
-
     return (
       <div className="space-y-6">
         {/* Title */}
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white">
-            Girone {groupId.toUpperCase()}
-          </h2>
+          <h2 className="text-2xl font-bold text-white">Girone {groupId.toUpperCase()}</h2>
         </div>
 
         {/* Standings */}
@@ -347,9 +367,7 @@ function PublicTournamentView() {
     return (
       <div className="space-y-6">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white">
-            Tabellone Finale
-          </h2>
+          <h2 className="text-2xl font-bold text-white">Tabellone Finale</h2>
         </div>
         <TournamentBracket
           tournament={tournament}
@@ -392,11 +410,13 @@ function PublicTournamentView() {
               teamName: standing.teamName,
               totalPoints: standing.points || 0,
               totalRPA: standing.rpaPoints || 0,
-              groups: [{
-                groupId: Object.keys(groupData).find((key) => groupData[key] === group),
-                points: standing.points || 0,
-                rpa: standing.rpaPoints || 0,
-              }],
+              groups: [
+                {
+                  groupId: Object.keys(groupData).find((key) => groupData[key] === group),
+                  points: standing.points || 0,
+                  rpa: standing.rpaPoints || 0,
+                },
+              ],
             });
           }
         });
@@ -406,9 +426,7 @@ function PublicTournamentView() {
     return (
       <div className="space-y-6">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white">
-            Classifica Punti - {tournament.name}
-          </h2>
+          <h2 className="text-2xl font-bold text-white">Classifica Punti - {tournament.name}</h2>
         </div>
 
         {/* Points Ranking */}
@@ -616,4 +634,3 @@ function PublicTournamentView() {
 }
 
 export default PublicTournamentView;
-
