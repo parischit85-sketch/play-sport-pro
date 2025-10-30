@@ -9,11 +9,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@services/firebase.js';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trophy, AlertCircle, ChevronLeft, ChevronRight, Medal, QrCode } from 'lucide-react';
 import TournamentStandings from '../standings/TournamentStandings.jsx';
 import TournamentMatches from '../matches/TournamentMatches.jsx';
+import TournamentBracket from '../knockout/TournamentBracket.jsx';
 import { getMatches } from '../../services/matchService.js';
 import { getTeamsByTournament } from '../../services/teamsService.js';
+import { calculateGroupStandings } from '../../services/standingsService.js';
+import QRCode from 'react-qr-code';
 
 function PublicTournamentView() {
   const { clubId, tournamentId, token } = useParams();
@@ -23,8 +26,13 @@ function PublicTournamentView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [groups, setGroups] = useState([]);
-  const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [showSwipeHint, setShowSwipeHint] = useState(true);
+  const [groupData, setGroupData] = useState({});
+  const [progress, setProgress] = useState(0);
+
+  const intervalRef = useRef(null);
+  const progressIntervalRef = useRef(null);
 
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
@@ -68,8 +76,8 @@ function PublicTournamentView() {
     return () => unsubscribe();
   }, [clubId, tournamentId, token]);
 
-  // Load groups when tournament changes
-  const loadGroups = useCallback(async () => {
+  // Load groups and data when tournament changes
+  const loadGroupsAndData = useCallback(async () => {
     if (!tournament) return;
 
     try {
@@ -89,14 +97,63 @@ function PublicTournamentView() {
       );
 
       setGroups(uniqueGroups);
+
+      // Load standings and matches for each group
+      const data = {};
+      for (const groupId of uniqueGroups) {
+        const standings = await calculateGroupStandings(
+          clubId,
+          tournamentId,
+          groupId,
+          tournament.pointsSystem || { win: 3, draw: 1, loss: 0 }
+        );
+
+        const groupMatches = matches.filter((m) => m.type === 'group' && m.groupId === groupId);
+
+        // Map team data
+        const teamsMap = {};
+        teams.forEach((t) => {
+          teamsMap[t.id] = t;
+        });
+
+        data[groupId] = {
+          standings,
+          matches: groupMatches,
+          teams: teamsMap,
+        };
+      }
+
+      setGroupData(data);
     } catch (err) {
       console.error('Error loading groups:', err);
     }
   }, [tournament, clubId, tournamentId]);
 
   useEffect(() => {
-    loadGroups();
-  }, [loadGroups]);
+    loadGroupsAndData();
+  }, [loadGroupsAndData]);
+
+  // Create pages based on display settings
+  const pages = [];
+
+  // Add group pages if enabled in settings
+  const displaySettings = tournament?.publicView?.settings?.displaySettings || {};
+  if (displaySettings.groupsMatches !== false) { // Default to true if not set
+    pages.push(...groups.map((g) => ({ type: 'group', groupId: g })));
+  }
+
+  // Add overall standings page if enabled
+  if (displaySettings.standings === true) {
+    pages.push({ type: 'overall-standings' });
+  }
+
+  // Add points page if enabled
+  if (displaySettings.points === true) {
+    pages.push({ type: 'points' });
+  }
+
+  // Always add QR page at the end
+  pages.push({ type: 'qr' });
 
   // Handle swipe gestures
   const handleTouchStart = (e) => {
@@ -110,17 +167,49 @@ function PublicTournamentView() {
 
   const handleTouchEnd = () => {
     if (!touchStartX.current || !touchEndX.current) return;
-    
+
     const swipeDistance = touchStartX.current - touchEndX.current;
     const minSwipeDistance = 50; // Minimum distance for a swipe
 
     if (Math.abs(swipeDistance) > minSwipeDistance) {
       if (swipeDistance > 0) {
-        // Swipe left - next group
-        setCurrentGroupIndex((prev) => (prev + 1) % groups.length);
+        // Swipe left - next page
+        setCurrentPageIndex((prev) => (prev + 1) % pages.length);
+        setProgress(0);
+        // Reset auto-scroll timer
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+        const interval = tournament?.publicView?.settings?.interval || 15000;
+        progressIntervalRef.current = setInterval(() => {
+          setProgress((prev) => {
+            const increment = (100 / interval) * 100;
+            if (prev >= 100) return 0;
+            return prev + increment;
+          });
+        }, 100);
+        intervalRef.current = setInterval(() => {
+          setCurrentPageIndex((prev) => (prev + 1) % pages.length);
+          setProgress(0);
+        }, interval);
       } else {
-        // Swipe right - previous group
-        setCurrentGroupIndex((prev) => (prev - 1 + groups.length) % groups.length);
+        // Swipe right - previous page
+        setCurrentPageIndex((prev) => (prev - 1 + pages.length) % pages.length);
+        setProgress(0);
+        // Reset auto-scroll timer
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+        const interval = tournament?.publicView?.settings?.interval || 15000;
+        progressIntervalRef.current = setInterval(() => {
+          setProgress((prev) => {
+            const increment = (100 / interval) * 100;
+            if (prev >= 100) return 0;
+            return prev + increment;
+          });
+        }, 100);
+        intervalRef.current = setInterval(() => {
+          setCurrentPageIndex((prev) => (prev + 1) % pages.length);
+          setProgress(0);
+        }, interval);
       }
     }
 
@@ -136,6 +225,33 @@ function PublicTournamentView() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Auto-scroll logic
+  useEffect(() => {
+    if (pages.length === 0) return;
+
+    const interval = tournament?.publicView?.settings?.interval || 15000; // Default 15s
+
+    // Progress bar update (every 100ms)
+    progressIntervalRef.current = setInterval(() => {
+      setProgress((prev) => {
+        const increment = (100 / interval) * 100;
+        if (prev >= 100) return 0;
+        return prev + increment;
+      });
+    }, 100);
+
+    // Auto-scroll to next page
+    intervalRef.current = setInterval(() => {
+      setCurrentPageIndex((prev) => (prev + 1) % pages.length);
+      setProgress(0);
+    }, interval);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+    };
+  }, [pages.length, tournament]);
 
   if (loading) {
     return (
@@ -166,7 +282,202 @@ function PublicTournamentView() {
     );
   }
 
-  const currentGroup = groups[currentGroupIndex];
+  const currentPage = pages[currentPageIndex];
+  const publicUrlMobile = `${window.location.origin}/public/tournament/${clubId}/${tournamentId}/${token}`;
+
+  const getRankIcon = (rank) => {
+    switch (rank) {
+      case 1:
+        return <Medal className="w-6 h-6 text-yellow-500" />;
+      case 2:
+        return <Medal className="w-6 h-6 text-gray-400" />;
+      case 3:
+        return <Medal className="w-6 h-6 text-orange-600" />;
+      default:
+        return <span className="text-lg text-gray-400">#{rank}</span>;
+    }
+  };
+
+  const renderGroupPage = (groupId) => {
+    const data = groupData[groupId];
+    if (!data) return null;
+
+    const { standings, matches, teams } = data;
+
+    return (
+      <div className="space-y-6">
+        {/* Title */}
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white">
+            Girone {groupId.toUpperCase()}
+          </h2>
+        </div>
+
+        {/* Standings */}
+        <div>
+          <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-emerald-500" />
+            Classifica
+          </h3>
+          <TournamentStandings
+            tournament={tournament}
+            clubId={clubId}
+            groupFilter={groupId}
+            isPublicView={true}
+          />
+        </div>
+
+        {/* Matches */}
+        <div>
+          <h3 className="text-xl font-bold text-white mb-3">Partite</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <TournamentMatches
+              tournament={tournament}
+              clubId={clubId}
+              groupFilter={groupId}
+              isPublicView={true}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderBracketPage = () => {
+    return (
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white">
+            Tabellone Finale
+          </h2>
+        </div>
+        <TournamentBracket
+          tournament={tournament}
+          clubId={clubId}
+          isPublicView={true}
+          isTVView={false}
+        />
+      </div>
+    );
+  };
+
+  const renderPointsPage = () => {
+    // Create points ranking based on overall performance
+    const pointsRanking = [];
+    const teamsMap = {};
+
+    // Collect all teams and their data
+    Object.values(groupData).forEach((group) => {
+      if (group.teams) {
+        Object.assign(teamsMap, group.teams);
+      }
+    });
+
+    // Calculate points for each team across all groups
+    Object.values(groupData).forEach((group) => {
+      if (group.standings) {
+        group.standings.forEach((standing) => {
+          const existingTeam = pointsRanking.find((p) => p.teamId === standing.teamId);
+          if (existingTeam) {
+            existingTeam.totalPoints += standing.points || 0;
+            existingTeam.totalRPA = Math.max(existingTeam.totalRPA, standing.rpaPoints || 0);
+            existingTeam.groups.push({
+              groupId: Object.keys(groupData).find((key) => groupData[key] === group),
+              points: standing.points || 0,
+              rpa: standing.rpaPoints || 0,
+            });
+          } else {
+            pointsRanking.push({
+              teamId: standing.teamId,
+              teamName: standing.teamName,
+              totalPoints: standing.points || 0,
+              totalRPA: standing.rpaPoints || 0,
+              groups: [{
+                groupId: Object.keys(groupData).find((key) => groupData[key] === group),
+                points: standing.points || 0,
+                rpa: standing.rpaPoints || 0,
+              }],
+            });
+          }
+        });
+      }
+    });
+
+    return (
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white">
+            Classifica Punti - {tournament.name}
+          </h2>
+        </div>
+
+        {/* Points Ranking */}
+        <div>
+          <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700">
+            <table className="w-full">
+              <thead className="bg-gray-900">
+                <tr>
+                  <th className="text-center py-2 px-2 text-white font-bold text-sm">#</th>
+                  <th className="text-left py-2 px-2 text-white font-bold text-sm">Squadra</th>
+                  <th className="text-center py-2 px-2 text-white font-bold text-sm">Punti</th>
+                  <th className="text-center py-2 px-2 text-white font-bold text-sm">RPA</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pointsRanking
+                  .sort((a, b) => {
+                    if (a.totalPoints !== b.totalPoints) return b.totalPoints - a.totalPoints;
+                    return b.totalRPA - a.totalRPA;
+                  })
+                  .map((team, index) => {
+                    const rank = index + 1;
+
+                    return (
+                      <tr key={team.teamId} className="border-b border-gray-700 bg-gray-800">
+                        <td className="py-2 px-2">
+                          <div className="flex items-center justify-center">
+                            {getRankIcon(rank)}
+                          </div>
+                        </td>
+                        <td className="py-2 px-2 text-lg font-semibold text-white">
+                          {team.teamName}
+                        </td>
+                        <td className="py-2 px-2 text-center text-lg font-bold text-emerald-400">
+                          {team.totalPoints}
+                        </td>
+                        <td className="py-2 px-2 text-center text-sm font-bold text-blue-400">
+                          {Math.round(team.totalRPA * 10) / 10}
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderQRPage = () => {
+    return (
+      <div className="flex flex-col items-center justify-center h-full py-8 space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white mb-2">{tournament.name}</h2>
+          <p className="text-emerald-400 font-semibold">Segui il torneo in tempo reale</p>
+          <p className="text-gray-300 text-sm">Scansiona il QR Code</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-4 shadow-lg">
+          <QRCode value={publicUrlMobile} size={200} />
+        </div>
+
+        <div className="text-center">
+          <p className="text-gray-400 text-xs">Powered by Play Sport Pro</p>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-900">
@@ -176,9 +487,9 @@ function PublicTournamentView() {
           <div className="flex items-start justify-between gap-4">
             {/* Logo */}
             <div className="flex items-center">
-              <img 
-                src="/play-sport-pro_horizontal.svg" 
-                alt="Play Sport Pro" 
+              <img
+                src="/play-sport-pro_horizontal.svg"
+                alt="Play Sport Pro"
                 className="h-8 w-auto"
               />
             </div>
@@ -197,44 +508,42 @@ function PublicTournamentView() {
         </div>
       </div>
 
+      {/* Progress bar */}
+      <div className="h-1 bg-gray-800">
+        <div
+          className="h-full bg-emerald-500 transition-all duration-100 ease-linear"
+          style={{ width: `${progress}%` }}
+        ></div>
+      </div>
+
       {/* Main content */}
-      <div 
+      <div
         className="container mx-auto px-4 py-8"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {groups.length === 0 ? (
+        {pages.length === 0 ? (
           <div className="text-center py-20">
             <Trophy className="w-16 h-16 text-white/50 mx-auto mb-4" />
-            <p className="text-white/80 text-xl">Nessun girone disponibile</p>
+            <p className="text-white/80 text-xl">Nessun contenuto disponibile</p>
           </div>
         ) : (
           <>
-            {/* Title */}
-            <div className="flex items-center justify-center mb-6">
-              <h2 className="text-3xl font-bold text-white">
-                Girone {currentGroup?.toUpperCase()}
-              </h2>
-            </div>
-
-            {/* Group indicators */}
-            <div className="flex justify-center gap-2 mb-8">
-              {groups.map((group, index) => (
+            {/* Page indicators */}
+            <div className="flex justify-center gap-2 mb-6">
+              {pages.map((page, index) => (
                 <div
-                  key={group}
+                  key={index}
                   className={`h-3 rounded-full transition-all ${
-                    index === currentGroupIndex
-                      ? 'bg-white w-8'
-                      : 'bg-white/30 w-3'
+                    index === currentPageIndex ? 'bg-emerald-500 w-8' : 'bg-white/30 w-3'
                   }`}
-                  aria-label={`Girone ${group.toUpperCase()}`}
                 ></div>
               ))}
             </div>
 
             {/* Swipe hint animation */}
-            {showSwipeHint && groups.length > 1 && (
+            {showSwipeHint && pages.length > 1 && (
               <motion.div
                 className="fixed inset-0 pointer-events-none flex items-center justify-between px-8 z-40"
                 initial={{ opacity: 0 }}
@@ -273,41 +582,22 @@ function PublicTournamentView() {
               </motion.div>
             )}
 
-            {/* Animated group content */}
+            {/* Animated page content */}
             <AnimatePresence mode="wait">
               <motion.div
-                key={currentGroup}
+                key={currentPageIndex}
                 initial={{ opacity: 0, x: 100 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -100 }}
                 transition={{ duration: 0.4, ease: 'easeInOut' }}
               >
-                {/* Standings (top) */}
-                <div className="mb-8">
-                  <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                    <Trophy className="w-6 h-6 text-emerald-500" />
-                    Classifica
-                  </h3>
-                  <TournamentStandings
-                    tournament={tournament}
-                    clubId={clubId}
-                    groupFilter={currentGroup}
-                    isPublicView={true}
-                  />
-                </div>
-
-                {/* Matches (bottom) - 6 per row when possible */}
-                <div>
-                  <h3 className="text-2xl font-bold text-white mb-4">Partite</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-                    <TournamentMatches
-                      tournament={tournament}
-                      clubId={clubId}
-                      groupFilter={currentGroup}
-                      isPublicView={true}
-                    />
-                  </div>
-                </div>
+                {currentPage?.type === 'group'
+                  ? renderGroupPage(currentPage.groupId)
+                  : currentPage?.type === 'overall-standings'
+                    ? renderBracketPage()
+                    : currentPage?.type === 'points'
+                      ? renderPointsPage()
+                      : renderQRPage()}
               </motion.div>
             </AnimatePresence>
           </>
@@ -318,11 +608,7 @@ function PublicTournamentView() {
       <div className="py-6 bg-gray-800 border-t border-gray-700">
         <div className="flex items-center justify-center gap-3">
           <p className="text-gray-400 text-sm">Powered by</p>
-          <img 
-            src="/play-sport-pro_horizontal.svg" 
-            alt="Play Sport Pro" 
-            className="h-6 w-auto"
-          />
+          <img src="/play-sport-pro_horizontal.svg" alt="Play Sport Pro" className="h-6 w-auto" />
         </div>
       </div>
     </div>
@@ -330,3 +616,4 @@ function PublicTournamentView() {
 }
 
 export default PublicTournamentView;
+

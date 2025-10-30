@@ -1,0 +1,2834 @@
+[
+  {
+    "insertId": "68e9096b0006f11abb44ecb0",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1243",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "35.243.23.160",
+      "serverIp": "34.143.73.2",
+      "latency": "1.402824648s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T13:26:02.022540Z",
+    "severity": "INFO",
+    "labels": {
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/be95bcc467a78f46f697308a67cfb45e",
+    "receiveTimestamp": "2025-10-10T13:26:03.461954149Z",
+    "spanId": "7277947c44799cc0",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e9096a0000c4822fbfff10",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T13:26:02.050306Z",
+    "labels": {
+      "deployment-scheduled": "true",
+      "execution_id": "kvqn2anzrpyq",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:26:02.066028476Z",
+    "spanId": "8248224503998028992"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e9096a00039e3a8071682c",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T13:26:02.237114Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kvqn2anzrpyq"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:26:02.393040852Z",
+    "spanId": "8248224503998028992"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e9096a00039f70ebdd1ac0",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:26:02.237424Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true",
+      "execution_id": "kvqn2anzrpyq",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:26:02.393040852Z",
+    "spanId": "8248224503998028992"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e9096a000b3df2bd072438",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:26:02.736754Z",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kvqn2anzrpyq",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:26:03.055515790Z",
+    "spanId": "8248224503998028992"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e9096a000def4322a71852",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T13:26:02.913219Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kvqn2anzrpyq",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:26:03.055515790Z",
+    "spanId": "8248224503998028992"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e9096b0006d85b7775053e",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:26:03.448603Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kvqn2anzrpyq",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:26:03.719616885Z",
+    "spanId": "8248224503998028992"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 1.40s\n",
+    "insertId": "68e9096b0006d9076d11dba1",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:26:03.448775Z",
+    "labels": {
+      "execution_id": "kvqn2anzrpyq",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:26:03.719616885Z",
+    "spanId": "8248224503998028992"
+  },
+  {
+    "insertId": "68e90a960003f9e84d0d18b4",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1245",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "34.98.143.13",
+      "serverIp": "34.143.79.2",
+      "latency": "0.709275841s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T13:31:01.528861Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/647e6e07798395258e912490af7f803e",
+    "receiveTimestamp": "2025-10-10T13:31:02.265782381Z",
+    "spanId": "00ced5924f26fe52",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e90a9500087cc5503f52f6",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T13:31:01.556229Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions",
+      "execution_id": "kvx25vutflff",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "deployment-scheduled": "true",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:31:01.563211028Z",
+    "spanId": "58218669572292178"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e90a95000ba90ad7a52885",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:31:01.764170Z",
+    "labels": {
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kvx25vutflff",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:31:01.894951705Z",
+    "spanId": "58218669572292178"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e90a95000ba9b2bed9b4b7",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:31:01.764338Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "execution_id": "kvx25vutflff"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:31:01.894951705Z",
+    "spanId": "58218669572292178"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e90a95000dca89b8cc7fb1",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T13:31:01.903817Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true",
+      "execution_id": "kvx25vutflff",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:31:02.227128147Z",
+    "spanId": "58218669572292178"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e90a960001303aa79ffa41",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:31:02.077882Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "execution_id": "kvx25vutflff",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:31:02.227128147Z",
+    "spanId": "58218669572292178"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e90a960003f513a86e2ea2",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:31:02.259347Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kvx25vutflff",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "deployment-scheduled": "true",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:31:02.560485670Z",
+    "spanId": "58218669572292178"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 0.70s\n",
+    "insertId": "68e90a960003f5aff8af4f11",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T13:31:02.259503Z",
+    "labels": {
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions",
+      "execution_id": "kvx25vutflff",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:31:02.560485670Z",
+    "spanId": "58218669572292178"
+  },
+  {
+    "insertId": "68e90bc20003653477bf0885",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1243",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "35.243.23.7",
+      "serverIp": "34.143.78.2",
+      "latency": "1.397069619s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T13:36:00.804959Z",
+    "severity": "INFO",
+    "labels": {
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/997fc6d02c5a9b53072d33fc68f7289c",
+    "receiveTimestamp": "2025-10-10T13:36:02.230093947Z",
+    "spanId": "4716d887953c3e83",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e90bc0000ca3e8a5bbb819",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:36:00.828392Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kw3h30d6xcmo",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:36:00.837449256Z",
+    "spanId": "5122519703016455811"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e90bc1000239154e93c2a8",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T13:36:01.145685Z",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kw3h30d6xcmo",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:36:01.170481186Z",
+    "spanId": "5122519703016455811"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e90bc100023a198bd05410",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T13:36:01.145945Z",
+    "labels": {
+      "execution_id": "kw3h30d6xcmo",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:36:01.170481186Z",
+    "spanId": "5122519703016455811"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e90bc100080158fb74f367",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T13:36:01.524632Z",
+    "labels": {
+      "execution_id": "kw3h30d6xcmo",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:36:01.837298462Z",
+    "spanId": "5122519703016455811"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e90bc1000c792ff88b4f03",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T13:36:01.817455Z",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions",
+      "execution_id": "kw3h30d6xcmo",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:36:01.837298462Z",
+    "spanId": "5122519703016455811"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e90bc20003604acf5e7487",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T13:36:02.221258Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kw3h30d6xcmo",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:36:02.503658582Z",
+    "spanId": "5122519703016455811"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 1.39s\n",
+    "insertId": "68e90bc2000360b27e2be7e9",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:36:02.221362Z",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kw3h30d6xcmo",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:36:02.503658582Z",
+    "spanId": "5122519703016455811"
+  },
+  {
+    "insertId": "68e90cee000a4bcb004a2088",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1244",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "107.178.194.133",
+      "serverIp": "34.143.78.2",
+      "latency": "1.378676723s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:41:01.275513Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/8e7aae5089a58177dfdca2134cf4af7f",
+    "receiveTimestamp": "2025-10-10T13:41:02.680277365Z",
+    "spanId": "ca9d8f0499a151d0",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e90ced00049c9621c193b3",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:41:01.302230Z",
+    "labels": {
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "execution_id": "kw9wxev51n7f"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:41:01.308861034Z",
+    "spanId": "14599982816925143504"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e90ced0007207ddf0508d7",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T13:41:01.467069Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kw9wxev51n7f",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:41:01.645762005Z",
+    "spanId": "14599982816925143504"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e90ced00072126001b2792",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:41:01.467238Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "execution_id": "kw9wxev51n7f"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:41:01.645762005Z",
+    "spanId": "14599982816925143504"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e90ced000edd110fd94dc3",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T13:41:01.974097Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "execution_id": "kw9wxev51n7f",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:41:02.308126009Z",
+    "spanId": "14599982816925143504"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e90cee00022f03c5dfc555",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:41:02.143107Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "execution_id": "kw9wxev51n7f",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:41:02.308126009Z",
+    "spanId": "14599982816925143504"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e90cee000a4729cf4b748e",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:41:02.673577Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kw9wxev51n7f",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:41:02.972893660Z",
+    "spanId": "14599982816925143504"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 1.38s\n",
+    "insertId": "68e90cee000a481e6298b812",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T13:41:02.673822Z",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kw9wxev51n7f",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:41:02.972893660Z",
+    "spanId": "14599982816925143504"
+  },
+  {
+    "insertId": "68e90e1b0001fe4aadb0dc53",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1244",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "34.98.143.197",
+      "serverIp": "34.143.79.2",
+      "latency": "1.389951636s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T13:46:01.722044Z",
+    "severity": "INFO",
+    "labels": {
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/261d92b4ba576f6a544a60a3eaec4fc1",
+    "receiveTimestamp": "2025-10-10T13:46:03.137307357Z",
+    "spanId": "42c1da914c356da7",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e90e19000b5a07a3c2b5fd",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:46:01.743943Z",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "execution_id": "kwgcr34sjr5l",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:46:01.755756095Z",
+    "spanId": "4810366194592083367"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e90e19000e54f27dbd37b1",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:46:01.939250Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "execution_id": "kwgcr34sjr5l",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:46:02.091286172Z",
+    "spanId": "4810366194592083367"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e90e19000e559ab705a850",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:46:01.939418Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kwgcr34sjr5l",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:46:02.091286172Z",
+    "spanId": "4810366194592083367"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e90e1a00066909393e37d1",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:46:02.420105Z",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kwgcr34sjr5l",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:46:02.756494880Z",
+    "spanId": "4810366194592083367"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e90e1a00093cfc8db7265c",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:46:02.605436Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kwgcr34sjr5l",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:46:02.756494880Z",
+    "spanId": "4810366194592083367"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e90e1b0001f94f9306f2f1",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:46:03.129359Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kwgcr34sjr5l",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-managed-by": "cloudfunctions",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:46:03.424518322Z",
+    "spanId": "4810366194592083367"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 1.39s\n",
+    "insertId": "68e90e1b0001fa25e492e5a7",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T13:46:03.129573Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kwgcr34sjr5l",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:46:03.424518322Z",
+    "spanId": "4810366194592083367"
+  },
+  {
+    "insertId": "68e90f46000b22ada605190d",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1244",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "35.243.23.32",
+      "serverIp": "34.143.75.2",
+      "latency": "1.522146219s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T13:51:01.187472Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/0ba125df96c9456a145af67c70ce1f32",
+    "receiveTimestamp": "2025-10-10T13:51:02.735757259Z",
+    "spanId": "3ed9082af1926f1c",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e90f45000336763072a252",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:51:01.210550Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kwmrtnsdq4si"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:51:01.214839336Z",
+    "spanId": "4528659880832298780"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e90f45000d8edd5c8da8c1",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:51:01.888541Z",
+    "labels": {
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kwmrtnsdq4si",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:51:02.215077908Z",
+    "spanId": "4528659880832298780"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e90f45000d8f61b1ef6917",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:51:01.888673Z",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kwmrtnsdq4si"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:51:02.215077908Z",
+    "spanId": "4528659880832298780"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e90f460000819d9ba13342",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T13:51:02.033181Z",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "execution_id": "kwmrtnsdq4si"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:51:02.215077908Z",
+    "spanId": "4528659880832298780"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e90f46000844ae6e238d81",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T13:51:02.541870Z",
+    "labels": {
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kwmrtnsdq4si",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:51:02.549537088Z",
+    "spanId": "4528659880832298780"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e90f46000b1d9600152e75",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:51:02.728470Z",
+    "labels": {
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-managed-by": "cloudfunctions",
+      "execution_id": "kwmrtnsdq4si"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:51:02.879886734Z",
+    "spanId": "4528659880832298780"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 1.52s\n",
+    "insertId": "68e90f46000b1e0b4a86ab46",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:51:02.728587Z",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "deployment-scheduled": "true",
+      "execution_id": "kwmrtnsdq4si",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:51:02.879886734Z",
+    "spanId": "4528659880832298780"
+  },
+  {
+    "insertId": "68e910770006a6e36505835d",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1245",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "35.187.132.206",
+      "serverIp": "34.143.76.2",
+      "latency": "1.632990313s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T13:56:05.778517Z",
+    "severity": "INFO",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/ebc97a04d5230d8df03e1bbf59c65ffd",
+    "receiveTimestamp": "2025-10-10T13:56:07.441167990Z",
+    "spanId": "40f796782b8264b9",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e91075000c4b640fa8b595",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T13:56:05.805732Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kwtaulfwbgf5",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:56:05.812625100Z",
+    "spanId": "4681375780545127609"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e91076000755636bedcff5",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T13:56:06.480611Z",
+    "labels": {
+      "execution_id": "kwtaulfwbgf5",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:56:06.811171689Z",
+    "spanId": "4681375780545127609"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e910760007562e825bbb46",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:56:06.480814Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true",
+      "execution_id": "kwtaulfwbgf5"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:56:06.811171689Z",
+    "spanId": "4681375780545127609"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e91076000978f8efb7087e",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T13:56:06.620792Z",
+    "labels": {
+      "deployment-scheduled": "true",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "execution_id": "kwtaulfwbgf5"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:56:06.811171689Z",
+    "spanId": "4681375780545127609"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e9107700024c4b732ac13e",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T13:56:07.150603Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kwtaulfwbgf5",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:56:07.476016409Z",
+    "spanId": "4681375780545127609"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e910770006a2ce1b45f598",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T13:56:07.434894Z",
+    "labels": {
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kwtaulfwbgf5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:56:07.476016409Z",
+    "spanId": "4681375780545127609"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 1.63s\n",
+    "insertId": "68e910770006a2de258dde89",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T13:56:07.434910Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kwtaulfwbgf5",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "deployment-scheduled": "true",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T13:56:07.476016409Z",
+    "spanId": "4681375780545127609"
+  },
+  {
+    "insertId": "68e911a300012cb15236f681",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1244",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "35.243.23.131",
+      "serverIp": "34.143.79.2",
+      "latency": "1.548745687s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:01:05.505891Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/a98feb5d489a32196e638a87ff177dd7",
+    "receiveTimestamp": "2025-10-10T14:01:07.083776789Z",
+    "spanId": "f09204613013015f",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e911a100081a25500114b0",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:01:05.530981Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "execution_id": "kwzq4avhhznd",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "deployment-scheduled": "true",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:01:05.540333070Z",
+    "spanId": "17334922731167351135"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e911a20003bf61d8f7b170",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:01:06.245601Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kwzq4avhhznd",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:01:06.536182573Z",
+    "spanId": "17334922731167351135"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e911a20003bf7402a99944",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T14:01:06.245620Z",
+    "labels": {
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kwzq4avhhznd",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:01:06.536182573Z",
+    "spanId": "17334922731167351135"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e911a20005f5a013927e88",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T14:01:06.390560Z",
+    "labels": {
+      "deployment-scheduled": "true",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kwzq4avhhznd",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:01:06.536182573Z",
+    "spanId": "17334922731167351135"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e911a2000dbe702f036108",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:01:06.900720Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kwzq4avhhznd",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "deployment-scheduled": "true",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:01:07.203104579Z",
+    "spanId": "17334922731167351135"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e911a3000128c389b48906",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T14:01:07.075971Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "execution_id": "kwzq4avhhznd",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:01:07.203104579Z",
+    "spanId": "17334922731167351135"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 1.54s\n",
+    "insertId": "68e911a3000128d3e5c89e89",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T14:01:07.075987Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "execution_id": "kwzq4avhhznd",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:01:07.203104579Z",
+    "spanId": "17334922731167351135"
+  },
+  {
+    "insertId": "68e912ca000a73e5cb17aa9e",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1269",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "34.98.143.100",
+      "serverIp": "34.143.73.2",
+      "latency": "1.519643245s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T14:06:01.125178Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/5767a9a378f2fcee6079a23e42b83253",
+    "receiveTimestamp": "2025-10-10T14:06:02.690895456Z",
+    "spanId": "9f31a73764b8b548",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e912c90002908e1c5c7958",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T14:06:01.168078Z",
+    "labels": {
+      "deployment-scheduled": "true",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "execution_id": "kx628fa8qe1s",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:06:01.193452030Z",
+    "spanId": "11471133582244230472"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e912c9000ced3e83b94ac1",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:06:01.847166Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "deployment-scheduled": "true",
+      "execution_id": "kx628fa8qe1s",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:06:02.186304603Z",
+    "spanId": "11471133582244230472"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e912c9000ced50ab77f2d4",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T14:06:01.847184Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "execution_id": "kx628fa8qe1s",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:06:02.186304603Z",
+    "spanId": "11471133582244230472"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e912c9000f31147fcc2571",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:06:01.995604Z",
+    "labels": {
+      "execution_id": "kx628fa8qe1s",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:06:02.186304603Z",
+    "spanId": "11471133582244230472"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e912ca0007befe1902bc09",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T14:06:02.507646Z",
+    "labels": {
+      "deployment-scheduled": "true",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kx628fa8qe1s",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:06:02.548011602Z",
+    "spanId": "11471133582244230472"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e912ca000a6ece8305509c",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:06:02.683726Z",
+    "labels": {
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "execution_id": "kx628fa8qe1s",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:06:02.850409576Z",
+    "spanId": "11471133582244230472"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 1.52s\n",
+    "insertId": "68e912ca000a6f4e3bd019fb",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:06:02.683854Z",
+    "labels": {
+      "deployment-scheduled": "true",
+      "execution_id": "kx628fa8qe1s",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:06:02.850409576Z",
+    "spanId": "11471133582244230472"
+  },
+  {
+    "insertId": "68e913fb000660f173bbc4ea",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1245",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "34.116.39.7",
+      "serverIp": "34.143.72.2",
+      "latency": "1.670649445s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T14:11:05.728954Z",
+    "severity": "INFO",
+    "labels": {
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-managed-by": "cloudfunctions",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/d45fb5d9352bc5cd12794f5597f7e53d",
+    "receiveTimestamp": "2025-10-10T14:11:07.424003168Z",
+    "spanId": "d1726b809636f4a1",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e913f9000b7132cf63b6d5",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:11:05.749874Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kxcl9256uvkm",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:11:05.756955503Z",
+    "spanId": "15092243501292123297"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e913fa0006f9027be87d1b",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:11:06.456962Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "execution_id": "kxcl9256uvkm",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:11:06.755042974Z",
+    "spanId": "15092243501292123297"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e913fa0006f9bcae09e8c0",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:11:06.457148Z",
+    "labels": {
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "execution_id": "kxcl9256uvkm",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:11:06.755042974Z",
+    "spanId": "15092243501292123297"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e913fa000af0b599048ba0",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T14:11:06.716981Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "execution_id": "kxcl9256uvkm",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:11:06.755042974Z",
+    "spanId": "15092243501292123297"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e913fb0001debac5141a9b",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T14:11:07.122554Z",
+    "labels": {
+      "execution_id": "kxcl9256uvkm",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:11:07.423420604Z",
+    "spanId": "15092243501292123297"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e913fb000659ec5ffd0893",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T14:11:07.416236Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "execution_id": "kxcl9256uvkm",
+      "deployment-scheduled": "true",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:11:07.423420604Z",
+    "spanId": "15092243501292123297"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 1.67s\n",
+    "insertId": "68e913fb00065a723294cf6a",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:11:07.416370Z",
+    "labels": {
+      "execution_id": "kxcl9256uvkm",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:11:07.423420604Z",
+    "spanId": "15092243501292123297"
+  },
+  {
+    "insertId": "68e915230008f3268b4934a1",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1244",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "34.116.39.32",
+      "serverIp": "34.143.76.2",
+      "latency": "2.079870931s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T14:16:01.486909Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/a34e6f9e94e2c9e8934bb27a85306dd2",
+    "receiveTimestamp": "2025-10-10T14:16:03.590991530Z",
+    "spanId": "046980333a0519f6",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e915210007c6e34ad948d5",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:16:01.509667Z",
+    "labels": {
+      "execution_id": "kxixgkfubdhw",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:16:01.514623813Z",
+    "spanId": "317926206211430902"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e91522000395b1c2ef91ad",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T14:16:02.234929Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true",
+      "execution_id": "kxixgkfubdhw"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:16:02.516760965Z",
+    "spanId": "317926206211430902"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e915220003961509e24315",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:16:02.235029Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kxixgkfubdhw",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:16:02.516760965Z",
+    "spanId": "317926206211430902"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e91522000d9460bf006a51",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:16:02.889952Z",
+    "labels": {
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true",
+      "execution_id": "kxixgkfubdhw"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:16:03.179537459Z",
+    "spanId": "317926206211430902"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e9152300008f3841e6cdfc",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T14:16:03.036664Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "kxixgkfubdhw"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:16:03.179537459Z",
+    "spanId": "317926206211430902"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e915230008f1250be43cf3",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "project_id": "m-padelweb",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T14:16:03.586021Z",
+    "labels": {
+      "deployment-scheduled": "true",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kxixgkfubdhw",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:16:03.847537745Z",
+    "spanId": "317926206211430902"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 2.08s\n",
+    "insertId": "68e915230008f14d53d0abc2",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T14:16:03.586061Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "execution_id": "kxixgkfubdhw",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:16:03.847537745Z",
+    "spanId": "317926206211430902"
+  },
+  {
+    "insertId": "68e9164e000d228a509f3416",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://dailycertificatecheck-khce34f7qa-uc.a.run.app/",
+      "requestSize": "1245",
+      "status": 200,
+      "responseSize": "97",
+      "userAgent": "Google-Cloud-Scheduler",
+      "remoteIp": "35.187.132.165",
+      "serverIp": "34.143.73.2",
+      "latency": "1.191153969s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "dailycertificatecheck",
+        "service_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:21:01.652124Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/a5beaa8c5898265eb2436cd0339032ed",
+    "receiveTimestamp": "2025-10-10T14:21:02.869279465Z",
+    "spanId": "969deae046b42a4b",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "🏥 [Certificate Check] Starting daily certificate expiry check...\n",
+    "insertId": "68e9164d000a4280acc11400",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T14:21:01.672384Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kxpd2f713rup",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:21:01.677532308Z",
+    "spanId": "10853088926012549707"
+  },
+  {
+    "textPayload": "📊 [Certificate Check] Found 3 clubs to check\n",
+    "insertId": "68e9164d000d349942d1fbb4",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck"
+      }
+    },
+    "timestamp": "2025-10-10T14:21:01.865433Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kxpd2f713rup",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:21:02.014881765Z",
+    "spanId": "10853088926012549707"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Dorado Padel Center (cLUtbWq5YLw5fQrUEj4B)\n",
+    "insertId": "68e9164d000d356e886f72b0",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-10-10T14:21:01.865646Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true",
+      "execution_id": "kxpd2f713rup",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:21:02.014881765Z",
+    "spanId": "10853088926012549707"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: aaaaa (fsR013mMyHDg0L6DNNpn)\n",
+    "insertId": "68e9164e00081d19b669f80f",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "dailycertificatecheck-00004-sit",
+        "configuration_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "service_name": "dailycertificatecheck",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-10-10T14:21:02.531737Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kxpd2f713rup",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "deployment-scheduled": "true"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:21:02.678767911Z",
+    "spanId": "10853088926012549707"
+  },
+  {
+    "textPayload": "🏛️ [Certificate Check] Processing club: Sporting Cat (sporting-cat)\n",
+    "insertId": "68e9164e000a68b534dfb809",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T14:21:02.682165Z",
+    "labels": {
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "deployment-scheduled": "true",
+      "goog-managed-by": "cloudfunctions",
+      "execution_id": "kxpd2f713rup",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:21:03.012909728Z",
+    "spanId": "10853088926012549707"
+  },
+  {
+    "textPayload": "✅ [Certificate Check] Completed successfully\n",
+    "insertId": "68e9164e000d1cd5cfa6aaad",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "dailycertificatecheck",
+        "configuration_name": "dailycertificatecheck",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T14:21:02.859349Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "execution_id": "kxpd2f713rup",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "deployment-scheduled": "true",
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:21:03.012909728Z",
+    "spanId": "10853088926012549707"
+  },
+  {
+    "textPayload": "📊 [Stats] Clubs: 3, Players: 32, Emails: 0, Errors: 0, Duration: 1.19s\n",
+    "insertId": "68e9164e000d1e4bb2794410",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "service_name": "dailycertificatecheck",
+        "location": "us-central1",
+        "configuration_name": "dailycertificatecheck",
+        "revision_name": "dailycertificatecheck-00004-sit"
+      }
+    },
+    "timestamp": "2025-10-10T14:21:02.859723Z",
+    "labels": {
+      "firebase-functions-hash": "142743d1c98d0b627a8f792607a1371391f5e5ce",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "deployment-scheduled": "true",
+      "goog-drz-cloudfunctions-id": "dailycertificatecheck",
+      "execution_id": "kxpd2f713rup",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs18:nodejs18_20250928_18_20_8_RC00",
+      "instanceId": "0069c7a9881d47ca3a7a2b9935e13a5f4695df5e5414ed502e0a6c01b8a52a203da6cd5687f2c6e18364e3b4a4ff324445883ace9ef5c680a10f5df66ed628d8f696ae2f4bf8909a7bab594449d5",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-10T14:21:03.012909728Z",
+    "spanId": "10853088926012549707"
+  }
+]

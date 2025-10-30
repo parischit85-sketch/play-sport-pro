@@ -35,9 +35,20 @@ const MAIN_CLUB_ID = 'sporting-cat';
 export const getClubs = async (filters = {}) => {
   try {
     const clubsRef = collection(db, 'clubs');
-    let q = query(clubsRef, orderBy('name'));
 
-    // Apply filters
+    // Handle composite index issue: when filtering by activeOnly, we can't order by name
+    // because it requires a composite index. We'll sort client-side instead.
+    let q;
+
+    if (filters.activeOnly) {
+      // For activeOnly filter, get all clubs and filter/sort client-side
+      q = query(clubsRef);
+    } else {
+      // For other queries, we can use orderBy safely
+      q = query(clubsRef, orderBy('name'));
+    }
+
+    // Apply other filters (but not activeOnly - we'll do that client-side)
     if (filters.city) {
       q = query(q, where('location.city', '==', filters.city));
     }
@@ -50,24 +61,30 @@ export const getClubs = async (filters = {}) => {
       q = query(q, where('settings.publicVisibility', '==', true));
     }
 
-    if (filters.activeOnly) {
-      q = query(q, where('subscription.isActive', '==', true));
-    }
-
     const snapshot = await getDocs(q);
 
+    let clubs = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // Apply activeOnly filter client-side if needed
+    if (filters.activeOnly) {
+      clubs = clubs.filter((club) => club.subscription?.isActive === true);
+    }
+
+    // Sort by name client-side if we couldn't do it server-side
+    if (filters.activeOnly) {
+      clubs.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    }
+
     // Filter for activated AND approved clubs (unless explicitly requesting all)
-    const clubs = snapshot.docs
-      .map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-      .filter((club) => {
-        // If filters.includeInactive is true, show all clubs (for admin/super-admin)
-        if (filters.includeInactive) return true;
-        // Otherwise only show activated AND approved clubs
-        return club.isActive === true && club.status === 'approved';
-      });
+    clubs = clubs.filter((club) => {
+      // If filters.includeInactive is true, show all clubs (for admin/super-admin)
+      if (filters.includeInactive) return true;
+      // Otherwise only show activated AND approved clubs
+      return club.isActive === true && club.status === 'approved';
+    });
 
     return clubs;
   } catch (error) {

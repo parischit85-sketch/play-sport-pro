@@ -1,0 +1,4 @@
+// Deprecated backup file (Extra.jsx.fixed)
+// This placeholder intentionally left minimal to avoid lint/build issues.
+// The authoritative implementation is in `src/features/extra/Extra.jsx`.
+// Legacy leagues/cloud backup logic has been removed. See FIREBASE_INITIALIZATION_FIX.md.

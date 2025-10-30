@@ -14,6 +14,7 @@ import QRCode from 'react-qr-code';
 import { getMatches } from '../../services/matchService.js';
 import { getTeamsByTournament } from '../../services/teamsService.js';
 import { calculateGroupStandings } from '../../services/standingsService.js';
+import TournamentBracket from '../knockout/TournamentBracket.jsx';
 
 function PublicTournamentViewTV() {
   const { clubId, tournamentId, token } = useParams();
@@ -27,6 +28,7 @@ function PublicTournamentViewTV() {
   const [progress, setProgress] = useState(0);
   const [groupData, setGroupData] = useState({});
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   const intervalRef = useRef(null);
   const progressIntervalRef = useRef(null);
@@ -127,11 +129,36 @@ function PublicTournamentViewTV() {
     loadGroupsAndData();
   }, [loadGroupsAndData]);
 
-  // Create pages: groups + QR page
-  const pages = [
-    ...groups.map((g) => ({ type: 'group', groupId: g })),
-    { type: 'qr' }, // QR page
-  ];
+  // Update current time every second
+  useEffect(() => {
+    const timeInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timeInterval);
+  }, []);
+
+  // Create pages based on display settings
+  const pages = [];
+
+  // Add group pages if enabled in settings
+  const displaySettings = tournament?.publicView?.settings?.displaySettings || {};
+  if (displaySettings.groupsMatches !== false) { // Default to true if not set
+    pages.push(...groups.map((g) => ({ type: 'group', groupId: g })));
+  }
+
+  // Add overall standings page if enabled
+  if (displaySettings.standings === true) {
+    pages.push({ type: 'overall-standings' });
+  }
+
+  // Add points page if enabled
+  if (displaySettings.points === true) {
+    pages.push({ type: 'points' });
+  }
+
+  // Always add QR page at the end
+  pages.push({ type: 'qr' });
 
   // Fullscreen toggle
   const toggleFullscreen = () => {
@@ -524,6 +551,119 @@ function PublicTournamentViewTV() {
     );
   };
 
+  const renderBracketPage = () => {
+    return (
+      <div className="space-y-4">
+        <TournamentBracket
+          tournament={tournament}
+          clubId={clubId}
+          isPublicView={true}
+          isTVView={true}
+        />
+      </div>
+    );
+  };
+
+  const renderPointsPage = () => {
+    // Create points ranking based on overall performance
+    const pointsRanking = [];
+    const teamsMap = {};
+
+    // Collect all teams and their data
+    Object.values(groupData).forEach((group) => {
+      if (group.teams) {
+        Object.assign(teamsMap, group.teams);
+      }
+    });
+
+    // Calculate points for each team across all groups
+    Object.values(groupData).forEach((group) => {
+      if (group.standings) {
+        group.standings.forEach((standing) => {
+          const existingTeam = pointsRanking.find((p) => p.teamId === standing.teamId);
+          if (existingTeam) {
+            existingTeam.totalPoints += standing.points || 0;
+            existingTeam.totalRPA = Math.max(existingTeam.totalRPA, standing.rpaPoints || 0);
+            existingTeam.groups.push({
+              groupId: Object.keys(groupData).find((key) => groupData[key] === group),
+              points: standing.points || 0,
+              rpa: standing.rpaPoints || 0,
+            });
+          } else {
+            pointsRanking.push({
+              teamId: standing.teamId,
+              teamName: standing.teamName,
+              totalPoints: standing.points || 0,
+              totalRPA: standing.rpaPoints || 0,
+              groups: [{
+                groupId: Object.keys(groupData).find((key) => groupData[key] === group),
+                points: standing.points || 0,
+                rpa: standing.rpaPoints || 0,
+              }],
+            });
+          }
+        });
+      }
+    });
+
+    return (
+      <div className="space-y-4">
+        {/* Points Ranking */}
+        <div>
+          <h3 className="text-3xl font-bold text-white mb-3 flex items-center gap-3">
+            <Medal className="w-8 h-8" />
+            Classifica Punti - {tournament.name}
+          </h3>
+          <div className="bg-gray-800 rounded-2xl overflow-hidden shadow-2xl border border-gray-700">
+            <table className="w-full">
+              <thead className="bg-gray-900">
+                <tr>
+                  <th className="text-center py-2 px-3 text-white font-bold text-xl">#</th>
+                  <th className="text-left py-2 px-3 text-white font-bold text-xl">Squadra</th>
+                  <th className="text-center py-2 px-3 text-white font-bold text-xl">Punti Totali</th>
+                  <th className="text-center py-2 px-3 text-white font-bold text-xl">RPA Migliore</th>
+                  <th className="text-center py-2 px-3 text-white font-bold text-xl">Gironi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pointsRanking
+                  .sort((a, b) => {
+                    if (a.totalPoints !== b.totalPoints) return b.totalPoints - a.totalPoints;
+                    return b.totalRPA - a.totalRPA;
+                  })
+                  .map((team, index) => {
+                    const rank = index + 1;
+
+                    return (
+                      <tr key={team.teamId} className="border-b border-gray-700 bg-gray-800">
+                        <td className="py-2 px-3">
+                          <div className="flex items-center justify-center">
+                            {getRankIcon(rank)}
+                          </div>
+                        </td>
+                        <td className="py-2 px-3 text-2xl font-semibold text-white">
+                          {team.teamName}
+                        </td>
+                        <td className="py-2 px-3 text-center text-2xl font-bold text-emerald-400">
+                          {team.totalPoints}
+                        </td>
+                        <td className="py-2 px-3 text-center text-xl font-bold text-blue-400">
+                          {Math.round(team.totalRPA * 10) / 10}
+                        </td>
+                        <td className="py-2 px-3 text-center text-lg text-gray-300">
+                          {team.groups.map(g => `${g.groupId.toUpperCase()}: ${g.points}`).join(', ')}
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderQRPage = () => {
     return (
       <div className="flex items-center justify-center h-full py-4">
@@ -585,7 +725,13 @@ function PublicTournamentViewTV() {
               {/* LIVE Badge */}
               <div className="flex items-center gap-3 px-4 py-2 bg-red-500 rounded-full shadow-lg">
                 <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
-                <span className="text-white font-bold text-xl">LIVE</span>
+                <span className="text-white font-bold text-xl">
+                  {currentTime.toLocaleTimeString('it-IT', { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                  })} LIVE
+                </span>
               </div>
 
               {/* Fullscreen button */}
@@ -645,7 +791,11 @@ function PublicTournamentViewTV() {
               >
                 {currentPage?.type === 'group'
                   ? renderGroupPage(currentPage.groupId)
-                  : renderQRPage()}
+                  : currentPage?.type === 'overall-standings'
+                    ? renderBracketPage()
+                    : currentPage?.type === 'points'
+                      ? renderPointsPage()
+                      : renderQRPage()}
               </motion.div>
             </AnimatePresence>
           </>
@@ -664,3 +814,4 @@ function PublicTournamentViewTV() {
 }
 
 export default PublicTournamentViewTV;
+

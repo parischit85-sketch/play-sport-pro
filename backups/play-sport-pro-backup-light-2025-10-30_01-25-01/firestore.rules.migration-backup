@@ -1,0 +1,231 @@
+// Firestore Security Rules - Multi-Club Model Production Ready
+// Data: 2025-09-18
+// Versione sicura con controlli granulari
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------ Helper Functions ------------------
+    function isAuthenticated() { 
+      return request.auth != null; 
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Dev admin limitato solo agli email autorizzati
+    function isDevAdmin() { 
+      return isAuthenticated() && 
+             request.auth.token.email in [
+               'parischit85@gmail.com',
+               'paris.andrea@live.it'
+             ];
+    }
+
+    function clubDoc(clubId) { 
+      return get(/databases/$(database)/documents/clubs/$(clubId)); 
+    }
+
+    function affiliationId(userId, clubId) { 
+      return userId + '_' + clubId; 
+    }
+
+    // Verifica affiliazione approvata
+    function isAffiliated(clubId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/affiliations/$(affiliationId(request.auth.uid, clubId))) &&
+        get(/databases/$(database)/documents/affiliations/$(affiliationId(request.auth.uid, clubId))).data.status == 'approved';
+    }
+
+    // Verifica ruolo di staff nel club
+    function isClubStaff(clubId) {
+      return isAffiliated(clubId) && (
+        request.auth.uid in clubDoc(clubId).data.managers ||
+        request.auth.uid in clubDoc(clubId).data.owners ||
+        request.auth.uid in clubDoc(clubId).data.staff ||
+        false
+      );
+    }
+
+    // Verifica ruolo di admin nel club
+    function isClubAdmin(clubId) {
+      return isDevAdmin() || (
+        isClubStaff(clubId) || 
+        (clubDoc(clubId).data.owners != null && request.auth.uid in clubDoc(clubId).data.owners)
+      );
+    }
+
+    // Validazioni dati
+    function isValidClubData() {
+      return request.resource.data.keys().hasAll(['name', 'email']) &&
+             request.resource.data.name is string &&
+             request.resource.data.name.size() > 0 &&
+             request.resource.data.email is string &&
+             request.resource.data.email.matches('.*@.*\\..*');
+    }
+
+    function isValidProfileData() {
+      return request.resource.data.keys().hasAll(['firstName', 'lastName', 'email']) &&
+             request.resource.data.firstName is string &&
+             request.resource.data.lastName is string &&
+             request.resource.data.email is string &&
+             request.resource.data.email.matches('.*@.*\\..*');
+    }
+
+    function isValidAffiliationData() {
+      return request.resource.data.keys().hasAll(['userId', 'clubId', 'status']) &&
+             request.resource.data.userId is string &&
+             request.resource.data.clubId is string &&
+             request.resource.data.status in ['pending', 'approved', 'rejected', 'withdrawn'];
+    }
+
+    // ------------------ Root Level Collections ------------------
+
+    // Clubs metadata - TEMPORANEO per migrazione completa
+    match /clubs/{clubId} {
+      allow read, write: if true; // TEMPORANEO per migrazione
+    }
+
+    // Affiliazioni normalizzate
+    match /affiliations/{affId} {
+      // Permetti lettura per utenti autenticati - la sicurezza è gestita lato client tramite filtri
+      allow read, list: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+                      isValidAffiliationData() &&
+                      request.auth.uid == request.resource.data.userId;
+      allow update: if isAuthenticated() && isValidAffiliationData() && (
+        // Utente può annullare la propria (status -> withdrawn)
+        (request.auth.uid == resource.data.userId && 
+         request.resource.data.status == 'withdrawn') ||
+        // Staff del club può approvare/rifiutare
+        (resource.data.clubId != null && isClubStaff(resource.data.clubId)) ||
+        isDevAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        isDevAdmin() ||
+        (resource.data.clubId != null && isClubAdmin(resource.data.clubId))
+      );
+    }
+
+    // Profili utente
+    match /profiles/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isDevAdmin());
+      allow create: if isAuthenticated() && 
+                      isOwner(userId) && 
+                      isValidProfileData();
+      allow update: if isAuthenticated() && 
+                      (isOwner(userId) || isDevAdmin()) && 
+                      isValidProfileData();
+      allow delete: if false; // Nessuna cancellazione diretta profili
+    }
+
+    // User Club Roles Mapping - accesso ristretto
+    match /userClubRoles/{userId} {
+      allow read: if isAuthenticated() && (
+        isOwner(userId) || isDevAdmin()
+      );
+      allow create, update: if isAuthenticated() && (
+        isDevAdmin() ||
+        // Consentire aggiornamento solo se l'utente ha ruolo admin in almeno un club
+        exists(/databases/$(database)/documents/affiliations/$(request.auth.uid + '_' + request.resource.data.clubId)) &&
+        get(/databases/$(database)/documents/affiliations/$(request.auth.uid + '_' + request.resource.data.clubId)).data.status == 'approved'
+      );
+      allow delete: if isAuthenticated() && isDevAdmin();
+    }
+
+    // Collezioni condivise (config, parametri generali)
+    match /shared/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isDevAdmin();
+    }
+
+    // Backups & diagnostics (limitato)
+    match /backups/{id} { 
+      allow read, write: if isAuthenticated() && isDevAdmin(); 
+    }
+    match /diagnostics/{doc=**} { 
+      allow read, write: if isAuthenticated() && isDevAdmin(); 
+    }
+
+    // ------------------ Club Subcollections - TEMPORANEO per migrazione completa ------------------
+
+    // Settings del club
+    match /clubs/{clubId}/settings/{docId} {
+      allow read, write: if true; // TEMPORANEO per migrazione
+    }
+
+    // Courts
+    match /clubs/{clubId}/courts/{courtId} {
+      allow read, write: if true; // TEMPORANEO per migrazione
+    }
+
+    // Players (profilo competitività interno al club)
+    match /clubs/{clubId}/players/{playerId} {
+      allow read, write: if true; // TEMPORANEO per migrazione
+    }
+
+    // Matches
+    match /clubs/{clubId}/matches/{matchId} {
+      allow read, write: if true; // TEMPORANEO per migrazione
+    }
+
+    // Bookings
+    match /clubs/{clubId}/bookings/{bookingId} {
+      allow read, write: if true; // TEMPORANEO per migrazione
+    }
+
+    // Tournaments
+    match /clubs/{clubId}/tournaments/{tournamentId} {
+      allow read, write: if true; // TEMPORANEO per migrazione
+    }
+
+    // Lessons (prenotazioni lezioni)
+    match /clubs/{clubId}/lessons/{lessonId} {
+      allow read, write: if true; // TEMPORANEO per migrazione
+    }
+
+    // Ranking / Stats cache
+    match /clubs/{clubId}/statsCache/{docId} {
+      allow read, write: if true; // TEMPORANEO per migrazione
+    }
+
+    // MIGRAZIONE TEMPORANEA - Collezioni per migrazione giocatori
+    match /profiles/{docId} { allow read, write: if true; }
+    match /users/{docId} { allow read, write: if true; }
+    match /members/{docId} { allow read, write: if true; }
+    match /affiliations/{docId} { allow read, write: if true; }
+    match /userClubRoles/{docId} { allow read, write: if true; }
+    
+    // Legacy global collections - RIMOSSO DOPO MIGRAZIONE COMPLETATA
+    // Le collezioni legacy non sono più accessibili
+    // Tutti i dati sono ora in clubs/{clubId}/collection
+    
+    // MIGRAZIONE TEMPORANEA - Legacy collections e club subcollections
+    match /players/{playerId} { allow read, write: if true; }
+    match /matches/{matchId} { allow read, write: if true; }
+    match /bookings/{bookingId} { allow read, write: if true; }
+    match /courts/{courtId} { allow read, write: if true; }
+    match /tournaments/{tournamentId} { allow read, write: if true; }
+    match /lessons/{lessonId} { allow read, write: if true; }
+    
+    // Club subcollections - accesso completo per migrazione
+    match /clubs/{clubId}/profiles/{docId} { allow read, write: if true; }
+    match /clubs/{clubId}/affiliations/{docId} { allow read, write: if true; }
+    match /clubs/{clubId}/userClubRoles/{docId} { allow read, write: if true; }
+    
+    // OPZIONE 2: Solo dev admin per emergenze (commentata)
+    // match /players/{playerId} { allow read, write: if isAuthenticated() && isDevAdmin(); }
+    // match /matches/{matchId} { allow read, write: if isAuthenticated() && isDevAdmin(); }
+    // match /bookings/{bookingId} { allow read, write: if isAuthenticated() && isDevAdmin(); }
+    // match /courts/{courtId} { allow read, write: if isAuthenticated() && isDevAdmin(); }
+    // match /tournaments/{tournamentId} { allow read, write: if isAuthenticated() && isDevAdmin(); }
+    // match /lessons/{lessonId} { allow read, write: if isAuthenticated() && isDevAdmin(); }
+
+    // Fallback deny all
+    match /{document=**} { 
+      allow read, write: if false; 
+    }
+  }
+}

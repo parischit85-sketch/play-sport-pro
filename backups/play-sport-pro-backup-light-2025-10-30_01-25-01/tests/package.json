@@ -1,0 +1,24 @@
+{
+  "name": "push-notifications-tests",
+  "version": "1.0.0",
+  "description": "Test suite for Push Notifications v2.0",
+  "scripts": {
+    "test": "vitest",
+    "test:unit": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:load": "k6 run tests/load/load-test.js",
+    "test:load:spike": "k6 run --vus 200 --duration 2m tests/load/load-test.js",
+    "test:load:stress": "k6 run --vus 500 --duration 5m tests/load/load-test.js",
+    "test:all": "npm run test:unit && npm run test:e2e && npm run test:load"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "vitest": "^1.0.0",
+    "k6": "^0.48.0"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "name": "Play Sport Pro - Gestione Campi",
+  "short_name": "Play Sport Pro",
+  "description": "App per la gestione e prenotazione campi da tennis e padel",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "it",
+  "dir": "ltr",
+  "categories": ["sports", "business", "productivity"],
+  "screenshots": [
+    {
+      "src": "/play-sport-pro_horizontal.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/play-sport-pro_icon_only.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Prenota Campo",
+      "short_name": "Prenota",
+      "description": "Prenota velocemente un campo",
+      "url": "/prenota",
+      "icons": [
+        {
+          "src": "/play-sport-pro_icon_only.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Gestione Campi",
+      "short_name": "Gestione",
+      "description": "Amministra i campi e le prenotazioni",
+      "url": "/gestione",
+      "icons": [
+        {
+          "src": "/play-sport-pro_icon_only.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "I Miei Dati",
+      "short_name": "Profilo",
+      "description": "Visualizza profilo e statistiche",
+      "url": "/profile",
+      "icons": [
+        {
+          "src": "/play-sport-pro_icon_only.svg",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "permissions": ["notifications", "vibrate", "geolocation", "contacts"],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+playsportpro",
+      "url": "/?handler=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/open-file",
+      "accept": {
+        "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"]
+      }
+    }
+  ]
+}

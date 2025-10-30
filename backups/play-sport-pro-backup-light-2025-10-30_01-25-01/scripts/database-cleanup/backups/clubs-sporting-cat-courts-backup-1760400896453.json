@@ -1,0 +1,205 @@
+{
+  "5qkXrSlbqDlu7DXs5ywn": {
+    "hasHeating": false,
+    "name": "Calcetto",
+    "courtType": "Calcetto",
+    "id": "5qkXrSlbqDlu7DXs5ywn",
+    "firebaseId": "5qkXrSlbqDlu7DXs5ywn",
+    "timeSlots": [
+      {
+        "eurPerHour": 50,
+        "from": "08:00",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "to": "23:00",
+        "label": "Nuova fascia",
+        "id": "1759271766347"
+      }
+    ],
+    "maxPlayers": 10,
+    "order": 9
+  },
+  "CXSmNdYcX83PiHYoXKbn": {
+    "timeSlots": [
+      {
+        "isPromo": true,
+        "label": "Nuova fascia",
+        "to": "23:00",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "from": "08:00",
+        "id": "1757074293997",
+        "eurPerHour": 20
+      }
+    ],
+    "id": "1qzu4peg",
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "hasHeating": false,
+    "migratedAt": "2025-09-16T22:17:16.110Z",
+    "clubName": "Sporting CAT",
+    "name": "Campo 1 (Outdoor)",
+    "_migratedAt": "2025-09-19T10:51:34.560Z",
+    "firebaseId": "CXSmNdYcX83PiHYoXKbn",
+    "courtType": "Padel",
+    "order": 1
+  },
+  "KLIiFS5n9dy87Szd52bu": {
+    "id": "1759266960383",
+    "name": "Tennis",
+    "hasHeating": false,
+    "firebaseId": "KLIiFS5n9dy87Szd52bu",
+    "timeSlots": [
+      {
+        "label": "Nuova fascia",
+        "eurPerHour": 25,
+        "to": "23:00",
+        "id": "1759267617460",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "from": "08:00"
+      }
+    ],
+    "courtType": "Tennis",
+    "maxPlayers": 2,
+    "order": 8
+  },
+  "dUCjBwEA5oo6K06sgdKH": {
+    "clubName": "Sporting CAT",
+    "timeSlots": [
+      {
+        "id": "1757074613779",
+        "to": "23:00",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "eurPerHour": 24,
+        "isPromo": true,
+        "from": "08:00",
+        "label": "Nuova fascia"
+      }
+    ],
+    "name": "Campo 5 (Outdoor)",
+    "migratedAt": "2025-09-16T22:17:16.110Z",
+    "id": "jlvr9xwu",
+    "promo": true,
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "_migratedAt": "2025-09-19T10:51:34.649Z",
+    "firebaseId": "dUCjBwEA5oo6K06sgdKH",
+    "courtType": "Padel",
+    "order": 7
+  },
+  "oCBL5pmyQ08si6q8kmgl": {
+    "hasHeating": true,
+    "migratedAt": "2025-09-16T22:17:16.110Z",
+    "id": "wbdzk6e2",
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "name": "Campo 3 (coperto)",
+    "timeSlots": [
+      {
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "to": "23:00",
+        "id": "1757074592394",
+        "from": "08:00",
+        "eurPerHour": 24,
+        "label": "Nuova fascia"
+      }
+    ],
+    "clubName": "Sporting CAT",
+    "_migratedAt": "2025-09-19T10:51:34.754Z",
+    "firebaseId": "oCBL5pmyQ08si6q8kmgl",
+    "courtType": "Padel",
+    "order": 5
+  },
+  "uWss31XYqvv2wRNknpZu": {
+    "migratedAt": "2025-09-16T22:17:16.110Z",
+    "name": "Campo 4 (Outdoor)",
+    "clubName": "Sporting CAT",
+    "clubId": "Z1CRVrIvRqPAPdFzMb71",
+    "id": "pq4yltro",
+    "timeSlots": [
+      {
+        "isPromo": true,
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "eurPerHour": 20,
+        "from": "08:00",
+        "id": "1757074603323",
+        "to": "23:00",
+        "label": "Nuova fascia"
+      }
+    ],
+    "_migratedAt": "2025-09-19T10:51:34.845Z",
+    "firebaseId": "uWss31XYqvv2wRNknpZu",
+    "courtType": "Padel",
+    "order": 6
+  },
+  "xcuhXQ1IO1TPS0M3xlG6": {
+    "name": "Campo 2 (indoor)",
+    "courtType": "Indoor",
+    "maxPlayers": 4,
+    "firebaseId": "xcuhXQ1IO1TPS0M3xlG6",
+    "id": "xcuhXQ1IO1TPS0M3xlG6",
+    "order": 3,
+    "timeSlots": [
+      {
+        "id": "1760371065965_d83cem2wv",
+        "label": "Nuova fascia",
+        "eurPerHour": 24,
+        "from": "08:00",
+        "to": "23:00",
+        "days": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      }
+    ],
+    "hasHeating": true
+  }
+}

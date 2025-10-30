@@ -1,0 +1,94 @@
+
+> play-sport-pro@1.0.4 test
+> vitest run --passWithNoTests src/services/__tests__/notificationCascade.test.js
+
+
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mC:/Users/paris/Downloads/play-sport-backup-2025-10-05_23-30-00[39m
+
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould send via push as first priority[35m 51 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould fallback to email when push fails[35m 51 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould try all channels in cascade until success[35m 51 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould fail if all channels fail[35m 51 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould respect user preferences[35m 51 MB heap used[39m
+ [31m├ù[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22msend()[2m > [22mshould respect maxCost threshold[35m 52 MB heap used[39m
+[31m   ÔåÆ expected false to be true // Object.is equality[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mType-Specific Routing[2m > [22mshould include SMS for PAYMENT_DUE[35m 52 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mType-Specific Routing[2m > [22mshould use push+email only for PROMOTIONAL[35m 52 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mType-Specific Routing[2m > [22mshould prioritize push+email for BOOKING_CONFIRMED[35m 52 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mgetStats()[2m > [22mshould return correct statistics[35m 52 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mgetStats()[2m > [22mshould calculate channel efficiency correctly[35m 53 MB heap used[39m
+ [31m├ù[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mgetStats()[2m > [22mshould track total cost accurately[35m 53 MB heap used[39m
+[31m   ÔåÆ expected 0.1 to be close to 0.0501, received difference is 0.04990000000000001, but expected 0.000049999999999999996[39m
+ [31m├ù[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mError Handling[2m > [22mshould handle channel timeout gracefully[35m 53 MB heap used[39m
+[31m   ÔåÆ expected false to be true // Object.is equality[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mError Handling[2m > [22mshould handle invalid user ID[35m 53 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mError Handling[2m > [22mshould handle missing notification data[35m 53 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mPerformance[2m > [22mshould handle concurrent sends[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mPerformance[2m > [22mshould complete cascade quickly[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mIntegration[2m > [22mshould log delivery to Firestore[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mNotificationCascade[2m > [22mIntegration[2m > [22mshould track analytics events[35m 54 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mChannel Cost Calculation[2m > [22mshould calculate push cost correctly[35m 57 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mChannel Cost Calculation[2m > [22mshould calculate email cost correctly[35m 57 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mChannel Cost Calculation[2m > [22mshould calculate SMS cost correctly[35m 57 MB heap used[39m
+ [32mÔ£ô[39m src/services/__tests__/notificationCascade.test.js[2m > [22mChannel Cost Calculation[2m > [22mshould calculate in-app cost correctly[35m 57 MB heap used[39m
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ» Failed Tests 3 ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+
+ FAIL  src/services/__tests__/notificationCascade.test.js > NotificationCascade > send() > should respect maxCost threshold
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ÔØ» src/services/__tests__/notificationCascade.test.js:161:30
+    159|       });
+    160| 
+    161|       expect(result.success).toBe(true);
+       |                              ^
+    162|       expect(result.channel).toBe('email');
+    163|       expect(result.cost).toBeLessThanOrEqual(0.01);
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/3]ÔÄ»
+
+ FAIL  src/services/__tests__/notificationCascade.test.js > NotificationCascade > getStats() > should track total cost accurately
+AssertionError: expected 0.1 to be close to 0.0501, received difference is 0.04990000000000001, but expected 0.000049999999999999996
+ ÔØ» src/services/__tests__/notificationCascade.test.js:310:31
+    308|       const stats = notificationCascade.getStats();
+    309| 
+    310|       expect(stats.totalCost).toBeCloseTo(0.0501, 4); // 0.0001 + 0.05
+       |                               ^
+    311|       expect(stats.averageCost).toBeCloseTo(0.02505, 4); // Average ofÔÇª
+    312|     });
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/3]ÔÄ»
+
+ FAIL  src/services/__tests__/notificationCascade.test.js > NotificationCascade > Error Handling > should handle channel timeout gracefully
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ÔØ» src/services/__tests__/notificationCascade.test.js:332:30
+    330|       });
+    331| 
+    332|       expect(result.success).toBe(true);
+       |                              ^
+    333|       expect(result.channel).toBe('email');
+    334|       expect(result.attempts[0].error).toContain('timeout');
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[3/3]ÔÄ»
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m20 passed[39m[22m[90m (23)[39m
+[2m   Start at [22m 22:14:31
+[2m   Duration [22m 2.43s[2m (transform 219ms, setup 369ms, collect 370ms, tests 81ms, environment 1.23s, prepare 127ms)[22m
+
+JSON report written to C:/Users/paris/Downloads/play-sport-backup-2025-10-05_23-30-00/test-results/results.json
+[1m[7m[35m HTML [39m[27m[22m [35mReport is generated[39m
+[2m       You can run [22m[1mnpx vite preview --outDir test-results[22m[2m to see the test results.[22m

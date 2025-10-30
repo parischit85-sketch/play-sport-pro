@@ -1,0 +1,277 @@
+// Firestore Security Rules - PRODUCTION
+// Data: 2025-10-07
+// Regole con sistema di attivazione circoli
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==================== HELPER FUNCTIONS ====================
+    
+    // Verifica se l'utente è autenticato
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Verifica se l'utente è super-admin
+    function isSuperAdmin() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super-admin';
+    }
+    
+    // Verifica se l'utente è club-admin
+    function isClubAdmin() {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'club-admin';
+    }
+    
+    // Verifica se l'utente è l'owner del circolo
+    function isClubOwner(clubId) {
+      return isSignedIn() && 
+             get(/databases/$(database)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid;
+    }
+    
+    // Verifica se il circolo è attivo
+    function isClubActive(clubId) {
+      return get(/databases/$(database)/documents/clubs/$(clubId)).data.isActive == true;
+    }
+    
+    // ==================== USERS COLLECTION ====================
+    match /users/{userId} {
+      // Lettura: solo il proprio profilo o super-admin
+      allow read: if isSignedIn() && (request.auth.uid == userId || isSuperAdmin());
+      
+      // Creazione: solo durante registrazione (stesso UID)
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      
+      // Aggiornamento: solo il proprio profilo (senza modificare role se non super-admin)
+      allow update: if isSignedIn() && 
+                       request.auth.uid == userId &&
+                       (isSuperAdmin() || request.resource.data.role == resource.data.role);
+      
+      // Eliminazione: solo super-admin
+      allow delete: if isSuperAdmin();
+    }
+    
+    // ==================== CLUBS COLLECTION ====================
+    match /clubs/{clubId} {
+      // Lettura pubblica: solo circoli attivi
+      allow read: if isClubActive(clubId);
+      
+      // Lettura owner: sempre accessibile dal proprietario
+      allow read: if isClubOwner(clubId);
+      
+      // Lettura super-admin: sempre accessibile
+      allow read: if isSuperAdmin();
+      
+      // Creazione: durante registrazione con status pending e isActive false
+      allow create: if isSignedIn() && 
+                       request.auth.uid == request.resource.data.ownerId &&
+                       request.resource.data.status == 'pending' &&
+                       request.resource.data.isActive == false;
+      
+      // Aggiornamento owner: può modificare tutto TRANNE isActive e status
+      allow update: if isClubOwner(clubId) &&
+                       !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isActive', 'status', 'ownerId']);
+      
+      // Aggiornamento super-admin: può modificare tutto (incluso isActive e status)
+      allow update: if isSuperAdmin();
+      
+      // Eliminazione: solo super-admin
+      allow delete: if isSuperAdmin();
+      
+      // ==================== CLUB SUBCOLLECTIONS ====================
+      
+      // Club Profiles (admin, istruttori, etc.)
+      match /profiles/{profileId} {
+        // Lettura: membri del circolo o super-admin
+        allow read: if isClubOwner(clubId) || isSuperAdmin();
+        
+        // Scrittura: owner del circolo o super-admin
+        allow write: if isClubOwner(clubId) || isSuperAdmin();
+      }
+      
+      // Club Courts
+      match /courts/{courtId} {
+        // Lettura pubblica: solo se circolo attivo
+        allow read: if isClubActive(clubId);
+        
+        // Lettura owner: sempre
+        allow read: if isClubOwner(clubId);
+        
+        // Scrittura: owner o super-admin
+        allow write: if isClubOwner(clubId) || isSuperAdmin();
+      }
+      
+      // Club Members
+      match /members/{memberId} {
+        // Lettura: membri del circolo, owner o super-admin
+        allow read: if isSignedIn() && 
+                       (request.auth.uid == memberId || 
+                        isClubOwner(clubId) || 
+                        isSuperAdmin());
+        
+        // Scrittura: owner o super-admin
+        allow write: if isClubOwner(clubId) || isSuperAdmin();
+      }
+    }
+    
+    // ==================== BOOKINGS COLLECTION ====================
+    match /bookings/{bookingId} {
+      // Lettura: creatore della prenotazione, admin del circolo o super-admin
+      allow read: if isSignedIn() && 
+                     (request.auth.uid == resource.data.userId ||
+                      isClubOwner(resource.data.clubId) ||
+                      isSuperAdmin());
+      
+      // Creazione: utenti autenticati (solo per circoli attivi)
+      allow create: if isSignedIn() && 
+                       request.auth.uid == request.resource.data.userId &&
+                       isClubActive(request.resource.data.clubId);
+      
+      // Aggiornamento: creatore, admin circolo o super-admin
+      allow update: if isSignedIn() && 
+                       (request.auth.uid == resource.data.userId ||
+                        isClubOwner(resource.data.clubId) ||
+                        isSuperAdmin());
+      
+      // Eliminazione: creatore, admin circolo o super-admin
+      allow delete: if isSignedIn() && 
+                       (request.auth.uid == resource.data.userId ||
+                        isClubOwner(resource.data.clubId) ||
+                        isSuperAdmin());
+    }
+    
+    // ==================== MATCHES COLLECTION ====================
+    match /matches/{matchId} {
+      // Lettura pubblica: solo partite in circoli attivi
+      allow read: if isClubActive(resource.data.clubId);
+      
+      // Lettura: partecipanti, admin circolo o super-admin
+      allow read: if isSignedIn() && 
+                     (request.auth.uid in resource.data.players ||
+                      isClubOwner(resource.data.clubId) ||
+                      isSuperAdmin());
+      
+      // Creazione: utenti autenticati (solo in circoli attivi)
+      allow create: if isSignedIn() && 
+                       isClubActive(request.resource.data.clubId);
+      
+      // Aggiornamento: creatore, partecipanti, admin circolo o super-admin
+      allow update: if isSignedIn() && 
+                       (request.auth.uid == resource.data.createdBy ||
+                        request.auth.uid in resource.data.players ||
+                        isClubOwner(resource.data.clubId) ||
+                        isSuperAdmin());
+      
+      // Eliminazione: creatore, admin circolo o super-admin
+      allow delete: if isSignedIn() && 
+                       (request.auth.uid == resource.data.createdBy ||
+                        isClubOwner(resource.data.clubId) ||
+                        isSuperAdmin());
+    }
+    
+    // ==================== TOURNAMENTS COLLECTION ====================
+    match /tournaments/{tournamentId} {
+      // Lettura pubblica: solo tornei in circoli attivi
+      allow read: if isClubActive(resource.data.clubId);
+      
+      // Lettura: admin circolo o super-admin
+      allow read: if isClubOwner(resource.data.clubId) || isSuperAdmin();
+      
+      // Scrittura: admin circolo o super-admin
+      allow write: if isClubOwner(resource.data.clubId) || isSuperAdmin();
+    }
+    
+    // ==================== LESSONS COLLECTION ====================
+    match /lessons/{lessonId} {
+      // Lettura: studente, istruttore, admin circolo o super-admin
+      allow read: if isSignedIn() && 
+                     (request.auth.uid == resource.data.studentId ||
+                      request.auth.uid == resource.data.instructorId ||
+                      isClubOwner(resource.data.clubId) ||
+                      isSuperAdmin());
+      
+      // Creazione: studenti (solo in circoli attivi)
+      allow create: if isSignedIn() && 
+                       request.auth.uid == request.resource.data.studentId &&
+                       isClubActive(request.resource.data.clubId);
+      
+      // Aggiornamento: studente, istruttore, admin circolo o super-admin
+      allow update: if isSignedIn() && 
+                       (request.auth.uid == resource.data.studentId ||
+                        request.auth.uid == resource.data.instructorId ||
+                        isClubOwner(resource.data.clubId) ||
+                        isSuperAdmin());
+      
+      // Eliminazione: studente, admin circolo o super-admin
+      allow delete: if isSignedIn() && 
+                       (request.auth.uid == resource.data.studentId ||
+                        isClubOwner(resource.data.clubId) ||
+                        isSuperAdmin());
+    }
+    
+    // ==================== INSTRUCTOR SLOTS COLLECTION ====================
+    match /instructorSlots/{slotId} {
+      // Lettura: tutti (per vedere disponibilità) solo se circolo attivo
+      allow read: if isClubActive(resource.data.clubId);
+      
+      // Lettura: istruttore, admin circolo o super-admin
+      allow read: if isSignedIn() && 
+                     (request.auth.uid == resource.data.instructorId ||
+                      isClubOwner(resource.data.clubId) ||
+                      isSuperAdmin());
+      
+      // Scrittura: istruttore, admin circolo o super-admin
+      allow write: if isSignedIn() && 
+                      (request.auth.uid == request.resource.data.instructorId ||
+                       isClubOwner(request.resource.data.clubId) ||
+                       isSuperAdmin());
+    }
+    
+    // ==================== NOTIFICATIONS COLLECTION ====================
+    match /notifications/{notificationId} {
+      // Lettura: solo destinatario o super-admin
+      allow read: if isSignedIn() && 
+                     (request.auth.uid == resource.data.userId || 
+                      isSuperAdmin());
+      
+      // Creazione: sistema o super-admin
+      allow create: if isSignedIn();
+      
+      // Aggiornamento: destinatario (per marcare come letta) o super-admin
+      allow update: if isSignedIn() && 
+                       (request.auth.uid == resource.data.userId || 
+                        isSuperAdmin());
+      
+      // Eliminazione: destinatario o super-admin
+      allow delete: if isSignedIn() && 
+                       (request.auth.uid == resource.data.userId || 
+                        isSuperAdmin());
+    }
+    
+    // ==================== PUSH SUBSCRIPTIONS COLLECTION ====================
+    match /pushSubscriptions/{subscriptionId} {
+      // Lettura/Scrittura: solo il proprietario della subscription
+      allow read, write: if isSignedIn() && request.auth.uid == subscriptionId;
+      
+      // Lettura: super-admin
+      allow read: if isSuperAdmin();
+    }
+    
+    // ==================== AFFILIATIONS COLLECTION ====================
+    match /affiliations/{affiliationId} {
+      // Lettura: solo super-admin
+      allow read: if isSuperAdmin();
+      
+      // Scrittura: solo super-admin
+      allow write: if isSuperAdmin();
+    }
+    
+    // ==================== FALLBACK - DENY ALL ====================
+    // Qualsiasi altra collezione non specificata è negata per sicurezza
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

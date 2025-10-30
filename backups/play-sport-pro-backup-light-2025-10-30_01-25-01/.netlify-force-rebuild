@@ -1,0 +1,4 @@
+# Force Netlify to rebuild and clear cache
+# This file was created to force a clean rebuild after removing Sentry dependency
+# Date: 2025-10-03
+# Reason: Clear cached vendor bundles that contained Sentry code causing React.Children error

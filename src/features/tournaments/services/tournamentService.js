@@ -701,6 +701,86 @@ export async function updateStatistics(clubId, tournamentId, statisticsUpdate) {
   }
 }
 
+/**
+ * Get public tournaments (tournaments with public view enabled)
+ * @param {Object} options - Query options
+ * @param {number} options.limit - Maximum number of tournaments to return
+ * @returns {Promise<Array>} Array of public tournaments with club information
+ */
+export async function getPublicTournaments(options = {}) {
+  try {
+    const { getClubs } = await import('../../../services/clubs.js');
+
+    // Get ALL clubs (not just active ones) to show public tournaments from any club
+    const clubs = await getClubs({ activeOnly: false });
+    console.log('🏓 Found clubs:', clubs.length);
+    clubs.forEach((club, index) => {
+      console.log(`  Club ${index + 1}: ${club.name} (${club.id})`);
+    });
+
+    const publicTournaments = [];
+    const maxLimit = options.limit || 20;
+
+    // For each club, get tournaments and filter client-side to show only public ones
+    for (const club of clubs) {
+      if (publicTournaments.length >= maxLimit) break;
+
+      try {
+        console.log(`🔍 Checking tournaments for club: ${club.name} (${club.id})`);
+        const tournamentsRef = collection(db, 'clubs', club.id, COLLECTIONS.TOURNAMENTS);
+        // Get more tournaments than needed to allow for client-side filtering
+        const q = query(
+          tournamentsRef,
+          orderBy('updatedAt', 'desc'),
+          limit(Math.min(maxLimit * 2, 50)) // Get more to filter client-side
+        );
+
+        const snapshot = await getDocs(q);
+        console.log(`  📋 Found ${snapshot.docs.length} tournaments for club ${club.name}`);
+
+        for (const doc of snapshot.docs) {
+          if (publicTournaments.length >= maxLimit) break;
+
+          const tournamentData = doc.data();
+          console.log(`    🏆 Tournament: ${tournamentData.name} (${doc.id})`);
+          console.log(`       Status: ${tournamentData.status}`);
+          console.log(`       Public view enabled: ${tournamentData.publicView?.enabled}`);
+          console.log(`       Has token: ${!!tournamentData.publicView?.token}`);
+
+          // Client-side filtering for public view enabled - show tournaments from ANY club
+          if (tournamentData.publicView?.enabled === true) {
+            console.log(`       ✅ ADDED TO PUBLIC LIST`);
+            publicTournaments.push({
+              id: doc.id,
+              clubId: club.id,
+              clubName: club.name,
+              name: tournamentData.name,
+              description: tournamentData.description,
+              status: tournamentData.status,
+              registeredTeams: tournamentData.registeredTeams || 0,
+              publicView: tournamentData.publicView,
+              createdAt: tournamentData.createdAt,
+              updatedAt: tournamentData.updatedAt,
+            });
+          } else {
+            console.log(`       ❌ SKIPPED (public view not enabled)`);
+          }
+        }
+      } catch (error) {
+        // Skip clubs that don't have tournaments or have permission issues
+        console.warn(`⚠️ Skipping club ${club.id} for public tournaments:`, error.message);
+        continue;
+      }
+    }
+
+    console.log(`📊 Final result: ${publicTournaments.length} public tournaments`);
+    return publicTournaments;
+  } catch (error) {
+    console.error('❌ Error getting public tournaments:', error);
+    return [];
+  }
+}
+
 export default {
   createTournament,
   getTournament,
@@ -715,4 +795,5 @@ export default {
   closeRegistration,
   cancelTournament,
   updateStatistics,
+  getPublicTournaments,
 };

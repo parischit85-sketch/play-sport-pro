@@ -1,0 +1,161 @@
+// Firestore Security Rules - Multi-Club Model
+// Data: 2025-09-18
+// NOTE: Rimuovere gradualmente le eccezioni di sviluppo (isDevAdmin) prima del go-live.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------ Helper Functions ------------------
+    function isAuthenticated() { return request.auth != null; }
+
+    // Dev override (email qualunque autenticata) - DA DISATTIVARE IN PRODUZIONE
+    function isDevAdmin() { return request.auth != null && request.auth.token.email != null; }
+
+    function clubDoc(clubId) { return get(/databases/$(database)/documents/clubs/$(clubId)); }
+
+    function affiliationId(userId, clubId) { return userId + '_' + clubId; }
+
+    function isAffiliated(clubId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/affiliations/$(affiliationId(request.auth.uid, clubId))) &&
+        get(/databases/$(database)/documents/affiliations/$(affiliationId(request.auth.uid, clubId))).data.status == 'approved';
+    }
+
+    function isClubStaff(clubId) {
+      return isAffiliated(clubId) && (
+        request.auth.uid in clubDoc(clubId).data.managers ||
+        request.auth.uid in clubDoc(clubId).data.owners ||
+        request.auth.uid in clubDoc(clubId).data.staff ||
+        false
+      );
+    }
+
+    function isClubAdmin(clubId) {
+      return isClubStaff(clubId) || (clubDoc(clubId).data.owners != null && request.auth.uid in clubDoc(clubId).data.owners);
+    }
+
+    // ------------------ Root Level Collections ------------------
+
+    // Clubs metadata (lettura pubblica opzionale, scrittura riservata)
+    match /clubs/{clubId} {
+      allow read: if true; // Se necessario restringere: isAuthenticated();
+      allow create: if isAuthenticated() && isDevAdmin(); // Creazione solo da tool/admin
+      allow update, delete: if isAuthenticated() && (isDevAdmin() || isClubAdmin(clubId));
+    }
+
+    // Affiliazioni normalizzate
+    match /affiliations/{affId} {
+      allow read: if isAuthenticated() && (
+        // Utente legge la propria affiliazione oppure staff del club
+        (request.auth.uid == resource.data.userId) ||
+        isDevAdmin() ||
+        (resource.data.clubId != null && isClubStaff(resource.data.clubId))
+      );
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
+      allow update: if isAuthenticated() && (
+        // Utente può annullare la propria (status -> withdrawn) oppure staff modifica stato
+        (request.auth.uid == resource.data.userId) ||
+        (resource.data.clubId != null && isClubStaff(resource.data.clubId)) ||
+        isDevAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        (resource.data.clubId != null && isClubAdmin(resource.data.clubId)) || isDevAdmin()
+      );
+    }
+
+    // Profili utente: solo proprietario (più dev)
+    match /profiles/{userId} {
+      allow read, update: if isAuthenticated() && (request.auth.uid == userId || isDevAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      allow delete: if false; // Nessuna cancellazione diretta profili
+    }
+
+    // Collezioni condivise (config, parametri generali) - visibili agli autenticati
+    match /shared/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isDevAdmin();
+    }
+
+    // Backups & diagnostics (limitato)
+    match /backups/{id} { allow read: if isAuthenticated() && isDevAdmin(); allow write: if isAuthenticated() && isDevAdmin(); }
+    match /diagnostics/{doc=**} { allow read, write: if isAuthenticated() && isDevAdmin(); }
+
+    // ------------------ Club Subcollections ------------------
+
+    // Courts
+    match /clubs/{clubId}/courts/{courtId} {
+      allow read: if true; // oppure: isAffiliated(clubId)
+      allow create, update, delete: if isAuthenticated() && (isClubStaff(clubId) || isDevAdmin());
+    }
+
+    // Players (profilo competitività interno al club)
+    match /clubs/{clubId}/players/{playerId} {
+      allow read: if isAffiliated(clubId) || isDevAdmin();
+      allow create: if isAuthenticated() && (isClubStaff(clubId) || request.auth.uid == request.resource.data.userId);
+      allow update: if isAuthenticated() && (
+        isClubStaff(clubId) || request.auth.uid == resource.data.userId || isDevAdmin()
+      );
+      allow delete: if isAuthenticated() && (isClubAdmin(clubId) || isDevAdmin());
+    }
+
+    // Matches
+    match /clubs/{clubId}/matches/{matchId} {
+      allow read: if isAffiliated(clubId) || isDevAdmin();
+      allow create: if isAuthenticated() && (
+        // Giocatore partecipante o staff
+        isClubStaff(clubId) || (request.resource.data.playerIds != null && request.auth.uid in request.resource.data.playerIds)
+      );
+      allow update, delete: if isAuthenticated() && (
+        isClubStaff(clubId) || isDevAdmin() || (resource.data.playerIds != null && request.auth.uid in resource.data.playerIds)
+      );
+    }
+
+    // Bookings
+    match /clubs/{clubId}/bookings/{bookingId} {
+      allow read: if isAffiliated(clubId) || isDevAdmin();
+      allow create: if isAuthenticated() && (
+        isAffiliated(clubId) && request.auth.uid == request.resource.data.createdBy &&
+        request.resource.data.clubId == clubId
+      );
+      allow update, delete: if isAuthenticated() && (
+        (resource.data.createdBy == request.auth.uid) || isClubStaff(clubId) || isDevAdmin()
+      );
+    }
+
+    // Tournaments
+    match /clubs/{clubId}/tournaments/{tournamentId} {
+      allow read: if isAffiliated(clubId) || isDevAdmin();
+      allow create, update, delete: if isAuthenticated() && (isClubStaff(clubId) || isDevAdmin());
+    }
+
+    // Ranking / Stats cache (se presente una collezione dedicata)
+    match /clubs/{clubId}/statsCache/{docId} {
+      allow read: if isAffiliated(clubId) || isDevAdmin();
+      allow write: if isAuthenticated() && (isClubStaff(clubId) || isDevAdmin());
+    }
+
+    // Lessons (prenotazioni lezioni) opzionale
+    match /clubs/{clubId}/lessons/{lessonId} {
+      allow read: if isAffiliated(clubId) || isDevAdmin();
+      allow create: if isAuthenticated() && isAffiliated(clubId);
+      allow update, delete: if isAuthenticated() && (isClubStaff(clubId) || resource.data.createdBy == request.auth.uid || isDevAdmin());
+    }
+
+    // ------------------ User Club Roles Mapping ------------------
+    // Mappa ruoli per utente e club. Documento previsto con campi: userId, clubId, roles (array/string-map)
+    // Lettura SOLO dal proprietario del documento (utente) per minimizzare esposizione ruoli aggregati.
+    // Creazione / modifica riservata ad admin del club (o dev override finché attivo isDevAdmin indirettamente tramite isClubAdmin -> staff/owners).
+    match /userClubRoles/{docId} {
+      // Solo l'utente proprietario può leggere il proprio mapping
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      // Creazione: admin del club indicato nel payload
+      allow create: if isAuthenticated() && isClubAdmin(request.resource.data.clubId);
+      // Update / Delete: admin del club indicato nel documento esistente
+      allow update, delete: if isAuthenticated() && isClubAdmin(resource.data.clubId);
+    }
+
+    // Fallback deny all
+    match /{document=**} { allow read, write: if false; }
+  }
+}

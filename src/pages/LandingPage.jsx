@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { themeTokens, LOGO_URL } from '@lib/theme.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import RegistrationTypeModal from '@components/ui/RegistrationTypeModal';
+import LiveTournamentsModal from '@components/ui/LiveTournamentsModal';
 import {
   Users,
   Calendar,
@@ -29,6 +30,7 @@ export default function LandingPage() {
   const { user } = useAuth();
   const T = React.useMemo(() => themeTokens(), []);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const [showLiveTournamentsModal, setShowLiveTournamentsModal] = useState(false);
 
   // Se l'utente è già autenticato, reindirizza alla dashboard
   React.useEffect(() => {
@@ -39,33 +41,33 @@ export default function LandingPage() {
 
   const features = [
     {
-      icon: <Calendar className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
+      icon: <Calendar className="w-8 h-8 text-blue-400" />,
       title: 'Prenotazioni Facili',
       description: 'Prenota campi sportivi in pochi click. Scegli il tuo sport, orario e conferma.',
     },
     {
-      icon: <Users className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
+      icon: <Users className="w-8 h-8 text-blue-400" />,
       title: 'Lezioni con Maestri',
       description:
         'Impara dai migliori istruttori. Lezioni individuali o di gruppo per tutti i livelli.',
     },
     {
-      icon: <Trophy className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
+      icon: <Trophy className="w-8 h-8 text-blue-400" />,
       title: 'Tornei e Competizioni',
       description: 'Partecipa a tornei locali e nazionali. Scala le classifiche e vinci premi.',
     },
     {
-      icon: <MapPin className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
+      icon: <MapPin className="w-8 h-8 text-blue-400" />,
       title: 'Trova il Tuo Circolo',
       description: 'Scopri circoli sportivi vicino a te con mappe interattive e recensioni.',
     },
     {
-      icon: <Smartphone className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
+      icon: <Smartphone className="w-8 h-8 text-blue-400" />,
       title: 'App Mobile',
       description: 'Gestisci tutto dal tuo smartphone. Disponibile per iOS e Android.',
     },
     {
-      icon: <Shield className="w-8 h-8 text-emerald-600 dark:text-blue-400" />,
+      icon: <Shield className="w-8 h-8 text-blue-400" />,
       title: 'Pagamenti Sicuri',
       description: 'Transazioni protette e gestione sicura delle tue prenotazioni.',
     },
@@ -88,23 +90,20 @@ export default function LandingPage() {
               <img
                 src={LOGO_URL}
                 alt="Play-Sport.pro"
-                className="h-10 w-auto select-none dark:bg-white dark:rounded-md dark:p-1"
+                className="h-10 w-auto select-none"
                 draggable={false}
               />
-              <span className="text-xl font-bold text-neutral-900 dark:text-white">
-                Play-Sport.pro
-              </span>
             </div>
             <div className="flex items-center gap-4">
               <Link
                 to="/login"
-                className="text-neutral-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-blue-400 font-medium transition-colors"
+                className="text-gray-300 hover:text-blue-400 font-medium transition-colors"
               >
                 Accedi
               </Link>
               <button
                 onClick={() => setShowRegistrationModal(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
               >
                 Registrati
               </button>
@@ -114,24 +113,24 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
           <div className="text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-white mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
               Il Tuo
-              <span className="text-emerald-600 dark:text-blue-400"> Sport</span>,
+              <span className="text-blue-400"> Sport</span>,
               <br />
-              La Tua <span className="text-emerald-600 dark:text-blue-400">Passione</span>
+              La Tua <span className="text-blue-400">Passione</span>
             </h1>
-            <p className="text-xl text-neutral-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
               Connetti con i migliori circoli sportivi, prenota campi, partecipa a tornei e migliora
               le tue abilità con lezioni professionali. Tutto in un'unica piattaforma.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => setShowRegistrationModal(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
               >
                 <UserPlus className="w-5 h-5" />
                 Inizia Ora - È Gratuito
@@ -140,31 +139,38 @@ export default function LandingPage() {
                 onClick={() =>
                   document.getElementById('features').scrollIntoView({ behavior: 'smooth' })
                 }
-                className="border-2 border-emerald-600 dark:border-blue-400 text-emerald-600 dark:text-blue-400 hover:bg-emerald-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2"
+                className="border-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2"
               >
                 <Play className="w-5 h-5" />
                 Scopri di Più
+              </button>
+              <button
+                onClick={() => setShowLiveTournamentsModal(true)}
+                className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              >
+                <Trophy className="w-5 h-5" />
+                Tornei Live
               </button>
             </div>
           </div>
         </div>
 
         {/* Floating Elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-emerald-200 dark:bg-blue-800 rounded-full opacity-20 animate-bounce"></div>
-        <div className="absolute top-40 right-20 w-16 h-16 bg-blue-200 dark:bg-emerald-800 rounded-full opacity-20 animate-bounce delay-1000"></div>
-        <div className="absolute bottom-20 left-20 w-12 h-12 bg-emerald-300 dark:bg-blue-700 rounded-full opacity-20 animate-bounce delay-500"></div>
+        <div className="absolute top-20 left-10 w-20 h-20 bg-blue-800 rounded-full opacity-20 animate-bounce"></div>
+        <div className="absolute top-40 right-20 w-16 h-16 bg-emerald-800 rounded-full opacity-20 animate-bounce delay-1000"></div>
+        <div className="absolute bottom-20 left-20 w-12 h-12 bg-blue-700 rounded-full opacity-20 animate-bounce delay-500"></div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white dark:bg-gray-800">
+      <section className="py-16 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-3xl lg:text-4xl font-bold text-emerald-600 dark:text-blue-400 mb-2">
+                <div className="text-3xl lg:text-4xl font-bold text-blue-400 mb-2">
                   {stat.number}
                 </div>
-                <div className="text-neutral-600 dark:text-gray-300 font-medium">{stat.label}</div>
+                <div className="text-gray-300 font-medium">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -172,13 +178,13 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gray-50 dark:bg-gray-900">
+      <section id="features" className="py-20 bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
               Tutto Quello che Ti Serve
             </h2>
-            <p className="text-xl text-neutral-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Una piattaforma completa per atleti, circoli sportivi e appassionati di sport.
             </p>
           </div>
@@ -187,13 +193,13 @@ export default function LandingPage() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                className="bg-gray-700 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
                 <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
+                <h3 className="text-xl font-semibold text-white mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-neutral-600 dark:text-gray-300">{feature.description}</p>
+                <p className="text-gray-300">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -201,50 +207,50 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works */}
-      <section className="py-20 bg-white dark:bg-gray-800">
+      <section className="py-20 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
               Come Funziona
             </h2>
-            <p className="text-xl text-neutral-600 dark:text-gray-300">
+            <p className="text-xl text-gray-300">
               Inizia in pochi semplici passi
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-emerald-600 dark:text-blue-400">1</span>
+              <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-blue-400">1</span>
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
+              <h3 className="text-xl font-semibold text-white mb-3">
                 Registrati
               </h3>
-              <p className="text-neutral-600 dark:text-gray-300">
+              <p className="text-gray-300">
                 Crea il tuo profilo gratuito come giocatore o gestisci il tuo circolo sportivo.
               </p>
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-emerald-600 dark:text-blue-400">2</span>
+              <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-blue-400">2</span>
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
+              <h3 className="text-xl font-semibold text-white mb-3">
                 Scegli il Tuo Sport
               </h3>
-              <p className="text-neutral-600 dark:text-gray-300">
+              <p className="text-gray-300">
                 Trova il circolo ideale, prenota campi o iscriviti a lezioni e tornei.
               </p>
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-emerald-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl font-bold text-emerald-600 dark:text-blue-400">3</span>
+              <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="text-2xl font-bold text-blue-400">3</span>
               </div>
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-white mb-3">
+              <h3 className="text-xl font-semibold text-white mb-3">
                 Gioca e Migliora
               </h3>
-              <p className="text-neutral-600 dark:text-gray-300">
+              <p className="text-gray-300">
                 Partecipa alle attività, traccia i tuoi progressi e connetti con altri appassionati.
               </p>
             </div>
@@ -253,7 +259,7 @@ export default function LandingPage() {
       </section>
 
       {/* User Types Section */}
-      <section className="py-20 bg-gradient-to-r from-emerald-600 to-blue-600 dark:from-blue-600 dark:to-emerald-600">
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-emerald-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
@@ -339,25 +345,25 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
+      <section className="py-20 bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-white mb-6">
+          <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
             Pronto a Iniziare la Tua Avventura Sportiva?
           </h2>
-          <p className="text-xl text-neutral-600 dark:text-gray-300 mb-8">
+          <p className="text-xl text-gray-300 mb-8">
             Unisciti a migliaia di atleti e circoli sportivi che già utilizzano Play-Sport.pro
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => setShowRegistrationModal(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
             >
               <UserPlus className="w-5 h-5" />
               Registrati Gratuitamente
             </button>
             <Link
               to="/login"
-              className="border-2 border-emerald-600 dark:border-blue-400 text-emerald-600 dark:text-blue-400 hover:bg-emerald-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2"
+              className="border-2 border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 flex items-center justify-center gap-2"
             >
               Hai già un account? Accedi
             </Link>
@@ -443,6 +449,13 @@ export default function LandingPage() {
         isOpen={showRegistrationModal}
         onClose={() => setShowRegistrationModal(false)}
       />
+
+      {/* Live Tournaments Modal */}
+      <LiveTournamentsModal
+        isOpen={showLiveTournamentsModal}
+        onClose={() => setShowLiveTournamentsModal(false)}
+      />
     </div>
   );
 }
+

@@ -16,21 +16,21 @@ const UserBookingsCard = React.lazy(() => import('@ui/UserBookingsCard.jsx'));
 const QuickAction = React.memo(({ action, T }) => (
   <button
     onClick={action.action}
-    className={`relative bg-emerald-50/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/40 dark:border-gray-600/40 hover:border-emerald-300/60 dark:hover:border-gray-500/60 p-6 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group text-center overflow-hidden`}
+    className={`relative bg-emerald-50/70/70 backdrop-blur-xl border border-emerald-200/40  hover:border-emerald-300/60  p-6 rounded-2xl transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group text-center overflow-hidden`}
   >
     {/* Subtle gradient overlay */}
-    <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/30 dark:from-gray-700/30 via-transparent to-transparent pointer-events-none" />
+    <div className="absolute inset-0 bg-gradient-to-br from-emerald-100/30  via-transparent to-transparent pointer-events-none" />
 
     <div className="relative">
       <div
-        className={`${action.iconWrap} w-12 h-12 backdrop-blur-sm border border-white/20 dark:border-gray-600/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform mx-auto rounded-xl shadow-lg`}
+        className={`${action.iconWrap} w-12 h-12 backdrop-blur-sm border border-white/20  flex items-center justify-center mb-4 group-hover:scale-110 transition-transform mx-auto rounded-xl shadow-lg`}
       >
         {action.icon}
       </div>
-      <h3 className="font-bold text-base mb-2 text-gray-900 dark:text-white text-center">
+      <h3 className="font-bold text-base mb-2 text-gray-900  text-center">
         {action.title}
       </h3>
-      <p className="text-xs text-gray-600 dark:text-gray-300 text-center leading-relaxed">
+      <p className="text-xs text-gray-600  text-center leading-relaxed">
         {action.description}
       </p>
     </div>
@@ -64,7 +64,7 @@ export default function DashboardHomePage() {
         ),
         action: () => navigate('/search-clubs'),
         iconWrap:
-          'bg-gradient-to-r from-blue-50/80 to-cyan-50/60 dark:from-blue-900/40 dark:to-cyan-900/30 text-blue-600 dark:text-blue-400 border-blue-200/50 dark:border-blue-500/30',
+          'bg-gradient-to-r from-blue-50/80 to-cyan-50/60   text-blue-600  border-blue-200/50',
       },
       {
         title: 'Prenota Campo/Lezione',
@@ -78,7 +78,7 @@ export default function DashboardHomePage() {
         ),
         action: () => navigate('/prenota'),
         iconWrap:
-          'bg-gradient-to-r from-emerald-50/80 to-green-50/60 dark:from-emerald-900/40 dark:to-green-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-500/30',
+          'bg-gradient-to-r from-emerald-50/80 to-green-50/60   text-emerald-600  border-emerald-200/50',
       },
     ],
     [navigate]
@@ -88,15 +88,15 @@ export default function DashboardHomePage() {
   if (!players) {
     // simple loading fallback until ClubContext guarantees players array
     return (
-      <div className="space-y-6 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800 p-4">
+      <div className="space-y-6 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100    p-4">
         <PWABanner />
         <div className="animate-pulse space-y-6">
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-3xl h-32 border border-white/20 dark:border-gray-700/20 shadow-xl"></div>
+          <div className="bg-white/60/60 backdrop-blur-xl rounded-3xl h-32 border border-white/20  shadow-xl"></div>
           <div className="grid grid-cols-2 gap-4">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl h-24 border border-white/20 dark:border-gray-700/20 shadow-xl"
+                className="bg-white/60/60 backdrop-blur-xl rounded-2xl h-24 border border-white/20  shadow-xl"
               ></div>
             ))}
           </div>
@@ -106,7 +106,7 @@ export default function DashboardHomePage() {
   }
 
   return (
-    <div className="space-y-1 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-gray-800">
+    <div className="space-y-1 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       {/* PWA Install Banner */}
       <PWABanner />
 
@@ -116,13 +116,13 @@ export default function DashboardHomePage() {
         <div>
           <React.Suspense
             fallback={
-              <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-6 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
-                <div className="h-4 bg-gray-200/80 dark:bg-gray-600/60 rounded w-32 mb-4"></div>
+              <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 rounded-2xl p-6 animate-pulse backdrop-blur-sm border border-white/30">
+                <div className="h-4 bg-gray-200/80 rounded w-32 mb-4"></div>
                 <div className="space-y-3">
                   {[1, 2].map((i) => (
                     <div
                       key={i}
-                      className="h-20 bg-gray-200/60 dark:bg-gray-600/40 rounded-lg"
+                      className="h-20 bg-gray-200/60 rounded-lg"
                     ></div>
                   ))}
                 </div>
@@ -134,8 +134,8 @@ export default function DashboardHomePage() {
         </div>
 
         {/* Azioni Rapide - Desktop (griglia) */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl">
-          <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white flex items-center gap-3">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-2xl">
+          <h3 className="text-xl font-bold mb-6 text-gray-900  flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
               <svg
                 className="w-5 h-5 text-white"
@@ -167,13 +167,13 @@ export default function DashboardHomePage() {
         <div>
           <React.Suspense
             fallback={
-              <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 dark:from-gray-700/60 dark:to-gray-800/40 rounded-2xl p-4 animate-pulse backdrop-blur-sm border border-white/30 dark:border-gray-600/30">
-                <div className="h-3 bg-gray-200/80 dark:bg-gray-600/60 rounded w-24 mb-3"></div>
+              <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 rounded-2xl p-4 animate-pulse backdrop-blur-sm border border-white/30">
+                <div className="h-3 bg-gray-200/80 rounded w-24 mb-3"></div>
                 <div className="flex gap-2 overflow-x-auto pb-2">
                   {[1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="min-w-[200px] h-24 bg-gray-200/60 dark:bg-gray-600/40 rounded-lg flex-shrink-0"
+                      className="min-w-[200px] h-24 bg-gray-200/60 rounded-lg flex-shrink-0"
                     ></div>
                   ))}
                 </div>
@@ -185,8 +185,8 @@ export default function DashboardHomePage() {
         </div>
 
         {/* Azioni Rapide - Mobile (griglia 2x2) */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-gray-700/20 p-6 shadow-2xl">
-          <h3 className="text-xl font-bold mb-6 text-gray-900 dark:text-white flex items-center gap-3">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-2xl">
+          <h3 className="text-xl font-bold mb-6 text-gray-900  flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
               <svg
                 className="w-5 h-5 text-white"
@@ -214,3 +214,4 @@ export default function DashboardHomePage() {
     </div>
   );
 }
+
