@@ -204,27 +204,43 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
           <button
             type="button"
             onClick={() => handleInputChange('participantType', PARTICIPANT_TYPE.COUPLES)}
-            className={`p-4 rounded-lg border-2 transition-colors ${
+            className={`p-5 rounded-lg border-2 transition-all transform hover:scale-105 ${
               formData.participantType === PARTICIPANT_TYPE.COUPLES
-                ? 'border-primary-500 bg-primary-900/30 text-primary-300'
-                : 'border-gray-600 bg-gray-700 text-gray-100 hover:border-gray-500'
+                ? 'border-primary-500 bg-gradient-to-br from-primary-600/40 to-primary-700/30 text-white ring-4 ring-primary-500/30 shadow-lg shadow-primary-500/20'
+                : 'border-gray-600 bg-gray-700/50 text-gray-300 hover:border-primary-400/50 hover:bg-gray-700'
             }`}
           >
-            <div className="font-semibold">Coppie</div>
-            <div className="text-sm text-gray-400 mt-1">2 giocatori per squadra</div>
+            <div className={`font-bold text-lg ${
+              formData.participantType === PARTICIPANT_TYPE.COUPLES ? 'text-primary-200' : 'text-gray-200'
+            }`}>
+              Coppie
+            </div>
+            <div className={`text-sm mt-1 ${
+              formData.participantType === PARTICIPANT_TYPE.COUPLES ? 'text-primary-300' : 'text-gray-400'
+            }`}>
+              2 giocatori per squadra
+            </div>
           </button>
 
           <button
             type="button"
             onClick={() => handleInputChange('participantType', PARTICIPANT_TYPE.TEAMS)}
-            className={`p-4 rounded-lg border-2 transition-colors ${
+            className={`p-5 rounded-lg border-2 transition-all transform hover:scale-105 ${
               formData.participantType === PARTICIPANT_TYPE.TEAMS
-                ? 'border-primary-500 bg-primary-900/30 text-primary-300'
-                : 'border-gray-600 bg-gray-700 text-gray-100 hover:border-gray-500'
+                ? 'border-primary-500 bg-gradient-to-br from-primary-600/40 to-primary-700/30 text-white ring-4 ring-primary-500/30 shadow-lg shadow-primary-500/20'
+                : 'border-gray-600 bg-gray-700/50 text-gray-300 hover:border-primary-400/50 hover:bg-gray-700'
             }`}
           >
-            <div className="font-semibold">Squadre</div>
-            <div className="text-sm text-gray-400 mt-1">2-6 giocatori per squadra</div>
+            <div className={`font-bold text-lg ${
+              formData.participantType === PARTICIPANT_TYPE.TEAMS ? 'text-primary-200' : 'text-gray-200'
+            }`}>
+              Squadre
+            </div>
+            <div className={`text-sm mt-1 ${
+              formData.participantType === PARTICIPANT_TYPE.TEAMS ? 'text-primary-300' : 'text-gray-400'
+            }`}>
+              2-6 giocatori per squadra
+            </div>
           </button>
         </div>
       </div>

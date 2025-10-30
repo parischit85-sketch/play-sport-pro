@@ -137,7 +137,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
       case AFFILIATION_STATUS.PENDING:
         return (
           <div
-            className="flex-1 bg-yellow-100 bg-yellow-900/30 text-yellow-800 text-yellow-400 
+            className="flex-1 bg-yellow-900/30 text-yellow-400 
                         px-4 py-2 rounded-lg text-center font-medium border border-yellow-200 border-yellow-700"
           >
             ⏳ Richiesta in attesa
@@ -159,7 +159,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
       case AFFILIATION_STATUS.REJECTED:
         return (
           <div
-            className="flex-1 bg-red-100 bg-red-900/30 text-red-800 text-red-400 
+            className="flex-1 bg-red-900/30 text-red-400 
                         px-4 py-2 rounded-lg text-center font-medium border border-red-200 border-red-700"
           >
             ❌ Richiesta rifiutata
@@ -213,7 +213,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
           {distance !== null && (
             <div className="ml-4 text-right">
               <div
-                className="bg-blue-100 bg-blue-900/30 text-blue-800 text-blue-400 
+                className="bg-blue-900/30 text-blue-400 
                             px-2 py-1 rounded-lg text-xs font-medium"
               >
                 {distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`}
@@ -256,8 +256,8 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
           <div
             className={`mb-4 p-3 rounded-lg text-sm ${
               message.type === 'success'
-                ? 'bg-green-100 bg-green-900/30 text-green-800 text-green-400 border border-green-200 border-green-700'
-                : 'bg-red-100 bg-red-900/30 text-red-800 text-red-400 border border-red-200 border-red-700'
+                ? 'bg-green-900/30 text-green-400 border border-green-200 border-green-700'
+                : 'bg-red-900/30 text-red-400 border border-red-200 border-red-700'
             }`}
           >
             {message.text}
@@ -288,7 +288,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
         <div className="flex flex-wrap gap-2 text-xs">
           {club.settings?.allowGuestBookings && (
             <span
-              className="bg-green-100 bg-green-900/30 text-green-800 text-green-400 
+              className="bg-green-900/30 text-green-400 
                            px-2 py-1 rounded-full"
             >
               Prenotazioni ospiti
@@ -296,7 +296,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
           )}
           {club.settings?.autoApproveAffiliations && (
             <span
-              className="bg-blue-100 bg-blue-900/30 text-blue-800 text-blue-400 
+              className="bg-blue-900/30 text-blue-400 
                            px-2 py-1 rounded-full"
             >
               Affiliazione automatica
@@ -304,7 +304,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
           )}
           {club.subscription?.type === 'premium' && (
             <span
-              className="bg-purple-100 bg-purple-900/30 text-purple-800 text-purple-400 
+              className="bg-purple-900/30 text-purple-400 
                            px-2 py-1 rounded-full"
             >
               Premium
@@ -317,4 +317,6 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
 };
 
 export default ClubCard;
+
+
 

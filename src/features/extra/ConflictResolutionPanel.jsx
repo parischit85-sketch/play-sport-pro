@@ -320,7 +320,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
               <h2 className="text-2xl font-bold text-gray-900 text-white flex items-center gap-2">
                 ⚠️ Risoluzione Conflitti
               </h2>
-              <p className="text-sm text-gray-600 text-gray-400 mt-1">
+              <p className="text-sm text-gray-400 mt-1">
                 {conflicts.length}{' '}
                 {conflicts.length === 1 ? 'conflitto rilevato' : 'conflitti rilevati'} in "
                 {court?.name}"
@@ -343,7 +343,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
               <h3 className="text-xl font-bold text-gray-900 text-white mb-2">
                 Nessun Conflitto Rilevato
               </h3>
-              <p className="text-gray-600 text-gray-400">
+              <p className="text-gray-400">
                 Tutte le fasce orarie sono configurate correttamente.
               </p>
             </div>
@@ -364,10 +364,10 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
                         <div className="font-semibold text-gray-900 text-white">
                           {conflict.slot1.label}
                         </div>
-                        <div className="text-gray-600 text-gray-400">
+                        <div className="text-gray-400">
                           ⏰ {conflict.slot1.from} - {conflict.slot1.to}
                         </div>
-                        <div className="text-gray-600 text-gray-400">
+                        <div className="text-gray-400">
                           💰 €{conflict.slot1.eurPerHour}/h
                         </div>
                       </div>
@@ -375,10 +375,10 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
                         <div className="font-semibold text-gray-900 text-white">
                           {conflict.slot2.label}
                         </div>
-                        <div className="text-gray-600 text-gray-400">
+                        <div className="text-gray-400">
                           ⏰ {conflict.slot2.from} - {conflict.slot2.to}
                         </div>
-                        <div className="text-gray-600 text-gray-400">
+                        <div className="text-gray-400">
                           💰 €{conflict.slot2.eurPerHour}/h
                         </div>
                       </div>
@@ -409,7 +409,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
                               <div className="font-semibold text-gray-900 text-white mb-1">
                                 {suggestion.title}
                               </div>
-                              <div className="text-sm text-gray-600 text-gray-400">
+                              <div className="text-sm text-gray-400">
                                 {suggestion.description}
                               </div>
                             </div>
@@ -468,7 +468,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
                   disabled={Object.keys(selectedSuggestions).length === 0}
                   className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                     Object.keys(selectedSuggestions).length === 0
-                      ? 'bg-gray-300 bg-gray-700 text-gray-500 cursor-not-allowed'
+                      ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                       : 'bg-green-500 hover:bg-green-600 text-white'
                   }`}
                 >
@@ -484,4 +484,5 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
 }
 
 export default ConflictResolutionPanel;
+
 

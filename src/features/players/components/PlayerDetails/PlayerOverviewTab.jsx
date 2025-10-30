@@ -31,8 +31,8 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
             </span>
             <div className={`px-3 py-1 rounded-full text-xs font-bold ${
               player.isActive
-                ? 'bg-green-100 text-green-700 bg-green-900/30 text-green-400'
-                : 'bg-gray-100 bg-gray-700 text-gray-700 text-gray-300'
+                ? `bg-green-900/30 ${T.accentSuccess}`
+                : `bg-gray-700 ${T.subtext}`
             }`}>
               {player.isActive ? 'ATTIVO' : 'INATTIVO'}
             </div>
@@ -63,7 +63,7 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
         <div className={`${T.cardBg} ${T.border} rounded-2xl p-5 shadow-lg hover:shadow-xl transition-shadow`}>
           <div className="flex items-center justify-between mb-3">
             <span className="text-3xl">🎾</span>
-            <div className={`px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700 bg-blue-900/30 text-blue-400`}>
+            <div className={`px-3 py-1 rounded-full text-xs font-bold bg-blue-900/30 ${T.accentInfo}`}>
               {player.matchHistory?.length || 0}
             </div>
           </div>
@@ -84,7 +84,7 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
 
           <div className="space-y-4">
             {/* Email */}
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 bg-gray-800/50 hover:bg-gray-100 hover:bg-gray-800 transition-colors">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors">
               <span className="text-xl flex-shrink-0">✉️</span>
               <div className="flex-1 min-w-0">
                 <label className={`block text-xs font-semibold ${T.subtext} mb-1`}>Email</label>
@@ -95,7 +95,7 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
             </div>
 
             {/* Phone */}
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 bg-gray-800/50 hover:bg-gray-100 hover:bg-gray-800 transition-colors">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors">
               <span className="text-xl flex-shrink-0">📱</span>
               <div className="flex-1 min-w-0">
                 <label className={`block text-xs font-semibold ${T.subtext} mb-1`}>Telefono</label>
@@ -107,7 +107,7 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
 
             {/* Birth Date */}
             {player.dateOfBirth && (
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 bg-gray-800/50 hover:bg-gray-100 hover:bg-gray-800 transition-colors">
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors">
                 <span className="text-xl flex-shrink-0">🎂</span>
                 <div className="flex-1 min-w-0">
                   <label className={`block text-xs font-semibold ${T.subtext} mb-1`}>Data di Nascita</label>
@@ -123,7 +123,7 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
 
             {/* Address */}
             {player.address && (
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 bg-gray-800/50 hover:bg-gray-100 hover:bg-gray-800 transition-colors">
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors">
                 <span className="text-xl flex-shrink-0">📍</span>
                 <div className="flex-1 min-w-0">
                   <label className={`block text-xs font-semibold ${T.subtext} mb-1`}>Indirizzo</label>
@@ -143,7 +143,7 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
 
             {/* Fiscal Code */}
             {player.fiscalCode && (
-              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 bg-gray-800/50 hover:bg-gray-100 hover:bg-gray-800 transition-colors">
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-800/50 hover:bg-gray-800 transition-colors">
                 <span className="text-xl flex-shrink-0">🆔</span>
                 <div className="flex-1 min-w-0">
                   <label className={`block text-xs font-semibold ${T.subtext} mb-1`}>Codice Fiscale</label>
@@ -168,21 +168,21 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
             {/* Ranking Cards */}
             <div className="grid grid-cols-2 gap-3">
               {/* Initial Ranking */}
-              <div className="bg-gradient-to-br from-orange-50 to-orange-100 from-orange-900/20 to-orange-800/20 rounded-xl p-4 border border-orange-200 border-orange-700">
-                <div className="text-xs font-semibold text-orange-900 text-orange-200 mb-2">
+              <div className={`bg-gradient-to-br from-orange-900/20 to-orange-800/20 rounded-xl p-4 border-orange-700 ${T.border}`}>
+                <div className={`text-xs font-semibold ${T.subtext} mb-2`}>
                   🎯 Ranking Iniziale
                 </div>
-                <div className="text-2xl font-bold text-orange-600 text-orange-400">
+                <div className={`text-2xl font-bold ${T.accentWarning}`}>
                   {player.tournamentData.initialRanking || DEFAULT_RATING}
                 </div>
               </div>
 
               {/* Current Ranking */}
-              <div className="bg-gradient-to-br from-purple-50 to-purple-100 from-purple-900/20 to-purple-800/20 rounded-xl p-4 border border-purple-200 border-purple-700">
-                <div className="text-xs font-semibold text-purple-900 text-purple-200 mb-2">
+              <div className={`bg-gradient-to-br from-purple-900/20 to-purple-800/20 rounded-xl p-4 border-purple-700 ${T.border}`}>
+                <div className={`text-xs font-semibold ${T.subtext} mb-2`}>
                   🏆 Ranking Attuale
                 </div>
-                <div className="text-2xl font-bold text-purple-600 text-purple-400">
+                <div className={`text-2xl font-bold ${T.accentInfo}`}>
                   {Number(playerWithRealRating.rating || DEFAULT_RATING).toFixed(0)}
                 </div>
               </div>
@@ -194,7 +194,7 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
                 ? 'bg-gradient-to-r from-green-50 to-emerald-50 from-green-900/20 to-emerald-900/20 border-2 border-green-300 border-green-700'
                 : (playerWithRealRating.rating || 0) < (player.tournamentData.initialRanking || 0)
                 ? 'bg-gradient-to-r from-red-50 to-pink-50 from-red-900/20 to-pink-900/20 border-2 border-red-300 border-red-700'
-                : 'bg-gray-50 bg-gray-700/50 border-2 border-gray-300 border-gray-700'
+                : 'bg-gray-700/50 border-2 border-gray-700'
             }`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -248,7 +248,7 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
             </div>
           </div>
         ) : (
-          <div className="text-center py-8 px-4 bg-gradient-to-br from-gray-50 to-gray-100 from-gray-800/50 to-gray-900/50 rounded-xl border-2 border-dashed border-gray-300 border-gray-700">
+          <div className="text-center py-8 px-4 bg-gradient-to-br from-gray-50 to-gray-100 from-gray-800/50 to-gray-900/50 rounded-xl border-2 border-dashed border-gray-700">
             <span className="text-4xl block mb-3">🏆</span>
             <span className={`text-sm font-semibold ${T.text}`}>
               Non partecipa al campionato
@@ -288,7 +288,7 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
                 ))}
               </div>
             ) : (
-              <div className="p-6 text-center bg-gray-50 bg-gray-700/50 rounded-xl border-2 border-dashed border-gray-300 border-gray-700">
+              <div className="p-6 text-center bg-gray-700/50 rounded-xl border-2 border-dashed border-gray-700">
                 <span className="text-3xl block mb-2">🏷️</span>
                 <div className={`text-sm ${T.subtext} italic`}>
                   Nessun tag assegnato
@@ -316,7 +316,7 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
                 ))}
               </div>
             ) : (
-              <div className="p-6 text-center bg-gray-50 bg-gray-700/50 rounded-xl border-2 border-dashed border-gray-300 border-gray-700">
+              <div className="p-6 text-center bg-gray-700/50 rounded-xl border-2 border-dashed border-gray-700">
                 <span className="text-3xl block mb-2">🎯</span>
                 <div className={`text-sm ${T.subtext} italic`}>
                   Nessuna preferenza impostata
@@ -331,4 +331,5 @@ const PlayerOverviewTab = ({ player, playerWithRealRating, T }) => {
 };
 
 export default React.memo(PlayerOverviewTab);
+
 

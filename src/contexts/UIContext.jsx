@@ -3,6 +3,7 @@
 // =============================================
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext.jsx';
+import { themeTokens } from '@lib/theme.js';
 import PerformanceDashboard from '../components/debug/PerformanceDashboard.jsx';
 import DatabaseDashboard from '../components/debug/DatabaseDashboard.jsx';
 import NotificationTestPanel from '../components/debug/NotificationTestPanel.jsx';
@@ -137,13 +138,15 @@ export function UIProvider({ children }) {
     return () => window.removeEventListener('notify', handleNotify);
   }, []);
 
+  const T = React.useMemo(() => themeTokens(), []);
+
   return (
     <UIContext.Provider value={value}>
       {children}
       {/* Performance Dashboard for development and debugging */}
       {(import.meta.env.DEV || auth?.userRole === 'super_admin') && (
         <>
-          <PerformanceDashboard T={getTheme(true)} />
+          <PerformanceDashboard T={T} />
           <div className="mt-4">
             <DatabaseDashboard />
           </div>
@@ -153,14 +156,4 @@ export function UIProvider({ children }) {
     </UIContext.Provider>
   );
 }
-
-// Helper function to get theme classes (simplified)
-const getTheme = (isDark) => ({
-  cardBg: isDark ? 'bg-gray-800' : 'bg-white',
-  border: isDark ? 'border-gray-700' : 'border-gray-200',
-  btnSecondary: isDark
-    ? 'bg-gray-700 hover:bg-gray-600 text-gray-200 border border-gray-600'
-    : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300',
-  btnGhost: isDark ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600',
-});
 

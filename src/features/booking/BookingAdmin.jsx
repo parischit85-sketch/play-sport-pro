@@ -241,23 +241,23 @@ function BookingAdmin({ user, T }) {
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
                       <div>
-                        <span className="text-gray-500 text-gray-400">Data:</span>
+                        <span className="text-gray-400">Data:</span>
                         <div className="font-medium">
                           {new Date(booking.date).toLocaleDateString('it-IT')}
                         </div>
                       </div>
                       <div>
-                        <span className="text-gray-500 text-gray-400">Orario:</span>
+                        <span className="text-gray-400">Orario:</span>
                         <div className="font-medium">
                           {booking.time} ({booking.duration}min)
                         </div>
                       </div>
                       <div>
-                        <span className="text-gray-500 text-gray-400">Cliente:</span>
+                        <span className="text-gray-400">Cliente:</span>
                         <div className="font-medium">{booking.bookedBy}</div>
                       </div>
                       <div>
-                        <span className="text-gray-500 text-gray-400">Prezzo:</span>
+                        <span className="text-gray-400">Prezzo:</span>
                         <div className="font-medium text-emerald-600 text-emerald-400">
                           {booking.price}€
                         </div>
@@ -270,19 +270,19 @@ function BookingAdmin({ user, T }) {
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
                           {booking.userEmail && (
                             <div>
-                              <span className="text-gray-500 text-gray-400">Email:</span>
+                              <span className="text-gray-400">Email:</span>
                               <div>{booking.userEmail}</div>
                             </div>
                           )}
                           {booking.userPhone && (
                             <div>
-                              <span className="text-gray-500 text-gray-400">Telefono:</span>
+                              <span className="text-gray-400">Telefono:</span>
                               <div>{booking.userPhone}</div>
                             </div>
                           )}
                           {booking.notes && (
                             <div>
-                              <span className="text-gray-500 text-gray-400">Note:</span>
+                              <span className="text-gray-400">Note:</span>
                               <div>{booking.notes}</div>
                             </div>
                           )}
@@ -588,7 +588,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
                   </option>
                 ))}
               </select>
-              <div className="text-[10px] mt-1 text-gray-500 text-gray-400 tracking-wide">
+              <div className="text-[10px] mt-1 text-gray-400 tracking-wide">
                 Prezzo aggiornato in base ai partecipanti
               </div>
             </div>
@@ -615,7 +615,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
               </span>
             </div>
             {perParticipant != null && (
-              <div className="flex justify-between text-xs text-gray-600 text-gray-400">
+              <div className="flex justify-between text-xs text-gray-400">
                 <span>
                   {formData.isLessonBooking ? 'Per partecipante:' : 'Per giocatore (su 4):'}
                 </span>
@@ -640,4 +640,5 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
 }
 
 export default BookingAdmin;
+
 

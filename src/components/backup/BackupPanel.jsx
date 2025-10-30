@@ -229,9 +229,9 @@ const BackupPanel = () => {
                   {backupProgress.progress}%
                 </span>
               </div>
-              <div className="w-full bg-blue-200 bg-blue-800 rounded-full h-2">
+              <div className="w-full bg-blue-800 rounded-full h-2">
                 <div
-                  className="bg-blue-600 bg-blue-400 h-2 rounded-full transition-all"
+                  className="bg-blue-400 h-2 rounded-full transition-all"
                   style={{ width: `${backupProgress.progress}%` }}
                 />
               </div>
@@ -359,4 +359,5 @@ const BackupPanel = () => {
 };
 
 export default BackupPanel;
+
 

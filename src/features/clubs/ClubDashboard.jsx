@@ -221,7 +221,7 @@ const ClubDashboard = () => {
 
   if (clubLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 flex items-center justify-center py-20">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -229,7 +229,7 @@ const ClubDashboard = () => {
 
   if (!club) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 flex items-center justify-center">
+      <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 flex items-center justify-center py-20">
         <div className="text-center">
           <div className="text-6xl mb-4">❌</div>
           <h1 className="text-2xl font-bold text-gray-900 text-white mb-2">
@@ -249,7 +249,7 @@ const ClubDashboard = () => {
   // If user is instructor, show InstructorDashboard
   if (isInstructor) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 p-2">
+      <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 p-2">
         <React.Suspense
           fallback={
             <div className="bg-white/80 bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 border-gray-700/20 p-6 shadow-2xl animate-pulse">
@@ -273,7 +273,7 @@ const ClubDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 py-4 md:py-6 px-4">
+    <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 py-4 md:py-6 px-4">
       <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         {/* Banner Stato Attivazione Circolo - visibile solo per club-admin */}
         {userProfile?.role === 'club-admin' && userProfile?.clubId === clubId && (
@@ -285,7 +285,7 @@ const ClubDashboard = () => {
           <h1 className="text-2xl md:text-4xl font-bold text-gray-900 text-white mb-1 md:mb-2">
             {club.name}
           </h1>
-          <p className="text-sm md:text-base text-gray-600 text-gray-400">
+          <p className="text-sm md:text-base text-gray-400">
             📍 {club.location?.city}, {club.location?.region}
           </p>
         </div>
@@ -324,14 +324,14 @@ const ClubDashboard = () => {
                 {[1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="bg-gray-100 bg-gray-700 p-4 rounded-xl animate-pulse"
+                    className="bg-gray-700 p-4 rounded-xl animate-pulse"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <div className="h-4 bg-gray-200 bg-gray-600 rounded w-20 mb-2"></div>
-                        <div className="h-3 bg-gray-200 bg-gray-600 rounded w-32"></div>
+                        <div className="h-4 bg-gray-600 rounded w-20 mb-2"></div>
+                        <div className="h-3 bg-gray-600 rounded w-32"></div>
                       </div>
-                      <div className="h-8 w-8 bg-gray-200 bg-gray-600 rounded-full"></div>
+                      <div className="h-8 w-8 bg-gray-600 rounded-full"></div>
                     </div>
                   </div>
                 ))}
@@ -395,13 +395,13 @@ const ClubDashboard = () => {
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="text-xs font-medium text-gray-500 text-gray-400 uppercase tracking-tight mb-1">
+                            <div className="text-xs font-medium text-gray-400 uppercase tracking-tight mb-1">
                               {dateLabel}
                             </div>
                             <div className="text-lg font-bold text-gray-900 text-white leading-none mb-1">
                               {booking.time.substring(0, 5)}
                             </div>
-                            <div className="text-xs text-gray-600 text-gray-400">
+                            <div className="text-xs text-gray-400">
                               {isLessonBooking
                                 ? `${booking.lessonType || 'Lezione'} • ${booking.duration || 60}min`
                                 : `${booking.courtName || 'Campo'} • ${booking.duration || 60}min`}
@@ -424,7 +424,7 @@ const ClubDashboard = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
-                            <div className="text-[10px] text-gray-600 text-gray-400 truncate mb-1">
+                            <div className="text-[10px] text-gray-400 truncate mb-1">
                               {isLessonBooking ? (
                                 <>
                                   {booking.instructor && (
@@ -478,8 +478,8 @@ const ClubDashboard = () => {
                                     </div>
                                   )}
                                   {(booking.players?.length || 0) + 1 < 4 && (
-                                    <div className="w-5 h-5 rounded-full bg-gray-200 bg-gray-600 border border-white border-gray-700 flex items-center justify-center">
-                                      <div className="w-1.5 h-1.5 bg-gray-400 bg-gray-300 rounded-full"></div>
+                                    <div className="w-5 h-5 rounded-full bg-gray-600 border border-white border-gray-700 flex items-center justify-center">
+                                      <div className="w-1.5 h-1.5 bg-gray-300 rounded-full"></div>
                                     </div>
                                   )}
                                 </>
@@ -492,7 +492,7 @@ const ClubDashboard = () => {
                                 €{booking.price}
                               </div>
                             )}
-                            <div className="text-[9px] text-gray-500 text-gray-400">
+                            <div className="text-[9px] text-gray-400">
                               {isLessonBooking
                                 ? booking.status === 'confirmed'
                                   ? 'Confermata'
@@ -553,7 +553,7 @@ const ClubDashboard = () => {
               <h3 className="text-base md:text-xl font-bold text-gray-900 text-white mb-2">
                 Nessuna prenotazione attiva
               </h3>
-              <p className="text-sm md:text-base text-gray-600 text-gray-400 mb-3 md:mb-4">
+              <p className="text-sm md:text-base text-gray-400 mb-3 md:mb-4">
                 Non hai prenotazioni future in questo club
               </p>
               <button
@@ -705,4 +705,6 @@ const ClubDashboard = () => {
 };
 
 export default ClubDashboard;
+
+
 

@@ -71,13 +71,13 @@ const PlayerDetailsHeader = React.memo(function PlayerDetailsHeader({
   const getCategoryColor = (category) => {
     switch (category) {
       case 'adult':
-        return 'bg-blue-500 bg-blue-600';
+        return 'bg-blue-600';
       case 'youth':
-        return 'bg-green-500 bg-green-600';
+        return 'bg-green-600';
       case 'junior':
-        return 'bg-yellow-500 bg-yellow-600';
+        return 'bg-yellow-600';
       case 'senior':
-        return 'bg-purple-500 bg-purple-600';
+        return 'bg-purple-600';
       default:
         return 'bg-gray-500 bg-gray-600';
     }
@@ -89,7 +89,7 @@ const PlayerDetailsHeader = React.memo(function PlayerDetailsHeader({
     : 0;
 
   return (
-    <div className="relative bg-gradient-to-br from-white via-gray-50 to-blue-50 from-gray-900 via-gray-800 to-blue-900/20 border-b-2 border-gray-200 border-gray-700">
+    <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-blue-900/20 border-b-2 border-gray-700">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div
@@ -106,7 +106,7 @@ const PlayerDetailsHeader = React.memo(function PlayerDetailsHeader({
         <div className="mb-6 relative z-20">
           <h2
             id="player-details-title"
-            className="text-3xl font-bold text-gray-900 text-white mb-1"
+            className="text-3xl font-bold text-white mb-1"
           >
             {player.firstName || player.lastName
               ? `${player.firstName || ''} ${player.lastName || ''}`.trim()
@@ -122,7 +122,7 @@ const PlayerDetailsHeader = React.memo(function PlayerDetailsHeader({
             )}
             {player.isActive ? (
               <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-600 text-white text-xs font-semibold rounded-md shadow-sm">
-                <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                <span className="w-2 h-2 bg-gray-800 rounded-full animate-pulse"></span>
                 Attivo
               </span>
             ) : (
@@ -233,13 +233,13 @@ const PlayerDetailsHeader = React.memo(function PlayerDetailsHeader({
                   {/* Secondary Actions */}
                   <div className="grid grid-cols-2 gap-2">
                     <button
-                      className="px-3 py-2 bg-gray-200 bg-gray-700 hover:bg-gray-300 hover:bg-gray-600 text-gray-700 text-gray-300 text-sm font-medium rounded-lg transition-all"
+                      className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm font-medium rounded-lg transition-all"
                       title="Esporta dati"
                     >
                       📤
                     </button>
                     <button
-                      className="px-3 py-2 bg-gray-200 bg-gray-700 hover:bg-gray-300 hover:bg-gray-600 text-gray-700 text-gray-300 text-sm font-medium rounded-lg transition-all"
+                      className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm font-medium rounded-lg transition-all"
                       title="Stampa"
                     >
                       🖨️
@@ -262,7 +262,7 @@ const PlayerDetailsHeader = React.memo(function PlayerDetailsHeader({
                   {/* Cancel Button */}
                   <button
                     onClick={onCancelEdit}
-                    className="w-full px-4 py-2.5 bg-gray-300 bg-gray-700 hover:bg-gray-400 hover:bg-gray-600 text-gray-700 text-gray-300 font-semibold rounded-lg transition-all hover:scale-105 shadow-md flex items-center justify-center gap-2"
+                    className="w-full px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold rounded-lg transition-all hover:scale-105 shadow-md flex items-center justify-center gap-2"
                   >
                     <span>❌</span>
                     <span>Annulla</span>
@@ -278,4 +278,7 @@ const PlayerDetailsHeader = React.memo(function PlayerDetailsHeader({
 });
 
 export default PlayerDetailsHeader;
+
+
+
 

@@ -97,7 +97,7 @@ export const PlayerDataExport = React.memo(function PlayerDataExport({
 
       {/* Content - Export Options */}
       {isExpanded && (
-        <div className="px-6 py-4 border-t border-gray-200 border-gray-700">
+        <div className="px-6 py-4 border-t border-gray-700">
           {/* Descrizione GDPR */}
           <div className="mb-6 p-4 bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-800 rounded-lg">
             <div className="flex items-start gap-3">
@@ -119,7 +119,7 @@ export const PlayerDataExport = React.memo(function PlayerDataExport({
             <h4 className={`font-medium ${T.text} mb-3`}>Seleziona il formato di export:</h4>
 
             {/* JSON Format */}
-            <div className="flex items-start gap-4 p-4 border border-gray-200 border-gray-700 rounded-lg hover:border-blue-400 hover:border-blue-600 transition-colors">
+            <div className="flex items-start gap-4 p-4 border border-gray-700 rounded-lg hover:border-blue-400 hover:border-blue-600 transition-colors">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xl">📄</span>
@@ -139,7 +139,7 @@ export const PlayerDataExport = React.memo(function PlayerDataExport({
             </div>
 
             {/* CSV Format */}
-            <div className="flex items-start gap-4 p-4 border border-gray-200 border-gray-700 rounded-lg hover:border-green-400 hover:border-green-600 transition-colors">
+            <div className="flex items-start gap-4 p-4 border border-gray-700 rounded-lg hover:border-green-400 hover:border-green-600 transition-colors">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xl">📊</span>
@@ -159,7 +159,7 @@ export const PlayerDataExport = React.memo(function PlayerDataExport({
             </div>
 
             {/* TXT Format */}
-            <div className="flex items-start gap-4 p-4 border border-gray-200 border-gray-700 rounded-lg hover:border-purple-400 hover:border-purple-600 transition-colors">
+            <div className="flex items-start gap-4 p-4 border border-gray-700 rounded-lg hover:border-purple-400 hover:border-purple-600 transition-colors">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xl">📝</span>
@@ -180,7 +180,7 @@ export const PlayerDataExport = React.memo(function PlayerDataExport({
           </div>
 
           {/* Footer - Data Included */}
-          <div className="mt-6 pt-4 border-t border-gray-200 border-gray-700">
+          <div className="mt-6 pt-4 border-t border-gray-700">
             <p className={`text-xs ${T.muted}`}>
               <strong>Dati inclusi:</strong> Informazioni personali, indirizzo, dati club,
               certificato medico
@@ -197,4 +197,7 @@ export const PlayerDataExport = React.memo(function PlayerDataExport({
 });
 
 export default PlayerDataExport;
+
+
+
 

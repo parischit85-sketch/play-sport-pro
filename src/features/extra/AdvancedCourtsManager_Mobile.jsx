@@ -184,7 +184,7 @@ function TimeSlotBottomSheet({ isOpen, onClose, slot, onSave, T, maxPlayers = 4 
               </label>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-gray-500 text-gray-400 mb-1">Da</label>
+                  <label className="block text-xs text-gray-400 mb-1">Da</label>
                   <input
                     type="time"
                     value={toTime(editedSlot.from)}
@@ -193,7 +193,7 @@ function TimeSlotBottomSheet({ isOpen, onClose, slot, onSave, T, maxPlayers = 4 
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 text-gray-400 mb-1">A</label>
+                  <label className="block text-xs text-gray-400 mb-1">A</label>
                   <input
                     type="time"
                     value={toTime(editedSlot.to)}
@@ -229,7 +229,7 @@ function TimeSlotBottomSheet({ isOpen, onClose, slot, onSave, T, maxPlayers = 4 
                   <div className="font-medium flex items-center gap-2">
                     🏷️ Fascia Promozionale
                     {editedSlot.isPromo && (
-                      <span className="text-xs bg-yellow-200 bg-yellow-800 text-yellow-800 text-yellow-200 px-3 py-1 rounded-full font-bold">
+                      <span className="text-xs bg-yellow-800 text-yellow-200 px-3 py-1 rounded-full font-bold">
                         PROMO
                       </span>
                     )}
@@ -248,7 +248,7 @@ function TimeSlotBottomSheet({ isOpen, onClose, slot, onSave, T, maxPlayers = 4 
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 py-4 px-6 bg-gray-200 text-gray-700 text-gray-300 rounded-xl font-semibold text-lg hover:bg-gray-300 hover:bg-gray-600 transition-colors"
+              className="flex-1 py-4 px-6 bg-gray-700 text-gray-300 rounded-xl font-semibold text-lg hover:bg-gray-600 transition-colors"
             >
               Annulla
             </button>
@@ -294,7 +294,7 @@ function DayTogglesLarge({ value = [], onChange, T }) {
           className={`aspect-square rounded-xl text-sm font-bold transition-all flex flex-col items-center justify-center ${
             value.includes(d.index)
               ? 'bg-emerald-500 text-white shadow-lg scale-105'
-              : 'bg-gray-100 bg-gray-700 text-gray-400 text-gray-500'
+              : 'bg-gray-700 text-gray-400'
           }`}
         >
           <span className="text-base sm:hidden">{d.short}</span>
@@ -333,7 +333,7 @@ function CompactTimeSlotCard({ slot, onEdit, onRemove, T, maxPlayers }) {
           <div className="font-bold text-lg mb-1 truncate">
             {slot.label || 'Fascia senza nome'}
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600 text-gray-400">
+          <div className="flex items-center gap-2 text-sm text-gray-400">
             <span>🕐 {slot.from} - {slot.to}</span>
             <span>•</span>
             <span className="font-medium text-emerald-600 text-emerald-400">
@@ -342,7 +342,7 @@ function CompactTimeSlotCard({ slot, onEdit, onRemove, T, maxPlayers }) {
           </div>
           <div className="mt-2 flex items-center gap-1">
             {activeDays ? (
-              <span className="text-xs bg-blue-100 bg-blue-900 text-blue-700 text-blue-300 px-2 py-1 rounded">
+              <span className="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded">
                 📅 {activeDays}
               </span>
             ) : (
@@ -355,14 +355,14 @@ function CompactTimeSlotCard({ slot, onEdit, onRemove, T, maxPlayers }) {
         <div className="flex flex-col gap-2">
           <button
             onClick={onEdit}
-            className="p-2 bg-blue-100 bg-blue-900 text-blue-600 text-blue-300 rounded-lg hover:bg-blue-200 hover:bg-blue-800 transition-colors"
+            className="p-2 bg-blue-100 bg-blue-900 text-blue-600 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors"
             title="Modifica"
           >
             ✏️
           </button>
           <button
             onClick={onRemove}
-            className="p-2 bg-red-100 bg-red-900 text-red-600 text-red-300 rounded-lg hover:bg-red-200 hover:bg-red-800 transition-colors"
+            className="p-2 bg-red-900 text-red-300 rounded-lg hover:bg-red-800 transition-colors"
             title="Elimina"
           >
             🗑️
@@ -456,10 +456,10 @@ const MobileCourtCard = ({
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-xl truncate">{court.name}</div>
                 <div className="flex items-center gap-2 flex-wrap mt-1">
-                  <span className={`text-xs px-2 py-1 rounded-full bg-blue-100 bg-blue-900 text-blue-700 text-blue-300 font-medium`}>
+                  <span className={`text-xs px-2 py-1 rounded-full bg-blue-900 text-blue-300 font-medium`}>
                     Pos. {position}
                   </span>
-                  <span className={`text-xs px-2 py-1 rounded-full bg-purple-100 bg-purple-900 text-purple-700 text-purple-300`}>
+                  <span className={`text-xs px-2 py-1 rounded-full bg-purple-900 text-purple-300`}>
                     {court.courtType}
                   </span>
                   {court.hasHeating && (
@@ -477,8 +477,8 @@ const MobileCourtCard = ({
                 type="button"
                 className={`p-2 rounded-lg text-xl transition-all ${
                   isFirst
-                    ? 'text-gray-300 text-gray-600 cursor-not-allowed'
-                    : 'text-blue-600 text-blue-400 hover:bg-blue-100 hover:bg-blue-900'
+                    ? 'text-gray-300 cursor-not-allowed'
+                    : 'text-blue-600 text-blue-400 hover:bg-blue-900'
                 }`}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -492,8 +492,8 @@ const MobileCourtCard = ({
                 type="button"
                 className={`p-2 rounded-lg text-xl transition-all ${
                   isLast
-                    ? 'text-gray-300 text-gray-600 cursor-not-allowed'
-                    : 'text-blue-600 text-blue-400 hover:bg-blue-100 hover:bg-blue-900'
+                    ? 'text-gray-300 cursor-not-allowed'
+                    : 'text-blue-600 text-blue-400 hover:bg-blue-900'
                 }`}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -512,7 +512,7 @@ const MobileCourtCard = ({
             className={`w-full py-3 rounded-xl font-semibold transition-all ${
               isExpanded
                 ? 'bg-emerald-500 text-white shadow-lg'
-                : 'bg-white bg-gray-800 text-gray-700 text-gray-300 hover:bg-gray-100 hover:bg-gray-700'
+                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
             }`}
           >
             {isExpanded ? '📝 Chiudi Configurazione' : '⚙️ Configura Campo'}
@@ -529,7 +529,7 @@ const MobileCourtCard = ({
                 className={`flex-1 py-4 px-4 font-semibold transition-all ${
                   activeTab === 'info'
                     ? 'bg-white bg-gray-800 text-blue-600 text-blue-400 border-b-2 border-blue-600'
-                    : 'text-gray-500 text-gray-400 hover:text-gray-700 hover:text-gray-300'
+                    : 'text-gray-400 hover:text-gray-700 hover:text-gray-300'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
@@ -543,14 +543,14 @@ const MobileCourtCard = ({
                 className={`flex-1 py-4 px-4 font-semibold transition-all ${
                   activeTab === 'slots'
                     ? 'bg-white bg-gray-800 text-blue-600 text-blue-400 border-b-2 border-blue-600'
-                    : 'text-gray-500 text-gray-400 hover:text-gray-700 hover:text-gray-300'
+                    : 'text-gray-400 hover:text-gray-700 hover:text-gray-300'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
                   <span>🕐</span>
                   <span className="hidden sm:inline">Fasce Orarie</span>
                   <span className="sm:hidden">Fasce</span>
-                  <span className="text-xs bg-blue-100 bg-blue-900 text-blue-700 text-blue-300 px-2 py-0.5 rounded-full ml-1">
+                  <span className="text-xs bg-blue-900 text-blue-300 px-2 py-0.5 rounded-full ml-1">
                     {(court.timeSlots || []).length}
                   </span>
                 </div>
@@ -663,10 +663,10 @@ const MobileCourtCard = ({
                   {(court.timeSlots || []).length === 0 ? (
                     <div className="text-center py-12 border-2 border-dashed border-gray-300 border-gray-600 rounded-xl">
                       <div className="text-4xl mb-3">🕐</div>
-                      <div className="font-medium text-gray-600 text-gray-400 mb-1">
+                      <div className="font-medium text-gray-400 mb-1">
                         Nessuna fascia oraria
                       </div>
-                      <div className="text-sm text-gray-500 text-gray-500">
+                      <div className="text-sm text-gray-500">
                         Aggiungi almeno una fascia per attivare il campo
                       </div>
                     </div>
@@ -899,7 +899,7 @@ export default function AdvancedCourtsManager_Mobile({
               hasUnsavedChanges={hasUnsavedChanges}
             />
           </div>
-          <p className="text-sm text-gray-600 text-gray-400">
+          <p className="text-sm text-gray-400">
             Configura campi, fasce orarie e prezzi
           </p>
         </div>
@@ -933,7 +933,7 @@ export default function AdvancedCourtsManager_Mobile({
                 className={`px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition-all ${
                   activeFilter === 'all'
                     ? 'bg-blue-500 text-white shadow-lg'
-                    : 'bg-gray-100 bg-gray-700 text-gray-700 text-gray-300'
+                    : 'bg-gray-700 text-gray-300'
                 }`}
               >
                 Tutti ({sortedCourts.length})
@@ -945,7 +945,7 @@ export default function AdvancedCourtsManager_Mobile({
                   className={`px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition-all ${
                     activeFilter === type
                       ? 'bg-blue-500 text-white shadow-lg'
-                      : 'bg-gray-100 bg-gray-700 text-gray-700 text-gray-300'
+                      : 'bg-gray-700 text-gray-300'
                   }`}
                 >
                   {type} ({courtTypeCounts[type] || 0})
@@ -964,7 +964,7 @@ export default function AdvancedCourtsManager_Mobile({
             <h4 className="font-bold text-xl mb-2">
               {activeFilter === 'all' ? 'Nessun campo' : `Nessun campo ${activeFilter}`}
             </h4>
-            <p className="text-gray-600 text-gray-400 mb-4">
+            <p className="text-gray-400 mb-4">
               {activeFilter === 'all'
                 ? 'Aggiungi il primo campo per iniziare'
                 : `Cambia filtro o aggiungi un nuovo campo`}
@@ -1014,13 +1014,13 @@ export default function AdvancedCourtsManager_Mobile({
               <div className="text-3xl font-bold text-emerald-600 text-emerald-400">
                 {filteredCourts.length}
               </div>
-              <div className="text-xs text-gray-600 text-gray-400 mt-1">Campi</div>
+              <div className="text-xs text-gray-400 mt-1">Campi</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-blue-600 text-blue-400">
                 {filteredCourts.reduce((sum, c) => sum + (c.timeSlots || []).length, 0)}
               </div>
-              <div className="text-xs text-gray-600 text-gray-400 mt-1">Fasce</div>
+              <div className="text-xs text-gray-400 mt-1">Fasce</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-yellow-600 text-yellow-400">
@@ -1029,7 +1029,7 @@ export default function AdvancedCourtsManager_Mobile({
                   0
                 )}
               </div>
-              <div className="text-xs text-gray-600 text-gray-400 mt-1">Promo</div>
+              <div className="text-xs text-gray-400 mt-1">Promo</div>
             </div>
           </div>
         </div>
@@ -1037,4 +1037,10 @@ export default function AdvancedCourtsManager_Mobile({
     </div>
   );
 }
+
+
+
+
+
+
 

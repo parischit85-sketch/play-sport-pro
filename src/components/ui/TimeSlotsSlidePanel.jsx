@@ -460,8 +460,8 @@ function TimeSlotsSlidePanel({
                         )}
                         <div className="flex items-center gap-1">
                           {slot.isActive ? (
-                            <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 bg-green-900/30 text-green-800 text-green-300">
-                              <div className="w-1.5 h-1.5 bg-green-500 bg-green-400 rounded-full"></div>
+                            <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium bg-green-900/30 text-green-300">
+                              <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
                               Attiva
                             </span>
                           ) : (
@@ -479,8 +479,8 @@ function TimeSlotsSlidePanel({
                           onClick={() => handleEdit(slot)}
                           className={`flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md min-w-[44px] ${
                             editingSlotId === slot.id
-                              ? 'bg-green-500 hover:bg-green-600 bg-green-600 hover:bg-green-700 text-white'
-                              : 'bg-blue-500 hover:bg-blue-600 bg-blue-600 hover:bg-blue-700 text-white'
+                              ? 'bg-green-600 hover:bg-green-700 text-white'
+                              : 'bg-blue-600 hover:bg-blue-700 text-white'
                           }`}
                         >
                           {editingSlotId === slot.id ? (
@@ -510,8 +510,8 @@ function TimeSlotsSlidePanel({
                           onClick={() => handleToggle(slot)}
                           className={`flex items-center justify-center gap-1 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md min-w-[44px] ${
                             slot.isActive
-                              ? 'bg-red-500 hover:bg-red-600 bg-red-600 hover:bg-red-700 text-white'
-                              : 'bg-green-500 hover:bg-green-600 bg-green-600 hover:bg-green-700 text-white'
+                              ? 'bg-red-600 hover:bg-red-700 text-white'
+                              : 'bg-green-600 hover:bg-green-700 text-white'
                           }`}
                         >
                           {slot.isActive ? (
@@ -528,7 +528,7 @@ function TimeSlotsSlidePanel({
                         </button>
                         <button
                           onClick={() => handleDelete(slot)}
-                          className="flex items-center justify-center gap-1 bg-red-600 hover:bg-red-700 bg-red-700 hover:bg-red-800 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md min-w-[44px]"
+                          className="flex items-center justify-center gap-1 bg-red-700 hover:bg-red-800 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 shadow-sm hover:shadow-md min-w-[44px]"
                         >
                           <X className="h-3 w-3" />
                           <span className="hidden sm:inline">Elimina</span>
@@ -731,4 +731,6 @@ function TimeSlotsSlidePanel({
 // Named and default exports
 export { TimeSlotsSlidePanel };
 export default TimeSlotsSlidePanel;
+
+
 

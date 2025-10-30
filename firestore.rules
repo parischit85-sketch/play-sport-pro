@@ -28,27 +28,26 @@ service cloud.firestore {
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
     
-    // Check if user is club admin
-    function isClubAdmin() {
-      return isAuthenticated() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'club_admin';
+    // Check if user is club admin for specific club
+    function isClubAdminForClub(clubId) {
+      return isAuthenticated() &&
+             (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'club_admin' ||
+              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') &&
+             (get(/databases/$(database)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid ||
+              (exists(/databases/$(database)/documents/clubs/$(clubId)/users/$(request.auth.uid)) &&
+               get(/databases/$(database)/documents/clubs/$(clubId)/users/$(request.auth.uid)).data.isClubAdmin == true));
     }
-    
-    // Check if user is instructor
-    function isInstructor() {
-      return isAuthenticated() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'instructor';
-    }
-    
-    // Check if user owns the resource
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
-    }
-    
+
     // Check if user is club owner
     function isClubOwner(clubId) {
-      return isAuthenticated() && 
+      return isAuthenticated() &&
              get(/databases/$(database)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid;
+    }
+
+    // Check if user is admin for specific club (legacy club_admin role)
+    function isClubAdmin() {
+      return isAuthenticated() &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'club_admin';
     }
     
     // Validate email format
@@ -113,15 +112,16 @@ service cloud.firestore {
     match /courts/{courtId} {
       // Read: Public (all courts visible)
       allow read: if true;
-      
-      // Create: Club admin/owner or admin
-      allow create: if (isClubAdmin() || isAdmin()) &&
+
+      // Create: Club admin/owner or admin (must specify clubId in document)
+      allow create: if request.resource.data.clubId is string &&
+                       (isClubAdminForClub(request.resource.data.clubId) || isAdmin()) &&
                        isWithinSizeLimit(20000);
-      
-      // Update: Club admin/owner or admin
-      allow update: if (isClubAdmin() || isAdmin()) &&
+
+      // Update: Club admin/owner or admin (validate club ownership)
+      allow update: if (isClubAdminForClub(resource.data.clubId) || isAdmin()) &&
                        isWithinSizeLimit(20000);
-      
+
       // Delete: Only admins
       allow delete: if isAdmin();
     }
@@ -131,24 +131,24 @@ service cloud.firestore {
     // ==========================================
     match /bookings/{bookingId} {
       // Read: User can read own bookings, club admins can read their club bookings, admins can read all
-      allow read: if isOwner(resource.data.userId) || 
-                     isClubAdmin() || 
+      allow read: if isOwner(resource.data.userId) ||
+                     isClubAdminForClub(resource.data.clubId) ||
                      isAdmin();
-      
+
       // Create: Authenticated users only, must be own booking, valid timestamp
-      allow create: if isAuthenticated() && 
+      allow create: if isAuthenticated() &&
                        request.resource.data.userId == request.auth.uid &&
                        isValidFutureTimestamp(request.resource.data.startTime) &&
                        request.resource.data.status == 'pending' &&
                        isWithinSizeLimit(10000);
-      
-      // Update: Owner can update own booking (limited fields), club admin can update status
-      allow update: if (isOwner(resource.data.userId) && 
+
+      // Update: Owner can update own booking (limited fields), club admin can update status for their club
+      allow update: if (isOwner(resource.data.userId) &&
                          request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'notes']) == false) ||
-                       (isClubAdmin() && 
+                       (isClubAdminForClub(resource.data.clubId) &&
                          request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) == true) ||
                        isAdmin();
-      
+
       // Delete: Owner or admin
       allow delete: if isOwner(resource.data.userId) || isAdmin();
     }
@@ -195,15 +195,16 @@ service cloud.firestore {
     match /tournaments/{tournamentId} {
       // Read: Public
       allow read: if true;
-      
-      // Create: Club admin or admin
-      allow create: if (isClubAdmin() || isAdmin()) &&
+
+      // Create: Club admin or admin (must specify clubId)
+      allow create: if request.resource.data.clubId is string &&
+                       (isClubAdminForClub(request.resource.data.clubId) || isAdmin()) &&
                        isWithinSizeLimit(50000);
-      
-      // Update: Club admin or admin
-      allow update: if (isClubAdmin() || isAdmin()) &&
+
+      // Update: Club admin or admin (validate club ownership)
+      allow update: if (isClubAdminForClub(resource.data.clubId) || isAdmin()) &&
                        isWithinSizeLimit(50000);
-      
+
       // Delete: Admins only
       allow delete: if isAdmin();
     }

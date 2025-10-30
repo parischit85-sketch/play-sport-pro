@@ -41,9 +41,12 @@ import playerDetailsReducer, {
 export default function PlayerDetails({ player, onUpdate, onClose, T }) {
   // Provide a safe default theme classes object when not passed (tests often omit it)
   const theme = T || {
-    border: 'border-gray-200 border-gray-700',
-    text: 'text-gray-800 text-gray-200',
-    muted: 'text-gray-500 text-gray-400',
+    border: 'border-gray-700',
+    text: 'text-gray-200',
+    muted: 'text-gray-400',
+    accentInfo: 'text-blue-400',
+    accentSuccess: 'text-green-400',
+    accentWarning: 'text-orange-400',
   };
   const { clubId, players, matches, leaderboard } = useClub();
   // In integration tests, component may render outside a Router. Provide a safe fallback.
@@ -385,7 +388,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
       )}
 
       {/* HORIZONTAL TABS NAVIGATION */}
-      <div className={`border-b ${theme.border} bg-gray-50 bg-gray-700/50 px-4 sm:px-6 sticky top-0 z-10`}>
+      <div className={`border-b ${theme.border} bg-gray-700/50 px-4 sm:px-6 sticky top-0 z-10`}>
         <nav className="flex gap-2 overflow-x-auto scrollbar-thin" role="tablist">
           {tabs.map((tab) => (
             <button
@@ -399,8 +402,8 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800
                 ${
                   state.activeTab === tab.id
-                    ? 'text-blue-600 text-blue-400 font-semibold'
-                    : `${theme.text} hover:text-blue-600 hover:text-blue-400`
+                    ? `${theme.accentInfo} font-semibold`
+                    : `${theme.text} hover:${theme.accentInfo}`
                 }
               `}
               role="tab"
@@ -417,15 +420,15 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                 {tab.counter !== undefined && tab.counter !== null && tab.counter !== 0 && (
                   <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
                     state.activeTab === tab.id
-                      ? 'bg-blue-600 bg-blue-500 text-white'
-                      : 'bg-gray-200 bg-gray-700 text-gray-600 text-gray-300'
+                      ? 'bg-blue-500 text-white'
+                      : `bg-gray-700 ${theme.muted}`
                   }`}>
                     {tab.counter}
                   </span>
                 )}
               </div>
               {state.activeTab === tab.id && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 bg-blue-400" />
+                <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${theme.accentInfo}`} />
               )}
             </button>
           ))}

@@ -18,6 +18,7 @@ import { getMatches, recordMatchResult } from '../../services/matchService';
 import { getTeamsByTournament } from '../../services/teamsService';
 import { MATCH_STATUS, KNOCKOUT_ROUND_NAMES } from '../../utils/tournamentConstants';
 import { computeFromSets, calcParisDelta } from '../../../../lib/rpa.js';
+import { themeTokens } from '../../../../lib/theme.js';
 import MatchResultModal from './MatchResultModal';
 import FormulaModal from '../../../../components/modals/FormulaModal.jsx';
 
@@ -737,6 +738,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
           team2={teams[selectedMatch.team2Id]}
           onClose={() => setSelectedMatch(null)}
           onSubmit={handleRecordResult}
+          T={themeTokens()}
         />
       )}
 

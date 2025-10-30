@@ -77,7 +77,7 @@ export default function MobileBookingView({
     return (
       <div className="text-center py-12">
         <div className="text-4xl mb-4">🏓</div>
-        <div className="font-medium text-gray-600 text-gray-400">Nessun campo disponibile</div>
+        <div className="font-medium text-gray-400">Nessun campo disponibile</div>
       </div>
     );
   }
@@ -96,7 +96,7 @@ export default function MobileBookingView({
             disabled={activeCourt === 0}
             className={`p-3 rounded-xl transition-all ${
               activeCourt === 0
-                ? 'text-gray-300 text-gray-600 cursor-not-allowed'
+                ? 'text-gray-300 cursor-not-allowed'
                 : 'text-blue-600 text-blue-400 hover:bg-blue-50 hover:bg-blue-900/30'
             }`}
           >
@@ -113,7 +113,7 @@ export default function MobileBookingView({
           <div className="flex-1 text-center">
             <div className="text-xl font-bold mb-1">{courtName}</div>
             <div className="flex items-center justify-center gap-2">
-              <span className="text-xs px-3 py-1 rounded-full bg-blue-100 bg-blue-900 text-blue-700 text-blue-300 font-medium">
+              <span className="text-xs px-3 py-1 rounded-full bg-blue-900 text-blue-300 font-medium">
                 {court?.courtType || 'Indoor'}
               </span>
               {court?.hasHeating && (
@@ -129,7 +129,7 @@ export default function MobileBookingView({
             disabled={activeCourt === filteredCourts.length - 1}
             className={`p-3 rounded-xl transition-all ${
               activeCourt === filteredCourts.length - 1
-                ? 'text-gray-300 text-gray-600 cursor-not-allowed'
+                ? 'text-gray-300 cursor-not-allowed'
                 : 'text-blue-600 text-blue-400 hover:bg-blue-50 hover:bg-blue-900/30'
             }`}
           >
@@ -146,7 +146,7 @@ export default function MobileBookingView({
               key={index}
               onClick={() => setActiveCourt(index)}
               className={`h-2 rounded-full transition-all ${
-                index === activeCourt ? 'w-8 bg-blue-500' : 'w-2 bg-gray-300 bg-gray-600'
+                index === activeCourt ? 'w-8 bg-blue-500' : 'w-2 bg-gray-600'
               }`}
             />
           ))}
@@ -155,7 +155,7 @@ export default function MobileBookingView({
         {/* Swipe Hint */}
         {filteredCourts.length > 1 && (
           <div className="text-center pb-2">
-            <div className="text-xs text-gray-500 text-gray-400">
+            <div className="text-xs text-gray-400">
               ← Swipe per cambiare campo →
             </div>
           </div>
@@ -205,7 +205,7 @@ export default function MobileBookingView({
                   className={`flex-shrink-0 w-16 flex items-center justify-center ${
                     isCurrentSlot
                       ? 'text-red-600 text-red-400 font-bold text-lg'
-                      : 'text-gray-600 text-gray-400 font-medium'
+                      : 'text-gray-400 font-medium'
                   }`}
                 >
                   {timeLabel}
@@ -232,19 +232,24 @@ export default function MobileBookingView({
         <div className="flex items-center justify-around text-xs">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 rounded bg-emerald-200 bg-emerald-800 border border-emerald-400" />
-            <span className="text-gray-600 text-gray-400">Libero</span>
+            <span className="text-gray-400">Libero</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-blue-200 bg-blue-800 border border-blue-400" />
-            <span className="text-gray-600 text-gray-400">Occupato</span>
+            <div className="w-4 h-4 rounded bg-blue-800 border border-blue-400" />
+            <span className="text-gray-400">Occupato</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-gray-200 bg-gray-800 border-dashed border border-gray-400" />
-            <span className="text-gray-600 text-gray-400">Non disp.</span>
+            <div className="w-4 h-4 rounded bg-gray-800 border-dashed border border-gray-400" />
+            <span className="text-gray-400">Non disp.</span>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+
+
+
+
 

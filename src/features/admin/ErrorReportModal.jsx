@@ -186,7 +186,7 @@ const ErrorReportModal = ({ isOpen, onClose, T }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 border-gray-700">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-100 bg-red-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-red-900/30 rounded-lg flex items-center justify-center">
               <AlertTriangle className="w-6 h-6 text-red-600 text-red-400" />
             </div>
             <div>
@@ -198,7 +198,7 @@ const ErrorReportModal = ({ isOpen, onClose, T }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
           >
             <X className="w-6 h-6 text-gray-600 text-gray-400" />
           </button>
@@ -449,4 +449,5 @@ const ErrorReportModal = ({ isOpen, onClose, T }) => {
 };
 
 export default ErrorReportModal;
+
 

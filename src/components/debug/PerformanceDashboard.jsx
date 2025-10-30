@@ -78,13 +78,13 @@ const PerformanceDashboard = ({ T }) => {
   const getRatingColor = (rating) => {
     switch (rating) {
       case 'good':
-        return 'text-green-600 bg-green-100 bg-green-900/20 text-green-400';
+        return 'bg-green-900/20 text-green-400';
       case 'needs-improvement':
-        return 'text-yellow-600 bg-yellow-100 bg-yellow-900/20 text-yellow-400';
+        return 'bg-yellow-900/20 text-yellow-400';
       case 'poor':
-        return 'text-red-600 bg-red-100 bg-red-900/20 text-red-400';
+        return 'bg-red-900/20 text-red-400';
       default:
-        return 'text-gray-600 bg-gray-100 bg-gray-900/20 text-gray-400';
+        return 'bg-gray-900/20 text-gray-400';
     }
   };
 
@@ -117,10 +117,10 @@ const PerformanceDashboard = ({ T }) => {
         className={`${T.cardBg} ${T.border} rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 border-gray-700">
+        <div className={`flex items-center justify-between p-6 border-b ${T.border}`}>
           <div className="flex items-center gap-3">
-            <Activity className="w-6 h-6 text-blue-600 text-blue-400" />
-            <h2 className="text-xl font-semibold">Performance Dashboard</h2>
+            <Activity className={`w-6 h-6 ${T.accentInfo}`} />
+            <h2 className={`text-xl font-semibold ${T.text}`}>Performance Dashboard</h2>
           </div>
           <button
             onClick={() => setIsVisible(false)}
@@ -135,7 +135,7 @@ const PerformanceDashboard = ({ T }) => {
           {/* Web Vitals */}
           {performanceData?.vitals && Object.keys(performanceData.vitals).length > 0 && (
             <div>
-              <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+              <h3 className={`text-lg font-medium mb-4 flex items-center gap-2 ${T.text}`}>
                 <Zap className="w-5 h-5 text-yellow-500" />
                 Core Web Vitals
               </h3>
@@ -167,7 +167,7 @@ const PerformanceDashboard = ({ T }) => {
           {/* Service Worker Metrics */}
           {serviceWorkerMetrics && (
             <div>
-              <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+              <h3 className={`text-lg font-medium mb-4 flex items-center gap-2 ${T.text}`}>
                 <Database className="w-5 h-5 text-purple-500" />
                 Service Worker Cache
               </h3>
@@ -214,7 +214,7 @@ const PerformanceDashboard = ({ T }) => {
           {/* Custom Metrics */}
           {performanceData?.custom && Object.keys(performanceData.custom).length > 0 && (
             <div>
-              <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+              <h3 className={`text-lg font-medium mb-4 flex items-center gap-2 ${T.text}`}>
                 <Clock className="w-5 h-5 text-indigo-500" />
                 Custom Metrics
               </h3>
@@ -234,7 +234,7 @@ const PerformanceDashboard = ({ T }) => {
           {/* Resource Performance */}
           {performanceData?.resources && (
             <div>
-              <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+              <h3 className={`text-lg font-medium mb-4 flex items-center gap-2 ${T.text}`}>
                 <Globe className="w-5 h-5 text-green-500" />
                 Resource Performance
               </h3>
@@ -264,7 +264,7 @@ const PerformanceDashboard = ({ T }) => {
           {/* Error Summary */}
           {performanceData?.errors && performanceData.errors.count > 0 && (
             <div>
-              <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
+              <h3 className={`text-lg font-medium mb-4 flex items-center gap-2 ${T.text}`}>
                 <AlertTriangle className="w-5 h-5 text-red-500" />
                 Error Impact
               </h3>
@@ -278,12 +278,12 @@ const PerformanceDashboard = ({ T }) => {
 
                 {performanceData.errors.recent.length > 0 && (
                   <div>
-                    <div className="text-sm font-medium mb-2">Recent Errors:</div>
+                    <div className={`text-sm font-medium mb-2 ${T.text}`}>Recent Errors:</div>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
                       {performanceData.errors.recent.map((error, index) => (
                         <div
                           key={index}
-                          className="text-xs text-gray-600 text-gray-400 truncate"
+                          className={`text-xs truncate ${T.subtext}`}
                         >
                           {error.message}
                         </div>
@@ -298,23 +298,23 @@ const PerformanceDashboard = ({ T }) => {
           {/* Connection Info */}
           {performanceData?.connection && (
             <div>
-              <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
-                <Globe className="w-5 h-5 text-blue-500" />
+              <h3 className={`text-lg font-medium mb-4 flex items-center gap-2 ${T.text}`}>
+                <Globe className={`w-5 h-5 ${T.accentInfo}`} />
                 Connection Info
               </h3>
               <div className={`${T.cardBg} ${T.border} rounded-lg p-4`}>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <div className="font-medium mb-1">Type</div>
-                    <div className="text-lg">{performanceData.connection.effective_type}</div>
+                    <div className={`font-medium mb-1 ${T.text}`}>Type</div>
+                    <div className={`text-lg ${T.subtext}`}>{performanceData.connection.effective_type}</div>
                   </div>
                   <div>
-                    <div className="font-medium mb-1">Downlink</div>
-                    <div className="text-lg">{performanceData.connection.downlink} Mbps</div>
+                    <div className={`font-medium mb-1 ${T.text}`}>Downlink</div>
+                    <div className={`text-lg ${T.subtext}`}>{performanceData.connection.downlink} Mbps</div>
                   </div>
                   <div>
-                    <div className="font-medium mb-1">RTT</div>
-                    <div className="text-lg">{performanceData.connection.rtt}ms</div>
+                    <div className={`font-medium mb-1 ${T.text}`}>RTT</div>
+                    <div className={`text-lg ${T.subtext}`}>{performanceData.connection.rtt}ms</div>
                   </div>
                 </div>
               </div>
@@ -322,7 +322,7 @@ const PerformanceDashboard = ({ T }) => {
           )}
 
           {/* Actions */}
-          <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-200 border-gray-700">
+          <div className={`flex flex-wrap gap-3 pt-4 border-t ${T.border}`}>
             <button onClick={updateMetrics} className={`${T.btnSecondary} flex items-center gap-2`}>
               <Activity className="w-4 h-4" />
               Aggiorna Metriche

@@ -9,8 +9,10 @@ import { TOURNAMENT_FORMAT, TEAM_STATUS } from '../../utils/tournamentConstants'
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useClub } from '../../../../contexts/ClubContext';
 import { computeClubRanking } from '../../../../lib/ranking-club';
+import { themeTokens } from '../../../../lib/theme';
 
 function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
+  const T = themeTokens();
   const { user } = useAuth();
   const { players: contextPlayers, matches, leaderboard } = useClub();
   const [players, setPlayers] = useState([]);
@@ -341,21 +343,21 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 border-gray-700">
+        <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <div className="flex items-center gap-3">
             <Users className="w-6 h-6 text-primary-600" />
             <div>
-              <h2 className="text-xl font-bold text-gray-900 text-white">Registra Squadra</h2>
-              <p className="text-sm text-gray-500 text-gray-400">
+              <h2 className="text-xl font-bold text-white">Registra Squadra</h2>
+              <p className="text-sm text-gray-400">
                 {isCouples ? 'Coppia (2 giocatori)' : 'Squadra (4 giocatori)'}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-300"
           >
             <X className="w-5 h-5" />
           </button>
@@ -364,21 +366,21 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
         {/* Content */}
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
           {error && (
-            <div className="mb-4 bg-red-50 bg-red-900/20 border border-red-200 border-red-800 rounded-lg p-4">
-              <p className="text-red-800 text-red-200">{error}</p>
+            <div className="mb-4 bg-red-900/20 border border-red-800 rounded-lg p-4">
+              <p className="text-red-200">{error}</p>
             </div>
           )}
 
           {/* Team Name */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Nome {isCouples ? 'Coppia' : 'Squadra'} *
             </label>
             <input
               type="text"
               value={formData.teamName}
               onChange={(e) => setFormData((prev) => ({ ...prev, teamName: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white bg-gray-700 text-gray-900 text-white"
+              className={`${T.input} w-full text-sm`}
               placeholder={isCouples ? 'es. Rossi/Bianchi' : 'es. Dream Team'}
               required
             />
@@ -387,35 +389,35 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
           {/* Player Selection */}
           <div className="space-y-4 mb-6">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-700 text-gray-300">
+              <h3 className="text-sm font-medium text-gray-300">
                 Seleziona Giocatori ({playersPerTeam} richiesti)
               </h3>
-              <span className="text-sm text-gray-500 text-gray-400">
+              <span className="text-sm text-gray-400">
                 {Object.values(formData).filter(Boolean).length} / {playersPerTeam}
               </span>
             </div>
 
             {[1, 2, 3, 4].slice(0, playersPerTeam).map((position) => (
               <div key={position} className="space-y-2">
-                <label className="block text-sm font-medium text-gray-600 text-gray-400">
+                <label className="block text-sm font-medium text-gray-400">
                   Giocatore {position} *
                 </label>
 
                 {formData[`player${position}`] ? (
                   // Selected player card
-                  <div className="flex items-center justify-between p-3 bg-primary-50 bg-primary-900/20 border border-primary-200 border-primary-800 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-primary-900/20 border border-primary-800 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary-100 bg-primary-800 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold text-primary-700 text-primary-300">
+                      <div className="w-10 h-10 bg-primary-800 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-bold text-primary-300">
                           {position}
                         </span>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900 text-white">
+                        <p className="font-medium text-white">
                           {formData[`player${position}`].name ||
                             formData[`player${position}`].userName}
                         </p>
-                        <p className="text-sm text-gray-500 text-gray-400">
+                        <p className="text-sm text-gray-400">
                           Ranking: {Math.round(formData[`player${position}`].rating || 1500)}
                         </p>
                       </div>
@@ -423,23 +425,23 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                     <button
                       type="button"
                       onClick={() => handlePlayerSelect(position, null)}
-                      className="p-2 text-red-600 hover:bg-red-50 hover:bg-red-900/20 rounded-lg transition-colors"
+                      className="p-2 text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
                   // Player selector
-                  <div className="border border-gray-300 border-gray-600 rounded-lg overflow-hidden">
+                  <div className="border border-gray-700 rounded-lg overflow-hidden">
                     {/* Search */}
-                    <div className="p-2 border-b border-gray-200 border-gray-700">
+                    <div className="p-2 border-b border-gray-700">
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                           type="text"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
-                          className="w-full pl-10 pr-4 py-2 bg-gray-50 bg-gray-700 border-0 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
+                          className="w-full pl-10 pr-4 py-2 bg-gray-700 border-0 rounded-lg text-sm text-white focus:ring-2 focus:ring-primary-500"
                           placeholder="Cerca giocatore..."
                         />
                       </div>
@@ -459,19 +461,19 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                             key={player.id}
                             type="button"
                             onClick={() => handlePlayerSelect(position, player)}
-                            className="w-full p-3 hover:bg-gray-50 hover:bg-gray-700 flex items-center justify-between transition-colors text-left"
+                            className="w-full p-3 hover:bg-gray-700 flex items-center justify-between transition-colors text-left"
                           >
                             <div>
-                              <p className="font-medium text-gray-900 text-white">
+                              <p className="font-medium text-white">
                                 {player.name || player.userName}
                               </p>
                               {player.email && (
-                                <p className="text-xs text-gray-500 text-gray-400">
+                                <p className="text-xs text-gray-400">
                                   {player.email}
                                 </p>
                               )}
                             </div>
-                            <span className="text-sm text-gray-500 text-gray-400">
+                            <span className="text-sm text-gray-400">
                               Ranking: {Math.round(player.rating || 1500)}
                             </span>
                           </button>
@@ -486,12 +488,12 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
 
           {/* Average Rating */}
           {Object.values(formData).filter(Boolean).length > 0 && (
-            <div className="bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-800 rounded-lg p-4 mb-6">
+            <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4 mb-6">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700 text-gray-300">
+                <span className="text-sm font-medium text-gray-300">
                   Ranking Medio Squadra
                 </span>
-                <span className="text-lg font-bold text-blue-600 text-blue-400">
+                <span className="text-lg font-bold text-blue-400">
                   {calculateAverageRating()}
                 </span>
               </div>
@@ -500,11 +502,11 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 border-gray-700">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-700">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 text-gray-300 hover:bg-gray-100 hover:bg-gray-700 rounded-lg transition-colors"
+            className="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
           >
             Annulla
           </button>
@@ -523,4 +525,5 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
 }
 
 export default TeamRegistrationModal;
+
 

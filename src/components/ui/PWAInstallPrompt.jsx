@@ -346,7 +346,7 @@ export default function PWAInstallPrompt() {
                   <>
                     <button
                       onClick={handleSkip}
-                      className="flex-1 px-4 py-3 bg-white bg-gray-600 text-gray-700 text-gray-200 rounded-lg font-medium hover:bg-gray-100 hover:bg-gray-500 transition-colors border border-gray-300 border-gray-500"
+                      className="flex-1 px-4 py-3 bg-gray-600 text-gray-200 rounded-lg font-medium hover:bg-gray-500 transition-colors border border-gray-300 border-gray-500"
                     >
                       Più tardi
                     </button>
@@ -386,7 +386,7 @@ export default function PWAInstallPrompt() {
                   <>
                     <button
                       onClick={handleSkip}
-                      className="flex-1 px-4 py-3 bg-white bg-gray-600 text-gray-700 text-gray-200 rounded-lg font-medium hover:bg-gray-100 hover:bg-gray-500 transition-colors border border-gray-300 border-gray-500"
+                      className="flex-1 px-4 py-3 bg-gray-600 text-gray-200 rounded-lg font-medium hover:bg-gray-500 transition-colors border border-gray-300 border-gray-500"
                     >
                       Salta
                     </button>
@@ -466,4 +466,6 @@ export default function PWAInstallPrompt() {
     </>
   );
 }
+
+
 

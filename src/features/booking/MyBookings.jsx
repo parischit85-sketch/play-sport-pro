@@ -159,7 +159,7 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
 
                     {/* Slot vuoto disponibile */}
                     {(!booking.players || booking.players.length < 4) && (
-                      <div className="w-8 h-8 rounded-full bg-gray-200 bg-gray-700 border-2 border-white flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-gray-700 border-2 border-white flex items-center justify-center">
                         <svg
                           className="w-4 h-4 text-gray-400"
                           fill="currentColor"
@@ -283,4 +283,6 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
     </Section>
   );
 }
+
+
 

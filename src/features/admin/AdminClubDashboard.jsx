@@ -642,7 +642,7 @@ const AdminClubDashboard = () => {
                   {instructor.availableSlots.slice(0, 6).map((slot, slotIndex) => (
                     <span
                       key={slotIndex}
-                      className="text-xs px-2 py-1 bg-green-50 bg-green-900/30 text-green-700 text-green-300 rounded border border-green-200 border-green-700"
+                      className="text-xs px-2 py-1 bg-green-900/30 text-green-300 rounded border border-green-700"
                     >
                       {slot.time}
                     </span>
@@ -698,15 +698,15 @@ const AdminClubDashboard = () => {
           <div className="flex items-start gap-4">
             <div className="text-3xl flex-shrink-0">⏳</div>
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-yellow-900 text-yellow-100 mb-1">
+              <h3 className="text-lg font-bold text-yellow-100 mb-1">
                 In Attesa di Approvazione
               </h3>
-              <p className="text-sm text-yellow-800 text-yellow-200 mb-3">
+              <p className="text-sm text-yellow-200 mb-3">
                 Il circolo "{club?.name}" è registrato e in attesa dell'approvazione da parte del
                 nostro team. Una volta approvato, sarà visibile a tutti gli utenti della
                 piattaforma.
               </p>
-              <p className="text-xs text-yellow-700 text-yellow-300 opacity-75">
+              <p className="text-xs text-yellow-300 opacity-75">
                 🔔 Ti notificheremo via email quando il circolo sarà approvato.
               </p>
             </div>
@@ -781,7 +781,7 @@ const AdminClubDashboard = () => {
           value={dashboardData?.stats?.todayBookingsCount || 0}
           subtitle="confermate"
           icon="📅"
-          color="text-blue-600 text-blue-400"
+          color="text-blue-400"
           onClick={() =>
             navigate(
               `/club/${clubId}/admin/bookings?date=${new Date().toISOString().split('T')[0]}`
@@ -793,7 +793,7 @@ const AdminClubDashboard = () => {
           value={dashboardData?.stats?.tomorrowBookingsCount || 0}
           subtitle="programmate"
           icon="🎾"
-          color="text-purple-600 text-purple-400"
+          color="text-purple-400"
           onClick={() => {
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
@@ -805,7 +805,7 @@ const AdminClubDashboard = () => {
           value={dashboardData?.stats?.todayLessonsCount || 0}
           subtitle="programmate"
           icon="🎓"
-          color="text-orange-600 text-orange-400"
+          color="text-orange-400"
           onClick={() =>
             navigate(`/club/${clubId}/admin/lessons?date=${new Date().toISOString().split('T')[0]}`)
           }
@@ -814,8 +814,8 @@ const AdminClubDashboard = () => {
           title="Lezioni Domani"
           value={dashboardData.stats.tomorrowLessonsCount || 0}
           subtitle="programmate"
-          icon="�"
-          color="text-green-600 text-green-400"
+          icon="📚"
+          color="text-green-400"
           onClick={() => {
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
@@ -826,8 +826,8 @@ const AdminClubDashboard = () => {
           title="Utilizzo Campi"
           value={`${dashboardData?.stats?.courtUtilization || 0}%`}
           subtitle="oggi"
-          icon="�️"
-          color="text-red-600 text-red-400"
+          icon="⚡️"
+          color="text-red-400"
           onClick={() =>
             navigate(
               `/club/${clubId}/admin/bookings?date=${new Date().toISOString().split('T')[0]}`
@@ -923,7 +923,7 @@ const AdminClubDashboard = () => {
               Crea nuova fascia oraria
             </h2>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-700 text-gray-300">
+              <label className="block mb-1 font-medium text-gray-300">
                 Data
               </label>
               <input
@@ -937,7 +937,7 @@ const AdminClubDashboard = () => {
             </div>
             <div className="mb-4 flex gap-2">
               <div className="flex-1">
-                <label className="block mb-1 font-medium text-gray-700 text-gray-300">
+                <label className="block mb-1 font-medium text-gray-300">
                   Orario Inizio
                 </label>
                 <div className="flex gap-2">
@@ -970,7 +970,7 @@ const AdminClubDashboard = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <label className="block mb-1 font-medium text-gray-700 text-gray-300">
+                <label className="block mb-1 font-medium text-gray-300">
                   Orario Fine
                 </label>
                 <div className="flex gap-2">
@@ -1004,7 +1004,7 @@ const AdminClubDashboard = () => {
               </div>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-700 text-gray-300">
+              <label className="block mb-1 font-medium text-gray-300">
                 Istruttore
               </label>
               <select
@@ -1023,14 +1023,14 @@ const AdminClubDashboard = () => {
               </select>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-700 text-gray-300">
+              <label className="block mb-1 font-medium text-gray-300">
                 Campi
               </label>
               <div className="flex flex-wrap gap-2">
                 {courts?.map((court) => (
                   <label
                     key={court.id}
-                    className="flex items-center gap-1 text-gray-800 text-gray-200"
+                    className="flex items-center gap-1 text-gray-200"
                   >
                     <input
                       type="checkbox"
@@ -1044,7 +1044,7 @@ const AdminClubDashboard = () => {
               </div>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-700 text-gray-300">
+              <label className="block mb-1 font-medium text-gray-300">
                 Attiva
               </label>
               <input
@@ -1076,4 +1076,5 @@ const AdminClubDashboard = () => {
 };
 
 export default AdminClubDashboard;
+
 

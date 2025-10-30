@@ -550,13 +550,13 @@ export default function InstructorDashboard() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 p-4">
         <div className="max-w-7xl mx-auto space-y-6 animate-pulse">
-          <div className="h-12 bg-white/60 bg-gray-800/60 rounded-2xl"></div>
+          <div className={`h-12 ${T.cardBg} bg-opacity-60 rounded-2xl`}></div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-32 bg-white/60 bg-gray-800/60 rounded-2xl"></div>
+              <div key={i} className={`h-32 ${T.cardBg} bg-opacity-60 rounded-2xl`}></div>
             ))}
           </div>
-          <div className="h-96 bg-white/60 bg-gray-800/60 rounded-2xl"></div>
+          <div className={`h-96 ${T.cardBg} bg-opacity-60 rounded-2xl`}></div>
         </div>
       </div>
     );
@@ -565,8 +565,8 @@ export default function InstructorDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/30 from-gray-950 via-slate-900 to-gray-900 p-3 sm:p-4 lg:p-6 pb-20 sm:pb-6">
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
-        {/* Header Compatto */}
-        <div className="relative overflow-hidden bg-white bg-gray-900 rounded-2xl shadow-lg border border-gray-200/50 border-gray-800">
+  {/* Header Compatto */}
+  <div className={`relative overflow-hidden ${T.card}`}>
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5 from-indigo-500/10 via-purple-500/10 to-pink-500/10"></div>
 
           <div className="relative p-4 sm:p-6">
@@ -590,7 +590,7 @@ export default function InstructorDashboard() {
                 <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                   Dashboard Istruttore
                 </h1>
-                <p className="text-xs sm:text-sm text-gray-600 text-gray-400 truncate">
+                <p className="text-xs sm:text-sm text-gray-400 truncate">
                   {club?.name || 'Caricamento...'}
                 </p>
               </div>
@@ -638,8 +638,8 @@ export default function InstructorDashboard() {
           </div>
         </div>
 
-        {/* Main Content - Design Rinnovato */}
-        <div className="bg-white bg-gray-900 rounded-2xl shadow-lg border border-gray-200/50 border-gray-800 overflow-hidden">
+  {/* Main Content - Design Rinnovato */}
+  <div className={`${T.card} overflow-hidden`}>
           {/* Tabs - In Unica Riga con Scroll Orizzontale */}
           <div className="border-b border-gray-200 border-gray-800 bg-gradient-to-b from-gray-50/50 to-transparent from-gray-800/30 px-3 sm:px-4 py-3">
             <div className="flex gap-2 overflow-x-auto scrollbar-hide">
@@ -653,8 +653,8 @@ export default function InstructorDashboard() {
                   onClick={() => setActiveTab(key)}
                   className={`relative px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
                     activeTab === key
-                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
-                      : 'bg-white bg-gray-800 text-gray-600 text-gray-300 hover:bg-gray-50 hover:bg-gray-700 border border-gray-200 border-gray-700'
+            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+            : `${T.cardBg} ${T.border} ${T.subtext}`
                   }`}
                 >
                   <span className="flex items-center gap-1.5 sm:gap-2">
@@ -695,8 +695,8 @@ export default function InstructorDashboard() {
                       onClick={() => setFilterDate(key)}
                       className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
                         filterDate === key
-                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
-                          : 'bg-gray-100 bg-gray-800 text-gray-600 text-gray-300 hover:bg-gray-200 hover:bg-gray-700 border border-gray-200 border-gray-700'
+                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                : `${T.cardBg} ${T.border} ${T.subtext}`
                       }`}
                     >
                       <span className="flex items-center gap-1.5">
@@ -708,7 +708,7 @@ export default function InstructorDashboard() {
                                 ? 'bg-white/20 text-white'
                                 : isActiveFilter
                                   ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
-                                  : 'bg-gray-300 bg-gray-700 text-gray-700 text-gray-300'
+                                  : 'bg-gray-300 bg-gray-700 text-gray-300'
                             }`}
                           >
                             {filterCounts[key]}
@@ -828,8 +828,10 @@ export default function InstructorDashboard() {
 
 // Stat Card Component
 function StatCard({ title, value, icon, color }) {
+  const T = themeTokens();
+
   return (
-    <div className="group relative overflow-hidden bg-white bg-gray-900 rounded-xl border border-gray-200 border-gray-800 p-3 sm:p-4 hover:shadow-md hover:border-gray-300 hover:border-gray-700 transition-all duration-200">
+    <div className={`group relative overflow-hidden ${T.card} transition-all duration-200`}>
       {/* Gradient Overlay on Hover */}
       <div
         className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-200`}
@@ -849,7 +851,7 @@ function StatCard({ title, value, icon, color }) {
         </div>
 
         {/* Title */}
-        <div className="text-[10px] sm:text-xs text-gray-600 text-gray-400 font-medium leading-tight">
+        <div className="text-[10px] sm:text-xs text-gray-400 font-medium leading-tight">
           {title}
         </div>
       </div>
@@ -866,6 +868,7 @@ function BookingsList({
   getStatusColor,
   getStatusText,
 }) {
+  const T = themeTokens();
   if (bookings.length === 0) {
     return (
       <div className="text-center py-12">
@@ -885,7 +888,7 @@ function BookingsList({
         <p className="text-lg font-medium text-gray-900 text-white mb-1">
           Nessuna {type === 'lessons' ? 'lezione' : 'partita'} trovata
         </p>
-        <p className="text-sm text-gray-500 text-gray-400">
+        <p className="text-sm text-gray-400">
           Le tue {type === 'lessons' ? 'lezioni' : 'partite'} appariranno qui
         </p>
       </div>
@@ -898,7 +901,7 @@ function BookingsList({
         <button
           key={booking.id}
           onClick={() => onSelectBooking(booking)}
-          className="group w-full bg-white bg-gray-800 rounded-xl border border-gray-200 border-gray-700 p-4 sm:p-5 hover:shadow-lg hover:border-indigo-300 hover:border-indigo-600 transition-all duration-200 text-left"
+          className={`group w-full ${T.cardHover} text-left`}
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex-1">
@@ -919,7 +922,7 @@ function BookingsList({
                 {formatBookingDate(booking.date)} {booking.time && `• ${booking.time}`}
               </div>
               {booking.courtName && (
-                <div className="text-xs text-gray-600 text-gray-400 flex items-center gap-1.5 mt-1">
+                <div className="text-xs text-gray-400 flex items-center gap-1.5 mt-1">
                   <svg
                     className="w-3.5 h-3.5"
                     fill="none"
@@ -954,7 +957,7 @@ function BookingsList({
             {type === 'lessons' && (
               <>
                 {booking.lessonType && (
-                  <div className="text-sm text-gray-700 text-gray-300">
+                  <div className="text-sm text-gray-300">
                     Tipo:{' '}
                     <span className="font-medium">
                       {booking.lessonType === 'individual' ? 'Individuale' : 'Gruppo'}
@@ -962,7 +965,7 @@ function BookingsList({
                   </div>
                 )}
                 {booking.participants && (
-                  <div className="text-sm text-gray-700 text-gray-300">
+                  <div className="text-sm text-gray-300">
                     Partecipanti: <span className="font-medium">{booking.participants.length}</span>
                   </div>
                 )}
@@ -971,14 +974,14 @@ function BookingsList({
             {type === 'matches' && (
               <>
                 {booking.matchType && (
-                  <div className="text-sm text-gray-700 text-gray-300">
+                  <div className="text-sm text-gray-300">
                     Tipo: <span className="font-medium">{booking.matchType}</span>
                   </div>
                 )}
                 {booking.participants &&
                   Array.isArray(booking.participants) &&
                   booking.participants.length > 0 && (
-                    <div className="text-sm text-gray-700 text-gray-300">
+                    <div className="text-sm text-gray-300">
                       Giocatori:{' '}
                       <span className="font-medium">
                         {booking.participants.map((p) => p.name || p.displayName).join(', ')}
@@ -1077,7 +1080,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
         <h3 className="text-xl font-bold text-gray-900 text-white mb-2">
           Nessuna fascia oraria configurata
         </h3>
-        <p className="text-gray-500 text-gray-400 mb-6">
+        <p className="text-gray-400 mb-6">
           Aggiungi le tue fasce orarie per gestire le lezioni
         </p>
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 bg-blue-900/20 text-blue-600 text-blue-400 rounded-lg text-sm">
@@ -1123,7 +1126,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
 
     return (
       <div
-        className={`group relative bg-white bg-gray-800 rounded-xl border border-gray-200 border-gray-700 overflow-hidden ${isExpired ? 'opacity-60' : 'hover:shadow-xl hover:border-indigo-300 hover:border-indigo-600'} transition-all duration-300`}
+        className={`group relative ${T.card} overflow-hidden ${isExpired ? 'opacity-60' : 'hover:shadow-xl hover:border-indigo-300 hover:border-indigo-600'} transition-all duration-300`}
       >
         {/* Decorative gradient bar */}
         <div
@@ -1155,7 +1158,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
                 <h3 className="text-base sm:text-lg font-bold text-gray-900 text-gray-100 capitalize truncate">
                   {displayTitle}
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-500 text-gray-400">{dateInfo}</p>
+                <p className="text-xs sm:text-sm text-gray-400">{dateInfo}</p>
               </div>
             </div>
 
@@ -1178,7 +1181,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
 
               {/* Disabled Badge */}
               {!isExpired && slot.isActive === false && (
-                <span className="px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-100 bg-gray-700/50 text-gray-600 text-gray-300 text-xs sm:text-sm font-bold rounded-full flex items-center gap-1 sm:gap-1.5">
+                <span className="px-2 sm:px-3 py-1 sm:py-1.5 bg-gray-700/50 text-gray-600 text-gray-300 text-xs sm:text-sm font-bold rounded-full flex items-center gap-1 sm:gap-1.5">
                   <svg
                     className="w-3 h-3 sm:w-3.5 sm:h-3.5"
                     fill="none"
@@ -1301,7 +1304,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
 
         {/* Additional Info */}
         {(slot.maxBookings || slot.maxParticipants || slot.price > 0) && (
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-3 sm:mb-4 text-xs sm:text-sm text-gray-600 text-gray-400">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-3 sm:mb-4 text-xs sm:text-sm text-gray-400">
             {(slot.maxBookings || slot.maxParticipants) && (
               <div className="flex items-center gap-1.5">
                 <svg
@@ -1468,7 +1471,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
         </div>
       ) : (
         <div className="text-center py-8">
-          <p className="text-gray-500 text-gray-400">Nessuna fascia oraria attiva</p>
+          <p className="text-gray-400">Nessuna fascia oraria attiva</p>
         </div>
       )}
     </div>
@@ -1477,28 +1480,29 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
 
 // Booking Detail Component
 function BookingDetail({ booking, type }) {
+  const T = themeTokens();
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <div className="text-sm text-gray-600 text-gray-400 mb-1">Data</div>
+          <div className="text-sm text-gray-400 mb-1">Data</div>
           <div className="font-medium text-gray-900 text-white">
             {booking.date && format(parseISO(booking.date), 'd MMMM yyyy', { locale: it })}
           </div>
         </div>
         <div>
-          <div className="text-sm text-gray-600 text-gray-400 mb-1">Ora</div>
+          <div className="text-sm text-gray-400 mb-1">Ora</div>
           <div className="font-medium text-gray-900 text-white">{booking.time || 'N/A'}</div>
         </div>
         {booking.courtName && (
           <div>
-            <div className="text-sm text-gray-600 text-gray-400 mb-1">Campo</div>
+            <div className="text-sm text-gray-400 mb-1">Campo</div>
             <div className="font-medium text-gray-900 text-white">{booking.courtName}</div>
           </div>
         )}
         {booking.duration && (
           <div>
-            <div className="text-sm text-gray-600 text-gray-400 mb-1">Durata</div>
+            <div className="text-sm text-gray-400 mb-1">Durata</div>
             <div className="font-medium text-gray-900 text-white">{booking.duration} min</div>
           </div>
         )}
@@ -1506,17 +1510,14 @@ function BookingDetail({ booking, type }) {
 
       {booking.participants && booking.participants.length > 0 && (
         <div>
-          <div className="text-sm text-gray-600 text-gray-400 mb-2">Partecipanti</div>
+          <div className="text-sm text-gray-400 mb-2">Partecipanti</div>
           <div className="space-y-2">
             {booking.participants.map((participant, idx) => (
-              <div
-                key={idx}
-                className="flex items-center gap-2 p-2 bg-gray-50 bg-gray-700 rounded-lg"
-              >
+              <div key={idx} className={`flex items-center gap-2 p-2 ${T.cardBg} rounded-lg`}>
                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
                   {(participant.name || participant.displayName || 'U')[0].toUpperCase()}
                 </div>
-                <div className="font-medium text-gray-900 text-white">
+                <div className="font-medium">
                   {participant.name || participant.displayName || 'Utente'}
                 </div>
               </div>
@@ -1527,7 +1528,7 @@ function BookingDetail({ booking, type }) {
 
       {booking.price && (
         <div>
-          <div className="text-sm text-gray-600 text-gray-400 mb-1">Prezzo</div>
+          <div className="text-sm text-gray-400 mb-1">Prezzo</div>
           <div className="text-2xl font-bold text-green-600 text-green-400">
             €{booking.price}
           </div>
@@ -1536,7 +1537,7 @@ function BookingDetail({ booking, type }) {
 
       {booking.notes && (
         <div>
-          <div className="text-sm text-gray-600 text-gray-400 mb-1">Note</div>
+          <div className="text-sm text-gray-400 mb-1">Note</div>
           <div className="p-3 bg-blue-50 bg-blue-900/20 rounded-lg text-sm text-gray-900 text-white">
             {booking.notes}
           </div>
@@ -1726,7 +1727,7 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
               />
             </svg>
             <div>
-              <p className="text-xs text-gray-500 text-gray-400">Istruttore</p>
+              <p className="text-xs text-gray-400">Istruttore</p>
               <p className="text-sm font-semibold text-gray-900 text-gray-100">Tu</p>
             </div>
           </div>
@@ -1758,7 +1759,7 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
                           : (prev.courtIds || []).filter((id) => id !== court.id),
                       }));
                     }}
-                    className="rounded text-blue-600 bg-gray-100 bg-gray-700 border-gray-300 border-gray-600 focus:ring-blue-500 w-5 h-5"
+                    className="rounded text-blue-600 bg-gray-700 border-gray-300 border-gray-600 focus:ring-blue-500 w-5 h-5"
                   />
                   <span className="font-medium text-gray-900 text-gray-100 text-base">
                     {court.name || `Campo ${court.id}`}
@@ -1766,7 +1767,7 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
                 </label>
               ))
             ) : (
-              <p className="text-sm text-gray-500 text-gray-400 text-center py-2">
+              <p className="text-sm text-gray-400 text-center py-2">
                 Nessun campo disponibile
               </p>
             )}
@@ -1774,13 +1775,13 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
         </div>
 
         {/* Active Toggle */}
-        <div className="flex items-center justify-between p-3 rounded-lg border ${T.border}">
+  <div className={`flex items-center justify-between p-3 rounded-lg ${T.border}`}>
           <label className="text-sm font-semibold text-gray-900 text-gray-100">Attiva</label>
           <input
             type="checkbox"
             checked={slotForm.active !== false}
             onChange={(e) => setSlotForm((prev) => ({ ...prev, active: e.target.checked }))}
-            className="rounded text-blue-600 bg-gray-100 bg-gray-700 border-gray-300 border-gray-600 focus:ring-blue-500 w-6 h-6"
+            className="rounded text-blue-600 bg-gray-700 border-gray-300 border-gray-600 focus:ring-blue-500 w-6 h-6"
           />
         </div>
 
@@ -1804,4 +1805,5 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
     </Modal>
   );
 }
+
 

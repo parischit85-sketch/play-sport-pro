@@ -35,7 +35,7 @@ const NotificationItem = ({ notification, onRead, onDelete }) => {
   const categoryConfig = {
     [NOTIFICATION_CATEGORIES.BOOKING]: {
       icon: Calendar,
-      bgColor: 'bg-blue-100 bg-blue-900',
+      bgColor: 'bg-blue-900',
       iconColor: 'text-blue-600 text-blue-300',
       borderColor: 'border-blue-300 border-blue-700',
     },
@@ -47,13 +47,13 @@ const NotificationItem = ({ notification, onRead, onDelete }) => {
     },
     [NOTIFICATION_CATEGORIES.PROMO]: {
       icon: Gift,
-      bgColor: 'bg-purple-100 bg-purple-900',
+      bgColor: 'bg-purple-900',
       iconColor: 'text-purple-600 text-purple-300',
       borderColor: 'border-purple-300 border-purple-700',
     },
     [NOTIFICATION_CATEGORIES.SOCIAL]: {
       icon: MessageCircle,
-      bgColor: 'bg-green-100 bg-green-900',
+      bgColor: 'bg-green-900',
       iconColor: 'text-green-600 text-green-300',
       borderColor: 'border-green-300 border-green-700',
     },
@@ -179,7 +179,7 @@ const NotificationItem = ({ notification, onRead, onDelete }) => {
                 text-blue-600 text-blue-400
                 bg-blue-50 bg-blue-900
                 rounded-md
-                hover:bg-blue-100 hover:bg-blue-800
+                hover:bg-blue-800
                 transition-colors
               "
             >
@@ -233,4 +233,5 @@ const NotificationItem = ({ notification, onRead, onDelete }) => {
 };
 
 export default NotificationItem;
+
 

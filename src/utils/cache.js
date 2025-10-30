@@ -1,6 +1,7 @@
 // =============================================
 // FILE: src/utils/cache.js
 // =============================================
+import React from 'react';
 
 /**
  * Simple cache implementation for performance optimization
@@ -41,7 +42,7 @@ class SimpleCache {
   }
 
   size() {
-    return this.cache.size;
+    return this.cache.size();
   }
 }
 
@@ -105,10 +106,11 @@ export function memoize(fn, maxSize = 50) {
   };
 }
 
+// Import theme tokens function
+import { themeTokens } from '../lib/theme.js';
+
 // Cached version of theme tokens
 export const getCachedThemeTokens = memoize(() => {
-  // Import theme tokens function
-  const { themeTokens } = require('../lib/theme.js');
   return themeTokens();
 });
 

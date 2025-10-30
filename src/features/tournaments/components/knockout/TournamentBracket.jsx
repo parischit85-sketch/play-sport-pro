@@ -5,6 +5,7 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Trophy, Crown, Medal, ChevronRight, ChevronDown } from 'lucide-react';
 import { useAuth, USER_ROLES } from '../../../../contexts/AuthContext';
+import { themeTokens } from '../../../../lib/theme';
 import { getMatches } from '../../services/matchService';
 import { getTeamsByTournament } from '../../services/teamsService';
 import MatchResultModal from '../matches/MatchResultModal';
@@ -694,6 +695,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
           team2={teams[selectedMatch.team2Id]}
           onClose={() => setSelectedMatch(null)}
           onSubmit={handleRecordResult}
+          T={themeTokens()}
         />
       )}
     </div>

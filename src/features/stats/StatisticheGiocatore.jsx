@@ -33,6 +33,17 @@ export default function StatisticheGiocatore({
   const [champEntries, setChampEntries] = useState([]);
   const [tournamentsById, setTournamentsById] = useState({});
 
+  // DEBUG: Log quando il componente monta/aggiorna
+  useEffect(() => {
+    console.log('📊 [StatisticheGiocatore] Component mounted/updated', {
+      playersCount: players?.length,
+      matchesCount: matches?.length,
+      selectedPlayerId,
+      pid,
+      statsRefCurrent: !!statsRef.current,
+    });
+  }, [players?.length, matches?.length, selectedPlayerId, pid]);
+
   useEffect(() => {
     if (selectedPlayerId) setPid(selectedPlayerId);
   }, [selectedPlayerId]);
@@ -752,11 +763,11 @@ export default function StatisticheGiocatore({
     >
       <div ref={statsRef} className="space-y-8">
         {/* Header con controlli - Futuristic Design */}
-        <div className="bg-white/80 bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 border-gray-700/20 p-6 shadow-2xl">
+        <div className={`${T.card} p-6 shadow-2xl`}>
           {/* Controlli in una riga su desktop, stack su mobile */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <div className="text-sm font-semibold text-gray-700 text-gray-300 mb-2 flex items-center gap-2">
+              <div className="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
                 <div className="w-4 h-4 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"></div>
                 Giocatore
               </div>
@@ -766,7 +777,7 @@ export default function StatisticheGiocatore({
                   setPid(e.target.value);
                   onSelectPlayer?.(e.target.value);
                 }}
-                className="w-full px-4 py-3 bg-white/60 bg-gray-700/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200 text-sm"
+                className={`${T.input} w-full text-sm`}
               >
                 {playersAlpha.map((p) => (
                   <option key={p.id} value={p.id}>
@@ -777,14 +788,14 @@ export default function StatisticheGiocatore({
             </div>
 
             <div>
-              <div className="text-sm font-semibold text-gray-700 text-gray-300 mb-2 flex items-center gap-2">
+              <div className="text-sm font-semibold text-gray-300 mb-2 flex items-center gap-2">
                 <div className="w-4 h-4 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full"></div>
                 Periodo
               </div>
               <select
                 value={timeFilter}
                 onChange={(e) => setTimeFilter(e.target.value)}
-                className="w-full px-4 py-3 bg-white/60 bg-gray-700/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent transition-all duration-200 text-sm"
+                className={`${T.input} w-full text-sm`}
               >
                 <option value="1w">1 settimana</option>
                 <option value="2w">2 settimane</option>
@@ -799,7 +810,7 @@ export default function StatisticheGiocatore({
 
         {/* Stats Cards - Modern Grid with Glassmorphism - Mobile Optimized */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 from-blue-900/30 to-indigo-900/30 backdrop-blur-xl rounded-2xl border border-blue-200/30 border-blue-700/30 p-4 sm:p-6 shadow-xl">
+          <div className={`${T.card} p-4 sm:p-6 shadow-xl`}>
             <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
               <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
                 <svg
@@ -816,11 +827,11 @@ export default function StatisticheGiocatore({
                   />
                 </svg>
               </div>
-              <span className="text-xs sm:text-sm font-medium text-gray-600 text-gray-300">
+              <span className={`text-xs sm:text-sm font-medium ${T.subtext}`}>
                 Posizione
               </span>
             </div>
-            <div className="text-xl sm:text-3xl font-bold text-blue-600 text-blue-400">
+            <div className="text-xl sm:text-3xl font-bold text-blue-600">
               {position ?? '-'}
             </div>
           </div>
@@ -842,11 +853,11 @@ export default function StatisticheGiocatore({
                   />
                 </svg>
               </div>
-              <span className="text-xs sm:text-sm font-medium text-gray-600 text-gray-300">
+              <span className="text-xs sm:text-sm font-medium ${T.subtext}">
                 Ranking
               </span>
             </div>
-            <div className="text-xl sm:text-3xl font-bold text-emerald-600 text-emerald-400">
+            <div className="text-xl sm:text-3xl font-bold text-emerald-600">
               {player ? Math.round(getEffectiveRating(player.id)) : '-'}
             </div>
           </div>
@@ -868,14 +879,14 @@ export default function StatisticheGiocatore({
                   />
                 </svg>
               </div>
-              <span className="text-xs sm:text-sm font-medium text-gray-600 text-gray-300">
+              <span className="text-xs sm:text-sm font-medium ${T.subtext}">
                 Win Rate
               </span>
             </div>
-            <div className="text-xl sm:text-3xl font-bold text-purple-600 text-purple-400">
+            <div className="text-xl sm:text-3xl font-bold text-purple-600">
               {`${advancedStats ? Math.round(advancedStats.winRate) : 0}%`}
             </div>
-            <div className="text-xs sm:text-sm text-gray-500 text-gray-400 mt-1">
+            <div className="text-xs sm:text-sm ${T.subtext} mt-1">
               {`${advancedStats?.wins || 0}–${advancedStats?.losses || 0}`}
             </div>
           </div>
@@ -900,14 +911,14 @@ export default function StatisticheGiocatore({
                     />
                   </svg>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-gray-300">
+                <span className="text-xs sm:text-sm font-medium ${T.subtext}">
                   Efficienza Game
                 </span>
               </div>
-              <div className="text-lg sm:text-2xl font-bold text-orange-600 text-orange-400">
+              <div className="text-lg sm:text-2xl font-bold text-orange-600">
                 {`${advancedStats.gameEfficiency}%`}
               </div>
-              <div className="text-xs sm:text-sm text-gray-500 text-gray-400 mt-1">
+              <div className="text-xs sm:text-sm ${T.subtext} mt-1">
                 % game vinti
               </div>
             </div>
@@ -929,14 +940,14 @@ export default function StatisticheGiocatore({
                     />
                   </svg>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-gray-300">
+                <span className="text-xs sm:text-sm font-medium ${T.subtext}">
                   Δ Medio
                 </span>
               </div>
               <div
                 className={`text-lg sm:text-2xl font-bold ${
                   advancedStats.avgDelta > 0
-                    ? 'text-emerald-600 text-emerald-400'
+                    ? 'text-emerald-600'
                     : 'text-red-600 text-red-400'
                 }`}
               >
@@ -944,7 +955,7 @@ export default function StatisticheGiocatore({
                   ? `+${advancedStats.avgDelta}`
                   : `${advancedStats.avgDelta}`}
               </div>
-              <div className="text-xs sm:text-sm text-gray-500 text-gray-400 mt-1">
+              <div className="text-xs sm:text-sm ${T.subtext} mt-1">
                 punti per partita
               </div>
             </div>
@@ -966,14 +977,14 @@ export default function StatisticheGiocatore({
                     />
                   </svg>
                 </div>
-                <span className="text-xs sm:text-sm font-medium text-gray-600 text-gray-300">
+                <span className="text-xs sm:text-sm font-medium ${T.subtext}">
                   Striscia Record
                 </span>
               </div>
-              <div className="text-lg sm:text-2xl font-bold text-amber-600 text-amber-400">
+              <div className="text-lg sm:text-2xl font-bold text-amber-600">
                 {advancedStats.maxWinStreak}
               </div>
-              <div className="text-xs sm:text-sm text-gray-500 text-gray-400 mt-1">
+              <div className="text-xs sm:text-sm ${T.subtext} mt-1">
                 vittorie consecutive (migliore)
               </div>
             </div>
@@ -995,23 +1006,23 @@ export default function StatisticheGiocatore({
                     />
                   </svg>
                 </div>
-                <span className="text-sm font-medium text-gray-600 text-gray-300">
+                <span className="text-sm font-medium ${T.subtext}">
                   Striscia Attiva
                 </span>
               </div>
               <div
                 className={`text-2xl font-bold ${
                   advancedStats.currentStreak > 0
-                    ? 'text-emerald-600 text-emerald-400'
+                    ? 'text-emerald-600'
                     : advancedStats.currentStreak < 0
                       ? 'text-red-600 text-red-400'
-                      : 'text-gray-600 text-gray-400'
+                      : 'text-gray-400'
                 }`}
               >
                 {advancedStats.currentStreak > 0 && '+'}
                 {advancedStats.currentStreak}
               </div>
-              <div className="text-sm text-gray-500 text-gray-400 mt-1">
+              <div className="text-sm ${T.subtext} mt-1">
                 {advancedStats.currentStreak > 0
                   ? 'vittorie consecutive (attuale)'
                   : advancedStats.currentStreak < 0
@@ -1140,15 +1151,15 @@ export default function StatisticheGiocatore({
                         <div className="grid grid-cols-3 gap-2 text-center text-sm">
                           <div>
                             <div className="font-semibold">{row.player1}</div>
-                            <div className="text-xs text-gray-500 truncate">{player?.name}</div>
+                            <div className="text-xs ${T.subtext} truncate">{player?.name}</div>
                           </div>
                           <div>
                             <div className="font-semibold">{row.player2}</div>
-                            <div className="text-xs text-gray-500 truncate">{cp?.name}</div>
+                            <div className="text-xs ${T.subtext} truncate">{cp?.name}</div>
                           </div>
                           <div>
                             <div className="font-semibold text-blue-600">{row.diff}</div>
-                            <div className="text-xs text-gray-500">Diff</div>
+                            <div className="text-xs ${T.subtext}">Diff</div>
                           </div>
                         </div>
                       </div>
@@ -1189,9 +1200,9 @@ export default function StatisticheGiocatore({
         </div>
 
         {/* Grafico Evoluzione Rating */}
-        <div className="bg-white/80 bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 border-gray-700/20 p-6 shadow-2xl">
+        <div className="${T.cardBg} backdrop-blur-xl rounded-3xl border ${T.border} p-6 shadow-2xl">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900 text-white flex items-center gap-3">
+            <h3 className="text-xl font-bold ${T.text} flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
                 <svg
                   className="w-5 h-5 text-white"
@@ -1209,7 +1220,7 @@ export default function StatisticheGiocatore({
               </div>
               Evoluzione Rating
             </h3>
-            <span className="text-sm text-gray-500 text-gray-400 bg-gray-100 bg-gray-700 px-3 py-1 rounded-full">
+            <span className="text-sm ${T.subtext} bg-gray-700 px-3 py-1 rounded-full">
               {timeFilter === 'all' ? 'Tutte le partite' : 'Periodo selezionato'}
             </span>
           </div>
@@ -1231,15 +1242,15 @@ export default function StatisticheGiocatore({
         </div>
 
         {/* Punti Torneo - sezione dedicata */}
-        <div className="bg-white/80 bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 border-gray-700/20 p-6 shadow-2xl">
+        <div className="${T.cardBg} backdrop-blur-xl rounded-3xl border ${T.border} p-6 shadow-2xl">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900 text-white flex items-center gap-3">
+            <h3 className="text-xl font-bold ${T.text} flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-yellow-600 rounded-lg flex items-center justify-center">
                 <span className="text-white">🏆</span>
               </div>
               Punti Torneo {timeFilter !== 'all' ? '(periodo filtrato)' : ''}
             </h3>
-            <div className="bg-amber-100 bg-amber-900/30 text-amber-700 text-amber-300 px-3 py-1 rounded-full text-sm font-medium">
+            <div className="bg-amber-900/30 text-amber-300 px-3 py-1 rounded-full text-sm font-medium">
               {tournamentPoints.totalEntries} movimenti
             </div>
           </div>
@@ -1247,14 +1258,14 @@ export default function StatisticheGiocatore({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Totale card (valore assoluto) */}
             <div className="lg:col-span-1 bg-gradient-to-br from-amber-50 to-yellow-50 from-amber-900/30 to-yellow-900/20 rounded-2xl border border-amber-200/40 border-amber-700/40 p-5">
-              <div className="text-sm font-medium text-amber-700 text-amber-300 mb-2">
+              <div className="text-sm font-medium text-amber-300 mb-2">
                 Totale punti Tornei
               </div>
-              <div className="text-3xl font-extrabold text-amber-700 text-amber-300">
+              <div className="text-3xl font-extrabold text-amber-300">
                 {Math.round(champTotals.totalPoints || 0)}
               </div>
-              <div className="flex items-center gap-2 mt-1 text-xs text-amber-800/70 text-amber-300/70">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-100/70 bg-amber-900/30 text-amber-700 text-amber-300">
+              <div className="flex items-center gap-2 mt-1 text-xs text-amber-300/70">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-900/30 text-amber-300">
                   Movimenti totali: {champTotals.entriesCount}
                 </span>
                 <span className="opacity-80">•</span>
@@ -1263,7 +1274,7 @@ export default function StatisticheGiocatore({
             </div>
 
             {/* Ultimi movimenti */}
-            <div className="bg-white/70 bg-gray-800/60 rounded-2xl border border-white/20 border-gray-700/30 p-5">
+            <div className="${T.cardBg} rounded-2xl border border-gray-700/30 p-5">
               <div className="font-medium mb-3 flex items-center gap-2">
                 <span>🕒</span> Ultimi movimenti
               </div>
@@ -1276,7 +1287,7 @@ export default function StatisticheGiocatore({
                           {e.tournamentId ? (
                             <a
                               href={`/club/${clubId}/tournaments/${e.tournamentId}`}
-                              className="text-amber-700 text-amber-300 hover:underline"
+                              className="text-amber-300 hover:underline"
                               title="Vedi torneo"
                             >
                               {tournamentsById?.[e.tournamentId]?.name ||
@@ -1287,7 +1298,7 @@ export default function StatisticheGiocatore({
                             e.tournamentName || 'Punti torneo'
                           )}
                         </div>
-                        <div className="text-xs text-gray-500 text-gray-400">
+                        <div className="text-xs ${T.subtext}">
                           {e.date
                             ? e.date.toLocaleDateString('it-IT', {
                                 day: '2-digit',
@@ -1296,13 +1307,13 @@ export default function StatisticheGiocatore({
                               })
                             : ''}
                           {e.tournamentId && tournamentsById?.[e.tournamentId]?.status ? (
-                            <span className="ml-2 px-1.5 py-0.5 rounded bg-amber-100 bg-amber-900/30 text-amber-700 text-amber-300">
+                            <span className="ml-2 px-1.5 py-0.5 rounded bg-amber-900/30 text-amber-300">
                               {tournamentsById[e.tournamentId].status}
                             </span>
                           ) : null}
                         </div>
                       </div>
-                      <div className="text-amber-700 text-amber-300 font-bold">
+                      <div className="text-amber-300 font-bold">
                         +{Math.round(e.points || 0)}
                       </div>
                     </div>
@@ -1314,7 +1325,7 @@ export default function StatisticheGiocatore({
             </div>
 
             {/* Per torneo */}
-            <div className="bg-white/70 bg-gray-800/60 rounded-2xl border border-white/20 border-gray-700/30 p-5">
+            <div className="${T.cardBg} rounded-2xl border border-gray-700/30 p-5">
               <div className="font-medium mb-3 flex items-center gap-2">
                 <span>📚</span> Punti per torneo
               </div>
@@ -1330,7 +1341,7 @@ export default function StatisticheGiocatore({
                           {row.tournamentId ? (
                             <a
                               href={`/club/${clubId}/tournaments/${row.tournamentId}`}
-                              className="text-amber-700 text-amber-300 hover:underline"
+                              className="text-amber-300 hover:underline"
                               title="Vedi torneo"
                             >
                               {tournamentsById?.[row.tournamentId]?.name || row.tournamentName}
@@ -1339,11 +1350,11 @@ export default function StatisticheGiocatore({
                             row.tournamentName
                           )}
                         </div>
-                        <div className="text-xs text-gray-500 text-gray-400">
+                        <div className="text-xs ${T.subtext}">
                           {row.count} movimenti
                         </div>
                       </div>
-                      <div className="text-amber-700 text-amber-300 font-bold">
+                      <div className="text-amber-300 font-bold">
                         +{Math.round(row.points)}
                       </div>
                     </div>
@@ -1375,10 +1386,10 @@ export default function StatisticheGiocatore({
                             index === 0
                               ? 'bg-yellow-100 text-yellow-600'
                               : index === 1
-                                ? 'bg-gray-100 bg-gray-700 text-gray-600 text-gray-300'
+                                ? 'bg-gray-700 ${T.subtext}'
                                 : index === 2
                                   ? 'bg-orange-100 text-orange-600'
-                                  : 'bg-gray-50 text-gray-500'
+                                  : 'bg-gray-50 ${T.subtext}'
                           }`}
                         >
                           {index + 1}
@@ -1389,7 +1400,7 @@ export default function StatisticheGiocatore({
                         <div className="font-bold text-emerald-600 text-sm">
                           {Math.round(mate.winPct)}%
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs ${T.subtext}">
                           {mate.wins}V-{mate.losses}S
                         </div>
                       </div>
@@ -1424,7 +1435,7 @@ export default function StatisticheGiocatore({
                                 ? 'bg-orange-100 text-orange-600'
                                 : index === 2
                                   ? 'bg-yellow-100 text-yellow-600'
-                                  : 'bg-gray-50 text-gray-500'
+                                  : 'bg-gray-50 ${T.subtext}'
                           }`}
                         >
                           {index + 1}
@@ -1435,7 +1446,7 @@ export default function StatisticheGiocatore({
                         <div className="font-bold text-rose-600 text-sm">
                           {Math.round(mate.winPct)}%
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs ${T.subtext}">
                           {mate.wins}V-{mate.losses}S
                         </div>
                       </div>
@@ -1467,10 +1478,10 @@ export default function StatisticheGiocatore({
                             index === 0
                               ? 'bg-yellow-100 text-yellow-600'
                               : index === 1
-                                ? 'bg-gray-100 bg-gray-700 text-gray-600 text-gray-300'
+                                ? 'bg-gray-700 ${T.subtext}'
                                 : index === 2
                                   ? 'bg-orange-100 text-orange-600'
-                                  : 'bg-gray-50 text-gray-500'
+                                  : 'bg-gray-50 ${T.subtext}'
                           }`}
                         >
                           {index + 1}
@@ -1481,7 +1492,7 @@ export default function StatisticheGiocatore({
                         <div className="font-bold text-emerald-600 text-sm">
                           {Math.round(opp.winPct)}%
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs ${T.subtext}">
                           {opp.wins}V-{opp.losses}S
                         </div>
                       </div>
@@ -1516,7 +1527,7 @@ export default function StatisticheGiocatore({
                                 ? 'bg-orange-100 text-orange-600'
                                 : index === 2
                                   ? 'bg-yellow-100 text-yellow-600'
-                                  : 'bg-gray-50 text-gray-500'
+                                  : 'bg-gray-50 ${T.subtext}'
                           }`}
                         >
                           {index + 1}
@@ -1527,7 +1538,7 @@ export default function StatisticheGiocatore({
                         <div className="font-bold text-rose-600 text-sm">
                           {Math.round(opp.winPct)}%
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs ${T.subtext}">
                           {opp.wins}V-{opp.losses}S
                         </div>
                       </div>
@@ -1544,9 +1555,9 @@ export default function StatisticheGiocatore({
         </div>
 
         {/* Storico Partite - Futuristic Design */}
-        <div className="bg-white/80 bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 border-gray-700/20 p-6 shadow-2xl">
+        <div className="${T.cardBg} backdrop-blur-xl rounded-3xl border ${T.border} p-6 shadow-2xl">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900 text-white flex items-center gap-3">
+            <h3 className="text-xl font-bold ${T.text} flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
                 <svg
                   className="w-5 h-5 text-white"
@@ -1564,7 +1575,7 @@ export default function StatisticheGiocatore({
               </div>
               Storico Partite {timeFilter !== 'all' ? '(periodo filtrato)' : ''}
             </h3>
-            <div className="bg-emerald-100 bg-emerald-900/30 text-emerald-700 text-emerald-300 px-3 py-1 rounded-full text-sm font-medium">
+            <div className="bg-emerald-900/30 text-emerald-300 px-3 py-1 rounded-full text-sm font-medium">
               {combinedItems.length} elementi
             </div>
           </div>
@@ -1582,23 +1593,23 @@ export default function StatisticheGiocatore({
                 return (
                   <div
                     key={`entry-${e.id}`}
-                    className="relative rounded-3xl bg-amber-50/60 bg-amber-900/20 backdrop-blur-xl border border-amber-200/50 border-amber-700/40 shadow-xl overflow-hidden"
+                    className="relative rounded-3xl bg-amber-900/20 backdrop-blur-xl border border-amber-700/40 shadow-xl overflow-hidden"
                   >
                     <div className="p-4 flex items-center justify-between gap-3">
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 text-amber-700 text-amber-300 font-semibold">
+                        <div className="flex items-center gap-2 text-amber-300 font-semibold">
                           <span>🏆</span>
                           <span className="truncate">{e.tournamentName || 'Punti torneo'}</span>
                         </div>
-                        <div className="text-xs text-amber-800/70 text-amber-300/70 mt-1">
+                        <div className="text-xs text-amber-300/70 mt-1">
                           {when}
                         </div>
                       </div>
                       <div className="shrink-0 text-right">
-                        <div className="text-lg font-bold text-amber-700 text-amber-300">
+                        <div className="text-lg font-bold text-amber-300">
                           +{Math.round(e.points || 0)}
                         </div>
-                        <div className="text-[10px] text-amber-800/70 text-amber-300/70">
+                        <div className="text-[10px] text-amber-300/70">
                           punti campionato
                         </div>
                       </div>
@@ -1627,7 +1638,7 @@ export default function StatisticheGiocatore({
               return (
                 <div
                   key={m.id}
-                  className={`relative rounded-3xl bg-white/80 bg-gray-800/80 backdrop-blur-xl border border-white/20 border-gray-700/30 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 ${isExpanded ? 'ring-2 ring-blue-500/60 shadow-blue-500/20' : ''}`}
+                  className={`relative rounded-3xl ${T.cardBg} backdrop-blur-xl border border-gray-700/30 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 ${isExpanded ? 'ring-2 ring-blue-500/60 shadow-blue-500/20' : ''}`}
                 >
                   {/* Subtle gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
@@ -1651,14 +1662,14 @@ export default function StatisticheGiocatore({
                         <span
                           className={`px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm border ${
                             won
-                              ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-700 text-emerald-300'
-                              : 'bg-rose-500/20 border-rose-400/30 text-rose-700 text-rose-300'
+                              ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300'
+                              : 'bg-rose-500/20 border-rose-400/30 text-rose-300'
                           }`}
                         >
                           {won ? '✨ Vittoria' : '❌ Sconfitta'}
                         </span>
                         {m.date && (
-                          <span className="text-xs text-gray-600 text-gray-400 bg-gray-100/50 bg-gray-700/50 px-2 py-1 rounded-lg backdrop-blur-sm">
+                          <span className="text-xs text-gray-400 bg-gray-700/50 px-2 py-1 rounded-lg backdrop-blur-sm">
                             {new Date(m.date).toLocaleDateString('it-IT', {
                               day: '2-digit',
                               month: 'short',
@@ -1674,7 +1685,7 @@ export default function StatisticheGiocatore({
                           >
                             {selfTeam}
                           </div>
-                          <div className="hidden sm:block text-gray-400 text-gray-500">vs</div>
+                          <div className="hidden sm:block text-gray-400 ${T.subtext}">vs</div>
                           <div
                             className={`${oppCls} font-semibold bg-gradient-to-r from-current to-current bg-clip-text`}
                           >
@@ -1682,13 +1693,13 @@ export default function StatisticheGiocatore({
                           </div>
                         </div>
                       </div>
-                      <div className="text-xs text-gray-600 text-gray-400 bg-gray-50/50 bg-gray-700/30 px-3 py-1.5 rounded-xl backdrop-blur-sm">
+                      <div className="text-xs text-gray-400 bg-gray-700/30 px-3 py-1.5 rounded-xl backdrop-blur-sm">
                         Sets {isA ? m.setsA : m.setsB}–{isA ? m.setsB : m.setsA} • Games{' '}
                         {isA ? m.gamesA : m.gamesB}–{isA ? m.gamesB : m.gamesA}
                       </div>
                     </div>
                     <div className="shrink-0 text-right flex items-center gap-3">
-                      <div className="bg-gradient-to-br from-gray-50/80 to-gray-100/80 from-gray-700/50 to-gray-800/50 backdrop-blur-sm rounded-2xl px-3 py-2 border border-white/20 border-gray-600/30">
+                      <div className="bg-gradient-to-br from-gray-700/50 to-gray-800/50 backdrop-blur-sm rounded-2xl px-3 py-2 border border-gray-600/30">
                         <div
                           className={`text-lg font-bold bg-gradient-to-r ${
                             delta >= 0
@@ -1699,7 +1710,7 @@ export default function StatisticheGiocatore({
                           {delta >= 0 ? '+' : ''}
                           {Math.round(delta)}
                         </div>
-                        <div className="text-[10px] text-gray-500 text-gray-400 font-medium">
+                        <div className="text-[10px] ${T.subtext} font-medium">
                           punti
                         </div>
                       </div>
@@ -1709,7 +1720,7 @@ export default function StatisticheGiocatore({
                           setCurrentMatchForRpa(m);
                           setShowRpaModal(true);
                         }}
-                        className="flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md backdrop-blur-sm border border-white/20"
+                        className="flex items-center justify-center gap-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg shadow-md backdrop-blur-sm border border-gray-600/30"
                         title="Spiegazione formula RPA"
                       >
                         <svg
@@ -1728,7 +1739,7 @@ export default function StatisticheGiocatore({
                         <span className="hidden sm:inline">Formula</span>
                       </button>
                       <div
-                        className={`text-gray-400 text-gray-300 text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+                        className={`text-gray-300 text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
                       >
                         ▼
                       </div>
@@ -1737,7 +1748,7 @@ export default function StatisticheGiocatore({
 
                   {/* Dettagli espansi - Mobile Optimized */}
                   {isExpanded && (
-                    <div className="border-t border-white/20 border-gray-700/30 bg-gradient-to-b from-gray-50/50 to-gray-100/50 from-gray-800/40 to-gray-900/40 backdrop-blur-sm">
+                    <div className="border-t border-gray-700/30 bg-gradient-to-b from-gray-800/40 to-gray-900/40 backdrop-blur-sm">
                       <div className="p-4 space-y-4">
                         {/* Squadre - Stacked su mobile */}
                         <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4 text-sm">
@@ -1748,11 +1759,11 @@ export default function StatisticheGiocatore({
                                 : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 from-rose-900/40 to-rose-800/30'
                             }`}
                           >
-                            <div className="font-semibold text-gray-900 text-white mb-2 flex items-center gap-2">
+                            <div className="font-semibold ${T.text} mb-2 flex items-center gap-2">
                               {won && <span className="text-emerald-500">👑</span>}
                               {selfTeamFull}
                             </div>
-                            <div className="text-xs text-gray-700 text-gray-300 bg-white/40 bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                            <div className="text-xs text-gray-300 bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                               Sets: {isA ? m.setsA : m.setsB} • Games: {isA ? m.gamesA : m.gamesB}
                             </div>
                           </div>
@@ -1763,11 +1774,11 @@ export default function StatisticheGiocatore({
                                 : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 from-rose-900/40 to-rose-800/30'
                             }`}
                           >
-                            <div className="font-semibold text-gray-900 text-white mb-2 flex items-center gap-2">
+                            <div className="font-semibold ${T.text} mb-2 flex items-center gap-2">
                               {!won && <span className="text-emerald-500">👑</span>}
                               {oppTeamFull}
                             </div>
-                            <div className="text-xs text-gray-700 text-gray-300 bg-white/40 bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                            <div className="text-xs text-gray-300 bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                               Sets: {isA ? m.setsB : m.setsA} • Games: {isA ? m.gamesB : m.gamesA}
                             </div>
                           </div>
@@ -1776,7 +1787,7 @@ export default function StatisticheGiocatore({
                         {/* Set dettaglio - Mobile scroll */}
                         {Array.isArray(m.sets) && m.sets.length > 0 && (
                           <div>
-                            <div className="text-sm font-semibold text-gray-700 text-gray-200 mb-3 flex items-center gap-2">
+                            <div className="text-sm font-semibold ${T.text} mb-3 flex items-center gap-2">
                               <span className="bg-gradient-to-r from-blue-500 to-indigo-600 text-transparent bg-clip-text">
                                 📊
                               </span>
@@ -1795,8 +1806,8 @@ export default function StatisticheGiocatore({
                                     key={`${m.id}-set-${i}`}
                                     className={`px-4 py-3 rounded-2xl text-sm font-semibold shrink-0 backdrop-blur-sm shadow-lg border ${
                                       isWinningSet
-                                        ? 'bg-gradient-to-br from-emerald-100/90 to-emerald-200/70 from-emerald-800/70 to-emerald-900/50 border-emerald-400/40 border-emerald-500/40 text-emerald-900 text-emerald-100'
-                                        : 'bg-gradient-to-br from-rose-100/90 to-rose-200/70 from-rose-800/70 to-rose-900/50 border-rose-400/40 border-rose-500/40 text-rose-900 text-rose-100'
+                                        ? 'bg-gradient-to-br from-emerald-800/70 to-emerald-900/50 border-emerald-500/40 text-emerald-100'
+                                        : 'bg-gradient-to-br from-rose-800/70 to-rose-900/50 border-rose-500/40 text-rose-100'
                                     }`}
                                   >
                                     <div className="text-center">
@@ -1815,14 +1826,14 @@ export default function StatisticheGiocatore({
                         )}
 
                         {/* Formula compatta - Mobile collapsible */}
-                        <div className="border-t border-white/20 border-gray-700/30 pt-4">
-                          <div className="text-sm font-semibold text-gray-700 text-gray-200 mb-3 flex items-center gap-2">
+                        <div className="border-t border-gray-700/30 pt-4">
+                          <div className="text-sm font-semibold ${T.text} mb-3 flex items-center gap-2">
                             <span className="bg-gradient-to-r from-violet-500 to-purple-600 text-transparent bg-clip-text">
                               🧮
                             </span>
                             Calcolo punti RPA:
                           </div>
-                          <div className="text-sm space-y-3 text-gray-800 text-gray-100">
+                          <div className="text-sm space-y-3 ${T.text}">
                             <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/60 from-blue-900/20 to-indigo-900/20 p-3 rounded-2xl border border-blue-200/30 border-blue-700/30 backdrop-blur-sm">
                               <strong className="text-blue-700 text-blue-300">Rating:</strong>{' '}
                               A={Math.round(m.sumA || 0)} vs B=
@@ -1836,7 +1847,7 @@ export default function StatisticheGiocatore({
                               {(m.factor || 1).toFixed(2)}
                             </div>
                             <div className="bg-gradient-to-r from-emerald-50/80 to-green-50/60 from-emerald-900/20 to-green-900/20 p-3 rounded-2xl border border-emerald-200/30 border-emerald-700/30 backdrop-blur-sm">
-                              <strong className="text-emerald-700 text-emerald-300">
+                              <strong className="text-emerald-300">
                                 Risultato:
                               </strong>{' '}
                               <span
@@ -1916,4 +1927,10 @@ export default function StatisticheGiocatore({
     </Section>
   );
 }
+
+
+
+
+
+
 

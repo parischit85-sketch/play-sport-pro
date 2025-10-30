@@ -57,25 +57,23 @@ export default function StatsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-indigo-900 to-purple-900">
-      <>
-        <StatisticheGiocatore
-          T={T}
-          players={rankingData.players}
-          matches={rankingData.matches}
-          selectedPlayerId={selectedPlayerId}
-          onSelectPlayer={handleSelectPlayer}
-          onShowFormula={setFormulaData}
-        />
+    <>
+      <StatisticheGiocatore
+        T={T}
+        players={rankingData.players}
+        matches={rankingData.matches}
+        selectedPlayerId={selectedPlayerId}
+        onSelectPlayer={handleSelectPlayer}
+        onShowFormula={setFormulaData}
+      />
 
-        {/* Formula Modal Moderno */}
-        <FormulaModal
-          isOpen={!!formulaData}
-          onClose={() => setFormulaData(null)}
-          matchData={formulaData}
-        />
-      </>
-    </div>
+      {/* Formula Modal Moderno */}
+      <FormulaModal
+        isOpen={!!formulaData}
+        onClose={() => setFormulaData(null)}
+        matchData={formulaData}
+      />
+    </>
   );
 }
 

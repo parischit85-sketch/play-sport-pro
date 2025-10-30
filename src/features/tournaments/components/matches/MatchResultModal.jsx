@@ -3,9 +3,12 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Trophy, Info } from 'lucide-react';
+import { themeTokens } from '../../../../lib/theme';
 
-function MatchResultModal({ match, team1, team2, onClose, onSubmit }) {
+function MatchResultModal({ match, team1, team2, onClose, onSubmit, T: externalT }) {
+  const T = externalT || themeTokens();
   // bestOf: 1 => set singolo, 3 => 2 su 3
   const [bestOf, setBestOf] = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -182,52 +185,72 @@ function MatchResultModal({ match, team1, team2, onClose, onSubmit }) {
     return { valid: false };
   }
 
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-  <div className="bg-gray-800 rounded-lg shadow-xl max-w-lg w-full">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-700">
-          <div className="flex items-start gap-3">
-            <Trophy className="w-6 h-6 text-primary-600 mt-0.5" />
-            <div>
-              <h2 className="text-xl font-bold text-white">
-                {match?.status === 'completed' ? 'Modifica Risultato' : 'Inserisci Risultato'}
-              </h2>
-              <div className="text-sm text-gray-300 mt-0.5">
-                {team1Name} <span className="mx-1 text-gray-400">vs</span> {team2Name}
+  // Body scroll lock + ESC to close while modal is mounted
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') onClose?.();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    
+    return () => {
+      document.body.style.overflow = prevOverflow || 'auto';
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div 
+      className="fixed inset-0 z-50 overflow-y-auto"
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={onClose} />
+      
+      {/* Modal container - uses padding and min-h-screen to center in viewport */}
+      <div className="flex min-h-screen items-center justify-center p-4">
+        {/* Modal content */}
+        <div 
+          className={`relative ${T.card} rounded-xl shadow-2xl max-w-2xl w-full my-8`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b ring-0">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center">
+                <Trophy className={`w-5 h-5 ${T.accentInfo}`} />
+              </div>
+              <div>
+                <h2 id="modal-title" className={`text-xl font-bold ${T.text}`}>
+                  {match?.status === 'completed' ? 'Modifica Risultato' : 'Inserisci Risultato'}
+                </h2>
+                <div className={`text-sm ${T.subtext} mt-0.5`}>
+                  {team1Name} <span className="mx-1">vs</span> {team2Name}
+                </div>
               </div>
             </div>
+            <button onClick={onClose} className={`${T.btnGhostSm} !p-2`} aria-label="Chiudi modal">
+              <X className="w-5 h-5" />
+            </button>
           </div>
-          <div className="flex items-center gap-2">
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-          </div>
-        </div>
-        
 
-        {/* Content */}
-        <div className="p-6 space-y-6">
+          {/* Content - scrollable if needed */}
+          <div className="p-6 space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto">
           {/* Match format selector */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-300">
-              Formato partita
-            </label>
-            <div className="inline-flex rounded-lg overflow-hidden border border-gray-700">
+            <div className={`block text-sm font-medium ${T.text}`}>Formato partita</div>
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => {
                   setBestOf(1);
                   setSets([{ team1: 0, team2: 0 }]);
                 }}
-                className={`px-3 py-1.5 text-sm transition-colors ${
-                  bestOf === 1
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+                className={`flex-1 ${bestOf === 1 ? T.btnPrimary : T.btnGhost}`}
               >
                 Set singolo
               </button>
@@ -237,98 +260,125 @@ function MatchResultModal({ match, team1, team2, onClose, onSubmit }) {
                   setBestOf(3);
                   setSets([{ team1: 0, team2: 0 }, { team1: 0, team2: 0 }]);
                 }}
-                className={`px-3 py-1.5 text-sm transition-colors border-l border-gray-700 ${
-                  bestOf === 3
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+                className={`flex-1 ${bestOf === 3 ? T.btnPrimary : T.btnGhost}`}
               >
                 2 su 3
               </button>
             </div>
-            <p className="text-xs text-gray-400">
+            <p className={`text-xs ${T.subtext}`}>
               Scegli se la partita è a set singolo o al meglio di tre set.
             </p>
-            <label className="inline-flex items-center gap-2 text-xs text-gray-300">
+            <label className={`inline-flex items-center gap-2 text-sm ${T.text} cursor-pointer`}>
               <input
                 type="checkbox"
                 checked={tennisRules}
                 onChange={(e) => setTennisRules(e.target.checked)}
+                className="w-4 h-4 rounded bg-gray-700 border-gray-600 text-blue-500 focus:ring-2 focus:ring-blue-500"
               />
-              <span className="flex items-center gap-1">
-                <Info className="w-3 h-3" />
+              <span className="flex items-center gap-1.5">
+                <Info className="w-4 h-4" />
                 Regole tennis (6 con 2 di scarto; 7-5/7-6; super TB a 10 nel terzo)
               </span>
             </label>
           </div>
 
           {/* Per-set inputs */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             {sets.map((s, idx) => {
               const isTie = s.team1 === s.team2 && (s.team1 !== 0 || s.team2 !== 0);
               const setWinner = s.team1 === s.team2 ? null : (s.team1 > s.team2 ? 1 : 2);
               const invalidTennis = tennisRules ? !validateTennisSet(s, idx, bestOf).valid : false;
+              
               return (
-                <div key={idx} className={`p-3 rounded-lg border ${
-                  setWinner === 1
-                    ? 'border-green-800 bg-green-900/10'
-                    : setWinner === 2
-                    ? 'border-blue-800 bg-blue-900/10'
-                    : 'border-gray-700'
-                }`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-xs font-medium text-gray-400">Set {idx + 1}</div>
+                <div 
+                  key={idx} 
+                  className={`p-4 rounded-lg ${setWinner ? '' : T.border} ${!setWinner ? 'bg-gray-800/50' : ''} ${
+                    setWinner === 1
+                      ? 'border-emerald-500/50 bg-emerald-500/10'
+                      : setWinner === 2
+                      ? 'border-blue-500/50 bg-blue-500/10'
+                      : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={`text-sm font-semibold ${T.text}`}>Set {idx + 1}</div>
+                    {setWinner && (
+                      <div className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                        setWinner === 1 
+                          ? 'bg-emerald-500/20 text-emerald-400' 
+                          : 'bg-blue-500/20 text-blue-400'
+                      }`}>
+                        {setWinner === 1 ? '🏆 ' + team1Name : '🏆 ' + team2Name}
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 flex-1">
-                      <label className={`text-sm w-28 truncate ${setWinner === 1 ? 'text-green-300' : 'text-gray-300'}`} title={team1Name}>{team1Name}</label>
+                  
+                  <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-center">
+                    {/* Team 1 */}
+                    <div className="space-y-2">
+                      <label className={`block text-xs font-medium ${setWinner === 1 ? 'text-emerald-400' : T.subtext}`}>
+                        {team1Name}
+                      </label>
                       <input
                         type="number"
                         min={0}
                         max={99}
                         value={s.team1}
                         onChange={(e) => updateSetScore(idx, 'team1', e.target.value)}
-                        className={`w-16 text-center px-2 py-1 border rounded-md bg-gray-800 text-gray-100 ${
-                          setWinner === 1 ? 'border-green-700' : 'border-gray-600'
+                        className={`${T.input} w-full text-center font-bold text-lg ${
+                          setWinner === 1 ? 'ring-2 ring-emerald-500/20 border-emerald-500/50' : ''
                         }`}
                       />
                     </div>
-                    <div className="text-xs text-gray-400">-</div>
-                    <div className="flex items-center gap-2 flex-1">
-                      <label className={`text-sm w-28 truncate ${setWinner === 2 ? 'text-blue-300' : 'text-gray-300'}`} title={team2Name}>{team2Name}</label>
+                    
+                    {/* Separator */}
+                    <div className="text-2xl font-bold text-gray-500 pb-8">−</div>
+                    
+                    {/* Team 2 */}
+                    <div className="space-y-2">
+                      <label className={`block text-xs font-medium ${setWinner === 2 ? 'text-blue-400' : T.subtext}`}>
+                        {team2Name}
+                      </label>
                       <input
                         type="number"
                         min={0}
                         max={99}
                         value={s.team2}
                         onChange={(e) => updateSetScore(idx, 'team2', e.target.value)}
-                        className={`w-16 text-center px-2 py-1 border rounded-md bg-gray-800 text-gray-100 ${
-                          setWinner === 2 ? 'border-blue-700' : 'border-gray-600'
+                        className={`${T.input} w-full text-center font-bold text-lg ${
+                          setWinner === 2 ? 'ring-2 ring-blue-500/20 border-blue-500/50' : ''
                         }`}
                       />
                     </div>
                   </div>
+
+                  {/* Validation messages */}
                   {isTie && (
-                    <div className="mt-2 text-xs text-red-400">
-                      Un set non può finire in parità.
+                    <div className="mt-3 p-2 bg-red-500/10 border border-red-500/30 rounded-lg">
+                      <p className="text-xs font-medium text-red-400">
+                        ⚠️ Un set non può finire in parità
+                      </p>
                     </div>
                   )}
                   {!isTie && invalidTennis && (
-                    <div className="mt-2 text-xs text-amber-400">
-                      Punteggi set non validi: minimo 6 con 2 giochi di scarto (7-5/7-6 ammessi). Nel terzo set è ammesso super tie-break a 10.
+                    <div className="mt-3 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                      <p className="text-xs font-medium text-amber-400">
+                        ⚠️ Punteggio non valido: minimo 6 con 2 giochi di scarto (7-5/7-6 ammessi). Nel terzo set è ammesso super tie-break a 10.
+                      </p>
                     </div>
                   )}
                 </div>
               );
             })}
 
+            {/* Add/Remove set buttons */}
             {bestOf === 3 && (
-              <div className="flex items-center gap-3">
+              <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={addSet}
                   disabled={sets.length >= 3}
-                  className="px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 disabled:opacity-50"
+                  className={`flex-1 ${sets.length >= 3 ? 'opacity-50 cursor-not-allowed' : ''} ${T.btnGhost}`}
                 >
                   + Aggiungi set
                 </button>
@@ -336,7 +386,7 @@ function MatchResultModal({ match, team1, team2, onClose, onSubmit }) {
                   type="button"
                   onClick={removeLastSet}
                   disabled={sets.length <= 1}
-                  className="px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 disabled:opacity-50"
+                  className={`flex-1 ${sets.length <= 1 ? 'opacity-50 cursor-not-allowed' : ''} ${T.btnGhost}`}
                 >
                   − Rimuovi ultimo
                 </button>
@@ -346,53 +396,51 @@ function MatchResultModal({ match, team1, team2, onClose, onSubmit }) {
 
           {/* Winner Display */}
           {winner && (
-            <div className="bg-green-900/20 border border-green-800 rounded-lg p-4">
-              <div className="flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-green-400" />
+            <div className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/10 border-2 border-emerald-500/30 rounded-xl p-5">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-emerald-500/20 rounded-full flex items-center justify-center">
+                  <Trophy className="w-6 h-6 text-emerald-400" />
+                </div>
                 <div>
-                  <p className="text-sm font-medium text-green-200">
+                  <p className="text-sm font-semibold text-emerald-400">
                     Vincitore
                   </p>
-                  <p className="text-lg font-bold text-green-100">
+                  <p className="text-xl font-bold text-emerald-300 mt-0.5">
                     {winner.name}
                   </p>
-                  <p className="text-xs text-green-300 mt-0.5">
-                    Set: {derivedSetsWon.team1} - {derivedSetsWon.team2}
+                  <p className="text-sm text-emerald-400 mt-1">
+                    Set: {derivedSetsWon.team1} − {derivedSetsWon.team2}
                   </p>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Validation Messages */}
-          {derivedSetsWon.team1 === derivedSetsWon.team2 && (derivedSetsWon.team1 > 0 || derivedSetsWon.team2 > 0) && (
-            <div className="bg-yellow-900/20 border border-yellow-800 rounded-lg p-3">
-              <p className="text-sm text-yellow-200">
-                ⚠️ Non può esserci parità
+          {/* Validation Warning */}
+          {!validation.valid && derivedSetsWon.team1 > 0 && (
+            <div className="bg-amber-500/10 border-2 border-amber-500/30 rounded-xl p-4">
+              <p className={`text-sm font-medium ${T.accentWarning}`}>
+                ⚠️ {validation.reason}
               </p>
             </div>
           )}
-          {/* Quick presets: opzionale (omesso per semplicità con per-set) */}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-700">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            Annulla
-          </button>
+        <div className="flex items-center justify-end gap-3 p-6 border-t ring-0">
+          <button onClick={onClose} className={T.btnGhost}>Annulla</button>
           <button
             onClick={handleSubmit}
             disabled={!validation.valid || submitting}
-            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className={`${T.btnPrimary} ${(!validation.valid || submitting) ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {submitting ? 'Salvataggio...' : `Conferma Risultato (${bestOf === 1 ? '1 set' : '2 su 3'})`}
           </button>
         </div>
+        </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

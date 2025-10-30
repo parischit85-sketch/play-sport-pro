@@ -245,7 +245,7 @@ export default function CRMTools({ players, T, onBulkOperation, onRefreshData })
                 {Object.entries(stats.categoryDistribution).map(([category, count]) => (
                   <div
                     key={category}
-                    className="flex justify-between items-center p-2 rounded-lg bg-gray-50 bg-gray-800"
+                    className="flex justify-between items-center p-2 rounded-lg bg-gray-800"
                   >
                     <span className={`capitalize ${T.text}`}>
                       {category === 'member' && '👑 Membri'}
@@ -271,7 +271,7 @@ export default function CRMTools({ players, T, onBulkOperation, onRefreshData })
                   .map(([sport, count]) => (
                     <div
                       key={sport}
-                      className="flex justify-between items-center p-2 rounded-lg bg-gray-50 bg-gray-800"
+                      className="flex justify-between items-center p-2 rounded-lg bg-gray-800"
                     >
                       <span className={`capitalize ${T.text}`}>
                         {sport === 'padel' && '🎾 Padel'}
@@ -359,7 +359,7 @@ export default function CRMTools({ players, T, onBulkOperation, onRefreshData })
       {showExportModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className={`${T.modalBg} rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden`}>
-            <div className="p-6 border-b border-gray-200 border-gray-700">
+            <div className="p-6 border-b border-gray-700">
               <div className="flex items-center justify-between">
                 <h3 className={`text-xl font-bold ${T.text}`}>📊 Esporta Dati Giocatori</h3>
                 <button
@@ -516,7 +516,7 @@ export default function CRMTools({ players, T, onBulkOperation, onRefreshData })
       {showBulkModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className={`${T.modalBg} rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden`}>
-            <div className="p-6 border-b border-gray-200 border-gray-700">
+            <div className="p-6 border-b border-gray-700">
               <div className="flex items-center justify-between">
                 <h3 className={`text-xl font-bold ${T.text}`}>🔄 Operazioni Bulk</h3>
                 <button
@@ -652,4 +652,6 @@ export default function CRMTools({ players, T, onBulkOperation, onRefreshData })
     </div>
   );
 }
+
+
 

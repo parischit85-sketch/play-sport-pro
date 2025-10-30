@@ -112,7 +112,7 @@ export default function InstructorLessonBookings({ compact = false }) {
     } else if (booking.status === 'confirmed') {
       return 'text-blue-600 text-blue-400';
     } else {
-      return 'text-gray-600 text-gray-400';
+      return 'text-gray-400';
     }
   };
 
@@ -195,7 +195,7 @@ export default function InstructorLessonBookings({ compact = false }) {
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                 filter === key
                   ? 'bg-blue-500 text-white shadow-lg'
-                  : 'bg-gray-100 bg-gray-700 text-gray-600 text-gray-300 hover:bg-gray-200 hover:bg-gray-600'
+                  : 'bg-gray-700 text-gray-600 text-gray-300 hover:bg-gray-200 hover:bg-gray-600'
               }`}
             >
               {label} ({count})
@@ -207,7 +207,7 @@ export default function InstructorLessonBookings({ compact = false }) {
       {/* Bookings list */}
       <div className="space-y-4">
         {filteredBookings.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 text-gray-400">
+          <div className="text-center py-8 text-gray-400">
             <svg
               className="w-12 h-12 mx-auto mb-3 opacity-50"
               fill="none"
@@ -257,7 +257,7 @@ export default function InstructorLessonBookings({ compact = false }) {
               {/* Booking details */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="text-gray-600 text-gray-400">Tipo:</span>
+                  <span className="text-gray-400">Tipo:</span>
                   <span className="font-medium text-gray-900 text-white">
                     {booking.lessonType === 'individual'
                       ? 'Lezione individuale'
@@ -269,7 +269,7 @@ export default function InstructorLessonBookings({ compact = false }) {
 
                 {booking.participants && booking.participants.length > 0 && (
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-gray-600 text-gray-400">Partecipanti:</span>
+                    <span className="text-gray-400">Partecipanti:</span>
                     <span className="font-medium text-gray-900 text-white">
                       {booking.participants.length}{' '}
                       {booking.participants.length === 1 ? 'persona' : 'persone'}
@@ -279,7 +279,7 @@ export default function InstructorLessonBookings({ compact = false }) {
 
                 {booking.price && (
                   <div className="flex items-center gap-2 text-sm">
-                    <span className="text-gray-600 text-gray-400">Prezzo:</span>
+                    <span className="text-gray-400">Prezzo:</span>
                     <span className="font-medium text-green-600 text-green-400">
                       €{booking.price}
                     </span>
@@ -302,4 +302,5 @@ export default function InstructorLessonBookings({ compact = false }) {
     </div>
   );
 }
+
 

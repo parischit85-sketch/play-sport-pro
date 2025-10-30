@@ -30,7 +30,7 @@ function ValidationAlert({ errors, onDismiss, type = 'error' }) {
   if (!errors || errors.length === 0) return null;
 
   const alertStyles = {
-    error: 'bg-red-50 bg-red-900/20 border-red-200 border-red-800 text-red-800 text-red-300',
+    error: 'bg-red-900/20 border-red-800 text-red-800 text-red-300',
     warning: 'bg-yellow-50 bg-yellow-900/20 border-yellow-200 border-yellow-800 text-yellow-800 text-yellow-300',
   };
 
@@ -56,7 +56,7 @@ function ValidationAlert({ errors, onDismiss, type = 'error' }) {
         {onDismiss && (
           <button
             onClick={onDismiss}
-            className="text-gray-500 hover:text-gray-700 text-gray-400 hover:text-gray-200"
+            className="text-gray-400 hover:text-gray-200"
             aria-label="Chiudi"
           >
             ✕
@@ -129,18 +129,18 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
       />
 
       {/* Modal */}
-      <div className="relative bg-white bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className={`p-6 border-b ${hasImpact ? 'bg-red-50 bg-red-900/20 border-red-200 border-red-800' : 'bg-gray-50 bg-gray-900 border-gray-200 border-gray-700'}`}>
+        <div className={`p-6 border-b ${hasImpact ? 'bg-red-900/20 border-red-800' : 'bg-gray-900 border-gray-700'}`}>
           <div className="flex items-start gap-3">
             <div className={`text-4xl ${hasImpact ? '⚠️' : '🗑️'}`}>
               {hasImpact ? '⚠️' : '🗑️'}
             </div>
             <div className="flex-1">
-              <h3 className="text-xl font-bold text-gray-900 text-white">
+              <h3 className="text-xl font-bold text-white">
                 Elimina Campo: {court.name}
               </h3>
-              <p className={`text-sm mt-1 ${hasImpact ? 'text-red-600 text-red-400' : 'text-gray-600 text-gray-400'}`}>
+              <p className={`text-sm mt-1 ${hasImpact ? 'text-red-600 text-red-400' : 'text-gray-400'}`}>
                 {hasImpact 
                   ? 'Attenzione: questa operazione avrà conseguenze'
                   : 'Conferma eliminazione campo'
@@ -149,7 +149,7 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 hover:text-gray-300 text-2xl"
+              className="text-gray-400 hover:text-gray-300 text-2xl"
             >
               ×
             </button>
@@ -168,7 +168,7 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
                 <div className="space-y-2 text-sm">
                   {futureBookings.length > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-gray-700 text-gray-300">Prenotazioni future:</span>
+                      <span className="text-gray-300">Prenotazioni future:</span>
                       <span className="font-bold text-red-600 text-red-400">
                         {futureBookings.length}
                       </span>
@@ -176,23 +176,23 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
                   )}
                   {relatedBookings.length > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-gray-700 text-gray-300">Prenotazioni totali:</span>
-                      <span className="font-semibold text-gray-900 text-white">
+                      <span className="text-gray-300">Prenotazioni totali:</span>
+                      <span className="font-semibold text-white">
                         {relatedBookings.length}
                       </span>
                     </div>
                   )}
                   {uniqueUsers > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-gray-700 text-gray-300">Clienti coinvolti:</span>
-                      <span className="font-semibold text-gray-900 text-white">
+                      <span className="text-gray-300">Clienti coinvolti:</span>
+                      <span className="font-semibold text-white">
                         {uniqueUsers}
                       </span>
                     </div>
                   )}
                   {futureRevenue > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-gray-700 text-gray-300">Revenue futura:</span>
+                      <span className="text-gray-300">Revenue futura:</span>
                       <span className="font-bold text-red-600 text-red-400">
                         €{futureRevenue.toFixed(2)}
                       </span>
@@ -200,8 +200,8 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
                   )}
                   {totalRevenue > 0 && (
                     <div className="flex justify-between border-t border-amber-200 border-amber-800 pt-2 mt-2">
-                      <span className="text-gray-700 text-gray-300">Revenue storica:</span>
-                      <span className="font-semibold text-gray-900 text-white">
+                      <span className="text-gray-300">Revenue storica:</span>
+                      <span className="font-semibold text-white">
                         €{totalRevenue.toFixed(2)}
                       </span>
                     </div>
@@ -224,11 +224,11 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
               </div>
             </div>
           ) : (
-            <div className="bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-800 rounded-lg p-4">
-              <h4 className="font-semibold text-blue-900 text-blue-300 mb-2">
+            <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
+              <h4 className="font-semibold text-blue-300 mb-2">
                 ℹ️ Informazioni Campo
               </h4>
-              <div className="text-sm text-blue-800 text-blue-300 space-y-1">
+              <div className="text-sm text-blue-300 space-y-1">
                 <p>• Nessuna prenotazione attiva</p>
                 <p>• L'eliminazione non avrà impatto sui clienti</p>
                 <p>• Fasce orarie: {(court.timeSlots || []).length}</p>
@@ -238,11 +238,11 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
           )}
 
           {/* Court Details */}
-          <div className="border border-gray-200 border-gray-700 rounded-lg p-4">
-            <h4 className="font-semibold text-gray-900 text-white mb-2">
+          <div className="border border-gray-700 rounded-lg p-4">
+            <h4 className="font-semibold text-white mb-2">
               📋 Dettagli Campo
             </h4>
-            <div className="text-sm text-gray-700 text-gray-300 space-y-1">
+            <div className="text-sm text-gray-300 space-y-1">
               <div><strong>Nome:</strong> {court.name}</div>
               <div><strong>Tipo:</strong> {court.courtType || court.type || 'N/A'}</div>
               <div><strong>Fasce orarie:</strong> {(court.timeSlots || []).length}</div>
@@ -252,10 +252,10 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
         </div>
 
         {/* Footer */}
-        <div className="p-6 bg-gray-50 bg-gray-900 border-t border-gray-200 border-gray-700 flex gap-3">
+        <div className="p-6 bg-gray-900 border-t border-gray-700 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-3 bg-white bg-gray-800 text-gray-700 text-gray-300 rounded-lg border border-gray-300 border-gray-600 hover:bg-gray-100 hover:bg-gray-700 font-medium transition-colors"
+            className="flex-1 px-4 py-3 bg-gray-800 text-gray-300 rounded-lg border border-gray-600 hover:bg-gray-700 font-medium transition-colors"
           >
             Annulla
           </button>
@@ -341,7 +341,7 @@ function TimeSlotEditor({ slot, onUpdate, onRemove, T, maxPlayers = 4 }) {
     : 'ring-1 ring-gray-300 ring-gray-600';
 
   return (
-    <div className={`relative rounded-lg p-3 bg-white bg-gray-800 ${borderClass}`}>
+    <div className={`relative rounded-lg p-3 bg-gray-800 ${borderClass}`}>
       {/* Pulsante rimuovi */}
       <button
         type="button"
@@ -435,7 +435,7 @@ function TimeSlotEditor({ slot, onUpdate, onRemove, T, maxPlayers = 4 }) {
             >
               🏷️ Fascia Promo
               {slot.isPromo && (
-                <span className="ml-1 text-xs bg-yellow-100 bg-yellow-900 text-yellow-800 text-yellow-300 px-2 py-1 rounded">
+                <span className="ml-1 text-xs bg-yellow-900 text-yellow-300 px-2 py-1 rounded">
                   PROMO
                 </span>
               )}
@@ -445,16 +445,14 @@ function TimeSlotEditor({ slot, onUpdate, onRemove, T, maxPlayers = 4 }) {
 
         {/* Preview prezzo */}
         <div className="flex lg:justify-end">
-          <div
-            className={`flex-shrink-0 p-3 rounded-lg ring-1 bg-emerald-100 bg-emerald-900 ${T.border} text-center`}
-          >
-            <div className="text-xs font-medium text-emerald-700 text-emerald-300 mb-1">
+          <div className="flex-shrink-0 p-3 rounded-lg ring-1 bg-emerald-900 border border-gray-700 text-center">
+            <div className="text-xs font-medium text-emerald-300 mb-1">
               90min x {maxPlayers} {maxPlayers === 1 ? 'Giocatore' : 'Giocatori'}
             </div>
-            <div className="text-lg font-bold text-emerald-800 text-emerald-200">
+            <div className="text-lg font-bold text-emerald-200">
               {perPlayer90(slot.eurPerHour)}€
             </div>
-            <div className="text-xs text-emerald-600 text-emerald-400">per giocatore</div>
+            <div className="text-xs text-emerald-400">per giocatore</div>
           </div>
         </div>
       </div>
@@ -534,7 +532,7 @@ const ExpandableCourtCard = ({
     <div className={`rounded-xl ${T.border} ${T.cardBg} overflow-hidden transition-all ${isSelected ? 'ring-2 ring-orange-500' : ''}`}>
       {/* Header della card - sempre visibile */}
       <div
-        className="p-4 cursor-pointer hover:bg-gray-50 hover:bg-gray-800 transition-colors"
+        className="p-4 cursor-pointer hover:bg-gray-800 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
         <div className="flex items-center justify-between">
@@ -604,7 +602,7 @@ const ExpandableCourtCard = ({
                       <span className={T.subtext}>🔥 Riscaldamento</span>
                     </label>
                     {hasUnsavedChanges && (
-                      <span className="text-xs px-2 py-1 bg-yellow-100 bg-yellow-900 text-yellow-800 text-yellow-300 rounded font-medium">
+                      <span className="text-xs px-2 py-1 bg-yellow-900 text-yellow-300 rounded font-medium">
                         • Non salvato
                       </span>
                     )}
@@ -622,7 +620,7 @@ const ExpandableCourtCard = ({
                   <div className={`text-sm ${T.subtext}`}>
                     {(court.timeSlots || []).length} fasce orarie configurate
                     {court.hasHeating && (
-                      <span className="ml-1 text-xs bg-orange-100 bg-orange-900 text-orange-800 text-orange-300 px-2 py-1 rounded">
+                      <span className="ml-1 text-xs bg-orange-900 text-orange-300 px-2 py-1 rounded">
                         🔥 Riscaldamento
                       </span>
                     )}
@@ -703,7 +701,7 @@ const ExpandableCourtCard = ({
             {!quickEditMode && (
               <button
                 type="button"
-                className="text-sm px-3 py-1 bg-blue-100 bg-blue-900 text-blue-700 text-blue-300 rounded hover:bg-blue-200 hover:bg-blue-800 transition-colors"
+                className="text-sm px-3 py-1 bg-blue-900 text-blue-300 rounded hover:bg-blue-800 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   onDuplicate && onDuplicate();
@@ -718,7 +716,7 @@ const ExpandableCourtCard = ({
             {hasOverlaps && (
               <button
                 type="button"
-                className="text-sm px-3 py-1 bg-red-100 bg-red-900 text-red-700 text-red-300 rounded hover:bg-red-200 hover:bg-red-800 transition-colors flex items-center gap-1"
+                className="text-sm px-3 py-1 bg-red-900 text-red-300 rounded hover:bg-red-800 transition-colors flex items-center gap-1"
                 onClick={(e) => {
                   e.stopPropagation();
                   onOpenConflictResolution && onOpenConflictResolution(courtIndex);
@@ -733,8 +731,8 @@ const ExpandableCourtCard = ({
               type="button"
               className={`text-sm px-3 py-1 rounded transition-all ${
                 isExpanded
-                  ? 'bg-emerald-100 bg-emerald-900 text-emerald-800 text-emerald-300'
-                  : 'bg-gray-100 bg-gray-700 text-gray-600 text-gray-300 hover:bg-gray-200 hover:bg-gray-600'
+                  ? 'bg-emerald-900 text-emerald-300'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
               onClick={(e) => {
                 e.stopPropagation();
@@ -745,7 +743,7 @@ const ExpandableCourtCard = ({
             </button>
             <button
               type="button"
-              className="text-red-500 hover:bg-red-50 hover:bg-red-900 px-2 py-1 rounded text-sm transition-colors"
+              className="text-red-500 hover:bg-red-900 px-2 py-1 rounded text-sm transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 onRemove();
@@ -759,7 +757,7 @@ const ExpandableCourtCard = ({
 
       {/* Contenuto espandibile */}
       {isExpanded && (
-        <div className="border-t border-gray-200 border-gray-700 p-4 bg-gray-50 bg-gray-900">
+        <div className="border-t border-gray-700 p-4 bg-gray-50 bg-gray-900">
           {/* Configurazioni base del campo */}
           <div className="mb-6">
             <h4 className="font-medium mb-3 flex items-center gap-2">
@@ -848,7 +846,7 @@ const ExpandableCourtCard = ({
                 {(court.timeSlots || []).length > 0 && (
                   <button
                     type="button"
-                    className="text-sm px-3 py-2 bg-purple-100 bg-purple-900 text-purple-700 text-purple-300 rounded-lg hover:bg-purple-200 hover:bg-purple-800 transition-colors font-medium"
+                    className="text-sm px-3 py-2 bg-purple-900 text-purple-300 rounded-lg hover:bg-purple-800 transition-colors font-medium"
                     onClick={() => onCreateTemplate && onCreateTemplate()}
                     title="Salva queste fasce come template"
                   >
@@ -857,7 +855,7 @@ const ExpandableCourtCard = ({
                 )}
                 <button
                   type="button"
-                  className="text-sm px-3 py-2 bg-blue-100 bg-blue-900 text-blue-700 text-blue-300 rounded-lg hover:bg-blue-200 hover:bg-blue-800 transition-colors font-medium"
+                  className="text-sm px-3 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 transition-colors font-medium"
                   onClick={() => onApplyTemplate && onApplyTemplate()}
                   title="Applica un template a questo campo"
                 >
@@ -884,7 +882,7 @@ const ExpandableCourtCard = ({
             <div className="space-y-3">
               {(court.timeSlots || []).length === 0 ? (
                 <div
-                  className={`text-center py-6 border-2 border-dashed border-gray-300 border-gray-600 rounded-lg ${T.subtext}`}
+                  className={`text-center py-6 border-2 border-dashed border-gray-600 rounded-lg ${T.subtext}`}
                 >
                   <div className="text-2xl mb-2">🕐</div>
                   <div className="text-sm">Nessuna fascia oraria configurata</div>
@@ -1624,7 +1622,7 @@ export default function AdvancedCourtsManager({
                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                   multiSelectMode
                     ? 'bg-orange-500 hover:bg-orange-600 text-white'
-                    : 'bg-gray-200 hover:bg-gray-300 hover:bg-gray-600 text-gray-700 text-gray-300'
+                    : 'bg-gray-200 hover:bg-gray-600 text-gray-300'
                 }`}
                 title={multiSelectMode ? 'Esci da selezione multipla' : 'Attiva selezione multipla'}
               >
@@ -1640,13 +1638,13 @@ export default function AdvancedCourtsManager({
                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                   quickEditMode
                     ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                    : 'bg-gray-200 hover:bg-gray-300 hover:bg-gray-600 text-gray-700 text-gray-300'
+                    : 'bg-gray-200 hover:bg-gray-600 text-gray-300'
                 }`}
                 title={quickEditMode ? 'Esci da quick edit' : 'Attiva quick edit mode'}
               >
                 {quickEditMode ? '⚡ Quick Edit ON' : '✏️ Quick Edit'}
                 {quickEditMode && unsavedChanges.size > 0 && (
-                  <span className="ml-1 px-2 py-0.5 bg-white/20 bg-gray-800/20 rounded-full text-xs">
+                  <span className="ml-1 px-2 py-0.5 bg-gray-800/20 rounded-full text-xs">
                     {unsavedChanges.size}
                   </span>
                 )}
@@ -1783,7 +1781,7 @@ export default function AdvancedCourtsManager({
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeFilter === 'all'
                   ? 'bg-blue-500 text-white shadow-md'
-                  : 'bg-gray-100 bg-gray-700 text-gray-700 text-gray-300 hover:bg-gray-200 hover:bg-gray-600'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
               Tutti ({sortedCourts.length})
@@ -1797,7 +1795,7 @@ export default function AdvancedCourtsManager({
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeFilter === type
                     ? 'bg-blue-500 text-white shadow-md'
-                    : 'bg-gray-100 bg-gray-700 text-gray-700 text-gray-300 hover:bg-gray-200 hover:bg-gray-600'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
               >
                 {type} ({courtTypeCounts[type] || 0})
@@ -1820,10 +1818,10 @@ export default function AdvancedCourtsManager({
             <div className="flex items-center gap-3">
               <div className="text-2xl">☑️</div>
               <div>
-                <div className="font-bold text-gray-900 text-white">
+                <div className="font-bold text-white">
                   {selectedCourtIndices.length} {selectedCourtIndices.length === 1 ? 'campo selezionato' : 'campi selezionati'}
                 </div>
-                <div className="text-sm text-gray-600 text-gray-400">
+                <div className="text-sm text-gray-400">
                   Azioni disponibili per la selezione multipla
                 </div>
               </div>
@@ -1832,13 +1830,13 @@ export default function AdvancedCourtsManager({
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={selectAllCourts}
-                className="px-3 py-2 bg-blue-100 bg-blue-900 text-blue-700 text-blue-300 rounded-lg hover:bg-blue-200 hover:bg-blue-800 text-sm font-medium transition-colors"
+                className="px-3 py-2 bg-blue-900 text-blue-300 rounded-lg hover:bg-blue-800 text-sm font-medium transition-colors"
               >
                 ✓ Seleziona Tutti
               </button>
               <button
                 onClick={deselectAllCourts}
-                className="px-3 py-2 bg-gray-100 bg-gray-700 text-gray-700 text-gray-300 rounded-lg hover:bg-gray-200 hover:bg-gray-600 text-sm font-medium transition-colors"
+                className="px-3 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm font-medium transition-colors"
               >
                 ✕ Deseleziona
               </button>
@@ -1875,7 +1873,7 @@ export default function AdvancedCourtsManager({
       <div className="space-y-4">
         {filteredCourts.length === 0 ? (
           <div
-            className={`text-center py-12 border-2 border-dashed border-gray-300 border-gray-600 rounded-xl ${T.cardBg}`}
+            className={`text-center py-12 border-2 border-dashed border-gray-600 rounded-xl ${T.cardBg}`}
           >
             <div className="text-4xl mb-4">{activeFilter === 'all' ? '🏟️' : '🏷️'}</div>
             <h4 className="font-medium text-lg mb-2">
@@ -2103,4 +2101,14 @@ export default function AdvancedCourtsManager({
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
 

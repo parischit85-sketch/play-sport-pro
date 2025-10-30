@@ -109,7 +109,7 @@ const ClubPreview = () => {
       case AFFILIATION_STATUS.PENDING:
         return (
           <div
-            className="w-full bg-yellow-100 bg-yellow-900/30 text-yellow-800 text-yellow-400 
+            className="w-full bg-yellow-900/30 text-yellow-400 
                         px-6 py-3 rounded-lg text-center font-medium border border-yellow-200 border-yellow-700"
           >
             ⏳ Richiesta in attesa di approvazione
@@ -130,7 +130,7 @@ const ClubPreview = () => {
       case AFFILIATION_STATUS.REJECTED:
         return (
           <div
-            className="w-full bg-red-100 bg-red-900/30 text-red-800 text-red-400 
+            className="w-full bg-red-900/30 text-red-400 
                         px-6 py-3 rounded-lg text-center font-medium border border-red-200 border-red-700"
           >
             ❌ Richiesta rifiutata
@@ -147,7 +147,7 @@ const ClubPreview = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 bg-gray-900 flex items-center justify-center">
+      <div className="bg-gray-50 bg-gray-900 flex items-center justify-center py-20">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -155,13 +155,13 @@ const ClubPreview = () => {
 
   if (error || !club) {
     return (
-      <div className="min-h-screen bg-gray-50 bg-gray-900 flex items-center justify-center">
+      <div className="bg-gray-50 bg-gray-900 flex items-center justify-center py-20">
         <div className="text-center">
           <div className="text-6xl mb-4">❌</div>
           <h1 className="text-2xl font-bold text-gray-900 text-white mb-2">
             Club non trovato
           </h1>
-          <p className="text-gray-600 text-gray-400 mb-6">
+          <p className="text-gray-400 mb-6">
             Il club richiesto non esiste o non è disponibile.
           </p>
           <button
@@ -176,20 +176,20 @@ const ClubPreview = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 bg-gray-900">
+    <div className="bg-gray-50 bg-gray-900">
       {/* Header */}
       <div className="bg-white bg-gray-800 border-b border-gray-200 border-gray-700">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <button
               onClick={() => navigate(-1)}
-              className="text-gray-500 hover:text-gray-700 text-gray-400 hover:text-gray-200
+              className="text-gray-400 hover:text-gray-200
                        font-medium transition-colors"
             >
               ← Indietro
             </button>
             <span
-              className="bg-blue-100 bg-blue-900/30 text-blue-800 text-blue-400 
+              className="bg-blue-900/30 text-blue-400 
                            px-3 py-1 rounded-full text-sm font-medium"
             >
               Anteprima Club
@@ -208,7 +208,7 @@ const ClubPreview = () => {
                 <h1 className="text-3xl font-bold text-gray-900 text-white mb-2">
                   {club.name}
                 </h1>
-                <p className="text-gray-600 text-gray-400 text-lg">
+                <p className="text-gray-400 text-lg">
                   📍 {club.location?.city}, {club.location?.region}
                 </p>
               </div>
@@ -220,7 +220,7 @@ const ClubPreview = () => {
             </div>
 
             {club.description && (
-              <p className="text-gray-700 text-gray-300 text-lg mb-6">{club.description}</p>
+              <p className="text-gray-300 text-lg mb-6">{club.description}</p>
             )}
 
             {/* Message */}
@@ -228,8 +228,8 @@ const ClubPreview = () => {
               <div
                 className={`mb-6 p-4 rounded-lg ${
                   message.type === 'success'
-                    ? 'bg-green-100 bg-green-900/30 text-green-800 text-green-400 border border-green-200 border-green-700'
-                    : 'bg-red-100 bg-red-900/30 text-red-800 text-red-400 border border-red-200 border-red-700'
+                    ? 'bg-green-900/30 text-green-400 border border-green-200 border-green-700'
+                    : 'bg-red-900/30 text-red-400 border border-red-200 border-red-700'
                 }`}
               >
                 {message.text}
@@ -250,19 +250,19 @@ const ClubPreview = () => {
             </h2>
             <div className="space-y-4">
               <div className="flex justify-between">
-                <span className="text-gray-600 text-gray-400">🎾 Campi</span>
+                <span className="text-gray-400">🎾 Campi</span>
                 <span className="font-medium text-gray-900 text-white">
                   {club.stats?.totalCourts || 0}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 text-gray-400">👥 Membri</span>
+                <span className="text-gray-400">👥 Membri</span>
                 <span className="font-medium text-gray-900 text-white">
                   {club.stats?.totalMembers || 0}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 text-gray-400">📅 Prenotazioni</span>
+                <span className="text-gray-400">📅 Prenotazioni</span>
                 <span className="font-medium text-gray-900 text-white">
                   {club.stats?.totalBookings || 0}
                 </span>
@@ -277,19 +277,19 @@ const ClubPreview = () => {
               {club.location?.address && (
                 <div className="flex items-start gap-3">
                   <span className="text-gray-400 mt-0.5">📍</span>
-                  <span className="text-gray-600 text-gray-400">{club.location.address}</span>
+                  <span className="text-gray-400">{club.location.address}</span>
                 </div>
               )}
               {club.contact?.phone && (
                 <div className="flex items-center gap-3">
                   <span className="text-gray-400">📞</span>
-                  <span className="text-gray-600 text-gray-400">{club.contact.phone}</span>
+                  <span className="text-gray-400">{club.contact.phone}</span>
                 </div>
               )}
               {club.contact?.email && (
                 <div className="flex items-center gap-3">
                   <span className="text-gray-400">✉️</span>
-                  <span className="text-gray-600 text-gray-400">{club.contact.email}</span>
+                  <span className="text-gray-400">{club.contact.email}</span>
                 </div>
               )}
               {club.contact?.website && (
@@ -341,7 +341,7 @@ const ClubPreview = () => {
             )}
             <div className="text-center p-3 bg-gray-50 bg-gray-700/50 rounded-lg">
               <div className="text-2xl mb-1">🏆</div>
-              <div className="text-sm font-medium text-gray-800 text-gray-400">Tornei</div>
+              <div className="text-sm font-medium text-gray-400">Tornei</div>
             </div>
           </div>
         </div>
@@ -351,4 +351,6 @@ const ClubPreview = () => {
 };
 
 export default ClubPreview;
+
+
 

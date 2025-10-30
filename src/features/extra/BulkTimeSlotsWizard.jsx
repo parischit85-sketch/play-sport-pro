@@ -196,29 +196,29 @@ export function BulkTimeSlotsWizard({
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 border-gray-700 bg-gradient-to-r from-purple-50 to-blue-50 from-purple-900/20 to-blue-900/20">
+        <div className="p-6 border-b border-gray-700 bg-gradient-to-r from-purple-50 to-blue-50 from-purple-900/20 to-blue-900/20">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 text-white flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                 🪄 Creazione Fasce Orarie Automatica
               </h2>
-              <p className="text-sm text-gray-600 text-gray-400 mt-1">
+              <p className="text-sm text-gray-400 mt-1">
                 Step {currentStep} di 5 - {targetCourts.length}{' '}
                 {targetCourts.length === 1 ? 'campo' : 'campi'} selezionati
               </p>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 hover:text-gray-300 text-3xl"
+              className="text-gray-400 hover:text-gray-300 text-3xl"
             >
               ×
             </button>
           </div>
 
           {/* Progress Bar */}
-          <div className="mt-4 bg-gray-200 bg-gray-700 rounded-full h-2 overflow-hidden">
+          <div className="mt-4 bg-gray-700 rounded-full h-2 overflow-hidden">
             <div
               className="bg-blue-500 h-full transition-all duration-300"
               style={{ width: `${(currentStep / 5) * 100}%` }}
@@ -231,7 +231,7 @@ export function BulkTimeSlotsWizard({
           {/* Step 1: Pattern Selection */}
           {currentStep === 1 && (
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-gray-900 text-white mb-4">
+              <h3 className="text-xl font-bold text-white mb-4">
                 1️⃣ Seleziona il Pattern di Creazione
               </h3>
 
@@ -241,14 +241,14 @@ export function BulkTimeSlotsWizard({
                   className={`p-6 rounded-xl border-2 transition-all ${
                     wizardData.pattern === 'hourly'
                       ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                      : 'border-gray-200 border-gray-700 hover:border-gray-300 hover:border-gray-600'
+                      : 'border-gray-700 hover:border-gray-300 hover:border-gray-600'
                   }`}
                 >
                   <div className="text-4xl mb-3">🕐</div>
-                  <div className="font-bold text-lg text-gray-900 text-white mb-2">
+                  <div className="font-bold text-lg text-white mb-2">
                     Ogni Ora
                   </div>
-                  <div className="text-sm text-gray-600 text-gray-400">Fasce di 60 minuti</div>
+                  <div className="text-sm text-gray-400">Fasce di 60 minuti</div>
                 </button>
 
                 <button
@@ -256,14 +256,14 @@ export function BulkTimeSlotsWizard({
                   className={`p-6 rounded-xl border-2 transition-all ${
                     wizardData.pattern === 'halfHourly'
                       ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                      : 'border-gray-200 border-gray-700 hover:border-gray-300 hover:border-gray-600'
+                      : 'border-gray-700 hover:border-gray-300 hover:border-gray-600'
                   }`}
                 >
                   <div className="text-4xl mb-3">🕑</div>
-                  <div className="font-bold text-lg text-gray-900 text-white mb-2">
+                  <div className="font-bold text-lg text-white mb-2">
                     Ogni 30 Minuti
                   </div>
-                  <div className="text-sm text-gray-600 text-gray-400">Fasce di 30 minuti</div>
+                  <div className="text-sm text-gray-400">Fasce di 30 minuti</div>
                 </button>
 
                 <button
@@ -271,20 +271,20 @@ export function BulkTimeSlotsWizard({
                   className={`p-6 rounded-xl border-2 transition-all ${
                     wizardData.pattern === 'custom'
                       ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                      : 'border-gray-200 border-gray-700 hover:border-gray-300 hover:border-gray-600'
+                      : 'border-gray-700 hover:border-gray-300 hover:border-gray-600'
                   }`}
                 >
                   <div className="text-4xl mb-3">⚙️</div>
-                  <div className="font-bold text-lg text-gray-900 text-white mb-2">
+                  <div className="font-bold text-lg text-white mb-2">
                     Personalizzato
                   </div>
-                  <div className="text-sm text-gray-600 text-gray-400">Intervallo custom</div>
+                  <div className="text-sm text-gray-400">Intervallo custom</div>
                 </button>
               </div>
 
               {wizardData.pattern === 'custom' && (
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Intervallo (minuti)
                   </label>
                   <input
@@ -301,7 +301,7 @@ export function BulkTimeSlotsWizard({
                     }
                     className={`${T.input} w-full`}
                   />
-                  <p className="text-xs text-gray-500 text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 mt-1">
                     Intervallo tra 15 e 240 minuti (multipli di 15)
                   </p>
                 </div>
@@ -312,13 +312,13 @@ export function BulkTimeSlotsWizard({
           {/* Step 2: Time Range */}
           {currentStep === 2 && (
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-gray-900 text-white mb-4">
+              <h3 className="text-xl font-bold text-white mb-4">
                 2️⃣ Imposta il Range Orario
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Orario Inizio
                   </label>
                   <input
@@ -330,7 +330,7 @@ export function BulkTimeSlotsWizard({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Orario Fine
                   </label>
                   <input
@@ -387,7 +387,7 @@ export function BulkTimeSlotsWizard({
           {/* Step 3: Days Selection */}
           {currentStep === 3 && (
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-gray-900 text-white mb-4">
+              <h3 className="text-xl font-bold text-white mb-4">
                 3️⃣ Seleziona i Giorni della Settimana
               </h3>
 
@@ -411,10 +411,10 @@ export function BulkTimeSlotsWizard({
                     className={`p-4 rounded-xl border-2 transition-all ${
                       wizardData.selectedDays.includes(day)
                         ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                        : 'border-gray-200 border-gray-700 hover:border-gray-300 hover:border-gray-600'
+                        : 'border-gray-700 hover:border-gray-300 hover:border-gray-600'
                     }`}
                   >
-                    <div className="font-bold text-gray-900 text-white">{dayNames[day]}</div>
+                    <div className="font-bold text-white">{dayNames[day]}</div>
                   </button>
                 ))}
               </div>
@@ -422,13 +422,13 @@ export function BulkTimeSlotsWizard({
               <div className="flex gap-2 mt-4">
                 <button
                   onClick={() => setWizardData({ ...wizardData, selectedDays: [1, 2, 3, 4, 5] })}
-                  className="px-4 py-2 bg-blue-100 bg-blue-900 text-blue-700 text-blue-300 rounded-lg text-sm font-medium hover:bg-blue-200 hover:bg-blue-800"
+                  className="px-4 py-2 bg-blue-900 text-blue-300 rounded-lg text-sm font-medium hover:bg-blue-800"
                 >
                   Lun-Ven
                 </button>
                 <button
                   onClick={() => setWizardData({ ...wizardData, selectedDays: [0, 6] })}
-                  className="px-4 py-2 bg-purple-100 bg-purple-900 text-purple-700 text-purple-300 rounded-lg text-sm font-medium hover:bg-purple-200 hover:bg-purple-800"
+                  className="px-4 py-2 bg-purple-900 text-purple-300 rounded-lg text-sm font-medium hover:bg-purple-800"
                 >
                   Weekend
                 </button>
@@ -436,7 +436,7 @@ export function BulkTimeSlotsWizard({
                   onClick={() =>
                     setWizardData({ ...wizardData, selectedDays: [0, 1, 2, 3, 4, 5, 6] })
                   }
-                  className="px-4 py-2 bg-green-100 bg-green-900 text-green-700 text-green-300 rounded-lg text-sm font-medium hover:bg-green-200 hover:bg-green-800"
+                  className="px-4 py-2 bg-green-900 text-green-300 rounded-lg text-sm font-medium hover:bg-green-800"
                 >
                   Tutti
                 </button>
@@ -455,12 +455,12 @@ export function BulkTimeSlotsWizard({
           {/* Step 4: Pricing */}
           {currentStep === 4 && (
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-gray-900 text-white mb-4">
+              <h3 className="text-xl font-bold text-white mb-4">
                 4️⃣ Configurazione Prezzi
               </h3>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
                   Strategia Prezzi
                 </label>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -469,11 +469,11 @@ export function BulkTimeSlotsWizard({
                     className={`p-4 rounded-xl border-2 transition-all ${
                       wizardData.pricingStrategy === 'uniform'
                         ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                        : 'border-gray-200 border-gray-700'
+                        : 'border-gray-700'
                     }`}
                   >
                     <div className="font-bold">💰 Uniforme</div>
-                    <div className="text-xs text-gray-600 text-gray-400 mt-1">
+                    <div className="text-xs text-gray-400 mt-1">
                       Stesso prezzo per tutte le fasce
                     </div>
                   </button>
@@ -483,11 +483,11 @@ export function BulkTimeSlotsWizard({
                     className={`p-4 rounded-xl border-2 transition-all ${
                       wizardData.pricingStrategy === 'peakOffPeak'
                         ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                        : 'border-gray-200 border-gray-700'
+                        : 'border-gray-700'
                     }`}
                   >
                     <div className="font-bold">📊 Peak/Off-Peak</div>
-                    <div className="text-xs text-gray-600 text-gray-400 mt-1">
+                    <div className="text-xs text-gray-400 mt-1">
                       Prezzi diversi per fasce orarie
                     </div>
                   </button>
@@ -497,12 +497,12 @@ export function BulkTimeSlotsWizard({
                     className={`p-4 rounded-xl border-2 transition-all ${
                       wizardData.pricingStrategy === 'custom'
                         ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                        : 'border-gray-200 border-gray-700'
+                        : 'border-gray-700'
                     }`}
                     disabled
                   >
                     <div className="font-bold">⚙️ Custom</div>
-                    <div className="text-xs text-gray-600 text-gray-400 mt-1">
+                    <div className="text-xs text-gray-400 mt-1">
                       (Prossimamente)
                     </div>
                   </button>
@@ -511,7 +511,7 @@ export function BulkTimeSlotsWizard({
 
               {wizardData.pricingStrategy === 'uniform' && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Prezzo (€/ora)
                   </label>
                   <input
@@ -531,7 +531,7 @@ export function BulkTimeSlotsWizard({
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
                         Prezzo Peak (€/ora)
                       </label>
                       <input
@@ -550,7 +550,7 @@ export function BulkTimeSlotsWizard({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
                         Prezzo Off-Peak (€/ora)
                       </label>
                       <input
@@ -571,7 +571,7 @@ export function BulkTimeSlotsWizard({
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
                         Peak Inizio
                       </label>
                       <input
@@ -588,7 +588,7 @@ export function BulkTimeSlotsWizard({
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
                         Peak Fine
                       </label>
                       <input
@@ -612,14 +612,14 @@ export function BulkTimeSlotsWizard({
           {/* Step 5: Preview & Settings */}
           {currentStep === 5 && (
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-gray-900 text-white mb-4">
+              <h3 className="text-xl font-bold text-white mb-4">
                 5️⃣ Anteprima e Conferma
               </h3>
 
               {/* Settings */}
-              <div className="bg-gray-50 bg-gray-900 rounded-lg p-4 space-y-3">
+              <div className="bg-gray-900 rounded-lg p-4 space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
                     Etichetta Fasce
                   </label>
                   <input
@@ -638,7 +638,7 @@ export function BulkTimeSlotsWizard({
                     onChange={(e) => setWizardData({ ...wizardData, autoNumber: e.target.checked })}
                     className="w-4 h-4 text-blue-600 rounded"
                   />
-                  <label htmlFor="autoNumber" className="text-sm text-gray-700 text-gray-300">
+                  <label htmlFor="autoNumber" className="text-sm text-gray-300">
                     Numerazione automatica
                   </label>
                 </div>
@@ -651,7 +651,7 @@ export function BulkTimeSlotsWizard({
                     onChange={(e) => setWizardData({ ...wizardData, isPromo: e.target.checked })}
                     className="w-4 h-4 text-blue-600 rounded"
                   />
-                  <label htmlFor="isPromo" className="text-sm text-gray-700 text-gray-300">
+                  <label htmlFor="isPromo" className="text-sm text-gray-300">
                     Marca come promozione
                   </label>
                 </div>
@@ -659,20 +659,20 @@ export function BulkTimeSlotsWizard({
 
               {/* Preview */}
               <div>
-                <h4 className="font-semibold text-gray-900 text-white mb-3">
+                <h4 className="font-semibold text-white mb-3">
                   📋 Anteprima Fasce ({previewSlots.length})
                 </h4>
-                <div className="bg-gray-50 bg-gray-900 rounded-lg p-4 max-h-60 overflow-y-auto">
+                <div className="bg-gray-900 rounded-lg p-4 max-h-60 overflow-y-auto">
                   <div className="space-y-2">
                     {previewSlots.map((slot, index) => (
                       <div
                         key={index}
-                        className="text-sm bg-white bg-gray-800 p-3 rounded border border-gray-200 border-gray-700"
+                        className="text-sm bg-gray-800 p-3 rounded border border-gray-700"
                       >
-                        <div className="font-semibold text-gray-900 text-white">
+                        <div className="font-semibold text-white">
                           {slot.label}
                         </div>
-                        <div className="text-gray-600 text-gray-400 text-xs mt-1">
+                        <div className="text-gray-400 text-xs mt-1">
                           ⏰ {slot.from} - {slot.to} | 💰 €{slot.eurPerHour}/h
                           {slot.isPromo && <span className="ml-2 text-orange-600">🎁</span>}
                         </div>
@@ -699,15 +699,15 @@ export function BulkTimeSlotsWizard({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-200 border-gray-700 bg-gray-50 bg-gray-900">
+        <div className="p-6 border-t border-gray-700 bg-gray-900">
           <div className="flex gap-3 justify-between">
             <button
               onClick={handleBack}
               disabled={currentStep === 1}
               className={`px-6 py-3 rounded-lg font-medium transition-colors ${
                 currentStep === 1
-                  ? 'bg-gray-300 bg-gray-700 text-gray-500 cursor-not-allowed'
-                  : 'bg-white bg-gray-800 text-gray-700 text-gray-300 border border-gray-300 border-gray-600 hover:bg-gray-100 hover:bg-gray-700'
+                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-800 text-gray-300 border border-gray-600 hover:bg-gray-700'
               }`}
             >
               ← Indietro
@@ -716,7 +716,7 @@ export function BulkTimeSlotsWizard({
             <div className="flex gap-3">
               <button
                 onClick={onClose}
-                className="px-6 py-3 bg-white bg-gray-800 text-gray-700 text-gray-300 rounded-lg border border-gray-300 border-gray-600 hover:bg-gray-100 hover:bg-gray-700 font-medium transition-colors"
+                className="px-6 py-3 bg-gray-800 text-gray-300 rounded-lg border border-gray-600 hover:bg-gray-700 font-medium transition-colors"
               >
                 Annulla
               </button>
@@ -750,4 +750,13 @@ export function BulkTimeSlotsWizard({
 }
 
 export default BulkTimeSlotsWizard;
+
+
+
+
+
+
+
+
+
 

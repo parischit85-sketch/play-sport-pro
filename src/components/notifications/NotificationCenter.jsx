@@ -138,7 +138,7 @@ const NotificationCenter = ({ isOpen = false, onClose, maxHeight = '600px' }) =>
 
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:text-gray-300 rounded-lg hover:bg-gray-100 hover:bg-gray-800 transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-600 hover:text-gray-300 rounded-lg hover:bg-gray-800 transition-colors"
               >
                 <X size={20} />
               </button>
@@ -155,7 +155,7 @@ const NotificationCenter = ({ isOpen = false, onClose, maxHeight = '600px' }) =>
                   text-blue-600 text-blue-400
                   bg-blue-50 bg-blue-900
                   rounded-lg
-                  hover:bg-blue-100 hover:bg-blue-800
+                  hover:bg-blue-800
                   disabled:opacity-50 disabled:cursor-not-allowed
                   transition-colors
                 "
@@ -173,7 +173,7 @@ const NotificationCenter = ({ isOpen = false, onClose, maxHeight = '600px' }) =>
                   text-red-600 text-red-400
                   bg-red-50 bg-red-900
                   rounded-lg
-                  hover:bg-red-100 hover:bg-red-800
+                  hover:bg-red-800
                   disabled:opacity-50 disabled:cursor-not-allowed
                   transition-colors
                 "
@@ -203,8 +203,8 @@ const NotificationCenter = ({ isOpen = false, onClose, maxHeight = '600px' }) =>
                       transition-colors
                       ${
                         activeTab === tab.id
-                          ? 'bg-blue-100 bg-blue-900 text-blue-600 text-blue-300'
-                          : 'text-gray-600 text-gray-400 hover:bg-gray-100 hover:bg-gray-800'
+                          ? 'bg-blue-900 text-blue-300'
+                          : 'text-gray-600 text-gray-400 hover:bg-gray-800'
                       }
                     `}
                   >
@@ -267,4 +267,5 @@ const NotificationCenter = ({ isOpen = false, onClose, maxHeight = '600px' }) =>
 };
 
 export default NotificationCenter;
+
 

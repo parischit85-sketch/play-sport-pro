@@ -81,7 +81,7 @@ function CalendarGrid({ currentDay, onSelectDay, T }) {
         <button
           type="button"
           onClick={goToPrevMonth}
-          className={`w-10 h-10 rounded-full hover:bg-gray-200 hover:bg-gray-700 flex items-center justify-center text-xl font-bold transition-colors`}
+          className={`w-10 h-10 rounded-full hover:bg-gray-700 flex items-center justify-center text-xl font-bold transition-colors`}
         >
           ←
         </button>
@@ -91,7 +91,7 @@ function CalendarGrid({ currentDay, onSelectDay, T }) {
         <button
           type="button"
           onClick={goToNextMonth}
-          className={`w-10 h-10 rounded-full hover:bg-gray-200 hover:bg-gray-700 flex items-center justify-center text-xl font-bold transition-colors`}
+          className={`w-10 h-10 rounded-full hover:bg-gray-700 flex items-center justify-center text-xl font-bold transition-colors`}
         >
           →
         </button>
@@ -129,8 +129,8 @@ function CalendarGrid({ currentDay, onSelectDay, T }) {
                     : isTodayDay
                       ? 'bg-blue-100 text-blue-700 border-2 border-blue-300 bg-emerald-100 text-emerald-700 border-emerald-300'
                       : isCurrentMonthDay
-                        ? 'hover:bg-gray-200 hover:bg-gray-700 ' + T.text
-                        : 'text-gray-400 text-gray-600'
+                        ? 'hover:bg-gray-700 ' + T.text
+                        : 'text-gray-400'
                 }
                 ${isPastDay ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}
               `}
@@ -1275,7 +1275,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                   {labelPlayers.map((name, i) => (
                     <span
                       key={i}
-                      className="bg-white/20 bg-gray-800/40 px-1 py-0.5 rounded text-[9px] font-medium"
+                      className="bg-gray-800/40 px-1 py-0.5 rounded text-[9px] font-medium"
                     >
                       {name}
                     </span>
@@ -1390,10 +1390,10 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="text-4xl mb-4">⏳</div>
-            <h3 className="text-lg font-medium mb-2 text-gray-900 text-white">
+            <h3 className="text-lg font-medium mb-2 text-white">
               Caricamento...
             </h3>
-            <p className="text-gray-500 text-gray-400">
+            <p className="text-gray-400">
               Caricamento configurazione campi in corso...
             </p>
           </div>
@@ -1415,7 +1415,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                   className={`${isMobileView ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm'} rounded-lg font-medium transition-all duration-200 ${
                     activeCourtFilter === 'all'
                       ? 'bg-blue-500 text-white shadow-lg'
-                      : `${T.btnGhost} hover:bg-blue-50 hover:bg-blue-900/20`
+                      : `${T.btnGhost} hover:bg-blue-900/20`
                   }`}
                 >
                   Tutti {!isMobileView && `(${sortedCourts.length})`}
@@ -1428,7 +1428,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                     className={`${isMobileView ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm'} rounded-lg font-medium transition-all duration-200 ${
                       activeCourtFilter === type
                         ? 'bg-blue-500 text-white shadow-lg'
-                        : `${T.btnGhost} hover:bg-blue-50 hover:bg-blue-900/20`
+                        : `${T.btnGhost} hover:bg-blue-900/20`
                     }`}
                   >
                     {type} {!isMobileView && `(${courtTypeCounts[type]})`}
@@ -1436,7 +1436,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                 ))}
               </div>
               {filteredCourts.length === 0 && activeCourtFilter !== 'all' && (
-                <div className="mt-2 text-center py-2 text-gray-500 text-gray-400">
+                <div className="mt-2 text-center py-2 text-gray-400">
                   <div className="text-lg mb-1">🏓</div>
                   <div className="text-sm">
                     Nessun campo di tipo "{activeCourtFilter}" disponibile
@@ -1458,7 +1458,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
               <div className="flex items-center justify-center gap-4 lg:gap-6">
                 <button
                   type="button"
-                  className={`${isMobileView ? 'w-10 h-10 text-xl' : 'w-12 h-12 text-2xl'} rounded-full bg-blue-500 hover:bg-blue-600 bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
+                  className={`${isMobileView ? 'w-10 h-10 text-xl' : 'w-12 h-12 text-2xl'} rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
                   onClick={() => goOffset(-1)}
                   title="Giorno precedente"
                 >
@@ -1468,7 +1468,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                 <button
                   type="button"
                   onClick={() => setShowDatePicker(true)}
-                  className={`${isMobileView ? 'text-lg' : 'text-2xl sm:text-3xl'} font-bold cursor-pointer hover:scale-105 transition-transform bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent from-emerald-400 to-lime-400 ${isMobileView ? 'px-2 py-1' : 'px-3 sm:px-4 py-2'} rounded-lg hover:bg-gray-100 hover:bg-gray-800 text-center`}
+                  className={`${isMobileView ? 'text-lg' : 'text-2xl sm:text-3xl'} font-bold cursor-pointer hover:scale-105 transition-transform bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent from-emerald-400 to-lime-400 ${isMobileView ? 'px-2 py-1' : 'px-3 sm:px-4 py-2'} rounded-lg hover:bg-gray-800 text-center`}
                   title="Clicca per aprire calendario"
                 >
                   {/* Versione mobile: formato compatto */}
@@ -1479,7 +1479,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
                 <button
                   type="button"
-                  className={`${isMobileView ? 'w-10 h-10 text-xl' : 'w-12 h-12 text-2xl'} rounded-full bg-blue-500 hover:bg-blue-600 bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
+                  className={`${isMobileView ? 'w-10 h-10 text-xl' : 'w-12 h-12 text-2xl'} rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
                   onClick={() => goOffset(1)}
                   title="Giorno successivo"
                 >
@@ -1491,7 +1491,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
           {/* Header campi sticky - Solo Desktop */}
           {!isMobileView && (
-            <div className="sticky top-16 z-10 bg-white/95 bg-gray-800/95 backdrop-blur-sm -mx-4 px-4 pb-2">
+            <div className="sticky top-16 z-10 bg-gray-800/95 backdrop-blur-sm -mx-4 px-4 pb-2">
               <div className="relative w-full" style={{ minHeight: '70px' }}>
                 <div className="w-full overflow-x-auto" style={{ touchAction: 'auto' }}>
                   <div
@@ -1515,7 +1515,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                         >
                           <span className="inline-flex items-center gap-2">
                             <span
-                              className={`w-7 h-7 rounded-full bg-blue-400 bg-emerald-400 text-white flex items-center justify-center font-bold shadow`}
+                              className={`w-7 h-7 rounded-full bg-emerald-400 text-white flex items-center justify-center font-bold shadow`}
                             >
                               {c.name[0]}
                             </span>
@@ -1527,7 +1527,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                                 </span>
                               )}
                               {c.hasHeating && (
-                                <span className="text-xs text-orange-500 text-orange-400 font-medium">
+                                <span className="text-xs text-orange-400 font-medium">
                                   🔥 Riscaldato
                                 </span>
                               )}
@@ -1590,14 +1590,14 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                 <div className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 from-white to-gray-300 bg-clip-text text-transparent mb-2">
                   Seleziona uno slot
                 </div>
-                <div className="text-gray-600 text-gray-400">
+                <div className="text-gray-400">
                   Clicca su uno slot libero nella griglia per iniziare
                 </div>
               </div>
             ) : (
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-3xl blur-xl"></div>
-                <div className="relative bg-white/80 bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-white/20 border-gray-700/30 p-4 shadow-2xl">
+                <div className="relative bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-gray-700/30 p-4 shadow-2xl">
                   <div className="grid sm:grid-cols-2 gap-4">
                     {/* Prima riga: Tipo prenotazione - Maestro - Numero partecipanti */}
                     <div className="sm:col-span-2">
@@ -1619,7 +1619,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                                   newType === 'lezione' ? f.participants || 1 : f.participants,
                               }));
                             }}
-                            className="px-3 py-2 rounded-xl border border-white/30 border-gray-600/30 bg-white/50 bg-gray-800/50 backdrop-blur-sm text-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium dark-select"
+                            className="px-3 py-2 rounded-xl border border-gray-600/30 bg-gray-800/50 backdrop-blur-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium dark-select"
                           >
                             <option value="partita">🏓 Partita</option>
                             <option value="lezione">👨‍🏫 Lezione</option>
@@ -1639,7 +1639,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                                 instructorId: e.target.value,
                               }))
                             }
-                            className="px-3 py-2 rounded-xl border border-white/30 border-gray-600/30 bg-white/50 bg-gray-800/50 backdrop-blur-sm text-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium disabled:opacity-50 dark-select"
+                            className="px-3 py-2 rounded-xl border border-gray-600/30 bg-gray-800/50 backdrop-blur-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium disabled:opacity-50 dark-select"
                             required={form.bookingType === 'lezione'}
                             disabled={form.bookingType !== 'lezione'}
                           >
@@ -1675,7 +1675,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                                 p4Name: val < 4 ? '' : f.p4Name,
                               }));
                             }}
-                            className="px-3 py-2 rounded-xl border border-white/30 border-gray-600/30 bg-white/50 bg-gray-800/50 backdrop-blur-sm text-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium disabled:opacity-50 dark-select"
+                            className="px-3 py-2 rounded-xl border border-gray-600/30 bg-gray-800/50 backdrop-blur-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium disabled:opacity-50 dark-select"
                             disabled={form.bookingType !== 'lezione'}
                           >
                             {[1, 2, 3, 4].map((n) => (
@@ -1684,7 +1684,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                               </option>
                             ))}
                           </select>
-                          <div className="text-xs text-gray-600 text-gray-400 mt-1">
+                          <div className="text-xs text-gray-400 mt-1">
                             {form.bookingType === 'lezione'
                               ? 'Il prezzo della lezione si adatta automaticamente al numero di partecipanti.'
                               : 'Non necessario per le partite'}
@@ -1695,7 +1695,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                       {/* Messaggio di errore per maestro mancante */}
                       {form.bookingType === 'lezione' && !form.instructorId && (
                         <div className="sm:col-span-2">
-                          <div className="text-sm text-red-600 text-red-400 bg-red-50/50 bg-red-900/20 backdrop-blur-sm px-3 py-2 rounded-lg border border-red-200/50 border-red-800/30">
+                          <div className="text-sm text-red-400 bg-red-900/20 backdrop-blur-sm px-3 py-2 rounded-lg border border-red-800/30">
                             ⚠️ Seleziona un maestro per le lezioni
                           </div>
                         </div>
@@ -1713,7 +1713,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                           <select
                             value={form.courtId}
                             onChange={(e) => setForm((f) => ({ ...f, courtId: e.target.value }))}
-                            className="px-3 py-2 rounded-xl border border-white/30 border-gray-600/30 bg-white/50 bg-gray-800/50 backdrop-blur-sm text-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium dark-select"
+                            className="px-3 py-2 rounded-xl border border-gray-600/30 bg-gray-800/50 backdrop-blur-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium dark-select"
                           >
                             {filteredCourts.map((c) => (
                               <option key={c.id} value={c.id}>
@@ -1722,7 +1722,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                             ))}
                           </select>
                           {form.courtId && hasPromoSlot(form.courtId, form.start) && (
-                            <div className="text-xs bg-gradient-to-r from-yellow-400/80 to-orange-400/80 text-yellow-900 text-yellow-100 px-2 py-1 rounded-lg font-semibold inline-flex items-center gap-1 w-fit backdrop-blur-sm border border-yellow-300/50 mt-1">
+                            <div className="text-xs bg-gradient-to-r from-yellow-400/80 to-orange-400/80 text-yellow-100 px-2 py-1 rounded-lg font-semibold inline-flex items-center gap-1 w-fit backdrop-blur-sm border border-yellow-300/50 mt-1">
                               🏷️ Promo
                             </div>
                           )}
@@ -1745,7 +1745,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                                 start: floorToSlot(d, cfg.slotMinutes),
                               }));
                             }}
-                            className="px-3 py-2 rounded-xl border border-white/30 border-gray-600/30 bg-white/50 bg-gray-800/50 backdrop-blur-sm text-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
+                            className="px-3 py-2 rounded-xl border border-gray-600/30 bg-gray-800/50 backdrop-blur-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium"
                           />
                         </div>
 
@@ -1762,7 +1762,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                                 duration: Number(e.target.value),
                               }))
                             }
-                            className="px-3 py-2 rounded-xl border border-white/30 border-gray-600/30 bg-white/50 bg-gray-800/50 backdrop-blur-sm text-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium dark-select"
+                            className="px-3 py-2 rounded-xl border border-gray-600/30 bg-gray-800/50 backdrop-blur-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200 font-medium dark-select"
                           >
                             {(cfg.defaultDurations || [60, 90, 120]).map((m) => (
                               <option key={m} value={m}>
@@ -1793,7 +1793,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                           )
                           .map(([key, label]) => (
                             <div key={key}>
-                              <label className="text-xs font-semibold text-gray-600 text-gray-400 mb-2 block">
+                              <label className="text-xs font-semibold text-gray-400 mb-2 block">
                                 {label}
                               </label>
                               <input
@@ -1805,7 +1805,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                                     [key]: e.target.value,
                                   }))
                                 }
-                                className="w-full px-3 py-2 rounded-xl border border-white/30 border-gray-600/30 bg-white/50 bg-gray-800/50 backdrop-blur-sm text-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200"
+                                className="w-full px-3 py-2 rounded-xl border border-gray-600/30 bg-gray-800/50 backdrop-blur-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200"
                                 placeholder="Nome giocatore"
                               />
                             </div>
@@ -1815,7 +1815,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
                     <div className="sm:col-span-1">
                       {/* Addon in layout futuristico - compatto */}
-                      <div className="bg-white/30 bg-gray-800/30 backdrop-blur-sm rounded-lg p-2 border border-white/20 border-gray-600/20">
+                      <div className="bg-gray-800/30 backdrop-blur-sm rounded-lg p-2 border border-gray-600/20">
                         <div className="flex items-center gap-1 mb-1">
                           <h3 className="text-xs font-bold bg-gradient-to-r from-gray-800 to-gray-600 from-white to-gray-300 bg-clip-text text-transparent">
                             ⚡ Servizi
@@ -1823,7 +1823,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                         </div>
                         <div className="flex flex-col gap-2">
                           {cfg.addons?.lightingEnabled && (
-                            <label className="inline-flex items-center gap-2 cursor-pointer bg-blue-50/50 bg-blue-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-blue-200/50 border-blue-800/30 hover:bg-blue-100/50 hover:bg-blue-800/30 transition-all duration-200">
+                            <label className="inline-flex items-center gap-2 cursor-pointer bg-blue-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-blue-800/30 hover:bg-blue-800/30 transition-all duration-200">
                               <input
                                 type="checkbox"
                                 checked={form.useLighting}
@@ -1833,13 +1833,13 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                                     useLighting: e.target.checked,
                                   }))
                                 }
-                                className="w-4 h-4 text-blue-600 bg-white/50 bg-gray-800/50 border-blue-300 border-blue-600 rounded focus:ring-blue-500 focus:ring-2"
+                                className="w-4 h-4 text-blue-600 bg-gray-800/50 border-blue-300 border-blue-600 rounded focus:ring-blue-500 focus:ring-2"
                               />
                               <div className="flex flex-col">
-                                <span className="text-sm font-semibold text-blue-700 text-blue-300">
+                                <span className="text-sm font-semibold text-blue-300">
                                   💡 Illuminazione
                                 </span>
-                                <span className="text-xs text-blue-600 text-blue-400">
+                                <span className="text-xs text-blue-400">
                                   +{euro(cfg.addons.lightingFee || 0)}
                                 </span>
                               </div>
@@ -1850,7 +1850,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                               const selectedCourt = courts.find((c) => c.id === form.courtId);
                               return (
                                 selectedCourt?.hasHeating && (
-                                  <label className="inline-flex items-center gap-2 cursor-pointer bg-purple-50/50 bg-purple-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-purple-200/50 border-purple-800/30 hover:bg-purple-100/50 hover:bg-purple-800/30 transition-all duration-200">
+                                  <label className="inline-flex items-center gap-2 cursor-pointer bg-purple-900/20 backdrop-blur-sm px-3 py-2 rounded-xl border border-purple-800/30 hover:bg-purple-800/30 transition-all duration-200">
                                     <input
                                       type="checkbox"
                                       checked={form.useHeating}
@@ -1860,13 +1860,13 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                                           useHeating: e.target.checked,
                                         }))
                                       }
-                                      className="w-4 h-4 text-purple-600 bg-white/50 bg-gray-800/50 border-purple-300 border-purple-600 rounded focus:ring-purple-500 focus:ring-2"
+                                      className="w-4 h-4 text-purple-600 bg-gray-800/50 border-purple-300 border-purple-600 rounded focus:ring-purple-500 focus:ring-2"
                                     />
                                     <div className="flex flex-col">
-                                      <span className="text-sm font-semibold text-purple-700 text-purple-300">
+                                      <span className="text-sm font-semibold text-purple-300">
                                         🔥 Riscaldamento
                                       </span>
-                                      <span className="text-xs text-purple-600 text-purple-400">
+                                      <span className="text-xs text-purple-400">
                                         +{euro(cfg.addons.heatingFee || 0)}
                                       </span>
                                     </div>
@@ -1905,7 +1905,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                         <input
                           value={form.bookedBy}
                           onChange={(e) => setForm((f) => ({ ...f, bookedBy: e.target.value }))}
-                          className="w-full px-3 py-2 rounded-xl border border-white/30 border-gray-600/30 bg-white/50 bg-gray-800/50 backdrop-blur-sm text-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200"
+                          className="w-full px-3 py-2 rounded-xl border border-gray-600/30 bg-gray-800/50 backdrop-blur-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200"
                           placeholder="Es. Andrea Paris"
                         />
                       </div>
@@ -1917,7 +1917,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                         <input
                           value={form.note}
                           onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
-                          className="w-full px-3 py-2 rounded-xl border border-white/30 border-gray-600/30 bg-white/50 bg-gray-800/50 backdrop-blur-sm text-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200"
+                          className="w-full px-3 py-2 rounded-xl border border-gray-600/30 bg-gray-800/50 backdrop-blur-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-200"
                           placeholder="Es. Lezioni, torneo, ecc."
                         />
                       </div>
@@ -1926,17 +1926,17 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                         <label className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 from-white to-gray-300 bg-clip-text text-transparent mb-1 block">
                           🎨 Colore
                           {form.bookingType === 'lezione' && form.instructorId && (
-                            <span className="ml-1 text-xs text-blue-600 text-blue-400 font-normal">
+                            <span className="ml-1 text-xs text-blue-400 font-normal">
                               (maestro)
                             </span>
                           )}
                           {form.bookingType === 'partita' && (
-                            <span className="ml-1 text-xs text-pink-600 text-pink-400 font-normal">
+                            <span className="ml-1 text-xs text-pink-400 font-normal">
                               (partita)
                             </span>
                           )}
                         </label>
-                        <div className="bg-white/30 bg-gray-800/30 backdrop-blur-sm rounded-lg p-2 border border-white/20 border-gray-600/20">
+                        <div className="bg-gray-800/30 backdrop-blur-sm rounded-lg p-2 border border-gray-600/20">
                           <div className="flex items-center gap-2 mb-2">
                             <input
                               type="color"
@@ -1947,7 +1947,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                                   color: e.target.value,
                                 }))
                               }
-                              className="w-8 h-8 rounded-lg border border-white/30 border-gray-600/30 cursor-pointer"
+                              className="w-8 h-8 rounded-lg border border-gray-600/30 cursor-pointer"
                               title="Seleziona colore personalizzato"
                             />
                             <div
@@ -1983,8 +1983,8 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                                 }
                                 className={`w-7 h-7 rounded-lg cursor-pointer transition-all duration-200 hover:scale-110 ${
                                   form.color === preset.color
-                                    ? 'ring-2 ring-gray-800 ring-white scale-110'
-                                    : 'border border-white/50 border-gray-600/50'
+                                    ? 'ring-2 ring-white scale-110'
+                                    : 'border border-gray-600/50'
                                 }`}
                                 style={{ backgroundColor: preset.color }}
                                 title={preset.name}
@@ -2014,7 +2014,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                       <button
                         type="button"
                         onClick={() => setModalOpen(false)}
-                        className="px-6 py-3 bg-white/50 bg-gray-800/50 backdrop-blur-sm border border-white/30 border-gray-600/30 text-gray-700 text-gray-300 font-semibold rounded-xl hover:bg-white/70 hover:bg-gray-600/70 transition-all duration-200"
+                        className="px-6 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-600/30 text-gray-300 font-semibold rounded-xl hover:bg-gray-600/70 transition-all duration-200"
                       >
                         Annulla
                       </button>
@@ -2034,7 +2034,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                   </div>
 
                   {/* Pulsanti mobili fluttuanti */}
-                  <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 bg-gray-800/95 backdrop-blur-xl border-t border-white/20 border-gray-700/30 p-4 z-50 shadow-2xl">
+                  <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-800/95 backdrop-blur-xl border-t border-gray-700/30 p-4 z-50 shadow-2xl">
                     <div className="flex gap-3 max-w-md mx-auto">
                       <button
                         type="button"
@@ -2046,7 +2046,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                       <button
                         type="button"
                         onClick={() => setModalOpen(false)}
-                        className="flex-1 bg-white/70 bg-gray-800/70 backdrop-blur-sm text-gray-700 text-gray-300 font-semibold py-4 rounded-xl border border-white/30 border-gray-600/30 hover:bg-white/90 hover:bg-gray-600/90 transition-all duration-200"
+                        className="flex-1 bg-gray-800/70 backdrop-blur-sm text-gray-300 font-semibold py-4 rounded-xl border border-gray-600/30 hover:bg-gray-600/90 transition-all duration-200"
                       >
                         Annulla
                       </button>
@@ -2069,7 +2069,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           {/* Pulsanti fluttuanti FUORI dal modal - sempre sopra tutto su mobile */}
           {modalOpen && form.start && (
             <>
-              <div className="fixed bottom-24 left-4 right-4 z-[99999] flex gap-3 md:hidden bg-white/95 bg-gray-800/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-white/20 border-gray-700/30">
+              <div className="fixed bottom-24 left-4 right-4 z-[99999] flex gap-3 md:hidden bg-gray-800/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-gray-700/30">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
@@ -2107,4 +2107,10 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     </Section>
   );
 }
+
+
+
+
+
+
 

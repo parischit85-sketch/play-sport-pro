@@ -400,7 +400,7 @@ export default function PlayersCRM({
             {/* Statistiche */}
             <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 xl:gap-3 flex-1">
               <div className="text-center">
-                <div className="text-2xl xl:text-xl font-bold text-blue-400">
+                <div className={`text-2xl xl:text-xl font-bold ${T.accentInfo}`}>
                   {stats.filtered}
                   {stats.total !== stats.filtered && (
                     <span className={`text-sm ${T.subtext}`}>/{stats.total}</span>
@@ -409,30 +409,30 @@ export default function PlayersCRM({
                 <div className={`text-xs ${T.subtext}`}>
                   {stats.total !== stats.filtered ? 'Filtrati' : 'Totale'}
                   {activeFiltersCount > 0 && (
-                    <span className="ml-1 text-orange-500">({activeFiltersCount})</span>
+                    <span className={`ml-1 ${T.accentWarning}`}>({activeFiltersCount})</span>
                   )}
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl xl:text-xl font-bold text-green-400">
+                <div className={`text-2xl xl:text-xl font-bold ${T.accentSuccess}`}>
                   {stats.members}
                 </div>
                 <div className={`text-xs ${T.subtext}`}>Membri</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl xl:text-xl font-bold text-orange-400">
+                <div className={`text-2xl xl:text-xl font-bold ${T.accentWarning}`}>
                   {stats.active}
                 </div>
                 <div className={`text-xs ${T.subtext}`}>Attivi</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl xl:text-xl font-bold text-purple-400">
+                <div className={`text-2xl xl:text-xl font-bold ${T.accentInfo}`}>
                   {stats.withAccount}
                 </div>
                 <div className={`text-xs ${T.subtext}`}>Con Account</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl xl:text-xl font-bold text-indigo-400">
+                <div className={`text-2xl xl:text-xl font-bold ${T.accentInfo}`}>
                   {filteredPlayers.filter(p => p.tournamentData?.isParticipant).length}
                 </div>
                 <div className={`text-xs ${T.subtext}`}>Torneo</div>
@@ -607,12 +607,12 @@ export default function PlayersCRM({
           {!isLoading && filteredPlayers.length > 0 && (
             <div className="flex items-center justify-between px-2">
               <p className={`text-sm ${T.subtext}`}>
-                Visualizzati <span className="font-semibold text-blue-400">{filteredPlayers.length}</span>
+                Visualizzati <span className={`font-semibold ${T.accentInfo}`}>{filteredPlayers.length}</span>
                 {filteredPlayers.length !== players.length && (
                   <> di <span className="font-semibold">{players.length}</span></>
                 )} giocatori
                 {activeFiltersCount > 0 && (
-                  <span className="ml-2 text-orange-500">
+                  <span className={`ml-2 ${T.accentWarning}`}>
                     (con {activeFiltersCount} filtro{activeFiltersCount > 1 ? 'i' : ''} attivo{activeFiltersCount > 1 ? 'i' : ''})
                   </span>
                 )}

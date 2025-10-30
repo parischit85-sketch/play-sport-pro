@@ -8,8 +8,10 @@ import { editTeamPlayers, getTeamsByTournament } from '../../services/teamsServi
 import { TEAM_STATUS } from '../../utils/tournamentConstants';
 import { useClub } from '../../../../contexts/ClubContext';
 import { computeClubRanking } from '../../../../lib/ranking-club';
+import { themeTokens } from '../../../../lib/theme';
 
 export default function TeamEditModal({ tournament, clubId, team, onClose, onSuccess }) {
+  const T = themeTokens();
   const { players: contextPlayers, matches, leaderboard } = useClub();
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -199,7 +201,7 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className={`${T.modalBackground} rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden`}>
         <div className="flex items-center justify-between p-6 border-b border-gray-200 border-gray-700">
           <div className="flex items-center gap-3">
             <Users className="w-6 h-6 text-primary-600" />
@@ -233,7 +235,7 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
               type="text"
               value={formData.teamName}
               onChange={(e) => setFormData((prev) => ({ ...prev, teamName: e.target.value }))}
-              className="w-full px-4 py-2 border border-gray-300 border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white bg-gray-700 text-gray-900 text-white"
+              className={`${T.input} w-full text-sm`}
               placeholder="es. Rossi / Bianchi"
               required
             />

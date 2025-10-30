@@ -704,17 +704,17 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
             <div className={`text-xs ${T.subtext} space-y-1`}>
               <div>
                 <b>League ID Corrente:</b>{' '}
-                <code className="bg-gray-100 bg-gray-800 px-1 rounded">{leagueId}</code>
+                <code className="bg-gray-800 px-1 rounded">{leagueId}</code>
               </div>
               <div>
                 <b>Backup Selezionato:</b>{' '}
-                <code className="bg-gray-100 bg-gray-800 px-1 rounded">
+                <code className="bg-gray-800 px-1 rounded">
                   {selectedBackup || leagueId}
                 </code>
               </div>
               <div>
                 <b>Firebase Project:</b>{' '}
-                <code className="bg-gray-100 bg-gray-800 px-1 rounded">m-padelweb</code>
+                <code className="bg-gray-800 px-1 rounded">m-padelweb</code>
               </div>
             </div>
           </div>
@@ -726,7 +726,7 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
             </h3>
 
             <div className="p-4 rounded-lg bg-blue-50 bg-blue-900/20">
-              <div className="text-sm text-gray-600 text-gray-300 space-y-2">
+              <div className="text-sm text-gray-300 space-y-2">
                 <p>
                   <b>Piattaforma:</b> Web Browser
                 </p>
@@ -768,7 +768,7 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
             </h3>
 
             <div className="p-4 rounded-lg bg-green-50 bg-green-900/20">
-              <div className="text-sm text-gray-600 text-gray-300 space-y-2">
+              <div className="text-sm text-gray-300 space-y-2">
                 <p>
                   <b>Versione App:</b> v1.7.0 (2025-09-12)
                 </p>
@@ -817,7 +817,7 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
                 🗑️ Cancella Cache PWA
               </button>
 
-              <div className="text-xs text-gray-500 text-gray-400 p-3 bg-gray-50 bg-gray-800 rounded">
+              <div className="text-xs text-gray-400 p-3 bg-gray-800 rounded">
                 <p>
                   <b>Per problemi di cache mobile:</b>
                 </p>
@@ -833,4 +833,6 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
     </div>
   );
 }
+
+
 

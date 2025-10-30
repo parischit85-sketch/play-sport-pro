@@ -54,7 +54,7 @@ const VARIANT_STYLES = {
   danger: {
     icon: AlertTriangle,
     iconColor: 'text-red-600 text-red-400',
-    iconBg: 'bg-red-100 bg-red-900/30',
+    iconBg: 'bg-red-900/30',
     confirmButton: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
     title: 'text-red-900 text-red-100',
   },
@@ -68,14 +68,14 @@ const VARIANT_STYLES = {
   info: {
     icon: Info,
     iconColor: 'text-blue-600 text-blue-400',
-    iconBg: 'bg-blue-100 bg-blue-900/30',
+    iconBg: 'bg-blue-900/30',
     confirmButton: 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500',
     title: 'text-blue-900 text-blue-100',
   },
   success: {
     icon: CheckCircle,
     iconColor: 'text-green-600 text-green-400',
-    iconBg: 'bg-green-100 bg-green-900/30',
+    iconBg: 'bg-green-900/30',
     confirmButton: 'bg-green-600 hover:bg-green-700 focus:ring-green-500',
     title: 'text-green-900 text-green-100',
   },
@@ -389,4 +389,5 @@ export function useConfirm() {
 }
 
 export default ConfirmDialog;
+
 

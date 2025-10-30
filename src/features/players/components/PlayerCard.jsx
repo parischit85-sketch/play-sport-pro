@@ -70,14 +70,14 @@ const PlayerCard = ({ player, playersById, onEdit, onDelete, onView, onStats, T 
           <div className="text-right">
             {player.tournamentData?.isParticipant && player.tournamentData?.isActive ? (
               <>
-                <div className="text-xl font-bold text-purple-600 text-purple-400">
+                <div className={`text-xl font-bold ${T.accentInfo}`}>
                   {Number(liveRating).toFixed(0)}
                 </div>
                 <div className={`text-xs ${T.subtext}`}>Ranking attuale</div>
               </>
             ) : (
               <>
-                <div className="text-lg text-gray-300 text-gray-600">-</div>
+                <div className={`text-lg ${T.subtext}`}>-</div>
                 <div className={`text-xs ${T.subtext}`}>Non partecipa</div>
               </>
             )}

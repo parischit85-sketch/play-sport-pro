@@ -76,11 +76,11 @@ export default function PlayerNotes({ player, onUpdate, T }) {
   const getNoteTypeColor = (type) => {
     switch (type) {
       case NOTE_TYPES.BOOKING:
-        return 'bg-blue-100 bg-blue-900/20 text-blue-600 text-blue-400';
+        return 'bg-blue-900/20 text-blue-400';
       case NOTE_TYPES.PAYMENT:
-        return 'bg-green-100 bg-green-900/20 text-green-600 text-green-400';
+        return 'bg-green-900/20 text-green-400';
       case NOTE_TYPES.DISCIPLINARY:
-        return 'bg-red-100 bg-red-900/20 text-red-600 text-red-400';
+        return 'bg-red-900/20 text-red-400';
       case NOTE_TYPES.MEDICAL:
         return 'bg-orange-100 bg-orange-900/20 text-orange-600 text-orange-400';
       default:
@@ -256,7 +256,7 @@ export default function PlayerNotes({ player, onUpdate, T }) {
                       {getNoteTypeLabel(note.type)}
                     </span>
                     {note.isPrivate && (
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 bg-purple-900/20 text-purple-600 text-purple-400">
+                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-900/20 text-purple-400">
                         🔒 Privata
                       </span>
                     )}
@@ -308,4 +308,6 @@ export default function PlayerNotes({ player, onUpdate, T }) {
     </div>
   );
 }
+
+
 

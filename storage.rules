@@ -11,32 +11,42 @@ service firebase.storage {
     match /logos/{clubId}/{fileName} {
       // Logo pubblicamente visibile
       allow read: if true;
-      // Solo utenti autenticati possono caricare (verifica ownership fatta a livello app)
-      allow write: if request.auth != null 
+      // Solo club admin/owner possono caricare (verifica ownership via Firestore)
+      allow write: if request.auth != null
         && request.resource.size < 5 * 1024 * 1024 // Max 5MB
-        && request.resource.contentType.matches('image/.*'); // Solo immagini
-      allow delete: if request.auth != null;
+        && request.resource.contentType.matches('image/.*') // Solo immagini
+        && (firestore.exists(/databases/(default)/documents/clubs/$(clubId)) &&
+            (get(/databases/(default)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid ||
+             firestore.exists(/databases/(default)/documents/clubs/$(clubId)/users/$(request.auth.uid)) &&
+             get(/databases/(default)/documents/clubs/$(clubId)/users/$(request.auth.uid)).data.isClubAdmin == true));
+      allow delete: if request.auth != null
+        && (firestore.exists(/databases/(default)/documents/clubs/$(clubId)) &&
+            (get(/databases/(default)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid ||
+             firestore.exists(/databases/(default)/documents/clubs/$(clubId)/users/$(request.auth.uid)) &&
+             get(/databases/(default)/documents/clubs/$(clubId)/users/$(request.auth.uid)).data.isClubAdmin == true));
     }
     
     // Regole per i loghi dei club (vecchio path - compatibilità)
     match /clubs/{clubId}/logo {
       // Solo admin del club possono caricare/modificare il logo
       allow read: if true; // Logo pubblicamente visibile
-      allow write: if request.auth != null 
-        && (request.auth.token.role == 'super_admin' 
-        || (request.auth.token.role == 'club_admin' 
-        && request.auth.token.clubId == clubId))
+      allow write: if request.auth != null
         && request.resource.size < 5 * 1024 * 1024 // Max 5MB
-        && request.resource.contentType.matches('image/.*'); // Solo immagini
+        && request.resource.contentType.matches('image/.*') // Solo immagini
+        && (firestore.exists(/databases/(default)/documents/clubs/$(clubId)) &&
+            (get(/databases/(default)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid ||
+             firestore.exists(/databases/(default)/documents/clubs/$(clubId)/users/$(request.auth.uid)) &&
+             get(/databases/(default)/documents/clubs/$(clubId)/users/$(request.auth.uid)).data.isClubAdmin == true));
     }
     
     // Regole per altri file dei club
     match /clubs/{clubId}/{allPaths=**} {
       // Solo admin del club possono gestire i file
-      allow read, write: if request.auth != null 
-        && (request.auth.token.role == 'super_admin' 
-        || (request.auth.token.role == 'club_admin' 
-        && request.auth.token.clubId == clubId));
+      allow read, write: if request.auth != null
+        && (firestore.exists(/databases/(default)/documents/clubs/$(clubId)) &&
+            (get(/databases/(default)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid ||
+             firestore.exists(/databases/(default)/documents/clubs/$(clubId)/users/$(request.auth.uid)) &&
+             get(/databases/(default)/documents/clubs/$(clubId)/users/$(request.auth.uid)).data.isClubAdmin == true));
     }
     
     // Regole per file utente

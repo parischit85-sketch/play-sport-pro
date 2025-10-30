@@ -310,7 +310,7 @@ export async function cancelCloudBooking(bookingId, user, clubId = MAIN_CLUB_ID)
  */
 export async function deleteCloudBooking(bookingId) {
   try {
-    await deleteDoc(doc(db, BOOKINGS_COLLECTION, bookingId));
+    await deleteDoc(doc(db, 'bookings', bookingId));
     return true;
   } catch (error) {
     console.error('Errore eliminazione prenotazione:', error);
@@ -323,7 +323,7 @@ export async function deleteCloudBooking(bookingId) {
  */
 export function subscribeToPublicBookings(callback) {
   const q = query(
-    collection(db, BOOKINGS_COLLECTION),
+    collection(db, 'bookings'),
     where('status', '==', 'confirmed'),
     orderBy('date', 'asc'),
     orderBy('time', 'asc')
@@ -349,7 +349,7 @@ export function subscribeToPublicBookings(callback) {
  */
 export function subscribeToUserBookings(userId, callback) {
   const q = query(
-    collection(db, BOOKINGS_COLLECTION),
+    collection(db, 'bookings'),
     where('createdBy', '==', userId),
     orderBy('createdAt', 'desc')
   );
@@ -384,22 +384,22 @@ export async function loadBookingsForPlayer({ userId, email, name }) {
     const queries = [];
     if (userId) {
       queries.push(
-        getDocs(query(collection(db, BOOKINGS_COLLECTION), where('createdBy', '==', userId)))
+        getDocs(query(collection(db, 'bookings'), where('createdBy', '==', userId)))
       );
     }
     if (email) {
       queries.push(
-        getDocs(query(collection(db, BOOKINGS_COLLECTION), where('userEmail', '==', email)))
+        getDocs(query(collection(db, 'bookings'), where('userEmail', '==', email)))
       );
     }
     if (name) {
       queries.push(
-        getDocs(query(collection(db, BOOKINGS_COLLECTION), where('bookedBy', '==', name)))
+        getDocs(query(collection(db, 'bookings'), where('bookedBy', '==', name)))
       );
       // array-contains richiede che 'players' sia un array di stringhe (nomi)
       queries.push(
         getDocs(
-          query(collection(db, BOOKINGS_COLLECTION), where('players', 'array-contains', name))
+          query(collection(db, 'bookings'), where('players', 'array-contains', name))
         )
       );
     }

@@ -84,7 +84,7 @@ const FilterPanel = ({
           <span className="font-semibold text-gray-900 text-white">
             {title}
             {filters[key] && (
-              <span className="ml-2 px-2 py-0.5 bg-blue-100 bg-blue-900 text-blue-800 text-blue-200 text-xs rounded-full">
+              <span className="ml-2 px-2 py-0.5 bg-blue-900 text-blue-200 text-xs rounded-full">
                 {Array.isArray(filters[key]) ? filters[key].length : '1'}
               </span>
             )}
@@ -300,7 +300,7 @@ const FilterPanel = ({
             {Object.entries(filters).map(([key, value]) => (
               <div
                 key={key}
-                className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 bg-blue-900 text-blue-800 text-blue-200 rounded-full text-sm"
+                className="inline-flex items-center gap-2 px-3 py-1 bg-blue-900 text-blue-200 rounded-full text-sm"
               >
                 <span className="font-medium capitalize">{key}:</span>
                 <span>
@@ -312,7 +312,7 @@ const FilterPanel = ({
                 </span>
                 <button
                   onClick={() => updateFilter(key, null)}
-                  className="hover:bg-blue-200 hover:bg-blue-800 rounded-full p-0.5 transition-colors"
+                  className="hover:bg-blue-800 rounded-full p-0.5 transition-colors"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -326,4 +326,5 @@ const FilterPanel = ({
 };
 
 export default FilterPanel;
+
 

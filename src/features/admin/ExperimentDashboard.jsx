@@ -151,7 +151,7 @@ const ExperimentDashboard = ({ isOpen, onClose, T }) => {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 border-gray-700">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 bg-purple-900/30 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-purple-900/30 rounded-lg flex items-center justify-center">
               <FlaskConical className="w-6 h-6 text-purple-600 text-purple-400" />
             </div>
             <div>
@@ -165,7 +165,7 @@ const ExperimentDashboard = ({ isOpen, onClose, T }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 hover:bg-gray-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
           >
             <X className="w-6 h-6 text-gray-600 text-gray-400" />
           </button>
@@ -407,7 +407,7 @@ const ExperimentDashboard = ({ isOpen, onClose, T }) => {
                 </h3>
                 <button
                   onClick={() => setSelectedExperiment(null)}
-                  className="p-2 hover:bg-gray-100 hover:bg-gray-700 rounded-lg"
+                  className="p-2 hover:bg-gray-700 rounded-lg"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -486,4 +486,5 @@ const ExperimentDashboard = ({ isOpen, onClose, T }) => {
 };
 
 export default ExperimentDashboard;
+
 

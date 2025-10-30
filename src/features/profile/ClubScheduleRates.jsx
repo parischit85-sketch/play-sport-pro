@@ -70,7 +70,7 @@ export default function ClubScheduleRates({ T, clubId }) {
                     <h4 className="font-semibold text-gray-900 text-white">
                       Lunedì - Venerdì
                     </h4>
-                    <p className="text-sm text-gray-600 text-gray-400">Giorni feriali</p>
+                    <p className="text-sm text-gray-400">Giorni feriali</p>
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold text-blue-600 text-blue-400">
@@ -86,7 +86,7 @@ export default function ClubScheduleRates({ T, clubId }) {
                     <h4 className="font-semibold text-gray-900 text-white">
                       Sabato - Domenica
                     </h4>
-                    <p className="text-sm text-gray-600 text-gray-400">Weekend</p>
+                    <p className="text-sm text-gray-400">Weekend</p>
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold text-green-600 text-green-400">
@@ -100,7 +100,7 @@ export default function ClubScheduleRates({ T, clubId }) {
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-semibold text-gray-900 text-white">Orari di Punta</h4>
-                    <p className="text-sm text-gray-600 text-gray-400">Maggiore richiesta</p>
+                    <p className="text-sm text-gray-400">Maggiore richiesta</p>
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold text-amber-600 text-amber-400">
@@ -124,10 +124,10 @@ export default function ClubScheduleRates({ T, clubId }) {
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-semibold text-gray-900 text-white">Feriali Mattina</h4>
-                    <p className="text-sm text-gray-600 text-gray-400">08:00 - 17:00</p>
+                    <p className="text-sm text-gray-400">08:00 - 17:00</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-bold text-gray-600 text-gray-400">
+                    <div className="text-lg font-bold text-gray-400">
                       €{scheduleData.rates.weekdayMorning}
                     </div>
                   </div>
@@ -138,7 +138,7 @@ export default function ClubScheduleRates({ T, clubId }) {
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-semibold text-gray-900 text-white">Feriali Sera</h4>
-                    <p className="text-sm text-gray-600 text-gray-400">17:00 - 22:00</p>
+                    <p className="text-sm text-gray-400">17:00 - 22:00</p>
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold text-purple-600 text-purple-400">
@@ -152,7 +152,7 @@ export default function ClubScheduleRates({ T, clubId }) {
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-semibold text-gray-900 text-white">Weekend</h4>
-                    <p className="text-sm text-gray-600 text-gray-400">Tutto il giorno</p>
+                    <p className="text-sm text-gray-400">Tutto il giorno</p>
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold text-green-600 text-green-400">
@@ -166,7 +166,7 @@ export default function ClubScheduleRates({ T, clubId }) {
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="font-semibold text-gray-900 text-white">Orari di Punta</h4>
-                    <p className="text-sm text-gray-600 text-gray-400">18:00 - 21:00</p>
+                    <p className="text-sm text-gray-400">18:00 - 21:00</p>
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold text-red-600 text-red-400">
@@ -191,7 +191,7 @@ export default function ClubScheduleRates({ T, clubId }) {
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="font-semibold text-gray-900 text-white">Estate</h4>
-                  <p className="text-sm text-gray-600 text-gray-400">
+                  <p className="text-sm text-gray-400">
                     {scheduleData.seasonalRates.summer.months}
                   </p>
                 </div>
@@ -199,7 +199,7 @@ export default function ClubScheduleRates({ T, clubId }) {
                   <div className="text-sm text-orange-600 text-orange-400">
                     +{((scheduleData.seasonalRates.summer.multiplier - 1) * 100).toFixed(0)}%
                   </div>
-                  <div className="text-xs text-gray-600 text-gray-400">Alta stagione</div>
+                  <div className="text-xs text-gray-400">Alta stagione</div>
                 </div>
               </div>
             </div>
@@ -208,7 +208,7 @@ export default function ClubScheduleRates({ T, clubId }) {
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="font-semibold text-gray-900 text-white">Inverno</h4>
-                  <p className="text-sm text-gray-600 text-gray-400">
+                  <p className="text-sm text-gray-400">
                     {scheduleData.seasonalRates.winter.months}
                   </p>
                 </div>
@@ -216,7 +216,7 @@ export default function ClubScheduleRates({ T, clubId }) {
                   <div className="text-sm text-blue-600 text-blue-400">
                     {((scheduleData.seasonalRates.winter.multiplier - 1) * 100).toFixed(0)}%
                   </div>
-                  <div className="text-xs text-gray-600 text-gray-400">Bassa stagione</div>
+                  <div className="text-xs text-gray-400">Bassa stagione</div>
                 </div>
               </div>
             </div>
@@ -264,4 +264,6 @@ export default function ClubScheduleRates({ T, clubId }) {
     </Section>
   );
 }
+
+
 

@@ -130,7 +130,7 @@ export default function PWABanner({ className = '' }) {
         <div className="fixed inset-0 bg-black/50 bg-black/70 flex items-center justify-center z-[99999] p-4">
           <div className="bg-white bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4 border border-gray-600">
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">{installInstructions.icon || '📱'}</span>
               </div>
 
@@ -180,7 +180,7 @@ export default function PWABanner({ className = '' }) {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowInstructionsModal(false)}
-                  className="flex-1 bg-gray-100 bg-gray-700 hover:bg-gray-200 hover:bg-gray-600 text-gray-800 text-gray-200 py-3 px-4 rounded-lg font-medium transition-colors"
+                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-800 text-gray-200 py-3 px-4 rounded-lg font-medium transition-colors"
                 >
                   Ho capito
                 </button>
@@ -203,4 +203,6 @@ export default function PWABanner({ className = '' }) {
     </>
   );
 }
+
+
 

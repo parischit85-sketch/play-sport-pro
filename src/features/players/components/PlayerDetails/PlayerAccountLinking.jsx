@@ -62,7 +62,7 @@ export default function PlayerAccountLinking({
   }, [accounts, linkedEmailsSet, linkedIdsSet, accountSearch]);
 
   return (
-    <div className="border-t border-gray-200 border-gray-700 pt-4">
+    <div className="border-t border-gray-700 pt-4">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         
         {/* Status account collegato */}
@@ -81,7 +81,7 @@ export default function PlayerAccountLinking({
                 <LoadingButton
                   onClick={onUnlinkAccount}
                   loading={loadingUnlink}
-                  className="ml-2 text-xs px-2 py-1 bg-red-50 bg-red-900/20 text-red-600 text-red-400 rounded hover:bg-red-100 hover:bg-red-900/30 transition-colors"
+                  className="ml-2 text-xs px-2 py-1 bg-red-900/20 text-red-400 rounded hover:bg-red-900/30 transition-colors"
                 >
                   Scollega
                 </LoadingButton>
@@ -102,7 +102,7 @@ export default function PlayerAccountLinking({
                 <LoadingButton
                   onClick={onOpenPicker}
                   loading={loadingAccounts}
-                  className={`px-4 py-2 text-sm bg-blue-50 bg-blue-900/20 text-blue-600 text-blue-400 rounded-lg hover:bg-blue-100 hover:bg-blue-900/30 transition-colors ${T.text}`}
+                  className={`px-4 py-2 text-sm bg-blue-900/20 text-blue-400 rounded-lg hover:bg-blue-900/30 transition-colors ${T.text}`}
                 >
                   🔎 Cerca account
                 </LoadingButton>
@@ -120,7 +120,7 @@ export default function PlayerAccountLinking({
                   />
                   <button
                     onClick={onClosePicker}
-                    className="px-3 py-2 text-sm bg-gray-100 bg-gray-700 text-gray-600 text-gray-300 rounded-lg hover:bg-gray-200 hover:bg-gray-600 transition-colors"
+                    className="px-3 py-2 text-sm bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
                   >
                     ✕ Chiudi
                   </button>
@@ -163,7 +163,7 @@ export default function PlayerAccountLinking({
                           <LoadingButton
                             onClick={() => onLinkAccount(acc)}
                             loading={loadingLink}
-                            className="ml-3 px-3 py-1 text-sm bg-green-50 bg-green-900/20 text-green-600 text-green-400 rounded hover:bg-green-100 hover:bg-green-900/30 transition-colors flex-shrink-0"
+                            className="ml-3 px-3 py-1 text-sm bg-green-900/20 text-green-400 rounded hover:bg-green-900/30 transition-colors flex-shrink-0"
                           >
                             🔗 Collega
                           </LoadingButton>
@@ -174,7 +174,7 @@ export default function PlayerAccountLinking({
                 )}
 
                 {/* Link via email manuale (opzionale) */}
-                <div className="pt-3 border-t border-gray-200 border-gray-700">
+                <div className="pt-3 border-t border-gray-700">
                   <p className={`text-xs ${T.muted} mb-2`}>
                     Oppure collega manualmente via email:
                   </p>
@@ -208,4 +208,8 @@ export default function PlayerAccountLinking({
     </div>
   );
 }
+
+
+
+
 

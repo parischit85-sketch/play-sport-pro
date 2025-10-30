@@ -102,15 +102,15 @@ export default function PlayerBookingHistory({ player, T }) {
   const getStatusColor = (status) => {
     switch (status) {
       case 'confirmed':
-        return 'bg-blue-100 bg-blue-900/20 text-blue-600 text-blue-400';
+        return `bg-blue-900/20 ${T.accentInfo}`;
       case 'completed':
-        return 'bg-green-100 bg-green-900/20 text-green-600 text-green-400';
+        return `bg-green-900/20 ${T.accentSuccess}`;
       case 'cancelled':
-        return 'bg-red-100 bg-red-900/20 text-red-600 text-red-400';
+        return 'bg-red-900/20 text-red-400';
       case 'no_show':
-        return 'bg-orange-100 bg-orange-900/20 text-orange-600 text-orange-400';
+        return `bg-orange-900/20 ${T.accentWarning}`;
       default:
-        return 'bg-gray-100 bg-gray-700 text-gray-600 text-gray-400';
+        return `${T.cardBg} ${T.subtext}`;
     }
   };
 
@@ -186,31 +186,31 @@ export default function PlayerBookingHistory({ player, T }) {
 
       {/* Statistiche */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 from-blue-900/20 to-blue-800/20 rounded-xl p-5 border border-blue-200 border-blue-700 text-center hover:shadow-lg transition-shadow">
-          <div className="text-3xl font-black text-blue-600 text-blue-400">{stats.total}</div>
-          <div className="text-xs text-blue-700 text-blue-300 mt-1 font-semibold">Totali</div>
+        <div className={`bg-gradient-to-br from-blue-900/20 to-blue-800/20 rounded-xl p-5 ${T.border} text-center hover:shadow-lg transition-shadow`}>
+          <div className={`text-3xl font-black ${T.accentInfo}`}>{stats.total}</div>
+          <div className={`text-xs ${T.subtext} mt-1 font-semibold`}>Totali</div>
         </div>
 
-        <div className="bg-gradient-to-br from-green-50 to-green-100 from-green-900/20 to-green-800/20 rounded-xl p-5 border border-green-200 border-green-700 text-center hover:shadow-lg transition-shadow">
-          <div className="text-3xl font-black text-green-600 text-green-400">
+        <div className={`bg-gradient-to-br from-green-900/20 to-green-800/20 rounded-xl p-5 border-green-700 text-center hover:shadow-lg transition-shadow`}>
+          <div className={`text-3xl font-black ${T.accentSuccess}`}>
             {stats.completed}
           </div>
-          <div className="text-xs text-green-700 text-green-300 mt-1 font-semibold">
+          <div className={`text-xs ${T.subtext} mt-1 font-semibold`}>
             Completate
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 from-purple-900/20 to-purple-800/20 rounded-xl p-5 border border-purple-200 border-purple-700 text-center hover:shadow-lg transition-shadow">
-          <div className="text-3xl font-black text-purple-600 text-purple-400">
+        <div className={`bg-gradient-to-br from-purple-900/20 to-purple-800/20 rounded-xl p-5 border-purple-700 text-center hover:shadow-lg transition-shadow`}>
+          <div className={`text-3xl font-black ${T.accentInfo}`}>
             {stats.upcoming}
           </div>
-          <div className="text-xs text-purple-700 text-purple-300 mt-1 font-semibold">
+          <div className={`text-xs ${T.subtext} mt-1 font-semibold`}>
             Future
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-red-50 to-red-100 from-red-900/20 to-red-800/20 rounded-xl p-5 border border-red-200 border-red-700 text-center hover:shadow-lg transition-shadow">
-          <div className="text-3xl font-black text-red-600 text-red-400">
+        <div className="bg-gradient-to-br from-red-900/20 to-red-800/20 rounded-xl p-5 border-red-700 text-center hover:shadow-lg transition-shadow">
+          <div className="text-3xl font-black text-red-400">
             {stats.cancelled}
           </div>
           <div className="text-xs text-red-700 text-red-300 mt-1 font-semibold">
@@ -319,13 +319,13 @@ export default function PlayerBookingHistory({ player, T }) {
                           {getStatusLabel(booking.status)}
                         </span>
                         {booking.paid && (
-                          <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 bg-green-900/20 text-green-600 text-green-400">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium bg-green-900/20 ${T.accentSuccess}`}>
                             💰 Pagato
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-4 text-sm text-gray-500 text-gray-400">
+                      <div className={`flex items-center gap-4 text-sm ${T.subtext}`}>
                         <span>📅 {new Date(booking.date).toLocaleDateString('it-IT')}</span>
                         <span>⏰ {booking.time}</span>
                         <span>👥 {booking.players.join(', ')}</span>
@@ -333,7 +333,7 @@ export default function PlayerBookingHistory({ player, T }) {
                     </div>
 
                     <div className="text-right">
-                      <div className="text-lg font-bold text-green-600 text-green-400">
+                      <div className={`text-lg font-bold ${T.accentSuccess}`}>
                         €{booking.price.toFixed(2)}
                       </div>
                       <div className={`text-xs ${T.subtext}`}>
@@ -349,12 +349,12 @@ export default function PlayerBookingHistory({ player, T }) {
                         <div className={`font-medium ${T.text} mb-1`}>
                           {booking.court} - {booking.sport}
                         </div>
-                        <div className="text-sm text-gray-500 text-gray-400">
+                        <div className={`text-sm ${T.subtext}`}>
                           📅 {new Date(booking.date).toLocaleDateString('it-IT')} ⏰ {booking.time}
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-green-600 text-green-400">
+                        <div className={`text-lg font-bold ${T.accentSuccess}`}>
                           €{booking.price.toFixed(2)}
                         </div>
                       </div>
@@ -385,4 +385,5 @@ export default function PlayerBookingHistory({ player, T }) {
     </div>
   );
 }
+
 

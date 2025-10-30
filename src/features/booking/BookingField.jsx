@@ -917,7 +917,7 @@ function BookingField({ user, T, state, setState }) {
             </div>
 
             {pastUserBookings.length === 0 ? (
-              <p className="text-gray-600 text-gray-400 text-center py-8">
+              <p className="text-gray-400 text-center py-8">
                 Non hai prenotazioni passate
               </p>
             ) : (
@@ -951,7 +951,7 @@ function BookingField({ user, T, state, setState }) {
                               </Badge>
                             )}
                           </div>
-                          <div className="text-xs text-gray-600 text-gray-400">
+                          <div className="text-xs text-gray-400">
                             {bookingDate.toLocaleDateString('it-IT', {
                               weekday: 'short',
                               day: 'numeric',
@@ -1003,7 +1003,7 @@ function BookingField({ user, T, state, setState }) {
                 <h4 className={`${ds.h6} mb-2`}>{selectedBookingDetails.courtName}</h4>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="text-gray-600 text-gray-400">Data:</span>
+                    <span className="text-gray-400">Data:</span>
                     <div className="font-medium">
                       {new Date(selectedBookingDetails.date).toLocaleDateString('it-IT', {
                         weekday: 'long',
@@ -1014,15 +1014,15 @@ function BookingField({ user, T, state, setState }) {
                     </div>
                   </div>
                   <div>
-                    <span className="text-gray-600 text-gray-400">Orario:</span>
+                    <span className="text-gray-400">Orario:</span>
                     <div className="font-medium">{selectedBookingDetails.time}</div>
                   </div>
                   <div>
-                    <span className="text-gray-600 text-gray-400">Durata:</span>
+                    <span className="text-gray-400">Durata:</span>
                     <div className="font-medium">{selectedBookingDetails.duration} minuti</div>
                   </div>
                   <div>
-                    <span className="text-gray-600 text-gray-400">Prezzo:</span>
+                    <span className="text-gray-400">Prezzo:</span>
                     <div className="font-medium text-emerald-600">
                       {selectedBookingDetails.price}€
                     </div>
@@ -1071,7 +1071,7 @@ function BookingField({ user, T, state, setState }) {
               {selectedBookingDetails.notes && (
                 <div>
                   <h5 className={`${ds.h6} mb-2`}>Note</h5>
-                  <p className="text-sm text-gray-600 text-gray-400">
+                  <p className="text-sm text-gray-400">
                     {selectedBookingDetails.notes}
                   </p>
                 </div>
@@ -1081,7 +1081,7 @@ function BookingField({ user, T, state, setState }) {
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => setSelectedBookingDetails(null)}
-                  className="flex-1 bg-gray-100 bg-gray-800 border border-gray-200 border-gray-500 py-2 px-4 rounded-md text-sm transition-all hover:bg-gray-50 hover:bg-gray-700"
+                  className="flex-1 bg-gray-800 border border-gray-200 border-gray-500 py-2 px-4 rounded-md text-sm transition-all hover:bg-gray-50 hover:bg-gray-700"
                 >
                   Chiudi
                 </button>
@@ -1095,4 +1095,5 @@ function BookingField({ user, T, state, setState }) {
 }
 
 export default BookingField;
+
 

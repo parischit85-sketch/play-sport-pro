@@ -458,8 +458,8 @@ export default function LessonAdminPanel({
                   onClick={toggleLessonSystem}
                   className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg ${
                     lessonConfig.isEnabled
-                      ? 'bg-red-100 bg-red-900/40 text-red-800 text-red-300 hover:bg-red-200 hover:bg-red-900/60 border border-red-300 border-red-700'
-                      : 'bg-green-100 bg-green-900/40 text-green-800 text-green-300 hover:bg-green-200 hover:bg-green-900/60 border border-green-300 border-green-700'
+                      ? 'bg-red-900/40 text-red-300 hover:bg-red-900/60 border border-red-300 border-red-700'
+                      : 'bg-green-900/40 text-green-300 hover:bg-green-900/60 border border-green-300 border-green-700'
                   }`}
                 >
                   {lessonConfig.isEnabled ? '🛑 Disattiva' : '🚀 Attiva'}
@@ -487,7 +487,7 @@ export default function LessonAdminPanel({
                     }
                     className={`w-full p-3 bg-gray-50 bg-gray-700 border border-gray-300 border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 text-white`}
                   />
-                  <p className="text-xs text-gray-500 text-gray-400 mt-2">
+                  <p className="text-xs text-gray-400 mt-2">
                     Quanto in anticipo si può prenotare
                   </p>
                 </div>
@@ -511,7 +511,7 @@ export default function LessonAdminPanel({
                     }
                     className={`w-full p-3 bg-gray-50 bg-gray-700 border border-gray-300 border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 text-white`}
                   />
-                  <p className="text-xs text-gray-500 text-gray-400 mt-2">
+                  <p className="text-xs text-gray-400 mt-2">
                     Limite per cancellazioni gratuite
                   </p>
                 </div>
@@ -529,7 +529,7 @@ export default function LessonAdminPanel({
               {/* Add Time Slot Button */}
               <button
                 onClick={() => setShowTimeSlotModal(true)}
-                className="px-4 py-2 bg-blue-600 bg-blue-700 text-white rounded-lg hover:bg-blue-700 hover:bg-blue-600"
+                className="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-600"
               >
                 + Aggiungi Fascia Oraria
               </button>{' '}
@@ -608,12 +608,12 @@ export default function LessonAdminPanel({
                                   </div>
 
                                   {dateInfo && (
-                                    <div className="text-sm text-gray-600 text-gray-400 mb-2">
+                                    <div className="text-sm text-gray-400 mb-2">
                                       {dateInfo}
                                     </div>
                                   )}
 
-                                  <div className="flex items-center gap-4 text-sm text-gray-600 text-gray-400">
+                                  <div className="flex items-center gap-4 text-sm text-gray-400">
                                     <span>Max prenotazioni: {slot.maxBookings}</span>
                                     <span>Istruttori: {availableInstructors.length}</span>
                                     <span>
@@ -636,7 +636,7 @@ export default function LessonAdminPanel({
                                         {availableInstructors.map((instructor) => (
                                           <div
                                             key={instructor.id}
-                                            className="flex items-center gap-1 px-2 py-1 bg-gray-100 bg-gray-700 rounded-full text-xs text-gray-700 text-gray-300"
+                                            className="flex items-center gap-1 px-2 py-1 bg-gray-700 rounded-full text-xs text-gray-300"
                                           >
                                             <div
                                               className="w-3 h-3 rounded-full"
@@ -680,7 +680,7 @@ export default function LessonAdminPanel({
                   {/* Expired Time Slots */}
                   {expiredTimeSlots.length > 0 && (
                     <div className="space-y-3">
-                      <h3 className="text-lg font-semibold text-gray-600 text-gray-400 flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-gray-400 flex items-center gap-2">
                         ⏰ Fasce Orarie Scadute ({expiredTimeSlots.length})
                         <span className="text-sm text-gray-500 text-gray-500 font-normal">
                           (si cancellano automaticamente dopo 1 settimana)
@@ -737,7 +737,7 @@ export default function LessonAdminPanel({
                                 className={`${T.cardBg} ${T.border} rounded-lg p-4 opacity-60 relative`}
                               >
                                 <div className="absolute top-2 right-2">
-                                  <span className="px-2 py-1 bg-red-100 bg-red-900/30 text-red-600 text-red-400 text-xs font-medium rounded-full">
+                                  <span className="px-2 py-1 bg-red-900/30 text-red-400 text-xs font-medium rounded-full">
                                     Scaduta
                                   </span>
                                 </div>
@@ -746,15 +746,15 @@ export default function LessonAdminPanel({
                                   <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
                                       <h4
-                                        className={`${ds.h6} font-medium text-gray-600 text-gray-400`}
+                                        className={`${ds.h6} font-medium text-gray-400`}
                                       >
                                         {displayTitle}
                                       </h4>
                                       <div
                                         className={`px-2 py-1 rounded text-xs font-medium ${
                                           slot.isActive
-                                            ? 'bg-green-100 bg-green-900/30 text-green-600 text-green-400'
-                                            : 'bg-gray-100 bg-gray-700 text-gray-500 text-gray-400'
+                                            ? 'bg-green-900/30 text-green-400'
+                                            : 'bg-gray-700 text-gray-500 text-gray-400'
                                         }`}
                                       >
                                         {slot.isActive ? 'Attiva' : 'Disattiva'}
@@ -767,7 +767,7 @@ export default function LessonAdminPanel({
                                       </p>
                                     )}
 
-                                    <div className="flex items-center gap-4 text-sm text-gray-600 text-gray-400">
+                                    <div className="flex items-center gap-4 text-sm text-gray-400">
                                       <span>
                                         🕐 {slot.startTime} - {slot.endTime}
                                       </span>
@@ -896,7 +896,7 @@ export default function LessonAdminPanel({
                                     {/* Prezzi lezioni con design migliorato */}
                                     <div className="flex flex-wrap gap-1.5">
                                       {instructor.instructorData?.priceSingle > 0 && (
-                                        <span className="px-2 py-1 bg-blue-100 bg-blue-900/40 text-blue-800 text-blue-200 rounded-full text-xs font-medium border border-blue-200 border-blue-700">
+                                        <span className="px-2 py-1 bg-blue-900/40 text-blue-200 rounded-full text-xs font-medium border border-blue-200 border-blue-700">
                                           💼 €{instructor.instructorData.priceSingle}
                                         </span>
                                       )}
@@ -906,7 +906,7 @@ export default function LessonAdminPanel({
                                         </span>
                                       )}
                                       {instructor.instructorData?.priceThree > 0 && (
-                                        <span className="px-2 py-1 bg-purple-100 bg-purple-900/40 text-purple-800 text-purple-200 rounded-full text-xs font-medium border border-purple-200 border-purple-700">
+                                        <span className="px-2 py-1 bg-purple-900/40 text-purple-200 rounded-full text-xs font-medium border border-purple-200 border-purple-700">
                                           👥👤 €{instructor.instructorData.priceThree}
                                         </span>
                                       )}
@@ -1031,7 +1031,7 @@ export default function LessonAdminPanel({
                               <p className={`text-sm ${T.subtext} flex items-center gap-2`}>
                                 <span>📧 {player.email}</span>
                                 <span>•</span>
-                                <span className="px-2 py-0.5 bg-gray-100 bg-gray-700 rounded text-xs font-medium">
+                                <span className="px-2 py-0.5 bg-gray-700 rounded text-xs font-medium">
                                   {player.category}
                                 </span>
                               </p>
@@ -1102,7 +1102,7 @@ export default function LessonAdminPanel({
 
                     <button
                       onClick={onClearAllLessons}
-                      className="w-full px-4 py-3 bg-red-600 bg-red-700 text-white font-medium rounded-lg hover:bg-red-700 hover:bg-red-600 transition-colors"
+                      className="w-full px-4 py-3 bg-red-700 text-white font-medium rounded-lg hover:bg-red-600 transition-colors"
                     >
                       🗑️ Cancella Tutte le Prenotazioni di Lezione
                     </button>
@@ -1359,7 +1359,7 @@ function TimeSlotModal({
                   <button
                     type="button"
                     onClick={() => navigateMonth(-1)}
-                    className="p-3 hover:bg-gray-100 hover:bg-gray-700 rounded-lg transition-colors text-gray-700 text-gray-300 hover:text-gray-900 hover:text-gray-100 font-bold text-lg"
+                    className="p-3 hover:bg-gray-700 rounded-lg transition-colors text-gray-300 hover:text-gray-900 hover:text-gray-100 font-bold text-lg"
                   >
                     ←
                   </button>
@@ -1369,7 +1369,7 @@ function TimeSlotModal({
                   <button
                     type="button"
                     onClick={() => navigateMonth(1)}
-                    className="p-3 hover:bg-gray-100 hover:bg-gray-700 rounded-lg transition-colors text-gray-700 text-gray-300 hover:text-gray-900 hover:text-gray-100 font-bold text-lg"
+                    className="p-3 hover:bg-gray-700 rounded-lg transition-colors text-gray-300 hover:text-gray-900 hover:text-gray-100 font-bold text-lg"
                   >
                     →
                   </button>
@@ -1380,7 +1380,7 @@ function TimeSlotModal({
                   {dayNames.map((dayName) => (
                     <div
                       key={dayName}
-                      className="text-center text-sm font-bold text-gray-700 text-gray-300 p-2 bg-gray-50 bg-gray-800 rounded"
+                      className="text-center text-sm font-bold text-gray-300 p-2 bg-gray-50 bg-gray-800 rounded"
                     >
                       {dayName}
                     </div>
@@ -1592,7 +1592,7 @@ function TimeSlotModal({
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="rounded text-blue-600 bg-gray-100 bg-gray-700 border-gray-300 border-gray-600 focus:ring-blue-500 focus:ring-blue-400 w-5 h-5"
+                  className="rounded text-blue-600 bg-gray-700 border-gray-300 border-gray-600 focus:ring-blue-500 focus:ring-blue-400 w-5 h-5"
                 />
                 <label
                   htmlFor="isActive"
@@ -1629,7 +1629,7 @@ function TimeSlotModal({
                               : formData.courtIds.filter((id) => id !== court.id),
                           });
                         }}
-                        className="rounded text-blue-600 bg-gray-100 bg-gray-700 border-gray-300 border-gray-600 focus:ring-blue-500 focus:ring-blue-400 w-4 h-4"
+                        className="rounded text-blue-600 bg-gray-700 border-gray-300 border-gray-600 focus:ring-blue-500 focus:ring-blue-400 w-4 h-4"
                       />
                       <div className="flex items-center gap-3">
                         <div
@@ -1643,7 +1643,7 @@ function TimeSlotModal({
                             {court.name || `Campo ${court.id}`}
                           </span>
                           {court.surface?.type && (
-                            <span className="text-xs px-2 py-1 bg-gray-100 bg-gray-700 text-gray-600 text-gray-400 rounded mt-1 self-start">
+                            <span className="text-xs px-2 py-1 bg-gray-700 text-gray-400 rounded mt-1 self-start">
                               {court.surface.type}
                             </span>
                           )}
@@ -1672,7 +1672,7 @@ function TimeSlotModal({
           </button>
           <button
             type="submit"
-            className="flex-1 py-3 px-6 bg-blue-600 bg-blue-700 text-white rounded-lg hover:bg-blue-700 hover:bg-blue-600 font-semibold transition-colors text-lg shadow-lg"
+            className="flex-1 py-3 px-6 bg-blue-700 text-white rounded-lg hover:bg-blue-600 font-semibold transition-colors text-lg shadow-lg"
           >
             {timeSlot ? '✏️ Aggiorna' : '➕ Crea'} Fascia Oraria
           </button>
@@ -1792,7 +1792,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
               className="w-12 h-8 rounded border cursor-pointer"
               title="Colore personalizzato"
             />
-            <span className="text-sm text-gray-600 text-gray-400">
+            <span className="text-sm text-gray-400">
               Colore: {formData.color}
             </span>
           </div>
@@ -1824,7 +1824,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
               >
                 🎯 Attiva Istruttore
               </span>
-              <p className="text-sm text-gray-600 text-gray-400 mt-1">
+              <p className="text-sm text-gray-400 mt-1">
                 {formData.isInstructor
                   ? "L'istruttore è attivo e può ricevere prenotazioni"
                   : "L'istruttore è disattivato e non comparirà nelle prenotazioni"}
@@ -1962,7 +1962,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
                   className={`p-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isSelected
                       ? 'bg-blue-600 text-white shadow-md'
-                      : 'bg-gray-100 bg-gray-700 text-gray-700 text-gray-300 hover:bg-gray-200 hover:bg-gray-600'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-200 hover:bg-gray-600'
                   }`}
                 >
                   {specialty}
@@ -2004,7 +2004,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
             placeholder="Descrivi l'esperienza e le competenze dell'istruttore..."
           />
           <div className="flex justify-between items-center mt-1">
-            <span className="text-xs text-gray-500 text-gray-400">
+            <span className="text-xs text-gray-400">
               {formData.bio.length}/500 caratteri
             </span>
             {formData.bio.length > 450 && (
@@ -2018,7 +2018,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2 px-4 bg-gray-100 bg-gray-700 text-gray-700 text-gray-300 border border-gray-300 border-gray-600 rounded hover:bg-gray-200 hover:bg-gray-600 font-medium transition-colors"
+            className="flex-1 py-2 px-4 bg-gray-700 text-gray-300 border border-gray-300 border-gray-600 rounded hover:bg-gray-200 hover:bg-gray-600 font-medium transition-colors"
           >
             Annulla
           </button>
@@ -2033,4 +2033,9 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
     </Modal>
   );
 }
+
+
+
+
+
 

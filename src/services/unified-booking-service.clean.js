@@ -471,27 +471,6 @@ async function deleteCloudBooking(bookingId) {
 }
 
 async function loadCloudBookings() {
-  // Raw loader including cancelled (admin use)
-  async function loadCloudBookingsRaw() {
-    const q = query(
-      collection(db, COLLECTIONS.BOOKINGS),
-      orderBy('date', 'asc'),
-      orderBy('time', 'asc')
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => {
-      const raw = d.data() || {};
-      const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId;
-      const { id: _discardId, ...rest } = raw;
-      return {
-        ...rest,
-        id: d.id,
-        legacyId,
-        createdAt: raw.createdAt?.toDate?.()?.toISOString() || raw.createdAt,
-        updatedAt: raw.updatedAt?.toDate?.()?.toISOString() || raw.updatedAt,
-      };
-    });
-  }
   const q = query(
     collection(db, COLLECTIONS.BOOKINGS),
     orderBy('date', 'asc'),
@@ -502,7 +481,8 @@ async function loadCloudBookings() {
   const allBookings = snapshot.docs.map((d) => {
     const raw = d.data() || {};
     const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId; // support both old & new storage
-    const { id: _discardId, ...rest } = raw; // remove conflicting embedded id field
+    const rest = { ...raw };
+    delete rest.id; // remove conflicting embedded id field
     return {
       ...rest,
       id: d.id,
@@ -526,6 +506,29 @@ async function loadCloudBookings() {
 
   console.log(`✅ Returning ${activeBookings.length} active bookings from cloud`);
   return activeBookings;
+}
+
+// Raw loader including cancelled (admin use)
+async function loadCloudBookingsRaw() {
+  const q = query(
+    collection(db, COLLECTIONS.BOOKINGS),
+    orderBy('date', 'asc'),
+    orderBy('time', 'asc')
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((d) => {
+    const raw = d.data() || {};
+    const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId;
+    const rest = { ...raw };
+    delete rest.id;
+    return {
+      ...rest,
+      id: d.id,
+      legacyId,
+      createdAt: raw.createdAt?.toDate?.()?.toISOString() || raw.createdAt,
+      updatedAt: raw.updatedAt?.toDate?.()?.toISOString() || raw.updatedAt,
+    };
+  });
 }
 
 // =============================================
@@ -847,7 +850,8 @@ async function _getActiveUserBookings(userId) {
     return snap.docs.map((d) => {
       const raw = d.data() || {};
       const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId;
-      const { id: _discardId, ...rest } = raw;
+      const rest = { ...raw };
+      delete rest.id;
       return {
         ...rest,
         id: d.id,
@@ -891,7 +895,8 @@ async function _getUserBookingHistory(userId) {
     return snap.docs.map((d) => {
       const raw = d.data() || {};
       const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId;
-      const { id: _discardId, ...rest } = raw;
+      const rest = { ...raw };
+      delete rest.id;
       return {
         ...rest,
         id: d.id,
@@ -964,7 +969,8 @@ async function _searchBookingsForPlayer({ userId, email, name }) {
         r.value.docs.forEach((d) => {
           const raw = d.data() || {};
           const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId;
-          const { id: _discardId, ...rest } = raw;
+          const rest = { ...raw };
+          delete rest.id;
           merged.set(d.id, {
             ...rest,
             id: d.id,
@@ -1235,8 +1241,4 @@ export {
   _getUserBookingHistory as getUserBookingHistory,
   _searchBookingsForPlayer as searchBookingsForPlayer,
   // Export validation functions
-  wouldCreateHalfHourHole,
-  isTimeSlotTrapped,
-  isDurationBookable,
-  isSlotAvailable,
 };

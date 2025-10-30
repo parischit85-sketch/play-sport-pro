@@ -272,7 +272,7 @@ export default function Profile({ T }) {
               <p className="text-blue-600 text-blue-400 text-lg truncate mb-2">{user.email}</p>
               <div className="flex items-center gap-3">
                 {user.providerData[0] && getProviderIcon(user.providerData[0].providerId)}
-                <span className="text-sm font-medium text-gray-600 text-gray-300">
+                <span className="text-sm font-medium text-gray-300">
                   Accesso tramite{' '}
                   {user.providerData[0]
                     ? getProviderName(user.providerData[0].providerId)
@@ -325,7 +325,7 @@ export default function Profile({ T }) {
                   ? new Date(user.metadata.creationTime).toLocaleDateString('it-IT')
                   : 'N/A'}
               </div>
-              <div className="text-sm font-medium text-gray-600 text-gray-300">
+              <div className="text-sm font-medium text-gray-300">
                 Registrato il
               </div>
             </div>
@@ -335,7 +335,7 @@ export default function Profile({ T }) {
                   ? new Date(user.metadata.lastSignInTime).toLocaleDateString('it-IT')
                   : 'N/A'}
               </div>
-              <div className="text-sm font-medium text-gray-600 text-gray-300">
+              <div className="text-sm font-medium text-gray-300">
                 Ultimo accesso
               </div>
             </div>
@@ -398,7 +398,7 @@ export default function Profile({ T }) {
             <div className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 text-gray-300">
+                  <label className="text-sm font-semibold text-gray-300">
                     Nome *
                   </label>
                   <input
@@ -409,7 +409,7 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 text-gray-300">
+                  <label className="text-sm font-semibold text-gray-300">
                     Cognome
                   </label>
                   <input
@@ -420,7 +420,7 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 text-gray-300">
+                  <label className="text-sm font-semibold text-gray-300">
                     Telefono *
                   </label>
                   <input
@@ -431,7 +431,7 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 text-gray-300">
+                  <label className="text-sm font-semibold text-gray-300">
                     Codice Fiscale
                   </label>
                   <input
@@ -442,7 +442,7 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 text-gray-300">
+                  <label className="text-sm font-semibold text-gray-300">
                     Data di nascita
                   </label>
                   <input
@@ -453,18 +453,18 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 text-gray-300">
+                  <label className="text-sm font-semibold text-gray-300">
                     Email
                   </label>
                   <input
                     type="email"
-                    className="px-4 py-3 bg-gray-100/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl text-gray-500 text-gray-400 cursor-not-allowed"
+                    className="px-4 py-3 bg-gray-100/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl text-gray-400 cursor-not-allowed"
                     value={user.email || ''}
                     disabled
                   />
                 </div>
                 <div className="flex flex-col sm:col-span-2 space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 text-gray-300">
+                  <label className="text-sm font-semibold text-gray-300">
                     Indirizzo
                   </label>
                   <input
@@ -494,7 +494,7 @@ export default function Profile({ T }) {
                 </button>
               </div>
 
-              <p className="text-sm text-gray-500 text-gray-400 italic">* Campi obbligatori</p>
+              <p className="text-sm text-gray-400 italic">* Campi obbligatori</p>
             </div>
           )}
         </div>
@@ -502,4 +502,7 @@ export default function Profile({ T }) {
     </div>
   );
 }
+
+
+
 

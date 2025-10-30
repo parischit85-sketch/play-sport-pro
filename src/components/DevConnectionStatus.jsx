@@ -62,14 +62,14 @@ export default function DevConnectionStatus() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 bg-yellow-100 bg-yellow-900/50 border border-yellow-300 border-yellow-600 rounded-lg p-3 shadow-lg z-50 max-w-sm">
+    <div className="fixed bottom-4 right-4 bg-yellow-900/50 border border-yellow-600 rounded-lg p-3 shadow-lg z-50 max-w-sm">
       <div className="flex items-center gap-2">
         <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
         <div className="text-sm">
           <div className="font-medium text-yellow-800 text-yellow-200">🔄 HMR Disconnesso</div>
           <div className="text-yellow-700 text-yellow-300 text-xs">
             Usa{' '}
-            <kbd className="px-1 py-0.5 bg-yellow-200 bg-yellow-800 rounded text-xs">F5</kbd>{' '}
+            <kbd className="px-1 py-0.5 bg-yellow-800 rounded text-xs">F5</kbd>{' '}
             per refresh manuale
           </div>
         </div>
@@ -83,4 +83,5 @@ export default function DevConnectionStatus() {
     </div>
   );
 }
+
 

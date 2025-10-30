@@ -327,17 +327,17 @@ export function formatCourt(courtNumber) {
  */
 export function getStatusColorClass(status) {
   const colorMap = {
-    draft: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
-    registration_open: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-    registration_closed: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
-    groups_generation: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-    groups_phase: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-    knockout_phase: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
-    completed: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-    cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+    draft: 'bg-gradient-to-r from-gray-700 to-gray-800 text-gray-100 border border-gray-600 shadow-lg',
+    registration_open: 'bg-gradient-to-r from-green-600 to-emerald-600 text-white border border-green-500 shadow-lg shadow-green-500/20',
+    registration_closed: 'bg-gradient-to-r from-orange-600 to-amber-600 text-white border border-orange-500 shadow-lg shadow-orange-500/20',
+    groups_generation: 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white border border-blue-500 shadow-lg shadow-blue-500/20',
+    groups_phase: 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border border-blue-500 shadow-lg shadow-blue-500/20',
+    knockout_phase: 'bg-gradient-to-r from-purple-600 to-pink-600 text-white border border-purple-500 shadow-lg shadow-purple-500/20',
+    completed: 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border border-emerald-500 shadow-lg shadow-emerald-500/20',
+    cancelled: 'bg-gradient-to-r from-red-600 to-rose-600 text-white border border-red-500 shadow-lg shadow-red-500/20',
   };
 
-  return colorMap[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+  return colorMap[status] || 'bg-gradient-to-r from-gray-700 to-gray-800 text-gray-100 border border-gray-600 shadow-lg';
 }
 
 /**

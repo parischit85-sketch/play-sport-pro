@@ -67,7 +67,7 @@ export function TemplateLibraryModal({ isOpen, onClose, onApply, T }) {
               <h2 className="text-2xl font-bold text-gray-900 text-white flex items-center gap-2">
                 📚 Libreria Template
               </h2>
-              <p className="text-sm text-gray-600 text-gray-400 mt-1">
+              <p className="text-sm text-gray-400 mt-1">
                 {stats.total} template disponibili ({stats.system} di sistema, {stats.custom}{' '}
                 personalizzati)
               </p>
@@ -100,7 +100,7 @@ export function TemplateLibraryModal({ isOpen, onClose, onApply, T }) {
                 className={`px-4 py-2 rounded-lg font-medium transition-all ${
                   activeCategory === cat.id
                     ? 'bg-blue-500 text-white shadow-lg'
-                    : 'bg-gray-100 bg-gray-700 text-gray-700 text-gray-300 hover:bg-gray-200 hover:bg-gray-600'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
               >
                 {cat.icon} {cat.name}
@@ -114,10 +114,10 @@ export function TemplateLibraryModal({ isOpen, onClose, onApply, T }) {
           {filteredTemplates.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📭</div>
-              <div className="text-xl font-semibold text-gray-600 text-gray-400">
+              <div className="text-xl font-semibold text-gray-400">
                 Nessun template trovato
               </div>
-              <p className="text-sm text-gray-500 text-gray-500 mt-2">
+              <p className="text-sm text-gray-500 mt-2">
                 Prova a cambiare categoria o cerca qualcos'altro
               </p>
             </div>
@@ -157,7 +157,7 @@ export function TemplateLibraryModal({ isOpen, onClose, onApply, T }) {
           <div className="flex gap-3 justify-end">
             <button
               onClick={onClose}
-              className="px-6 py-3 bg-white bg-gray-800 text-gray-700 text-gray-300 rounded-lg border border-gray-300 border-gray-600 hover:bg-gray-100 hover:bg-gray-700 font-medium transition-colors"
+              className="px-6 py-3 bg-gray-800 text-gray-300 rounded-lg border border-gray-300 border-gray-600 hover:bg-gray-100 hover:bg-gray-700 font-medium transition-colors"
             >
               Annulla
             </button>
@@ -231,13 +231,13 @@ function TemplateCard({ template, isSelected, onSelect, onDelete, T }) {
             <span className="text-2xl">{getCategoryIcon(template.category)}</span>
             <h3 className="font-bold text-lg text-gray-900 text-white">{template.name}</h3>
             {template.isSystem && (
-              <span className="text-xs px-2 py-1 bg-gray-200 bg-gray-700 text-gray-600 text-gray-400 rounded-full">
+              <span className="text-xs px-2 py-1 bg-gray-700 text-gray-400 rounded-full">
                 Sistema
               </span>
             )}
           </div>
           {template.description && (
-            <p className="text-sm text-gray-600 text-gray-400">{template.description}</p>
+            <p className="text-sm text-gray-400">{template.description}</p>
           )}
         </div>
 
@@ -259,7 +259,7 @@ function TemplateCard({ template, isSelected, onSelect, onDelete, T }) {
         <span className={`text-xs px-3 py-1 rounded-full ${info.bg} ${info.text} font-medium`}>
           {getCategoryDisplayName(template.category)}
         </span>
-        <span className="text-xs text-gray-500 text-gray-500">
+        <span className="text-xs text-gray-500">
           {template.timeSlots.length} {template.timeSlots.length === 1 ? 'fascia' : 'fasce'}
         </span>
       </div>
@@ -283,11 +283,11 @@ function TemplateCard({ template, isSelected, onSelect, onDelete, T }) {
                 <div className="font-semibold text-gray-900 text-white">
                   {slot.label || `Fascia ${idx + 1}`}
                 </div>
-                <div className="text-gray-600 text-gray-400">
+                <div className="text-gray-400">
                   ⏰ {slot.from} - {slot.to} | 💰 €{slot.eurPerHour}/h
                   {slot.isPromo && <span className="ml-2 text-orange-600">🎁 Promo</span>}
                 </div>
-                <div className="text-gray-500 text-gray-500 text-xs">
+                <div className="text-gray-500 text-xs">
                   📅 {formatDays(slot.days)}
                 </div>
               </div>
@@ -365,7 +365,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, sourceTimeSlots =
               <h2 className="text-2xl font-bold text-gray-900 text-white">
                 ✨ Crea Nuovo Template
               </h2>
-              <p className="text-sm text-gray-600 text-gray-400 mt-1">
+              <p className="text-sm text-gray-400 mt-1">
                 Salva le fasce orarie attuali come template riutilizzabile
               </p>
             </div>
@@ -441,7 +441,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, sourceTimeSlots =
                   className={`px-4 py-3 rounded-lg font-medium transition-all ${
                     templateData.category === cat.id
                       ? 'bg-blue-500 text-white shadow-lg'
-                      : 'bg-gray-100 bg-gray-700 text-gray-700 text-gray-300 hover:bg-gray-200 hover:bg-gray-600'
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                   }`}
                 >
                   {cat.icon} {cat.name}
@@ -457,7 +457,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, sourceTimeSlots =
             </label>
             <div className="bg-gray-50 bg-gray-900 rounded-lg p-4 max-h-60 overflow-y-auto">
               {templateData.timeSlots.length === 0 ? (
-                <p className="text-sm text-gray-500 text-gray-500 text-center py-4">
+                <p className="text-sm text-gray-500 text-center py-4">
                   Nessuna fascia oraria disponibile
                 </p>
               ) : (
@@ -470,7 +470,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, sourceTimeSlots =
                       <div className="font-semibold text-gray-900 text-white">
                         {slot.label || `Fascia ${idx + 1}`}
                       </div>
-                      <div className="text-gray-600 text-gray-400 text-xs mt-1">
+                      <div className="text-gray-400 text-xs mt-1">
                         ⏰ {slot.from} - {slot.to} | 💰 €{slot.eurPerHour}/h | 📅{' '}
                         {formatDays(slot.days)}
                       </div>
@@ -487,7 +487,7 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, sourceTimeSlots =
           <div className="flex gap-3 justify-end">
             <button
               onClick={onClose}
-              className="px-6 py-3 bg-white bg-gray-800 text-gray-700 text-gray-300 rounded-lg border border-gray-300 border-gray-600 hover:bg-gray-100 hover:bg-gray-700 font-medium transition-colors"
+              className="px-6 py-3 bg-gray-800 text-gray-300 rounded-lg border border-gray-300 border-gray-600 hover:bg-gray-100 hover:bg-gray-700 font-medium transition-colors"
             >
               Annulla
             </button>
@@ -521,4 +521,7 @@ function formatDays(days) {
 }
 
 export default TemplateLibraryModal;
+
+
+
 

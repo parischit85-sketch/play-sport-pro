@@ -161,7 +161,7 @@ const MigrationWarningBanner = ({ onCreateSportingCAT, onMigrateData, clubs }) =
                 </button>
               ) : (
                 <div
-                  className="bg-green-100 bg-green-900/30 text-green-800 text-green-200 
+                  className="bg-green-900/30 text-green-200 
                               px-3 py-1 rounded-lg text-sm flex items-center gap-2"
                 >
                   <span>✅</span>
@@ -1092,4 +1092,5 @@ const AdminChampionshipRevertTool = () => {
     </div>
   );
 };
+
 

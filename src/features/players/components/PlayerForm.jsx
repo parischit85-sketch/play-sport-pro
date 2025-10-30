@@ -145,8 +145,8 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
               onClick={() => setActiveTab(tab.id)}
               className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
                 activeTab === tab.id
-                  ? 'border-blue-500 text-blue-400'
-                  : 'border-transparent text-gray-400 hover:text-gray-300'
+                  ? `border-blue-500 ${T.accentInfo}`
+                  : `border-transparent ${T.subtext} hover:${T.text}`
               }`}
             >
               <span className="hidden sm:inline">{tab.label}</span>
@@ -172,7 +172,7 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                   placeholder="Nome del giocatore"
                 />
                 {errors.firstName && (
-                  <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
+                  <p className={`${T.accentWarning} text-xs mt-1`}>{errors.firstName}</p>
                 )}
               </div>
 
@@ -185,7 +185,7 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                   className={`${T.input} w-full ${errors.lastName ? 'border-red-500' : ''}`}
                   placeholder="Cognome del giocatore"
                 />
-                {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
+                {errors.lastName && <p className={`${T.accentWarning} text-xs mt-1`}>{errors.lastName}</p>}
               </div>
             </div>
 
@@ -240,7 +240,7 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                 className={`${T.input} w-full ${errors.email ? 'border-red-500' : ''}`}
                 placeholder="email@esempio.com"
               />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+              {errors.email && <p className={`${T.accentWarning} text-xs mt-1`}>{errors.email}</p>}
             </div>
 
             <div>
@@ -252,7 +252,7 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                 className={`${T.input} w-full ${errors.phone ? 'border-red-500' : ''}`}
                 placeholder="+39 123 456 7890"
               />
-              {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+              {errors.phone && <p className={`${T.accentWarning} text-xs mt-1`}>{errors.phone}</p>}
             </div>
 
             <div className="space-y-3">
@@ -473,7 +473,7 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                               currentSpecialties.filter((s) => s !== specialty)
                             );
                           }}
-                          className="text-blue-400 hover:text-blue-200"
+                          className={`${T.accentInfo} hover:opacity-80`}
                         >
                           ×
                         </button>

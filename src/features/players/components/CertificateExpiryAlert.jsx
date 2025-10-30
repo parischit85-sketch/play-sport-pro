@@ -110,7 +110,7 @@ export default function CertificateExpiryAlert() {
         title: 'Certificato Medico Mancante',
         message:
           'Non hai ancora caricato il certificato medico. Contatta il circolo per maggiori informazioni.',
-        bgClass: 'bg-gray-50 bg-gray-800',
+        bgClass: 'bg-gray-800',
         borderClass: 'border-gray-400',
         textClass: 'text-gray-800 text-gray-200',
         dismissable: true,
@@ -186,4 +186,6 @@ export default function CertificateExpiryAlert() {
     </div>
   );
 }
+
+
 

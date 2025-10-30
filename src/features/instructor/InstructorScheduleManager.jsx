@@ -240,7 +240,7 @@ export default function InstructorScheduleManager({ compact = false }) {
               className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                 isSameDay(option.date, selectedDate)
                   ? 'bg-blue-500 text-white shadow-lg'
-                  : 'bg-gray-100 bg-gray-700 text-gray-600 text-gray-300 hover:bg-gray-200 hover:bg-gray-600'
+                  : 'bg-gray-700 text-gray-600 text-gray-300 hover:bg-gray-200 hover:bg-gray-600'
               }`}
             >
               {option.label}
@@ -252,7 +252,7 @@ export default function InstructorScheduleManager({ compact = false }) {
       {/* Slots list */}
       <div className="space-y-4">
         {slotsForSelectedDate.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 text-gray-400">
+          <div className="text-center py-8 text-gray-400">
             <svg
               className="w-12 h-12 mx-auto mb-3 opacity-50"
               fill="none"
@@ -316,7 +316,7 @@ export default function InstructorScheduleManager({ compact = false }) {
               <div className="space-y-2 text-sm">
                 {slot.courtIds && slot.courtIds.length > 0 && (
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-600 text-gray-400">Campi:</span>
+                    <span className="text-gray-400">Campi:</span>
                     <span className="font-medium text-gray-900 text-white">
                       {slot.courtIds.join(', ')}
                     </span>
@@ -324,7 +324,7 @@ export default function InstructorScheduleManager({ compact = false }) {
                 )}
 
                 <div className="flex items-center gap-2">
-                  <span className="text-gray-600 text-gray-400">Max partecipanti:</span>
+                  <span className="text-gray-400">Max partecipanti:</span>
                   <span className="font-medium text-gray-900 text-white">
                     {slot.maxParticipants || 1}
                   </span>
@@ -332,7 +332,7 @@ export default function InstructorScheduleManager({ compact = false }) {
 
                 {slot.price && slot.price > 0 && (
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-600 text-gray-400">Prezzo:</span>
+                    <span className="text-gray-400">Prezzo:</span>
                     <span className="font-medium text-green-600 text-green-400">
                       €{slot.price}
                     </span>
@@ -375,7 +375,7 @@ export default function InstructorScheduleManager({ compact = false }) {
         <form onSubmit={handleSubmitSlot} className="space-y-4">
           {/* Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Data
             </label>
             <select
@@ -396,7 +396,7 @@ export default function InstructorScheduleManager({ compact = false }) {
           {/* Time range */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Ora inizio
               </label>
               <input
@@ -408,7 +408,7 @@ export default function InstructorScheduleManager({ compact = false }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Ora fine
               </label>
               <input
@@ -423,7 +423,7 @@ export default function InstructorScheduleManager({ compact = false }) {
 
           {/* Courts */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Campi disponibili
             </label>
             <div className="space-y-2">
@@ -443,7 +443,7 @@ export default function InstructorScheduleManager({ compact = false }) {
                     }}
                     className="mr-2"
                   />
-                  <span className="text-sm text-gray-700 text-gray-300">{court.name}</span>
+                  <span className="text-sm text-gray-300">{court.name}</span>
                 </label>
               ))}
             </div>
@@ -451,7 +451,7 @@ export default function InstructorScheduleManager({ compact = false }) {
 
           {/* Max participants */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Max partecipanti
             </label>
             <input
@@ -468,7 +468,7 @@ export default function InstructorScheduleManager({ compact = false }) {
 
           {/* Price */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Prezzo (€)
             </label>
             <input
@@ -485,7 +485,7 @@ export default function InstructorScheduleManager({ compact = false }) {
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
               Note (opzionale)
             </label>
             <textarea
@@ -514,7 +514,7 @@ export default function InstructorScheduleManager({ compact = false }) {
                   notes: '',
                 });
               }}
-              className="flex-1 px-4 py-2 border border-gray-300 border-gray-600 text-gray-700 text-gray-300 rounded-lg hover:bg-gray-50 hover:bg-gray-700 transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-300 border-gray-600 text-gray-300 rounded-lg hover:bg-gray-50 hover:bg-gray-700 transition-colors"
             >
               Annulla
             </button>
@@ -530,4 +530,5 @@ export default function InstructorScheduleManager({ compact = false }) {
     </div>
   );
 }
+
 

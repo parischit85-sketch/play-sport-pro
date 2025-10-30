@@ -16,7 +16,7 @@ const AffiliationCard = ({ affiliation, onEnterClub }) => {
       case AFFILIATION_STATUS.PENDING:
         return (
           <span
-            className="bg-yellow-100 bg-yellow-900/30 text-yellow-800 text-yellow-400 
+            className="bg-yellow-900/30 text-yellow-400 
                          px-3 py-1 rounded-full text-sm font-medium"
           >
             ⏳ In attesa
@@ -25,7 +25,7 @@ const AffiliationCard = ({ affiliation, onEnterClub }) => {
       case AFFILIATION_STATUS.APPROVED:
         return (
           <span
-            className="bg-green-100 bg-green-900/30 text-green-800 text-green-400 
+            className="bg-green-900/30 text-green-400 
                          px-3 py-1 rounded-full text-sm font-medium"
           >
             ✅ Approvata
@@ -34,7 +34,7 @@ const AffiliationCard = ({ affiliation, onEnterClub }) => {
       case AFFILIATION_STATUS.REJECTED:
         return (
           <span
-            className="bg-red-100 bg-red-900/30 text-red-800 text-red-400 
+            className="bg-red-900/30 text-red-400 
                          px-3 py-1 rounded-full text-sm font-medium"
           >
             ❌ Rifiutata
@@ -318,4 +318,5 @@ const MyAffiliations = () => {
 };
 
 export default MyAffiliations;
+
 

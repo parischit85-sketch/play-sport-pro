@@ -3,11 +3,13 @@
  * Interfaccia per generazione e visualizzazione report
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { FileText, Download, Calendar, TrendingUp, Users, DollarSign, Filter } from 'lucide-react';
 import { useReports } from '../services/reportService';
+import { themeTokens } from '@lib/theme.js';
 
 export default function ReportsDashboard({ clubId, clubName }) {
+  const T = React.useMemo(() => themeTokens(), []);
   const [reportType, setReportType] = useState('bookings');
   const [format, setFormat] = useState('excel');
   const [startDate, setStartDate] = useState(
@@ -58,7 +60,7 @@ export default function ReportsDashboard({ clubId, clubName }) {
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
       {/* Header */}
-      <div className="bg-white bg-gray-800 rounded-lg shadow-md p-6">
+      <div className={`${T.card} p-6`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <FileText className="w-8 h-8 text-blue-600" />
@@ -77,7 +79,7 @@ export default function ReportsDashboard({ clubId, clubName }) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Report Type Selection */}
         <div className="lg:col-span-1 space-y-4">
-          <div className="bg-white bg-gray-800 rounded-lg shadow-md p-6">
+          <div className={`${T.card} p-6`}>
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Filter className="w-5 h-5" />
               Tipo di Report
@@ -114,7 +116,7 @@ export default function ReportsDashboard({ clubId, clubName }) {
           </div>
 
           {/* Format Selection */}
-          <div className="bg-white bg-gray-800 rounded-lg shadow-md p-6">
+          <div className={`${T.card} p-6`}>
             <h2 className="text-lg font-semibold mb-4">Formato Export</h2>
 
             <div className="space-y-2">
@@ -152,11 +154,11 @@ export default function ReportsDashboard({ clubId, clubName }) {
         {/* Configuration Panel */}
         <div className="lg:col-span-2 space-y-6">
           {/* Date Range */}
-          <div className="bg-white bg-gray-800 rounded-lg shadow-md p-6">
+          <div className={`${T.card} p-6`}>
             <h2 className="text-lg font-semibold mb-4">Periodo</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+                <div>
                 <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
                   Data Inizio
                 </label>
@@ -164,7 +166,7 @@ export default function ReportsDashboard({ clubId, clubName }) {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-700 border-gray-600"
+                  className={`${T.input} w-full`}
                 />
               </div>
 
@@ -190,7 +192,7 @@ export default function ReportsDashboard({ clubId, clubName }) {
                   setStartDate(start.toISOString().split('T')[0]);
                   setEndDate(end.toISOString().split('T')[0]);
                 }}
-                className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 bg-gray-700 hover:bg-gray-600 rounded-lg"
+                className={`px-3 py-1 text-sm ${T.btnGhostSm}`}
               >
                 Ultimi 7 giorni
               </button>
@@ -231,10 +233,10 @@ export default function ReportsDashboard({ clubId, clubName }) {
           </div>
 
           {/* Preview & Generate */}
-          <div className="bg-white bg-gray-800 rounded-lg shadow-md p-6">
+          <div className={`${T.card} p-6`}>
             <h2 className="text-lg font-semibold mb-4">Anteprima Report</h2>
 
-            <div className="bg-gray-50 bg-gray-700 rounded-lg p-6 mb-6">
+            <div className={`${T.cardBg} rounded-lg p-6 mb-6`}> 
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600 text-gray-400">Tipo:</span>
@@ -292,7 +294,7 @@ export default function ReportsDashboard({ clubId, clubName }) {
           </div>
 
           {/* Info Card */}
-          <div className="bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-800 rounded-lg p-6">
+          <div className={`rounded-lg p-6 ${T.cardBg} ${T.border}`}>
             <h3 className="font-semibold text-blue-900 text-blue-200 mb-2">ℹ️ Informazioni</h3>
             <ul className="text-sm text-blue-800 text-blue-300 space-y-1">
               <li>• I report vengono generati in tempo reale dai dati attuali</li>

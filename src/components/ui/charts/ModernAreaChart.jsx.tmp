@@ -111,17 +111,17 @@ export default function ModernAreaChart({
     if (multiPlayer && top5Players && top5Players.length > 0) {
       // Per multiPlayer, controlla solo i valori dei giocatori visibili
       chartData.forEach((point) => {
-      top5Players
-        .filter((player) => visiblePlayers.has(player.id))
-        .forEach((player) => {
-          const dataKey = yKey === 'rating' ? player.name : `${player.name}_${yKey}`;
+        top5Players
+          .filter((player) => visiblePlayers.has(player.id))
+          .forEach((player) => {
+            const dataKey = yKey === 'rating' ? player.name : `${player.name}_${yKey}`;
             const playerValue = point[dataKey];
             if (typeof playerValue === 'number') {
               minValue = Math.min(minValue, playerValue);
               maxValue = Math.max(maxValue, playerValue);
             }
           });
-        });
+      });
     } else {
       // Logica originale per single player
       chartData.forEach((point) => {
@@ -165,9 +165,7 @@ export default function ModernAreaChart({
 
       return (
         <div className="bg-white/95 bg-gray-800/95 backdrop-blur-sm border border-gray-200 border-gray-700 rounded-xl shadow-xl p-4">
-          <p className="text-sm font-semibold text-gray-900 text-gray-100 mb-2">
-            {displayLabel}
-          </p>
+          <p className="text-sm font-semibold text-gray-900 text-gray-100 mb-2">{displayLabel}</p>
           {multiPlayer
             ? // Tooltip per multiPlayer - mostra solo giocatori visibili
               top5Players
@@ -562,9 +560,7 @@ export default function ModernAreaChart({
                     ></div>
                     <span
                       className={`text-xs transition-colors duration-200 ${
-                        isVisible
-                          ? 'text-gray-600 text-gray-400'
-                          : 'text-gray-400 text-gray-500'
+                        isVisible ? 'text-gray-600 text-gray-400' : 'text-gray-400 text-gray-500'
                       }`}
                     >
                       {player.name}
@@ -660,9 +656,7 @@ export default function ModernAreaChart({
                       </div>
                       <span
                         className={`text-sm font-medium transition-colors duration-200 ${
-                          isVisible
-                            ? 'text-blue-900 text-blue-100'
-                            : 'text-gray-500 text-gray-400'
+                          isVisible ? 'text-blue-900 text-blue-100' : 'text-gray-500 text-gray-400'
                         }`}
                       >
                         {player.name}
@@ -695,4 +689,3 @@ export default function ModernAreaChart({
     </div>
   );
 }
-

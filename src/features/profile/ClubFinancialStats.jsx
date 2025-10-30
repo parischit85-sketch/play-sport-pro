@@ -140,7 +140,7 @@ export default function ClubFinancialStats({ T, clubId, courts }) {
               <div className="text-3xl font-bold text-green-600 text-green-400">
                 €{currentData.revenue?.toFixed(2) || '0.00'}
               </div>
-              <div className="text-sm text-gray-600 text-gray-400">
+              <div className="text-sm text-gray-400">
                 {timeRange === 'today' && 'Incasso di oggi'}
                 {timeRange === 'week' && 'Incasso settimanale'}
                 {timeRange === 'month' && 'Incasso mensile'}
@@ -157,7 +157,7 @@ export default function ClubFinancialStats({ T, clubId, courts }) {
               <div className="text-3xl font-bold text-blue-600 text-blue-400">
                 {currentData.bookings || 0}
               </div>
-              <div className="text-sm text-gray-600 text-gray-400">
+              <div className="text-sm text-gray-400">
                 {timeRange === 'today' && 'Prenotazioni di oggi'}
                 {timeRange === 'week' && 'Prenotazioni settimanali'}
                 {timeRange === 'month' && 'Prenotazioni mensili'}
@@ -178,7 +178,7 @@ export default function ClubFinancialStats({ T, clubId, courts }) {
                 <div key={method} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></div>
-                    <span className="text-sm font-medium text-gray-700 text-gray-300">
+                    <span className="text-sm font-medium text-gray-300">
                       {method}
                     </span>
                   </div>
@@ -212,7 +212,7 @@ export default function ClubFinancialStats({ T, clubId, courts }) {
                       <div className="text-sm font-medium text-gray-900 text-white">
                         {court.name}
                       </div>
-                      <div className="text-xs text-gray-600 text-gray-400">
+                      <div className="text-xs text-gray-400">
                         {court.bookings} prenotazioni
                       </div>
                     </div>
@@ -233,7 +233,7 @@ export default function ClubFinancialStats({ T, clubId, courts }) {
               <div className="text-2xl font-bold text-gray-900 text-white">
                 €{(currentData.revenue / Math.max(currentData.bookings, 1)).toFixed(0)}
               </div>
-              <div className="text-sm text-gray-600 text-gray-400">Ricavo Medio</div>
+              <div className="text-sm text-gray-400">Ricavo Medio</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-gray-900 text-white">
@@ -242,19 +242,19 @@ export default function ClubFinancialStats({ T, clubId, courts }) {
                   (timeRange === 'today' ? 1 : timeRange === 'week' ? 7 : 30)
                 ).toFixed(1)}
               </div>
-              <div className="text-sm text-gray-600 text-gray-400">Utilizzo Medio/Campo</div>
+              <div className="text-sm text-gray-400">Utilizzo Medio/Campo</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600 text-green-400">
                 {Math.floor(Math.random() * 20) + 80}%
               </div>
-              <div className="text-sm text-gray-600 text-gray-400">Tasso Occupazione</div>
+              <div className="text-sm text-gray-400">Tasso Occupazione</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600 text-blue-400">
                 {Math.floor(Math.random() * 10) + 85}%
               </div>
-              <div className="text-sm text-gray-600 text-gray-400">Soddisfazione</div>
+              <div className="text-sm text-gray-400">Soddisfazione</div>
             </div>
           </div>
         </div>
@@ -262,4 +262,6 @@ export default function ClubFinancialStats({ T, clubId, courts }) {
     </Section>
   );
 }
+
+
 

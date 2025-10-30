@@ -287,7 +287,7 @@ export function SmartSuggestionsPanel({
               <h2 className="text-2xl font-bold text-gray-900 text-white flex items-center gap-2">
                 🧠 Smart Suggestions
               </h2>
-              <p className="text-sm text-gray-600 text-gray-400 mt-1">
+              <p className="text-sm text-gray-400 mt-1">
                 Analisi intelligente basata su {analytics.totalBookings} prenotazioni
               </p>
             </div>
@@ -306,7 +306,7 @@ export function SmartSuggestionsPanel({
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === 'suggestions'
                   ? 'bg-blue-500 text-white'
-                  : 'bg-white bg-gray-700 text-gray-700 text-gray-300 hover:bg-gray-100 hover:bg-gray-600'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
               💡 Suggerimenti ({suggestions.length})
@@ -316,7 +316,7 @@ export function SmartSuggestionsPanel({
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === 'analytics'
                   ? 'bg-blue-500 text-white'
-                  : 'bg-white bg-gray-700 text-gray-700 text-gray-300 hover:bg-gray-100 hover:bg-gray-600'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
               📊 Analytics
@@ -326,7 +326,7 @@ export function SmartSuggestionsPanel({
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeTab === 'heatmap'
                   ? 'bg-blue-500 text-white'
-                  : 'bg-white bg-gray-700 text-gray-700 text-gray-300 hover:bg-gray-100 hover:bg-gray-600'
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
               }`}
             >
               🔥 Occupancy Heatmap
@@ -345,7 +345,7 @@ export function SmartSuggestionsPanel({
                   <h3 className="text-xl font-bold text-gray-900 text-white mb-2">
                     Nessun suggerimento disponibile
                   </h3>
-                  <p className="text-gray-600 text-gray-400">
+                  <p className="text-gray-400">
                     Accumula più dati di prenotazione per ricevere suggerimenti intelligenti.
                   </p>
                 </div>
@@ -464,7 +464,7 @@ export function SmartSuggestionsPanel({
                         <div className="w-24 text-sm font-medium text-gray-700 text-gray-300">
                           {day}
                         </div>
-                        <div className="flex-1 bg-gray-200 bg-gray-700 rounded-full h-6 overflow-hidden">
+                        <div className="flex-1 bg-gray-700 rounded-full h-6 overflow-hidden">
                           <div
                             className="bg-blue-500 h-full flex items-center justify-end px-2 transition-all"
                             style={{ width: `${percentage}%` }}
@@ -502,7 +502,7 @@ export function SmartSuggestionsPanel({
                           <div className="text-lg font-bold text-gray-900 text-white">
                             {hour}:00
                           </div>
-                          <div className="text-sm text-gray-600 text-gray-400">
+                          <div className="text-sm text-gray-400">
                             {count} prenotazioni
                           </div>
                           {isPeak && (
@@ -548,7 +548,7 @@ export function SmartSuggestionsPanel({
                       <div className="w-32 font-medium text-gray-900 text-white">
                         {slot.timeRange}
                       </div>
-                      <div className="flex-1 bg-gray-200 bg-gray-700 rounded-full h-8 overflow-hidden">
+                      <div className="flex-1 bg-gray-700 rounded-full h-8 overflow-hidden">
                         <div
                           className={`${colorClass} h-full flex items-center justify-center transition-all`}
                           style={{ width: `${rate}%` }}
@@ -558,7 +558,7 @@ export function SmartSuggestionsPanel({
                           )}
                         </div>
                       </div>
-                      <div className="w-24 text-right text-sm text-gray-600 text-gray-400">
+                      <div className="w-24 text-right text-sm text-gray-400">
                         {slot.bookings}/{slot.totalCapacity}
                       </div>
                     </div>
@@ -572,7 +572,7 @@ export function SmartSuggestionsPanel({
         {/* Footer */}
         <div className="p-4 border-t border-gray-200 border-gray-700 bg-gray-50 bg-gray-900">
           <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-600 text-gray-400">
+            <div className="text-sm text-gray-400">
               💡 Suggerimento: Usa questi dati per ottimizzare prezzi e disponibilità
             </div>
             <button
@@ -589,4 +589,5 @@ export function SmartSuggestionsPanel({
 }
 
 export default SmartSuggestionsPanel;
+
 
