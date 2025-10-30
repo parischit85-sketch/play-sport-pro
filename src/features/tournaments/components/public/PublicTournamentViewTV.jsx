@@ -32,6 +32,8 @@ function PublicTournamentViewTV() {
 
   const intervalRef = useRef(null);
   const progressIntervalRef = useRef(null);
+  const contentRef = useRef(null);
+  const scrollIntervalRef = useRef(null);
 
   // Validate token and load tournament
   useEffect(() => {
@@ -143,7 +145,8 @@ function PublicTournamentViewTV() {
 
   // Add group pages if enabled in settings
   const displaySettings = tournament?.publicView?.settings?.displaySettings || {};
-  if (displaySettings.groupsMatches !== false) { // Default to true if not set
+  if (displaySettings.groupsMatches !== false) {
+    // Default to true if not set
     pages.push(...groups.map((g) => ({ type: 'group', groupId: g })));
   }
 
@@ -268,6 +271,87 @@ function PublicTournamentViewTV() {
       if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
     };
   }, [pages.length, tournament]);
+
+  // Auto-scroll for content that overflows viewport
+  useEffect(() => {
+    if (!contentRef.current) return;
+
+    const checkAndScroll = () => {
+      const container = contentRef.current;
+      if (!container) return;
+
+      const containerHeight = container.clientHeight;
+      const scrollHeight = container.scrollHeight;
+      const isOverflowing = scrollHeight > containerHeight;
+
+      // Clear any existing scroll interval
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
+
+      if (isOverflowing) {
+        console.log('📜 Content overflows, starting auto-scroll', {
+          containerHeight,
+          scrollHeight,
+          overflow: scrollHeight - containerHeight,
+        });
+
+        let scrollPosition = 0;
+        const scrollStep = 1; // pixels per interval
+        const scrollDelay = 50; // ms between steps (slower = smoother)
+        const pauseAtBottom = 2000; // ms to pause at bottom
+        const pauseAtTop = 1000; // ms to pause at top
+        let isPaused = false;
+        let scrollDirection = 'down'; // 'down' or 'up'
+
+        scrollIntervalRef.current = setInterval(() => {
+          if (isPaused || !container) return;
+
+          if (scrollDirection === 'down') {
+            scrollPosition += scrollStep;
+            container.scrollTop = scrollPosition;
+
+            // Check if reached bottom
+            if (scrollPosition >= scrollHeight - containerHeight) {
+              scrollDirection = 'up';
+              isPaused = true;
+              setTimeout(() => {
+                isPaused = false;
+              }, pauseAtBottom);
+            }
+          } else {
+            // Scrolling up
+            scrollPosition -= scrollStep;
+            container.scrollTop = scrollPosition;
+
+            // Check if reached top
+            if (scrollPosition <= 0) {
+              scrollDirection = 'down';
+              isPaused = true;
+              setTimeout(() => {
+                isPaused = false;
+              }, pauseAtTop);
+            }
+          }
+        }, scrollDelay);
+      } else {
+        // Reset scroll to top if content doesn't overflow
+        container.scrollTop = 0;
+      }
+    };
+
+    // Check after content loads and when page changes
+    const timeoutId = setTimeout(checkAndScroll, 500);
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
+    };
+  }, [currentPageIndex, groupData, pages]);
 
   if (loading) {
     return (
@@ -595,11 +679,13 @@ function PublicTournamentViewTV() {
               teamName: standing.teamName,
               totalPoints: standing.points || 0,
               totalRPA: standing.rpaPoints || 0,
-              groups: [{
-                groupId: Object.keys(groupData).find((key) => groupData[key] === group),
-                points: standing.points || 0,
-                rpa: standing.rpaPoints || 0,
-              }],
+              groups: [
+                {
+                  groupId: Object.keys(groupData).find((key) => groupData[key] === group),
+                  points: standing.points || 0,
+                  rpa: standing.rpaPoints || 0,
+                },
+              ],
             });
           }
         });
@@ -620,8 +706,12 @@ function PublicTournamentViewTV() {
                 <tr>
                   <th className="text-center py-2 px-3 text-white font-bold text-xl">#</th>
                   <th className="text-left py-2 px-3 text-white font-bold text-xl">Squadra</th>
-                  <th className="text-center py-2 px-3 text-white font-bold text-xl">Punti Totali</th>
-                  <th className="text-center py-2 px-3 text-white font-bold text-xl">RPA Migliore</th>
+                  <th className="text-center py-2 px-3 text-white font-bold text-xl">
+                    Punti Totali
+                  </th>
+                  <th className="text-center py-2 px-3 text-white font-bold text-xl">
+                    RPA Migliore
+                  </th>
                   <th className="text-center py-2 px-3 text-white font-bold text-xl">Gironi</th>
                 </tr>
               </thead>
@@ -651,7 +741,9 @@ function PublicTournamentViewTV() {
                           {Math.round(team.totalRPA * 10) / 10}
                         </td>
                         <td className="py-2 px-3 text-center text-lg text-gray-300">
-                          {team.groups.map(g => `${g.groupId.toUpperCase()}: ${g.points}`).join(', ')}
+                          {team.groups
+                            .map((g) => `${g.groupId.toUpperCase()}: ${g.points}`)
+                            .join(', ')}
                         </td>
                       </tr>
                     );
@@ -726,11 +818,12 @@ function PublicTournamentViewTV() {
               <div className="flex items-center gap-3 px-4 py-2 bg-red-500 rounded-full shadow-lg">
                 <div className="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div>
                 <span className="text-white font-bold text-xl">
-                  {currentTime.toLocaleTimeString('it-IT', { 
-                    hour: '2-digit', 
-                    minute: '2-digit', 
-                    second: '2-digit' 
-                  })} LIVE
+                  {currentTime.toLocaleTimeString('it-IT', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                  })}{' '}
+                  LIVE
                 </span>
               </div>
 
@@ -760,7 +853,7 @@ function PublicTournamentViewTV() {
       </div>
 
       {/* Main content - Padding ridotto per 16:9 */}
-      <div className="container mx-auto px-4 py-3 flex-1">
+      <div ref={contentRef} className="container mx-auto px-4 py-3 flex-1 overflow-hidden">
         {pages.length === 0 ? (
           <div className="text-center py-32">
             <Trophy className="w-24 h-24 text-gray-600 mx-auto mb-6" />
@@ -814,4 +907,3 @@ function PublicTournamentViewTV() {
 }
 
 export default PublicTournamentViewTV;
-
