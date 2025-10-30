@@ -6,9 +6,11 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { User, Building2, X } from 'lucide-react';
+import { themeTokens } from '@lib/theme.js';
 
 export default function RegistrationTypeModal({ isOpen, onClose }) {
   const navigate = useNavigate();
+  const T = React.useMemo(() => themeTokens(), []);
 
   if (!isOpen) return null;
 
@@ -33,9 +35,9 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
       className="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden animate-fade-in">
+      <div className={`${T.cardBg} rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden animate-fade-in`}>
         {/* Header */}
-        <div className="bg-gradient-to-r from-emerald-500 to-blue-600 dark:from-blue-600 dark:to-indigo-700 p-6 relative">
+        <div className="bg-gradient-to-r from-emerald-500 to-blue-600 from-blue-600 to-indigo-700 p-6 relative">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm flex items-center justify-center text-white transition-colors"
@@ -52,7 +54,7 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
             {/* Registrazione Utente */}
             <button
               onClick={handleUserRegistration}
-              className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/10 rounded-xl p-6 border-2 border-emerald-200 dark:border-emerald-700/30 hover:border-emerald-400 dark:hover:border-emerald-500 transition-all duration-300 hover:shadow-lg hover:scale-105"
+              className="group relative overflow-hidden bg-gradient-to-br from-emerald-900/20 to-green-900/10 rounded-xl p-6 border-2 border-emerald-700/30 hover:border-emerald-500 transition-all duration-300 hover:shadow-lg hover:scale-105"
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-full -mr-10 -mt-10"></div>
 
@@ -61,15 +63,15 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
                   <User className="w-8 h-8 text-white" />
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-xl font-bold text-white mb-2">
                   Registrati come Utente
                 </h3>
 
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-sm text-gray-400 mb-4">
                   Prenota campi, partecipa a tornei, segui statistiche e migliora il tuo gioco
                 </p>
 
-                <div className="space-y-2 text-xs text-gray-500 dark:text-gray-500">
+                <div className="space-y-2 text-xs text-gray-500 text-gray-500">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
                     <span>Prenotazioni rapide</span>
@@ -84,7 +86,7 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold">
+                <div className="mt-4 flex items-center justify-center gap-2 text-emerald-400 font-semibold">
                   <span>Inizia subito</span>
                   <svg
                     className="w-5 h-5 group-hover:translate-x-1 transition-transform"
@@ -106,7 +108,7 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
             {/* Registrazione Circolo */}
             <button
               onClick={handleClubRegistration}
-              className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/10 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-700/30 hover:border-blue-400 dark:hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:scale-105"
+              className="group relative overflow-hidden bg-gradient-to-br from-blue-900/20 to-indigo-900/10 rounded-xl p-6 border-2 border-blue-700/30 hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:scale-105"
             >
               <div className="absolute top-0 right-0 w-20 h-20 bg-blue-500/10 rounded-full -mr-10 -mt-10"></div>
 
@@ -115,15 +117,15 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
                   <Building2 className="w-8 h-8 text-white" />
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                <h3 className="text-xl font-bold text-white mb-2">
                   Registra il tuo Circolo
                 </h3>
 
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-sm text-gray-400 mb-4">
                   Gestisci campi, prenotazioni, tornei e membri del tuo circolo sportivo
                 </p>
 
-                <div className="space-y-2 text-xs text-gray-500 dark:text-gray-500">
+                <div className="space-y-2 text-xs text-gray-500 text-gray-500">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
                     <span>Gestione completa</span>
@@ -138,7 +140,7 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-center gap-2 text-blue-600 dark:text-blue-400 font-semibold">
+                <div className="mt-4 flex items-center justify-center gap-2 text-blue-400 font-semibold">
                   <span>Registra circolo</span>
                   <svg
                     className="w-5 h-5 group-hover:translate-x-1 transition-transform"
@@ -159,7 +161,7 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
           </div>
 
           {/* Footer note */}
-          <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+          <div className="mt-6 text-center text-sm text-gray-400">
             Potrai sempre cambiare o aggiungere ruoli successivamente
           </div>
         </div>
@@ -168,3 +170,4 @@ export default function RegistrationTypeModal({ isOpen, onClose }) {
     document.body
   );
 }
+
