@@ -315,10 +315,8 @@ export function isRegistrationOpen(tournament) {
     return false;
   }
 
-  // Check if full
-  if (registration.currentTeamsCount >= tournament.configuration.maxTeamsAllowed) {
-    return false;
-  }
+  // ⚠️ CONTROLLO RIMOSSO: maxTeamsAllowed non blocca più le iscrizioni
+  // L'admin ha piena libertà di iscrivere squadre oltre il limite teorico
 
   return true;
 }

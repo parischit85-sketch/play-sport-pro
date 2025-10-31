@@ -52,10 +52,8 @@ export async function registerTeam(teamData) {
       return { success: false, error: VALIDATION_MESSAGES.REGISTRATION_CLOSED };
     }
 
-    // Check if tournament is full
-    if (tournament.registration.currentTeamsCount >= tournament.configuration.maxTeamsAllowed) {
-      return { success: false, error: VALIDATION_MESSAGES.TOURNAMENT_FULL };
-    }
+    // ⚠️ CONTROLLO RIMOSSO: L'admin può iscrivere squadre oltre il limite teorico
+    // Nessun controllo sul maxTeamsAllowed per permettere flessibilità
 
     // Validate team data
     const validation = validateTeamRegistration(

@@ -17,7 +17,7 @@ import {
 } from '../../utils/tournamentConstants';
 
 function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView = false }) {
-  const { userRole, userClubRoles, user } = useAuth();
+  const { userRole, userClubRoles } = useAuth();
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState({});
   const [loading, setLoading] = useState(true);

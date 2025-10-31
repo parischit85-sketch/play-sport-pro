@@ -8,7 +8,7 @@ import React from 'react';
 import { Crown, Trophy } from 'lucide-react';
 import { MATCH_STATUS, KNOCKOUT_ROUND_NAMES } from '../../utils/tournamentConstants';
 
-function TournamentBracketTV({ orderedRounds, rounds, teams, renderMatchContent }) {
+function TournamentBracketTV({ orderedRounds, rounds, teams }) {
   if (!orderedRounds || orderedRounds.length === 0) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -37,11 +37,13 @@ function TournamentBracketTV({ orderedRounds, rounds, teams, renderMatchContent 
   const matchGapVh = baseMatchHeightVh * GAP_FACTOR;
 
   // Column width allocation
-  const columnWidthVw = totalRounds === 1 ? 40 : totalRounds === 2 ? 35 : totalRounds === 3 ? 25 : 20;
-  const gapBetweenColumnsVw = totalRounds === 1 ? 0 : totalRounds === 2 ? 8 : totalRounds === 3 ? 6 : 4;
+  const columnWidthVw =
+    totalRounds === 1 ? 40 : totalRounds === 2 ? 35 : totalRounds === 3 ? 25 : 20;
+  const gapBetweenColumnsVw =
+    totalRounds === 1 ? 0 : totalRounds === 2 ? 8 : totalRounds === 3 ? 6 : 4;
 
   // Render a single match card
-  const renderMatchCard = (match, roundIndex, matchIndex) => {
+  const renderMatchCard = (match, roundIndex) => {
     if (!match) return null;
 
     const team1 = teams[match.team1Id];
@@ -56,12 +58,10 @@ function TournamentBracketTV({ orderedRounds, rounds, teams, renderMatchContent 
     const cardHeight = `${Math.min(scaledHeight, 50)}vh`;
 
     // Font sizes scaled by round
-    const nameFontSize = firstRoundMatchCount >= 8
-      ? `${1.1 + roundIndex * 0.3}vw`
-      : `${1.5 + roundIndex * 0.4}vw`;
-    const scoreFontSize = firstRoundMatchCount >= 8
-      ? `${1.3 + roundIndex * 0.3}vw`
-      : `${1.7 + roundIndex * 0.4}vw`;
+    const nameFontSize =
+      firstRoundMatchCount >= 8 ? `${1.1 + roundIndex * 0.3}vw` : `${1.5 + roundIndex * 0.4}vw`;
+    const scoreFontSize =
+      firstRoundMatchCount >= 8 ? `${1.3 + roundIndex * 0.3}vw` : `${1.7 + roundIndex * 0.4}vw`;
 
     return (
       <div
@@ -93,7 +93,10 @@ function TournamentBracketTV({ orderedRounds, rounds, teams, renderMatchContent 
             {team1?.seed && <span className="text-gray-500 mr-[0.3vw]">#{team1.seed}</span>}
             {team1Name}
             {isFinale && isCompleted && match.winnerId === team1?.id && (
-              <Crown className="inline-block ml-[0.5vw] text-yellow-500" style={{ width: '1.5vw', height: '1.5vw' }} />
+              <Crown
+                className="inline-block ml-[0.5vw] text-yellow-500"
+                style={{ width: '1.5vw', height: '1.5vw' }}
+              />
             )}
           </span>
           {isCompleted && match.score && (
@@ -130,7 +133,10 @@ function TournamentBracketTV({ orderedRounds, rounds, teams, renderMatchContent 
             {team2?.seed && <span className="text-gray-500 mr-[0.3vw]">#{team2.seed}</span>}
             {team2Name}
             {isFinale && isCompleted && match.winnerId === team2?.id && (
-              <Crown className="inline-block ml-[0.5vw] text-yellow-500" style={{ width: '1.5vw', height: '1.5vw' }} />
+              <Crown
+                className="inline-block ml-[0.5vw] text-yellow-500"
+                style={{ width: '1.5vw', height: '1.5vw' }}
+              />
             )}
           </span>
           {isCompleted && match.score && (
@@ -173,7 +179,10 @@ function TournamentBracketTV({ orderedRounds, rounds, teams, renderMatchContent 
         <div className="text-center mb-[1.5vh]">
           <div className="inline-flex items-center gap-[0.5vw] px-[1vw] py-[0.8vh] bg-gradient-to-r from-purple-600 to-fuchsia-600 rounded-lg shadow-lg">
             <Trophy className="text-white" style={{ width: '1.5vw', height: '1.5vw' }} />
-            <span className="font-bold text-white uppercase tracking-wide" style={{ fontSize: `${totalRounds <= 2 ? '1.3' : '1.1'}vw` }}>
+            <span
+              className="font-bold text-white uppercase tracking-wide"
+              style={{ fontSize: `${totalRounds <= 2 ? '1.3' : '1.1'}vw` }}
+            >
               {roundName}
             </span>
           </div>
@@ -183,9 +192,12 @@ function TournamentBracketTV({ orderedRounds, rounds, teams, renderMatchContent 
         <div className="flex-1 relative">
           {sortedMatches.map((match, matchIndex) => {
             // Calculate vertical position
-            const topPosition = roundIndex === 0
-              ? matchIndex * (baseMatchHeightVh + matchGapVh)
-              : matchIndex * spacing + (spacing / 2) - (baseMatchHeightVh * (1 + roundIndex * 0.25) / 2);
+            const topPosition =
+              roundIndex === 0
+                ? matchIndex * (baseMatchHeightVh + matchGapVh)
+                : matchIndex * spacing +
+                  spacing / 2 -
+                  (baseMatchHeightVh * (1 + roundIndex * 0.25)) / 2;
 
             return (
               <div

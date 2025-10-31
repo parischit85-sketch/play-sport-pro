@@ -441,6 +441,52 @@ export async function deleteKnockoutMatches(clubId, tournamentId) {
   }
 }
 
+/**
+ * Clear match result - reset match to SCHEDULED status
+ * @param {string} clubId
+ * @param {string} tournamentId
+ * @param {string} matchId
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export async function clearMatchResult(clubId, tournamentId, matchId) {
+  try {
+    const matchRef = doc(
+      db,
+      'clubs',
+      clubId,
+      COLLECTIONS.TOURNAMENTS,
+      tournamentId,
+      COLLECTIONS.MATCHES,
+      matchId
+    );
+
+    // Reset match to scheduled state
+    await updateDoc(matchRef, {
+      status: MATCH_STATUS.SCHEDULED,
+      score: null,
+      sets: null,
+      winnerId: null,
+      completedAt: null,
+    });
+
+    console.log('✅ Match result cleared successfully');
+
+    // TODO: Trigger standings recalculation for the group/tournament
+    // This should be handled by recalculating all completed matches in the group
+    try {
+      console.warn('⚠️ Manual standings recalculation required after clearing match result');
+      // onMatchResultCleared(clubId, tournamentId, matchId);
+    } catch (error) {
+      console.warn('⚠️ Could not trigger standings recalculation:', error);
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error clearing match result:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 export default {
   createMatch,
   getMatch,
@@ -448,6 +494,7 @@ export default {
   getMatchesByGroup,
   getMatchesByRound,
   recordMatchResult,
+  clearMatchResult,
   updateMatchStatus,
   scheduleMatch,
   getTeamMatches,

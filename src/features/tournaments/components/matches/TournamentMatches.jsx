@@ -12,9 +12,15 @@ import {
   ChevronDown,
   ChevronUp,
   Info,
+  Trash2,
 } from 'lucide-react';
 import { useAuth, USER_ROLES } from '../../../../contexts/AuthContext';
-import { getMatches, recordMatchResult, updateMatchStatus } from '../../services/matchService';
+import {
+  getMatches,
+  recordMatchResult,
+  updateMatchStatus,
+  clearMatchResult,
+} from '../../services/matchService';
 import { getTeamsByTournament } from '../../services/teamsService';
 import { MATCH_STATUS, KNOCKOUT_ROUND_NAMES } from '../../utils/tournamentConstants';
 import { computeFromSets, calcParisDelta } from '../../../../lib/rpa.js';
@@ -88,6 +94,30 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
     } catch (error) {
       console.error('Error recording result:', error);
       alert('Errore nel salvataggio del risultato');
+    }
+  };
+
+  const handleClearResult = async (matchId) => {
+    if (
+      !window.confirm(
+        'Sei sicuro di voler cancellare il risultato? La partita tornerà allo stato "Programmata".'
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const result = await clearMatchResult(clubId, tournament.id, matchId);
+
+      if (result.success) {
+        loadData();
+        alert('Risultato cancellato. Ricorda di ricalcolare manualmente la classifica se necessario.');
+      } else {
+        alert(result.error || 'Errore nella cancellazione del risultato');
+      }
+    } catch (error) {
+      console.error('Error clearing result:', error);
+      alert('Errore nella cancellazione del risultato');
     }
   };
 
@@ -662,13 +692,23 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
         )}
 
         {!isPublicView && isCompleted && (
-          <button
-            onClick={() => canEditResults && setSelectedMatch(match)}
-            disabled={!canEditResults}
-            className="w-full mt-2 px-3 sm:px-4 py-2 rounded-lg border border-gray-600 text-gray-200 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
-          >
-            Modifica Risultato
-          </button>
+          <>
+            <button
+              onClick={() => canEditResults && setSelectedMatch(match)}
+              disabled={!canEditResults}
+              className="w-full mt-2 px-3 sm:px-4 py-2 rounded-lg border border-gray-600 text-gray-200 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+            >
+              Modifica Risultato
+            </button>
+            <button
+              onClick={() => canEditResults && handleClearResult(match.id)}
+              disabled={!canEditResults}
+              className="w-full mt-2 px-3 sm:px-4 py-2 rounded-lg border border-red-600 text-red-400 hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center justify-center gap-2"
+            >
+              <Trash2 className="w-4 h-4" />
+              Cancella Risultato
+            </button>
+          </>
         )}
 
         {/* Scheduled date */}

@@ -79,8 +79,6 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
 
   const numberOfGroups =
     tournament.configuration?.numberOfGroups || tournament.groupsConfig?.numberOfGroups || 4;
-  const teamsPerGroup =
-    tournament.configuration?.teamsPerGroup || tournament.groupsConfig?.teamsPerGroup || 4;
 
   const groupOptions = GROUP_NAMES.slice(0, numberOfGroups);
 
@@ -98,25 +96,9 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
       if (g) groupsMap.get(g)?.push(t);
     });
 
-    // Validate assignments
-    for (const gid of groupOptions) {
-      const arr = groupsMap.get(gid) || [];
-      if (arr.length > teamsPerGroup) {
-        alert(`Il girone ${gid} ha ${arr.length} squadre (max ${teamsPerGroup}).`);
-        return;
-      }
-    }
-
-    const totalAssigned = Array.from(groupsMap.values()).reduce((s, arr) => s + arr.length, 0);
-    if (totalAssigned !== numberOfGroups * teamsPerGroup) {
-      if (
-        !window.confirm(
-          `Hai assegnato ${totalAssigned}/${numberOfGroups * teamsPerGroup} squadre. Procedere comunque?`
-        )
-      ) {
-        return;
-      }
-    }
+    // ⚠️ CONTROLLO RIMOSSO: L'admin può creare gironi con numeri diversi di squadre
+    // Nessuna validazione sul numero di squadre per girone
+    // L'admin ha piena libertà di assegnazione
 
     setSavingManual(true);
     try {
@@ -180,7 +162,7 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
           <h3 className="text-lg font-semibold text-white mb-3">Assegna Gironi Manualmente</h3>
           <p className="text-sm text-gray-400 mb-4">
-            Seleziona il girone per ogni squadra (max {teamsPerGroup} per girone).
+            Seleziona il girone per ogni squadra. Puoi creare gironi con numeri diversi di squadre.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             {teams.map((team) => (

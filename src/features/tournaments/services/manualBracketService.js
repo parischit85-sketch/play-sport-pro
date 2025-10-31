@@ -161,12 +161,12 @@ export async function startManualKnockout(clubId, tournamentId, config) {
       // Handle slots: 'BYE' = explicit BYE from admin, '' or null = qualif, teamId = team
       const slot1 = slots[idx1];
       const slot2 = slots[idx2];
-      
+
       const team1Id = slot1 === 'BYE' || slot1 === '' || slot1 == null ? null : slot1;
       const team2Id = slot2 === 'BYE' || slot2 === '' || slot2 == null ? null : slot2;
       const team1 = team1Id ? teamMap.get(team1Id) : null;
       const team2 = team2Id ? teamMap.get(team2Id) : null;
-      
+
       // Determine team names: 'BYE' if admin selected BYE, 'Qalif.' if auto-qualified
       const team1Name = team1?.teamName || (slot1 === 'BYE' ? 'BYE' : 'Qalif.');
       const team2Name = team2?.teamName || (slot2 === 'BYE' ? 'BYE' : 'Qalif.');
