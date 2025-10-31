@@ -17,11 +17,19 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
   const isEnabled = tournament?.publicView?.enabled || false;
   const token = tournament?.publicView?.token || '';
   const showQRCode = tournament?.publicView?.showQRCode || false;
-  const interval = tournament?.publicView?.settings?.interval || 15000;
+  const interval = tournament?.publicView?.settings?.interval || 15000; // Fallback globale
   const displaySettings = tournament?.publicView?.settings?.displaySettings || {
     groupsMatches: true,
     standings: true,
     points: true,
+  };
+
+  // Intervalli separati per ogni tipo di pagina (in secondi)
+  const pageIntervals = tournament?.publicView?.settings?.pageIntervals || {
+    groups: 15, // Intervallo per ogni girone
+    standings: 15, // Intervallo per tabellone
+    points: 15, // Intervallo per punti
+    qr: 15, // Intervallo per QR code
   };
 
   const baseUrl = window.location.origin;
@@ -119,6 +127,26 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
     } catch (error) {
       console.error('Error updating display settings:', error);
       alert('Errore durante laggiornamento delle impostazioni');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdatePageInterval = async (pageType, seconds) => {
+    setLoading(true);
+    try {
+      const newPageIntervals = {
+        ...pageIntervals,
+        [pageType]: Number(seconds),
+      };
+      await updateDoc(doc(db, 'clubs', clubId, 'tournaments', tournament.id), {
+        'publicView.settings.pageIntervals': newPageIntervals,
+      });
+
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      console.error('Error updating page interval:', error);
+      alert('Errore durante laggiornamento dellintervallo');
     } finally {
       setLoading(false);
     }
@@ -238,12 +266,16 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
           <div className="bg-gray-800 rounded-lg p-4 space-y-4">
             <h4 className="font-semibold text-white">Impostazioni</h4>
 
-            {/* Auto-scroll interval */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Intervallo Auto-Scroll (secondi)
+            {/* Intervallo Auto-Scroll Globale (deprecato, mantenuto per retrocompatibilità) */}
+            <div className="opacity-50">
+              <label
+                htmlFor="global-interval"
+                className="block text-sm font-medium text-gray-300 mb-2"
+              >
+                Intervallo Auto-Scroll Globale (secondi) - Deprecato
               </label>
               <select
+                id="global-interval"
                 value={interval / 1000}
                 onChange={(e) => handleUpdateInterval(Number(e.target.value) * 1000)}
                 disabled={loading}
@@ -256,69 +288,153 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                 <option value={45}>45 secondi</option>
                 <option value={60}>60 secondi</option>
               </select>
+              <p className="text-xs text-gray-500 mt-1">
+                ⚠️ Usa gli intervalli separati per pagina (sotto)
+              </p>
             </div>
 
-            {/* Display Settings - Pages to show */}
+            {/* Display Settings - Pages to show with individual intervals */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-3">
+              <div className="block text-sm font-medium text-gray-300 mb-3">
                 Pagine Pubbliche da visualizzare
-              </label>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={displaySettings.groupsMatches || false}
-                    onChange={(e) =>
-                      handleUpdateDisplaySettings({
-                        ...displaySettings,
-                        groupsMatches: e.target.checked,
-                      })
-                    }
-                    disabled={loading}
-                    className="w-4 h-4 rounded border-gray-300"
-                  />
-                  <span className="text-sm text-gray-300">Gironi & Partite</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={displaySettings.standings || false}
-                    onChange={(e) =>
-                      handleUpdateDisplaySettings({
-                        ...displaySettings,
-                        standings: e.target.checked,
-                      })
-                    }
-                    disabled={loading}
-                    className="w-4 h-4 rounded border-gray-300"
-                  />
-                  <span className="text-sm text-gray-300">Tabellone</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={displaySettings.points || false}
-                    onChange={(e) =>
-                      handleUpdateDisplaySettings({
-                        ...displaySettings,
-                        points: e.target.checked,
-                      })
-                    }
-                    disabled={loading}
-                    className="w-4 h-4 rounded border-gray-300"
-                  />
-                  <span className="text-sm text-gray-300">Punti</span>
-                </label>
               </div>
-              <p className="text-xs text-gray-400 mt-2">La pagina QR code sarà sempre visibile</p>
+              <div className="space-y-3">
+                {/* Gironi & Partite */}
+                <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">
+                  <label className="flex items-center gap-2 cursor-pointer flex-1">
+                    <input
+                      type="checkbox"
+                      checked={displaySettings.groupsMatches !== false}
+                      onChange={(e) =>
+                        handleUpdateDisplaySettings({
+                          ...displaySettings,
+                          groupsMatches: e.target.checked,
+                        })
+                      }
+                      disabled={loading}
+                      className="w-4 h-4 rounded border-gray-300"
+                    />
+                    <span className="text-sm text-gray-300 font-medium">Gironi & Partite</span>
+                  </label>
+                  <select
+                    value={pageIntervals.groups}
+                    onChange={(e) => handleUpdatePageInterval('groups', e.target.value)}
+                    disabled={loading || displaySettings.groupsMatches === false}
+                    className="px-3 py-1.5 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm min-w-[140px]"
+                    title="Intervallo per ogni girone"
+                  >
+                    <option value={5}>5 secondi</option>
+                    <option value={10}>10 secondi</option>
+                    <option value={15}>15 secondi</option>
+                    <option value={20}>20 secondi</option>
+                    <option value={30}>30 secondi</option>
+                    <option value={45}>45 secondi</option>
+                    <option value={60}>60 secondi</option>
+                  </select>
+                </div>
+
+                {/* Tabellone */}
+                <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">
+                  <label className="flex items-center gap-2 cursor-pointer flex-1">
+                    <input
+                      type="checkbox"
+                      checked={displaySettings.standings || false}
+                      onChange={(e) =>
+                        handleUpdateDisplaySettings({
+                          ...displaySettings,
+                          standings: e.target.checked,
+                        })
+                      }
+                      disabled={loading}
+                      className="w-4 h-4 rounded border-gray-300"
+                    />
+                    <span className="text-sm text-gray-300 font-medium">Tabellone</span>
+                  </label>
+                  <select
+                    value={pageIntervals.standings}
+                    onChange={(e) => handleUpdatePageInterval('standings', e.target.value)}
+                    disabled={loading || !displaySettings.standings}
+                    className="px-3 py-1.5 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm min-w-[140px]"
+                    title="Intervallo per tabellone"
+                  >
+                    <option value={5}>5 secondi</option>
+                    <option value={10}>10 secondi</option>
+                    <option value={15}>15 secondi</option>
+                    <option value={20}>20 secondi</option>
+                    <option value={30}>30 secondi</option>
+                    <option value={45}>45 secondi</option>
+                    <option value={60}>60 secondi</option>
+                  </select>
+                </div>
+
+                {/* Punti */}
+                <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">
+                  <label className="flex items-center gap-2 cursor-pointer flex-1">
+                    <input
+                      type="checkbox"
+                      checked={displaySettings.points || false}
+                      onChange={(e) =>
+                        handleUpdateDisplaySettings({
+                          ...displaySettings,
+                          points: e.target.checked,
+                        })
+                      }
+                      disabled={loading}
+                      className="w-4 h-4 rounded border-gray-300"
+                    />
+                    <span className="text-sm text-gray-300 font-medium">Punti</span>
+                  </label>
+                  <select
+                    value={pageIntervals.points}
+                    onChange={(e) => handleUpdatePageInterval('points', e.target.value)}
+                    disabled={loading || !displaySettings.points}
+                    className="px-3 py-1.5 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm min-w-[140px]"
+                    title="Intervallo per punti"
+                  >
+                    <option value={5}>5 secondi</option>
+                    <option value={10}>10 secondi</option>
+                    <option value={15}>15 secondi</option>
+                    <option value={20}>20 secondi</option>
+                    <option value={30}>30 secondi</option>
+                    <option value={45}>45 secondi</option>
+                    <option value={60}>60 secondi</option>
+                  </select>
+                </div>
+
+                {/* QR Code */}
+                <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 flex-1">
+                    <span className="text-sm text-gray-300 font-medium">QR Code</span>
+                    <span className="text-xs text-gray-500">(sempre visibile)</span>
+                  </div>
+                  <select
+                    value={pageIntervals.qr}
+                    onChange={(e) => handleUpdatePageInterval('qr', e.target.value)}
+                    disabled={loading}
+                    className="px-3 py-1.5 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm min-w-[140px]"
+                    title="Intervallo per pagina QR code"
+                  >
+                    <option value={5}>5 secondi</option>
+                    <option value={10}>10 secondi</option>
+                    <option value={15}>15 secondi</option>
+                    <option value={20}>20 secondi</option>
+                    <option value={30}>30 secondi</option>
+                    <option value={45}>45 secondi</option>
+                    <option value={60}>60 secondi</option>
+                  </select>
+                </div>
+              </div>
+              <p className="text-xs text-gray-400 mt-2">
+                ℹ️ Ogni pagina ha il suo intervallo personalizzato in secondi
+              </p>
             </div>
 
             {/* Show QR Code (only for mobile view) */}
             <div className="flex items-center justify-between">
               <div>
-                <label className="block text-sm font-medium text-gray-300">
+                <div className="block text-sm font-medium text-gray-300">
                   Mostra QR Code (vista smartphone)
-                </label>
+                </div>
                 <p className="text-xs text-gray-400">
                   Aggiunge un QR code in fondo alla pagina mobile
                 </p>

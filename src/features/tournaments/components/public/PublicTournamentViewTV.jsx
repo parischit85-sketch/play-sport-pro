@@ -4,7 +4,7 @@
  * Access: /public/tournament-tv/:clubId/:tournamentId/:token
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, onSnapshot, collection } from 'firebase/firestore';
 import { db } from '@services/firebase.js';
@@ -169,28 +169,32 @@ function PublicTournamentViewTV() {
     return () => clearInterval(timeInterval);
   }, []);
 
-  // Create pages based on display settings
-  const pages = [];
+  // Create pages based on display settings (memoized to avoid re-creation)
+  const pages = useMemo(() => {
+    const pagesArray = [];
 
-  // Add group pages if enabled in settings
-  const displaySettings = tournament?.publicView?.settings?.displaySettings || {};
-  if (displaySettings.groupsMatches !== false) {
-    // Default to true if not set
-    pages.push(...groups.map((g) => ({ type: 'group', groupId: g })));
-  }
+    // Add group pages if enabled in settings
+    const displaySettings = tournament?.publicView?.settings?.displaySettings || {};
+    if (displaySettings.groupsMatches !== false) {
+      // Default to true if not set
+      pagesArray.push(...groups.map((g) => ({ type: 'group', groupId: g })));
+    }
 
-  // Add overall standings page if enabled
-  if (displaySettings.standings === true) {
-    pages.push({ type: 'overall-standings' });
-  }
+    // Add overall standings page if enabled
+    if (displaySettings.standings === true) {
+      pagesArray.push({ type: 'standings' });
+    }
 
-  // Add points page if enabled
-  if (displaySettings.points === true) {
-    pages.push({ type: 'points' });
-  }
+    // Add points page if enabled
+    if (displaySettings.points === true) {
+      pagesArray.push({ type: 'points' });
+    }
 
-  // Always add QR page at the end
-  pages.push({ type: 'qr' });
+    // Always add QR page at the end
+    pagesArray.push({ type: 'qr' });
+
+    return pagesArray;
+  }, [groups, tournament]);
 
   // Fullscreen toggle
   const toggleFullscreen = () => {
@@ -229,42 +233,14 @@ function PublicTournamentViewTV() {
 
       if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
         // Next page
-        setCurrentPageIndex((prev) => (prev + 1) % pages.length);
+        const nextIndex = (currentPageIndex + 1) % pages.length;
+        setCurrentPageIndex(nextIndex);
         setProgress(0);
-        // Reset auto-scroll timer
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-        const interval = tournament?.publicView?.settings?.interval || 15000;
-        progressIntervalRef.current = setInterval(() => {
-          setProgress((prev) => {
-            const increment = (100 / interval) * 100;
-            if (prev >= 100) return 0;
-            return prev + increment;
-          });
-        }, 100);
-        intervalRef.current = setInterval(() => {
-          setCurrentPageIndex((prev) => (prev + 1) % pages.length);
-          setProgress(0);
-        }, interval);
       } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
         // Previous page
-        setCurrentPageIndex((prev) => (prev - 1 + pages.length) % pages.length);
+        const prevIndex = (currentPageIndex - 1 + pages.length) % pages.length;
+        setCurrentPageIndex(prevIndex);
         setProgress(0);
-        // Reset auto-scroll timer
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-        const interval = tournament?.publicView?.settings?.interval || 15000;
-        progressIntervalRef.current = setInterval(() => {
-          setProgress((prev) => {
-            const increment = (100 / interval) * 100;
-            if (prev >= 100) return 0;
-            return prev + increment;
-          });
-        }, 100);
-        intervalRef.current = setInterval(() => {
-          setCurrentPageIndex((prev) => (prev + 1) % pages.length);
-          setProgress(0);
-        }, interval);
       }
     };
 
@@ -272,36 +248,60 @@ function PublicTournamentViewTV() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [pages.length, tournament]);
+  }, [pages.length, currentPageIndex]);
 
-  // Auto-scroll logic
+  // Auto-scroll logic con intervalli separati per pagina
   useEffect(() => {
     if (pages.length === 0) return;
 
-    const interval = tournament?.publicView?.settings?.interval || 15000; // Default 15s
+    // Intervalli per tipo di pagina (in secondi)
+    const pageIntervals = tournament?.publicView?.settings?.pageIntervals || {
+      groups: 15,
+      standings: 15,
+      points: 15,
+      qr: 15,
+    };
+
+    // Determina l'intervallo per la pagina corrente
+    const currentPage = pages[currentPageIndex];
+    let currentInterval = 15000; // Default fallback
+
+    if (currentPage?.type === 'group') {
+      currentInterval = (pageIntervals.groups || 15) * 1000;
+    } else if (currentPage?.type === 'standings') {
+      currentInterval = (pageIntervals.standings || 15) * 1000;
+    } else if (currentPage?.type === 'points') {
+      currentInterval = (pageIntervals.points || 15) * 1000;
+    } else if (currentPage?.type === 'qr') {
+      currentInterval = (pageIntervals.qr || 15) * 1000;
+    }
+
+    console.log(
+      `⏱️ Page ${currentPageIndex} (${currentPage?.type}): interval = ${currentInterval}ms`
+    );
 
     // Progress bar update (every 100ms)
     progressIntervalRef.current = setInterval(() => {
       setProgress((prev) => {
-        const increment = (100 / interval) * 100;
+        const increment = (100 / currentInterval) * 100;
         if (prev >= 100) return 0;
         return prev + increment;
       });
     }, 100);
 
-    // Auto-scroll to next page
+    // Auto-scroll to next page dopo l'intervallo specifico
     intervalRef.current = setInterval(() => {
       setCurrentPageIndex((prev) => (prev + 1) % pages.length);
       setProgress(0);
-    }, interval);
+    }, currentInterval);
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
       if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
     };
-  }, [pages.length, tournament]);
+  }, [pages, currentPageIndex, tournament]);
 
-  // Auto-scroll orizzontale per le partite
+  // Auto-scroll orizzontale INFINITO per le partite (carosello continuo senza reset)
   useEffect(() => {
     // Reset refs when page changes
     scrollPositionRef.current = 0;
@@ -338,15 +338,12 @@ function PublicTournamentViewTV() {
           });
 
           if (isOverflowing) {
-            const totalScroll = scrollWidth - containerWidth;
             const scrollStep = 3; // pixel per step
             const scrollDelay = 55; // ms tra gli step
-            const pauseAtEnd = 1000; // pausa alla fine prima di ricominciare
 
-            console.log('🎬 Starting horizontal scroll for matches', {
+            console.log('🎬 Starting INFINITE horizontal scroll for matches (no reset)', {
               scrollWidth,
               containerWidth,
-              totalScroll,
               scrollStep,
               scrollDelay,
               page: currentPageIndex,
@@ -358,22 +355,10 @@ function PublicTournamentViewTV() {
               scrollPositionRef.current += scrollStep;
               container.scrollLeft = scrollPositionRef.current;
 
-              // Se arriva alla fine, pausa e ricomincia
-              if (scrollPositionRef.current >= totalScroll) {
-                isPausedRef.current = true;
-                console.log('🔄 Reached end, restarting after', pauseAtEnd, 'ms');
-                setTimeout(() => {
-                  scrollPositionRef.current = 0;
-                  if (container) {
-                    container.scrollLeft = 0;
-                  }
-                  isPausedRef.current = false;
-                  console.log('▶️ Restarting scroll');
-                }, pauseAtEnd);
-              }
+              // Nessun reset - scroll infinito continuo grazie al contenuto duplicato
             }, scrollDelay);
 
-            console.log('✅ Scroll interval created:', matchesScrollIntervalRef.current);
+            console.log('✅ Infinite scroll interval created:', matchesScrollIntervalRef.current);
           } else {
             // Reset scroll to start if content doesn't overflow
             console.log('ℹ️ Content does not overflow, no scroll needed');
@@ -534,16 +519,17 @@ function PublicTournamentViewTV() {
           </div>
         </div>
 
-        {/* Matches - Scroll orizzontale */}
+        {/* Matches - Scroll orizzontale INFINITO (carosello continuo) */}
         <div>
           <h3 className="text-3xl font-bold text-white mb-3">Partite</h3>
           <div
             ref={matchesScrollRef}
             className="flex gap-4 overflow-x-scroll hide-scrollbar pb-2"
             style={{
-              scrollBehavior: 'smooth',
+              scrollBehavior: 'auto', // Auto per il reset seamless
             }}
           >
+            {/* PRIMO SET: Partite originali */}
             {matches.map((match) => {
               const team1 = teams[match.team1Id];
               const team2 = teams[match.team2Id];
@@ -689,6 +675,155 @@ function PublicTournamentViewTV() {
                 </div>
               );
             })}
+
+            {/* SECONDO SET: Partite duplicate per carosello infinito seamless */}
+            {matches.length > 0 &&
+              matches.map((match) => {
+                const team1 = teams[match.team1Id];
+                const team2 = teams[match.team2Id];
+
+                if (!team1 || !team2) return null;
+
+                const team1Name = team1?.teamName || team1?.name || '—';
+                const team2Name = team2?.teamName || team2?.name || '—';
+                const isCompleted = match.status === 'completed';
+                const isInProgress = match.status === 'in_progress';
+
+                // Split team names to get individual players (assuming format "Player1 / Player2")
+                const team1Players = team1Name.split('/').map((p) => p.trim());
+                const team2Players = team2Name.split('/').map((p) => p.trim());
+
+                const hasSets = Array.isArray(match.sets) && match.sets.length > 0;
+
+                const renderSetPills = (teamIndex) => {
+                  if (!hasSets) return null;
+                  return (
+                    <div className="flex items-center gap-1 mt-0.5">
+                      {match.sets.map((s, i) => {
+                        const a = Number(s?.team1 ?? 0);
+                        const b = Number(s?.team2 ?? 0);
+                        const val = teamIndex === 1 ? a : b;
+                        const win = teamIndex === 1 ? a > b : b > a;
+                        return (
+                          <span
+                            key={`set-clone-${match.id}-${teamIndex}-${i}`}
+                            className={`text-3xl font-bold ${
+                              win ? 'text-emerald-400' : 'text-red-400'
+                            }`}
+                            title={`Set ${i + 1}`}
+                          >
+                            {val}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  );
+                };
+
+                return (
+                  <div
+                    key={`clone-${match.id}`}
+                    className={`bg-gray-800 rounded-xl p-3 shadow-lg min-h-[126px] min-w-[180px] flex-shrink-0 flex flex-col justify-center border-[2.5px] ${
+                      isCompleted
+                        ? 'border-fuchsia-500'
+                        : isInProgress
+                          ? 'border-red-500'
+                          : 'border-fuchsia-700/60'
+                    }`}
+                  >
+                    {/* Status Badge - Only for IN PROGRESS */}
+                    {isInProgress && (
+                      <div className="mb-2 flex justify-center">
+                        <span className="px-3 py-1 bg-red-500 text-white text-sm font-bold rounded-full animate-pulse">
+                          IN CORSO
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Team 1 */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex-1">
+                        {team1Players.map((player, idx) => (
+                          <div
+                            key={idx}
+                            className={`font-medium text-lg ${isCompleted && match.winnerId === team1.id ? 'text-emerald-400' : isCompleted ? 'text-red-400' : 'text-white'}`}
+                          >
+                            {player}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex flex-col items-end ml-3">
+                        {isCompleted && (
+                          <>
+                            {hasSets
+                              ? renderSetPills(1)
+                              : match.score && (
+                                  <span
+                                    className={`text-4xl font-bold ${match.winnerId === team1.id ? 'text-emerald-400' : 'text-red-400'}`}
+                                  >
+                                    {match.score.team1}
+                                  </span>
+                                )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* VS Divider */}
+                    <div className="relative flex items-center my-2">
+                      <div
+                        className={`flex-grow border-t-2 ${isCompleted ? 'border-fuchsia-500' : 'border-fuchsia-700/60'}`}
+                      ></div>
+                      <span
+                        className={`px-2 text-xs font-bold ${isCompleted ? 'text-fuchsia-500' : 'text-fuchsia-700/80'}`}
+                      >
+                        VS
+                      </span>
+                      <div
+                        className={`flex-grow border-t-2 ${isCompleted ? 'border-fuchsia-500' : 'border-fuchsia-700/60'}`}
+                      ></div>
+                    </div>
+
+                    {/* Team 2 */}
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex-1">
+                        {team2Players.map((player, idx) => (
+                          <div
+                            key={idx}
+                            className={`font-medium text-lg ${isCompleted && match.winnerId === team2.id ? 'text-emerald-400' : isCompleted ? 'text-red-400' : 'text-white'}`}
+                          >
+                            {player}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex flex-col items-end ml-3">
+                        {isCompleted && (
+                          <>
+                            {hasSets
+                              ? renderSetPills(2)
+                              : match.score && (
+                                  <span
+                                    className={`text-4xl font-bold ${match.winnerId === team2.id ? 'text-emerald-400' : 'text-red-400'}`}
+                                  >
+                                    {match.score.team2}
+                                  </span>
+                                )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Status */}
+                    {!isCompleted && !isInProgress && (
+                      <div className="mt-2 text-center">
+                        <span className="text-xs text-amber-500 font-semibold uppercase">
+                          In programma
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
           </div>
         </div>
       </div>
