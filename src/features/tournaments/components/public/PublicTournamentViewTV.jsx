@@ -9,7 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, onSnapshot, collection } from 'firebase/firestore';
 import { db } from '@services/firebase.js';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, AlertCircle, Medal, Maximize, Minimize } from 'lucide-react';
+import { Trophy, AlertCircle, Medal, Pause, Play } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import { getTeamsByTournament } from '../../services/teamsService.js';
 import { calculateGroupStandings } from '../../services/standingsService.js';
@@ -26,7 +26,7 @@ function PublicTournamentViewTV() {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [groupData, setGroupData] = useState({});
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [dynamicCardHeight, setDynamicCardHeight] = useState(113); // Default height
 
@@ -260,24 +260,13 @@ function PublicTournamentViewTV() {
   }, [pages, currentPageIndex, groupData]);
 
   // Fullscreen toggle
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement
-        .requestFullscreen()
-        .then(() => {
-          setIsFullscreen(true);
-        })
-        .catch((err) => {
-          console.error('Error attempting to enable fullscreen:', err);
-        });
-    } else {
-      document.exitFullscreen().then(() => {
-        setIsFullscreen(false);
-      });
-    }
+  const togglePause = () => {
+    setIsPaused((prev) => !prev);
+    isPausedRef.current = !isPausedRef.current;
   };
 
-  // Listen for fullscreen changes
+  // Listen for fullscreen changes - REMOVED (not needed anymore)
+  /*
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
@@ -288,6 +277,7 @@ function PublicTournamentViewTV() {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
   }, []);
+  */
 
   // Keyboard navigation for arrow keys
   useEffect(() => {
@@ -345,6 +335,7 @@ function PublicTournamentViewTV() {
 
     // Progress bar update (every 100ms)
     progressIntervalRef.current = setInterval(() => {
+      if (isPausedRef.current) return; // Skip if paused
       setProgress((prev) => {
         const increment = (100 / currentInterval) * 100;
         if (prev >= 100) return 0;
@@ -354,6 +345,7 @@ function PublicTournamentViewTV() {
 
     // Auto-scroll to next page dopo l'intervallo specifico
     intervalRef.current = setInterval(() => {
+      if (isPausedRef.current) return; // Skip if paused
       setCurrentPageIndex((prev) => (prev + 1) % pages.length);
       setProgress(0);
     }, currentInterval);
@@ -366,9 +358,9 @@ function PublicTournamentViewTV() {
 
   // Auto-scroll orizzontale INFINITO per le partite (solo se più di 6 partite)
   useEffect(() => {
-    // Reset refs when page changes
+    // Reset scroll position when page changes
     scrollPositionRef.current = 0;
-    isPausedRef.current = false;
+    // DON'T reset isPausedRef - user controls this with button
 
     // Clear any existing scroll interval
     if (matchesScrollIntervalRef.current) {
@@ -459,7 +451,7 @@ function PublicTournamentViewTV() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-24 w-24 border-t-4 border-b-4 border-emerald-500 mx-auto mb-6"></div>
           <p className="text-white text-3xl font-bold">Caricamento torneo...</p>
@@ -1084,9 +1076,9 @@ function PublicTournamentViewTV() {
           scrollbar-width: none;
         }
       `}</style>
-      <div className="min-h-screen bg-gray-900 flex flex-col">
+      <div className="min-h-screen bg-black flex flex-col">
         {/* Header - NO QR CODE - Ottimizzato per 16:9 */}
-        <div className="bg-gray-800 border-b border-gray-700">
+        <div className="bg-black border-b border-gray-800">
           <div className="container mx-auto px-4 py-2">
             <div className="flex items-center justify-between">
               {/* Left: Logo */}
@@ -1118,16 +1110,16 @@ function PublicTournamentViewTV() {
                   </span>
                 </div>
 
-                {/* Fullscreen button */}
+                {/* Pause/Play button */}
                 <button
-                  onClick={toggleFullscreen}
+                  onClick={togglePause}
                   className="p-2 bg-gray-700 hover:bg-gray-600 rounded-full transition-colors"
-                  title={isFullscreen ? 'Esci da schermo intero' : 'Schermo intero'}
+                  title={isPaused ? 'Riprendi rotazione' : 'Pausa rotazione'}
                 >
-                  {isFullscreen ? (
-                    <Minimize className="w-5 h-5 text-white" />
+                  {isPaused ? (
+                    <Play className="w-5 h-5 text-white" />
                   ) : (
-                    <Maximize className="w-5 h-5 text-white" />
+                    <Pause className="w-5 h-5 text-white" />
                   )}
                 </button>
               </div>
