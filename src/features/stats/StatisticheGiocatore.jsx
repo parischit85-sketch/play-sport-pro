@@ -827,13 +827,9 @@ export default function StatisticheGiocatore({
                   />
                 </svg>
               </div>
-              <span className={`text-xs sm:text-sm font-medium ${T.subtext}`}>
-                Posizione
-              </span>
+              <span className={`text-xs sm:text-sm font-medium ${T.subtext}`}>Posizione</span>
             </div>
-            <div className="text-xl sm:text-3xl font-bold text-blue-600">
-              {position ?? '-'}
-            </div>
+            <div className="text-xl sm:text-3xl font-bold text-blue-600">{position ?? '-'}</div>
           </div>
 
           <div className="bg-gradient-to-r from-emerald-50 to-green-50 from-emerald-900/30 to-green-900/30 backdrop-blur-xl rounded-2xl border border-emerald-200/30 border-emerald-700/30 p-4 sm:p-6 shadow-xl">
@@ -853,9 +849,7 @@ export default function StatisticheGiocatore({
                   />
                 </svg>
               </div>
-              <span className="text-xs sm:text-sm font-medium ${T.subtext}">
-                Ranking
-              </span>
+              <span className="text-xs sm:text-sm font-medium ${T.subtext}">Ranking</span>
             </div>
             <div className="text-xl sm:text-3xl font-bold text-emerald-600">
               {player ? Math.round(getEffectiveRating(player.id)) : '-'}
@@ -879,9 +873,7 @@ export default function StatisticheGiocatore({
                   />
                 </svg>
               </div>
-              <span className="text-xs sm:text-sm font-medium ${T.subtext}">
-                Win Rate
-              </span>
+              <span className="text-xs sm:text-sm font-medium ${T.subtext}">Win Rate</span>
             </div>
             <div className="text-xl sm:text-3xl font-bold text-purple-600">
               {`${advancedStats ? Math.round(advancedStats.winRate) : 0}%`}
@@ -911,16 +903,12 @@ export default function StatisticheGiocatore({
                     />
                   </svg>
                 </div>
-                <span className="text-xs sm:text-sm font-medium ${T.subtext}">
-                  Efficienza Game
-                </span>
+                <span className="text-xs sm:text-sm font-medium ${T.subtext}">Efficienza Game</span>
               </div>
               <div className="text-lg sm:text-2xl font-bold text-orange-600">
                 {`${advancedStats.gameEfficiency}%`}
               </div>
-              <div className="text-xs sm:text-sm ${T.subtext} mt-1">
-                % game vinti
-              </div>
+              <div className="text-xs sm:text-sm ${T.subtext} mt-1">% game vinti</div>
             </div>
 
             <div className="bg-gradient-to-r from-cyan-50 to-blue-50 from-cyan-900/30 to-blue-900/30 backdrop-blur-xl rounded-2xl border border-cyan-200/30 border-cyan-700/30 p-4 sm:p-6 shadow-xl">
@@ -940,24 +928,18 @@ export default function StatisticheGiocatore({
                     />
                   </svg>
                 </div>
-                <span className="text-xs sm:text-sm font-medium ${T.subtext}">
-                  Δ Medio
-                </span>
+                <span className="text-xs sm:text-sm font-medium ${T.subtext}">Δ Medio</span>
               </div>
               <div
                 className={`text-lg sm:text-2xl font-bold ${
-                  advancedStats.avgDelta > 0
-                    ? 'text-emerald-600'
-                    : 'text-red-600 text-red-400'
+                  advancedStats.avgDelta > 0 ? 'text-emerald-600' : 'text-red-400'
                 }`}
               >
                 {advancedStats.avgDelta > 0
                   ? `+${advancedStats.avgDelta}`
                   : `${advancedStats.avgDelta}`}
               </div>
-              <div className="text-xs sm:text-sm ${T.subtext} mt-1">
-                punti per partita
-              </div>
+              <div className="text-xs sm:text-sm ${T.subtext} mt-1">punti per partita</div>
             </div>
 
             <div className="bg-gradient-to-r from-rose-50 to-pink-50 from-rose-900/30 to-pink-900/30 backdrop-blur-xl rounded-2xl border border-rose-200/30 border-rose-700/30 p-4 sm:p-6 shadow-xl">
@@ -977,9 +959,7 @@ export default function StatisticheGiocatore({
                     />
                   </svg>
                 </div>
-                <span className="text-xs sm:text-sm font-medium ${T.subtext}">
-                  Striscia Record
-                </span>
+                <span className="text-xs sm:text-sm font-medium ${T.subtext}">Striscia Record</span>
               </div>
               <div className="text-lg sm:text-2xl font-bold text-amber-600">
                 {advancedStats.maxWinStreak}
@@ -1006,16 +986,14 @@ export default function StatisticheGiocatore({
                     />
                   </svg>
                 </div>
-                <span className="text-sm font-medium ${T.subtext}">
-                  Striscia Attiva
-                </span>
+                <span className="text-sm font-medium ${T.subtext}">Striscia Attiva</span>
               </div>
               <div
                 className={`text-2xl font-bold ${
                   advancedStats.currentStreak > 0
                     ? 'text-emerald-600'
                     : advancedStats.currentStreak < 0
-                      ? 'text-red-600 text-red-400'
+                      ? 'text-red-400'
                       : 'text-gray-400'
                 }`}
               >
@@ -1258,9 +1236,7 @@ export default function StatisticheGiocatore({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Totale card (valore assoluto) */}
             <div className="lg:col-span-1 bg-gradient-to-br from-amber-50 to-yellow-50 from-amber-900/30 to-yellow-900/20 rounded-2xl border border-amber-200/40 border-amber-700/40 p-5">
-              <div className="text-sm font-medium text-amber-300 mb-2">
-                Totale punti Tornei
-              </div>
+              <div className="text-sm font-medium text-amber-300 mb-2">Totale punti Tornei</div>
               <div className="text-3xl font-extrabold text-amber-300">
                 {Math.round(champTotals.totalPoints || 0)}
               </div>
@@ -1313,9 +1289,7 @@ export default function StatisticheGiocatore({
                           ) : null}
                         </div>
                       </div>
-                      <div className="text-amber-300 font-bold">
-                        +{Math.round(e.points || 0)}
-                      </div>
+                      <div className="text-amber-300 font-bold">+{Math.round(e.points || 0)}</div>
                     </div>
                   ))}
                 </div>
@@ -1350,13 +1324,9 @@ export default function StatisticheGiocatore({
                             row.tournamentName
                           )}
                         </div>
-                        <div className="text-xs ${T.subtext}">
-                          {row.count} movimenti
-                        </div>
+                        <div className="text-xs ${T.subtext}">{row.count} movimenti</div>
                       </div>
-                      <div className="text-amber-300 font-bold">
-                        +{Math.round(row.points)}
-                      </div>
+                      <div className="text-amber-300 font-bold">+{Math.round(row.points)}</div>
                     </div>
                   ))}
                 </div>
@@ -1601,17 +1571,13 @@ export default function StatisticheGiocatore({
                           <span>🏆</span>
                           <span className="truncate">{e.tournamentName || 'Punti torneo'}</span>
                         </div>
-                        <div className="text-xs text-amber-300/70 mt-1">
-                          {when}
-                        </div>
+                        <div className="text-xs text-amber-300/70 mt-1">{when}</div>
                       </div>
                       <div className="shrink-0 text-right">
                         <div className="text-lg font-bold text-amber-300">
                           +{Math.round(e.points || 0)}
                         </div>
-                        <div className="text-[10px] text-amber-300/70">
-                          punti campionato
-                        </div>
+                        <div className="text-[10px] text-amber-300/70">punti campionato</div>
                       </div>
                     </div>
                   </div>
@@ -1710,9 +1676,7 @@ export default function StatisticheGiocatore({
                           {delta >= 0 ? '+' : ''}
                           {Math.round(delta)}
                         </div>
-                        <div className="text-[10px] ${T.subtext} font-medium">
-                          punti
-                        </div>
+                        <div className="text-[10px] ${T.subtext} font-medium">punti</div>
                       </div>
                       <button
                         onClick={(e) => {
@@ -1835,21 +1799,17 @@ export default function StatisticheGiocatore({
                           </div>
                           <div className="text-sm space-y-3 ${T.text}">
                             <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/60 from-blue-900/20 to-indigo-900/20 p-3 rounded-2xl border border-blue-200/30 border-blue-700/30 backdrop-blur-sm">
-                              <strong className="text-blue-700 text-blue-300">Rating:</strong>{' '}
-                              A={Math.round(m.sumA || 0)} vs B=
+                              <strong className="text-blue-300">Rating:</strong> A=
+                              {Math.round(m.sumA || 0)} vs B=
                               {Math.round(m.sumB || 0)} (Gap: {Math.round(m.gap || 0)})
                             </div>
                             <div className="bg-gradient-to-r from-purple-50/80 to-violet-50/60 from-purple-900/20 to-violet-900/20 p-3 rounded-2xl border border-purple-200/30 border-purple-700/30 backdrop-blur-sm">
-                              <strong className="text-purple-700 text-purple-300">
-                                Calcolo:
-                              </strong>{' '}
-                              Base: {(m.base || 0).toFixed(1)} • DG: {m.gd || 0} • Factor:{' '}
+                              <strong className="text-purple-300">Calcolo:</strong> Base:{' '}
+                              {(m.base || 0).toFixed(1)} • DG: {m.gd || 0} • Factor:{' '}
                               {(m.factor || 1).toFixed(2)}
                             </div>
                             <div className="bg-gradient-to-r from-emerald-50/80 to-green-50/60 from-emerald-900/20 to-green-900/20 p-3 rounded-2xl border border-emerald-200/30 border-emerald-700/30 backdrop-blur-sm">
-                              <strong className="text-emerald-300">
-                                Risultato:
-                              </strong>{' '}
+                              <strong className="text-emerald-300">Risultato:</strong>{' '}
                               <span
                                 className={`font-bold text-lg ${
                                   delta >= 0
@@ -1927,10 +1887,3 @@ export default function StatisticheGiocatore({
     </Section>
   );
 }
-
-
-
-
-
-
-

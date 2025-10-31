@@ -76,4 +76,3 @@ const ClubClassifica = ({ clubId, club }) => {
 };
 
 export default ClubClassifica;
-

@@ -338,4 +338,3 @@ const PlayerEditMode = ({ state, dispatch, T }) => {
 };
 
 export default React.memo(PlayerEditMode);
-

@@ -196,10 +196,7 @@ const ErrorReportModal = ({ isOpen, onClose, T }) => {
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          >
+          <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
             <X className="w-6 h-6 text-gray-600 text-gray-400" />
           </button>
         </div>
@@ -226,15 +223,11 @@ const ErrorReportModal = ({ isOpen, onClose, T }) => {
               </div>
               <div className="bg-yellow-50 bg-yellow-900/20 rounded-lg p-4">
                 <p className="text-sm text-yellow-600 text-yellow-400 mb-1">Ultima Ora</p>
-                <p className="text-2xl font-bold text-yellow-900 text-yellow-300">
-                  {stats.last1h}
-                </p>
+                <p className="text-2xl font-bold text-yellow-900 text-yellow-300">{stats.last1h}</p>
               </div>
               <div className="bg-blue-50 bg-blue-900/20 rounded-lg p-4">
                 <p className="text-sm text-blue-600 text-blue-400 mb-1">Ultime 24h</p>
-                <p className="text-2xl font-bold text-blue-900 text-blue-300">
-                  {stats.last24h}
-                </p>
+                <p className="text-2xl font-bold text-blue-900 text-blue-300">{stats.last24h}</p>
               </div>
             </div>
           </div>
@@ -402,17 +395,13 @@ const ErrorReportModal = ({ isOpen, onClose, T }) => {
                         </summary>
                         <div className="mt-2 space-y-2 text-sm">
                           <div>
-                            <span className="font-medium text-gray-700 text-gray-300">
-                              ID:
-                            </span>
+                            <span className="font-medium text-gray-700 text-gray-300">ID:</span>
                             <span className="ml-2 text-gray-600 text-gray-400 font-mono text-xs">
                               {error.id}
                             </span>
                           </div>
                           <div>
-                            <span className="font-medium text-gray-700 text-gray-300">
-                              URL:
-                            </span>
+                            <span className="font-medium text-gray-700 text-gray-300">URL:</span>
                             <span className="ml-2 text-gray-600 text-gray-400 break-all">
                               {error.context.url}
                             </span>
@@ -449,5 +438,3 @@ const ErrorReportModal = ({ isOpen, onClose, T }) => {
 };
 
 export default ErrorReportModal;
-
-

@@ -13,4 +13,3 @@ const ClubSearchPage = () => {
 };
 
 export default ClubSearchPage;
-

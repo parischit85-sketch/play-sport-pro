@@ -85,9 +85,7 @@ export default function NotificationTestPanel() {
 
   return (
     <div className="p-4 mt-4 rounded-lg border border-dashed border-gray-300 border-gray-600 bg-white bg-gray-800">
-      <h3 className="font-semibold mb-2 text-gray-800 text-gray-200">
-        Notification Test Panel
-      </h3>
+      <h3 className="font-semibold mb-2 text-gray-800 text-gray-200">Notification Test Panel</h3>
       <p className="text-xs mb-3 text-gray-500 text-gray-400">
         Solo in DEV / super admin. Permette di testare rapidamente il sistema di notifiche e la
         pipeline geolocalizzazione.
@@ -144,4 +142,3 @@ export default function NotificationTestPanel() {
     </div>
   );
 }
-

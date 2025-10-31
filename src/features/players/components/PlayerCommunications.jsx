@@ -155,16 +155,12 @@ export default function PlayerCommunications({ player, T }) {
       {/* Statistiche comunicazioni */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-blue-600 text-blue-400">
-            {stats.totalSent}
-          </div>
+          <div className="text-2xl font-bold text-blue-600 text-blue-400">{stats.totalSent}</div>
           <div className={`text-xs ${T.subtext}`}>Totali</div>
         </div>
 
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-purple-600 text-purple-400">
-            {stats.emails}
-          </div>
+          <div className="text-2xl font-bold text-purple-600 text-purple-400">{stats.emails}</div>
           <div className={`text-xs ${T.subtext}`}>📧 Email</div>
         </div>
 
@@ -174,9 +170,7 @@ export default function PlayerCommunications({ player, T }) {
         </div>
 
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-orange-600 text-orange-400">
-            {stats.push}
-          </div>
+          <div className="text-2xl font-bold text-orange-600 text-orange-400">{stats.push}</div>
           <div className={`text-xs ${T.subtext}`}>🔔 Push</div>
         </div>
 
@@ -429,6 +423,3 @@ export default function PlayerCommunications({ player, T }) {
     </div>
   );
 }
-
-
-

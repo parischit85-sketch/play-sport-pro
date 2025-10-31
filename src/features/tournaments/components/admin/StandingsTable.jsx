@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getStandings } from '../../services/standingsService.js';
-import { subscribeGroupStandings, subscribeAllStandings } from '../../services/tournamentRealtime.js';
+import {
+  subscribeGroupStandings,
+  subscribeAllStandings,
+} from '../../services/tournamentRealtime.js';
 
 const StandingsTable = ({ clubId, tournamentId, groupId = null, showAllGroups = false }) => {
   const [standings, setStandings] = useState([]);
@@ -94,7 +97,15 @@ const StandingsTable = ({ clubId, tournamentId, groupId = null, showAllGroups = 
     return (
       <div className="flex items-center justify-center py-8">
         <svg className="animate-spin h-8 w-8 text-blue-600" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+            fill="none"
+          />
           <path
             className="opacity-75"
             fill="currentColor"
@@ -117,7 +128,8 @@ const StandingsTable = ({ clubId, tournamentId, groupId = null, showAllGroups = 
     return (
       <div className="p-4 bg-gray-700 border border-gray-600 rounded-lg">
         <p className="text-sm text-gray-400 text-center">
-          Nessun dato disponibile. I risultati delle partite aggiorneranno automaticamente la classifica.
+          Nessun dato disponibile. I risultati delle partite aggiorneranno automaticamente la
+          classifica.
         </p>
       </div>
     );
@@ -125,9 +137,7 @@ const StandingsTable = ({ clubId, tournamentId, groupId = null, showAllGroups = 
 
   const renderStandingsTable = (teams, groupName) => (
     <div key={groupName} className="mb-6 last:mb-0">
-      {showAllGroups && (
-        <h3 className="text-lg font-semibold text-white mb-3">{groupName}</h3>
-      )}
+      {showAllGroups && <h3 className="text-lg font-semibold text-white mb-3">{groupName}</h3>}
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-gray-800 border border-gray-700 rounded-lg">
@@ -186,9 +196,7 @@ const StandingsTable = ({ clubId, tournamentId, groupId = null, showAllGroups = 
                 <td className="px-4 py-3 whitespace-nowrap">
                   <div className="flex items-center">
                     <span className="text-sm font-medium text-white">{team.teamName}</span>
-                    {team.qualified && (
-                      <span className="ml-2 text-xs text-green-500">✓</span>
-                    )}
+                    {team.qualified && <span className="ml-2 text-xs text-green-500">✓</span>}
                   </div>
                 </td>
                 <td className="px-4 py-3 text-center whitespace-nowrap">
@@ -264,13 +272,15 @@ const StandingsTable = ({ clubId, tournamentId, groupId = null, showAllGroups = 
         </button>
       </div>
 
-      {Object.entries(groupedStandings).map(([groupName, teams]) => renderStandingsTable(teams, groupName))}
+      {Object.entries(groupedStandings).map(([groupName, teams]) =>
+        renderStandingsTable(teams, groupName)
+      )}
 
       {/* Info Footer */}
       <div className="mt-4 p-3 bg-blue-900/20 border border-blue-800 rounded-lg">
         <p className="text-xs text-blue-400">
-          <strong>Legenda:</strong> G = Partite Giocate, V = Vinte, P = Perse, S+ = Set Vinti, S- = Set Persi, Diff =
-          Differenza Set
+          <strong>Legenda:</strong> G = Partite Giocate, V = Vinte, P = Perse, S+ = Set Vinti, S- =
+          Set Persi, Diff = Differenza Set
         </p>
       </div>
     </div>
@@ -278,4 +288,3 @@ const StandingsTable = ({ clubId, tournamentId, groupId = null, showAllGroups = 
 };
 
 export default StandingsTable;
-

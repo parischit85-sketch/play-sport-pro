@@ -763,9 +763,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       confirmText: 'Cancella',
       cancelText: 'Annulla',
     });
-    
+
     if (!confirmed) return;
-    
+
     try {
       await updateUnifiedBooking(id, {
         status: 'cancelled',
@@ -779,14 +779,15 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   async function hardDeleteBooking(id) {
     const confirmed = await confirm({
       title: 'Elimina definitivamente',
-      message: 'Sei sicuro di voler eliminare definitivamente questa prenotazione?\n\nQuesta azione non può essere annullata.',
+      message:
+        'Sei sicuro di voler eliminare definitivamente questa prenotazione?\n\nQuesta azione non può essere annullata.',
       variant: 'danger',
       confirmText: 'Elimina',
       cancelText: 'Annulla',
     });
-    
+
     if (!confirmed) return;
-    
+
     try {
       await deleteUnifiedBooking(id);
       setModalOpen(false);
@@ -1390,12 +1391,8 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="text-4xl mb-4">⏳</div>
-            <h3 className="text-lg font-medium mb-2 text-white">
-              Caricamento...
-            </h3>
-            <p className="text-gray-400">
-              Caricamento configurazione campi in corso...
-            </p>
+            <h3 className="text-lg font-medium mb-2 text-white">Caricamento...</h3>
+            <p className="text-gray-400">Caricamento configurazione campi in corso...</p>
           </div>
         </div>
       ) : (
@@ -1403,10 +1400,14 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           {/* Header principale con filtri e navigazione affiancati */}
           <div className="flex flex-col lg:flex-row gap-2 lg:gap-3 mb-3 lg:mb-4">
             {/* Filtri per tipologia campo - a sinistra */}
-            <div className={`flex-1 ${T.cardBg} ${T.border} p-2 lg:p-3 rounded-lg lg:rounded-xl shadow-lg`}>
+            <div
+              className={`flex-1 ${T.cardBg} ${T.border} p-2 lg:p-3 rounded-lg lg:rounded-xl shadow-lg`}
+            >
               <div className={`flex items-center gap-2 ${isMobileView ? 'mb-1.5' : 'mb-2'}`}>
                 <span className={`${isMobileView ? 'text-xs' : 'text-sm'} font-semibold`}>🏓</span>
-                <span className={`${isMobileView ? 'text-xs' : 'text-sm'} font-medium`}>Filtra per tipologia campo</span>
+                <span className={`${isMobileView ? 'text-xs' : 'text-sm'} font-medium`}>
+                  Filtra per tipologia campo
+                </span>
               </div>
               <div className="flex flex-wrap gap-1">
                 <button
@@ -1453,7 +1454,9 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
             </div>
 
             {/* Header moderno con navigazione integrata - a destra */}
-            <div className={`flex-1 ${T.cardBg} ${T.border} ${isMobileView ? 'p-2' : 'p-3'} rounded-lg lg:rounded-xl shadow-lg`}>
+            <div
+              className={`flex-1 ${T.cardBg} ${T.border} ${isMobileView ? 'p-2' : 'p-3'} rounded-lg lg:rounded-xl shadow-lg`}
+            >
               {/* Navigazione date centrata con frecce grandi */}
               <div className="flex items-center justify-center gap-4 lg:gap-6">
                 <button
@@ -2107,10 +2110,3 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     </Section>
   );
 }
-
-
-
-
-
-
-

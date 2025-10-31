@@ -325,9 +325,7 @@ export default function Profile({ T }) {
                   ? new Date(user.metadata.creationTime).toLocaleDateString('it-IT')
                   : 'N/A'}
               </div>
-              <div className="text-sm font-medium text-gray-300">
-                Registrato il
-              </div>
+              <div className="text-sm font-medium text-gray-300">Registrato il</div>
             </div>
             <div className="text-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 from-purple-900/30 to-pink-900/30 rounded-2xl border border-purple-200/30 border-purple-700/30">
               <div className="text-2xl font-bold text-purple-600 text-purple-400 mb-1">
@@ -335,9 +333,7 @@ export default function Profile({ T }) {
                   ? new Date(user.metadata.lastSignInTime).toLocaleDateString('it-IT')
                   : 'N/A'}
               </div>
-              <div className="text-sm font-medium text-gray-300">
-                Ultimo accesso
-              </div>
+              <div className="text-sm font-medium text-gray-300">Ultimo accesso</div>
             </div>
           </div>
 
@@ -398,9 +394,7 @@ export default function Profile({ T }) {
             <div className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">
-                    Nome *
-                  </label>
+                  <label className="text-sm font-semibold text-gray-300">Nome *</label>
                   <input
                     className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
                     value={form.firstName}
@@ -409,9 +403,7 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">
-                    Cognome
-                  </label>
+                  <label className="text-sm font-semibold text-gray-300">Cognome</label>
                   <input
                     className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
                     value={form.lastName}
@@ -420,9 +412,7 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">
-                    Telefono *
-                  </label>
+                  <label className="text-sm font-semibold text-gray-300">Telefono *</label>
                   <input
                     className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
                     value={form.phone}
@@ -431,9 +421,7 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">
-                    Codice Fiscale
-                  </label>
+                  <label className="text-sm font-semibold text-gray-300">Codice Fiscale</label>
                   <input
                     className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
                     value={form.fiscalCode}
@@ -442,9 +430,7 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">
-                    Data di nascita
-                  </label>
+                  <label className="text-sm font-semibold text-gray-300">Data di nascita</label>
                   <input
                     type="date"
                     className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
@@ -453,9 +439,7 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">
-                    Email
-                  </label>
+                  <label className="text-sm font-semibold text-gray-300">Email</label>
                   <input
                     type="email"
                     className="px-4 py-3 bg-gray-100/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl text-gray-400 cursor-not-allowed"
@@ -464,9 +448,7 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col sm:col-span-2 space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">
-                    Indirizzo
-                  </label>
+                  <label className="text-sm font-semibold text-gray-300">Indirizzo</label>
                   <input
                     className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
                     value={form.address}
@@ -502,7 +484,3 @@ export default function Profile({ T }) {
     </div>
   );
 }
-
-
-
-

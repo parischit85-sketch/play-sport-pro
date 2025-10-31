@@ -75,8 +75,10 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
   };
 
   const canSave = useMemo(() => {
-    // Allow saving even with BYEs or empty slots (treated as BYE)
-    // but avoid duplicate team selections
+    // All slots must be filled (either team or BYE), no empty slots allowed
+    // Check if any slot is empty
+    if (slots.some((s) => s === '')) return false;
+    // Avoid duplicate team selections
     if (selectedTeamIds.size !== slots.filter((s) => s && s !== 'BYE').length) return false;
     // Must have at least 2 non-BYE teams overall
     const teamsCount = slots.filter((s) => s && s !== 'BYE').length;
@@ -88,8 +90,10 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
     setSaving(true);
     setError(null);
     try {
-      // Normalize slots: '' -> BYE (null)
-      const normalizedSlots = slots.map((s) => (s === '' || s === 'BYE' ? null : s));
+      // Keep 'BYE' as-is when admin explicitly selects it
+      // Keep teamIds as-is
+      // Empty strings should not exist due to validation
+      const normalizedSlots = slots.map((s) => s);
       const res = await startManualKnockout(clubId, tournament.id, {
         startingRound,
         includeThirdPlace,
@@ -111,20 +115,21 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
 
   const roundOptions = [
     { value: KNOCKOUT_ROUND.ROUND_OF_16, label: KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.ROUND_OF_16] },
-    { value: KNOCKOUT_ROUND.QUARTER_FINALS, label: KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.QUARTER_FINALS] },
+    {
+      value: KNOCKOUT_ROUND.QUARTER_FINALS,
+      label: KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.QUARTER_FINALS],
+    },
     { value: KNOCKOUT_ROUND.SEMI_FINALS, label: KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.SEMI_FINALS] },
     { value: KNOCKOUT_ROUND.FINALS, label: KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.FINALS] },
   ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-  <div className="w-full max-w-7xl bg-gray-900 rounded-xl shadow-xl border border-gray-700">
+      <div className="w-full max-w-7xl bg-gray-900 rounded-xl shadow-xl border border-gray-700">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
           <div className="flex items-center gap-2">
             <Settings className="w-5 h-5 text-primary-600" />
-            <h3 className="text-lg font-semibold text-white">
-              Configura Tabellone Manuale
-            </h3>
+            <h3 className="text-lg font-semibold text-white">Configura Tabellone Manuale</h3>
           </div>
           <button onClick={onClose} className="p-2 rounded hover:bg-gray-800">
             <X className="w-5 h-5 text-gray-500" />
@@ -140,19 +145,24 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-300">Round iniziale</label>
+              <label htmlFor="roundSelect" className="text-sm font-medium text-gray-300">
+                Round iniziale
+              </label>
               <select
+                id="roundSelect"
                 value={startingRound}
                 onChange={(e) => setStartingRound(e.target.value)}
-                className="mt-1 w-full rounded-lg border-gray-700 bg-gray-800 text-white"
+                className="mt-1 w-full rounded-lg border border-gray-700 bg-gray-800 text-white"
               >
                 {roundOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
                 ))}
               </select>
             </div>
             <div className="col-span-2">
-              <label className="text-sm font-medium text-gray-300">Opzioni</label>
+              <div className="text-sm font-medium text-gray-300">Opzioni</div>
               <div className="mt-2 flex items-center gap-4">
                 <label className="inline-flex items-center gap-2">
                   <input
@@ -179,7 +189,9 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-white mb-2">Configura abbinamenti iniziali</h4>
+            <h4 className="text-sm font-semibold text-white mb-2">
+              Configura abbinamenti iniziali
+            </h4>
             {loading ? (
               <div className="py-8 text-center text-gray-500">Caricamento classifiche…</div>
             ) : (
@@ -195,7 +207,10 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
         </div>
 
         <div className="px-6 py-4 border-t border-gray-700 flex items-center justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-gray-800 text-gray-300">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700"
+          >
             Annulla
           </button>
           <button
@@ -212,4 +227,3 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
 }
 
 export default KnockoutSetupModal;
-

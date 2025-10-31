@@ -129,9 +129,7 @@ const BackupPanel = () => {
           <div className="flex items-center gap-3">
             <Database size={28} className="text-blue-600 text-blue-400" />
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 text-white">
-                Backup & Recovery
-              </h2>
+              <h2 className="text-2xl font-bold text-gray-900 text-white">Backup & Recovery</h2>
               <p className="text-sm text-gray-500 text-gray-400">
                 Gestisci backup e ripristino dei dati Firestore
               </p>
@@ -142,20 +140,14 @@ const BackupPanel = () => {
         {/* Messages */}
         {error && (
           <div className="mx-6 mt-4 p-4 bg-red-50 bg-red-900/20 border border-red-200 border-red-800 rounded-lg flex items-start gap-3">
-            <AlertTriangle
-              size={20}
-              className="text-red-600 text-red-400 flex-shrink-0 mt-0.5"
-            />
+            <AlertTriangle size={20} className="text-red-600 text-red-400 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-red-700 text-red-300">{error}</p>
           </div>
         )}
 
         {success && (
           <div className="mx-6 mt-4 p-4 bg-green-50 bg-green-900/20 border border-green-200 border-green-800 rounded-lg flex items-start gap-3">
-            <CheckCircle
-              size={20}
-              className="text-green-600 text-green-400 flex-shrink-0 mt-0.5"
-            />
+            <CheckCircle size={20} className="text-green-600 text-green-400 flex-shrink-0 mt-0.5" />
             <p className="text-sm text-green-700 text-green-300">{success}</p>
           </div>
         )}
@@ -359,5 +351,3 @@ const BackupPanel = () => {
 };
 
 export default BackupPanel;
-
-

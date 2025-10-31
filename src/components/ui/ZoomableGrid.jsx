@@ -70,4 +70,3 @@ export default function ZoomableGrid({ children, className = '', T }) {
     </div>
   );
 }
-

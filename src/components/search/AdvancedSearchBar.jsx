@@ -208,4 +208,3 @@ const AdvancedSearchBar = ({
 };
 
 export default AdvancedSearchBar;
-

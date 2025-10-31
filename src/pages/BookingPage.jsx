@@ -21,60 +21,72 @@ export default function BookingPage() {
     const handleResend = async () => {
       setSending(true);
       setMessage('');
-      
+
       try {
         await resendVerificationEmail(user);
         setMessage('✅ Email di verifica inviata! Controlla la tua casella di posta.');
       } catch (error) {
         console.error('Error resending verification email:', error);
-        setMessage('❌ Errore nell\'invio. Riprova tra qualche minuto.');
+        setMessage("❌ Errore nell'invio. Riprova tra qualche minuto.");
       } finally {
         setSending(false);
       }
     };
 
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#111827',
-        padding: '20px',
-      }}>
-        <div style={{
-          maxWidth: '500px',
-          width: '100%',
-          backgroundColor: '#1f2937',
-          borderRadius: '16px',
-          padding: '32px',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-          textAlign: 'center',
-          border: '1px solid #374151',
-        }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#111827',
+          padding: '20px',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '500px',
+            width: '100%',
+            backgroundColor: '#1f2937',
+            borderRadius: '16px',
+            padding: '32px',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            textAlign: 'center',
+            border: '1px solid #374151',
+          }}
+        >
           <div style={{ fontSize: '64px', marginBottom: '16px' }}>📧</div>
-          <h2 style={{
-            fontSize: '24px',
-            fontWeight: '600',
-            color: '#f9fafb',
-            marginBottom: '12px',
-          }}>
+          <h2
+            style={{
+              fontSize: '24px',
+              fontWeight: '600',
+              color: '#f9fafb',
+              marginBottom: '12px',
+            }}
+          >
             Verifica la tua email
           </h2>
-          <p style={{
-            fontSize: '16px',
-            color: '#d1d5db',
-            marginBottom: '24px',
-            lineHeight: '1.6',
-          }}>
-            Per prenotare campi devi prima verificare il tuo indirizzo email: <strong style={{color: '#f9fafb'}}>{user.email}</strong>
+          <p
+            style={{
+              fontSize: '16px',
+              color: '#d1d5db',
+              marginBottom: '24px',
+              lineHeight: '1.6',
+            }}
+          >
+            Per prenotare campi devi prima verificare il tuo indirizzo email:{' '}
+            <strong style={{ color: '#f9fafb' }}>{user.email}</strong>
           </p>
-          <p style={{
-            fontSize: '14px',
-            color: '#9ca3af',
-            marginBottom: '24px',
-          }}>
-            Ti abbiamo inviato un'email con un link di verifica. Clicca sul link nell'email per attivare il tuo account.
+          <p
+            style={{
+              fontSize: '14px',
+              color: '#9ca3af',
+              marginBottom: '24px',
+            }}
+          >
+            Ti abbiamo inviato un'email con un link di verifica. Clicca sul link nell'email per
+            attivare il tuo account.
           </p>
 
           <button
@@ -117,15 +129,17 @@ export default function BookingPage() {
           </button>
 
           {message && (
-            <div style={{
-              marginTop: '16px',
-              padding: '12px',
-              borderRadius: '8px',
-              backgroundColor: message.includes('✅') ? '#064e3b' : '#7f1d1d',
-              color: message.includes('✅') ? '#a7f3d0' : '#fca5a5',
-              fontSize: '14px',
-              border: `1px solid ${message.includes('✅') ? '#065f46' : '#991b1b'}`,
-            }}>
+            <div
+              style={{
+                marginTop: '16px',
+                padding: '12px',
+                borderRadius: '8px',
+                backgroundColor: message.includes('✅') ? '#064e3b' : '#7f1d1d',
+                color: message.includes('✅') ? '#a7f3d0' : '#fca5a5',
+                fontSize: '14px',
+                border: `1px solid ${message.includes('✅') ? '#065f46' : '#991b1b'}`,
+              }}
+            >
               {message}
             </div>
           )}
@@ -144,4 +158,3 @@ export default function BookingPage() {
     <ModernBookingInterface T={T} user={user} state={null} setState={() => {}} clubId={clubId} />
   );
 }
-

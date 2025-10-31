@@ -63,4 +63,3 @@ const PlayerBadges = ({ player, certStatus, _compact = false }) => {
 
 // 🚀 OTTIMIZZAZIONE: Memoizza per evitare re-render inutili
 export default React.memo(PlayerBadges);
-

@@ -201,15 +201,15 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className={`${T.modalBackground} rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden`}>
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 border-gray-700">
+      <div
+        className={`${T.modalBackground} rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden`}
+      >
+        <div className="flex items-center justify-between p-6 border-b border-gray-700">
           <div className="flex items-center gap-3">
             <Users className="w-6 h-6 text-primary-600" />
             <div>
               <h2 className="text-xl font-bold text-gray-900 text-white">Modifica Squadra</h2>
-              <p className="text-sm text-gray-500 text-gray-400">
-                Aggiorna giocatori e nome squadra
-              </p>
+              <p className="text-sm text-gray-400">Aggiorna giocatori e nome squadra</p>
             </div>
           </div>
           <button
@@ -222,15 +222,13 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
 
         <form onSubmit={handleSave} className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
           {error && (
-            <div className="mb-4 bg-red-50 bg-red-900/20 border border-red-200 border-red-800 rounded-lg p-4">
-              <p className="text-red-800 text-red-200">{error}</p>
+            <div className="mb-4 bg-red-900/20 border border-red-800 rounded-lg p-4">
+              <p className="text-red-200">{error}</p>
             </div>
           )}
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
-              Nome Squadra *
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Nome Squadra *</label>
             <input
               type="text"
               value={formData.teamName}
@@ -243,33 +241,31 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
 
           <div className="space-y-4 mb-6">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-700 text-gray-300">
+              <h3 className="text-sm font-medium text-gray-300">
                 Giocatori ({playersPerTeam} richiesti)
               </h3>
-              <span className="text-sm text-gray-500 text-gray-400">
+              <span className="text-sm text-gray-400">
                 {selectedPlayers.length} / {playersPerTeam}
               </span>
             </div>
 
             {[1, 2, 3, 4].slice(0, playersPerTeam).map((position) => (
               <div key={position} className="space-y-2">
-                <label className="block text-sm font-medium text-gray-600 text-gray-400">
+                <label className="block text-sm font-medium text-gray-400">
                   Giocatore {position} *
                 </label>
                 {formData[`player${position}`] ? (
-                  <div className="flex items-center justify-between p-3 bg-primary-50 bg-primary-900/20 border border-primary-200 border-primary-800 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-primary-900/20 border border-primary-800 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary-100 bg-primary-800 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold text-primary-700 text-primary-300">
-                          {position}
-                        </span>
+                      <div className="w-10 h-10 bg-primary-800 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-bold text-primary-300">{position}</span>
                       </div>
                       <div>
                         <p className="font-medium text-gray-900 text-white">
                           {formData[`player${position}`].name ||
                             formData[`player${position}`].userName}
                         </p>
-                        <p className="text-sm text-gray-500 text-gray-400">
+                        <p className="text-sm text-gray-400">
                           Ranking: {Math.round(formData[`player${position}`].rating || 1500)}
                         </p>
                       </div>
@@ -283,8 +279,8 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
                     </button>
                   </div>
                 ) : (
-                  <div className="border border-gray-300 border-gray-600 rounded-lg overflow-hidden">
-                    <div className="p-2 border-b border-gray-200 border-gray-700">
+                  <div className="border border-gray-600 rounded-lg overflow-hidden">
+                    <div className="p-2 border-b border-gray-700">
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
@@ -315,13 +311,9 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
                               <p className="font-medium text-gray-900 text-white">
                                 {p.name || p.userName}
                               </p>
-                              {p.email && (
-                                <p className="text-xs text-gray-500 text-gray-400">
-                                  {p.email}
-                                </p>
-                              )}
+                              {p.email && <p className="text-xs text-gray-400">{p.email}</p>}
                             </div>
-                            <span className="text-sm text-gray-500 text-gray-400">
+                            <span className="text-sm text-gray-400">
                               Ranking: {Math.round(p.rating || 1500)}
                             </span>
                           </button>
@@ -335,24 +327,20 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
           </div>
 
           {selectedPlayers.length > 0 && (
-            <div className="bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-800 rounded-lg p-4 mb-6">
+            <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4 mb-6">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700 text-gray-300">
-                  Ranking Medio Squadra
-                </span>
-                <span className="text-lg font-bold text-blue-600 text-blue-400">
-                  {averageRating}
-                </span>
+                <span className="text-sm font-medium text-gray-300">Ranking Medio Squadra</span>
+                <span className="text-lg font-bold text-blue-400">{averageRating}</span>
               </div>
             </div>
           )}
         </form>
 
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 border-gray-700">
+        <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-700">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 text-gray-300 hover:bg-gray-100 hover:bg-gray-700 rounded-lg transition-colors"
+            className="px-4 py-2 text-gray-300 hover:bg-gray-100 hover:bg-gray-700 rounded-lg transition-colors"
           >
             Annulla
           </button>
@@ -369,4 +357,3 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
     </div>
   );
 }
-

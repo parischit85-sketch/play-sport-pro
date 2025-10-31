@@ -107,9 +107,7 @@ export default function EmailValidator({
               <span className="text-sm">💡</span>
               <div>
                 <p className="font-medium">Possibile errore di battitura</p>
-                <p className="text-blue-600/80 text-blue-400/80 mt-1">
-                  {validation.suggestion}
-                </p>
+                <p className="text-blue-600/80 text-blue-400/80 mt-1">{validation.suggestion}</p>
                 <button
                   type="button"
                   onClick={() => {
@@ -145,4 +143,3 @@ export default function EmailValidator({
     </div>
   );
 }
-

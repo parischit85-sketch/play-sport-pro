@@ -71,9 +71,7 @@ const PlayerStats = ({ player, liveRating, T, layout = 'desktop' }) => {
       {/* Wallet (solo se > 0) */}
       {balance > 0 && (
         <div className="text-center w-[90px] shrink-0">
-          <div className="font-semibold text-green-600 text-green-400">
-            €{balance.toFixed(2)}
-          </div>
+          <div className="font-semibold text-green-600 text-green-400">€{balance.toFixed(2)}</div>
           <div className={`text-xs ${T.subtext}`}>Credito</div>
         </div>
       )}
@@ -102,4 +100,3 @@ const PlayerStats = ({ player, liveRating, T, layout = 'desktop' }) => {
 
 // 🚀 OTTIMIZZAZIONE: Memoizza per evitare re-render inutili
 export default React.memo(PlayerStats);
-

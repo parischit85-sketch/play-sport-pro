@@ -31,9 +31,7 @@ const StatCard = ({ title, value, icon, color = 'blue', subtitle, trend }) => {
             <p className="text-2xl font-semibold text-gray-900 text-white">
               {typeof value === 'number' ? value.toLocaleString() : value}
             </p>
-            {subtitle && (
-              <p className="text-xs text-gray-500 text-gray-400 mt-1">{subtitle}</p>
-            )}
+            {subtitle && <p className="text-xs text-gray-500 text-gray-400 mt-1">{subtitle}</p>}
           </div>
         </div>
         {trend && (
@@ -202,9 +200,7 @@ const RecentActivity = ({ activities, loading }) => {
   if (loading) {
     return (
       <div className="bg-white bg-gray-800 rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold text-gray-900 text-white mb-4">
-          Attività Recente
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 text-white mb-4">Attività Recente</h2>
         <div className="flex justify-center py-8">
           <LoadingSpinner />
         </div>
@@ -273,9 +269,7 @@ const PendingAffiliations = ({ affiliations, loading, onApprove, onReject }) => 
   return (
     <div className="bg-white bg-gray-800 rounded-lg shadow p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-gray-900 text-white">
-          Affiliazioni in Sospeso
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 text-white">Affiliazioni in Sospeso</h2>
         <span className="bg-red-100 text-red-800 bg-red-900 text-red-200 text-xs font-medium px-2.5 py-0.5 rounded-full">
           {affiliations.length}
         </span>
@@ -1092,5 +1086,3 @@ const AdminChampionshipRevertTool = () => {
     </div>
   );
 };
-
-

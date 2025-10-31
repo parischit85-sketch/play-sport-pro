@@ -1,7 +1,7 @@
 /**
  * Tournaments Page - Main tournament management interface
  * Entry point for tournament system in club admin dashboard
- * 
+ *
  * @param {Object} props - Component props
  * @param {string} props.clubId - Club ID for tournament management
  */
@@ -47,9 +47,7 @@ function TournamentsPage({ clubId, isAdmin = false }) {
       ];
 
       const visible =
-        filterStatus === 'active'
-          ? data.filter((t) => activeStatuses.includes(t.status))
-          : data;
+        filterStatus === 'active' ? data.filter((t) => activeStatuses.includes(t.status)) : data;
 
       setTournaments(visible);
     } catch (error) {
@@ -74,11 +72,13 @@ function TournamentsPage({ clubId, isAdmin = false }) {
 
   const stats = {
     total: tournaments.length,
-    active: tournaments.filter((t) => [
-      TOURNAMENT_STATUS.REGISTRATION_OPEN,
-      TOURNAMENT_STATUS.GROUPS_PHASE,
-      TOURNAMENT_STATUS.KNOCKOUT_PHASE,
-    ].includes(t.status)).length,
+    active: tournaments.filter((t) =>
+      [
+        TOURNAMENT_STATUS.REGISTRATION_OPEN,
+        TOURNAMENT_STATUS.GROUPS_PHASE,
+        TOURNAMENT_STATUS.KNOCKOUT_PHASE,
+      ].includes(t.status)
+    ).length,
     completed: tournaments.filter((t) => t.status === TOURNAMENT_STATUS.COMPLETED).length,
     draft: tournaments.filter((t) => t.status === TOURNAMENT_STATUS.DRAFT).length,
   };
@@ -227,10 +227,7 @@ function TournamentsPage({ clubId, isAdmin = false }) {
             )}
           </div>
         ) : (
-          <TournamentList
-            tournaments={tournaments}
-            onRefresh={loadTournaments}
-          />
+          <TournamentList tournaments={tournaments} onRefresh={loadTournaments} />
         )}
       </div>
 
@@ -247,4 +244,3 @@ function TournamentsPage({ clubId, isAdmin = false }) {
 }
 
 export default TournamentsPage;
-

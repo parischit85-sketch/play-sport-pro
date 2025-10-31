@@ -189,4 +189,3 @@ export default function SuccessAnimation({ userName = '', onComplete, redirectDe
     </div>
   );
 }
-

@@ -343,9 +343,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
               <h3 className="text-xl font-bold text-gray-900 text-white mb-2">
                 Nessun Conflitto Rilevato
               </h3>
-              <p className="text-gray-400">
-                Tutte le fasce orarie sono configurate correttamente.
-              </p>
+              <p className="text-gray-400">Tutte le fasce orarie sono configurate correttamente.</p>
             </div>
           ) : (
             <div className="space-y-6">
@@ -367,9 +365,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
                         <div className="text-gray-400">
                           ⏰ {conflict.slot1.from} - {conflict.slot1.to}
                         </div>
-                        <div className="text-gray-400">
-                          💰 €{conflict.slot1.eurPerHour}/h
-                        </div>
+                        <div className="text-gray-400">💰 €{conflict.slot1.eurPerHour}/h</div>
                       </div>
                       <div className="bg-white bg-gray-800 p-3 rounded-lg border border-gray-200 border-gray-700">
                         <div className="font-semibold text-gray-900 text-white">
@@ -378,9 +374,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
                         <div className="text-gray-400">
                           ⏰ {conflict.slot2.from} - {conflict.slot2.to}
                         </div>
-                        <div className="text-gray-400">
-                          💰 €{conflict.slot2.eurPerHour}/h
-                        </div>
+                        <div className="text-gray-400">💰 €{conflict.slot2.eurPerHour}/h</div>
                       </div>
                     </div>
                     <div className="mt-2 text-sm text-red-700 text-red-400 font-medium">
@@ -409,9 +403,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
                               <div className="font-semibold text-gray-900 text-white mb-1">
                                 {suggestion.title}
                               </div>
-                              <div className="text-sm text-gray-400">
-                                {suggestion.description}
-                              </div>
+                              <div className="text-sm text-gray-400">{suggestion.description}</div>
                             </div>
                             <div className="flex gap-2 ml-3">
                               <button
@@ -484,5 +476,3 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
 }
 
 export default ConflictResolutionPanel;
-
-

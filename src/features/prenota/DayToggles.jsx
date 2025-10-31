@@ -26,4 +26,3 @@ export default function DayToggles({ value = [], onChange, T }) {
     </div>
   );
 }
-

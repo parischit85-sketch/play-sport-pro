@@ -8,9 +8,9 @@ import { XCircle, RefreshCw, Home, AlertTriangle } from 'lucide-react';
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      hasError: false, 
-      error: null, 
+    this.state = {
+      hasError: false,
+      error: null,
       errorInfo: null,
       errorId: null,
     };
@@ -93,9 +93,7 @@ class ErrorBoundary extends React.Component {
               </h1>
 
               {/* Message */}
-              <p className="text-lg text-gray-600  text-center mb-8">
-                {friendlyMessage.message}
-              </p>
+              <p className="text-lg text-gray-600  text-center mb-8">{friendlyMessage.message}</p>
 
               {/* Error ID */}
               {this.state.errorId && (
@@ -114,16 +112,11 @@ class ErrorBoundary extends React.Component {
                 <div className="bg-blue-50  border border-blue-200  rounded-lg p-6 mb-8">
                   <div className="flex items-start gap-3 mb-4">
                     <AlertTriangle className="w-5 h-5 text-blue-600  flex-shrink-0 mt-0.5" />
-                    <h3 className="text-lg font-semibold text-blue-900">
-                      Cosa Puoi Fare
-                    </h3>
+                    <h3 className="text-lg font-semibold text-blue-900">Cosa Puoi Fare</h3>
                   </div>
                   <ul className="space-y-2">
                     {friendlyMessage.suggestions.map((suggestion, index) => (
-                      <li
-                        key={index}
-                        className="flex items-start gap-2 text-blue-800"
-                      >
+                      <li key={index} className="flex items-start gap-2 text-blue-800">
                         <span className="text-blue-600  mt-1">•</span>
                         <span>{suggestion}</span>
                       </li>
@@ -136,21 +129,21 @@ class ErrorBoundary extends React.Component {
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={this.handleReset}
-                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
                 >
                   <RefreshCw className="w-5 h-5" />
                   Riprova
                 </button>
                 <button
                   onClick={this.handleReload}
-                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg font-semibold transition-colors"
                 >
                   <RefreshCw className="w-5 h-5" />
                   Ricarica Pagina
                 </button>
                 <button
                   onClick={this.handleGoHome}
-                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-lg font-semibold transition-colors"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-900 rounded-lg font-semibold transition-colors"
                 >
                   <Home className="w-5 h-5" />
                   Home
@@ -205,4 +198,3 @@ class ErrorBoundary extends React.Component {
 }
 
 export default ErrorBoundary;
-

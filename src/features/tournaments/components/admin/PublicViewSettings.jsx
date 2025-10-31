@@ -25,9 +25,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
   };
 
   const baseUrl = window.location.origin;
-  const mobileUrl = token
-    ? `${baseUrl}/public/tournament/${clubId}/${tournament.id}/${token}`
-    : '';
+  const mobileUrl = token ? `${baseUrl}/public/tournament/${clubId}/${tournament.id}/${token}` : '';
   const tvUrl = token ? `${baseUrl}/public/tournament-tv/${clubId}/${tournament.id}/${token}` : '';
 
   const generateToken = () => {
@@ -58,9 +56,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 
   const handleRegenerateToken = async () => {
     if (
-      !confirm(
-        'Vuoi rigenerare il token? I link esistenti smetteranno di funzionare. Continuare?'
-      )
+      !confirm('Vuoi rigenerare il token? I link esistenti smetteranno di funzionare. Continuare?')
     )
       return;
 
@@ -155,9 +151,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
           onClick={handleTogglePublicView}
           disabled={loading}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-            isEnabled
-              ? 'bg-red-900/20 text-red-400'
-              : 'bg-green-900/20 text-green-400'
+            isEnabled ? 'bg-red-900/20 text-red-400' : 'bg-green-900/20 text-green-400'
           } disabled:opacity-50`}
         >
           {isEnabled ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -173,9 +167,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
             <div className="bg-gray-800 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Smartphone className="w-5 h-5 text-primary-400" />
-                <h4 className="font-semibold text-white">
-                  Vista Smartphone
-                </h4>
+                <h4 className="font-semibold text-white">Vista Smartphone</h4>
               </div>
               <p className="text-sm text-gray-400 mb-3">
                 Ottimizzata per dispositivi mobili con navigazione touch
@@ -192,11 +184,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                   className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                   title="Copia link"
                 >
-                  {copied.mobile ? (
-                    <Check className="w-5 h-5" />
-                  ) : (
-                    <Copy className="w-5 h-5" />
-                  )}
+                  {copied.mobile ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                 </button>
                 <a
                   href={mobileUrl}
@@ -322,9 +310,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                   <span className="text-sm text-gray-300">Punti</span>
                 </label>
               </div>
-              <p className="text-xs text-gray-400 mt-2">
-                La pagina QR code sarà sempre visibile
-              </p>
+              <p className="text-xs text-gray-400 mt-2">La pagina QR code sarà sempre visibile</p>
             </div>
 
             {/* Show QR Code (only for mobile view) */}
@@ -341,9 +327,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                 onClick={handleToggleQRCode}
                 disabled={loading}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  showQRCode
-                    ? 'bg-primary-600'
-                    : 'bg-gray-300'
+                  showQRCode ? 'bg-primary-600' : 'bg-gray-300'
                 } disabled:opacity-50`}
               >
                 <span
@@ -378,9 +362,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
             <div className="flex items-start gap-3">
               <RefreshCw className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h4 className="font-semibold text-yellow-200 mb-1">
-                  Sicurezza
-                </h4>
+                <h4 className="font-semibold text-yellow-200 mb-1">Sicurezza</h4>
                 <p className="text-sm text-yellow-300 mb-3">
                   Il token protegge laccesso alla vista pubblica. Se sospetti un uso non
                   autorizzato, rigenera il token per invalidare i vecchi link.
@@ -403,4 +385,3 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 }
 
 export default PublicViewSettings;
-

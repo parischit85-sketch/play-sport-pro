@@ -909,4 +909,3 @@ export function ClubProvider({ children }) {
 
   return <ClubContext.Provider value={value}>{children}</ClubContext.Provider>;
 }
-

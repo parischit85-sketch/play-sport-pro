@@ -105,9 +105,7 @@ export default function AdminBookingsPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sticky top-0 bg-gray-900 border-b border-gray-700 p-4 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-white">
-                Impostazioni Avanzate
-              </h2>
+              <h2 className="text-xl font-semibold text-white">Impostazioni Avanzate</h2>
               <button
                 onClick={() => setShowSettings(false)}
                 className="p-2 text-gray-400 hover:text-gray-200"
@@ -277,4 +275,3 @@ export default function AdminBookingsPage() {
     </div>
   );
 }
-

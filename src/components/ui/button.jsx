@@ -16,10 +16,8 @@ export function Button({
       'bg-primary text-primary-foreground hover:bg-primary/90 bg-blue-600 text-white hover:bg-blue-700',
     destructive:
       'bg-destructive text-destructive-foreground hover:bg-destructive/90 bg-red-600 text-white hover:bg-red-700',
-    outline:
-      'border border-gray-600 bg-background hover:bg-gray-800 hover:text-accent-foreground',
-    secondary:
-      'bg-gray-700 text-secondary-foreground hover:bg-gray-600',
+    outline: 'border border-gray-600 bg-background hover:bg-gray-800 hover:text-accent-foreground',
+    secondary: 'bg-gray-700 text-secondary-foreground hover:bg-gray-600',
     ghost: 'hover:bg-gray-800 hover:text-accent-foreground',
     link: 'text-blue-400 underline-offset-4 hover:underline',
   };
@@ -41,4 +39,3 @@ export function Button({
     </button>
   );
 }
-

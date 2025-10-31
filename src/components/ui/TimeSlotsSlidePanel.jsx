@@ -731,6 +731,3 @@ function TimeSlotsSlidePanel({
 // Named and default exports
 export { TimeSlotsSlidePanel };
 export default TimeSlotsSlidePanel;
-
-
-

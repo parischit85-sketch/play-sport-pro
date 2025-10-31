@@ -272,4 +272,3 @@ export default function ClubSelectionForBooking({ bookingType = 'campo', T }) {
     </div>
   );
 }
-

@@ -114,7 +114,7 @@ export default function ClubRegistrationRequests() {
           role: 'club_admin',
           status: 'approved',
           isClubAdmin: true,
-          
+
           // Permission flags
           canManageBookings: true,
           canManageCourts: true,
@@ -122,7 +122,7 @@ export default function ClubRegistrationRequests() {
           canViewReports: true,
           canManageMembers: true,
           canManageSettings: true,
-          
+
           requestedAt: serverTimestamp(),
           approvedAt: serverTimestamp(),
           joinedAt: serverTimestamp(),
@@ -202,12 +202,8 @@ export default function ClubRegistrationRequests() {
     <div className="p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          Richieste di Registrazione Circoli
-        </h1>
-        <p className="text-gray-400">
-          Gestisci le richieste di nuovi circoli sportivi
-        </p>
+        <h1 className="text-3xl font-bold text-white mb-2">Richieste di Registrazione Circoli</h1>
+        <p className="text-gray-400">Gestisci le richieste di nuovi circoli sportivi</p>
       </div>
 
       {/* Stats */}
@@ -216,9 +212,7 @@ export default function ClubRegistrationRequests() {
           <div className="flex items-center gap-3">
             <Clock className="w-8 h-8 text-yellow-400" />
             <div>
-              <p className="text-2xl font-bold text-yellow-100">
-                {requests.length}
-              </p>
+              <p className="text-2xl font-bold text-yellow-100">{requests.length}</p>
               <p className="text-sm text-yellow-300">In Attesa</p>
             </div>
           </div>
@@ -229,9 +223,7 @@ export default function ClubRegistrationRequests() {
       {requests.length === 0 ? (
         <div className="bg-gray-800 rounded-lg shadow p-12 text-center">
           <Building2 className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-white mb-2">
-            Nessuna richiesta in attesa
-          </h3>
+          <h3 className="text-xl font-semibold text-white mb-2">Nessuna richiesta in attesa</h3>
           <p className="text-gray-400">
             Al momento non ci sono richieste di registrazione da approvare
           </p>
@@ -261,9 +253,7 @@ export default function ClubRegistrationRequests() {
 
                     {/* Info */}
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-1">
-                        {request.name}
-                      </h3>
+                      <h3 className="text-xl font-bold text-white mb-1">{request.name}</h3>
                       <div className="flex items-center gap-2 text-sm text-gray-400">
                         <Calendar className="w-4 h-4" />
                         <span>Richiesta il {formatDate(request.requestedAt)}</span>
@@ -308,18 +298,14 @@ export default function ClubRegistrationRequests() {
                       {/* Colonna 1 */}
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-semibold text-white mb-2">
-                            Descrizione
-                          </h4>
+                          <h4 className="font-semibold text-white mb-2">Descrizione</h4>
                           <p className="text-gray-400">
                             {request.description || 'Nessuna descrizione fornita'}
                           </p>
                         </div>
 
                         <div>
-                          <h4 className="font-semibold text-white mb-2">
-                            Indirizzo
-                          </h4>
+                          <h4 className="font-semibold text-white mb-2">Indirizzo</h4>
                           <div className="flex items-start gap-2 text-gray-400">
                             <MapPin className="w-5 h-5 mt-0.5 flex-shrink-0" />
                             <div>
@@ -337,9 +323,7 @@ export default function ClubRegistrationRequests() {
                       {/* Colonna 2 */}
                       <div className="space-y-4">
                         <div>
-                          <h4 className="font-semibold text-white mb-2">
-                            Contatti
-                          </h4>
+                          <h4 className="font-semibold text-white mb-2">Contatti</h4>
                           <div className="space-y-2">
                             <div className="flex items-center gap-2 text-gray-400">
                               <Phone className="w-5 h-5" />
@@ -386,4 +370,3 @@ export default function ClubRegistrationRequests() {
     </div>
   );
 }
-

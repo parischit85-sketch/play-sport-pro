@@ -364,12 +364,10 @@ export default function InstructorDashboard() {
 
   // Get booking status color
   const getStatusColor = (booking) => {
-    if (booking.status === 'cancelled')
-      return 'bg-red-100 text-red-700 bg-red-900/30 text-red-400';
+    if (booking.status === 'cancelled') return 'bg-red-100 text-red-700 bg-red-900/30 text-red-400';
     if (booking.status === 'confirmed') {
       const date = booking.date ? parseISO(booking.date) : null;
-      if (date && isPast(date))
-        return 'bg-green-100 text-green-700 bg-green-900/30 text-green-400';
+      if (date && isPast(date)) return 'bg-green-100 text-green-700 bg-green-900/30 text-green-400';
       return 'bg-blue-100 text-blue-700 bg-blue-900/30 text-blue-400';
     }
     return 'bg-gray-100 text-gray-700 bg-gray-700/30 text-gray-400';
@@ -565,8 +563,8 @@ export default function InstructorDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/30 from-gray-950 via-slate-900 to-gray-900 p-3 sm:p-4 lg:p-6 pb-20 sm:pb-6">
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
-  {/* Header Compatto */}
-  <div className={`relative overflow-hidden ${T.card}`}>
+        {/* Header Compatto */}
+        <div className={`relative overflow-hidden ${T.card}`}>
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5 from-indigo-500/10 via-purple-500/10 to-pink-500/10"></div>
 
           <div className="relative p-4 sm:p-6">
@@ -638,8 +636,8 @@ export default function InstructorDashboard() {
           </div>
         </div>
 
-  {/* Main Content - Design Rinnovato */}
-  <div className={`${T.card} overflow-hidden`}>
+        {/* Main Content - Design Rinnovato */}
+        <div className={`${T.card} overflow-hidden`}>
           {/* Tabs - In Unica Riga con Scroll Orizzontale */}
           <div className="border-b border-gray-200 border-gray-800 bg-gradient-to-b from-gray-50/50 to-transparent from-gray-800/30 px-3 sm:px-4 py-3">
             <div className="flex gap-2 overflow-x-auto scrollbar-hide">
@@ -653,8 +651,8 @@ export default function InstructorDashboard() {
                   onClick={() => setActiveTab(key)}
                   className={`relative px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-200 whitespace-nowrap flex-shrink-0 ${
                     activeTab === key
-            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
-            : `${T.cardBg} ${T.border} ${T.subtext}`
+                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                      : `${T.cardBg} ${T.border} ${T.subtext}`
                   }`}
                 >
                   <span className="flex items-center gap-1.5 sm:gap-2">
@@ -695,8 +693,8 @@ export default function InstructorDashboard() {
                       onClick={() => setFilterDate(key)}
                       className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
                         filterDate === key
-                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
-                : `${T.cardBg} ${T.border} ${T.subtext}`
+                          ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
+                          : `${T.cardBg} ${T.border} ${T.subtext}`
                       }`}
                     >
                       <span className="flex items-center gap-1.5">
@@ -1080,9 +1078,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
         <h3 className="text-xl font-bold text-gray-900 text-white mb-2">
           Nessuna fascia oraria configurata
         </h3>
-        <p className="text-gray-400 mb-6">
-          Aggiungi le tue fasce orarie per gestire le lezioni
-        </p>
+        <p className="text-gray-400 mb-6">Aggiungi le tue fasce orarie per gestire le lezioni</p>
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 bg-blue-900/20 text-blue-600 text-blue-400 rounded-lg text-sm">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -1529,9 +1525,7 @@ function BookingDetail({ booking, type }) {
       {booking.price && (
         <div>
           <div className="text-sm text-gray-400 mb-1">Prezzo</div>
-          <div className="text-2xl font-bold text-green-600 text-green-400">
-            €{booking.price}
-          </div>
+          <div className="text-2xl font-bold text-green-600 text-green-400">€{booking.price}</div>
         </div>
       )}
 
@@ -1767,15 +1761,13 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
                 </label>
               ))
             ) : (
-              <p className="text-sm text-gray-400 text-center py-2">
-                Nessun campo disponibile
-              </p>
+              <p className="text-sm text-gray-400 text-center py-2">Nessun campo disponibile</p>
             )}
           </div>
         </div>
 
         {/* Active Toggle */}
-  <div className={`flex items-center justify-between p-3 rounded-lg ${T.border}`}>
+        <div className={`flex items-center justify-between p-3 rounded-lg ${T.border}`}>
           <label className="text-sm font-semibold text-gray-900 text-gray-100">Attiva</label>
           <input
             type="checkbox"
@@ -1805,5 +1797,3 @@ function SlotFormModal({ isOpen, onClose, slotForm, setSlotForm, onSubmit, editi
     </Modal>
   );
 }
-
-

@@ -26,10 +26,8 @@ export const FormProgressBar = ({ progress, message, className = '' }) => {
   return (
     <div className={`w-full ${className}`}>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-gray-700 text-gray-300">
-          Completamento Form
-        </span>
-        <span className="text-sm text-gray-500 text-gray-400">{progress}%</span>
+        <span className="text-sm font-medium text-gray-300">Completamento Form</span>
+        <span className="text-sm text-gray-400">{progress}%</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-2 bg-gray-700">
         <div
@@ -37,9 +35,7 @@ export const FormProgressBar = ({ progress, message, className = '' }) => {
           style={{ width: `${progress}%` }}
         />
       </div>
-      {message && (
-        <div className="mt-2 text-sm text-gray-600 text-gray-400">{message.message}</div>
-      )}
+      {message && <div className="mt-2 text-sm text-gray-600 text-gray-400">{message.message}</div>}
     </div>
   );
 };
@@ -60,9 +56,7 @@ export const FieldFeedback = ({ error, warning, className = '' }) => {
       ) : (
         <AlertTriangle className="w-4 h-4 text-yellow-500 flex-shrink-0" />
       )}
-      <span
-        className={`text-sm ${isError ? 'text-red-600 text-red-400' : 'text-yellow-600 text-yellow-400'}`}
-      >
+      <span className={`text-sm ${isError ? 'text-red-400' : 'text-yellow-400'}`}>
         {feedback.message}
       </span>
     </div>
@@ -298,22 +292,22 @@ export const MatchSummaryCard = ({ validation, playersById, formData, T, classNa
       className={`rounded-xl bg-gradient-to-r from-gray-50 to-blue-50 from-gray-800 to-blue-900/20 p-4 ${T.border} ${className}`}
     >
       <div className="flex items-center gap-2 mb-3">
-        <Trophy className="w-5 h-5 text-blue-600 text-blue-400" />
-        <span className="font-medium text-gray-900 text-gray-100">Riepilogo Partita</span>
+        <Trophy className="w-5 h-5 text-blue-400" />
+        <span className="font-medium text-gray-100">Riepilogo Partita</span>
       </div>
 
       {/* Teams Display */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
         <div className="bg-white bg-gray-700 rounded-lg p-3">
-          <div className="text-sm font-medium text-blue-600 text-blue-400 mb-1">🅰️ Team A</div>
-          <div className="text-sm text-gray-700 text-gray-300">
+          <div className="text-sm font-medium text-blue-400 mb-1">🅰️ Team A</div>
+          <div className="text-sm text-gray-300">
             {getPlayerName(a1)} {a1 && a2 && '+'} {getPlayerName(a2)}
           </div>
         </div>
 
         <div className="bg-white bg-gray-700 rounded-lg p-3">
-          <div className="text-sm font-medium text-red-600 text-red-400 mb-1">🅱️ Team B</div>
-          <div className="text-sm text-gray-700 text-gray-300">
+          <div className="text-sm font-medium text-red-400 mb-1">🅱️ Team B</div>
+          <div className="text-sm text-gray-300">
             {getPlayerName(b1)} {b1 && b2 && '+'} {getPlayerName(b2)}
           </div>
         </div>
@@ -323,7 +317,7 @@ export const MatchSummaryCard = ({ validation, playersById, formData, T, classNa
       {result && summary.setsCompleted > 0 && (
         <div className="bg-white bg-gray-700 rounded-lg p-3 mb-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700 text-gray-300">Risultato</span>
+            <span className="text-sm font-medium text-gray-300">Risultato</span>
             {result.winner && (
               <span
                 className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -354,7 +348,7 @@ export const MatchSummaryCard = ({ validation, playersById, formData, T, classNa
       {/* Status Indicator */}
       <div
         className={`flex items-center gap-2 text-sm ${
-          canSubmit ? 'text-green-600 text-green-400' : 'text-gray-500 text-gray-400'
+          canSubmit ? 'text-green-400' : 'text-gray-400'
         }`}
       >
         {canSubmit ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
@@ -388,13 +382,13 @@ export const ToastNotification = ({
 
     switch (type) {
       case 'success':
-        return `${baseClasses} border-green-200 border-green-800`;
+        return `${baseClasses} border-green-800`;
       case 'error':
-        return `${baseClasses} border-red-200 border-red-800`;
+        return `${baseClasses} border-red-800`;
       case 'warning':
-        return `${baseClasses} border-yellow-200 border-yellow-800`;
+        return `${baseClasses} border-yellow-800`;
       default:
-        return `${baseClasses} border-blue-200 border-blue-800`;
+        return `${baseClasses} border-blue-800`;
     }
   };
 
@@ -416,7 +410,7 @@ export const ToastNotification = ({
       <div className="flex items-start gap-3">
         {getIcon()}
         <div className="flex-1">
-          <div className="text-sm font-medium text-gray-900 text-gray-100">{message}</div>
+          <div className="text-sm font-medium text-gray-100">{message}</div>
         </div>
         {onClose && (
           <button
@@ -440,4 +434,3 @@ export default {
   MatchSummaryCard,
   ToastNotification,
 };
-

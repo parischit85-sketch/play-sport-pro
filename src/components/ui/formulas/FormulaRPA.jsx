@@ -46,13 +46,9 @@ export function FormulaRPA({ sumA, sumB, gap, base, factor, gd, pts, winner, set
           <div className="text-sm">Team B: {fmtInt(sumB)}</div>
         </div>
         <div>
-          <div className="text-xs font-semibold text-blue-700 text-blue-300 mb-1">
-            DIFFERENZA
-          </div>
+          <div className="text-xs font-semibold text-blue-700 text-blue-300 mb-1">DIFFERENZA</div>
           <div className="text-sm">Gap: {fmtInt(gap)}</div>
-          <div className="text-xs text-blue-600 text-blue-400">
-            Fascia: {rpaBracketText(gap)}
-          </div>
+          <div className="text-xs text-blue-600 text-blue-400">Fascia: {rpaBracketText(gap)}</div>
         </div>
       </div>
 
@@ -130,4 +126,3 @@ export function FormulaRPA({ sumA, sumB, gap, base, factor, gd, pts, winner, set
     </div>
   );
 }
-

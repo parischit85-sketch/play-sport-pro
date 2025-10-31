@@ -228,4 +228,3 @@ export default function RulesEditor({ title, list = [], onChange, courts = [], T
     </div>
   );
 }
-

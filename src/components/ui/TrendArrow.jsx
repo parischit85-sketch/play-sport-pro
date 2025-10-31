@@ -22,4 +22,3 @@ export function TrendArrow({ total = 0, pos = 0, neg = 0 }) {
     </span>
   );
 }
-

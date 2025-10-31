@@ -112,9 +112,7 @@ const FilterPanel = ({
                   />
                   <span className="text-gray-700 text-gray-300 flex-1">{option.label}</span>
                   {option.count !== undefined && (
-                    <span className="text-xs text-gray-500 text-gray-400">
-                      ({option.count})
-                    </span>
+                    <span className="text-xs text-gray-500 text-gray-400">({option.count})</span>
                   )}
                 </label>
               ))}
@@ -326,5 +324,3 @@ const FilterPanel = ({
 };
 
 export default FilterPanel;
-
-

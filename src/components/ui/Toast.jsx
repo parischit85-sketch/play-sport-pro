@@ -21,4 +21,3 @@ export const toast = {
   show: (type, message, duration, options) =>
     typeof window !== 'undefined' && window.__globalToast?.show?.(type, message, duration, options),
 };
-

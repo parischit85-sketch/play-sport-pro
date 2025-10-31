@@ -82,9 +82,7 @@ const ClubCourts = ({ clubId, club }) => {
     return (
       <div className="text-center py-12">
         <div className="text-red-500 mb-4">❌</div>
-        <h3 className="text-lg font-medium text-white mb-2">
-          Errore nel caricamento
-        </h3>
+        <h3 className="text-lg font-medium text-white mb-2">Errore nel caricamento</h3>
         <p className="text-gray-400">{error}</p>
       </div>
     );
@@ -93,21 +91,15 @@ const ClubCourts = ({ clubId, club }) => {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-white mb-2">
-          Campi {club?.name}
-        </h2>
+        <h2 className="text-2xl font-bold text-white mb-2">Campi {club?.name}</h2>
         <p className="text-gray-400">Stato e disponibilità dei campi del club</p>
       </div>
 
       {courts.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🎾</div>
-          <h3 className="text-lg font-medium text-white mb-2">
-            Nessun campo disponibile
-          </h3>
-          <p className="text-gray-400">
-            I campi del club non sono ancora stati configurati
-          </p>
+          <h3 className="text-lg font-medium text-white mb-2">Nessun campo disponibile</h3>
+          <p className="text-gray-400">I campi del club non sono ancora stati configurati</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -144,9 +136,7 @@ const ClubCourts = ({ clubId, club }) => {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Prenotazioni oggi:</span>
-                    <span className="font-medium text-white">
-                      {courtInfo.todayBookings}
-                    </span>
+                    <span className="font-medium text-white">{courtInfo.todayBookings}</span>
                   </div>
 
                   {courtInfo.nextBooking && (
@@ -161,9 +151,7 @@ const ClubCourts = ({ clubId, club }) => {
                   {court.hourlyRate && (
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Tariffa oraria:</span>
-                      <span className="font-medium text-white">
-                        €{court.hourlyRate}/ora
-                      </span>
+                      <span className="font-medium text-white">€{court.hourlyRate}/ora</span>
                     </div>
                   )}
                 </div>
@@ -183,4 +171,3 @@ const ClubCourts = ({ clubId, club }) => {
 };
 
 export default ClubCourts;
-

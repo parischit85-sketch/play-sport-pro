@@ -193,7 +193,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
 
   const handleToggleStatus = useCallback(async () => {
     const action = player.isActive ? 'disattivare' : 'attivare';
-    
+
     const confirmed = await confirm({
       title: `${player.isActive ? 'Disattiva' : 'Attiva'} giocatore`,
       message: `Sei sicuro di voler ${action} "${player.firstName} ${player.lastName}"?`,
@@ -209,7 +209,15 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
     } catch (error) {
       showError(`Errore: ${error.message}`);
     }
-  }, [player.isActive, player.firstName, player.lastName, onUpdate, confirm, showSuccess, showError]);
+  }, [
+    player.isActive,
+    player.firstName,
+    player.lastName,
+    onUpdate,
+    confirm,
+    showSuccess,
+    showError,
+  ]);
 
   const handleLinkAccount = useCallback(
     async (account) => {
@@ -279,53 +287,53 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
 
   // 🎨 Tabs configuration con counter dinamici
   const tabs = [
-    { 
-      id: 'overview', 
-      label: 'Overview', 
+    {
+      id: 'overview',
+      label: 'Overview',
       icon: '📊',
-      description: 'Dati principali'
+      description: 'Dati principali',
     },
-    { 
-      id: 'tournament', 
-      label: 'Torneo', 
+    {
+      id: 'tournament',
+      label: 'Torneo',
       icon: '🏆',
       description: 'Classifica e match',
-      counter: player.tournamentData?.isParticipant ? '✓' : null
+      counter: player.tournamentData?.isParticipant ? '✓' : null,
     },
-    { 
-      id: 'bookings', 
-      label: 'Prenotazioni', 
+    {
+      id: 'bookings',
+      label: 'Prenotazioni',
       icon: '📅',
       description: 'Storico campi',
-      counter: player.bookingHistory?.length || 0
+      counter: player.bookingHistory?.length || 0,
     },
-    { 
-      id: 'wallet', 
-      label: 'Portafoglio', 
+    {
+      id: 'wallet',
+      label: 'Portafoglio',
       icon: '💰',
       description: 'Credito e transazioni',
-      counter: `€${(player.wallet?.balance || 0).toFixed(2)}`
+      counter: `€${(player.wallet?.balance || 0).toFixed(2)}`,
     },
-    { 
-      id: 'medical', 
-      label: 'Certificati', 
+    {
+      id: 'medical',
+      label: 'Certificati',
       icon: '🏥',
       description: 'Documenti medici',
-      counter: player.medicalCertificate?.status === 'valid' ? '✓' : '⚠️'
+      counter: player.medicalCertificate?.status === 'valid' ? '✓' : '⚠️',
     },
-    { 
-      id: 'notes', 
-      label: 'Note', 
+    {
+      id: 'notes',
+      label: 'Note',
       icon: '📝',
       description: 'Note private',
-      counter: player.notes?.length || 0
+      counter: player.notes?.length || 0,
     },
-    { 
-      id: 'communications', 
-      label: 'Email', 
+    {
+      id: 'communications',
+      label: 'Email',
       icon: '📧',
       description: 'Storico comunicazioni',
-      counter: player.communications?.length || 0
+      counter: player.communications?.length || 0,
     },
   ];
 
@@ -333,14 +341,16 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
     <div className="flex flex-col">
       {/* 🔒 Read-Only Warning (FASE 2 - Security) */}
       {permissions.isReadOnly && (
-        <div className="mx-2 sm:mx-4 my-4 bg-gradient-to-r from-amber-50 to-amber-100 from-amber-900/20 to-amber-900/10 border border-amber-300 border-amber-700 rounded-xl p-4 shadow-sm">
+        <div className="mx-2 sm:mx-4 my-4 bg-gradient-to-r from-amber-900/20 to-amber-900/10 border border-amber-700 rounded-xl p-4 shadow-sm">
           <div className="flex items-center gap-3">
-            <div className="flex-shrink-0 w-10 h-10 bg-amber-200 bg-amber-800/50 rounded-full flex items-center justify-center">
-              <span className="text-amber-700 text-amber-300 text-lg">🔒</span>
+            <div className="flex-shrink-0 w-10 h-10 bg-amber-800/50 rounded-full flex items-center justify-center">
+              <span className="text-amber-300 text-lg">🔒</span>
             </div>
             <div>
-              <p className="text-amber-900 text-amber-200 font-semibold text-sm">Modalità Solo Lettura</p>
-              <p className="text-amber-700 text-amber-400 text-xs mt-0.5">Non hai i permessi per modificare questi dati</p>
+              <p className="text-amber-200 font-semibold text-sm">Modalità Solo Lettura</p>
+              <p className="text-amber-400 text-xs mt-0.5">
+                Non hai i permessi per modificare questi dati
+              </p>
             </div>
           </div>
         </div>
@@ -378,7 +388,9 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
             permissions={permissions}
             onOpenPicker={openAccountsPicker}
             onClosePicker={() => dispatch({ type: ACTIONS.CANCEL_LINKING })}
-            onSearchChange={(value) => dispatch({ type: ACTIONS.SET_ACCOUNT_SEARCH, payload: value })}
+            onSearchChange={(value) =>
+              dispatch({ type: ACTIONS.SET_ACCOUNT_SEARCH, payload: value })
+            }
             onEmailChange={(value) => dispatch({ type: ACTIONS.SET_LINK_EMAIL, payload: value })}
             onLinkAccount={handleLinkAccount}
             onUnlinkAccount={handleUnlinkAccount}
@@ -411,18 +423,22 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
               aria-controls={`panel-${tab.id}`}
             >
               <div className="flex items-center gap-2">
-                <span className={`text-xl transition-transform duration-200 ${
-                  state.activeTab === tab.id ? 'scale-110' : 'group-hover:scale-110'
-                }`}>
+                <span
+                  className={`text-xl transition-transform duration-200 ${
+                    state.activeTab === tab.id ? 'scale-110' : 'group-hover:scale-110'
+                  }`}
+                >
                   {tab.icon}
                 </span>
                 <span className="text-sm font-medium">{tab.label}</span>
                 {tab.counter !== undefined && tab.counter !== null && tab.counter !== 0 && (
-                  <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
-                    state.activeTab === tab.id
-                      ? 'bg-blue-500 text-white'
-                      : `bg-gray-700 ${theme.muted}`
-                  }`}>
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                      state.activeTab === tab.id
+                        ? 'bg-blue-500 text-white'
+                        : `bg-gray-700 ${theme.muted}`
+                    }`}
+                  >
                     {tab.counter}
                   </span>
                 )}
@@ -446,9 +462,23 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
                   <PlayerEditMode state={state} dispatch={dispatch} T={theme} />
                 ) : (
                   <div className="space-y-6">
-                    <PlayerOverviewTab player={player} playerWithRealRating={playerWithRealRating} T={theme} />
-                    <PlayerDataExport player={player} permissions={permissions} additionalData={{}} T={theme} />
-                    <PlayerDataDelete player={player} permissions={permissions} onDeleted={onClose} T={theme} />
+                    <PlayerOverviewTab
+                      player={player}
+                      playerWithRealRating={playerWithRealRating}
+                      T={theme}
+                    />
+                    <PlayerDataExport
+                      player={player}
+                      permissions={permissions}
+                      additionalData={{}}
+                      T={theme}
+                    />
+                    <PlayerDataDelete
+                      player={player}
+                      permissions={permissions}
+                      onDeleted={onClose}
+                      T={theme}
+                    />
                   </div>
                 )}
               </div>
@@ -458,7 +488,9 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
               fallback={
                 <div className="flex items-center justify-center h-64 animate-in fade-in duration-300">
                   <div className="text-center">
-                    <div className={`inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 ${theme.text}`}></div>
+                    <div
+                      className={`inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 ${theme.text}`}
+                    ></div>
                     <p className={`mt-4 ${theme.muted} text-sm font-medium`}>Caricamento...</p>
                   </div>
                 </div>
@@ -466,7 +498,12 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
             >
               {state.activeTab === 'tournament' && (
                 <div className="animate-in fade-in slide-in-from-right-2 duration-300">
-                  <PlayerTournamentTab player={player} clubId={clubId} onUpdate={onUpdate} T={theme} />
+                  <PlayerTournamentTab
+                    player={player}
+                    clubId={clubId}
+                    onUpdate={onUpdate}
+                    T={theme}
+                  />
                 </div>
               )}
 
@@ -509,4 +546,3 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
     </div>
   );
 }
-

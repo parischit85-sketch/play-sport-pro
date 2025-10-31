@@ -158,10 +158,18 @@ export async function startManualKnockout(clubId, tournamentId, config) {
     for (let i = 0; i < firstRound.length; i++) {
       const idx1 = i * 2;
       const idx2 = i * 2 + 1;
-      const team1Id = slots[idx1] || null;
-      const team2Id = slots[idx2] || null;
+      // Handle slots: 'BYE' = explicit BYE from admin, '' or null = qualif, teamId = team
+      const slot1 = slots[idx1];
+      const slot2 = slots[idx2];
+      
+      const team1Id = slot1 === 'BYE' || slot1 === '' || slot1 == null ? null : slot1;
+      const team2Id = slot2 === 'BYE' || slot2 === '' || slot2 == null ? null : slot2;
       const team1 = team1Id ? teamMap.get(team1Id) : null;
       const team2 = team2Id ? teamMap.get(team2Id) : null;
+      
+      // Determine team names: 'BYE' if admin selected BYE, 'Qalif.' if auto-qualified
+      const team1Name = team1?.teamName || (slot1 === 'BYE' ? 'BYE' : 'Qalif.');
+      const team2Name = team2?.teamName || (slot2 === 'BYE' ? 'BYE' : 'Qalif.');
 
       const { nextMatchId, nextMatchPosition } = getNextLink(firstRoundIdx, i);
 
@@ -174,9 +182,9 @@ export async function startManualKnockout(clubId, tournamentId, config) {
         roundName: roundsSeq[firstRoundIdx].label,
         matchNumber: i + 1,
         team1Id: team1Id,
-        team1Name: team1?.teamName || 'BYE',
+        team1Name: team1Name,
         team2Id: team2Id,
-        team2Name: team2?.teamName || 'BYE',
+        team2Name: team2Name,
         nextMatchId,
         nextMatchPosition,
         status: team1Id && team2Id ? MATCH_STATUS.SCHEDULED : MATCH_STATUS.COMPLETED,
@@ -215,7 +223,7 @@ export async function startManualKnockout(clubId, tournamentId, config) {
               roundName: roundsSeq[firstRoundIdx + 1]?.label || null,
               matchNumber: Math.floor(i / 2) + 1,
               [updateField]: winner,
-              [nameField]: teamMap.get(winner)?.teamName || null,
+              [nameField]: teamMap.get(winner)?.teamName || 'Qalif.',
               status: MATCH_STATUS.SCHEDULED,
               createdAt: Timestamp.fromDate(new Date()),
               updatedAt: Timestamp.fromDate(new Date()),
@@ -243,8 +251,8 @@ export async function startManualKnockout(clubId, tournamentId, config) {
           round: roundsSeq[r].code,
           roundName: roundsSeq[r].label,
           matchNumber: i + 1,
-          team1Name: 'Qualif.',
-          team2Name: 'Qualif.',
+          team1Name: 'Qalif.',
+          team2Name: 'Qalif.',
           nextMatchId,
           nextMatchPosition,
           status: MATCH_STATUS.SCHEDULED,

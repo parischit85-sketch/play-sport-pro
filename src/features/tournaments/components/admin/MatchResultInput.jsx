@@ -87,9 +87,7 @@ const MatchResultInput = ({ clubId, tournamentId, match, onResultSubmitted }) =>
           <span className="text-gray-400 mx-2">vs</span>
           <span className="text-gray-300 font-medium">{match.team2Name || 'Squadra 2'}</span>
         </div>
-        {match.groupName && (
-          <p className="text-xs text-gray-400 mt-1">Girone: {match.groupName}</p>
-        )}
+        {match.groupName && <p className="text-xs text-gray-400 mt-1">Girone: {match.groupName}</p>}
         {match.round && (
           <p className="text-xs text-gray-400 mt-1">
             Turno: {KNOCKOUT_ROUND_NAMES[match.round] || match.round}
@@ -138,9 +136,7 @@ const MatchResultInput = ({ clubId, tournamentId, match, onResultSubmitted }) =>
 
         {/* Date Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Data Completamento
-          </label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">Data Completamento</label>
           <input
             type="date"
             value={completedDate}
@@ -200,4 +196,3 @@ const MatchResultInput = ({ clubId, tournamentId, match, onResultSubmitted }) =>
 };
 
 export default MatchResultInput;
-

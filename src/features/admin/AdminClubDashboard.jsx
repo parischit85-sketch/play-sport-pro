@@ -698,9 +698,7 @@ const AdminClubDashboard = () => {
           <div className="flex items-start gap-4">
             <div className="text-3xl flex-shrink-0">⏳</div>
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-yellow-100 mb-1">
-                In Attesa di Approvazione
-              </h3>
+              <h3 className="text-lg font-bold text-yellow-100 mb-1">In Attesa di Approvazione</h3>
               <p className="text-sm text-yellow-200 mb-3">
                 Il circolo "{club?.name}" è registrato e in attesa dell'approvazione da parte del
                 nostro team. Una volta approvato, sarà visibile a tutti gli utenti della
@@ -918,35 +916,29 @@ const AdminClubDashboard = () => {
       {/* Modal per la creazione della fascia oraria */}
       {newSlotModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 bg-black/70 backdrop-blur-sm">
-          <div className="bg-white bg-gray-900 p-6 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 border-gray-700">
-            <h2 className="text-xl font-bold mb-4 text-gray-900 text-white">
-              Crea nuova fascia oraria
-            </h2>
+          <div className="bg-gray-900 p-6 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 border-gray-700">
+            <h2 className="text-xl font-bold mb-4 text-white">Crea nuova fascia oraria</h2>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-300">
-                Data
-              </label>
+              <label className="block mb-1 font-medium text-gray-300">Data</label>
               <input
                 type="date"
                 value={newSlotDate}
                 onChange={(e) => {
                   setNewSlotDate(e.target.value);
                 }}
-                className="w-full border border-gray-300 border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-gray-900 text-white"
+                className="w-full border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
               />
             </div>
             <div className="mb-4 flex gap-2">
               <div className="flex-1">
-                <label className="block mb-1 font-medium text-gray-300">
-                  Orario Inizio
-                </label>
+                <label className="block mb-1 font-medium text-gray-300">Orario Inizio</label>
                 <div className="flex gap-2">
                   <select
                     value={newSlotStartTime.split(':')[0]}
                     onChange={(e) =>
                       setNewSlotStartTime(`${e.target.value}:${newSlotStartTime.split(':')[1]}`)
                     }
-                    className="border border-gray-300 border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-gray-900 text-white"
+                    className="border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
                   >
                     {[...Array(24).keys()].map((h) => (
                       <option key={h} value={h.toString().padStart(2, '0')}>
@@ -959,7 +951,7 @@ const AdminClubDashboard = () => {
                     onChange={(e) =>
                       setNewSlotStartTime(`${newSlotStartTime.split(':')[0]}:${e.target.value}`)
                     }
-                    className="border border-gray-300 border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-gray-900 text-white"
+                    className="border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
                   >
                     {['00', '30'].map((m) => (
                       <option key={m} value={m}>
@@ -970,16 +962,14 @@ const AdminClubDashboard = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <label className="block mb-1 font-medium text-gray-300">
-                  Orario Fine
-                </label>
+                <label className="block mb-1 font-medium text-gray-300">Orario Fine</label>
                 <div className="flex gap-2">
                   <select
                     value={newSlotEndTime.split(':')[0]}
                     onChange={(e) =>
                       setNewSlotEndTime(`${e.target.value}:${newSlotEndTime.split(':')[1]}`)
                     }
-                    className="border border-gray-300 border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-gray-900 text-white"
+                    className="border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
                   >
                     {[...Array(24).keys()].map((h) => (
                       <option key={h} value={h.toString().padStart(2, '0')}>
@@ -992,7 +982,7 @@ const AdminClubDashboard = () => {
                     onChange={(e) =>
                       setNewSlotEndTime(`${newSlotEndTime.split(':')[0]}:${e.target.value}`)
                     }
-                    className="border border-gray-300 border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-gray-900 text-white"
+                    className="border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
                   >
                     {['00', '30'].map((m) => (
                       <option key={m} value={m}>
@@ -1004,13 +994,11 @@ const AdminClubDashboard = () => {
               </div>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-300">
-                Istruttore
-              </label>
+              <label className="block mb-1 font-medium text-gray-300">Istruttore</label>
               <select
                 value={newSlotInstructorId}
                 onChange={(e) => setNewSlotInstructorId(e.target.value)}
-                className="w-full border border-gray-300 border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-gray-900 text-white"
+                className="w-full border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
               >
                 <option value="">Seleziona...</option>
                 {players
@@ -1023,15 +1011,10 @@ const AdminClubDashboard = () => {
               </select>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-300">
-                Campi
-              </label>
+              <label className="block mb-1 font-medium text-gray-300">Campi</label>
               <div className="flex flex-wrap gap-2">
                 {courts?.map((court) => (
-                  <label
-                    key={court.id}
-                    className="flex items-center gap-1 text-gray-200"
-                  >
+                  <label key={court.id} className="flex items-center gap-1 text-gray-200">
                     <input
                       type="checkbox"
                       checked={newSlotCourtIds.includes(court.id)}
@@ -1044,9 +1027,7 @@ const AdminClubDashboard = () => {
               </div>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-300">
-                Attiva
-              </label>
+              <label className="block mb-1 font-medium text-gray-300">Attiva</label>
               <input
                 type="checkbox"
                 checked={newSlotIsActive}
@@ -1076,5 +1057,3 @@ const AdminClubDashboard = () => {
 };
 
 export default AdminClubDashboard;
-
-

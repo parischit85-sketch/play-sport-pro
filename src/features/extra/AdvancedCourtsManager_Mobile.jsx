@@ -9,7 +9,7 @@ import {
   validateCourt,
   validateTimeSlot,
   detectTimeSlotOverlaps,
-  sanitizeCourt
+  sanitizeCourt,
 } from '@utils/court-validation.js';
 
 // ============================================
@@ -17,12 +17,12 @@ import {
 // ============================================
 const ValidationAlert = ({ errors, type = 'error' }) => {
   if (!errors || errors.length === 0) return null;
-  
+
   const bgColor = type === 'error' ? 'bg-red-500/10' : 'bg-amber-500/10';
   const borderColor = type === 'error' ? 'border-red-500/30' : 'border-amber-500/30';
   const textColor = type === 'error' ? 'text-red-400' : 'text-amber-400';
   const icon = type === 'error' ? '❌' : '⚠️';
-  
+
   return (
     <div className={`${bgColor} ${borderColor} border-l-4 p-3 rounded mb-3 text-sm`}>
       <div className={`font-semibold ${textColor} mb-1 flex items-center gap-2`}>
@@ -65,9 +65,7 @@ const SaveIndicator = ({ isSaving, lastSaved, hasUnsavedChanges }) => {
           <span>{formatRelativeTime(lastSaved)}</span>
         </div>
       )}
-      {hasUnsavedChanges && !isSaving && (
-        <div className="text-amber-400">●</div>
-      )}
+      {hasUnsavedChanges && !isSaving && <div className="text-amber-400">●</div>}
     </div>
   );
 };
@@ -103,10 +101,7 @@ function TimeSlotBottomSheet({ isOpen, onClose, slot, onSave, T, maxPlayers = 4 
   return (
     <div className="fixed inset-0 z-[9999] flex items-end justify-center sm:items-center">
       {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Bottom Sheet */}
       <div className="relative w-full sm:max-w-2xl bg-white bg-gray-800 rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[90vh] overflow-hidden">
@@ -155,12 +150,16 @@ function TimeSlotBottomSheet({ isOpen, onClose, slot, onSave, T, maxPlayers = 4 
                   min="0"
                   step="0.5"
                   value={editedSlot.eurPerHour ?? 0}
-                  onChange={(e) => setEditedSlot({ ...editedSlot, eurPerHour: Number(e.target.value) || 0 })}
+                  onChange={(e) =>
+                    setEditedSlot({ ...editedSlot, eurPerHour: Number(e.target.value) || 0 })
+                  }
                   className={`${T.input} w-full text-2xl font-bold pr-12`}
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">€</span>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl">
+                  €
+                </span>
               </div>
-              
+
               {/* Preview Prezzo per giocatore */}
               <div className="mt-3 p-4 bg-emerald-50 bg-emerald-900/30 rounded-xl border-2 border-emerald-200 border-emerald-700">
                 <div className="flex items-center justify-between">
@@ -316,7 +315,7 @@ function CompactTimeSlotCard({ slot, onEdit, onRemove, T, maxPlayers }) {
   };
 
   const days = ['D', 'L', 'M', 'M', 'G', 'V', 'S'];
-  const activeDays = (slot.days || []).map(i => days[i]).join('');
+  const activeDays = (slot.days || []).map((i) => days[i]).join('');
 
   return (
     <div className="relative bg-white bg-gray-800 rounded-xl p-4 shadow-md border-2 border-gray-200 border-gray-700">
@@ -330,11 +329,11 @@ function CompactTimeSlotCard({ slot, onEdit, onRemove, T, maxPlayers }) {
       <div className="flex items-start gap-3">
         {/* Info principale */}
         <div className="flex-1 min-w-0">
-          <div className="font-bold text-lg mb-1 truncate">
-            {slot.label || 'Fascia senza nome'}
-          </div>
+          <div className="font-bold text-lg mb-1 truncate">{slot.label || 'Fascia senza nome'}</div>
           <div className="flex items-center gap-2 text-sm text-gray-400">
-            <span>🕐 {slot.from} - {slot.to}</span>
+            <span>
+              🕐 {slot.from} - {slot.to}
+            </span>
             <span>•</span>
             <span className="font-medium text-emerald-600 text-emerald-400">
               {perPlayer90(slot.eurPerHour)}€/p
@@ -418,8 +417,8 @@ const MobileCourtCard = ({
   };
 
   const handleSaveSlot = (updatedSlot) => {
-    const existingIndex = (court.timeSlots || []).findIndex(s => s.id === updatedSlot.id);
-    
+    const existingIndex = (court.timeSlots || []).findIndex((s) => s.id === updatedSlot.id);
+
     if (existingIndex >= 0) {
       // Update existing
       const updatedSlots = (court.timeSlots || []).map((slot, index) =>
@@ -456,7 +455,9 @@ const MobileCourtCard = ({
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-xl truncate">{court.name}</div>
                 <div className="flex items-center gap-2 flex-wrap mt-1">
-                  <span className={`text-xs px-2 py-1 rounded-full bg-blue-900 text-blue-300 font-medium`}>
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full bg-blue-900 text-blue-300 font-medium`}
+                  >
                     Pos. {position}
                   </span>
                   <span className={`text-xs px-2 py-1 rounded-full bg-purple-900 text-purple-300`}>
@@ -647,7 +648,7 @@ const MobileCourtCard = ({
                   {timeSlotOverlaps.length > 0 && (
                     <ValidationAlert
                       type="warning"
-                      errors={timeSlotOverlaps.map(overlap => overlap.message)}
+                      errors={timeSlotOverlaps.map((overlap) => overlap.message)}
                     />
                   )}
 
@@ -663,9 +664,7 @@ const MobileCourtCard = ({
                   {(court.timeSlots || []).length === 0 ? (
                     <div className="text-center py-12 border-2 border-dashed border-gray-300 border-gray-600 rounded-xl">
                       <div className="text-4xl mb-3">🕐</div>
-                      <div className="font-medium text-gray-400 mb-1">
-                        Nessuna fascia oraria
-                      </div>
+                      <div className="font-medium text-gray-400 mb-1">Nessuna fascia oraria</div>
                       <div className="text-sm text-gray-500">
                         Aggiungi almeno una fascia per attivare il campo
                       </div>
@@ -731,8 +730,8 @@ export default function AdvancedCourtsManager_Mobile({
       }
       return [];
     }
-    
-    return courts.map(court => {
+
+    return courts.map((court) => {
       try {
         return sanitizeCourt(court);
       } catch (error) {
@@ -745,7 +744,7 @@ export default function AdvancedCourtsManager_Mobile({
           courtType: 'Indoor',
           timeSlots: [],
           hasHeating: false,
-          maxPlayers: 4
+          maxPlayers: 4,
         };
       }
     });
@@ -780,9 +779,8 @@ export default function AdvancedCourtsManager_Mobile({
     setHasUnsavedChanges(false);
 
     try {
-      const maxOrder = courtsWithOrder.length > 0 
-        ? Math.max(...courtsWithOrder.map((c) => c.order || 0)) 
-        : 0;
+      const maxOrder =
+        courtsWithOrder.length > 0 ? Math.max(...courtsWithOrder.map((c) => c.order || 0)) : 0;
       const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
       const newCourt = {
@@ -828,7 +826,7 @@ export default function AdvancedCourtsManager_Mobile({
       // Validazione del campo aggiornato
       const updatedCourt = updatedCourts[courtIndex];
       const validation = validateCourt(updatedCourt);
-      
+
       if (!validation.isValid) {
         showWarning('Errori nel campo:\n' + validation.errors.join('\n'));
         setIsSaving(false);
@@ -890,18 +888,14 @@ export default function AdvancedCourtsManager_Mobile({
         {/* Title with Save Indicator */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold text-2xl flex items-center gap-2">
-              🏟️ Gestione Campi
-            </h3>
+            <h3 className="font-bold text-2xl flex items-center gap-2">🏟️ Gestione Campi</h3>
             <SaveIndicator
               isSaving={isSaving}
               lastSaved={lastSaved}
               hasUnsavedChanges={hasUnsavedChanges}
             />
           </div>
-          <p className="text-sm text-gray-400">
-            Configura campi, fasce orarie e prezzi
-          </p>
+          <p className="text-sm text-gray-400">Configura campi, fasce orarie e prezzi</p>
         </div>
 
         {/* Add New Court */}
@@ -1006,9 +1000,7 @@ export default function AdvancedCourtsManager_Mobile({
       {/* Stats Footer */}
       {sortedCourts.length > 0 && (
         <div className={`rounded-2xl ${T.border} ${T.cardBg} p-6 shadow-lg`}>
-          <h4 className="font-semibold text-lg mb-4 flex items-center gap-2">
-            📊 Statistiche
-          </h4>
+          <h4 className="font-semibold text-lg mb-4 flex items-center gap-2">📊 Statistiche</h4>
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-3xl font-bold text-emerald-600 text-emerald-400">
@@ -1037,10 +1029,3 @@ export default function AdvancedCourtsManager_Mobile({
     </div>
   );
 }
-
-
-
-
-
-
-

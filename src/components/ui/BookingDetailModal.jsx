@@ -180,7 +180,7 @@ export default function BookingDetailModal({
                   {clubInfo.name}
                 </h3>
                 {clubInfo.location && (
-                  <p className="text-sm text-gray-600 text-gray-400 truncate">
+                  <p className="text-sm text-gray-400 truncate">
                     📍 {clubInfo.location.city}
                     {clubInfo.location.region && `, ${clubInfo.location.region}`}
                   </p>
@@ -243,7 +243,7 @@ export default function BookingDetailModal({
 
         {/* Giocatori/Istruttore - Con stile della conferma prenotazione quando in editing */}
         <div className="bg-white/80 bg-gray-800/80 backdrop-blur-xl border border-white/30 border-gray-700/30 rounded-xl p-5 shadow-lg shadow-gray-100/50 shadow-gray-900/20">
-          <div className="text-xs text-gray-500 text-gray-400 mb-4 font-medium">
+          <div className="text-xs text-gray-400 mb-4 font-medium">
             {isLessonBooking
               ? '🎾 DETTAGLI LEZIONE'
               : `👥 GIOCATORI (${booking.players?.length || 1}/4)`}
@@ -260,13 +260,13 @@ export default function BookingDetailModal({
                       <span className="text-white text-sm">🎾</span>
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm font-semibold text-gray-900 text-gray-100">
+                      <div className="text-sm font-semibold text-gray-100">
                         {booking.instructor.name || booking.instructor.email || 'Istruttore'}
                       </div>
-                      <div className="text-xs text-green-600 text-green-400 font-medium">
+                      <div className="text-xs text-green-400 font-medium">
                         Maestro di Tennis
                         {booking.instructor.email && (
-                          <span className="block text-green-600 text-green-400 mt-0.5">
+                          <span className="block text-green-400 mt-0.5">
                             {booking.instructor.email}
                           </span>
                         )}
@@ -280,16 +280,14 @@ export default function BookingDetailModal({
               <div className="p-4 bg-white/60 bg-gray-700/60 backdrop-blur-sm rounded-xl border border-white/20 border-gray-600/20 shadow-sm">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <div className="text-xs text-gray-500 text-gray-400 mb-1">Livello</div>
-                    <div className="font-medium text-gray-900 text-gray-100">
+                    <div className="text-xs text-gray-400 mb-1">Livello</div>
+                    <div className="font-medium text-gray-100">
                       {booking.level || 'Non specificato'}
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-500 text-gray-400 mb-1">
-                      Partecipanti
-                    </div>
-                    <div className="font-medium text-gray-900 text-gray-100">
+                    <div className="text-xs text-gray-400 mb-1">Partecipanti</div>
+                    <div className="font-medium text-gray-100">
                       {booking.participants || 1}{' '}
                       {booking.participants === 1 ? 'persona' : 'persone'}
                     </div>
@@ -304,15 +302,13 @@ export default function BookingDetailModal({
                     <span className="text-white text-sm">👤</span>
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm font-semibold text-gray-900 text-gray-100">
+                    <div className="text-sm font-semibold text-gray-100">
                       {booking.userName || booking.userEmail || 'Studente'}
                     </div>
-                    <div className="text-xs text-blue-600 text-blue-400 font-medium">
+                    <div className="text-xs text-blue-400 font-medium">
                       Studente principale
                       {booking.userEmail && (
-                        <span className="block text-blue-600 text-blue-400 mt-0.5">
-                          {booking.userEmail}
-                        </span>
+                        <span className="block text-blue-400 mt-0.5">{booking.userEmail}</span>
                       )}
                     </div>
                   </div>
@@ -329,7 +325,7 @@ export default function BookingDetailModal({
                     <span className="text-white text-sm">👑</span>
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm font-semibold text-gray-900 text-gray-100">
+                    <div className="text-sm font-semibold text-gray-100">
                       {(() => {
                         const currentPlayers = isEditingPlayers ? editedPlayers : booking.players;
                         if (currentPlayers && currentPlayers[0]) {
@@ -338,12 +334,10 @@ export default function BookingDetailModal({
                         return booking.userName || booking.userEmail || 'Organizzatore';
                       })()}
                     </div>
-                    <div className="text-xs text-blue-600 text-blue-400 font-medium">
+                    <div className="text-xs text-blue-400 font-medium">
                       Organizzatore • Giocatore 1
                       {booking.userEmail && (
-                        <span className="block text-blue-600 text-blue-400 mt-0.5">
-                          {booking.userEmail}
-                        </span>
+                        <span className="block text-blue-400 mt-0.5">{booking.userEmail}</span>
                       )}
                     </div>
                   </div>
@@ -381,12 +375,10 @@ export default function BookingDetailModal({
                               }
                               setEditedPlayers(newPlayers);
                             }}
-                            className="w-full text-sm font-medium text-gray-900 text-gray-100 bg-transparent border-b-2 border-gray-300 border-gray-500 focus:border-green-500 focus:border-green-400 outline-none pb-1 transition-colors"
+                            className="w-full text-sm font-medium text-gray-100 bg-transparent border-b-2 border-gray-500 focus:border-green-500 focus:border-green-400 outline-none pb-1 transition-colors"
                             placeholder="Nome giocatore"
                           />
-                          <div className="text-xs text-gray-500 text-gray-400">
-                            Giocatore {index + 2}
-                          </div>
+                          <div className="text-xs text-gray-400">Giocatore {index + 2}</div>
                         </div>
                         <button
                           onClick={() => {
@@ -394,7 +386,7 @@ export default function BookingDetailModal({
                             newPlayers.splice(index + 1, 1);
                             setEditedPlayers(newPlayers);
                           }}
-                          className="w-9 h-9 bg-red-100 bg-red-900/30 hover:bg-red-200 hover:bg-red-800/40 text-red-600 text-red-400 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 shadow-sm"
+                          className="w-9 h-9 bg-red-900/30 hover:bg-red-800/40 text-red-400 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 shadow-sm"
                         >
                           <span className="text-sm">✕</span>
                         </button>
@@ -403,7 +395,7 @@ export default function BookingDetailModal({
 
                   {/* Aggiungi nuovo giocatore - Sezione separata */}
                   {editedPlayers.length < 4 && (
-                    <div className="mt-6 pt-6 border-t-2 border-dashed border-gray-300 border-gray-600">
+                    <div className="mt-6 pt-6 border-t-2 border-dashed border-gray-600">
                       <h4 className="text-sm font-semibold text-gray-700 text-gray-300 mb-3">
                         ➕ Aggiungi giocatore
                       </h4>
@@ -455,9 +447,7 @@ export default function BookingDetailModal({
                               {isSearching ? (
                                 <div className="p-4 text-center">
                                   <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
-                                  <p className="text-sm text-gray-500 text-gray-400">
-                                    Ricerca...
-                                  </p>
+                                  <p className="text-sm text-gray-400">Ricerca...</p>
                                 </div>
                               ) : searchResults.length > 0 ? (
                                 <div className="py-1">
@@ -497,7 +487,7 @@ export default function BookingDetailModal({
                                             `${user.firstName || ''} ${user.lastName || ''}`.trim() ||
                                             'Utente'}
                                         </div>
-                                        <div className="text-xs text-gray-500 text-gray-400 truncate">
+                                        <div className="text-xs text-gray-400 truncate">
                                           {user.email}
                                         </div>
                                       </div>
@@ -507,9 +497,7 @@ export default function BookingDetailModal({
                               ) : (
                                 <div className="p-4 text-center">
                                   <div className="text-2xl mb-1">🔍</div>
-                                  <p className="text-sm text-gray-500 text-gray-400">
-                                    Nessun utente trovato
-                                  </p>
+                                  <p className="text-sm text-gray-400">Nessun utente trovato</p>
                                 </div>
                               )}
                             </div>
@@ -552,12 +540,10 @@ export default function BookingDetailModal({
                           <span className="text-white text-sm font-bold">{index + 2}</span>
                         </div>
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900 text-gray-100">
+                          <div className="text-sm font-medium text-gray-100">
                             {getPlayerDisplayName(participant)}
                           </div>
-                          <div className="text-xs text-gray-500 text-gray-400">
-                            Giocatore {index + 2}
-                          </div>
+                          <div className="text-xs text-gray-400">Giocatore {index + 2}</div>
                         </div>
                       </div>
                     ))}
@@ -575,12 +561,10 @@ export default function BookingDetailModal({
                           className="flex items-center gap-3 bg-gray-100/60 bg-gray-700/40 backdrop-blur-sm rounded-xl px-4 py-3 border-dashed border border-gray-200/60 border-gray-600/40"
                         >
                           <div className="w-8 h-8 rounded-full bg-gray-300 bg-gray-500 flex items-center justify-center">
-                            <span className="text-gray-500 text-gray-400 text-sm">?</span>
+                            <span className="text-gray-400 text-sm">?</span>
                           </div>
                           <div className="flex-1">
-                            <div className="text-sm text-gray-500 text-gray-400 italic">
-                              Slot libero
-                            </div>
+                            <div className="text-sm text-gray-400 italic">Slot libero</div>
                             <div className="text-xs text-gray-400 text-gray-500">
                               Giocatore {currentPlayers + index + 1}
                             </div>
@@ -597,9 +581,7 @@ export default function BookingDetailModal({
           {/* Note compatte (solo se presenti) */}
           {booking.notes && (
             <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 from-blue-900/30 to-indigo-900/30 backdrop-blur-xl border border-white/30 border-gray-700/30 rounded-xl p-4 shadow-lg shadow-blue-100/50 shadow-blue-900/20">
-              <div className="text-xs text-blue-700 text-blue-300 font-medium mb-2">
-                📝 NOTE
-              </div>
+              <div className="text-xs text-blue-700 text-blue-300 font-medium mb-2">📝 NOTE</div>
               <p className="text-sm text-gray-700 text-gray-300">{booking.notes}</p>
             </div>
           )}
@@ -668,4 +650,3 @@ export default function BookingDetailModal({
     </Modal>
   );
 }
-

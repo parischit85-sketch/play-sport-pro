@@ -466,11 +466,8 @@ export async function rollbackToPreviousPhase(clubId, tournamentId) {
       });
     }
 
-    // If rolling back from KNOCKOUT → GROUPS, purge knockout data (matches + bracket config)
-    if (
-      lastTransition.to === TOURNAMENT_STATUS.KNOCKOUT_PHASE &&
-      previousStatus === TOURNAMENT_STATUS.GROUPS_PHASE
-    ) {
+    // If rolling back from KNOCKOUT phase, purge knockout data (matches + bracket config)
+    if (lastTransition.to === TOURNAMENT_STATUS.KNOCKOUT_PHASE) {
       // Delete all knockout matches for this tournament in batches
       const matchesColl = collection(
         db,

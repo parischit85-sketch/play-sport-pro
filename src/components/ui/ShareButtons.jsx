@@ -93,4 +93,3 @@ export default function ShareButtons({ title, url, captureRef, captionBuilder, s
     </div>
   );
 }
-

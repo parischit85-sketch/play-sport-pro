@@ -13,7 +13,12 @@ import {
   getUserProfile,
   sendVerificationEmail,
 } from '@services/auth.jsx';
-import { validateRegistrationData, normalizeEmail, getE164Format, validateAndNormalizeEmail } from '@utils/validators';
+import {
+  validateRegistrationData,
+  normalizeEmail,
+  getE164Format,
+  validateAndNormalizeEmail,
+} from '@utils/validators';
 import PasswordStrengthMeter from '@components/registration/PasswordStrengthMeter.jsx';
 import EmailValidator from '@components/registration/EmailValidator.jsx';
 import PhoneInput from '@components/registration/PhoneInput.jsx';
@@ -41,7 +46,7 @@ export default function RegisterPage() {
   const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isGoogleRegistration, setIsGoogleRegistration] = useState(false);
-  
+
   // New validation states
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [showTermsError, setShowTermsError] = useState(false);
@@ -107,7 +112,7 @@ export default function RegisterPage() {
     if (!validation.isValid) {
       // Convert validation errors to old format
       const newErrors = {};
-      Object.keys(validation.errors).forEach(field => {
+      Object.keys(validation.errors).forEach((field) => {
         if (Array.isArray(validation.errors[field])) {
           newErrors[field] = validation.errors[field][0]; // Take first error
         }
@@ -118,23 +123,24 @@ export default function RegisterPage() {
 
     // Additional validation for email and phone from real-time validators
     if (emailValidation && !emailValidation.isValid) {
-      setErrors(prev => ({ ...prev, email: emailValidation.errors[0] }));
+      setErrors((prev) => ({ ...prev, email: emailValidation.errors[0] }));
       return false;
     }
 
     if (emailValidation?.isDisposable) {
-      setErrors(prev => ({ ...prev, email: 'Email temporanee non sono accettate' }));
+      setErrors((prev) => ({ ...prev, email: 'Email temporanee non sono accettate' }));
       return false;
     }
 
     if (phoneValidation && !phoneValidation.isValid) {
-      setErrors(prev => ({ ...prev, phone: phoneValidation.errors[0] }));
+      setErrors((prev) => ({ ...prev, phone: phoneValidation.errors[0] }));
       return false;
     }
 
     setErrors({});
     return true;
-  };  const handleInputChange = (field, value) => {
+  };
+  const handleInputChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -154,7 +160,7 @@ export default function RegisterPage() {
 
     // Reset API error
     setApiError('');
-    
+
     // Check Terms of Service acceptance
     if (!termsAccepted) {
       setShowTermsError(true);
@@ -254,7 +260,10 @@ export default function RegisterPage() {
         const currentUserId = userCredential?.user?.uid || user?.uid;
         console.log('🔍 [DEBUG] Fetching profile to verify save...');
         const debugProfile = await getUserProfile(currentUserId, true);
-        console.log('🔍 [DEBUG] Profile fetched from Firestore:', JSON.stringify(debugProfile, null, 2));
+        console.log(
+          '🔍 [DEBUG] Profile fetched from Firestore:',
+          JSON.stringify(debugProfile, null, 2)
+        );
         console.log('🔍 [DEBUG] Profile verification:', {
           hasFirstName: !!debugProfile?.firstName,
           hasLastName: !!debugProfile?.lastName,
@@ -270,7 +279,7 @@ export default function RegisterPage() {
 
         // Step 5: Add buffer time to ensure React Context updates propagate
         // This is critical because reloadUserData() updates state asynchronously
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise((resolve) => setTimeout(resolve, 800));
 
         console.log('✅ Registration completed successfully');
 
@@ -392,10 +401,10 @@ export default function RegisterPage() {
                     onChange={(e) => handleInputChange('email', e.target.value)}
                   />
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-                  
+
                   {/* Email Validator */}
                   {!isGoogleRegistration && (
-                    <EmailValidator 
+                    <EmailValidator
                       email={formData.email}
                       onChange={(normalized) => handleInputChange('email', normalized)}
                       onValidationChange={setEmailValidation}
@@ -427,7 +436,7 @@ export default function RegisterPage() {
                       {errors.password && (
                         <p className="text-red-500 text-xs mt-1">{errors.password}</p>
                       )}
-                      
+
                       {/* Password Strength Meter */}
                       <PasswordStrengthMeter password={formData.password} />
                     </div>
@@ -579,7 +588,7 @@ export default function RegisterPage() {
 
               {/* Terms of Service */}
               <div className="pt-4">
-                <TermsOfService 
+                <TermsOfService
                   accepted={termsAccepted}
                   onAcceptanceChange={setTermsAccepted}
                   showError={showTermsError}
@@ -649,4 +658,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

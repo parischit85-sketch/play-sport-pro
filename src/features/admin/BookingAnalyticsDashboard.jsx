@@ -305,18 +305,13 @@ const BookingAnalyticsDashboard = ({ isOpen, onClose, clubId }) => {
               <TrendingUp className="w-6 h-6 text-blue-600 text-blue-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 text-white">
-                Booking Analytics
-              </h2>
+              <h2 className="text-2xl font-bold text-gray-900 text-white">Booking Analytics</h2>
               <p className="text-sm text-gray-600 text-gray-400">
                 Revenue trends, court utilization, and user behavior
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          >
+          <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
             <X className="w-6 h-6 text-gray-600 text-gray-400" />
           </button>
         </div>
@@ -326,9 +321,7 @@ const BookingAnalyticsDashboard = ({ isOpen, onClose, clubId }) => {
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
               <Filter className="w-5 h-5 text-gray-600 text-gray-400" />
-              <span className="text-sm font-medium text-gray-700 text-gray-300">
-                Date Range:
-              </span>
+              <span className="text-sm font-medium text-gray-700 text-gray-300">Date Range:</span>
             </div>
             <select
               value={dateRange}
@@ -424,9 +417,7 @@ const BookingAnalyticsDashboard = ({ isOpen, onClose, clubId }) => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Revenue Trend */}
                 <div className="bg-white bg-gray-700 rounded-xl p-6 border border-gray-200 border-gray-600">
-                  <h3 className="text-lg font-bold text-gray-900 text-white mb-4">
-                    Revenue Trend
-                  </h3>
+                  <h3 className="text-lg font-bold text-gray-900 text-white mb-4">Revenue Trend</h3>
                   <Line
                     data={revenueTrendChart}
                     options={{
@@ -535,9 +526,7 @@ const BookingAnalyticsDashboard = ({ isOpen, onClose, clubId }) => {
                           key={user.userId}
                           className="border-b border-gray-100 border-gray-600 hover:bg-gray-50 hover:bg-gray-600"
                         >
-                          <td className="p-3 text-sm text-gray-600 text-gray-400">
-                            {index + 1}
-                          </td>
+                          <td className="p-3 text-sm text-gray-600 text-gray-400">{index + 1}</td>
                           <td className="p-3 text-sm text-gray-900 text-white font-medium">
                             {user.userName}
                           </td>
@@ -562,5 +551,3 @@ const BookingAnalyticsDashboard = ({ isOpen, onClose, clubId }) => {
 };
 
 export default BookingAnalyticsDashboard;
-
-

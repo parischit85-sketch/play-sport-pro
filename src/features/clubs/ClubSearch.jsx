@@ -571,9 +571,7 @@ const ClubSearch = () => {
           <h3 className="text-xl font-semibold text-gray-900 text-white mb-2">
             Nessun circolo disponibile
           </h3>
-          <p className="text-gray-600 text-gray-400">
-            Non ci sono circoli disponibili al momento
-          </p>
+          <p className="text-gray-600 text-gray-400">Non ci sono circoli disponibili al momento</p>
         </div>
       )}
     </div>
@@ -581,4 +579,3 @@ const ClubSearch = () => {
 };
 
 export default ClubSearch;
-

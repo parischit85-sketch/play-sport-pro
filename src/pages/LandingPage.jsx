@@ -196,9 +196,7 @@ export default function LandingPage() {
                 className="bg-gray-700 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
               >
                 <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-white mb-3">
-                  {feature.title}
-                </h3>
+                <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
                 <p className="text-gray-300">{feature.description}</p>
               </div>
             ))}
@@ -210,12 +208,8 @@ export default function LandingPage() {
       <section className="py-20 bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-              Come Funziona
-            </h2>
-            <p className="text-xl text-gray-300">
-              Inizia in pochi semplici passi
-            </p>
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Come Funziona</h2>
+            <p className="text-xl text-gray-300">Inizia in pochi semplici passi</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -223,9 +217,7 @@ export default function LandingPage() {
               <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-blue-400">1</span>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Registrati
-              </h3>
+              <h3 className="text-xl font-semibold text-white mb-3">Registrati</h3>
               <p className="text-gray-300">
                 Crea il tuo profilo gratuito come giocatore o gestisci il tuo circolo sportivo.
               </p>
@@ -235,9 +227,7 @@ export default function LandingPage() {
               <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-blue-400">2</span>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Scegli il Tuo Sport
-              </h3>
+              <h3 className="text-xl font-semibold text-white mb-3">Scegli il Tuo Sport</h3>
               <p className="text-gray-300">
                 Trova il circolo ideale, prenota campi o iscriviti a lezioni e tornei.
               </p>
@@ -247,9 +237,7 @@ export default function LandingPage() {
               <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-blue-400">3</span>
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                Gioca e Migliora
-              </h3>
+              <h3 className="text-xl font-semibold text-white mb-3">Gioca e Migliora</h3>
               <p className="text-gray-300">
                 Partecipa alle attività, traccia i tuoi progressi e connetti con altri appassionati.
               </p>
@@ -458,4 +446,3 @@ export default function LandingPage() {
     </div>
   );
 }
-

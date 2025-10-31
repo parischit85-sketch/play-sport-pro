@@ -167,18 +167,13 @@ const SecurityAuditPanel = ({ isOpen, onClose, T }) => {
               <Shield className="w-6 h-6 text-green-600 text-green-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 text-white">
-                Security Audit Panel
-              </h2>
+              <h2 className="text-2xl font-bold text-gray-900 text-white">Security Audit Panel</h2>
               <p className="text-sm text-gray-600 text-gray-400">
                 Test security features and protections
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          >
+          <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
             <X className="w-6 h-6 text-gray-600 text-gray-400" />
           </button>
         </div>
@@ -232,9 +227,7 @@ const SecurityAuditPanel = ({ isOpen, onClose, T }) => {
                       <h4 className="font-semibold text-gray-900 text-white capitalize">
                         {key.replace(/([A-Z])/g, ' $1').trim()}
                       </h4>
-                      <p className="text-sm text-gray-600 text-gray-400 mt-1">
-                        {check.message}
-                      </p>
+                      <p className="text-sm text-gray-600 text-gray-400 mt-1">{check.message}</p>
                     </div>
                   </div>
                 </div>
@@ -273,9 +266,7 @@ const SecurityAuditPanel = ({ isOpen, onClose, T }) => {
 
               {testResult && testResult.type && (
                 <div className="bg-gray-50 bg-gray-700/50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900 text-white mb-2">
-                    Validation Result
-                  </h4>
+                  <h4 className="font-semibold text-gray-900 text-white mb-2">Validation Result</h4>
                   <div className="space-y-2">
                     <p className="text-sm">
                       <span className="font-medium">Type:</span> {testResult.type}
@@ -527,5 +518,3 @@ const SecurityAuditPanel = ({ isOpen, onClose, T }) => {
 };
 
 export default SecurityAuditPanel;
-
-

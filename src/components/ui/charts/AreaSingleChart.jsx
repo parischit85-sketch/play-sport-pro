@@ -43,4 +43,3 @@ export default function AreaSingleChart({ data, dataKey = 'rating', chartId = 's
     </div>
   );
 }
-

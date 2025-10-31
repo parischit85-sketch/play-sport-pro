@@ -178,9 +178,7 @@ export default function ClubFinancialStats({ T, clubId, courts }) {
                 <div key={method} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"></div>
-                    <span className="text-sm font-medium text-gray-300">
-                      {method}
-                    </span>
+                    <span className="text-sm font-medium text-gray-300">{method}</span>
                   </div>
                   <span className="font-semibold text-gray-900 text-white">€{amount}</span>
                 </div>
@@ -212,14 +210,10 @@ export default function ClubFinancialStats({ T, clubId, courts }) {
                       <div className="text-sm font-medium text-gray-900 text-white">
                         {court.name}
                       </div>
-                      <div className="text-xs text-gray-400">
-                        {court.bookings} prenotazioni
-                      </div>
+                      <div className="text-xs text-gray-400">{court.bookings} prenotazioni</div>
                     </div>
                   </div>
-                  <span className="font-semibold text-gray-900 text-white">
-                    €{court.revenue}
-                  </span>
+                  <span className="font-semibold text-gray-900 text-white">€{court.revenue}</span>
                 </div>
               ))}
             </div>
@@ -262,6 +256,3 @@ export default function ClubFinancialStats({ T, clubId, courts }) {
     </Section>
   );
 }
-
-
-

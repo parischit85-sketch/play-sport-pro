@@ -89,15 +89,12 @@ export default function PlayersCRM({
 
   // 🚀 OTTIMIZZAZIONE: Pre-calcola indice di ricerca per filtri più veloci
   const playersWithSearchIndex = useMemo(() => {
-    return players.map(player => ({
+    return players.map((player) => ({
       ...player,
-      _searchIndex: [
-        player.name,
-        player.firstName,
-        player.lastName,
-        player.email,
-        player.phone
-      ].filter(Boolean).join(' ').toLowerCase()
+      _searchIndex: [player.name, player.firstName, player.lastName, player.email, player.phone]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase(),
     }));
   }, [players]);
 
@@ -165,7 +162,9 @@ export default function PlayersCRM({
 
     // Filtro per ordinamento per rating: mostra solo chi partecipa al campionato
     if (sortBy === 'rating') {
-      filtered = filtered.filter((p) => p.tournamentData?.isParticipant && p.tournamentData?.isActive);
+      filtered = filtered.filter(
+        (p) => p.tournamentData?.isParticipant && p.tournamentData?.isActive
+      );
     }
 
     // Ordinamento
@@ -192,7 +191,15 @@ export default function PlayersCRM({
     });
 
     return filtered;
-  }, [playersWithSearchIndex, filterCategory, filterStatus, filterRegistrationDate, filterLastActivity, debouncedSearchTerm, sortBy]);
+  }, [
+    playersWithSearchIndex,
+    filterCategory,
+    filterStatus,
+    filterRegistrationDate,
+    filterLastActivity,
+    debouncedSearchTerm,
+    sortBy,
+  ]);
 
   // Statistiche rapide
   const stats = useMemo(() => {
@@ -243,7 +250,7 @@ export default function PlayersCRM({
       setShowPlayerForm(false);
     } catch (error) {
       console.error('Error adding player:', error);
-      toast.error('Errore durante l\'aggiunta del giocatore. Riprova.');
+      toast.error("Errore durante l'aggiunta del giocatore. Riprova.");
     }
   };
 
@@ -267,12 +274,12 @@ export default function PlayersCRM({
       toast.success('Giocatore aggiornato con successo');
     } catch (error) {
       console.error('Error updating player:', error);
-      toast.error('Errore durante l\'aggiornamento del giocatore. Riprova.');
+      toast.error("Errore durante l'aggiornamento del giocatore. Riprova.");
     }
   };
 
   const handleDeletePlayer = async (playerId) => {
-    const player = players.find(p => p.id === playerId);
+    const player = players.find((p) => p.id === playerId);
     if (!player) return;
 
     setPlayerToDelete(player);
@@ -300,7 +307,7 @@ export default function PlayersCRM({
       setSelectedPlayerId(null);
     } catch (error) {
       console.error('Error deleting player:', error);
-      toast.error('Errore durante l\'eliminazione del giocatore. Riprova.');
+      toast.error("Errore durante l'eliminazione del giocatore. Riprova.");
     } finally {
       setShowConfirmDelete(false);
       setPlayerToDelete(null);
@@ -433,7 +440,7 @@ export default function PlayersCRM({
               </div>
               <div className="text-center">
                 <div className={`text-2xl xl:text-xl font-bold ${T.accentInfo}`}>
-                  {filteredPlayers.filter(p => p.tournamentData?.isParticipant).length}
+                  {filteredPlayers.filter((p) => p.tournamentData?.isParticipant).length}
                 </div>
                 <div className={`text-xs ${T.subtext}`}>Torneo</div>
               </div>
@@ -607,18 +614,25 @@ export default function PlayersCRM({
           {!isLoading && filteredPlayers.length > 0 && (
             <div className="flex items-center justify-between px-2">
               <p className={`text-sm ${T.subtext}`}>
-                Visualizzati <span className={`font-semibold ${T.accentInfo}`}>{filteredPlayers.length}</span>
+                Visualizzati{' '}
+                <span className={`font-semibold ${T.accentInfo}`}>{filteredPlayers.length}</span>
                 {filteredPlayers.length !== players.length && (
-                  <> di <span className="font-semibold">{players.length}</span></>
-                )} giocatori
+                  <>
+                    {' '}
+                    di <span className="font-semibold">{players.length}</span>
+                  </>
+                )}{' '}
+                giocatori
                 {activeFiltersCount > 0 && (
                   <span className={`ml-2 ${T.accentWarning}`}>
-                    (con {activeFiltersCount} filtro{activeFiltersCount > 1 ? 'i' : ''} attivo{activeFiltersCount > 1 ? 'i' : ''})
+                    (con {activeFiltersCount} filtro{activeFiltersCount > 1 ? 'i' : ''} attivo
+                    {activeFiltersCount > 1 ? 'i' : ''})
                   </span>
                 )}
               </p>
               <p className={`text-xs ${T.subtext}`}>
-                Ordinamento: <span className="font-medium">
+                Ordinamento:{' '}
+                <span className="font-medium">
                   {sortBy === 'name' && 'Alfabetico'}
                   {sortBy === 'registration' && 'Data registrazione'}
                   {sortBy === 'lastActivity' && 'Ultima attività'}
@@ -835,10 +849,7 @@ export default function PlayersCRM({
               ) : (
                 <ul className="divide-y divide-gray-700">
                   {filteredAccounts.map((acc) => (
-                    <li
-                      key={acc.uid}
-                      className="p-4 hover:bg-gray-700/50 transition-colors"
-                    >
+                    <li key={acc.uid} className="p-4 hover:bg-gray-700/50 transition-colors">
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3 min-w-0 flex-1">
                           {/* Avatar */}
@@ -935,8 +946,7 @@ export default function PlayersCRM({
         T={T}
       />
 
-  {/* Toast notifications rendered globally by NotificationProvider */}
+      {/* Toast notifications rendered globally by NotificationProvider */}
     </>
   );
 }
-

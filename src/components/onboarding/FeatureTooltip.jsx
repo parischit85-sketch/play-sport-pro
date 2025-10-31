@@ -205,4 +205,3 @@ export const withTooltip = (Component, tooltipProps) => {
     </FeatureTooltip>
   );
 };
-

@@ -27,12 +27,8 @@ const QuickAction = React.memo(({ action, T }) => (
       >
         {action.icon}
       </div>
-      <h3 className="font-bold text-base mb-2 text-gray-900  text-center">
-        {action.title}
-      </h3>
-      <p className="text-xs text-gray-600  text-center leading-relaxed">
-        {action.description}
-      </p>
+      <h3 className="font-bold text-base mb-2 text-gray-900  text-center">{action.title}</h3>
+      <p className="text-xs text-gray-600  text-center leading-relaxed">{action.description}</p>
     </div>
   </button>
 ));
@@ -120,10 +116,7 @@ export default function DashboardHomePage() {
                 <div className="h-4 bg-gray-200/80 rounded w-32 mb-4"></div>
                 <div className="space-y-3">
                   {[1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className="h-20 bg-gray-200/60 rounded-lg"
-                    ></div>
+                    <div key={i} className="h-20 bg-gray-200/60 rounded-lg"></div>
                   ))}
                 </div>
               </div>
@@ -214,4 +207,3 @@ export default function DashboardHomePage() {
     </div>
   );
 }
-

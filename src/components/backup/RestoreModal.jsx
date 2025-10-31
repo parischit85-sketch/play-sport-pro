@@ -50,9 +50,7 @@ const RestoreModal = ({ backup, onConfirm, onCancel }) => {
             <div className="flex items-center gap-3">
               <RefreshCw size={24} className="text-orange-600 text-orange-400" />
               <div>
-                <h3 className="text-xl font-bold text-gray-900 text-white">
-                  Ripristina Backup
-                </h3>
+                <h3 className="text-xl font-bold text-gray-900 text-white">Ripristina Backup</h3>
                 <p className="text-sm text-gray-500 text-gray-400">
                   {new Date(backup.metadata.timestamp).toLocaleString('it-IT')}
                 </p>
@@ -76,9 +74,7 @@ const RestoreModal = ({ backup, onConfirm, onCancel }) => {
                   className="text-orange-600 text-orange-400 flex-shrink-0 mt-0.5"
                 />
                 <div className="flex-1">
-                  <h4 className="font-semibold text-orange-900 text-orange-200 mb-1">
-                    Attenzione
-                  </h4>
+                  <h4 className="font-semibold text-orange-900 text-orange-200 mb-1">Attenzione</h4>
                   <p className="text-sm text-orange-700 text-orange-300">
                     Il ripristino del backup modificherà i dati nel database. Assicurati di aver
                     creato un backup recente prima di procedere.
@@ -91,15 +87,11 @@ const RestoreModal = ({ backup, onConfirm, onCancel }) => {
             <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 bg-gray-700 rounded-lg">
               <div>
                 <p className="text-xs text-gray-500 text-gray-400">Dimensione</p>
-                <p className="font-semibold text-gray-900 text-white">
-                  {backup.metadata.size} MB
-                </p>
+                <p className="font-semibold text-gray-900 text-white">{backup.metadata.size} MB</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 text-gray-400">Versione</p>
-                <p className="font-semibold text-gray-900 text-white">
-                  {backup.metadata.version}
-                </p>
+                <p className="font-semibold text-gray-900 text-white">{backup.metadata.version}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 text-gray-400">Origine</p>
@@ -266,4 +258,3 @@ const RestoreModal = ({ backup, onConfirm, onCancel }) => {
 };
 
 export default RestoreModal;
-

@@ -420,9 +420,7 @@ export function SmartSuggestionsPanel({
                   <div className="text-2xl font-bold text-blue-900 text-blue-300">
                     {analytics.totalBookings}
                   </div>
-                  <div className="text-sm text-blue-700 text-blue-400">
-                    Prenotazioni Totali
-                  </div>
+                  <div className="text-sm text-blue-700 text-blue-400">Prenotazioni Totali</div>
                 </div>
                 <div className="bg-green-50 bg-green-900/20 border-2 border-green-200 border-green-800 rounded-xl p-4">
                   <div className="text-3xl mb-2">💰</div>
@@ -502,9 +500,7 @@ export function SmartSuggestionsPanel({
                           <div className="text-lg font-bold text-gray-900 text-white">
                             {hour}:00
                           </div>
-                          <div className="text-sm text-gray-400">
-                            {count} prenotazioni
-                          </div>
+                          <div className="text-sm text-gray-400">{count} prenotazioni</div>
                           {isPeak && (
                             <div className="text-xs text-orange-600 text-orange-400 font-medium mt-1">
                               🔥 PEAK
@@ -589,5 +585,3 @@ export function SmartSuggestionsPanel({
 }
 
 export default SmartSuggestionsPanel;
-
-

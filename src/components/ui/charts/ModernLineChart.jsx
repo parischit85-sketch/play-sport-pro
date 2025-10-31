@@ -60,9 +60,9 @@ export default function ModernLineChart({
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white bg-gray-800 border border-gray-200 border-gray-700 rounded-lg shadow-lg p-3">
-          <p className="text-sm font-medium text-gray-900 text-gray-100">{label}</p>
-          <p className="text-sm text-gray-600 text-gray-400">
+        <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-lg p-3">
+          <p className="text-sm font-medium text-gray-100">{label}</p>
+          <p className="text-sm text-gray-400">
             <span className="font-semibold" style={{ color: lineColor }}>
               {dataKey}: {payload[0].value}
             </span>
@@ -158,4 +158,3 @@ export default function ModernLineChart({
     </div>
   );
 }
-

@@ -8,4 +8,3 @@ import DarkModeTest from '@components/ui/DarkModeTest.jsx';
 export default function DarkModeTestPage() {
   return <DarkModeTest />;
 }
-

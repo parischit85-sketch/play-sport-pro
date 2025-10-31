@@ -28,9 +28,7 @@ export function SavingIndicator({ message = 'Salvataggio...', age = null }) {
         />
       </svg>
       <span className="text-sm font-medium text-blue-300">{message}</span>
-      {age !== null && (
-        <span className="text-xs text-blue-400">({(age / 1000).toFixed(1)}s)</span>
-      )}
+      {age !== null && <span className="text-xs text-blue-400">({(age / 1000).toFixed(1)}s)</span>}
     </div>
   );
 }
@@ -67,10 +65,7 @@ export function ErrorIndicator({ message = 'Errore - modifiche annullate', onRet
         <span className="text-sm font-medium text-red-300">{message}</span>
       </div>
       {onRetry && (
-        <button
-          onClick={onRetry}
-          className="text-xs font-medium text-red-400 hover:underline"
-        >
+        <button onClick={onRetry} className="text-xs font-medium text-red-400 hover:underline">
           Riprova
         </button>
       )}
@@ -182,13 +177,20 @@ export function OptimisticToast({ status, message, age, onClose, autoClose = 300
       <div className="flex-1">
         <p className={`text-sm font-medium ${config.text}`}>{message}</p>
         {status === 'pending' && age !== null && (
-          <p className={`text-xs ${config.text} opacity-75 mt-0.5`}>Tempo: {(age / 1000).toFixed(1)}s</p>
+          <p className={`text-xs ${config.text} opacity-75 mt-0.5`}>
+            Tempo: {(age / 1000).toFixed(1)}s
+          </p>
         )}
       </div>
       {onClose && (
         <button onClick={onClose} className={`${config.text} hover:opacity-75`}>
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       )}
@@ -259,4 +261,3 @@ export function OptimisticWrapper({ isPending, age, children, showIndicator = tr
     </div>
   );
 }
-

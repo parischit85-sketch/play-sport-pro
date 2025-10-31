@@ -362,4 +362,3 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
     );
   }
 }
-

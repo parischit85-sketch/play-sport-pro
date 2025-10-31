@@ -616,4 +616,3 @@ export default function LessonBookingInterface({ T, user: propUser, state, setSt
     </Section>
   );
 }
-

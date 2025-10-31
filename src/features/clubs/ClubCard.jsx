@@ -95,9 +95,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
 
           {/* Nome e Città */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-bold text-gray-900 text-white truncate">
-              {club.name}
-            </h3>
+            <h3 className="text-sm font-bold text-gray-900 text-white truncate">{club.name}</h3>
             <p className="text-xs text-gray-500 text-gray-400 truncate">📍 {city}</p>
           </div>
         </div>
@@ -194,18 +192,14 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
                 </div>
               )}
               <div>
-                <h3 className="text-xl font-bold text-gray-900 text-white mb-1">
-                  {club.name}
-                </h3>
+                <h3 className="text-xl font-bold text-gray-900 text-white mb-1">{club.name}</h3>
                 <p className="text-gray-600 text-gray-400 text-sm mb-2">
                   📍 {club.location?.city}, {club.location?.region}
                 </p>
               </div>
             </div>
             {club.description && (
-              <p className="text-gray-700 text-gray-300 text-sm line-clamp-2">
-                {club.description}
-              </p>
+              <p className="text-gray-700 text-gray-300 text-sm line-clamp-2">{club.description}</p>
             )}
           </div>
 
@@ -246,9 +240,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
 
         {/* Address */}
         {club.location?.address && (
-          <div className="text-sm text-gray-600 text-gray-400 mb-4">
-            📍 {club.location.address}
-          </div>
+          <div className="text-sm text-gray-600 text-gray-400 mb-4">📍 {club.location.address}</div>
         )}
 
         {/* Message display */}
@@ -317,6 +309,3 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
 };
 
 export default ClubCard;
-
-
-

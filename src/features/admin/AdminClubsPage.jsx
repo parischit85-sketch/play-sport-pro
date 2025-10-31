@@ -129,9 +129,7 @@ const FilterBar = ({ filters, onFiltersChange, clubsCount }) => {
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700 text-gray-300">
-            Ordina per:
-          </label>
+          <label className="text-sm font-medium text-gray-700 text-gray-300">Ordina per:</label>
           <select
             value={filters.sortBy}
             onChange={(e) => onFiltersChange({ ...filters, sortBy: e.target.value })}
@@ -344,4 +342,3 @@ const AdminClubsPage = () => {
 };
 
 export default AdminClubsPage;
-

@@ -223,7 +223,7 @@ const ClubSettings = () => {
   const handleLogoEditorComplete = async (croppedBlob) => {
     try {
       setShowLogoEditor(false);
-      
+
       // Crea un File dal blob
       const croppedFile = new File([croppedBlob], 'logo.jpg', { type: 'image/jpeg' });
       setLogoFile(croppedFile);
@@ -233,7 +233,7 @@ const ClubSettings = () => {
       setSettings((prev) => ({ ...prev, logoUrl: previewUrl }));
     } catch (error) {
       console.error('Errore durante il crop del logo:', error);
-      alert('Errore durante l\'elaborazione dell\'immagine');
+      alert("Errore durante l'elaborazione dell'immagine");
     }
   };
 
@@ -892,4 +892,3 @@ const ClubSettings = () => {
 };
 
 export default ClubSettings;
-

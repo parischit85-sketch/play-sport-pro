@@ -92,8 +92,7 @@ export function themeTokens() {
     // Brand colors
     neonText: 'text-blue-400',
     link: 'underline underline-offset-4 decoration-blue-400 hover:text-blue-300',
-    ghostRing:
-      'ring-gray-600/50 hover:bg-gray-700',
+    ghostRing: 'ring-gray-600/50 hover:bg-gray-700',
     tableHeadText: 'text-gray-400',
 
     // Form elements

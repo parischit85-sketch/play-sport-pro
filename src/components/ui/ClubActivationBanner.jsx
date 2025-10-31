@@ -122,4 +122,3 @@ export const ClubActivationStatusBadge = ({ club }) => {
 };
 
 export default ClubActivationBanner;
-

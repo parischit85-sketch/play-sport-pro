@@ -186,45 +186,37 @@ export default function PlayerBookingHistory({ player, T }) {
 
       {/* Statistiche */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className={`bg-gradient-to-br from-blue-900/20 to-blue-800/20 rounded-xl p-5 ${T.border} text-center hover:shadow-lg transition-shadow`}>
+        <div
+          className={`bg-gradient-to-br from-blue-900/20 to-blue-800/20 rounded-xl p-5 ${T.border} text-center hover:shadow-lg transition-shadow`}
+        >
           <div className={`text-3xl font-black ${T.accentInfo}`}>{stats.total}</div>
           <div className={`text-xs ${T.subtext} mt-1 font-semibold`}>Totali</div>
         </div>
 
-        <div className={`bg-gradient-to-br from-green-900/20 to-green-800/20 rounded-xl p-5 border-green-700 text-center hover:shadow-lg transition-shadow`}>
-          <div className={`text-3xl font-black ${T.accentSuccess}`}>
-            {stats.completed}
-          </div>
-          <div className={`text-xs ${T.subtext} mt-1 font-semibold`}>
-            Completate
-          </div>
+        <div
+          className={`bg-gradient-to-br from-green-900/20 to-green-800/20 rounded-xl p-5 border-green-700 text-center hover:shadow-lg transition-shadow`}
+        >
+          <div className={`text-3xl font-black ${T.accentSuccess}`}>{stats.completed}</div>
+          <div className={`text-xs ${T.subtext} mt-1 font-semibold`}>Completate</div>
         </div>
 
-        <div className={`bg-gradient-to-br from-purple-900/20 to-purple-800/20 rounded-xl p-5 border-purple-700 text-center hover:shadow-lg transition-shadow`}>
-          <div className={`text-3xl font-black ${T.accentInfo}`}>
-            {stats.upcoming}
-          </div>
-          <div className={`text-xs ${T.subtext} mt-1 font-semibold`}>
-            Future
-          </div>
+        <div
+          className={`bg-gradient-to-br from-purple-900/20 to-purple-800/20 rounded-xl p-5 border-purple-700 text-center hover:shadow-lg transition-shadow`}
+        >
+          <div className={`text-3xl font-black ${T.accentInfo}`}>{stats.upcoming}</div>
+          <div className={`text-xs ${T.subtext} mt-1 font-semibold`}>Future</div>
         </div>
 
         <div className="bg-gradient-to-br from-red-900/20 to-red-800/20 rounded-xl p-5 border-red-700 text-center hover:shadow-lg transition-shadow">
-          <div className="text-3xl font-black text-red-400">
-            {stats.cancelled}
-          </div>
-          <div className="text-xs text-red-700 text-red-300 mt-1 font-semibold">
-            Cancellate
-          </div>
+          <div className="text-3xl font-black text-red-400">{stats.cancelled}</div>
+          <div className="text-xs text-red-700 text-red-300 mt-1 font-semibold">Cancellate</div>
         </div>
 
         <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 from-emerald-900/20 to-emerald-800/20 rounded-xl p-5 border border-emerald-200 border-emerald-700 text-center hover:shadow-lg transition-shadow">
           <div className="text-3xl font-black text-emerald-600 text-emerald-400">
             €{stats.totalSpent.toFixed(0)}
           </div>
-          <div className="text-xs text-emerald-700 text-emerald-300 mt-1 font-semibold">
-            Spesi
-          </div>
+          <div className="text-xs text-emerald-700 text-emerald-300 mt-1 font-semibold">Spesi</div>
         </div>
       </div>
 
@@ -319,7 +311,9 @@ export default function PlayerBookingHistory({ player, T }) {
                           {getStatusLabel(booking.status)}
                         </span>
                         {booking.paid && (
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium bg-green-900/20 ${T.accentSuccess}`}>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium bg-green-900/20 ${T.accentSuccess}`}
+                          >
                             💰 Pagato
                           </span>
                         )}
@@ -385,5 +379,3 @@ export default function PlayerBookingHistory({ player, T }) {
     </div>
   );
 }
-
-

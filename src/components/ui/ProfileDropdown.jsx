@@ -16,9 +16,7 @@ const ProfileDropdown = ({ onProfileClick, onBackupClick }) => {
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" strokeWidth={1.5} />
           </svg>
         </div>
-        <h3 className="font-bold text-base mb-2 text-gray-900 text-white text-center">
-          Profilo
-        </h3>
+        <h3 className="font-bold text-base mb-2 text-gray-900 text-white text-center">Profilo</h3>
         <p className="text-xs text-gray-600 text-gray-300 text-center leading-relaxed">
           Gestisci il tuo account
         </p>
@@ -28,4 +26,3 @@ const ProfileDropdown = ({ onProfileClick, onBackupClick }) => {
 };
 
 export default ProfileDropdown;
-

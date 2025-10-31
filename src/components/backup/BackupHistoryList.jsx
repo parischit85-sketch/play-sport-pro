@@ -215,4 +215,3 @@ const BackupHistoryList = () => {
 };
 
 export default BackupHistoryList;
-

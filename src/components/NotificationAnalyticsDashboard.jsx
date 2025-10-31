@@ -533,4 +533,3 @@ function MetricCard({ title, value, subtitle, icon, color }) {
     </div>
   );
 }
-

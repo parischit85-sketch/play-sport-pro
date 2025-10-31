@@ -34,12 +34,8 @@ const QuickAction = React.memo(({ action, T: _T }) => (
       >
         {action.icon}
       </div>
-      <h3 className="font-bold text-base mb-2 text-white text-center">
-        {action.title}
-      </h3>
-      <p className="text-xs text-gray-300 text-center leading-relaxed">
-        {action.description}
-      </p>
+      <h3 className="font-bold text-base mb-2 text-white text-center">{action.title}</h3>
+      <p className="text-xs text-gray-300 text-center leading-relaxed">{action.description}</p>
     </div>
   </button>
 ));
@@ -150,7 +146,7 @@ export default function DashboardPage() {
     <div className="space-y-1 min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800 overflow-x-hidden">
       {/* PWA Install Banner */}
       <PWABanner />
-      
+
       {/* Email Verification Banner */}
       <EmailVerificationBanner />
 
@@ -163,10 +159,7 @@ export default function DashboardPage() {
                 <div className="h-8 bg-gray-600/60 rounded w-64 mb-6"></div>
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="h-24 bg-gray-600/40 rounded-2xl"
-                    ></div>
+                    <div key={i} className="h-24 bg-gray-600/40 rounded-2xl"></div>
                   ))}
                 </div>
                 <div className="h-96 bg-gray-600/40 rounded-2xl"></div>
@@ -189,10 +182,7 @@ export default function DashboardPage() {
                     <div className="h-4 bg-gray-600/60 rounded w-32 mb-4"></div>
                     <div className="space-y-3">
                       {[1, 2].map((i) => (
-                        <div
-                          key={i}
-                          className="h-20 bg-gray-600/40 rounded-lg"
-                        ></div>
+                        <div key={i} className="h-20 bg-gray-600/40 rounded-lg"></div>
                       ))}
                     </div>
                   </div>
@@ -340,4 +330,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

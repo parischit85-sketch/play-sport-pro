@@ -82,4 +82,3 @@ export default function TermsOfService({ accepted, onAcceptanceChange, showError
     </div>
   );
 }
-

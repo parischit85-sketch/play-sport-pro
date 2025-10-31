@@ -40,19 +40,17 @@ function TournamentList({ tournaments, onRefresh: _onRefresh }) {
             <div className="flex-1">
               {/* Tournament Name & Status */}
               <div className="flex items-center gap-3 mb-2">
-                <h3 className="text-lg font-semibold text-gray-100">
-                  {tournament.name}
-                </h3>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColorClass(tournament.status)}`}>
+                <h3 className="text-lg font-semibold text-gray-100">{tournament.name}</h3>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColorClass(tournament.status)}`}
+                >
                   {formatTournamentStatus(tournament.status)}
                 </span>
               </div>
 
               {/* Description */}
               {tournament.description && (
-                <p className="text-sm text-gray-300 mb-3">
-                  {tournament.description}
-                </p>
+                <p className="text-sm text-gray-300 mb-3">{tournament.description}</p>
               )}
 
               {/* Stats */}
@@ -67,22 +65,19 @@ function TournamentList({ tournaments, onRefresh: _onRefresh }) {
 
                 <div className="flex items-center gap-2 text-gray-300">
                   <Trophy className="w-4 h-4" />
-                  <span>
-                    {tournament.configuration.numberOfGroups} gironi
-                  </span>
+                  <span>{tournament.configuration.numberOfGroups} gironi</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-gray-300">
                   <Calendar className="w-4 h-4" />
-                  <span>
-                    Creato il {formatDate(tournament.createdAt)}
-                  </span>
+                  <span>Creato il {formatDate(tournament.createdAt)}</span>
                 </div>
 
                 {tournament.statistics.completedMatches > 0 && (
                   <div className="flex items-center gap-2 text-gray-300">
                     <span className="font-medium">
-                      {tournament.statistics.completedMatches}/{tournament.statistics.totalMatches} partite
+                      {tournament.statistics.completedMatches}/{tournament.statistics.totalMatches}{' '}
+                      partite
                     </span>
                   </div>
                 )}
@@ -109,4 +104,3 @@ function TournamentList({ tournaments, onRefresh: _onRefresh }) {
 }
 
 export default TournamentList;
-

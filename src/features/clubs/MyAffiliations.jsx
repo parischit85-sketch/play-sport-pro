@@ -201,9 +201,7 @@ const MyAffiliations = () => {
     <div className="max-w-4xl mx-auto px-4 py-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 text-white mb-2">
-          Le mie Affiliazioni
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 text-white mb-2">Le mie Affiliazioni</h1>
         <p className="text-gray-600 text-gray-400">
           Gestisci i tuoi club e le richieste di affiliazione
         </p>
@@ -318,5 +316,3 @@ const MyAffiliations = () => {
 };
 
 export default MyAffiliations;
-
-

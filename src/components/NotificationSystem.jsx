@@ -70,4 +70,3 @@ function NotificationItem({ notification, onRemove }) {
     </div>
   );
 }
-

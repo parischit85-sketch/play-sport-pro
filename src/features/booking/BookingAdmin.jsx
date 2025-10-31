@@ -610,9 +610,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
           <div className="p-2 bg-gray-50 bg-gray-800 rounded-md text-sm flex flex-col gap-1">
             <div className="flex justify-between items-center">
               <span>{formData.isLessonBooking ? 'Totale Lezione' : 'Prezzo Campo'}:</span>
-              <span className="font-semibold text-emerald-600 text-emerald-400">
-                {totalPrice}€
-              </span>
+              <span className="font-semibold text-emerald-600 text-emerald-400">{totalPrice}€</span>
             </div>
             {perParticipant != null && (
               <div className="flex justify-between text-xs text-gray-400">
@@ -640,5 +638,3 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
 }
 
 export default BookingAdmin;
-
-

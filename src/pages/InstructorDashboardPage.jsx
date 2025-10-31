@@ -40,9 +40,7 @@ export default function InstructorDashboardPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 p-4 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 text-white mb-4">
-            Accesso Riservato
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900 text-white mb-4">Accesso Riservato</h2>
           <p className="text-gray-600 text-gray-400 mb-6">
             Questa pagina è riservata agli istruttori
           </p>
@@ -80,4 +78,3 @@ export default function InstructorDashboardPage() {
     </div>
   );
 }
-

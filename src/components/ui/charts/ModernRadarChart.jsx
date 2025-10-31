@@ -44,4 +44,3 @@ export default function ModernRadarChart({ data, dataKey, chartId, color = 'prim
     </div>
   );
 }
-

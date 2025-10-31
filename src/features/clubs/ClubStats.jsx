@@ -77,4 +77,3 @@ const ClubStats = ({ clubId, club }) => {
 };
 
 export default ClubStats;
-

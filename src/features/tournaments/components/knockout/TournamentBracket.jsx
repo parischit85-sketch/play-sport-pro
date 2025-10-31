@@ -129,8 +129,13 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
     []
   );
   const orderedRounds = useMemo(
-    () => canonicalOrder.filter((label) => rounds[label] && rounds[label].length > 0 && 
-      (!isTVView || label !== KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.THIRD_PLACE])),
+    () =>
+      canonicalOrder.filter(
+        (label) =>
+          rounds[label] &&
+          rounds[label].length > 0 &&
+          (!isTVView || label !== KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.THIRD_PLACE])
+      ),
     [canonicalOrder, rounds, isTVView]
   );
 
@@ -173,15 +178,15 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
     // Solo admin possono modificare i risultati
     const canRecordResult = !!(team1 && team2 && canEditResults);
 
-    // TBD teams (not yet determined from previous round) or BYE (no team)
-    const team1Name = !match.team1Id ? 'BYE' : team1?.teamName || match.team1Name || 'TBD';
-    const team2Name = !match.team2Id ? 'BYE' : team2?.teamName || match.team2Name || 'TBD';
+    // TBD teams (not yet determined from previous round), BYE (admin selected), or Qalif. (auto-qualified)
+    const team1Name = team1?.teamName || match.team1Name || 'TBD';
+    const team2Name = team2?.teamName || match.team2Name || 'TBD';
 
     const hasSets = Array.isArray(match.sets) && match.sets.length > 0;
 
     // Check if this match has a BYE
     const hasBye = team1Name === 'BYE' || team2Name === 'BYE';
-    
+
     // TV View: Ultra compact match card with sets display
     if (isTVView) {
       // Determine font sizes based on round
@@ -191,12 +196,13 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
       const playerFontSize = isAdvancedRound ? 'text-[20px]' : 'text-[13px]';
       const pillTextSize = isAdvancedRound ? 'text-[20px]' : 'text-[14px]';
       const pillPadding = isAdvancedRound ? 'px-1.5 py-1' : 'px-1 py-0.5';
-      
+
       const renderTVSetPills = (teamIndex) => {
         if (!hasSets) return null;
-        const isWinner = (teamIndex === 1 && match.winnerId === team1?.id) || 
-                        (teamIndex === 2 && match.winnerId === team2?.id);
-        
+        const isWinner =
+          (teamIndex === 1 && match.winnerId === team1?.id) ||
+          (teamIndex === 2 && match.winnerId === team2?.id);
+
         return (
           <div className="flex items-center gap-0.5 ml-1">
             {match.sets.map((s, i) => {
@@ -209,7 +215,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
                   key={`tv-pill-${match.id}-${teamIndex}-${i}`}
                   className={`${pillPadding} rounded ${pillTextSize} leading-3 font-bold ${
                     win
-                      ? isWinner 
+                      ? isWinner
                         ? 'bg-emerald-900/30 text-emerald-300'
                         : 'bg-red-900/30 text-red-400'
                       : isWinner
@@ -226,69 +232,83 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
       };
 
       return (
-        <div
-          key={match.id}
-          className="bg-gray-700 w-full"
-          style={{ margin: 0, padding: '0px' }}
-        >
+        <div key={match.id} className="bg-gray-700 w-full" style={{ margin: 0, padding: '0px' }}>
           {/* Team 1 */}
-          <div className={`flex items-center justify-between px-2 py-0.5 ${playerFontSize} ${
-            isCompleted && match.winnerId === team1?.id
-              ? 'bg-green-900/30 border border-green-700'
-              : 'bg-gray-700'
-          }`}>
-            <span className={`font-semibold truncate ${
-              team1Name === 'BYE' ? 'text-orange-500 font-bold' :
-              isCompleted && match.winnerId === team1?.id ? 'text-green-200 font-bold' :
-              team1 ? 'text-white' : 'text-gray-500 italic'
-            }`}>
-              {team1?.seed ? `#${team1.seed} ` : ''}{team1Name}
+          <div
+            className={`flex items-center justify-between px-2 py-0.5 ${playerFontSize} ${
+              isCompleted && match.winnerId === team1?.id
+                ? 'bg-green-900/30 border border-green-700'
+                : 'bg-gray-700'
+            }`}
+          >
+            <span
+              className={`font-semibold truncate ${
+                team1Name === 'BYE'
+                  ? 'text-orange-500 font-bold'
+                  : isCompleted && match.winnerId === team1?.id
+                    ? 'text-green-200 font-bold'
+                    : team1
+                      ? 'text-white'
+                      : 'text-gray-500 italic'
+              }`}
+            >
+              {team1?.seed ? `#${team1.seed} ` : ''}
+              {team1Name}
               {isFinale && isCompleted && match.winnerId === team1?.id && (
                 <Crown className="inline-block ml-1 w-5 h-5 text-amber-400 align-middle" />
               )}
             </span>
-            {isCompleted && 
-              (hasSets 
+            {isCompleted &&
+              (hasSets
                 ? renderTVSetPills(1)
                 : match.score && (
-                    <span className={`${pillTextSize} font-bold ml-1 ${
-                      match.winnerId === team1?.id ? 'text-green-300' : 'text-red-400'
-                    }`}>
+                    <span
+                      className={`${pillTextSize} font-bold ml-1 ${
+                        match.winnerId === team1?.id ? 'text-green-300' : 'text-red-400'
+                      }`}
+                    >
                       {match.score.team1}
                     </span>
-                  )
-              )
-            }
+                  ))}
           </div>
-          
+
           {/* Team 2 */}
-          <div className={`flex items-center justify-between px-2 py-0.5 ${playerFontSize} ${
-            isCompleted && match.winnerId === team2?.id
-              ? 'bg-green-900/30 border border-green-700'
-              : 'bg-gray-700'
-          }`}>
-            <span className={`font-semibold truncate ${
-              team2Name === 'BYE' ? 'text-orange-500 font-bold' :
-              isCompleted && match.winnerId === team2?.id ? 'text-green-200 font-bold' :
-              team2 ? 'text-white' : 'text-gray-500 italic'
-            }`}>
-              {team2?.seed ? `#${team2.seed} ` : ''}{team2Name}
+          <div
+            className={`flex items-center justify-between px-2 py-0.5 ${playerFontSize} ${
+              isCompleted && match.winnerId === team2?.id
+                ? 'bg-green-900/30 border border-green-700'
+                : 'bg-gray-700'
+            }`}
+          >
+            <span
+              className={`font-semibold truncate ${
+                team2Name === 'BYE'
+                  ? 'text-orange-500 font-bold'
+                  : isCompleted && match.winnerId === team2?.id
+                    ? 'text-green-200 font-bold'
+                    : team2
+                      ? 'text-white'
+                      : 'text-gray-500 italic'
+              }`}
+            >
+              {team2?.seed ? `#${team2.seed} ` : ''}
+              {team2Name}
               {isFinale && isCompleted && match.winnerId === team2?.id && (
                 <Crown className="inline-block ml-1 w-5 h-5 text-amber-400 align-middle" />
               )}
             </span>
-            {isCompleted && 
-              (hasSets 
+            {isCompleted &&
+              (hasSets
                 ? renderTVSetPills(2)
                 : match.score && (
-                    <span className={`${pillTextSize} font-bold ml-1 ${
-                      match.winnerId === team2?.id ? 'text-green-300' : 'text-red-400'
-                    }`}>
+                    <span
+                      className={`${pillTextSize} font-bold ml-1 ${
+                        match.winnerId === team2?.id ? 'text-green-300' : 'text-red-400'
+                      }`}
+                    >
                       {match.score.team2}
                     </span>
-                  )
-              )
-            }
+                  ))}
           </div>
         </div>
       );
@@ -308,9 +328,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
               <span
                 key={`tb-pill-${match.id}-${teamIndex}-${i}`}
                 className={`px-1.5 py-0.5 rounded text-[10px] leading-4 ${
-                  win
-                    ? 'bg-emerald-900/30 text-emerald-300'
-                    : 'bg-gray-700 text-gray-300'
+                  win ? 'bg-emerald-900/30 text-emerald-300' : 'bg-gray-700 text-gray-300'
                 }`}
                 title={`Set ${i + 1}`}
               >
@@ -328,10 +346,10 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
         key={match.id}
         disabled={!canRecordResult || isPublicView}
         className={`relative bg-gray-700 rounded-lg border-2 border-gray-700 p-2 sm:p-3 transition-all w-full lg:min-w-[200px] lg:w-[200px] text-left ${
-          isPublicView ? 'cursor-default' : 'hover:border-primary-400 cursor-pointer active:scale-[0.99]'
-        } ${
-          !canRecordResult && !hasBye && !isPublicView ? 'opacity-60 cursor-not-allowed' : ''
-        }`}
+          isPublicView
+            ? 'cursor-default'
+            : 'hover:border-primary-400 cursor-pointer active:scale-[0.99]'
+        } ${!canRecordResult && !hasBye && !isPublicView ? 'opacity-60 cursor-not-allowed' : ''}`}
         onClick={() => !isPublicView && canRecordResult && setSelectedMatch(match)}
       >
         {/* Match Number - only show in admin view */}
@@ -375,9 +393,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
               : match.score && (
                   <span
                     className={`${isPublicView ? 'text-xl sm:text-2xl' : 'text-lg sm:text-xl'} font-bold ml-2 flex-shrink-0 ${
-                      match.winnerId === team1?.id
-                        ? 'text-green-300'
-                        : 'text-gray-500'
+                      match.winnerId === team1?.id ? 'text-green-300' : 'text-gray-500'
                     }`}
                   >
                     {match.score.team1}
@@ -428,9 +444,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
               : match.score && (
                   <span
                     className={`${isPublicView ? 'text-xl sm:text-2xl' : 'text-lg sm:text-xl'} font-bold ml-2 flex-shrink-0 ${
-                      match.winnerId === team2?.id
-                        ? 'text-green-300'
-                        : 'text-gray-500'
+                      match.winnerId === team2?.id ? 'text-green-300' : 'text-gray-500'
                     }`}
                   >
                     {match.score.team2}
@@ -441,9 +455,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
         {/* Action hint - only show in admin view */}
         {canRecordResult && !isPublicView && (
           <div className="mt-2 text-center">
-            <span className="text-xs text-primary-400">
-              Click per inserire risultato
-            </span>
+            <span className="text-xs text-primary-400">Click per inserire risultato</span>
           </div>
         )}
       </button>
@@ -463,7 +475,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
       return String(a.id).localeCompare(String(b.id));
     });
     const isCollapsed = !!collapsedByRound[roundName];
-    
+
     // TV View: Bracket-style layout with proper positioning
     if (isTVView) {
       return (
@@ -472,9 +484,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
           <div className="bg-gradient-to-r from-primary-900/40 to-blue-900/40 rounded-md px-2 py-1.5 mb-3 border border-primary-800">
             <div className="flex items-center gap-1.5 justify-center">
               {getRoundIcon(roundName)}
-              <h3 className="font-bold text-xs text-white truncate">
-                {roundName}
-              </h3>
+              <h3 className="font-bold text-xs text-white truncate">{roundName}</h3>
             </div>
           </div>
 
@@ -483,36 +493,36 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
             {sortedMatches.map((match, matchIndex) => {
               // Calculate vertical position for bracket-style layout
               let topPosition = 0;
-              
+
               // Different match heights based on font sizes
               // Ottavi: 13px font, compact -> ~60px height
               // Quarti+: 20px font, larger -> ~75px height
               const ottoviHeight = 60;
               const advancedHeight = 75;
-              
+
               // For rounds after first, position matches between previous round matches
               if (roundIndex > 0) {
                 // Calculate spacing based on previous round's height
                 // Round 1 (quarti): centered between ottavi pairs
                 // Round 2 (semi): centered between quarti pairs
                 // Round 3 (finale): centered between semi pairs
-                
+
                 // Use ottavi height for first round calculations
                 const baseHeight = ottoviHeight;
                 const spacing = baseHeight * Math.pow(2, roundIndex);
-                
+
                 // Position at center, accounting for current round's actual height
                 const currentHeight = advancedHeight;
-                topPosition = matchIndex * spacing + (spacing / 2) - (currentHeight / 2);
+                topPosition = matchIndex * spacing + spacing / 2 - currentHeight / 2;
               } else {
                 // First round (ottavi): stack matches WITHOUT gap
                 topPosition = matchIndex * ottoviHeight;
               }
-              
+
               return (
-                <div 
-                  key={match.id} 
-                  className="absolute" 
+                <div
+                  key={match.id}
+                  className="absolute"
                   style={{ top: `${topPosition}px`, width: '100%' }}
                 >
                   {renderMatch(match, roundIndex)}
@@ -523,7 +533,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
         </div>
       );
     }
-    
+
     // Normal View: Original layout with collapse
     return (
       <div
@@ -544,9 +554,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
           <div className="flex items-center gap-2 justify-between sm:justify-center">
             <div className="flex items-center gap-2 min-w-0 flex-1 sm:flex-none">
               {getRoundIcon(roundName)}
-              <h3 className="font-bold text-sm sm:text-base text-white truncate">
-                {roundName}
-              </h3>
+              <h3 className="font-bold text-sm sm:text-base text-white truncate">{roundName}</h3>
             </div>
             <div className="flex items-center gap-2">
               <p className="text-xs text-gray-400 flex-shrink-0">
@@ -596,7 +604,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
   }
 
   return (
-    <div className={isTVView ? "h-full flex flex-col" : "space-y-4 sm:space-y-6"}>
+    <div className={isTVView ? 'h-full flex flex-col' : 'space-y-4 sm:space-y-6'}>
       {/* Mobile: Quick round chips navigator - hide in TV view and public view */}
       {!isTVView && !isPublicView && (
         <div className="lg:hidden -mx-3 px-3">
@@ -703,4 +711,3 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
 }
 
 export default TournamentBracket;
-

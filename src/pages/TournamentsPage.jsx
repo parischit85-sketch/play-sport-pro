@@ -73,4 +73,3 @@ export default function TournamentsPage() {
   // Render the main tournament management component
   return <TournamentsPageComponent clubId={activeClubId} isAdmin={adminForClub} />;
 }
-

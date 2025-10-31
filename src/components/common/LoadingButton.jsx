@@ -25,8 +25,7 @@ const LoadingButton = ({
     primary: 'bg-blue-600 hover:bg-blue-700 text-white disabled:hover:bg-blue-600',
     danger: 'bg-red-600 hover:bg-red-700 text-white disabled:hover:bg-red-600',
     success: 'bg-green-600 hover:bg-green-700 text-white disabled:hover:bg-green-600',
-    ghost:
-      'bg-transparent hover:bg-gray-100 hover:bg-gray-800 text-gray-700 text-gray-300',
+    ghost: 'bg-transparent hover:bg-gray-100 hover:bg-gray-800 text-gray-700 text-gray-300',
     outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 hover:bg-blue-900/20',
   };
 
@@ -68,4 +67,3 @@ const LoadingButton = ({
 };
 
 export default React.memo(LoadingButton);
-

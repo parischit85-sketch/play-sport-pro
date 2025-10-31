@@ -257,9 +257,7 @@ const RoleManagementModal = ({ user, clubs, onClose, onSetRole, onRemoveRole }) 
         </form>
 
         <div className="mt-6 pt-4 border-t border-gray-200 border-gray-700">
-          <h4 className="text-sm font-medium text-gray-700 text-gray-300 mb-2">
-            Ruoli Attuali
-          </h4>
+          <h4 className="text-sm font-medium text-gray-700 text-gray-300 mb-2">Ruoli Attuali</h4>
           <div className="text-sm text-gray-600 text-gray-400">
             {/* TODO: Display current user roles */}
             Implementazione in corso...
@@ -271,4 +269,3 @@ const RoleManagementModal = ({ user, clubs, onClose, onSetRole, onRemoveRole }) 
 };
 
 export default UserManagement;
-

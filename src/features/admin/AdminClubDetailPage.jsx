@@ -103,9 +103,7 @@ const AdminClubDetailPage = () => {
     return (
       <div className="min-h-screen bg-gray-50 bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 text-white mb-2">
-            Club non trovato
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 text-white mb-2">Club non trovato</h2>
           <button
             onClick={() => navigate('/admin/clubs')}
             className="text-blue-600 hover:text-blue-800 text-blue-400 hover:text-blue-300"
@@ -157,9 +155,7 @@ const AdminClubDetailPage = () => {
           <div className="bg-white bg-gray-800 rounded-lg shadow-sm border border-gray-200 border-gray-700 p-6">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 text-white mb-2">
-                  {club.name}
-                </h2>
+                <h2 className="text-2xl font-bold text-gray-900 text-white mb-2">{club.name}</h2>
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(club.status)}`}
                 >
@@ -176,9 +172,7 @@ const AdminClubDetailPage = () => {
 
           {/* Statistics */}
           <div className="bg-white bg-gray-800 rounded-lg shadow-sm border border-gray-200 border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 text-white mb-4">
-              Statistiche
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 text-white mb-4">Statistiche</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600 text-blue-400">
@@ -230,9 +224,7 @@ const AdminClubDetailPage = () => {
           {/* Contact */}
           {(club.contact?.email || club.contact?.phone || club.contact?.website) && (
             <div className="bg-white bg-gray-800 rounded-lg shadow-sm border border-gray-200 border-gray-700 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 text-white mb-4">
-                📞 Contatti
-              </h3>
+              <h3 className="text-lg font-semibold text-gray-900 text-white mb-4">📞 Contatti</h3>
               <div className="space-y-2 text-gray-600 text-gray-400">
                 {club.contact.email && (
                   <div>
@@ -275,9 +267,7 @@ const AdminClubDetailPage = () => {
 
           {/* Settings */}
           <div className="bg-white bg-gray-800 rounded-lg shadow-sm border border-gray-200 border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 text-white mb-4">
-              ⚙️ Impostazioni
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900 text-white mb-4">⚙️ Impostazioni</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-gray-600 text-gray-400">Prenotazioni pubbliche:</span>
@@ -304,9 +294,7 @@ const AdminClubDetailPage = () => {
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600 text-gray-400">
-                  Max prenotazioni per utente:
-                </span>
+                <span className="text-gray-600 text-gray-400">Max prenotazioni per utente:</span>
                 <span className="px-2 py-1 bg-blue-100 text-blue-800 bg-blue-900 text-blue-200 rounded text-sm">
                   {club.settings?.maxBookingsPerUser || 10}
                 </span>
@@ -341,4 +329,3 @@ const AdminClubDetailPage = () => {
 };
 
 export default AdminClubDetailPage;
-

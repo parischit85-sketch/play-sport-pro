@@ -70,4 +70,3 @@ export default function AreaMultiChart({ data, seriesKeys = [], chartId = 'multi
     </div>
   );
 }
-

@@ -136,11 +136,7 @@ const NotificationItem = ({ notification, onRead, onDelete }) => {
             <h4
               className={`
               text-sm font-semibold
-              ${
-                notification.read
-                  ? 'text-gray-600 text-gray-400'
-                  : 'text-gray-900 text-white'
-              }
+              ${notification.read ? 'text-gray-600 text-gray-400' : 'text-gray-900 text-white'}
             `}
             >
               {notification.title}
@@ -155,11 +151,7 @@ const NotificationItem = ({ notification, onRead, onDelete }) => {
           <p
             className={`
             text-sm mb-2
-            ${
-              notification.read
-                ? 'text-gray-500 text-gray-500'
-                : 'text-gray-700 text-gray-300'
-            }
+            ${notification.read ? 'text-gray-500 text-gray-500' : 'text-gray-700 text-gray-300'}
           `}
           >
             {notification.message}
@@ -233,5 +225,3 @@ const NotificationItem = ({ notification, onRead, onDelete }) => {
 };
 
 export default NotificationItem;
-
-

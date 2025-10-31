@@ -93,9 +93,7 @@ const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
       {/* Note e Tag */}
       <div className="min-w-[180px] flex-1">
         <div className="flex items-center gap-2 text-xs mb-1">
-          <span
-            className={`${notesCount > 0 ? 'text-orange-600 text-orange-400' : T.subtext}`}
-          >
+          <span className={`${notesCount > 0 ? 'text-orange-600 text-orange-400' : T.subtext}`}>
             📝 {notesCount} note
           </span>
           <span className={`${tags.length > 0 ? 'text-blue-600 text-blue-400' : T.subtext}`}>
@@ -122,4 +120,3 @@ const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
 
 // 🚀 OTTIMIZZAZIONE: Memoizza per evitare re-render inutili
 export default React.memo(PlayerInfo);
-

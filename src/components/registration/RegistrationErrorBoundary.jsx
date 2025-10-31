@@ -224,4 +224,3 @@ class RegistrationErrorBoundary extends React.Component {
 }
 
 export default RegistrationErrorBoundary;
-

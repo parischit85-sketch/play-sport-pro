@@ -171,7 +171,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
 
   const handleLogout = async () => {
     const confirmed = await confirm({
-      title: 'Esci dall\'account',
+      title: "Esci dall'account",
       message: 'Sei sicuro di voler uscire?',
       variant: 'warning',
       confirmText: 'Esci',
@@ -436,16 +436,12 @@ export default function ClubAdminProfile({ T, club, clubId }) {
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1 bg-emerald-900/30 px-3 py-1 rounded-full">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs font-medium text-emerald-400">
-                    Circolo Attivo
-                  </span>
+                  <span className="text-xs font-medium text-emerald-400">Circolo Attivo</span>
                 </div>
                 {clubData?.isPremium && (
                   <div className="flex items-center gap-1 bg-yellow-900/30 px-3 py-1 rounded-full">
                     <span className="text-yellow-600">⭐</span>
-                    <span className="text-xs font-medium text-yellow-400">
-                      Premium
-                    </span>
+                    <span className="text-xs font-medium text-yellow-400">Premium</span>
                   </div>
                 )}
               </div>
@@ -540,9 +536,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-300">
-                  Nome Circolo
-                </label>
+                <label className="text-sm font-semibold text-gray-300">Nome Circolo</label>
                 <input
                   className="w-full px-4 py-3 bg-gray-700/60 backdrop-blur-xl border border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   value={clubSettings.name}
@@ -551,9 +545,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-300">
-                  Telefono
-                </label>
+                <label className="text-sm font-semibold text-gray-300">Telefono</label>
                 <input
                   className="w-full px-4 py-3 bg-gray-700/60 backdrop-blur-xl border border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   value={clubSettings.phone}
@@ -562,9 +554,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-300">
-                  Email
-                </label>
+                <label className="text-sm font-semibold text-gray-300">Email</label>
                 <input
                   type="email"
                   className="w-full px-4 py-3 bg-gray-700/60 backdrop-blur-xl border border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
@@ -574,9 +564,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-300">
-                  Sito Web
-                </label>
+                <label className="text-sm font-semibold text-gray-300">Sito Web</label>
                 <input
                   className="w-full px-4 py-3 bg-gray-700/60 backdrop-blur-xl border border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   value={clubSettings.website}
@@ -587,9 +575,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 />
               </div>
               <div className="md:col-span-2 space-y-2">
-                <label className="text-sm font-semibold text-gray-300">
-                  Indirizzo
-                </label>
+                <label className="text-sm font-semibold text-gray-300">Indirizzo</label>
                 <input
                   className="w-full px-4 py-3 bg-gray-700/60 backdrop-blur-xl border border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                   value={clubSettings.address}
@@ -600,9 +586,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 />
               </div>
               <div className="md:col-span-2 space-y-2">
-                <label className="text-sm font-semibold text-gray-300">
-                  📍 Link Google Maps
-                </label>
+                <label className="text-sm font-semibold text-gray-300">📍 Link Google Maps</label>
                 <input
                   type="url"
                   className="w-full px-4 py-3 bg-gray-700/60 backdrop-blur-xl border border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
@@ -617,9 +601,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                 </p>
               </div>
               <div className="md:col-span-2 space-y-2">
-                <label className="text-sm font-semibold text-gray-300">
-                  Descrizione
-                </label>
+                <label className="text-sm font-semibold text-gray-300">Descrizione</label>
                 <textarea
                   rows={3}
                   className="w-full px-4 py-3 bg-gray-700/60 backdrop-blur-xl border border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-none"
@@ -808,9 +790,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-1">
-                  Gestione Tipologie Campo
-                </h3>
+                <h3 className="text-lg font-semibold text-white mb-1">Gestione Tipologie Campo</h3>
                 <p className="text-sm text-gray-400">
                   Definisci le tipologie di campo disponibili nel tuo circolo (es. Indoor, Outdoor,
                   Covered)
@@ -913,12 +893,8 @@ export default function ClubAdminProfile({ T, club, clubId }) {
               className="p-4 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 rounded-2xl border border-blue-700/30 hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
             >
               <div className="text-2xl mb-2">📅</div>
-              <div className="font-semibold text-white">
-                Gestione Prenotazioni
-              </div>
-              <div className="text-sm text-gray-400">
-                Gestisci le prenotazioni dei campi
-              </div>
+              <div className="font-semibold text-white">Gestione Prenotazioni</div>
+              <div className="text-sm text-gray-400">Gestisci le prenotazioni dei campi</div>
             </button>
 
             <button
@@ -927,9 +903,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
             >
               <div className="text-2xl mb-2">🎾</div>
               <div className="font-semibold text-white">Lezioni e Maestri</div>
-              <div className="text-sm text-gray-400">
-                Gestisci lezioni e istruttori
-              </div>
+              <div className="text-sm text-gray-400">Gestisci lezioni e istruttori</div>
             </button>
 
             <button
@@ -938,9 +912,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
             >
               <div className="text-2xl mb-2">👥</div>
               <div className="font-semibold text-white">Membri</div>
-              <div className="text-sm text-gray-400">
-                Gestisci i membri del circolo
-              </div>
+              <div className="text-sm text-gray-400">Gestisci i membri del circolo</div>
             </button>
 
             <button
@@ -949,9 +921,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
             >
               <div className="text-2xl mb-2">🏟️</div>
               <div className="font-semibold text-white">Campi</div>
-              <div className="text-sm text-gray-400">
-                Gestisci i campi da padel
-              </div>
+              <div className="text-sm text-gray-400">Gestisci i campi da padel</div>
             </button>
 
             <button
@@ -960,9 +930,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
             >
               <div className="text-2xl mb-2">⚙️</div>
               <div className="font-semibold text-white">Impostazioni</div>
-              <div className="text-sm text-gray-400">
-                Configura tariffe e orari
-              </div>
+              <div className="text-sm text-gray-400">Configura tariffe e orari</div>
             </button>
 
             <button
@@ -979,4 +947,3 @@ export default function ClubAdminProfile({ T, club, clubId }) {
     </div>
   );
 }
-

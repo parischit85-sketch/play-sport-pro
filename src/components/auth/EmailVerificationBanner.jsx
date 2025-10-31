@@ -28,7 +28,7 @@ export default function EmailVerificationBanner() {
       setMessage('✅ Email di verifica inviata! Controlla la tua casella di posta.');
     } catch (error) {
       console.error('Error resending verification email:', error);
-      setMessage('❌ Errore nell\'invio dell\'email. Riprova tra qualche minuto.');
+      setMessage("❌ Errore nell'invio dell'email. Riprova tra qualche minuto.");
     } finally {
       setSending(false);
     }
@@ -172,4 +172,3 @@ export default function EmailVerificationBanner() {
     </div>
   );
 }
-

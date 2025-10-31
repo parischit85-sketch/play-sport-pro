@@ -127,9 +127,7 @@ export default function LogoEditor({ imageSrc, onComplete, onCancel }) {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium text-gray-700 text-gray-300">Zoom</label>
-              <span className="text-sm text-gray-500 text-gray-400">
-                {Math.round(zoom * 100)}%
-              </span>
+              <span className="text-sm text-gray-500 text-gray-400">{Math.round(zoom * 100)}%</span>
             </div>
             <div className="flex items-center gap-3">
               <button
@@ -159,9 +157,7 @@ export default function LogoEditor({ imageSrc, onComplete, onCancel }) {
           {/* Rotation Control */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-gray-700 text-gray-300">
-                Rotazione
-              </label>
+              <label className="text-sm font-medium text-gray-700 text-gray-300">Rotazione</label>
               <span className="text-sm text-gray-500 text-gray-400">{rotation}°</span>
             </div>
             <div className="flex items-center gap-3">
@@ -228,4 +224,3 @@ export default function LogoEditor({ imageSrc, onComplete, onCancel }) {
     </div>
   );
 }
-

@@ -638,4 +638,3 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
   // Use portal to render modal at document.body level, outside of BottomNavigation
   return createPortal(modalContent, document.body);
 }
-

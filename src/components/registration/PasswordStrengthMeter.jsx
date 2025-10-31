@@ -56,9 +56,7 @@ export default function PasswordStrengthMeter({ password }) {
       {/* Strength Bar */}
       <div className="space-y-1">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-neutral-600 text-gray-400 font-medium">
-            Sicurezza password
-          </span>
+          <span className="text-neutral-600 text-gray-400 font-medium">Sicurezza password</span>
           <span className={`font-semibold ${colors.text}`}>
             {level === 'weak' && '❌ Debole'}
             {level === 'medium' && '⚠️ Media'}
@@ -104,4 +102,3 @@ export default function PasswordStrengthMeter({ password }) {
     </div>
   );
 }
-

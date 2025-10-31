@@ -333,9 +333,7 @@ export default function InstructorScheduleManager({ compact = false }) {
                 {slot.price && slot.price > 0 && (
                   <div className="flex items-center gap-2">
                     <span className="text-gray-400">Prezzo:</span>
-                    <span className="font-medium text-green-600 text-green-400">
-                      €{slot.price}
-                    </span>
+                    <span className="font-medium text-green-600 text-green-400">€{slot.price}</span>
                   </div>
                 )}
 
@@ -375,9 +373,7 @@ export default function InstructorScheduleManager({ compact = false }) {
         <form onSubmit={handleSubmitSlot} className="space-y-4">
           {/* Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Data
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Data</label>
             <select
               value={slotForm.date}
               onChange={(e) => setSlotForm((prev) => ({ ...prev, date: e.target.value }))}
@@ -396,9 +392,7 @@ export default function InstructorScheduleManager({ compact = false }) {
           {/* Time range */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Ora inizio
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Ora inizio</label>
               <input
                 type="time"
                 value={slotForm.startTime}
@@ -408,9 +402,7 @@ export default function InstructorScheduleManager({ compact = false }) {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Ora fine
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Ora fine</label>
               <input
                 type="time"
                 value={slotForm.endTime}
@@ -451,9 +443,7 @@ export default function InstructorScheduleManager({ compact = false }) {
 
           {/* Max participants */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Max partecipanti
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Max partecipanti</label>
             <input
               type="number"
               min="1"
@@ -468,9 +458,7 @@ export default function InstructorScheduleManager({ compact = false }) {
 
           {/* Price */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Prezzo (€)
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Prezzo (€)</label>
             <input
               type="number"
               min="0"
@@ -485,9 +473,7 @@ export default function InstructorScheduleManager({ compact = false }) {
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Note (opzionale)
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Note (opzionale)</label>
             <textarea
               value={slotForm.notes}
               onChange={(e) => setSlotForm((prev) => ({ ...prev, notes: e.target.value }))}
@@ -530,5 +516,3 @@ export default function InstructorScheduleManager({ compact = false }) {
     </div>
   );
 }
-
-

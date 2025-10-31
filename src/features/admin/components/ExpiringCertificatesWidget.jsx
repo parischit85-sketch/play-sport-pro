@@ -121,21 +121,15 @@ export default function ExpiringCertificatesWidget({ clubId, T }) {
           <div className="text-xs text-red-400">Scaduti</div>
         </div>
         <div className="text-center p-3 bg-orange-900/20 rounded-lg">
-          <div className="text-2xl font-bold text-orange-400">
-            {expiringSoon.length}
-          </div>
+          <div className="text-2xl font-bold text-orange-400">{expiringSoon.length}</div>
           <div className="text-xs text-orange-400">Urgenti (&lt;15gg)</div>
         </div>
         <div className="text-center p-3 bg-yellow-900/20 rounded-lg">
-          <div className="text-2xl font-bold text-yellow-400">
-            {expiring.length}
-          </div>
+          <div className="text-2xl font-bold text-yellow-400">{expiring.length}</div>
           <div className="text-xs text-yellow-400">In scadenza</div>
         </div>
         <div className="text-center p-3 bg-gray-800 rounded-lg">
-          <div className="text-2xl font-bold text-gray-400">
-            {missing.length}
-          </div>
+          <div className="text-2xl font-bold text-gray-400">{missing.length}</div>
           <div className="text-xs text-gray-400">Mancanti</div>
         </div>
       </div>
@@ -200,9 +194,7 @@ export default function ExpiringCertificatesWidget({ clubId, T }) {
                     <>
                       <p
                         className={`text-sm font-bold ${
-                          daysUntilExpiry <= 15
-                            ? 'text-orange-400'
-                            : 'text-yellow-400'
+                          daysUntilExpiry <= 15 ? 'text-orange-400' : 'text-yellow-400'
                         }`}
                       >
                         {daysUntilExpiry === 0
@@ -256,9 +248,9 @@ export default function ExpiringCertificatesWidget({ clubId, T }) {
       </button>
 
       {/* Modal per gestione completa certificati */}
-      <Modal 
-        isOpen={showManager} 
-        onClose={() => setShowManager(false)} 
+      <Modal
+        isOpen={showManager}
+        onClose={() => setShowManager(false)}
         size="xl"
         title="Gestione Certificati Medici"
       >
@@ -272,4 +264,3 @@ export default function ExpiringCertificatesWidget({ clubId, T }) {
     </div>
   );
 }
-

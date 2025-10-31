@@ -138,9 +138,7 @@ export default function PWABanner({ className = '' }) {
                 {installInstructions.title || 'Installa App'}
               </h3>
 
-              <p className="text-gray-600 text-gray-300 mb-6">
-                Segui questi semplici passaggi:
-              </p>
+              <p className="text-gray-600 text-gray-300 mb-6">Segui questi semplici passaggi:</p>
 
               {installInstructions.instructions && (
                 <div className="text-left space-y-4 mb-8">
@@ -203,6 +201,3 @@ export default function PWABanner({ className = '' }) {
     </>
   );
 }
-
-
-

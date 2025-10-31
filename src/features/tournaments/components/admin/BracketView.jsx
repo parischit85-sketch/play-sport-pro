@@ -85,7 +85,15 @@ const BracketView = ({ clubId, tournamentId, onMatchClick }) => {
     return (
       <div className="flex items-center justify-center py-12">
         <svg className="animate-spin h-10 w-10 text-blue-600" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+            fill="none"
+          />
           <path
             className="opacity-75"
             fill="currentColor"
@@ -108,7 +116,8 @@ const BracketView = ({ clubId, tournamentId, onMatchClick }) => {
     return (
       <div className="p-8 bg-gray-800 border border-gray-600 rounded-lg text-center">
         <p className="text-gray-400">
-          Nessuna partita eliminatoria disponibile. Il tabellone verrà generato al completamento della fase a gironi.
+          Nessuna partita eliminatoria disponibile. Il tabellone verrà generato al completamento
+          della fase a gironi.
         </p>
       </div>
     );
@@ -142,9 +151,7 @@ const BracketView = ({ clubId, tournamentId, onMatchClick }) => {
             onClick={loadKnockoutMatches}
             disabled={isLive}
             className={`text-sm ${
-              isLive
-                ? 'text-gray-600 cursor-not-allowed'
-                : 'text-blue-400 hover:underline'
+              isLive ? 'text-gray-600 cursor-not-allowed' : 'text-blue-400 hover:underline'
             }`}
             title={isLive ? 'Auto-aggiornamento attivo' : 'Aggiorna tabellone'}
           >
@@ -162,7 +169,8 @@ const BracketView = ({ clubId, tournamentId, onMatchClick }) => {
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-white">{round.name}</h3>
                 <p className="text-sm text-gray-400">
-                  {round.matches.filter((m) => m.status === 'completed').length}/{round.matches.length} completate
+                  {round.matches.filter((m) => m.status === 'completed').length}/
+                  {round.matches.length} completate
                 </p>
               </div>
 
@@ -197,8 +205,8 @@ const BracketView = ({ clubId, tournamentId, onMatchClick }) => {
                         {match.team1Name || 'TBD'}
                         {match.winnerId === match.team1Id && ' 🏆'}
                       </span>
-                      {match.status === 'completed' && (
-                        Array.isArray(match.sets) && match.sets.length > 0 ? (
+                      {match.status === 'completed' &&
+                        (Array.isArray(match.sets) && match.sets.length > 0 ? (
                           <div className="flex items-center gap-1 ml-2">
                             {match.sets.map((s, i) => {
                               const a = Number(s?.team1 ?? 0);
@@ -223,8 +231,7 @@ const BracketView = ({ clubId, tournamentId, onMatchClick }) => {
                           <span className="ml-2 text-sm font-bold text-white">
                             {match.score?.team1 || 0}
                           </span>
-                        )
-                      )}
+                        ))}
                     </div>
 
                     {/* Team 2 */}
@@ -239,8 +246,8 @@ const BracketView = ({ clubId, tournamentId, onMatchClick }) => {
                         {match.team2Name || 'TBD'}
                         {match.winnerId === match.team2Id && ' 🏆'}
                       </span>
-                      {match.status === 'completed' && (
-                        Array.isArray(match.sets) && match.sets.length > 0 ? (
+                      {match.status === 'completed' &&
+                        (Array.isArray(match.sets) && match.sets.length > 0 ? (
                           <div className="flex items-center gap-1 ml-2">
                             {match.sets.map((s, i) => {
                               const a = Number(s?.team1 ?? 0);
@@ -265,8 +272,7 @@ const BracketView = ({ clubId, tournamentId, onMatchClick }) => {
                           <span className="ml-2 text-sm font-bold text-white">
                             {match.score?.team2 || 0}
                           </span>
-                        )
-                      )}
+                        ))}
                     </div>
 
                     {/* Match Status */}
@@ -327,7 +333,8 @@ const BracketView = ({ clubId, tournamentId, onMatchClick }) => {
       {/* Info */}
       <div className="mt-4 p-3 bg-blue-900/20 border border-blue-800 rounded-lg">
         <p className="text-xs text-blue-400">
-          💡 <strong>Suggerimento:</strong> Clicca su una partita per inserire il risultato o visualizzare i dettagli.
+          💡 <strong>Suggerimento:</strong> Clicca su una partita per inserire il risultato o
+          visualizzare i dettagli.
         </p>
       </div>
     </div>
@@ -335,4 +342,3 @@ const BracketView = ({ clubId, tournamentId, onMatchClick }) => {
 };
 
 export default BracketView;
-

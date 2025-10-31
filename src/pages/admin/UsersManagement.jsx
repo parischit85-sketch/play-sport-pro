@@ -171,12 +171,14 @@ const UsersManagement = () => {
       console.log('🔍 [UsersManagement] Loading users from global collection...');
       try {
         const globalUsersSnap = await getDocs(collection(db, 'users'));
-        console.log(`📊 [UsersManagement] Found ${globalUsersSnap.docs.length} users in global collection`);
-        
+        console.log(
+          `📊 [UsersManagement] Found ${globalUsersSnap.docs.length} users in global collection`
+        );
+
         for (const userDoc of globalUsersSnap.docs) {
           const userId = userDoc.id;
           const userData = userDoc.data();
-          
+
           if (!userMap.has(userId)) {
             // Utente non trovato nei club, aggiungilo dalla collezione globale
             console.log('➕ [UsersManagement] Adding user from global collection:', {
@@ -184,11 +186,14 @@ const UsersManagement = () => {
               email: userData.email,
               skipEmailVerification: userData.skipEmailVerification,
             });
-            
+
             userMap.set(userId, {
               id: userId,
               email: userData.email || 'Non disponibile',
-              displayName: userData.displayName || userData.firstName + ' ' + userData.lastName || 'Nome non disponibile',
+              displayName:
+                userData.displayName ||
+                userData.firstName + ' ' + userData.lastName ||
+                'Nome non disponibile',
               createdAt: userData.registeredAt || userData._createdAt,
               lastLogin: userData._updatedAt,
               clubs: [], // Nessuna affiliazione a club
@@ -203,7 +208,11 @@ const UsersManagement = () => {
             // Utente già esistente, aggiorna skipEmailVerification dalla collezione globale
             const existingUser = userMap.get(userId);
             if (userData.skipEmailVerification !== undefined) {
-              console.log('🔄 [UsersManagement] Updating skipEmailVerification from global for:', userId, userData.skipEmailVerification);
+              console.log(
+                '🔄 [UsersManagement] Updating skipEmailVerification from global for:',
+                userId,
+                userData.skipEmailVerification
+              );
               existingUser.skipEmailVerification = userData.skipEmailVerification;
             }
           }
@@ -373,7 +382,11 @@ const UsersManagement = () => {
 
     try {
       // Aggiorna il profilo utente in tutti i circoli dove è presente
-      console.log('📝 [UsersManagement] Updating club profiles...', selectedUser.clubs.length, 'clubs');
+      console.log(
+        '📝 [UsersManagement] Updating club profiles...',
+        selectedUser.clubs.length,
+        'clubs'
+      );
       for (const clubAffiliation of selectedUser.clubs) {
         const profileRef = doc(db, 'clubs', clubAffiliation.clubId, 'profiles', selectedUser.id);
         console.log('📝 [UsersManagement] Updating club:', clubAffiliation.clubId);
@@ -429,18 +442,22 @@ const UsersManagement = () => {
       }
 
       console.log('✅ [UsersManagement] All updates completed successfully');
-      
+
       // Se l'utente modificato è quello corrente (controlla sia UID che email)
       const isCurrentUser =
         currentUser &&
         (currentUser.uid === selectedUser.id || currentUser.email === selectedUser.email);
 
       if (isCurrentUser) {
-        alert('Utente aggiornato con successo! La pagina verrà ricaricata per applicare le modifiche.');
+        alert(
+          'Utente aggiornato con successo! La pagina verrà ricaricata per applicare le modifiche.'
+        );
       } else {
-        alert('Utente aggiornato con successo! L\'utente dovrà disconnettersi e riconnettersi per vedere le modifiche applicate.');
+        alert(
+          "Utente aggiornato con successo! L'utente dovrà disconnettersi e riconnettersi per vedere le modifiche applicate."
+        );
       }
-      
+
       // Invalida la cache del profilo utente per forzare il reload
       console.log('🔄 [UsersManagement] Invalidating profile cache for user:', selectedUser.id);
       invalidateUserProfileCache(selectedUser.id);
@@ -454,7 +471,7 @@ const UsersManagement = () => {
             currentUser.uid
           );
           invalidateUserProfileCache(currentUser.uid);
-          
+
           // Aggiorna anche il profilo del current user (duplicato con stessa email)
           console.log('📝 [UsersManagement] Also updating current user profile with same email');
           try {
@@ -464,23 +481,23 @@ const UsersManagement = () => {
               _updatedAt: new Date().toISOString(),
             });
             console.log('✅ [UsersManagement] Current user profile also updated');
-            
+
             // Aspetta un attimo per permettere a Firebase di sincronizzare
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise((resolve) => setTimeout(resolve, 500));
           } catch (err) {
             console.warn('⚠️ [UsersManagement] Failed to update current user profile:', err);
           }
         }
         await reloadUserData();
         console.log('✅ [UsersManagement] Current user data reloaded');
-        
+
         // Force page reload per essere sicuri che il profilo venga ricaricato
         console.log('🔄 [UsersManagement] Force reloading page to refresh profile...');
         setTimeout(() => {
           window.location.reload();
         }, 1000);
       }
-      
+
       loadData();
       setShowEditModal(false);
       setSelectedUser(null);
@@ -840,7 +857,10 @@ const UsersManagement = () => {
                       type="checkbox"
                       checked={editFormData.skipEmailVerification}
                       onChange={(e) =>
-                        setEditFormData({ ...editFormData, skipEmailVerification: e.target.checked })
+                        setEditFormData({
+                          ...editFormData,
+                          skipEmailVerification: e.target.checked,
+                        })
                       }
                       className="w-4 h-4 text-yellow-600 rounded focus:ring-yellow-500"
                     />
@@ -1018,4 +1038,3 @@ const UsersManagement = () => {
 };
 
 export default UsersManagement;
-

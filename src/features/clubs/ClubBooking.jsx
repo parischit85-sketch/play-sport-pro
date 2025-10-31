@@ -46,9 +46,7 @@ const ClubBooking = ({ clubId, club }) => {
     return (
       <div className="text-center py-12">
         <div className="text-red-500 mb-4">❌</div>
-        <h3 className="text-lg font-medium text-white mb-2">
-          Errore nel caricamento
-        </h3>
+        <h3 className="text-lg font-medium text-white mb-2">Errore nel caricamento</h3>
         <p className="text-gray-400">{error}</p>
         <button
           onClick={loadClubBookingData}
@@ -64,9 +62,7 @@ const ClubBooking = ({ clubId, club }) => {
     return (
       <div className="text-center py-12">
         <div className="text-6xl mb-4">🎾</div>
-        <h3 className="text-lg font-medium text-white mb-2">
-          Nessun campo disponibile
-        </h3>
+        <h3 className="text-lg font-medium text-white mb-2">Nessun campo disponibile</h3>
         <p className="text-gray-400">
           Il club {club?.name} non ha ancora configurato i campi per le prenotazioni
         </p>
@@ -77,12 +73,8 @@ const ClubBooking = ({ clubId, club }) => {
   return (
     <div>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-white mb-2">
-          Prenota Campo - {club?.name}
-        </h2>
-        <p className="text-gray-400">
-          Sistema di prenotazione campi per {club?.name}
-        </p>
+        <h2 className="text-2xl font-bold text-white mb-2">Prenota Campo - {club?.name}</h2>
+        <p className="text-gray-400">Sistema di prenotazione campi per {club?.name}</p>
       </div>
 
       <ModernBookingInterface data={clubData} clubFilter={clubId} clubContext={club} />
@@ -91,4 +83,3 @@ const ClubBooking = ({ clubId, club }) => {
 };
 
 export default ClubBooking;
-

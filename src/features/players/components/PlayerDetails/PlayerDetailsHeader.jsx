@@ -104,10 +104,7 @@ const PlayerDetailsHeader = React.memo(function PlayerDetailsHeader({
       <div className="relative px-6 py-6">
         {/* PLAYER NAME */}
         <div className="mb-6 relative z-20">
-          <h2
-            id="player-details-title"
-            className="text-3xl font-bold text-white mb-1"
-          >
+          <h2 id="player-details-title" className="text-3xl font-bold text-white mb-1">
             {player.firstName || player.lastName
               ? `${player.firstName || ''} ${player.lastName || ''}`.trim()
               : player.name || player.displayName || player.userName || 'Giocatore'}
@@ -278,7 +275,3 @@ const PlayerDetailsHeader = React.memo(function PlayerDetailsHeader({
 });
 
 export default PlayerDetailsHeader;
-
-
-
-

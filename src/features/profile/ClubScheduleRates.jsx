@@ -67,9 +67,7 @@ export default function ClubScheduleRates({ T, clubId }) {
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 from-blue-900/30 to-indigo-900/30 rounded-2xl p-4 border border-blue-200/30 border-blue-700/30">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-semibold text-gray-900 text-white">
-                      Lunedì - Venerdì
-                    </h4>
+                    <h4 className="font-semibold text-gray-900 text-white">Lunedì - Venerdì</h4>
                     <p className="text-sm text-gray-400">Giorni feriali</p>
                   </div>
                   <div className="text-right">
@@ -83,9 +81,7 @@ export default function ClubScheduleRates({ T, clubId }) {
               <div className="bg-gradient-to-r from-green-50 to-emerald-50 from-green-900/30 to-emerald-900/30 rounded-2xl p-4 border border-green-200/30 border-green-700/30">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="font-semibold text-gray-900 text-white">
-                      Sabato - Domenica
-                    </h4>
+                    <h4 className="font-semibold text-gray-900 text-white">Sabato - Domenica</h4>
                     <p className="text-sm text-gray-400">Weekend</p>
                   </div>
                   <div className="text-right">
@@ -264,6 +260,3 @@ export default function ClubScheduleRates({ T, clubId }) {
     </Section>
   );
 }
-
-
-

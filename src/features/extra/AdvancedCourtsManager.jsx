@@ -9,14 +9,8 @@ import {
   sanitizeCourt,
   logValidationErrors,
 } from '@utils/court-validation.js';
-import { 
-  TemplateLibraryModal, 
-  CreateTemplateModal 
-} from './TemplateManager.jsx';
-import { 
-  ExportCourtsModal, 
-  ImportCourtsModal 
-} from './ImportExportModal.jsx';
+import { TemplateLibraryModal, CreateTemplateModal } from './TemplateManager.jsx';
+import { ExportCourtsModal, ImportCourtsModal } from './ImportExportModal.jsx';
 import { BulkTimeSlotsWizard } from './BulkTimeSlotsWizard.jsx'; // CHK-205
 import { SmartSuggestionsPanel } from './SmartSuggestionsPanel.jsx'; // CHK-207
 import { ConflictResolutionPanel } from './ConflictResolutionPanel.jsx'; // CHK-208
@@ -30,8 +24,8 @@ function ValidationAlert({ errors, onDismiss, type = 'error' }) {
   if (!errors || errors.length === 0) return null;
 
   const alertStyles = {
-    error: 'bg-red-900/20 border-red-800 text-red-800 text-red-300',
-    warning: 'bg-yellow-50 bg-yellow-900/20 border-yellow-200 border-yellow-800 text-yellow-800 text-yellow-300',
+    error: 'bg-red-900/20 border-red-800 text-red-300',
+    warning: 'bg-yellow-50 bg-yellow-900/20 border-yellow-200 border-yellow-800 text-yellow-300',
   };
 
   const icons = {
@@ -73,7 +67,7 @@ function ValidationAlert({ errors, onDismiss, type = 'error' }) {
 function SaveIndicator({ isSaving, lastSaved, hasUnsavedChanges }) {
   if (isSaving) {
     return (
-      <div className="flex items-center gap-2 text-sm text-blue-600 text-blue-400">
+      <div className="flex items-center gap-2 text-sm text-blue-400">
         <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent" />
         <span>Salvataggio...</span>
       </div>
@@ -82,7 +76,7 @@ function SaveIndicator({ isSaving, lastSaved, hasUnsavedChanges }) {
 
   if (lastSaved) {
     return (
-      <div className="flex items-center gap-2 text-sm text-emerald-600 text-emerald-400">
+      <div className="flex items-center gap-2 text-sm text-emerald-400">
         <span>✓</span>
         <span>Salvato {lastSaved}</span>
       </div>
@@ -91,7 +85,7 @@ function SaveIndicator({ isSaving, lastSaved, hasUnsavedChanges }) {
 
   if (hasUnsavedChanges) {
     return (
-      <div className="flex items-center gap-2 text-sm text-yellow-600 text-yellow-400">
+      <div className="flex items-center gap-2 text-sm text-yellow-400">
         <span>⚠️</span>
         <span>Modifiche non salvate</span>
       </div>
@@ -108,13 +102,13 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
   if (!isOpen || !court) return null;
 
   // Calcola l'impatto dell'eliminazione
-  const relatedBookings = bookings.filter(b => b.courtId === court.id);
-  const futureBookings = relatedBookings.filter(b => {
+  const relatedBookings = bookings.filter((b) => b.courtId === court.id);
+  const futureBookings = relatedBookings.filter((b) => {
     const bookingDate = new Date(b.date);
     return bookingDate >= new Date();
   });
-  
-  const uniqueUsers = new Set(relatedBookings.map(b => b.userId)).size;
+
+  const uniqueUsers = new Set(relatedBookings.map((b) => b.userId)).size;
   const totalRevenue = relatedBookings.reduce((sum, b) => sum + (b.price || 0), 0);
   const futureRevenue = futureBookings.reduce((sum, b) => sum + (b.price || 0), 0);
 
@@ -123,34 +117,25 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className={`p-6 border-b ${hasImpact ? 'bg-red-900/20 border-red-800' : 'bg-gray-900 border-gray-700'}`}>
+        <div
+          className={`p-6 border-b ${hasImpact ? 'bg-red-900/20 border-red-800' : 'bg-gray-900 border-gray-700'}`}
+        >
           <div className="flex items-start gap-3">
-            <div className={`text-4xl ${hasImpact ? '⚠️' : '🗑️'}`}>
-              {hasImpact ? '⚠️' : '🗑️'}
-            </div>
+            <div className={`text-4xl ${hasImpact ? '⚠️' : '🗑️'}`}>{hasImpact ? '⚠️' : '🗑️'}</div>
             <div className="flex-1">
-              <h3 className="text-xl font-bold text-white">
-                Elimina Campo: {court.name}
-              </h3>
-              <p className={`text-sm mt-1 ${hasImpact ? 'text-red-600 text-red-400' : 'text-gray-400'}`}>
-                {hasImpact 
+              <h3 className="text-xl font-bold text-white">Elimina Campo: {court.name}</h3>
+              <p className={`text-sm mt-1 ${hasImpact ? 'text-red-400' : 'text-gray-400'}`}>
+                {hasImpact
                   ? 'Attenzione: questa operazione avrà conseguenze'
-                  : 'Conferma eliminazione campo'
-                }
+                  : 'Conferma eliminazione campo'}
               </p>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-300 text-2xl"
-            >
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-300 text-2xl">
               ×
             </button>
           </div>
@@ -161,59 +146,47 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
           {/* Impact Summary */}
           {hasImpact ? (
             <div className="space-y-3">
-              <div className="bg-amber-50 bg-amber-900/20 border border-amber-200 border-amber-800 rounded-lg p-4">
-                <h4 className="font-semibold text-amber-900 text-amber-300 mb-2 flex items-center gap-2">
+              <div className="bg-amber-900/20 border border-amber-800 rounded-lg p-4">
+                <h4 className="font-semibold text-amber-300 mb-2 flex items-center gap-2">
                   📊 Analisi Impatto
                 </h4>
                 <div className="space-y-2 text-sm">
                   {futureBookings.length > 0 && (
                     <div className="flex justify-between">
                       <span className="text-gray-300">Prenotazioni future:</span>
-                      <span className="font-bold text-red-600 text-red-400">
-                        {futureBookings.length}
-                      </span>
+                      <span className="font-bold text-red-400">{futureBookings.length}</span>
                     </div>
                   )}
                   {relatedBookings.length > 0 && (
                     <div className="flex justify-between">
                       <span className="text-gray-300">Prenotazioni totali:</span>
-                      <span className="font-semibold text-white">
-                        {relatedBookings.length}
-                      </span>
+                      <span className="font-semibold text-white">{relatedBookings.length}</span>
                     </div>
                   )}
                   {uniqueUsers > 0 && (
                     <div className="flex justify-between">
                       <span className="text-gray-300">Clienti coinvolti:</span>
-                      <span className="font-semibold text-white">
-                        {uniqueUsers}
-                      </span>
+                      <span className="font-semibold text-white">{uniqueUsers}</span>
                     </div>
                   )}
                   {futureRevenue > 0 && (
                     <div className="flex justify-between">
                       <span className="text-gray-300">Revenue futura:</span>
-                      <span className="font-bold text-red-600 text-red-400">
-                        €{futureRevenue.toFixed(2)}
-                      </span>
+                      <span className="font-bold text-red-400">€{futureRevenue.toFixed(2)}</span>
                     </div>
                   )}
                   {totalRevenue > 0 && (
-                    <div className="flex justify-between border-t border-amber-200 border-amber-800 pt-2 mt-2">
+                    <div className="flex justify-between border-t border-amber-800 pt-2 mt-2">
                       <span className="text-gray-300">Revenue storica:</span>
-                      <span className="font-semibold text-white">
-                        €{totalRevenue.toFixed(2)}
-                      </span>
+                      <span className="font-semibold text-white">€{totalRevenue.toFixed(2)}</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="bg-red-50 bg-red-900/20 border border-red-200 border-red-800 rounded-lg p-4">
-                <h4 className="font-semibold text-red-900 text-red-300 mb-2">
-                  ⚠️ Conseguenze
-                </h4>
-                <ul className="text-sm text-red-800 text-red-300 space-y-1">
+              <div className="bg-red-900/20 border border-red-800 rounded-lg p-4">
+                <h4 className="font-semibold text-red-300 mb-2">⚠️ Conseguenze</h4>
+                <ul className="text-sm text-red-300 space-y-1">
                   {futureBookings.length > 0 && (
                     <li>• Le {futureBookings.length} prenotazioni future verranno annullate</li>
                   )}
@@ -225,9 +198,7 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
             </div>
           ) : (
             <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
-              <h4 className="font-semibold text-blue-300 mb-2">
-                ℹ️ Informazioni Campo
-              </h4>
+              <h4 className="font-semibold text-blue-300 mb-2">ℹ️ Informazioni Campo</h4>
               <div className="text-sm text-blue-300 space-y-1">
                 <p>• Nessuna prenotazione attiva</p>
                 <p>• L'eliminazione non avrà impatto sui clienti</p>
@@ -239,14 +210,22 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
 
           {/* Court Details */}
           <div className="border border-gray-700 rounded-lg p-4">
-            <h4 className="font-semibold text-white mb-2">
-              📋 Dettagli Campo
-            </h4>
+            <h4 className="font-semibold text-white mb-2">📋 Dettagli Campo</h4>
             <div className="text-sm text-gray-300 space-y-1">
-              <div><strong>Nome:</strong> {court.name}</div>
-              <div><strong>Tipo:</strong> {court.courtType || court.type || 'N/A'}</div>
-              <div><strong>Fasce orarie:</strong> {(court.timeSlots || []).length}</div>
-              {court.hasHeating && <div><strong>Riscaldamento:</strong> Sì</div>}
+              <div>
+                <strong>Nome:</strong> {court.name}
+              </div>
+              <div>
+                <strong>Tipo:</strong> {court.courtType || court.type || 'N/A'}
+              </div>
+              <div>
+                <strong>Fasce orarie:</strong> {(court.timeSlots || []).length}
+              </div>
+              {court.hasHeating && (
+                <div>
+                  <strong>Riscaldamento:</strong> Sì
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -265,9 +244,7 @@ const DeleteCourtModal = ({ isOpen, onClose, onConfirm, court, bookings = [] }) 
               onClose();
             }}
             className={`flex-1 px-4 py-3 rounded-lg font-bold text-white transition-colors ${
-              hasImpact
-                ? 'bg-red-600 hover:bg-red-700'
-                : 'bg-red-500 hover:bg-red-600'
+              hasImpact ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'
             }`}
           >
             {hasImpact ? '⚠️ Elimina Comunque' : '🗑️ Conferma Eliminazione'}
@@ -354,8 +331,8 @@ function TimeSlotEditor({ slot, onUpdate, onRemove, T, maxPlayers = 4 }) {
 
       {/* Errori di validazione */}
       {hasErrors && (
-        <div className="mb-3 p-2 bg-red-50 bg-red-900/20 border border-red-200 border-red-800 rounded text-xs">
-          <div className="font-semibold text-red-800 text-red-300 mb-1">⚠️ Errori:</div>
+        <div className="mb-3 p-2 bg-red-900/20 border border-red-800 rounded text-xs">
+          <div className="font-semibold text-red-300 mb-1">⚠️ Errori:</div>
           <ul className="list-disc list-inside text-red-700 text-red-400 space-y-0.5">
             {validationErrors.map((error, index) => (
               <li key={index}>{error}</li>
@@ -529,7 +506,9 @@ const ExpandableCourtCard = ({
   };
 
   return (
-    <div className={`rounded-xl ${T.border} ${T.cardBg} overflow-hidden transition-all ${isSelected ? 'ring-2 ring-orange-500' : ''}`}>
+    <div
+      className={`rounded-xl ${T.border} ${T.cardBg} overflow-hidden transition-all ${isSelected ? 'ring-2 ring-orange-500' : ''}`}
+    >
       {/* Header della card - sempre visibile */}
       <div
         className="p-4 cursor-pointer hover:bg-gray-800 transition-colors"
@@ -550,13 +529,13 @@ const ExpandableCourtCard = ({
                 className="w-5 h-5 text-orange-600 rounded focus:ring-orange-500 cursor-pointer"
               />
             )}
-            
+
             <span className="text-2xl">🎾</span>
             <div className="flex-1">
               {quickEditMode ? (
                 // CHK-206: Quick Edit Mode - Inline Editing
-                <div 
-                  className="space-y-2" 
+                <div
+                  className="space-y-2"
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => onKeyDown && onKeyDown(e, courtIndex)}
                 >
@@ -564,13 +543,18 @@ const ExpandableCourtCard = ({
                     <input
                       type="text"
                       value={editingData?.name ?? court.name}
-                      onChange={(e) => onQuickEditChange && onQuickEditChange(courtIndex, 'name', e.target.value)}
+                      onChange={(e) =>
+                        onQuickEditChange && onQuickEditChange(courtIndex, 'name', e.target.value)
+                      }
                       className={`${T.input} font-semibold text-lg flex-1 min-w-0`}
                       placeholder="Nome campo"
                     />
                     <select
                       value={editingData?.courtType ?? court.courtType}
-                      onChange={(e) => onQuickEditChange && onQuickEditChange(courtIndex, 'courtType', e.target.value)}
+                      onChange={(e) =>
+                        onQuickEditChange &&
+                        onQuickEditChange(courtIndex, 'courtType', e.target.value)
+                      }
                       className={`${T.select} text-sm`}
                     >
                       {courtTypes.map((type) => (
@@ -588,7 +572,10 @@ const ExpandableCourtCard = ({
                         min="1"
                         max="22"
                         value={editingData?.maxPlayers ?? court.maxPlayers}
-                        onChange={(e) => onQuickEditChange && onQuickEditChange(courtIndex, 'maxPlayers', parseInt(e.target.value) || 1)}
+                        onChange={(e) =>
+                          onQuickEditChange &&
+                          onQuickEditChange(courtIndex, 'maxPlayers', parseInt(e.target.value) || 1)
+                        }
                         className={`${T.input} w-16 text-sm`}
                       />
                     </label>
@@ -596,7 +583,10 @@ const ExpandableCourtCard = ({
                       <input
                         type="checkbox"
                         checked={editingData?.hasHeating ?? court.hasHeating}
-                        onChange={(e) => onQuickEditChange && onQuickEditChange(courtIndex, 'hasHeating', e.target.checked)}
+                        onChange={(e) =>
+                          onQuickEditChange &&
+                          onQuickEditChange(courtIndex, 'hasHeating', e.target.checked)
+                        }
                         className="w-4 h-4 text-orange-600 rounded"
                       />
                       <span className={T.subtext}>🔥 Riscaldamento</span>
@@ -928,12 +918,12 @@ export default function AdvancedCourtsManager({
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [courtToDelete, setCourtToDelete] = useState(null);
-  
+
   // CHK-201: Template System State
   const [templateLibraryOpen, setTemplateLibraryOpen] = useState(false);
   const [createTemplateOpen, setCreateTemplateOpen] = useState(false);
   const [selectedCourtForTemplate, setSelectedCourtForTemplate] = useState(null);
-  
+
   // CHK-203: Import/Export State
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [importModalOpen, setImportModalOpen] = useState(false);
@@ -969,26 +959,28 @@ export default function AdvancedCourtsManager({
     }
 
     // Sanitizza ogni court
-    return courts.map((court) => {
-      // Verifica che court sia un oggetto
-      if (!court || typeof court !== 'object') {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('⚠️ Invalid court object, skipping:', court);
+    return courts
+      .map((court) => {
+        // Verifica che court sia un oggetto
+        if (!court || typeof court !== 'object') {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('⚠️ Invalid court object, skipping:', court);
+          }
+          return null;
         }
-        return null;
-      }
 
-      // Sanitizza il court
-      return {
-        id: court.id || `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        name: (court.name || 'Campo senza nome').trim(),
-        courtType: courtTypes.includes(court.courtType) ? court.courtType : 'Indoor',
-        maxPlayers: Math.max(1, Math.min(22, parseInt(court.maxPlayers) || 4)),
-        hasHeating: Boolean(court.hasHeating),
-        order: parseInt(court.order) || 1,
-        timeSlots: Array.isArray(court.timeSlots) ? court.timeSlots : [],
-      };
-    }).filter(Boolean); // Rimuovi eventuali null
+        // Sanitizza il court
+        return {
+          id: court.id || `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          name: (court.name || 'Campo senza nome').trim(),
+          courtType: courtTypes.includes(court.courtType) ? court.courtType : 'Indoor',
+          maxPlayers: Math.max(1, Math.min(22, parseInt(court.maxPlayers) || 4)),
+          hasHeating: Boolean(court.hasHeating),
+          order: parseInt(court.order) || 1,
+          timeSlots: Array.isArray(court.timeSlots) ? court.timeSlots : [],
+        };
+      })
+      .filter(Boolean); // Rimuovi eventuali null
   }, [courts, courtTypes]);
 
   // Inizializza gli ordini se necessario
@@ -1035,15 +1027,17 @@ export default function AdvancedCourtsManager({
     try {
       setIsSaving(true);
       setHasUnsavedChanges(true);
-      
+
       // Notifica il parent della modifica - il parent si occuperà del salvataggio Firebase
       onChange([...courts, newCourt]);
       setNewCourtName('');
-      
+
       // Simula salvataggio completato (in realtà avviene nel parent)
       setTimeout(() => {
         setIsSaving(false);
-        setLastSaved(new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+        setLastSaved(
+          new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
+        );
         setHasUnsavedChanges(false);
       }, 500);
     } catch (error) {
@@ -1067,17 +1061,19 @@ export default function AdvancedCourtsManager({
     try {
       setIsSaving(true);
       setHasUnsavedChanges(true);
-      
+
       // Notifica il parent della modifica - il parent si occuperà del salvataggio Firebase
       const updatedCourts = courts.map((c, index) =>
         index === courtIndex ? { ...c, ...updates } : c
       );
       onChange(updatedCourts);
-      
+
       // Simula salvataggio completato
       setTimeout(() => {
         setIsSaving(false);
-        setLastSaved(new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+        setLastSaved(
+          new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
+        );
         setHasUnsavedChanges(false);
       }, 500);
     } catch (error) {
@@ -1157,7 +1153,7 @@ export default function AdvancedCourtsManager({
   // ===========================================
   // CHK-201: Template Management Handlers
   // ===========================================
-  
+
   const handleApplyTemplate = (template) => {
     if (!template) return;
 
@@ -1167,7 +1163,7 @@ export default function AdvancedCourtsManager({
       const court = courts[selectedCourtForTemplate];
       if (court) {
         handleUpdateCourt(selectedCourtForTemplate, {
-          timeSlots: template.timeSlots
+          timeSlots: template.timeSlots,
         });
       }
       setSelectedCourtForTemplate(null);
@@ -1188,7 +1184,7 @@ export default function AdvancedCourtsManager({
   // ===========================================
   // CHK-202: Duplicate Court Handler
   // ===========================================
-  
+
   const handleDuplicateCourt = async (courtIndex) => {
     const sourceCourt = courts[courtIndex];
     if (!sourceCourt) return;
@@ -1204,13 +1200,11 @@ export default function AdvancedCourtsManager({
 
       // Auto-increment del nome
       const baseName = sourceCourt.name.replace(/ - Copia( \d+)?$/, '');
-      const existingCopies = courts.filter(c => 
-        c.name.startsWith(baseName) && c.name.match(/ - Copia( \d+)?$/)
+      const existingCopies = courts.filter(
+        (c) => c.name.startsWith(baseName) && c.name.match(/ - Copia( \d+)?$/)
       );
       const copyNumber = existingCopies.length > 0 ? existingCopies.length + 1 : null;
-      const newName = copyNumber 
-        ? `${baseName} - Copia ${copyNumber}`
-        : `${baseName} - Copia`;
+      const newName = copyNumber ? `${baseName} - Copia ${copyNumber}` : `${baseName} - Copia`;
 
       // ID temporaneo
       const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1223,10 +1217,10 @@ export default function AdvancedCourtsManager({
         maxPlayers: sourceCourt.maxPlayers,
         hasHeating: sourceCourt.hasHeating,
         order: nextOrder,
-        timeSlots: (sourceCourt.timeSlots || []).map(slot => ({
+        timeSlots: (sourceCourt.timeSlots || []).map((slot) => ({
           ...slot,
-          id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-        }))
+          id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        })),
       };
 
       // Aggiungi il nuovo campo
@@ -1236,15 +1230,16 @@ export default function AdvancedCourtsManager({
       // Feedback successo
       setTimeout(() => {
         setIsSaving(false);
-        setLastSaved(new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+        setLastSaved(
+          new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
+        );
         setHasUnsavedChanges(false);
-        
+
         // Mostra notifica
         if (process.env.NODE_ENV === 'development') {
           console.log(`✅ Campo "${sourceCourt.name}" duplicato come "${newName}"`);
         }
       }, 500);
-
     } catch (error) {
       setIsSaving(false);
       if (process.env.NODE_ENV === 'development') {
@@ -1257,7 +1252,7 @@ export default function AdvancedCourtsManager({
   // ===========================================
   // CHK-203: Import/Export Handlers
   // ===========================================
-  
+
   const handleExportAll = () => {
     setSelectedCourtsForExport([]);
     setExportModalOpen(true);
@@ -1273,25 +1268,27 @@ export default function AdvancedCourtsManager({
       setIsSaving(true);
       setHasUnsavedChanges(true);
 
-      const updatedCourts = strategy === 'replace'
-        ? importedCourts
-        : [...courts, ...importedCourts];
+      const updatedCourts =
+        strategy === 'replace' ? importedCourts : [...courts, ...importedCourts];
 
       onChange(updatedCourts);
 
       // Feedback successo
       setTimeout(() => {
         setIsSaving(false);
-        setLastSaved(new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+        setLastSaved(
+          new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
+        );
         setHasUnsavedChanges(false);
-        
-        showSuccess(`${importedCourts.length} campi importati con successo! (${strategy === 'replace' ? 'Sostituzione' : 'Aggiunta'})`);
-      }, 500);
 
+        showSuccess(
+          `${importedCourts.length} campi importati con successo! (${strategy === 'replace' ? 'Sostituzione' : 'Aggiunta'})`
+        );
+      }, 500);
     } catch (error) {
       setIsSaving(false);
       if (process.env.NODE_ENV === 'development') {
-        console.error('Errore durante l\'import:', error);
+        console.error("Errore durante l'import:", error);
       }
       showError(`Errore durante l'import: ${error.message}`);
     }
@@ -1310,9 +1307,9 @@ export default function AdvancedCourtsManager({
   };
 
   const toggleCourtSelection = (courtIndex) => {
-    setSelectedCourtIndices(prev => {
+    setSelectedCourtIndices((prev) => {
       if (prev.includes(courtIndex)) {
-        return prev.filter(i => i !== courtIndex);
+        return prev.filter((i) => i !== courtIndex);
       } else {
         return [...prev, courtIndex];
       }
@@ -1321,7 +1318,7 @@ export default function AdvancedCourtsManager({
 
   const selectAllCourts = () => {
     const allIndices = filteredCourts.map((_, idx) => {
-      return courts.findIndex(c => c.id === filteredCourts[idx].id);
+      return courts.findIndex((c) => c.id === filteredCourts[idx].id);
     });
     setSelectedCourtIndices(allIndices);
   };
@@ -1347,13 +1344,15 @@ export default function AdvancedCourtsManager({
       setIsSaving(true);
       const updatedCourts = courts.filter((_, index) => !selectedCourtIndices.includes(index));
       onChange(updatedCourts);
-      
+
       setSelectedCourtIndices([]);
       setMultiSelectMode(false);
 
       setTimeout(() => {
         setIsSaving(false);
-        setLastSaved(new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }));
+        setLastSaved(
+          new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
+        );
       }, 500);
     } catch (error) {
       setIsSaving(false);
@@ -1379,25 +1378,29 @@ export default function AdvancedCourtsManager({
     const updatedCourts = courts.map((court, index) => {
       // Check if this court is in the target list
       const isTargetCourt = targetCourts.some((tc) => tc === court || courts.indexOf(tc) === index);
-      
+
       if (isTargetCourt) {
         // Generate new IDs for each slot
         const slotsWithNewIds = generatedSlots.map((slot) => ({
           ...slot,
           id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         }));
-        
+
         return {
           ...court,
           timeSlots: [...court.timeSlots, ...slotsWithNewIds],
         };
       }
-      
+
       return court;
     });
 
     onChange(updatedCourts);
-    setSaveStatus({ show: true, type: 'success', message: `Aggiunte ${generatedSlots.length} fasce a ${targetCourts.length} ${targetCourts.length === 1 ? 'campo' : 'campi'}` });
+    setSaveStatus({
+      show: true,
+      type: 'success',
+      message: `Aggiunte ${generatedSlots.length} fasce a ${targetCourts.length} ${targetCourts.length === 1 ? 'campo' : 'campi'}`,
+    });
     setTimeout(() => setSaveStatus({ show: false, type: '', message: '' }), 3000);
   };
 
@@ -1413,7 +1416,7 @@ export default function AdvancedCourtsManager({
           confirmText: 'Esci senza salvare',
           cancelText: 'Continua a modificare',
         });
-        
+
         if (!confirmed) {
           return;
         }
@@ -1425,20 +1428,20 @@ export default function AdvancedCourtsManager({
   };
 
   const handleQuickEditChange = (courtIndex, field, value) => {
-    setEditingCourts(prev => ({
+    setEditingCourts((prev) => ({
       ...prev,
       [courtIndex]: {
         ...(prev[courtIndex] || {}),
         [field]: value,
       },
     }));
-    setUnsavedChanges(prev => new Set(prev).add(courtIndex));
+    setUnsavedChanges((prev) => new Set(prev).add(courtIndex));
   };
 
   const saveQuickEdits = (courtIndex = null) => {
     // Se courtIndex è null, salva tutti i campi
     const indicesToSave = courtIndex !== null ? [courtIndex] : Array.from(unsavedChanges);
-    
+
     if (indicesToSave.length === 0) return;
 
     const updatedCourts = courts.map((court, index) => {
@@ -1452,10 +1455,10 @@ export default function AdvancedCourtsManager({
     });
 
     onChange(updatedCourts);
-    
+
     // Rimuovi gli indici salvati dalle modifiche non salvate
     const newUnsaved = new Set(unsavedChanges);
-    indicesToSave.forEach(i => newUnsaved.delete(i));
+    indicesToSave.forEach((i) => newUnsaved.delete(i));
     setUnsavedChanges(newUnsaved);
 
     // Pulisci i campi salvati
@@ -1467,10 +1470,10 @@ export default function AdvancedCourtsManager({
       setEditingCourts({});
     }
 
-    setSaveStatus({ 
-      show: true, 
-      type: 'success', 
-      message: `${indicesToSave.length} ${indicesToSave.length === 1 ? 'campo salvato' : 'campi salvati'}` 
+    setSaveStatus({
+      show: true,
+      type: 'success',
+      message: `${indicesToSave.length} ${indicesToSave.length === 1 ? 'campo salvato' : 'campi salvati'}`,
     });
     setTimeout(() => setSaveStatus({ show: false, type: '', message: '' }), 2000);
   };
@@ -1479,7 +1482,7 @@ export default function AdvancedCourtsManager({
     const newEditing = { ...editingCourts };
     delete newEditing[courtIndex];
     setEditingCourts(newEditing);
-    
+
     const newUnsaved = new Set(unsavedChanges);
     newUnsaved.delete(courtIndex);
     setUnsavedChanges(newUnsaved);
@@ -1488,13 +1491,13 @@ export default function AdvancedCourtsManager({
   // CHK-206: Keyboard shortcuts handler
   const handleKeyDown = (e, courtIndex) => {
     if (!quickEditMode) return;
-    
+
     // Ctrl+S o Cmd+S: Salva
     if ((e.ctrlKey || e.metaKey) && e.key === 's') {
       e.preventDefault();
       saveQuickEdits(courtIndex);
     }
-    
+
     // ESC: Annulla
     if (e.key === 'Escape') {
       e.preventDefault();
@@ -1505,7 +1508,7 @@ export default function AdvancedCourtsManager({
   // CHK-207: Handler per applicare suggerimenti
   const handleApplySuggestion = (suggestion) => {
     console.log('Applying suggestion:', suggestion);
-    
+
     switch (suggestion.action) {
       case 'apply-peak-pricing': {
         // Applica pricing maggiorato per peak hours
@@ -1525,15 +1528,15 @@ export default function AdvancedCourtsManager({
           }),
         }));
         onChange(updatedCourts);
-        setSaveStatus({ 
-          show: true, 
-          type: 'success', 
-          message: `Prezzi aumentati per ${peakHours.length} fasce orarie di punta` 
+        setSaveStatus({
+          show: true,
+          type: 'success',
+          message: `Prezzi aumentati per ${peakHours.length} fasce orarie di punta`,
         });
         setTimeout(() => setSaveStatus({ show: false, type: '', message: '' }), 3000);
         break;
       }
-      
+
       case 'apply-offpeak-discount': {
         // Applica sconto per off-peak hours
         const { offPeakHours, suggestedDiscount } = suggestion.data;
@@ -1552,22 +1555,25 @@ export default function AdvancedCourtsManager({
           }),
         }));
         onChange(updatedCourts);
-        setSaveStatus({ 
-          show: true, 
-          type: 'success', 
-          message: `Sconto applicato a ${offPeakHours.length} fasce orarie off-peak` 
+        setSaveStatus({
+          show: true,
+          type: 'success',
+          message: `Sconto applicato a ${offPeakHours.length} fasce orarie off-peak`,
         });
         setTimeout(() => setSaveStatus({ show: false, type: '', message: '' }), 3000);
         break;
       }
-      
+
       case 'view-details':
       case 'optimize-pricing':
       case 'add-court-type':
         // Per questi suggerimenti, mostra solo info
-        showInfo(`${suggestion.title}\n\n${suggestion.description}\n\nImplementa manualmente questa ottimizzazione.`, 8000);
+        showInfo(
+          `${suggestion.title}\n\n${suggestion.description}\n\nImplementa manualmente questa ottimizzazione.`,
+          8000
+        );
         break;
-      
+
       default:
         console.warn('Unknown suggestion action:', suggestion.action);
     }
@@ -1582,12 +1588,12 @@ export default function AdvancedCourtsManager({
   // CHK-208: Handler per risolvere conflitti
   const handleResolveConflict = (courtIndex, updates) => {
     if (courtIndex === null || courtIndex === undefined) return;
-    
+
     handleUpdateCourt(courtIndex, updates);
-    setSaveStatus({ 
-      show: true, 
-      type: 'success', 
-      message: 'Conflitto risolto con successo!' 
+    setSaveStatus({
+      show: true,
+      type: 'success',
+      message: 'Conflitto risolto con successo!',
     });
     setTimeout(() => setSaveStatus({ show: false, type: '', message: '' }), 3000);
   };
@@ -1612,7 +1618,7 @@ export default function AdvancedCourtsManager({
           <h3 className="font-semibold text-lg flex items-center gap-2">
             🏟️ Gestione Campi Avanzata
           </h3>
-          
+
           <div className="flex items-center gap-3">
             {/* CHK-204: Multi-Select Toggle */}
             {sortedCourts.length > 0 && (
@@ -1694,13 +1700,15 @@ export default function AdvancedCourtsManager({
             </button>
 
             {/* CHK-208: Conflict Auto-Resolution */}
-            {sortedCourts.some(court => detectTimeSlotOverlaps(court.timeSlots || []).length > 0) && (
+            {sortedCourts.some(
+              (court) => detectTimeSlotOverlaps(court.timeSlots || []).length > 0
+            ) && (
               <button
                 type="button"
                 onClick={() => {
                   // Trova il primo campo con conflitti
                   const firstConflictIndex = sortedCourts.findIndex(
-                    court => detectTimeSlotOverlaps(court.timeSlots || []).length > 0
+                    (court) => detectTimeSlotOverlaps(court.timeSlots || []).length > 0
                   );
                   if (firstConflictIndex !== -1) {
                     handleOpenConflictResolution(firstConflictIndex);
@@ -1730,7 +1738,7 @@ export default function AdvancedCourtsManager({
             >
               📤 Export
             </button>
-            
+
             {/* CHK-101: Indicatore salvataggio */}
             <SaveIndicator
               isSaving={isSaving}
@@ -1813,13 +1821,14 @@ export default function AdvancedCourtsManager({
 
       {/* CHK-204: Bulk Actions Panel */}
       {multiSelectMode && selectedCourtIndices.length > 0 && (
-        <div className="rounded-xl bg-gradient-to-r from-orange-50 to-yellow-50 from-orange-900/20 to-yellow-900/20 border-2 border-orange-300 border-orange-700 p-4 shadow-lg">
+        <div className="rounded-xl bg-gradient-to-r from-orange-900/20 to-yellow-900/20 border-2 border-orange-700 p-4 shadow-lg">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
               <div className="text-2xl">☑️</div>
               <div>
                 <div className="font-bold text-white">
-                  {selectedCourtIndices.length} {selectedCourtIndices.length === 1 ? 'campo selezionato' : 'campi selezionati'}
+                  {selectedCourtIndices.length}{' '}
+                  {selectedCourtIndices.length === 1 ? 'campo selezionato' : 'campi selezionati'}
                 </div>
                 <div className="text-sm text-gray-400">
                   Azioni disponibili per la selezione multipla
@@ -1945,9 +1954,7 @@ export default function AdvancedCourtsManager({
           <h4 className="font-medium mb-3 flex items-center gap-2">
             📊 Riepilogo Configurazioni
             {activeFilter !== 'all' && (
-              <span className="text-sm text-blue-600 text-blue-400">
-                (Filtro: {activeFilter})
-              </span>
+              <span className="text-sm text-blue-400">(Filtro: {activeFilter})</span>
             )}
           </h4>
 
@@ -1994,7 +2001,7 @@ export default function AdvancedCourtsManager({
               I campi sono ordinati per posizione. Usa i pulsanti ⬆️ ⬇️ accanto a ciascun campo per
               modificare l'ordine di visualizzazione nelle colonne della prenotazione.
               {activeFilter !== 'all' && (
-                <div className="mt-1 text-blue-600 text-blue-400">
+                <div className="mt-1 text-blue-400">
                   Nota: Le modifiche all'ordine si applicano a tutti i campi, anche quelli non
                   visibili con il filtro attivo.
                 </div>
@@ -2036,9 +2043,7 @@ export default function AdvancedCourtsManager({
         }}
         onSave={handleSaveNewTemplate}
         sourceTimeSlots={
-          selectedCourtForTemplate !== null
-            ? courts[selectedCourtForTemplate]?.timeSlots || []
-            : []
+          selectedCourtForTemplate !== null ? courts[selectedCourtForTemplate]?.timeSlots || [] : []
         }
         T={T}
       />
@@ -2101,14 +2106,3 @@ export default function AdvancedCourtsManager({
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-

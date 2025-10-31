@@ -84,4 +84,3 @@ export const OnboardingProvider = ({ children }) => {
     </OnboardingContext.Provider>
   );
 };
-

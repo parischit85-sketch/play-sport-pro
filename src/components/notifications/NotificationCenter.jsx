@@ -267,5 +267,3 @@ const NotificationCenter = ({ isOpen = false, onClose, maxHeight = '600px' }) =>
 };
 
 export default NotificationCenter;
-
-

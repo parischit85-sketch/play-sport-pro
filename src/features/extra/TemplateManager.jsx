@@ -114,9 +114,7 @@ export function TemplateLibraryModal({ isOpen, onClose, onApply, T }) {
           {filteredTemplates.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">📭</div>
-              <div className="text-xl font-semibold text-gray-400">
-                Nessun template trovato
-              </div>
+              <div className="text-xl font-semibold text-gray-400">Nessun template trovato</div>
               <p className="text-sm text-gray-500 mt-2">
                 Prova a cambiare categoria o cerca qualcos'altro
               </p>
@@ -236,9 +234,7 @@ function TemplateCard({ template, isSelected, onSelect, onDelete, T }) {
               </span>
             )}
           </div>
-          {template.description && (
-            <p className="text-sm text-gray-400">{template.description}</p>
-          )}
+          {template.description && <p className="text-sm text-gray-400">{template.description}</p>}
         </div>
 
         {!template.isSystem && (
@@ -287,9 +283,7 @@ function TemplateCard({ template, isSelected, onSelect, onDelete, T }) {
                   ⏰ {slot.from} - {slot.to} | 💰 €{slot.eurPerHour}/h
                   {slot.isPromo && <span className="ml-2 text-orange-600">🎁 Promo</span>}
                 </div>
-                <div className="text-gray-500 text-xs">
-                  📅 {formatDays(slot.days)}
-                </div>
+                <div className="text-gray-500 text-xs">📅 {formatDays(slot.days)}</div>
               </div>
             ))}
           </div>
@@ -521,7 +515,3 @@ function formatDays(days) {
 }
 
 export default TemplateLibraryModal;
-
-
-
-

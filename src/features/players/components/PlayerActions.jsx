@@ -55,4 +55,3 @@ const PlayerActions = ({ onView, _onEdit, onStats, onDelete, T, layout = 'deskto
 
 // 🚀 OTTIMIZZAZIONE: Memoizza per evitare re-render inutili
 export default React.memo(PlayerActions);
-

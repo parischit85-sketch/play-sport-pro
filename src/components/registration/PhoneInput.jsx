@@ -134,9 +134,7 @@ export default function PhoneInput({
               {/* Requirements checklist */}
               {requirements.length > 0 && (
                 <div className="bg-gray-50 bg-gray-800 rounded-lg p-2 space-y-1">
-                  <p className="text-xs font-semibold text-neutral-700 text-gray-300">
-                    Requisiti:
-                  </p>
+                  <p className="text-xs font-semibold text-neutral-700 text-gray-300">Requisiti:</p>
                   {requirements.map((req, idx) => (
                     <div key={idx} className="flex items-center gap-2">
                       <span className="text-xs">{req.met ? '✅' : '❌'}</span>
@@ -163,4 +161,3 @@ export default function PhoneInput({
     </div>
   );
 }
-

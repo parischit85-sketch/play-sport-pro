@@ -169,9 +169,7 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
         {/* Prezzo e status */}
         <div className="text-right">
           {booking.price && (
-            <div className="text-xs font-bold text-green-600 text-green-400">
-              €{booking.price}
-            </div>
+            <div className="text-xs font-bold text-green-600 text-green-400">€{booking.price}</div>
           )}
           <div className="text-[9px] text-gray-500 text-gray-400">
             {isLessonBooking
@@ -551,9 +549,7 @@ export default function UserBookingsCard({ user, state, T, compact: _compact, on
         <div className="text-center">
           <div className="text-4xl mb-3">📅</div>
           <h3 className="font-semibold mb-2 text-gray-900 text-white">Nessuna Prenotazione</h3>
-          <p className="text-sm text-gray-600 text-gray-400 mb-4">
-            Non hai prenotazioni attive
-          </p>
+          <p className="text-sm text-gray-600 text-gray-400 mb-4">Non hai prenotazioni attive</p>
           <button
             onClick={onBookNow || (() => navigate('/booking'))}
             className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
@@ -652,10 +648,7 @@ export default function UserBookingsCard({ user, state, T, compact: _compact, on
         <div className="flex justify-center mt-3 sm:hidden">
           <div className="flex gap-1">
             {displayBookings.slice(0, Math.min(6, displayBookings.length)).map((_, index) => (
-              <div
-                key={index}
-                className="w-1 h-1 rounded-full bg-gray-300/60 bg-gray-600/60"
-              ></div>
+              <div key={index} className="w-1 h-1 rounded-full bg-gray-300/60 bg-gray-600/60"></div>
             ))}
             {displayBookings.length > 6 && <div className="w-1 h-1 rounded-full bg-blue-500"></div>}
           </div>
@@ -689,4 +682,3 @@ export default function UserBookingsCard({ user, state, T, compact: _compact, on
     </>
   );
 }
-

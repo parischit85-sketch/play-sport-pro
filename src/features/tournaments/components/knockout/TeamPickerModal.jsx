@@ -19,8 +19,17 @@ function TeamPickerModal({
   selectedTeamIds = new Set(), // teamIds already used in other slots
   allowBye = true,
   teamsPerGroup = 2,
-  T,
+  T = {},
 }) {
+  // Provide default theme values if T is not passed
+  const theme = {
+    modalBackground: 'bg-gray-800',
+    modalBorder: 'border border-gray-700',
+    input: 'bg-gray-700 border border-gray-600 text-white',
+    cardBackground: 'bg-gray-800',
+    ...T,
+  };
+
   const [search, setSearch] = useState('');
   const [expandedGroups, setExpandedGroups] = useState({});
 
@@ -66,16 +75,15 @@ function TeamPickerModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className={`w-full max-w-4xl ${T.modalBackground} rounded-xl shadow-xl ${T.modalBorder}`}>
+      <div
+        className={`w-full max-w-4xl ${theme.modalBackground} rounded-xl shadow-xl ${theme.modalBorder}`}
+      >
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 border-gray-700">
           <div className="flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-primary-600 text-primary-400" />
+            <Trophy className="w-5 h-5 text-primary-400" />
             <h3 className="text-base font-semibold text-gray-900 text-white">{title}</h3>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded hover:bg-gray-100 hover:bg-gray-800"
-          >
+          <button onClick={onClose} className="p-2 rounded hover:bg-gray-100 hover:bg-gray-800">
             <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
@@ -88,7 +96,7 @@ function TeamPickerModal({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cerca squadra…"
-                className={`${T.input} w-full pl-9 pr-3 py-2`}
+                className={`${theme.input} w-full pl-9 pr-3 py-2`}
               />
               <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
@@ -99,7 +107,7 @@ function TeamPickerModal({
                   onSelect('BYE');
                   onClose?.();
                 }}
-                className="px-3 py-2 rounded-lg border border-amber-300 border-amber-700 bg-amber-50 bg-amber-900/30 hover:bg-amber-100 hover:bg-amber-900/40 text-amber-900 text-amber-200 text-sm"
+                className="px-3 py-2 rounded-lg border border-amber-700 bg-amber-900/30 hover:bg-amber-900/40 text-amber-200 text-sm"
                 title="Imposta uno slot libero (BYE)"
               >
                 Scegli BYE
@@ -119,9 +127,7 @@ function TeamPickerModal({
           </div>
 
           {filtered.length === 0 ? (
-            <div className="text-center text-gray-400 py-10">
-              Nessuna squadra trovata
-            </div>
+            <div className="text-center text-gray-400 py-10">Nessuna squadra trovata</div>
           ) : (
             <div className="space-y-6">
               {filtered.map(([groupId, groupStandings]) => {
@@ -136,7 +142,7 @@ function TeamPickerModal({
                       className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-primary-50 to-blue-50 from-primary-900/20 to-blue-900/20 hover:from-primary-100 hover:to-blue-100 hover:from-primary-900/30 hover:to-blue-900/30 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <Trophy className="w-6 h-6 text-primary-600 text-primary-400" />
+                        <Trophy className="w-6 h-6 text-primary-400" />
                         <div className="text-left">
                           <h3 className="text-lg font-bold text-gray-900 text-white">
                             Girone {String(groupId).toUpperCase()}
@@ -154,7 +160,7 @@ function TeamPickerModal({
                     </button>
 
                     {isExpanded && (
-                      <div className={`p-4 ${T.cardBackground} overflow-x-auto`}>
+                      <div className={`p-4 ${theme.cardBackground} overflow-x-auto`}>
                         <table className="w-full">
                           <thead className="bg-gray-50 bg-gray-900">
                             <tr className="border-b border-gray-200 border-gray-700">
@@ -268,7 +274,7 @@ function TeamPickerModal({
                                     </span>
                                   </td>
                                   <td className="py-3 px-4 text-center">
-                                    <span className="text-lg font-bold text-primary-600 text-primary-400">
+                                    <span className="text-lg font-bold text-primary-400">
                                       {standing.points}
                                     </span>
                                   </td>
@@ -312,10 +318,7 @@ function TeamPickerModal({
         </div>
 
         <div className="px-5 py-3 border-t border-gray-200 border-gray-700 flex items-center justify-end">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-gray-800 text-gray-300"
-          >
+          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-gray-800 text-gray-300">
             Chiudi
           </button>
         </div>
@@ -325,6 +328,3 @@ function TeamPickerModal({
 }
 
 export default TeamPickerModal;
-
-
-

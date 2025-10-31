@@ -288,4 +288,3 @@ const OnboardingWizard = ({ steps, tourName, onComplete, onSkip }) => {
 };
 
 export default OnboardingWizard;
-

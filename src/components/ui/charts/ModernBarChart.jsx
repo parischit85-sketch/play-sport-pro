@@ -95,4 +95,3 @@ export default function ModernBarChart({
     </div>
   );
 }
-

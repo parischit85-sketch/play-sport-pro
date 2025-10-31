@@ -917,9 +917,7 @@ function BookingField({ user, T, state, setState }) {
             </div>
 
             {pastUserBookings.length === 0 ? (
-              <p className="text-gray-400 text-center py-8">
-                Non hai prenotazioni passate
-              </p>
+              <p className="text-gray-400 text-center py-8">Non hai prenotazioni passate</p>
             ) : (
               <div className="space-y-2">
                 {pastUserBookings.map((booking) => {
@@ -1071,9 +1069,7 @@ function BookingField({ user, T, state, setState }) {
               {selectedBookingDetails.notes && (
                 <div>
                   <h5 className={`${ds.h6} mb-2`}>Note</h5>
-                  <p className="text-sm text-gray-400">
-                    {selectedBookingDetails.notes}
-                  </p>
+                  <p className="text-sm text-gray-400">{selectedBookingDetails.notes}</p>
                 </div>
               )}
 
@@ -1095,5 +1091,3 @@ function BookingField({ user, T, state, setState }) {
 }
 
 export default BookingField;
-
-

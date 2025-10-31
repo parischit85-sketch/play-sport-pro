@@ -281,10 +281,7 @@ const PerformanceDashboard = ({ T }) => {
                     <div className={`text-sm font-medium mb-2 ${T.text}`}>Recent Errors:</div>
                     <div className="space-y-1 max-h-32 overflow-y-auto">
                       {performanceData.errors.recent.map((error, index) => (
-                        <div
-                          key={index}
-                          className={`text-xs truncate ${T.subtext}`}
-                        >
+                        <div key={index} className={`text-xs truncate ${T.subtext}`}>
                           {error.message}
                         </div>
                       ))}
@@ -306,11 +303,15 @@ const PerformanceDashboard = ({ T }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <div className={`font-medium mb-1 ${T.text}`}>Type</div>
-                    <div className={`text-lg ${T.subtext}`}>{performanceData.connection.effective_type}</div>
+                    <div className={`text-lg ${T.subtext}`}>
+                      {performanceData.connection.effective_type}
+                    </div>
                   </div>
                   <div>
                     <div className={`font-medium mb-1 ${T.text}`}>Downlink</div>
-                    <div className={`text-lg ${T.subtext}`}>{performanceData.connection.downlink} Mbps</div>
+                    <div className={`text-lg ${T.subtext}`}>
+                      {performanceData.connection.downlink} Mbps
+                    </div>
                   </div>
                   <div>
                     <div className={`font-medium mb-1 ${T.text}`}>RTT</div>
@@ -371,4 +372,3 @@ const PerformanceDashboard = ({ T }) => {
 };
 
 export default PerformanceDashboard;
-

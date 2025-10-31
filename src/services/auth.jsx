@@ -623,4 +623,3 @@ export async function linkUserToClub(uid, clubId, playerId, role = 'player') {
 
   return await updateUser(uid, { clubLinks: updatedLinks });
 }
-

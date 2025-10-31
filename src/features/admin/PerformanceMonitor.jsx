@@ -641,4 +641,3 @@ export function PerformanceMonitor({ isOpen, onClose, T }) {
 }
 
 export default PerformanceMonitor;
-

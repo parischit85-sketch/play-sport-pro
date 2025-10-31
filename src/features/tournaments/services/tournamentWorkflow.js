@@ -262,6 +262,20 @@ export class TournamentWorkflowManager {
         return { success: false, error: VALIDATION_MESSAGES.TOURNAMENT_NOT_FOUND };
       }
 
+      // Validate that all group matches have results before starting knockout
+      console.log('✓ Validating group matches completion...');
+      const allGroupMatches = await getMatches(this.clubId, this.tournamentId, { type: 'group' });
+      const incompleteMatches = allGroupMatches.filter((m) => m.status !== MATCH_STATUS.COMPLETED);
+
+      if (incompleteMatches.length > 0) {
+        return {
+          success: false,
+          error: `Non puoi generare il tabellone: ci sono ancora ${incompleteMatches.length} partite dei gironi da completare`,
+        };
+      }
+
+      console.log('✅ All group matches completed');
+
       // Get qualified teams from group standings
       console.log('📋 Getting qualified teams...');
       const qualifiedTeams = await getQualifiedTeams(

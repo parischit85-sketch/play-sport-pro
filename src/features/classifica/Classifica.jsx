@@ -16,7 +16,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
   const classificaRef = useRef(null);
   const [showAllPlayers, setShowAllPlayers] = useState(false);
   const { playersById, matches: clubMatches, clubId, tournamentMatches } = useClub();
-  
+
   // State per champEntries di tutti i giocatori
   const [allChampEntries, setAllChampEntries] = useState({});
 
@@ -59,7 +59,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
     top5.forEach((player) => {
       const entriesRef = collection(db, 'clubs', clubId, 'leaderboard', player.id, 'entries');
       const q = query(entriesRef, orderBy('createdAt', 'desc'));
-      
+
       const unsub = onSnapshot(q, (snap) => {
         const entries = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
         setAllChampEntries((prev) => ({
@@ -482,7 +482,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
             // USA I PUNTI TOTALI DEL TORNEO (entry.points), NON i delta dei singoli match
             const tournamentPoints = Number(entry.points || 0);
             const date = toDate(entry.createdAt) || toDate(entry.appliedAt) || new Date();
-            
+
             movements.push({
               date: date,
               delta: tournamentPoints,
@@ -713,9 +713,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                   <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-lg shadow-md">
                     📈
                   </div>
-                  <h4 className="text-lg font-bold text-white">
-                    Evoluzione Rating - Top 5
-                  </h4>
+                  <h4 className="text-lg font-bold text-white">Evoluzione Rating - Top 5</h4>
                 </div>
                 <ModernAreaChart
                   data={podiumTimeline}
@@ -750,9 +748,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                 <div className="flex items-start gap-2">
                   <span className="text-amber-500 text-sm">ℹ️</span>
                   <div>
-                    <p className="text-sm font-semibold text-amber-200 mb-1">
-                      Come funziona:
-                    </p>
+                    <p className="text-sm font-semibold text-amber-200 mb-1">Come funziona:</p>
                     <p className="text-sm text-amber-300">
                       Ordinate per % vittorie. Solo coppie con ≥2 partite.
                     </p>
@@ -768,23 +764,15 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                     className="flex items-center justify-between py-2 px-3 bg-gray-700/30 backdrop-blur-sm rounded-xl border border-gray-600/20 hover:bg-gray-600/40 transition-all duration-200"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-amber-400 w-6">
-                        #{idx + 1}
-                      </span>
+                      <span className="text-sm font-bold text-amber-400 w-6">#{idx + 1}</span>
                       <span className="text-sm font-medium text-gray-100">
                         {couple.players[0].split(' ').pop()} & {couple.players[1].split(' ').pop()}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-green-400 font-semibold">
-                        {couple.wins}V
-                      </span>
-                      <span className="text-red-400 font-semibold">
-                        {couple.losses}S
-                      </span>
-                      <span className="font-bold text-amber-300">
-                        {couple.winRate.toFixed(0)}%
-                      </span>
+                      <span className="text-green-400 font-semibold">{couple.wins}V</span>
+                      <span className="text-red-400 font-semibold">{couple.losses}S</span>
+                      <span className="font-bold text-amber-300">{couple.winRate.toFixed(0)}%</span>
                     </div>
                   </div>
                 ))}
@@ -807,20 +795,13 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                         key={couple.key}
                         className="border-b border-gray-700/20 hover:bg-gray-700/30 transition-all duration-200"
                       >
-                        <td className="py-3 pr-3 font-semibold text-gray-200">
-                          {idx + 1}
-                        </td>
+                        <td className="py-3 pr-3 font-semibold text-gray-200">{idx + 1}</td>
                         <td className="py-3 pr-3 font-medium text-sm text-gray-100">
                           {couple.players[0]} & {couple.players[1]}
                         </td>
                         <td className="py-3 pr-3 text-sm">
-                          <span className="text-green-400 font-semibold">
-                            {couple.wins}
-                          </span>
-                          /
-                          <span className="text-red-400 font-semibold">
-                            {couple.losses}
-                          </span>
+                          <span className="text-green-400 font-semibold">{couple.wins}</span>/
+                          <span className="text-red-400 font-semibold">{couple.losses}</span>
                         </td>
                         <td className="py-3 pr-3 font-bold text-amber-300">
                           {couple.winRate.toFixed(0)}%
@@ -850,12 +831,8 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                 <div className="flex items-start gap-2">
                   <span className="text-blue-500 text-sm">⚡</span>
                   <div>
-                    <p className="text-sm font-semibold text-blue-200 mb-1">
-                      Formula:
-                    </p>
-                    <p className="text-sm text-blue-300">
-                      % vittorie (70%) + % game vinti (30%).
-                    </p>
+                    <p className="text-sm font-semibold text-blue-200 mb-1">Formula:</p>
+                    <p className="text-sm text-blue-300">% vittorie (70%) + % game vinti (30%).</p>
                   </div>
                 </div>
               </div>
@@ -868,9 +845,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                     className="flex items-center justify-between py-2 px-3 bg-gray-700/30 backdrop-blur-sm rounded-xl border border-gray-600/20 hover:bg-gray-600/40 transition-all duration-200"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-blue-400 w-6">
-                        #{idx + 1}
-                      </span>
+                      <span className="text-sm font-bold text-blue-400 w-6">#{idx + 1}</span>
                       <button
                         className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm"
                         onClick={() => onOpenStats(player.id)}
@@ -879,12 +854,8 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                       </button>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-green-400 font-semibold">
-                        {player.wins}V
-                      </span>
-                      <span className="text-red-400 font-semibold">
-                        {player.losses}S
-                      </span>
+                      <span className="text-green-400 font-semibold">{player.wins}V</span>
+                      <span className="text-red-400 font-semibold">{player.losses}S</span>
                       <span className="font-bold text-blue-300">
                         {player.efficiency.toFixed(1)}%
                       </span>
@@ -910,9 +881,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                         key={player.id}
                         className="border-b border-gray-700/20 hover:bg-gray-700/30 transition-all duration-200"
                       >
-                        <td className="py-3 pr-3 font-semibold text-gray-200">
-                          {idx + 1}
-                        </td>
+                        <td className="py-3 pr-3 font-semibold text-gray-200">{idx + 1}</td>
                         <td className="py-3 pr-3">
                           <button
                             className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm"
@@ -925,13 +894,8 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                           {player.efficiency.toFixed(1)}%
                         </td>
                         <td className="py-3 pr-3 text-sm">
-                          <span className="text-green-400 font-semibold">
-                            {player.wins}
-                          </span>
-                          /
-                          <span className="text-red-400 font-semibold">
-                            {player.losses}
-                          </span>
+                          <span className="text-green-400 font-semibold">{player.wins}</span>/
+                          <span className="text-red-400 font-semibold">{player.losses}</span>
                         </td>
                       </tr>
                     ))}
@@ -958,9 +922,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                 <div className="flex items-start gap-2">
                   <span className="text-green-500 text-sm">🔥</span>
                   <div>
-                    <p className="text-sm font-semibold text-green-200 mb-1">
-                      Streak vittorie:
-                    </p>
+                    <p className="text-sm font-semibold text-green-200 mb-1">Streak vittorie:</p>
                     <p className="text-sm text-green-300">
                       Migliore serie consecutiva. 🔥 = serie attiva.
                     </p>
@@ -976,9 +938,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                     className="flex items-center justify-between py-2 px-3 bg-gray-700/30 backdrop-blur-sm rounded-xl border border-gray-600/20 hover:bg-gray-600/40 transition-all duration-200"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-green-400 w-6">
-                        #{idx + 1}
-                      </span>
+                      <span className="text-sm font-bold text-green-400 w-6">#{idx + 1}</span>
                       <button
                         className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm"
                         onClick={() => onOpenStats(player.id)}
@@ -994,9 +954,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                       ) : (
                         <span className="text-gray-400">-</span>
                       )}
-                      <span className="font-bold text-green-300">
-                        {player.bestWinStreak}
-                      </span>
+                      <span className="font-bold text-green-300">{player.bestWinStreak}</span>
                     </div>
                   </div>
                 ))}
@@ -1019,9 +977,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                         key={player.id}
                         className="border-b border-gray-700/20 hover:bg-gray-700/30 transition-all duration-200"
                       >
-                        <td className="py-3 pr-3 font-semibold text-gray-200">
-                          {idx + 1}
-                        </td>
+                        <td className="py-3 pr-3 font-semibold text-gray-200">{idx + 1}</td>
                         <td className="py-3 pr-3">
                           <button
                             className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm"
@@ -1067,9 +1023,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                 <div className="flex items-start gap-2">
                   <span className="text-purple-500 text-sm">🛡️</span>
                   <div>
-                    <p className="text-sm font-semibold text-purple-200 mb-1">
-                      Ingiocabili:
-                    </p>
+                    <p className="text-sm font-semibold text-purple-200 mb-1">Ingiocabili:</p>
                     <p className="text-sm text-purple-300">
                       Minor % sconfitte. Più basso = più difficile da battere.
                     </p>
@@ -1085,9 +1039,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                     className="flex items-center justify-between py-2 px-3 bg-gray-700/30 backdrop-blur-sm rounded-xl border border-gray-600/20 hover:bg-gray-600/40 transition-all duration-200"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-purple-400 w-6">
-                        #{idx + 1}
-                      </span>
+                      <span className="text-sm font-bold text-purple-400 w-6">#{idx + 1}</span>
                       <button
                         className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm"
                         onClick={() => onOpenStats(player.id)}
@@ -1096,12 +1048,8 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                       </button>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <span className="text-green-400 font-semibold">
-                        {player.totalWins}V
-                      </span>
-                      <span className="text-red-400 font-semibold">
-                        {player.totalLosses}S
-                      </span>
+                      <span className="text-green-400 font-semibold">{player.totalWins}V</span>
+                      <span className="text-red-400 font-semibold">{player.totalLosses}S</span>
                       <span className="font-bold text-purple-300">
                         {player.lossRatio.toFixed(1)}%
                       </span>
@@ -1127,9 +1075,7 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                         key={player.id}
                         className="border-b border-gray-700/20 hover:bg-gray-700/30 transition-all duration-200"
                       >
-                        <td className="py-3 pr-3 font-semibold text-gray-200">
-                          {idx + 1}
-                        </td>
+                        <td className="py-3 pr-3 font-semibold text-gray-200">{idx + 1}</td>
                         <td className="py-3 pr-3">
                           <button
                             className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 hover:underline text-sm"
@@ -1142,13 +1088,8 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                           {player.lossRatio.toFixed(1)}%
                         </td>
                         <td className="py-3 pr-3 text-sm">
-                          <span className="text-green-400 font-semibold">
-                            {player.totalWins}
-                          </span>
-                          /
-                          <span className="text-red-400 font-semibold">
-                            {player.totalLosses}
-                          </span>
+                          <span className="text-green-400 font-semibold">{player.totalWins}</span>/
+                          <span className="text-red-400 font-semibold">{player.totalLosses}</span>
                         </td>
                       </tr>
                     ))}
@@ -1162,4 +1103,3 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
     </Section>
   );
 }
-

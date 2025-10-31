@@ -21,7 +21,11 @@ import {
 import { themeTokens, LOGO_URL } from '@lib/theme.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { auth, db } from '@services/firebase.js';
-import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  sendEmailVerification,
+} from 'firebase/auth';
 import { collection, addDoc, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import LogoEditor from '@components/shared/LogoEditor.jsx';
 
@@ -58,7 +62,7 @@ export default function RegisterClubPage() {
   const [step, setStep] = useState(1); // 1: Dati circolo, 2: Logo e dettagli
   const [showMapsInstructions, setShowMapsInstructions] = useState(false);
   const [extractingAddress, setExtractingAddress] = useState(false);
-  
+
   // Stati per Logo Editor
   const [showLogoEditor, setShowLogoEditor] = useState(false);
   const [originalLogoSrc, setOriginalLogoSrc] = useState(null);
@@ -81,7 +85,7 @@ export default function RegisterClubPage() {
   // Funzione per estrarre indirizzo da link Google Maps
   const extractAddressFromMapsLink = async (mapsLink) => {
     if (!mapsLink) return;
-    
+
     setExtractingAddress(true);
     try {
       // Estrai coordinate dal link
@@ -100,8 +104,8 @@ export default function RegisterClubPage() {
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`,
         {
           headers: {
-            'User-Agent': 'PlaySportPro/1.0'
-          }
+            'User-Agent': 'PlaySportPro/1.0',
+          },
         }
       );
 
@@ -116,7 +120,8 @@ export default function RegisterClubPage() {
         address: {
           street: `${addr.road || ''} ${addr.house_number || ''}`.trim() || prev.address.street,
           city: addr.city || addr.town || addr.village || prev.address.city,
-          province: addr.state_code || addr.county?.substring(0, 2).toUpperCase() || prev.address.province,
+          province:
+            addr.state_code || addr.county?.substring(0, 2).toUpperCase() || prev.address.province,
           postalCode: addr.postcode || prev.address.postalCode,
           country: addr.country || 'Italia',
         },
@@ -392,17 +397,17 @@ export default function RegisterClubPage() {
       // 7. Success message and redirect to admin dashboard
       alert(
         `✅ Club Creato!\n\n` +
-        `Il circolo "${formData.clubName}" è stato creato.\n\n` +
-        `📧 IMPORTANTE: Controlla la tua email!\n` +
-        `Abbiamo inviato un'email di verifica a:\n` +
-        `${formData.clubEmail}\n\n` +
-        `Devi verificare l'email per accedere a tutte le funzionalità.\n\n` +
-        `⏳ Status: In attesa di approvazione\n\n` +
-        `Puoi già:\n` +
-        `• Configurare i campi\n` +
-        `• Aggiungere fasce orarie\n` +
-        `• Gestire le impostazioni\n\n` +
-        `Il circolo sarà visibile agli utenti dopo l'approvazione del super-admin.`
+          `Il circolo "${formData.clubName}" è stato creato.\n\n` +
+          `📧 IMPORTANTE: Controlla la tua email!\n` +
+          `Abbiamo inviato un'email di verifica a:\n` +
+          `${formData.clubEmail}\n\n` +
+          `Devi verificare l'email per accedere a tutte le funzionalità.\n\n` +
+          `⏳ Status: In attesa di approvazione\n\n` +
+          `Puoi già:\n` +
+          `• Configurare i campi\n` +
+          `• Aggiungere fasce orarie\n` +
+          `• Gestire le impostazioni\n\n` +
+          `Il circolo sarà visibile agli utenti dopo l'approvazione del super-admin.`
       );
 
       // Redirect to club admin dashboard
@@ -433,7 +438,7 @@ export default function RegisterClubPage() {
     formData.password === formData.confirmPassword &&
     isPasswordValid(formData.password);
 
-  const canSubmit = 
+  const canSubmit =
     formData.address.street &&
     formData.address.city &&
     formData.address.postalCode &&
@@ -447,9 +452,7 @@ export default function RegisterClubPage() {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3">
               <img src={LOGO_URL} alt="Play-Sport.pro" className="h-10" />
-              <span className="text-xl font-bold text-white">
-                Play-Sport.pro
-              </span>
+              <span className="text-xl font-bold text-white">Play-Sport.pro</span>
             </Link>
             <Link
               to="/"
@@ -469,9 +472,7 @@ export default function RegisterClubPage() {
           <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
             <Building2 className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4">
-            Registra il Tuo Circolo
-          </h1>
+          <h1 className="text-4xl font-bold text-white mb-4">Registra il Tuo Circolo</h1>
           <p className="text-xl text-gray-300">
             Unisciti alla nostra piattaforma e gestisci il tuo circolo sportivo in modo
             professionale
@@ -512,10 +513,7 @@ export default function RegisterClubPage() {
         </div>
 
         {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-2xl shadow-xl p-8"
-        >
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8">
           {error && (
             <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg text-red-400">
               {error}
@@ -525,9 +523,7 @@ export default function RegisterClubPage() {
           {/* Step 1: Dati Circolo Base */}
           {step === 1 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white mb-6">
-                📋 Dati del Circolo
-              </h2>
+              <h2 className="text-2xl font-bold text-white mb-6">📋 Dati del Circolo</h2>
 
               <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4 mb-6">
                 <p className="text-sm text-blue-300">
@@ -594,9 +590,7 @@ export default function RegisterClubPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Password *
-                </label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Password *</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
@@ -620,9 +614,7 @@ export default function RegisterClubPage() {
                     </p>
                   )}
                   {formData.password && isPasswordValid(formData.password) && (
-                    <p className="text-xs text-green-400">
-                      ✅ Password valida
-                    </p>
+                    <p className="text-xs text-green-400">✅ Password valida</p>
                   )}
                 </div>
               </div>
@@ -645,9 +637,7 @@ export default function RegisterClubPage() {
                   />
                 </div>
                 {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                  <p className="mt-1 text-xs text-red-400">
-                    Le password non corrispondono
-                  </p>
+                  <p className="mt-1 text-xs text-red-400">Le password non corrispondono</p>
                 )}
               </div>
 
@@ -667,9 +657,7 @@ export default function RegisterClubPage() {
           {/* Step 2: Logo e Dettagli */}
           {step === 2 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white mb-6">
-                📍 Dettagli & Indirizzo
-              </h2>
+              <h2 className="text-2xl font-bold text-white mb-6">📍 Dettagli & Indirizzo</h2>
 
               {/* Logo Upload */}
               <div>
@@ -702,9 +690,7 @@ export default function RegisterClubPage() {
                       className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:cursor-pointer hover:file:bg-blue-100"
                     />
                     {uploading && (
-                      <p className="text-sm text-blue-400 mt-2">
-                        📤 Caricamento in corso...
-                      </p>
+                      <p className="text-sm text-blue-400 mt-2">📤 Caricamento in corso...</p>
                     )}
                   </div>
                 </div>
@@ -768,10 +754,8 @@ export default function RegisterClubPage() {
 
               {/* Address Fields */}
               <div className="border-t border-gray-700 pt-6">
-                <h3 className="font-semibold text-white mb-4">
-                  Indirizzo Completo *
-                </h3>
-                
+                <h3 className="font-semibold text-white mb-4">Indirizzo Completo *</h3>
+
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -789,9 +773,7 @@ export default function RegisterClubPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Città *
-                    </label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Città *</label>
                     <input
                       type="text"
                       name="address.city"
@@ -804,9 +786,7 @@ export default function RegisterClubPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      CAP *
-                    </label>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">CAP *</label>
                     <input
                       type="text"
                       name="address.postalCode"
@@ -874,9 +854,7 @@ export default function RegisterClubPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-white">
-                  Come ottenere il link Google Maps
-                </h3>
+                <h3 className="text-xl font-bold text-white">Come ottenere il link Google Maps</h3>
                 <button
                   onClick={() => setShowMapsInstructions(false)}
                   className="text-gray-400 hover:text-gray-200"
@@ -976,10 +954,7 @@ export default function RegisterClubPage() {
         {/* Footer Note */}
         <div className="mt-8 text-center text-sm text-gray-400">
           Hai già un account?{' '}
-          <Link
-            to="/login"
-            className="text-blue-400 hover:underline font-medium"
-          >
+          <Link to="/login" className="text-blue-400 hover:underline font-medium">
             Accedi qui
           </Link>
         </div>
@@ -996,4 +971,3 @@ export default function RegisterClubPage() {
     </div>
   );
 }
-

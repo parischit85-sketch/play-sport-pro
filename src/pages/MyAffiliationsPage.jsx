@@ -13,4 +13,3 @@ const MyAffiliationsPage = () => {
 };
 
 export default MyAffiliationsPage;
-

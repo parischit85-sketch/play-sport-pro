@@ -404,9 +404,7 @@ export default function BottomNavigation({
           >
             <div className="flex justify-between items-center mb-3 sm:mb-4 sticky top-0 bg-white/95/95 backdrop-blur-xl z-10 pb-2">
               <div className="flex items-center gap-2">
-                <div className="text-sm font-semibold text-gray-300">
-                  Menu Completo
-                </div>
+                <div className="text-sm font-semibold text-gray-300">Menu Completo</div>
                 <div className="text-xs text-gray-400 bg-gray-800 px-2 py-0.5 rounded-full">
                   {hamburgerMenuItems.length}
                 </div>
@@ -460,9 +458,7 @@ export default function BottomNavigation({
                     <span className="text-sm sm:text-base font-medium truncate block">
                       {item.label}
                     </span>
-                    {item.isAdmin && (
-                      <span className="text-xs text-purple-400">Admin</span>
-                    )}
+                    {item.isAdmin && <span className="text-xs text-purple-400">Admin</span>}
                   </div>
                 </div>
               ))}
@@ -477,9 +473,7 @@ export default function BottomNavigation({
             <div
               key={item.id}
               className={`bottom-nav-item flex flex-col items-center justify-center gap-0.5 cursor-pointer transition-all duration-300 ${
-                active === item.id
-                  ? 'text-blue-400'
-                  : 'text-gray-400 hover:text-gray-200'
+                active === item.id ? 'text-blue-400' : 'text-gray-400 hover:text-gray-200'
               }`}
               onClick={!isIOS ? (e) => handleNavClick(item, e) : undefined}
               onTouchEnd={isIOS ? (e) => handleNavClick(item, e) : undefined}
@@ -513,9 +507,7 @@ export default function BottomNavigation({
               </div>
               <span
                 className={`text-[10px] font-medium leading-tight mt-0.5 ${
-                  active === item.id
-                    ? 'text-blue-400 font-semibold'
-                    : 'text-gray-400'
+                  active === item.id ? 'text-blue-400 font-semibold' : 'text-gray-400'
                 }`}
               >
                 {item.label}
@@ -568,9 +560,7 @@ export default function BottomNavigation({
             </div>
             <span
               className={`text-[10px] font-medium leading-tight mt-0.5 ${
-                showClubMenu
-                  ? 'text-purple-400 font-semibold'
-                  : 'text-gray-400'
+                showClubMenu ? 'text-purple-400 font-semibold' : 'text-gray-400'
               }`}
             >
               Menu
@@ -589,4 +579,3 @@ export default function BottomNavigation({
     </div>
   );
 }
-

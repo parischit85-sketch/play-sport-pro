@@ -68,9 +68,8 @@ export default function DevConnectionStatus() {
         <div className="text-sm">
           <div className="font-medium text-yellow-800 text-yellow-200">🔄 HMR Disconnesso</div>
           <div className="text-yellow-700 text-yellow-300 text-xs">
-            Usa{' '}
-            <kbd className="px-1 py-0.5 bg-yellow-800 rounded text-xs">F5</kbd>{' '}
-            per refresh manuale
+            Usa <kbd className="px-1 py-0.5 bg-yellow-800 rounded text-xs">F5</kbd> per refresh
+            manuale
           </div>
         </div>
         <button
@@ -83,5 +82,3 @@ export default function DevConnectionStatus() {
     </div>
   );
 }
-
-

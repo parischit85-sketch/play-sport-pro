@@ -263,7 +263,7 @@ export default function LessonBookingInterface({
       confirmText: 'Cancella Tutte',
       cancelText: 'Annulla',
     });
-    
+
     if (!confirmed) {
       return;
     }
@@ -1121,10 +1121,10 @@ export default function LessonBookingInterface({
         <div
           className={`p-4 rounded-lg ${
             message.type === 'success'
-              ? 'bg-green-50 text-green-700 border border-green-200'
+              ? 'bg-green-900/30 text-green-300 border border-green-700'
               : message.type === 'error'
-                ? 'bg-red-50 text-red-700 border border-red-200'
-                : 'bg-blue-50 text-blue-700 border border-blue-200'
+                ? 'bg-red-900/30 text-red-300 border border-red-700'
+                : 'bg-blue-900/30 text-blue-300 border border-blue-700'
           }`}
         >
           {message.text}
@@ -1132,13 +1132,13 @@ export default function LessonBookingInterface({
       )}
 
       {/* Tab Navigation */}
-      <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+      <div className="flex space-x-1 bg-gray-800 rounded-lg p-1">
         <button
           onClick={() => setActiveTab('book')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
             activeTab === 'book'
               ? 'bg-gray-800 text-emerald-400 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+              : 'text-gray-400 hover:text-white'
           }`}
         >
           Prenota Lezione
@@ -1184,7 +1184,7 @@ export default function LessonBookingInterface({
                 <div key={step} className={`flex items-center ${step < 4 ? 'flex-1' : ''}`}>
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                      currentStep >= step ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'
+                      currentStep >= step ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-200'
                     }`}
                   >
                     {step}
@@ -1192,9 +1192,7 @@ export default function LessonBookingInterface({
                   {step < 4 && (
                     <div
                       className={`flex-1 h-0.5 mx-2 ${
-                        currentStep > step
-                          ? 'bg-blue-500'
-                          : 'bg-gray-200'
+                        currentStep > step ? 'bg-blue-600' : 'bg-gray-700'
                       }`}
                     />
                   )}
@@ -1212,12 +1210,8 @@ export default function LessonBookingInterface({
           {/* Step 1: Select Date */}
           {currentStep === 1 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">
-                Scegli il Giorno
-              </h3>
-              <p className="text-sm text-gray-300">
-                Prossimi 7 giorni disponibili per le lezioni
-              </p>
+              <h3 className="text-lg font-semibold text-white">Scegli il Giorno</h3>
+              <p className="text-sm text-gray-300">Prossimi 7 giorni disponibili per le lezioni</p>
 
               {availableDates.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
@@ -1277,9 +1271,7 @@ export default function LessonBookingInterface({
           {/* Step 2: Select Time Slot */}
           {currentStep === 2 && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white">
-                Seleziona Orario
-              </h3>
+              <h3 className="text-lg font-semibold text-white">Seleziona Orario</h3>
               <div className="text-sm text-gray-300 mb-4">
                 Data selezionata:{' '}
                 <span className="font-medium">
@@ -1299,13 +1291,13 @@ export default function LessonBookingInterface({
                   <p className="text-sm">
                     Tutti gli slot sono già occupati o non hanno maestri disponibili.
                   </p>
-                  <p className="text-sm">Prova con un altro giorno o contatta l&apos;amministrazione.</p>
+                  <p className="text-sm">
+                    Prova con un altro giorno o contatta l&apos;amministrazione.
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <p className="text-sm text-gray-300">
-                    Orari disponibili (lezioni di 1 ora):
-                  </p>
+                  <p className="text-sm text-gray-300">Orari disponibili (lezioni di 1 ora):</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {availableTimeSlots.map((slot) => (
                       <button
@@ -1357,9 +1349,7 @@ export default function LessonBookingInterface({
           {/* Step 3: Select Number of Participants */}
           {currentStep === 3 && (
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-white">
-                Numero Partecipanti
-              </h3>
+              <h3 className="text-lg font-semibold text-white">Numero Partecipanti</h3>
               <p className="text-sm text-gray-300">
                 Seleziona quante persone parteciperanno alla lezione
               </p>
@@ -1403,9 +1393,7 @@ export default function LessonBookingInterface({
           {/* Step 4: Select Instructor and Confirmation */}
           {currentStep === 4 && (
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-white">
-                Scegli Maestro e Conferma
-              </h3>
+              <h3 className="text-lg font-semibold text-white">Scegli Maestro e Conferma</h3>
 
               {/* Booking Summary */}
               <div className="bg-gray-800 rounded-lg p-4 space-y-3">
@@ -1422,9 +1410,7 @@ export default function LessonBookingInterface({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-300">Orario:</span>
-                  <span className="font-medium text-white">
-                    {selectedTimeSlot?.displayTime}
-                  </span>
+                  <span className="font-medium text-white">{selectedTimeSlot?.displayTime}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-300">Durata:</span>
@@ -1443,9 +1429,7 @@ export default function LessonBookingInterface({
                 <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-4">
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-blue-300 font-medium">
-                        Prezzo Totale:
-                      </span>
+                      <span className="text-blue-300 font-medium">Prezzo Totale:</span>
                       <span className="text-blue-100 font-bold text-lg">
                         {euro(
                           calculateLessonPrice({
@@ -1534,9 +1518,7 @@ export default function LessonBookingInterface({
                           >
                             {instructor.name?.charAt(0) || '?'}
                           </div>
-                          <div className="font-medium text-white">
-                            {instructor.name}
-                          </div>
+                          <div className="font-medium text-white">{instructor.name}</div>
                         </div>
                         {instructor.instructorData?.specialties?.length > 0 && (
                           <div className="text-sm text-gray-300 mb-1">
@@ -1583,9 +1565,7 @@ export default function LessonBookingInterface({
       {/* User Bookings List */}
       {activeTab === 'bookings' && (
         <div className="bg-gray-800 rounded-lg border-2 border-emerald-600 p-6">
-          <h3 className="text-lg font-semibold text-white mb-4">
-            Le Mie Lezioni
-          </h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Le Mie Lezioni</h3>
 
           {lessonBookings.length === 0 ? (
             <div className="text-center py-8 text-gray-400">
@@ -1637,9 +1617,7 @@ export default function LessonBookingInterface({
                           </div>
                         )}
                         {booking.courtName && (
-                          <div className="text-sm text-gray-300">
-                            🎾 Campo: {booking.courtName}
-                          </div>
+                          <div className="text-sm text-gray-300">🎾 Campo: {booking.courtName}</div>
                         )}
                       </div>
                       <button

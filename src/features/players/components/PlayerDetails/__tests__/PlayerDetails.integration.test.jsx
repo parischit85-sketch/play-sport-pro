@@ -49,4 +49,3 @@ describe.skip('GDPR Delete Flow (Art. 17)', () => {
   // - Firestore document deletion
   // - Success/error toast notifications
 });
-

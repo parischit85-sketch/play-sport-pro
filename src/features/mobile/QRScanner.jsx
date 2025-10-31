@@ -270,4 +270,3 @@ export function useQRScanner() {
     QRScannerComponent: isOpen ? <QRScanner onScan={handleScan} onClose={close} /> : null,
   };
 }
-

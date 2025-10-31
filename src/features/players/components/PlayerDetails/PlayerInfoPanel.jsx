@@ -9,12 +9,15 @@ const PlayerInfoPanel = ({ player, T }) => {
   // Calculate quick stats
   const stats = {
     rankingTrend: player.rankingDelta || 0,
-    bookingsThisMonth: player.bookingHistory?.filter(b => {
-      const bookingDate = new Date(b.date);
-      const now = new Date();
-      return bookingDate.getMonth() === now.getMonth() && 
-             bookingDate.getFullYear() === now.getFullYear();
-    }).length || 0,
+    bookingsThisMonth:
+      player.bookingHistory?.filter((b) => {
+        const bookingDate = new Date(b.date);
+        const now = new Date();
+        return (
+          bookingDate.getMonth() === now.getMonth() &&
+          bookingDate.getFullYear() === now.getFullYear()
+        );
+      }).length || 0,
     walletBalance: player.wallet?.balance || 0,
     certificateStatus: player.medicalCertificate?.status || 'missing',
     certificateExpiry: player.medicalCertificate?.expiryDate || null,
@@ -26,10 +29,12 @@ const PlayerInfoPanel = ({ player, T }) => {
 
   // Check for alerts
   const alerts = [];
-  
+
   // Certificate expiring soon (30 days)
   if (stats.certificateExpiry) {
-    const daysUntilExpiry = Math.floor((new Date(stats.certificateExpiry) - new Date()) / (1000 * 60 * 60 * 24));
+    const daysUntilExpiry = Math.floor(
+      (new Date(stats.certificateExpiry) - new Date()) / (1000 * 60 * 60 * 24)
+    );
     if (daysUntilExpiry < 30 && daysUntilExpiry > 0) {
       alerts.push({
         type: 'warning',
@@ -66,7 +71,9 @@ const PlayerInfoPanel = ({ player, T }) => {
 
   // No recent activity (30 days)
   if (stats.lastActivity) {
-    const daysSinceActivity = Math.floor((new Date() - new Date(stats.lastActivity)) / (1000 * 60 * 60 * 24));
+    const daysSinceActivity = Math.floor(
+      (new Date() - new Date(stats.lastActivity)) / (1000 * 60 * 60 * 24)
+    );
     if (daysSinceActivity > 30) {
       alerts.push({
         type: 'info',
@@ -89,33 +96,34 @@ const PlayerInfoPanel = ({ player, T }) => {
 
   // Recent activity (last 5 items)
   const recentActivity = [
-    ...(player.bookingHistory || []).slice(0, 3).map(b => ({
+    ...(player.bookingHistory || []).slice(0, 3).map((b) => ({
       type: 'booking',
       icon: '📅',
       title: 'Prenotazione',
       description: `Campo ${b.fieldName || 'N/D'}`,
       date: b.date,
     })),
-    ...(player.wallet?.transactions || []).slice(0, 2).map(t => ({
+    ...(player.wallet?.transactions || []).slice(0, 2).map((t) => ({
       type: 'transaction',
       icon: t.type === 'credit' ? '💵' : '💸',
       title: t.type === 'credit' ? 'Ricarica' : 'Pagamento',
       description: `€${Math.abs(t.amount).toFixed(2)}`,
       date: t.date,
     })),
-  ].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+  ]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 5);
 
   return (
     <aside className="hidden xl:block w-80 flex-shrink-0 border-l border-gray-700 bg-gradient-to-b from-gray-800/50 to-gray-900/50">
       <div className="sticky top-0 p-6 space-y-6 max-h-screen overflow-y-auto">
-        
         {/* Quick Stats Summary */}
         <div className="space-y-3">
           <h3 className="text-sm font-bold text-white uppercase tracking-wide flex items-center gap-2">
             <span className="text-lg">📊</span>
             Statistiche Rapide
           </h3>
-          
+
           {/* Ranking Trend */}
           <div className="bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-700">
             <div className="flex items-center justify-between">
@@ -123,28 +131,28 @@ const PlayerInfoPanel = ({ player, T }) => {
                 <span className="text-2xl">📈</span>
                 <div>
                   <div className="text-xs text-gray-400">Ranking</div>
-                  <div className="text-lg font-bold text-white">
-                    {player.rating || 1500}
-                  </div>
+                  <div className="text-lg font-bold text-white">{player.rating || 1500}</div>
                 </div>
               </div>
-              <div className={`text-sm font-bold px-2 py-1 rounded-lg ${
-                stats.rankingTrend > 0 
-                  ? `bg-green-900/30 ${T.accentSuccess}`
-                  : stats.rankingTrend < 0
-                  ? `bg-red-900/30 text-red-400`
-                  : `bg-gray-700 ${T.subtext}`
-              }`}>
-                {stats.rankingTrend > 0 ? '↗' : stats.rankingTrend < 0 ? '↘' : '→'} 
+              <div
+                className={`text-sm font-bold px-2 py-1 rounded-lg ${
+                  stats.rankingTrend > 0
+                    ? `bg-green-900/30 ${T.accentSuccess}`
+                    : stats.rankingTrend < 0
+                      ? `bg-red-900/30 text-red-400`
+                      : `bg-gray-700 ${T.subtext}`
+                }`}
+              >
+                {stats.rankingTrend > 0 ? '↗' : stats.rankingTrend < 0 ? '↘' : '→'}
                 {Math.abs(stats.rankingTrend)}
               </div>
             </div>
-            
+
             {/* Mini trend line (visual) */}
             <div className="mt-3 h-1 bg-gray-700 rounded-full overflow-hidden">
-              <div 
+              <div
                 className={`h-full rounded-full ${
-                  stats.rankingTrend > 0 
+                  stats.rankingTrend > 0
                     ? 'bg-gradient-to-r from-green-400 to-green-600'
                     : 'bg-gradient-to-r from-red-400 to-red-600'
                 }`}
@@ -160,19 +168,15 @@ const PlayerInfoPanel = ({ player, T }) => {
                 <span className="text-2xl">🎯</span>
                 <div>
                   <div className="text-xs text-gray-400">Win Rate</div>
-                  <div className="text-lg font-bold text-white">
-                    {stats.winRate.toFixed(1)}%
-                  </div>
+                  <div className="text-lg font-bold text-white">{stats.winRate.toFixed(1)}%</div>
                 </div>
               </div>
-              <div className="text-xs text-gray-400">
-                {stats.totalMatches} match
-              </div>
+              <div className="text-xs text-gray-400">{stats.totalMatches} match</div>
             </div>
-            
+
             {/* Progress bar */}
             <div className="mt-3 h-2 bg-gray-700 rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full transition-all duration-500"
                 style={{ width: `${stats.winRate}%` }}
               />
@@ -186,9 +190,7 @@ const PlayerInfoPanel = ({ player, T }) => {
                 <span className="text-2xl">📅</span>
                 <div>
                   <div className="text-xs text-gray-400">Prenotazioni mese</div>
-                  <div className="text-lg font-bold text-white">
-                    {stats.bookingsThisMonth}
-                  </div>
+                  <div className="text-lg font-bold text-white">{stats.bookingsThisMonth}</div>
                 </div>
               </div>
             </div>
@@ -202,28 +204,24 @@ const PlayerInfoPanel = ({ player, T }) => {
               <span className="text-lg">🔔</span>
               Avvisi
             </h3>
-            
+
             <div className="space-y-2">
               {alerts.map((alert, index) => (
-                <div 
+                <div
                   key={index}
                   className={`rounded-xl p-3 border-l-4 ${
-                    alert.type === 'error' 
+                    alert.type === 'error'
                       ? 'bg-red-50 bg-red-900/20 border-red-500'
                       : alert.type === 'warning'
-                      ? 'bg-yellow-50 bg-yellow-900/20 border-yellow-500'
-                      : 'bg-blue-50 bg-blue-900/20 border-blue-500'
+                        ? 'bg-yellow-50 bg-yellow-900/20 border-yellow-500'
+                        : 'bg-blue-50 bg-blue-900/20 border-blue-500'
                   }`}
                 >
                   <div className="flex items-start gap-2">
                     <span className="text-lg flex-shrink-0">{alert.icon}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-semibold text-white">
-                        {alert.title}
-                      </div>
-                      <div className="text-xs text-gray-400 mt-0.5">
-                        {alert.description}
-                      </div>
+                      <div className="text-xs font-semibold text-white">{alert.title}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">{alert.description}</div>
                     </div>
                   </div>
                 </div>
@@ -239,10 +237,10 @@ const PlayerInfoPanel = ({ player, T }) => {
               <span className="text-lg">🕐</span>
               Attività Recenti
             </h3>
-            
+
             <div className="space-y-2">
               {recentActivity.map((activity, index) => (
-                <div 
+                <div
                   key={index}
                   className="bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-700 hover:shadow-md transition-shadow"
                 >
@@ -275,7 +273,7 @@ const PlayerInfoPanel = ({ player, T }) => {
               <span className="text-lg">🏆</span>
               Torneo
             </h3>
-            
+
             <div className="bg-gradient-to-br from-purple-900/20 to-purple-800/20 rounded-xl p-4 border border-purple-700">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
@@ -318,7 +316,6 @@ const PlayerInfoPanel = ({ player, T }) => {
             </div>
           </div>
         </div>
-
       </div>
     </aside>
   );
@@ -330,7 +327,3 @@ PlayerInfoPanel.propTypes = {
 };
 
 export default PlayerInfoPanel;
-
-
-
-

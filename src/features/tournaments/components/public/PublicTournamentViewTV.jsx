@@ -588,7 +588,7 @@ function PublicTournamentViewTV() {
               return (
                 <div
                   key={match.id}
-                  className={`bg-gray-800 rounded-xl p-3 shadow-lg min-h-[140px] min-w-[180px] flex-shrink-0 flex flex-col justify-center border-[2.5px] ${
+                  className={`bg-gray-800 rounded-xl p-3 shadow-lg min-h-[126px] min-w-[180px] flex-shrink-0 flex flex-col justify-center border-[2.5px] ${
                     isCompleted
                       ? 'border-fuchsia-500'
                       : isInProgress

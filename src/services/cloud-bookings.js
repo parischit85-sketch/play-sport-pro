@@ -383,24 +383,16 @@ export async function loadBookingsForPlayer({ userId, email, name }) {
   try {
     const queries = [];
     if (userId) {
-      queries.push(
-        getDocs(query(collection(db, 'bookings'), where('createdBy', '==', userId)))
-      );
+      queries.push(getDocs(query(collection(db, 'bookings'), where('createdBy', '==', userId))));
     }
     if (email) {
-      queries.push(
-        getDocs(query(collection(db, 'bookings'), where('userEmail', '==', email)))
-      );
+      queries.push(getDocs(query(collection(db, 'bookings'), where('userEmail', '==', email))));
     }
     if (name) {
-      queries.push(
-        getDocs(query(collection(db, 'bookings'), where('bookedBy', '==', name)))
-      );
+      queries.push(getDocs(query(collection(db, 'bookings'), where('bookedBy', '==', name))));
       // array-contains richiede che 'players' sia un array di stringhe (nomi)
       queries.push(
-        getDocs(
-          query(collection(db, 'bookings'), where('players', 'array-contains', name))
-        )
+        getDocs(query(collection(db, 'bookings'), where('players', 'array-contains', name)))
       );
     }
 

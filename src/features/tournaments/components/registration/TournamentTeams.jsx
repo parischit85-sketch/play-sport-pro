@@ -46,7 +46,7 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
       onUpdate();
     } catch (error) {
       console.error('Error deleting team:', error);
-      alert('Errore nell\'eliminazione della squadra');
+      alert("Errore nell'eliminazione della squadra");
     }
   };
 
@@ -56,7 +56,6 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
     onUpdate();
   };
 
-  
   const canEditTeams = [
     TOURNAMENT_STATUS.REGISTRATION_OPEN,
     TOURNAMENT_STATUS.GROUPS_GENERATION,
@@ -78,8 +77,10 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
   const canRegister = tournament.status === TOURNAMENT_STATUS.REGISTRATION_OPEN;
   const canAssignGroups = tournament.status === TOURNAMENT_STATUS.GROUPS_GENERATION;
 
-  const numberOfGroups = tournament.configuration?.numberOfGroups || tournament.groupsConfig?.numberOfGroups || 4;
-  const teamsPerGroup = tournament.configuration?.teamsPerGroup || tournament.groupsConfig?.teamsPerGroup || 4;
+  const numberOfGroups =
+    tournament.configuration?.numberOfGroups || tournament.groupsConfig?.numberOfGroups || 4;
+  const teamsPerGroup =
+    tournament.configuration?.teamsPerGroup || tournament.groupsConfig?.teamsPerGroup || 4;
 
   const groupOptions = GROUP_NAMES.slice(0, numberOfGroups);
 
@@ -108,7 +109,11 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
 
     const totalAssigned = Array.from(groupsMap.values()).reduce((s, arr) => s + arr.length, 0);
     if (totalAssigned !== numberOfGroups * teamsPerGroup) {
-      if (!window.confirm(`Hai assegnato ${totalAssigned}/${numberOfGroups * teamsPerGroup} squadre. Procedere comunque?`)) {
+      if (
+        !window.confirm(
+          `Hai assegnato ${totalAssigned}/${numberOfGroups * teamsPerGroup} squadre. Procedere comunque?`
+        )
+      ) {
         return;
       }
     }
@@ -141,7 +146,11 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
         'configuration.generatedAt': new Date().toISOString(),
         phaseHistory: [
           ...(tournament.phaseHistory || []),
-          { from: tournament.status, to: TOURNAMENT_STATUS.GROUPS_PHASE, timestamp: new Date().toISOString() },
+          {
+            from: tournament.status,
+            to: TOURNAMENT_STATUS.GROUPS_PHASE,
+            timestamp: new Date().toISOString(),
+          },
         ],
       });
       if (!res.success) throw new Error(res.error || 'Errore aggiornamento torneo');
@@ -170,7 +179,9 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
       {canAssignGroups && (
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
           <h3 className="text-lg font-semibold text-white mb-3">Assegna Gironi Manualmente</h3>
-          <p className="text-sm text-gray-400 mb-4">Seleziona il girone per ogni squadra (max {teamsPerGroup} per girone).</p>
+          <p className="text-sm text-gray-400 mb-4">
+            Seleziona il girone per ogni squadra (max {teamsPerGroup} per girone).
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             {teams.map((team) => (
               <div key={team.id} className="border border-gray-700 rounded-lg p-3 bg-gray-700/30">
@@ -182,7 +193,9 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
                 >
                   <option value="">— Seleziona Girone —</option>
                   {groupOptions.map((g) => (
-                    <option key={g} value={g}>{g}</option>
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -199,9 +212,7 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
       )}
       {/* Header with Add button */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-white">
-          Squadre Registrate ({teams.length})
-        </h2>
+        <h2 className="text-xl font-semibold text-white">Squadre Registrate ({teams.length})</h2>
         {canRegister && (
           <button
             onClick={() => setShowRegistrationModal(true)}
@@ -240,33 +251,23 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
       {teams.length === 0 ? (
         <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
           <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">
-            Nessuna squadra registrata
-          </h3>
+          <h3 className="text-lg font-medium text-white mb-2">Nessuna squadra registrata</h3>
           <p className="text-gray-400 mb-4">
-            {canRegister 
+            {canRegister
               ? 'Inizia aggiungendo la prima squadra al torneo'
-              : 'Le iscrizioni sono chiuse'
-            }
+              : 'Le iscrizioni sono chiuse'}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {teams.map((team) => (
-            <div
-              key={team.id}
-              className="bg-gray-800 rounded-lg border border-gray-700 p-4"
-            >
+            <div key={team.id} className="bg-gray-800 rounded-lg border border-gray-700 p-4">
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h3 className="font-semibold text-white">
                     {team.teamName || team.name || 'Squadra senza nome'}
                   </h3>
-                  {team.seed && (
-                    <span className="text-sm text-gray-400">
-                      Seed #{team.seed}
-                    </span>
-                  )}
+                  {team.seed && <span className="text-sm text-gray-400">Seed #{team.seed}</span>}
                 </div>
                 {canEditTeams && (
                   <button
@@ -287,22 +288,18 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
                     <span className="text-gray-300">
                       {player.playerName || player.name || `Giocatore ${idx + 1}`}
                     </span>
-                    {(player.ranking !== null && player.ranking !== undefined) && (
-                      <span className="ml-auto text-gray-400">
-                        Rank: {player.ranking}
-                      </span>
+                    {player.ranking !== null && player.ranking !== undefined && (
+                      <span className="ml-auto text-gray-400">Rank: {player.ranking}</span>
                     )}
                   </div>
                 ))}
               </div>
 
-              {(team.averageRanking !== null && team.averageRanking !== undefined) && (
+              {team.averageRanking !== null && team.averageRanking !== undefined && (
                 <div className="mt-3 pt-3 border-t border-gray-700">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Ranking Medio</span>
-                    <span className="font-medium text-white">
-                      {team.averageRanking.toFixed(1)}
-                    </span>
+                    <span className="font-medium text-white">{team.averageRanking.toFixed(1)}</span>
                   </div>
                 </div>
               )}
@@ -327,4 +324,3 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
 }
 
 export default TournamentTeams;
-

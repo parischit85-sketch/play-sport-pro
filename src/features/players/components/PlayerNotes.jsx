@@ -308,6 +308,3 @@ export default function PlayerNotes({ player, onUpdate, T }) {
     </div>
   );
 }
-
-
-

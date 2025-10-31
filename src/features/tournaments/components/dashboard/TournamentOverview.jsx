@@ -29,7 +29,7 @@ import {
   revertTournamentChampionshipPoints,
 } from '../../services/championshipApplyService.js';
 import { db } from '@services/firebase.js';
-import { collection, getDocs, query, doc, onSnapshot } from 'firebase/firestore';
+import { collection, getDocs, query, doc, onSnapshot, where } from 'firebase/firestore';
 
 function TournamentOverview({ tournament, onUpdate, clubId }) {
   const { userRole, userClubRoles } = useAuth();
@@ -42,6 +42,8 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
   const [actualTeamsCount, setActualTeamsCount] = useState(null);
   const [completedMatches, setCompletedMatches] = useState(tournament?.completedMatches || 0);
   const [totalMatches, setTotalMatches] = useState(tournament?.totalMatches || 0);
+  const [completedGroupMatches, setCompletedGroupMatches] = useState(0);
+  const [totalGroupMatches, setTotalGroupMatches] = useState(0);
 
   // Se è un utente normale, mostra la tab torneo solo in visualizzazione
   // eslint-disable-next-line no-unused-vars
@@ -132,6 +134,40 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
       },
       (error) => {
         console.warn('⚠️ [TournamentOverview] Error listening to tournament:', error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [clubId, tournament?.id]);
+
+  // 📊 Monitor group matches completion separately (for knockout phase validation)
+  useEffect(() => {
+    if (!clubId || !tournament?.id) return;
+
+    const matchesRef = collection(db, 'clubs', clubId, 'tournaments', tournament.id, 'matches');
+
+    // Query only group matches
+    const q = query(matchesRef, where('type', '==', 'group'));
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        let completed = 0;
+        let total = 0;
+
+        snapshot.forEach((doc) => {
+          const match = doc.data();
+          total++;
+          if (match.status === 'completed') {
+            completed++;
+          }
+        });
+
+        setCompletedGroupMatches(completed);
+        setTotalGroupMatches(total);
+      },
+      (error) => {
+        console.warn('⚠️ [TournamentOverview] Error listening to group matches:', error);
       }
     );
 
@@ -261,31 +297,6 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
     }
   };
 
-  const handleStartKnockout = async () => {
-    if (
-      !window.confirm(
-        'Avviare la fase a eliminazione? Verrà generato automaticamente il tabellone e le partite.'
-      )
-    )
-      return;
-    setLoading(true);
-    setError(null);
-    try {
-      const manager = createWorkflowManager(clubId, tournament.id);
-      const res = await manager.startKnockoutStage();
-      if (res.success) {
-        onUpdate();
-      } else {
-        setError(res.error || "Errore durante l'avvio della fase a eliminazione");
-      }
-    } catch (e) {
-      console.error(e);
-      setError("Errore durante l'avvio della fase a eliminazione");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleRecalculateStandings = async () => {
     if (!window.confirm('Ricalcolare le classifiche dei gironi?')) return;
     setLoading(true);
@@ -347,8 +358,9 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
   // Il torneo si completa al termine della fase a eliminazione
   const canComplete = tournament.status === TOURNAMENT_STATUS.KNOCKOUT_PHASE;
 
-  // Check if all group stage matches have results
-  const allGroupMatchesCompleted = totalMatches > 0 && completedMatches === totalMatches;
+  // Check if all group stage matches have results (using only group matches count)
+  const allGroupMatchesCompleted =
+    totalGroupMatches > 0 && completedGroupMatches === totalGroupMatches;
 
   // Filtra le fasi rilevanti in base allo stato del torneo
   const activePhasesSequence = [
@@ -435,9 +447,7 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
             </div>
             <div>
               <p className="text-sm text-gray-400">Partite</p>
-              <p className="text-xl font-bold text-white">
-                {tournament.totalMatches || 0}
-              </p>
+              <p className="text-xl font-bold text-white">{tournament.totalMatches || 0}</p>
             </div>
           </div>
         </div>
@@ -463,9 +473,7 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
             </div>
             <div>
               <p className="text-sm text-gray-400">Completate</p>
-              <p className="text-xl font-bold text-white">
-                {completedMatches || 0}
-              </p>
+              <p className="text-xl font-bold text-white">{completedMatches || 0}</p>
             </div>
           </div>
         </div>
@@ -474,9 +482,7 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
       {/* Tournament Information */}
       <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-700">
-          <h2 className="text-lg font-semibold text-white">
-            Informazioni Torneo
-          </h2>
+          <h2 className="text-lg font-semibold text-white">Informazioni Torneo</h2>
         </div>
         <div className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -485,43 +491,29 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
               <p className="text-white">{tournament.name}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-400">
-                Formato
-              </label>
-              <p className="text-white">
-                {formatTournamentFormat(tournament.format)}
-              </p>
+              <label className="text-sm font-medium text-gray-400">Formato</label>
+              <p className="text-white">{formatTournamentFormat(tournament.format)}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-400">
-                Data Inizio
-              </label>
+              <label className="text-sm font-medium text-gray-400">Data Inizio</label>
               <p className="text-white">{formatDate(tournament.startDate)}</p>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-400">
-                Data Fine
-              </label>
+              <label className="text-sm font-medium text-gray-400">Data Fine</label>
               <p className="text-white">{formatDate(tournament.endDate)}</p>
             </div>
           </div>
 
           {tournament.description && (
             <div>
-              <label className="text-sm font-medium text-gray-400">
-                Descrizione
-              </label>
-              <p className="text-white whitespace-pre-wrap">
-                {tournament.description}
-              </p>
+              <label className="text-sm font-medium text-gray-400">Descrizione</label>
+              <p className="text-white whitespace-pre-wrap">{tournament.description}</p>
             </div>
           )}
 
           {/* Configuration Details */}
           <div className="pt-4 border-t border-gray-700">
-            <h3 className="text-sm font-semibold text-white mb-3">
-              Configurazione
-            </h3>
+            <h3 className="text-sm font-semibold text-white mb-3">Configurazione</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               {tournament.format === TOURNAMENT_FORMAT.GROUPS && (
                 <>
@@ -556,11 +548,7 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
       {isAdmin && (
         <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
           <div className="px-6 py-4">
-            <PublicViewSettings 
-              tournament={tournament}
-              clubId={clubId}
-              onUpdate={onUpdate}
-            />
+            <PublicViewSettings tournament={tournament} clubId={clubId} onUpdate={onUpdate} />
           </div>
         </div>
       )}
@@ -655,14 +643,6 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
                           Tutti i risultati inseriti - Genera tabellone:
                         </div>
                         <button
-                          onClick={handleStartKnockout}
-                          disabled={loading}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Genera automaticamente il tabellone a eliminazione diretta"
-                        >
-                          Genera Tabellone Automatico
-                        </button>
-                        <button
                           onClick={() => setShowManualBracket(true)}
                           disabled={loading}
                           className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -672,10 +652,10 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
                         </button>
                       </>
                     )}
-                    {!allGroupMatchesCompleted && tournament.totalMatches > 0 && (
+                    {!allGroupMatchesCompleted && totalGroupMatches > 0 && (
                       <div className="inline-flex items-center text-sm text-amber-400 px-2 py-1 bg-amber-900/20 rounded-lg">
-                        ⏳ Inserisci i risultati di tutte le partite ({completedMatches}/
-                        {totalMatches}) per sbloccare il tabellone
+                        ⏳ Inserisci i risultati di tutte le partite ({completedGroupMatches}/
+                        {totalGroupMatches}) per sbloccare il tabellone
                       </div>
                     )}
                     {/* Rimosso in fase Gironi: Ricalcola Classifiche / Configura Tabellone Manuale / Inizia Fase a Eliminazione */}
@@ -778,4 +758,3 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
 }
 
 export default TournamentOverview;
-

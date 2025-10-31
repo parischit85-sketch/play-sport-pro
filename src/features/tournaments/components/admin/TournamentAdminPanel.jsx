@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../../../contexts/AuthContext.jsx';
-import { TournamentWorkflowManager, canAdvanceTournament } from '../../services/tournamentWorkflow.js';
+import {
+  TournamentWorkflowManager,
+  canAdvanceTournament,
+} from '../../services/tournamentWorkflow.js';
 import { canAdvancePhase, canViewAdminFeatures } from '../../services/tournamentAuth.js';
 import { TOURNAMENT_STATUS } from '../../constants/tournamentConstants.js';
 
@@ -149,15 +152,15 @@ const TournamentAdminPanel = ({ clubId, tournament, onUpdate }) => {
 
   return (
     <div className="bg-gray-800 rounded-lg shadow-lg p-6">
-      <h2 className="text-2xl font-bold text-white mb-6">
-        Pannello Amministrazione Torneo
-      </h2>
+      <h2 className="text-2xl font-bold text-white mb-6">Pannello Amministrazione Torneo</h2>
 
       {/* Current Status */}
       <div className="mb-6">
         <h3 className="text-sm font-medium text-gray-300 mb-2">Stato Attuale</h3>
         <div className="flex items-center space-x-3">
-          <span className={`px-3 py-1 rounded-full text-white text-sm font-medium ${statusInfo.color}`}>
+          <span
+            className={`px-3 py-1 rounded-full text-white text-sm font-medium ${statusInfo.color}`}
+          >
             {statusInfo.label}
           </span>
           <span className="text-sm text-gray-400">{statusInfo.description}</span>
@@ -187,11 +190,7 @@ const TournamentAdminPanel = ({ clubId, tournament, onUpdate }) => {
                   {isCompleted ? '✓' : index + 1}
                 </div>
                 <span
-                  className={`text-sm ${
-                    isCurrent
-                      ? 'font-semibold text-white'
-                      : 'text-gray-400'
-                  }`}
+                  className={`text-sm ${isCurrent ? 'font-semibold text-white' : 'text-gray-400'}`}
                 >
                   {getStatusInfo(status).label}
                 </span>
@@ -204,15 +203,11 @@ const TournamentAdminPanel = ({ clubId, tournament, onUpdate }) => {
       {/* Advancement Info */}
       {advanceInfo && (
         <div className="mb-6 p-4 bg-gray-700 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-300 mb-2">
-            Informazioni Avanzamento
-          </h3>
+          <h3 className="text-sm font-medium text-gray-300 mb-2">Informazioni Avanzamento</h3>
           <div className="space-y-1 text-sm text-gray-400">
             {advanceInfo.canAdvance ? (
               <>
-                <p className="text-green-400 font-medium">
-                  ✓ Puoi avanzare alla prossima fase
-                </p>
+                <p className="text-green-400 font-medium">✓ Puoi avanzare alla prossima fase</p>
                 <p>Prossima fase: {getStatusInfo(advanceInfo.nextStatus).label}</p>
               </>
             ) : (
@@ -309,4 +304,3 @@ const TournamentAdminPanel = ({ clubId, tournament, onUpdate }) => {
 };
 
 export default TournamentAdminPanel;
-

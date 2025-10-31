@@ -57,11 +57,11 @@ function VisualBracketEditor({
         <button
           type="button"
           onClick={() => openPicker(slotIndex)}
-          className="w-full rounded-lg border border-gray-300 border-gray-700 bg-white bg-gray-800 text-left px-3 py-2 text-sm text-gray-900 text-gray-100 hover:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300"
+          className="w-full rounded-lg border border-gray-700 bg-gray-800 text-left px-3 py-2 text-sm text-gray-100 hover:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-300"
           title="Seleziona dalla classifica del girone"
         >
           {value === '' && <span className="text-gray-400">— {label} —</span>}
-          {value === 'BYE' && <span className="text-amber-700 text-amber-300">BYE</span>}
+          {value === 'BYE' && <span className="text-amber-300">BYE</span>}
           {value && value !== 'BYE' && (
             <span>
               {current
@@ -80,9 +80,9 @@ function VisualBracketEditor({
       {firstRoundPairs.map(([a, b], idx) => (
         <div
           key={idx}
-          className="relative bg-white bg-gray-800 border border-gray-200 border-gray-700 rounded-lg p-3 shadow-sm"
+          className="relative bg-gray-800 border border-gray-700 rounded-lg p-3 shadow-sm"
         >
-          <div className="text-xs text-gray-500 text-gray-400 mb-1">Match {idx + 1}</div>
+          <div className="text-xs text-gray-400 mb-1">Match {idx + 1}</div>
           <div className="flex flex-col gap-2">
             {renderTeamSelect(a, `Slot ${a + 1}`)}
             <div className="text-center text-[10px] uppercase tracking-wide text-gray-400">VS</div>
@@ -102,7 +102,7 @@ function VisualBracketEditor({
         {Array.from({ length: currCount }).map((_, idx) => (
           <div
             key={idx}
-            className="bg-gray-50 bg-gray-900/40 border border-dashed border-gray-300 border-gray-700 rounded-lg p-4 text-center text-xs text-gray-400"
+            className="bg-gray-900/40 border border-dashed border-gray-700 rounded-lg p-4 text-center text-xs text-gray-400"
           >
             Match {idx + 1}
           </div>
@@ -119,7 +119,7 @@ function VisualBracketEditor({
           {rounds.slice(1).map((_, i) => (
             <React.Fragment key={i}>
               <div className="flex items-center">
-                <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-gray-300 text-gray-600" />
+                <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-gray-600" />
               </div>
               {renderPlaceholderRound(i + 1)}
             </React.Fragment>
@@ -143,12 +143,12 @@ function VisualBracketEditor({
 
 function RoundHeader({ title, count }) {
   return (
-    <div className="sticky top-0 z-10 bg-gradient-to-r from-primary-100 to-blue-100 from-primary-900/40 to-blue-900/40 rounded-lg px-4 py-2 border border-primary-200 border-primary-800">
+    <div className="sticky top-0 z-10 bg-gradient-to-r from-primary-900/40 to-blue-900/40 rounded-lg px-4 py-2 border border-primary-800">
       <div className="flex items-center gap-2 justify-center">
         <Crown className="w-4 h-4 text-primary-600" />
-        <h4 className="text-sm font-semibold text-gray-900 text-white">{title}</h4>
+        <h4 className="text-sm font-semibold text-white">{title}</h4>
       </div>
-      <div className="text-[11px] text-gray-600 text-gray-400 text-center mt-1">
+      <div className="text-[11px] text-gray-400 text-center mt-1">
         {count} {count === 1 ? 'partita' : 'partite'}
       </div>
     </div>
@@ -225,4 +225,3 @@ function TeamPickerHost({ open, slotIndex, standings, slots, onPick, onClose, te
     />
   );
 }
-

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 /**
  * FASE 2: 2025-10-16 - GDPR Data Export Utility
  *

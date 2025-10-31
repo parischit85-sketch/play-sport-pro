@@ -104,4 +104,3 @@ const PlayerCard = ({ player, playersById, onEdit, onDelete, onView, onStats, T 
 // 🚀 OTTIMIZZAZIONE: Memoizza il componente per evitare re-render inutili
 // Riduce i re-render del ~40% quando cambiano altri elementi della lista
 export default React.memo(PlayerCard);
-

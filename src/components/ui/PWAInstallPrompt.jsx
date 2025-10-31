@@ -205,9 +205,7 @@ export default function PWAInstallPrompt() {
                       ✓
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 text-white">
-                        Accesso istantaneo
-                      </h4>
+                      <h4 className="font-semibold text-gray-900 text-white">Accesso istantaneo</h4>
                       <p className="text-sm text-gray-600 text-gray-300">
                         Apri l&apos;app direttamente dalla home screen
                       </p>
@@ -219,9 +217,7 @@ export default function PWAInstallPrompt() {
                       ✓
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 text-white">
-                        Funziona offline
-                      </h4>
+                      <h4 className="font-semibold text-gray-900 text-white">Funziona offline</h4>
                       <p className="text-sm text-gray-600 text-gray-300">
                         Visualizza dati e statistiche senza connessione
                       </p>
@@ -328,9 +324,7 @@ export default function PWAInstallPrompt() {
                     />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 text-white mb-2">
-                  Sei pronto! 🎾
-                </h3>
+                <h3 className="text-xl font-bold text-gray-900 text-white mb-2">Sei pronto! 🎾</h3>
                 <p className="text-gray-600 text-gray-300">
                   Ora puoi goderti al meglio Play Sport Pro con tutte le funzionalità attive.
                 </p>
@@ -466,6 +460,3 @@ export default function PWAInstallPrompt() {
     </>
   );
 }
-
-
-

@@ -11,13 +11,13 @@ import { useOptimisticUpdate } from '../../hooks/useOptimisticUpdate.js';
 import { calculateOptimisticStandings } from '../../services/optimisticUpdates.js';
 import { OptimisticToast, SavingIndicator } from '../shared/OptimisticIndicators.jsx';
 
-const EnhancedMatchResultForm = ({ 
-  clubId, 
-  tournamentId, 
-  match, 
+const EnhancedMatchResultForm = ({
+  clubId,
+  tournamentId,
+  match,
   currentStandings = [],
   onResultSubmitted,
-  onStandingsUpdated 
+  onStandingsUpdated,
 }) => {
   const { user, userRole } = useAuth();
   const [team1Score, setTeam1Score] = useState('');
@@ -28,7 +28,11 @@ const EnhancedMatchResultForm = ({
   const [toastMessage, setToastMessage] = useState('');
 
   // Optimistic update hook
-  const { execute: submitWithOptimistic, isPending, age } = useOptimisticUpdate(`match-${match.id}`);
+  const {
+    execute: submitWithOptimistic,
+    isPending,
+    age,
+  } = useOptimisticUpdate(`match-${match.id}`);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -127,23 +131,13 @@ const EnhancedMatchResultForm = ({
     <div className="bg-gray-800 rounded-lg shadow p-4">
       {/* Match Info */}
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-white mb-2">
-          Inserisci Risultato
-        </h3>
+        <h3 className="text-lg font-semibold text-white mb-2">Inserisci Risultato</h3>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-300 font-medium">
-            {match.team1Name || 'Squadra 1'}
-          </span>
+          <span className="text-gray-300 font-medium">{match.team1Name || 'Squadra 1'}</span>
           <span className="text-gray-400 mx-2">vs</span>
-          <span className="text-gray-300 font-medium">
-            {match.team2Name || 'Squadra 2'}
-          </span>
+          <span className="text-gray-300 font-medium">{match.team2Name || 'Squadra 2'}</span>
         </div>
-        {match.groupName && (
-          <p className="text-xs text-gray-400 mt-1">
-            Girone: {match.groupName}
-          </p>
-        )}
+        {match.groupName && <p className="text-xs text-gray-400 mt-1">Girone: {match.groupName}</p>}
       </div>
 
       {/* Optimistic Update Indicator */}
@@ -194,9 +188,7 @@ const EnhancedMatchResultForm = ({
 
         {/* Date Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Data Completamento
-          </label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">Data Completamento</label>
           <input
             type="date"
             value={completedDate}
@@ -258,4 +250,3 @@ const EnhancedMatchResultForm = ({
 };
 
 export default EnhancedMatchResultForm;
-

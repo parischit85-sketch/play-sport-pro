@@ -232,9 +232,7 @@ const ClubDashboard = () => {
       <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 flex items-center justify-center py-20">
         <div className="text-center">
           <div className="text-6xl mb-4">❌</div>
-          <h1 className="text-2xl font-bold text-gray-900 text-white mb-2">
-            Club non trovato
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 text-white mb-2">Club non trovato</h1>
           <button
             onClick={() => navigate('/clubs/search')}
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg"
@@ -256,10 +254,7 @@ const ClubDashboard = () => {
               <div className="h-8 bg-gray-200/80 bg-gray-600/60 rounded w-64 mb-6"></div>
               <div className="grid grid-cols-3 gap-4 mb-6">
                 {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="h-24 bg-gray-200/60 bg-gray-600/40 rounded-2xl"
-                  ></div>
+                  <div key={i} className="h-24 bg-gray-200/60 bg-gray-600/40 rounded-2xl"></div>
                 ))}
               </div>
               <div className="h-96 bg-gray-200/60 bg-gray-600/40 rounded-2xl"></div>
@@ -322,10 +317,7 @@ const ClubDashboard = () => {
             <div className="bg-white/80 bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 md:p-8">
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="bg-gray-700 p-4 rounded-xl animate-pulse"
-                  >
+                  <div key={i} className="bg-gray-700 p-4 rounded-xl animate-pulse">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="h-4 bg-gray-600 rounded w-20 mb-2"></div>
@@ -488,7 +480,7 @@ const ClubDashboard = () => {
                           </div>
                           <div className="text-right">
                             {booking.price && (
-                              <div className="text-xs font-bold text-green-600 text-green-400">
+                              <div className="text-xs font-bold text-green-400">
                                 €{booking.price}
                               </div>
                             )}
@@ -525,7 +517,7 @@ const ClubDashboard = () => {
                         />
                       </svg>
                     </div>
-                    <span className="text-sm font-medium text-blue-700 text-blue-300 text-center">
+                    <span className="text-sm font-medium text-blue-300 text-center">
                       Prenota Campo
                     </span>
                   </div>
@@ -705,6 +697,3 @@ const ClubDashboard = () => {
 };
 
 export default ClubDashboard;
-
-
-

@@ -319,9 +319,7 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
               <div className="text-3xl font-bold text-blue-600 text-blue-400">
                 {stats.totalMatches}
               </div>
-              <div className="text-xs text-gray-600 text-gray-400 mt-1 font-medium">
-                Partite
-              </div>
+              <div className="text-xs text-gray-600 text-gray-400 mt-1 font-medium">Partite</div>
             </div>
 
             {/* Wins */}
@@ -332,12 +330,8 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
                   Vinte
                 </div>
               </div>
-              <div className="text-3xl font-bold text-green-600 text-green-400">
-                {stats.wins}
-              </div>
-              <div className="text-xs text-gray-600 text-gray-400 mt-1 font-medium">
-                Vittorie
-              </div>
+              <div className="text-3xl font-bold text-green-600 text-green-400">{stats.wins}</div>
+              <div className="text-xs text-gray-600 text-gray-400 mt-1 font-medium">Vittorie</div>
             </div>
 
             {/* Losses */}
@@ -348,12 +342,8 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
                   Perse
                 </div>
               </div>
-              <div className="text-3xl font-bold text-red-600 text-red-400">
-                {stats.losses}
-              </div>
-              <div className="text-xs text-gray-600 text-gray-400 mt-1 font-medium">
-                Sconfitte
-              </div>
+              <div className="text-3xl font-bold text-red-600 text-red-400">{stats.losses}</div>
+              <div className="text-xs text-gray-600 text-gray-400 mt-1 font-medium">Sconfitte</div>
             </div>
 
             {/* Win Rate */}
@@ -367,9 +357,7 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
               <div className="text-3xl font-bold text-purple-600 text-purple-400">
                 {stats.winRate ? `${stats.winRate.toFixed(1)}%` : '0%'}
               </div>
-              <div className="text-xs text-gray-600 text-gray-400 mt-1 font-medium">
-                Win Rate
-              </div>
+              <div className="text-xs text-gray-600 text-gray-400 mt-1 font-medium">Win Rate</div>
             </div>
           </div>
 
@@ -573,4 +561,3 @@ export default function PlayerTournamentTab({ player, onUpdate, T }) {
     </div>
   );
 }
-

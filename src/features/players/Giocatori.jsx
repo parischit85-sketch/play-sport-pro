@@ -203,4 +203,3 @@ export default function Giocatori({ state, setState, onOpenStats, playersById, T
     </Section>
   );
 }
-

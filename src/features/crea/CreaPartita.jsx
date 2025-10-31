@@ -599,9 +599,7 @@ export default function CreaPartita({
               ))}
             </div>
 
-            <div
-              className={`mt-3 text-xs ${T.subtext} bg-amber-50 bg-amber-900/20 p-2 rounded-lg`}
-            >
+            <div className={`mt-3 text-xs ${T.subtext} bg-amber-50 bg-amber-900/20 p-2 rounded-lg`}>
               💡 Se dopo 2 set è 1–1, inserisci il 3° set per decidere.
             </div>
           </div>
@@ -691,4 +689,3 @@ export default function CreaPartita({
     </>
   );
 }
-

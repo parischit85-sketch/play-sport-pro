@@ -181,4 +181,3 @@ export default function LogoEditor({ imageSource, onCropComplete, onCancel }) {
     </div>
   );
 }
-

@@ -28,9 +28,7 @@ const AdminUsersPage = () => {
               >
                 ← Admin Dashboard
               </button>
-              <h1 className="text-xl font-semibold text-gray-900 text-white">
-                Gestione Utenti
-              </h1>
+              <h1 className="text-xl font-semibold text-gray-900 text-white">Gestione Utenti</h1>
             </div>
           </div>
         </div>
@@ -45,4 +43,3 @@ const AdminUsersPage = () => {
 };
 
 export default AdminUsersPage;
-

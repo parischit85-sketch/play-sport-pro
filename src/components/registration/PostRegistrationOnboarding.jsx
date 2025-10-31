@@ -197,9 +197,7 @@ export default function PostRegistrationOnboarding({ clubId, clubName }) {
 
         {/* Tasks List */}
         <div className="mt-8 space-y-2">
-          <p className="text-sm font-medium text-neutral-700 text-gray-300 mb-4">
-            Tutti i compiti
-          </p>
+          <p className="text-sm font-medium text-neutral-700 text-gray-300 mb-4">Tutti i compiti</p>
           <div className="grid gap-2">
             {tasks.map((task, index) => (
               <div
@@ -244,4 +242,3 @@ export default function PostRegistrationOnboarding({ clubId, clubName }) {
     </div>
   );
 }
-

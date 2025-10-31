@@ -158,12 +158,8 @@ const ClubPreview = () => {
       <div className="bg-gray-50 bg-gray-900 flex items-center justify-center py-20">
         <div className="text-center">
           <div className="text-6xl mb-4">❌</div>
-          <h1 className="text-2xl font-bold text-gray-900 text-white mb-2">
-            Club non trovato
-          </h1>
-          <p className="text-gray-400 mb-6">
-            Il club richiesto non esiste o non è disponibile.
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900 text-white mb-2">Club non trovato</h1>
+          <p className="text-gray-400 mb-6">Il club richiesto non esiste o non è disponibile.</p>
           <button
             onClick={() => navigate('/search-clubs')}
             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg"
@@ -205,9 +201,7 @@ const ClubPreview = () => {
           <div className="p-8">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 text-white mb-2">
-                  {club.name}
-                </h1>
+                <h1 className="text-3xl font-bold text-gray-900 text-white mb-2">{club.name}</h1>
                 <p className="text-gray-400 text-lg">
                   📍 {club.location?.city}, {club.location?.region}
                 </p>
@@ -219,9 +213,7 @@ const ClubPreview = () => {
               </div>
             </div>
 
-            {club.description && (
-              <p className="text-gray-300 text-lg mb-6">{club.description}</p>
-            )}
+            {club.description && <p className="text-gray-300 text-lg mb-6">{club.description}</p>}
 
             {/* Message */}
             {message && (
@@ -245,9 +237,7 @@ const ClubPreview = () => {
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           {/* Stats */}
           <div className="bg-white bg-gray-800 rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold text-gray-900 text-white mb-4">
-              Statistiche
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-900 text-white mb-4">Statistiche</h2>
             <div className="space-y-4">
               <div className="flex justify-between">
                 <span className="text-gray-400">🎾 Campi</span>
@@ -311,9 +301,7 @@ const ClubPreview = () => {
 
         {/* Features */}
         <div className="bg-white bg-gray-800 rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-900 text-white mb-4">
-            Caratteristiche
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900 text-white mb-4">Caratteristiche</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {club.settings?.allowGuestBookings && (
               <div className="text-center p-3 bg-green-50 bg-green-900/20 rounded-lg">
@@ -334,9 +322,7 @@ const ClubPreview = () => {
             {club.subscription?.type === 'premium' && (
               <div className="text-center p-3 bg-purple-50 bg-purple-900/20 rounded-lg">
                 <div className="text-2xl mb-1">⭐</div>
-                <div className="text-sm font-medium text-purple-800 text-purple-400">
-                  Premium
-                </div>
+                <div className="text-sm font-medium text-purple-800 text-purple-400">Premium</div>
               </div>
             )}
             <div className="text-center p-3 bg-gray-50 bg-gray-700/50 rounded-lg">
@@ -351,6 +337,3 @@ const ClubPreview = () => {
 };
 
 export default ClubPreview;
-
-
-

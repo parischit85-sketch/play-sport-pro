@@ -108,4 +108,3 @@ const NotificationBadge = ({ size = 'md', onClick, showCount = true, className =
 };
 
 export default NotificationBadge;
-

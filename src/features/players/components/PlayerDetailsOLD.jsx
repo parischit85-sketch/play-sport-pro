@@ -1034,4 +1034,3 @@ export default function PlayerDetails({ player, onUpdate, _onClose, T }) {
     </div>
   );
 }
-

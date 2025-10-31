@@ -396,7 +396,7 @@ export default function LessonAdminPanel({
   return (
     <div className="space-y-6">
       {/* Section Navigation */}
-      <div className="border-b border-gray-200 border-gray-600 bg-white bg-gray-800 rounded-t-lg">
+      <div className="border-b border-gray-600 bg-gray-800 rounded-t-lg">
         <nav className="flex space-x-8 overflow-x-auto px-6 py-2">
           {[
             {
@@ -425,7 +425,7 @@ export default function LessonAdminPanel({
               className={`py-3 px-4 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-200 flex items-center gap-2 ${
                 activeSection === section.id
                   ? `border-${section.color}-500 text-${section.color}-600 text-${section.color}-400 bg-${section.color}-50 bg-${section.color}-900/20 rounded-t-lg`
-                  : 'border-transparent text-gray-500 text-gray-400 hover:text-gray-700 hover:text-gray-300 hover:border-gray-300 hover:border-gray-500 hover:bg-gray-50 hover:bg-gray-700/50 rounded-t-lg'
+                  : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300 hover:border-gray-500 hover:bg-gray-700/50 rounded-t-lg'
               }`}
             >
               <span className="text-base">{section.icon}</span>
@@ -441,11 +441,9 @@ export default function LessonAdminPanel({
           <Section title="Configurazione Sistema Lezioni" variant="minimal" T={T}>
             <div className="space-y-4">
               {/* Enable/Disable System */}
-              <div className="flex items-center justify-between p-6 bg-gradient-to-r from-gray-50 to-gray-100 from-gray-800 to-gray-700 rounded-xl border border-gray-200 border-gray-600 shadow-sm">
+              <div className="flex items-center justify-between p-6 bg-gradient-to-r from-gray-800 to-gray-700 rounded-xl border border-gray-600 shadow-sm">
                 <div>
-                  <h3
-                    className={`${ds.h6} font-semibold mb-2 text-gray-900 text-white flex items-center gap-2`}
-                  >
+                  <h3 className={`${ds.h6} font-semibold mb-2 text-white flex items-center gap-2`}>
                     🎾 Sistema Lezioni
                   </h3>
                   <p className={`text-sm ${T.subtext} max-w-md`}>
@@ -458,8 +456,8 @@ export default function LessonAdminPanel({
                   onClick={toggleLessonSystem}
                   className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg ${
                     lessonConfig.isEnabled
-                      ? 'bg-red-900/40 text-red-300 hover:bg-red-900/60 border border-red-300 border-red-700'
-                      : 'bg-green-900/40 text-green-300 hover:bg-green-900/60 border border-green-300 border-green-700'
+                      ? 'bg-red-900/40 text-red-300 hover:bg-red-900/60 border border-red-700'
+                      : 'bg-green-900/40 text-green-300 hover:bg-green-900/60 border border-green-700'
                   }`}
                 >
                   {lessonConfig.isEnabled ? '🛑 Disattiva' : '🚀 Attiva'}
@@ -468,9 +466,9 @@ export default function LessonAdminPanel({
 
               {/* Configuration Options */}
               <div className="grid gap-6 sm:grid-cols-2">
-                <div className="p-4 bg-white bg-gray-800 rounded-lg border border-gray-200 border-gray-600 shadow-sm">
+                <div className="p-4 bg-gray-800 rounded-lg border border-gray-600 shadow-sm">
                   <label
-                    className={`block ${ds.label} mb-3 flex items-center gap-2 text-gray-900 text-white font-medium`}
+                    className={`block ${ds.label} mb-3 flex items-center gap-2 text-white font-medium`}
                   >
                     📅 Giorni di Anticipo per Prenotazione
                   </label>
@@ -485,16 +483,14 @@ export default function LessonAdminPanel({
                         bookingAdvanceDays: parseInt(e.target.value) || 14,
                       })
                     }
-                    className={`w-full p-3 bg-gray-50 bg-gray-700 border border-gray-300 border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 text-white`}
+                    className={`w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white`}
                   />
-                  <p className="text-xs text-gray-400 mt-2">
-                    Quanto in anticipo si può prenotare
-                  </p>
+                  <p className="text-xs text-gray-400 mt-2">Quanto in anticipo si può prenotare</p>
                 </div>
 
-                <div className="p-4 bg-white bg-gray-800 rounded-lg border border-gray-200 border-gray-600 shadow-sm">
+                <div className="p-4 bg-gray-800 rounded-lg border border-gray-600 shadow-sm">
                   <label
-                    className={`block ${ds.label} mb-3 flex items-center gap-2 text-gray-900 text-white font-medium`}
+                    className={`block ${ds.label} mb-3 flex items-center gap-2 text-white font-medium`}
                   >
                     ⏰ Ore Prima per Cancellazione
                   </label>
@@ -509,11 +505,9 @@ export default function LessonAdminPanel({
                         cancellationHours: parseInt(e.target.value) || 24,
                       })
                     }
-                    className={`w-full p-3 bg-gray-50 bg-gray-700 border border-gray-300 border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 text-white`}
+                    className={`w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white`}
                   />
-                  <p className="text-xs text-gray-400 mt-2">
-                    Limite per cancellazioni gratuite
-                  </p>
+                  <p className="text-xs text-gray-400 mt-2">Limite per cancellazioni gratuite</p>
                 </div>
               </div>
             </div>
@@ -543,7 +537,7 @@ export default function LessonAdminPanel({
                   {/* Active Time Slots */}
                   {activeTimeSlots.length > 0 && (
                     <div className="space-y-3">
-                      <h3 className="text-lg font-semibold text-gray-900 text-gray-100 flex items-center gap-2">
+                      <h3 className="text-lg font-semibold text-gray-100 flex items-center gap-2">
                         ✅ Fasce Orarie Attive ({activeTimeSlots.length})
                       </h3>
                       <div className="space-y-3">
@@ -608,9 +602,7 @@ export default function LessonAdminPanel({
                                   </div>
 
                                   {dateInfo && (
-                                    <div className="text-sm text-gray-400 mb-2">
-                                      {dateInfo}
-                                    </div>
+                                    <div className="text-sm text-gray-400 mb-2">{dateInfo}</div>
                                   )}
 
                                   <div className="flex items-center gap-4 text-sm text-gray-400">
@@ -658,13 +650,13 @@ export default function LessonAdminPanel({
                                       setEditingTimeSlot(slot);
                                       setShowTimeSlotModal(true);
                                     }}
-                                    className="text-blue-600 text-blue-400 hover:text-blue-700 hover:text-blue-300"
+                                    className="text-blue-400 hover:text-blue-300"
                                   >
                                     Modifica
                                   </button>
                                   <button
                                     onClick={() => handleDeleteTimeSlot(slot.id)}
-                                    className="text-red-600 text-red-400 hover:text-red-700 hover:text-red-300"
+                                    className="text-red-400 hover:text-red-300"
                                   >
                                     Elimina
                                   </button>
@@ -682,11 +674,11 @@ export default function LessonAdminPanel({
                     <div className="space-y-3">
                       <h3 className="text-lg font-semibold text-gray-400 flex items-center gap-2">
                         ⏰ Fasce Orarie Scadute ({expiredTimeSlots.length})
-                        <span className="text-sm text-gray-500 text-gray-500 font-normal">
+                        <span className="text-sm text-gray-500 font-normal">
                           (si cancellano automaticamente dopo 1 settimana)
                         </span>
                       </h3>
-                      <div className="bg-gray-50 bg-gray-800/50 rounded-lg p-4 border-2 border-dashed border-gray-300 border-gray-600">
+                      <div className="bg-gray-800/50 rounded-lg p-4 border-2 border-dashed border-gray-600">
                         <div className="space-y-3">
                           {expiredTimeSlots.map((slot) => {
                             // Support both old format (dayOfWeek) and new format (selectedDates)
@@ -745,16 +737,14 @@ export default function LessonAdminPanel({
                                 <div className="flex justify-between items-start">
                                   <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-2">
-                                      <h4
-                                        className={`${ds.h6} font-medium text-gray-400`}
-                                      >
+                                      <h4 className={`${ds.h6} font-medium text-gray-400`}>
                                         {displayTitle}
                                       </h4>
                                       <div
                                         className={`px-2 py-1 rounded text-xs font-medium ${
                                           slot.isActive
                                             ? 'bg-green-900/30 text-green-400'
-                                            : 'bg-gray-700 text-gray-500 text-gray-400'
+                                            : 'bg-gray-700 text-gray-400'
                                         }`}
                                       >
                                         {slot.isActive ? 'Attiva' : 'Disattiva'}
@@ -762,9 +752,7 @@ export default function LessonAdminPanel({
                                     </div>
 
                                     {dateInfo && (
-                                      <p className="text-sm text-gray-500 text-gray-400 mb-2">
-                                        {dateInfo}
-                                      </p>
+                                      <p className="text-sm text-gray-400 mb-2">{dateInfo}</p>
                                     )}
 
                                     <div className="flex items-center gap-4 text-sm text-gray-400">
@@ -784,7 +772,7 @@ export default function LessonAdminPanel({
                                   <div className="flex gap-2 ml-4">
                                     <button
                                       onClick={() => handleDeleteTimeSlot(slot.id)}
-                                      className="p-2 text-red-600 text-red-400 hover:bg-red-50 hover:bg-red-900/30 rounded-lg transition-colors"
+                                      className="p-2 text-red-400 hover:bg-red-900/30 rounded-lg transition-colors"
                                       title="Elimina fascia oraria"
                                     >
                                       🗑️
@@ -842,7 +830,7 @@ export default function LessonAdminPanel({
                   ).length > 0 && (
                     <button
                       onClick={handleActivateAllInstructors}
-                      className="px-3 py-1.5 text-green-600 text-green-400 hover:text-white hover:bg-green-600 hover:bg-green-500 border border-green-600 border-green-400 rounded-lg transition-all duration-200 font-medium text-sm"
+                      className="px-3 py-1.5 text-green-400 hover:text-white hover:bg-green-500 border border-green-400 rounded-lg transition-all duration-200 font-medium text-sm"
                     >
                       ✅ Attiva Tutti
                     </button>
@@ -871,7 +859,7 @@ export default function LessonAdminPanel({
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-3">
                                 {!isActive && (
-                                  <div className="absolute top-2 right-2 bg-red-100 bg-red-900/40 text-red-600 text-red-400 px-2 py-1 rounded-full text-xs font-medium">
+                                  <div className="absolute top-2 right-2 bg-red-900/40 text-red-400 px-2 py-1 rounded-full text-xs font-medium">
                                     🚫 Disattivato
                                   </div>
                                 )}
@@ -887,7 +875,7 @@ export default function LessonAdminPanel({
                                 </div>
                                 <div>
                                   <h4
-                                    className={`${ds.h6} font-medium ${isActive ? 'text-gray-900 text-white' : 'text-gray-500 text-gray-400'}`}
+                                    className={`${ds.h6} font-medium ${isActive ? 'text-white' : 'text-gray-400'}`}
                                   >
                                     {instructor.name}
                                     {isActive && <span className="ml-2 text-green-500">🟢</span>}
@@ -896,22 +884,22 @@ export default function LessonAdminPanel({
                                     {/* Prezzi lezioni con design migliorato */}
                                     <div className="flex flex-wrap gap-1.5">
                                       {instructor.instructorData?.priceSingle > 0 && (
-                                        <span className="px-2 py-1 bg-blue-900/40 text-blue-200 rounded-full text-xs font-medium border border-blue-200 border-blue-700">
+                                        <span className="px-2 py-1 bg-blue-900/40 text-blue-200 rounded-full text-xs font-medium border border-blue-700">
                                           💼 €{instructor.instructorData.priceSingle}
                                         </span>
                                       )}
                                       {instructor.instructorData?.priceCouple > 0 && (
-                                        <span className="px-2 py-1 bg-green-100 bg-green-900/40 text-green-800 text-green-200 rounded-full text-xs font-medium border border-green-200 border-green-700">
+                                        <span className="px-2 py-1 bg-green-900/40 text-green-200 rounded-full text-xs font-medium border border-green-700">
                                           👥 €{instructor.instructorData.priceCouple}
                                         </span>
                                       )}
                                       {instructor.instructorData?.priceThree > 0 && (
-                                        <span className="px-2 py-1 bg-purple-900/40 text-purple-200 rounded-full text-xs font-medium border border-purple-200 border-purple-700">
+                                        <span className="px-2 py-1 bg-purple-900/40 text-purple-200 rounded-full text-xs font-medium border border-purple-700">
                                           👥👤 €{instructor.instructorData.priceThree}
                                         </span>
                                       )}
                                       {instructor.instructorData?.priceMatchLesson > 0 && (
-                                        <span className="px-2 py-1 bg-orange-100 bg-orange-900/40 text-orange-800 text-orange-200 rounded-full text-xs font-medium border border-orange-200 border-orange-700">
+                                        <span className="px-2 py-1 bg-orange-900/40 text-orange-200 rounded-full text-xs font-medium border border-orange-700">
                                           🏆 €{instructor.instructorData.priceMatchLesson}
                                         </span>
                                       )}
@@ -921,7 +909,7 @@ export default function LessonAdminPanel({
                                         !instructor.instructorData?.priceThree &&
                                         !instructor.instructorData?.priceMatchLesson &&
                                         instructor.instructorData?.hourlyRate > 0 && (
-                                          <span className="px-2 py-1 bg-gray-100 bg-gray-800 text-gray-800 text-gray-200 rounded-full text-xs font-medium border border-gray-200 border-gray-600">
+                                          <span className="px-2 py-1 bg-gray-800 text-gray-200 rounded-full text-xs font-medium border border-gray-600">
                                             ⏰ €{instructor.instructorData.hourlyRate}
                                             /ora
                                           </span>
@@ -934,7 +922,7 @@ export default function LessonAdminPanel({
                                           (specialty, idx) => (
                                             <span
                                               key={idx}
-                                              className="px-2 py-1 bg-indigo-50 bg-indigo-900/30 text-indigo-700 text-indigo-300 rounded text-xs border border-indigo-200 border-indigo-700"
+                                              className="px-2 py-1 bg-indigo-900/30 text-indigo-300 rounded text-xs border border-indigo-700"
                                             >
                                               ⭐ {specialty}
                                             </span>
@@ -952,13 +940,13 @@ export default function LessonAdminPanel({
                                     setEditingPlayer(instructor);
                                     setShowInstructorModal(true);
                                   }}
-                                  className="px-3 py-1.5 text-blue-600 text-blue-400 hover:text-white hover:bg-blue-600 hover:bg-blue-500 border border-blue-600 border-blue-400 rounded-lg transition-all duration-200 font-medium text-sm"
+                                  className="px-3 py-1.5 text-blue-400 hover:text-white hover:bg-blue-500 border border-blue-400 rounded-lg transition-all duration-200 font-medium text-sm"
                                 >
                                   ✏️ Modifica
                                 </button>
                                 <button
                                   onClick={() => handleRemoveInstructor(instructor.id)}
-                                  className="px-3 py-1.5 text-red-600 text-red-400 hover:text-white hover:bg-red-600 hover:bg-red-500 border border-red-600 border-red-400 rounded-lg transition-all duration-200 font-medium text-sm"
+                                  className="px-3 py-1.5 text-red-400 hover:text-white hover:bg-red-500 border border-red-400 rounded-lg transition-all duration-200 font-medium text-sm"
                                 >
                                   🗑️ Rimuovi
                                 </button>
@@ -1025,9 +1013,7 @@ export default function LessonAdminPanel({
                               {player.name?.charAt(0) || '?'}
                             </div>
                             <div>
-                              <h4 className={`${ds.h6} font-medium text-gray-900 text-white`}>
-                                {player.name}
-                              </h4>
+                              <h4 className={`${ds.h6} font-medium text-white`}>{player.name}</h4>
                               <p className={`text-sm ${T.subtext} flex items-center gap-2`}>
                                 <span>📧 {player.email}</span>
                                 <span>•</span>
@@ -1042,7 +1028,7 @@ export default function LessonAdminPanel({
                               setEditingPlayer(player);
                               setShowInstructorModal(true);
                             }}
-                            className="px-4 py-2 bg-green-100 bg-green-900/40 text-green-800 text-green-200 rounded-lg hover:bg-green-200 hover:bg-green-900/60 border border-green-300 border-green-700 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
+                            className="px-4 py-2 bg-green-900/40 text-green-200 rounded-lg hover:bg-green-900/60 border border-green-700 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                           >
                             ➕ Rendi Istruttore
                           </button>
@@ -1062,12 +1048,12 @@ export default function LessonAdminPanel({
         <div className="space-y-6">
           <Section title="Pulizia Dati di Test" variant="minimal" T={T}>
             <div className="space-y-4">
-              <div className="bg-yellow-50 bg-yellow-900/20 border border-yellow-200 border-yellow-700 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-yellow-800 text-yellow-200 mb-2">
+              <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-yellow-200 mb-2">
                   <span className="text-xl">⚠️</span>
                   <h3 className="font-semibold">Attenzione</h3>
                 </div>
-                <p className="text-sm text-yellow-700 text-yellow-300">
+                <p className="text-sm text-yellow-300">
                   Questa sezione permette di cancellare tutte le prenotazioni di lezione di test. Le
                   prenotazioni dei campi associate verranno anche cancellate automaticamente.
                 </p>
@@ -1090,8 +1076,8 @@ export default function LessonAdminPanel({
 
                 {lessonBookingsCount > 0 ? (
                   <div className="space-y-3">
-                    <div className="bg-red-50 bg-red-900/20 border border-red-200 border-red-700 rounded p-3">
-                      <p className="text-sm text-red-700 text-red-300">
+                    <div className="bg-red-900/20 border border-red-700 rounded p-3">
+                      <p className="text-sm text-red-300">
                         <strong>Cosa verrà eliminato:</strong>
                         <br />• {lessonBookingsCount} prenotazione/i di lezione
                         <br />
@@ -1351,25 +1337,23 @@ function TimeSlotModal({
               <label className={`block ${ds.label} mb-3 text-lg font-semibold`}>
                 📅 Seleziona Data *
               </label>
-              <div
-                className={`border-2 rounded-lg p-4 ${T.border} bg-white bg-gray-900 shadow-sm`}
-              >
+              <div className={`border-2 rounded-lg p-4 ${T.border} bg-gray-900 shadow-sm`}>
                 {/* Calendar Header */}
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 border-gray-700">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-700">
                   <button
                     type="button"
                     onClick={() => navigateMonth(-1)}
-                    className="p-3 hover:bg-gray-700 rounded-lg transition-colors text-gray-300 hover:text-gray-900 hover:text-gray-100 font-bold text-lg"
+                    className="p-3 hover:bg-gray-700 rounded-lg transition-colors hover:text-gray-100 font-bold text-lg"
                   >
                     ←
                   </button>
-                  <h3 className="text-xl font-bold text-gray-900 text-gray-100 capitalize">
+                  <h3 className="text-xl font-bold text-gray-100 capitalize">
                     {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
                   </h3>
                   <button
                     type="button"
                     onClick={() => navigateMonth(1)}
-                    className="p-3 hover:bg-gray-700 rounded-lg transition-colors text-gray-300 hover:text-gray-900 hover:text-gray-100 font-bold text-lg"
+                    className="p-3 hover:bg-gray-700 rounded-lg transition-colors hover:text-gray-100 font-bold text-lg"
                   >
                     →
                   </button>
@@ -1380,7 +1364,7 @@ function TimeSlotModal({
                   {dayNames.map((dayName) => (
                     <div
                       key={dayName}
-                      className="text-center text-sm font-bold text-gray-300 p-2 bg-gray-50 bg-gray-800 rounded"
+                      className="text-center text-sm font-bold text-gray-300 p-2 bg-gray-800 rounded"
                     >
                       {dayName}
                     </div>
@@ -1404,15 +1388,15 @@ function TimeSlotModal({
                           p-3 text-sm rounded-lg border-2 transition-all duration-200 font-semibold min-h-[2.5rem] flex items-center justify-center
                           ${
                             dayData.isPast
-                              ? 'text-gray-400 text-gray-600 cursor-not-allowed bg-gray-100 bg-gray-800 border-gray-200 border-gray-700'
+                              ? 'text-gray-400 cursor-not-allowed bg-gray-800 border-gray-700'
                               : 'hover:shadow-md cursor-pointer transform hover:scale-105'
                           }
                           ${
                             dayData.isSelected
-                              ? 'bg-blue-600 bg-blue-500 text-white border-blue-600 border-blue-500 shadow-lg shadow-blue-500/30'
+                              ? 'bg-blue-500 text-white border-blue-500 shadow-lg shadow-blue-500/30'
                               : dayData.isPast
                                 ? ''
-                                : 'border-gray-300 border-gray-600 bg-white bg-gray-800 text-gray-900 text-gray-100 hover:bg-blue-50 hover:bg-gray-700 hover:border-blue-300 hover:border-blue-500'
+                                : 'border-gray-600 bg-gray-800 text-gray-100 hover:bg-blue-50 hover:bg-gray-700 hover:border-blue-300 hover:border-blue-500'
                           }
                         `}
                       >
@@ -1424,8 +1408,8 @@ function TimeSlotModal({
 
                 {/* Selected date display */}
                 {formData.selectedDate && (
-                  <div className="mt-4 p-3 bg-blue-50 bg-blue-900/30 rounded-lg border border-blue-200 border-blue-700">
-                    <p className="text-sm font-bold text-blue-800 text-blue-200">
+                  <div className="mt-4 p-3 bg-blue-900/30 rounded-lg border border-blue-700">
+                    <p className="text-sm font-bold text-blue-200">
                       📅 Data selezionata:{' '}
                       {new Date(formData.selectedDate).toLocaleDateString('it-IT')}
                     </p>
@@ -1585,19 +1569,16 @@ function TimeSlotModal({
             </div>
 
             {/* Active Toggle */}
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 from-green-900/20 to-emerald-900/20 rounded-lg p-4 border border-green-200 border-green-700">
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 from-green-900/20 to-emerald-900/20 rounded-lg p-4 border border-green-700">
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="rounded text-blue-600 bg-gray-700 border-gray-300 border-gray-600 focus:ring-blue-500 focus:ring-blue-400 w-5 h-5"
+                  className="rounded text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500 focus:ring-blue-400 w-5 h-5"
                 />
-                <label
-                  htmlFor="isActive"
-                  className="font-semibold text-green-700 text-green-300"
-                >
+                <label htmlFor="isActive" className="font-semibold text-green-300">
                   ✅ Fascia oraria attiva
                 </label>
               </div>
@@ -1609,7 +1590,7 @@ function TimeSlotModal({
                 🏟️ Campi Disponibili *
               </label>
               <div
-                className={`space-y-2 border-2 rounded-lg p-3 ${T.border} bg-white bg-gray-900 shadow-sm`}
+                className={`space-y-2 border-2 rounded-lg p-3 ${T.border} bg-gray-900 shadow-sm`}
               >
                 {courts &&
                   courts.map((court) => (
@@ -1629,7 +1610,7 @@ function TimeSlotModal({
                               : formData.courtIds.filter((id) => id !== court.id),
                           });
                         }}
-                        className="rounded text-blue-600 bg-gray-700 border-gray-300 border-gray-600 focus:ring-blue-500 focus:ring-blue-400 w-4 h-4"
+                        className="rounded text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500 focus:ring-blue-400 w-4 h-4"
                       />
                       <div className="flex items-center gap-3">
                         <div
@@ -1639,7 +1620,7 @@ function TimeSlotModal({
                           }}
                         ></div>
                         <div className="flex flex-col">
-                          <span className="font-medium text-gray-900 text-gray-100">
+                          <span className="font-medium text-gray-100">
                             {court.name || `Campo ${court.id}`}
                           </span>
                           {court.surface?.type && (
@@ -1662,7 +1643,7 @@ function TimeSlotModal({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-4 pt-6 border-t border-gray-200 border-gray-600 mt-6">
+        <div className="flex gap-4 pt-6 border-t border-gray-600 mt-6">
           <button
             type="button"
             onClick={onClose}
@@ -1774,8 +1755,8 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
                 onClick={() => setFormData({ ...formData, color })}
                 className={`w-8 h-8 rounded-full border-2 transition-all duration-200 hover:scale-110 ${
                   formData.color === color
-                    ? 'border-gray-800 border-white scale-110 shadow-lg'
-                    : 'border-gray-300 border-gray-600 hover:border-gray-500 hover:border-gray-400'
+                    ? 'border-white scale-110 shadow-lg'
+                    : 'border-gray-600 hover:border-gray-400'
                 }`}
                 style={{ backgroundColor: color }}
                 title={`Seleziona colore ${color}`}
@@ -1792,14 +1773,12 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
               className="w-12 h-8 rounded border cursor-pointer"
               title="Colore personalizzato"
             />
-            <span className="text-sm text-gray-400">
-              Colore: {formData.color}
-            </span>
+            <span className="text-sm text-gray-400">Colore: {formData.color}</span>
           </div>
         </div>
 
         {/* Attiva/Disattiva Istruttore */}
-        <div className="bg-gradient-to-r from-emerald-50 to-green-50 from-emerald-900/20 to-green-900/20 rounded-lg p-4 border border-emerald-200 border-emerald-700">
+        <div className="bg-gradient-to-r from-emerald-900/20 to-green-900/20 rounded-lg p-4 border border-emerald-700">
           <label className="flex items-center gap-3 cursor-pointer group">
             <div className="relative">
               <input
@@ -1812,7 +1791,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
                 className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${
                   formData.isInstructor
                     ? 'bg-emerald-600 border-emerald-600 shadow-lg'
-                    : 'bg-white bg-gray-700 border-gray-300 border-gray-600 group-hover:border-emerald-400'
+                    : 'bg-gray-700 border-gray-600 group-hover:border-emerald-400'
                 }`}
               >
                 {formData.isInstructor && <span className="text-white text-sm font-bold">✓</span>}
@@ -1820,7 +1799,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
             </div>
             <div>
               <span
-                className={`${ds.label} font-semibold ${formData.isInstructor ? 'text-emerald-700 text-emerald-300' : ''}`}
+                className={`${ds.label} font-semibold ${formData.isInstructor ? 'text-emerald-300' : ''}`}
               >
                 🎯 Attiva Istruttore
               </span>
@@ -1836,14 +1815,14 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
         {/* Pricing Section */}
         <div className="relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-600 rounded-xl blur opacity-20 group-hover:opacity-30 transition-opacity"></div>
-          <div className="relative bg-white/90 bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 border border-white/20 border-gray-700/50">
+          <div className="relative bg-gray-800/90 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
             <label className={`block ${ds.label} mb-2`}>Tariffe (€/ora)</label>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                <div className="relative p-4 bg-white/80 bg-gray-800/80 backdrop-blur-sm rounded-lg border border-blue-200/50 border-blue-700/50 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-1">
-                  <label className="flex items-center gap-2 text-sm font-bold text-blue-600 text-blue-400 mb-3">
+                <div className="relative p-4 bg-gray-800/80 backdrop-blur-sm rounded-lg border border-blue-700/50 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-1">
+                  <label className="flex items-center gap-2 text-sm font-bold text-blue-400 mb-3">
                     <span className="text-lg">🎯</span>
                     <span>Lezione Singola</span>
                   </label>
@@ -1857,7 +1836,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
                         priceSingle: parseFloat(e.target.value) || 0,
                       })
                     }
-                    className="w-full p-3 bg-white/90 bg-gray-900/90 text-gray-900 text-white border-2 border-blue-300/50 border-blue-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 placeholder-gray-500"
+                    className="w-full p-3 bg-gray-900/90 text-white border-2 border-blue-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-500"
                     placeholder="50€"
                   />
                 </div>
@@ -1865,8 +1844,8 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
 
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-teal-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                <div className="relative p-4 bg-white/80 bg-gray-800/80 backdrop-blur-sm rounded-lg border border-green-200/50 border-green-700/50 hover:shadow-xl hover:shadow-green-500/20 transition-all duration-300 transform hover:-translate-y-1">
-                  <label className="flex items-center gap-2 text-sm font-bold text-green-600 text-green-400 mb-3">
+                <div className="relative p-4 bg-gray-800/80 backdrop-blur-sm rounded-lg border border-green-700/50 hover:shadow-xl hover:shadow-green-500/20 transition-all duration-300 transform hover:-translate-y-1">
+                  <label className="flex items-center gap-2 text-sm font-bold text-green-400 mb-3">
                     <span className="text-lg">👥</span>
                     <span>Lezione di Coppia</span>
                   </label>
@@ -1880,7 +1859,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
                         priceCouple: parseFloat(e.target.value) || 0,
                       })
                     }
-                    className="w-full p-3 bg-white/90 bg-gray-900/90 text-gray-900 text-white border-2 border-green-300/50 border-green-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 placeholder-gray-500"
+                    className="w-full p-3 bg-gray-900/90 text-white border-2 border-green-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-500"
                     placeholder="70€"
                   />
                 </div>
@@ -1888,8 +1867,8 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
 
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-violet-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                <div className="relative p-4 bg-white/80 bg-gray-800/80 backdrop-blur-sm rounded-lg border border-purple-200/50 border-purple-700/50 hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 transform hover:-translate-y-1">
-                  <label className="flex items-center gap-2 text-sm font-bold text-purple-600 text-purple-400 mb-3">
+                <div className="relative p-4 bg-gray-800/80 backdrop-blur-sm rounded-lg border border-purple-700/50 hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300 transform hover:-translate-y-1">
+                  <label className="flex items-center gap-2 text-sm font-bold text-purple-400 mb-3">
                     <span className="text-lg">👨‍�‍�</span>
                     <span>Lezione a 3 Persone</span>
                   </label>
@@ -1903,7 +1882,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
                         priceThree: parseFloat(e.target.value) || 0,
                       })
                     }
-                    className="w-full p-3 bg-white/90 bg-gray-900/90 text-gray-900 text-white border-2 border-purple-300/50 border-purple-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 placeholder-gray-500"
+                    className="w-full p-3 bg-gray-900/90 text-white border-2 border-purple-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-500"
                     placeholder="90€"
                   />
                 </div>
@@ -1911,8 +1890,8 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
 
               <div className="relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                <div className="relative p-4 bg-white/80 bg-gray-800/80 backdrop-blur-sm rounded-lg border border-orange-200/50 border-orange-700/50 hover:shadow-xl hover:shadow-orange-500/20 transition-all duration-300 transform hover:-translate-y-1">
-                  <label className="flex items-center gap-2 text-sm font-bold text-orange-600 text-orange-400 mb-3">
+                <div className="relative p-4 bg-gray-800/80 backdrop-blur-sm rounded-lg border border-orange-700/50 hover:shadow-xl hover:shadow-orange-500/20 transition-all duration-300 transform hover:-translate-y-1">
+                  <label className="flex items-center gap-2 text-sm font-bold text-orange-400 mb-3">
                     <span className="text-lg">🏆</span>
                     <span>Partita Lezione</span>
                   </label>
@@ -1926,15 +1905,15 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
                         priceMatchLesson: parseFloat(e.target.value) || 0,
                       })
                     }
-                    className="w-full p-3 bg-white/90 bg-gray-900/90 text-gray-900 text-white border-2 border-orange-300/50 border-orange-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-400 placeholder-gray-500"
+                    className="w-full p-3 bg-gray-900/90 text-white border-2 border-orange-600/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all text-lg font-semibold placeholder-gray-500"
                     placeholder="80€"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 from-blue-900/20 to-indigo-900/20 rounded-lg border border-blue-200/50 border-blue-700/50">
-              <div className="flex items-center gap-2 text-xs text-blue-700 text-blue-300">
+            <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 from-blue-900/20 to-indigo-900/20 rounded-lg border border-blue-700/50">
+              <div className="flex items-center gap-2 text-xs text-blue-300">
                 <span className="text-base">💡</span>
                 <span className="font-medium">Neural Tip:</span>
                 <span>Prezzi per ora di lezione. Impostare a 0 per disabilitare la tipologia.</span>
@@ -2004,9 +1983,7 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
             placeholder="Descrivi l'esperienza e le competenze dell'istruttore..."
           />
           <div className="flex justify-between items-center mt-1">
-            <span className="text-xs text-gray-400">
-              {formData.bio.length}/500 caratteri
-            </span>
+            <span className="text-xs text-gray-400">{formData.bio.length}/500 caratteri</span>
             {formData.bio.length > 450 && (
               <span className="text-xs text-orange-500">Limite quasi raggiunto</span>
             )}
@@ -2014,17 +1991,17 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 pt-4 border-t border-gray-200 border-gray-600">
+        <div className="flex gap-3 pt-4 border-t border-gray-600">
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 py-2 px-4 bg-gray-700 text-gray-300 border border-gray-300 border-gray-600 rounded hover:bg-gray-200 hover:bg-gray-600 font-medium transition-colors"
+            className="flex-1 py-2 px-4 bg-gray-700 text-gray-300 border border-gray-600 rounded hover:bg-gray-200 hover:bg-gray-600 font-medium transition-colors"
           >
             Annulla
           </button>
           <button
             type="submit"
-            className="flex-1 py-2 px-4 bg-blue-600 bg-blue-700 text-white rounded hover:bg-blue-700 hover:bg-blue-600 font-medium transition-colors"
+            className="flex-1 py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 font-medium transition-colors"
           >
             Salva
           </button>
@@ -2033,9 +2010,3 @@ function InstructorModal({ isOpen, onClose, player, onSave, T, ds }) {
     </Modal>
   );
 }
-
-
-
-
-
-

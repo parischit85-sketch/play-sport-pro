@@ -16,9 +16,10 @@ export function ExportCourtsModal({ isOpen, onClose, courts = [], selectedCourts
 
   if (!isOpen) return null;
 
-  const courtsToExport = selectedCourts.length > 0
-    ? courts.filter((_, index) => selectedCourts.includes(index))
-    : courts;
+  const courtsToExport =
+    selectedCourts.length > 0
+      ? courts.filter((_, index) => selectedCourts.includes(index))
+      : courts;
 
   const handleExport = () => {
     try {
@@ -26,14 +27,14 @@ export function ExportCourtsModal({ isOpen, onClose, courts = [], selectedCourts
         version: '1.0',
         exportDate: new Date().toISOString(),
         courtCount: courtsToExport.length,
-        courts: courtsToExport.map(court => ({
+        courts: courtsToExport.map((court) => ({
           name: court.name,
           courtType: court.courtType,
           maxPlayers: court.maxPlayers,
           hasHeating: court.hasHeating,
           order: court.order,
-          timeSlots: court.timeSlots || []
-        }))
+          timeSlots: court.timeSlots || [],
+        })),
       };
 
       if (!includeMetadata) {
@@ -42,9 +43,10 @@ export function ExportCourtsModal({ isOpen, onClose, courts = [], selectedCourts
         delete exportData.courtCount;
       }
 
-      const jsonString = exportFormat === 'pretty'
-        ? JSON.stringify(exportData, null, 2)
-        : JSON.stringify(exportData);
+      const jsonString =
+        exportFormat === 'pretty'
+          ? JSON.stringify(exportData, null, 2)
+          : JSON.stringify(exportData);
 
       // Create blob and download
       const blob = new Blob([jsonString], { type: 'application/json' });
@@ -67,20 +69,17 @@ export function ExportCourtsModal({ isOpen, onClose, courts = [], selectedCourts
     version: '1.0',
     exportDate: new Date().toISOString(),
     courtCount: courtsToExport.length,
-    courts: courtsToExport.slice(0, 2).map(court => ({
+    courts: courtsToExport.slice(0, 2).map((court) => ({
       name: court.name,
       courtType: court.courtType,
-      timeSlots: `${(court.timeSlots || []).length} fasce`
-    }))
+      timeSlots: `${(court.timeSlots || []).length} fasce`,
+    })),
   };
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -92,13 +91,11 @@ export function ExportCourtsModal({ isOpen, onClose, courts = [], selectedCourts
                 📤 Esporta Configurazioni
               </h2>
               <p className="text-sm text-gray-400 mt-1">
-                Esporta {courtsToExport.length} {courtsToExport.length === 1 ? 'campo' : 'campi'} in formato JSON
+                Esporta {courtsToExport.length} {courtsToExport.length === 1 ? 'campo' : 'campi'} in
+                formato JSON
               </p>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-300 text-3xl"
-            >
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-300 text-3xl">
               ×
             </button>
           </div>
@@ -109,9 +106,7 @@ export function ExportCourtsModal({ isOpen, onClose, courts = [], selectedCourts
           {/* Options */}
           <div className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Formato Output
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Formato Output</label>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setExportFormat('pretty')}
@@ -156,19 +151,20 @@ export function ExportCourtsModal({ isOpen, onClose, courts = [], selectedCourts
               Anteprima (primi 2 campi)
             </label>
             <pre className="bg-gray-900 text-green-400 p-4 rounded-lg text-xs overflow-x-auto max-h-60 overflow-y-auto font-mono">
-{JSON.stringify(previewData, null, 2)}
-{courtsToExport.length > 2 && '\n... altri ' + (courtsToExport.length - 2) + ' campi'}
+              {JSON.stringify(previewData, null, 2)}
+              {courtsToExport.length > 2 && '\n... altri ' + (courtsToExport.length - 2) + ' campi'}
             </pre>
           </div>
 
           {/* Info */}
           <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-300 mb-2">
-              ℹ️ Informazioni Export
-            </h4>
+            <h4 className="font-semibold text-blue-300 mb-2">ℹ️ Informazioni Export</h4>
             <ul className="text-sm text-blue-300 space-y-1">
               <li>• Totale campi: {courtsToExport.length}</li>
-              <li>• Totale fasce orarie: {courtsToExport.reduce((sum, c) => sum + (c.timeSlots || []).length, 0)}</li>
+              <li>
+                • Totale fasce orarie:{' '}
+                {courtsToExport.reduce((sum, c) => sum + (c.timeSlots || []).length, 0)}
+              </li>
               <li>• Gli ID verranno rigenerati durante l'import</li>
               <li>• File compatibile con Import Configurazioni</li>
             </ul>
@@ -222,7 +218,7 @@ export function ImportCourtsModal({ isOpen, onClose, onImport, existingCourts = 
     reader.onload = (event) => {
       try {
         const jsonData = JSON.parse(event.target.result);
-        
+
         // Validate structure
         if (!jsonData.courts || !Array.isArray(jsonData.courts)) {
           setParseError('Il file JSON non contiene un array "courts" valido');
@@ -235,7 +231,9 @@ export function ImportCourtsModal({ isOpen, onClose, onImport, existingCourts = 
         jsonData.courts.forEach((court, index) => {
           const validation = validateCourt(court);
           if (!validation.isValid) {
-            errors.push(`Campo ${index + 1} (${court.name || 'senza nome'}): ${validation.errors.join(', ')}`);
+            errors.push(
+              `Campo ${index + 1} (${court.name || 'senza nome'}): ${validation.errors.join(', ')}`
+            );
           }
         });
 
@@ -255,25 +253,24 @@ export function ImportCourtsModal({ isOpen, onClose, onImport, existingCourts = 
 
     try {
       // Sanitize imported courts
-      const sanitizedCourts = importData.courts.map(court => sanitizeCourt(court));
+      const sanitizedCourts = importData.courts.map((court) => sanitizeCourt(court));
 
       // Generate new IDs and orders
-      const maxOrder = existingCourts.length > 0
-        ? Math.max(...existingCourts.map(c => c.order || 0))
-        : 0;
+      const maxOrder =
+        existingCourts.length > 0 ? Math.max(...existingCourts.map((c) => c.order || 0)) : 0;
 
       const processedCourts = sanitizedCourts.map((court, index) => ({
         ...court,
         id: `imported_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         order: maxOrder + index + 1,
-        timeSlots: (court.timeSlots || []).map(slot => ({
+        timeSlots: (court.timeSlots || []).map((slot) => ({
           ...slot,
-          id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-        }))
+          id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        })),
       }));
 
       onImport(processedCourts, importStrategy);
-      
+
       // Reset and close
       setImportFile(null);
       setImportData(null);
@@ -290,10 +287,7 @@ export function ImportCourtsModal({ isOpen, onClose, onImport, existingCourts = 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       {/* Overlay */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -308,10 +302,7 @@ export function ImportCourtsModal({ isOpen, onClose, onImport, existingCourts = 
                 Carica un file JSON per importare campi e configurazioni
               </p>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-300 text-3xl"
-            >
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-300 text-3xl">
               ×
             </button>
           </div>
@@ -340,9 +331,7 @@ export function ImportCourtsModal({ isOpen, onClose, onImport, existingCourts = 
           {/* Parse Error */}
           {parseError && (
             <div className="bg-red-900/20 border border-red-800 rounded-lg p-4">
-              <h4 className="font-semibold text-red-300 mb-2">
-                ❌ Errore Parsing
-              </h4>
+              <h4 className="font-semibold text-red-300 mb-2">❌ Errore Parsing</h4>
               <p className="text-sm text-red-300">{parseError}</p>
             </div>
           )}
@@ -398,14 +387,20 @@ export function ImportCourtsModal({ isOpen, onClose, onImport, existingCourts = 
               </div>
 
               <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-300 mb-2">
-                  📊 Anteprima Import
-                </h4>
+                <h4 className="font-semibold text-blue-300 mb-2">📊 Anteprima Import</h4>
                 <div className="text-sm text-blue-300 space-y-1">
                   <div>• Campi da importare: {importData.courts.length}</div>
                   <div>• Campi esistenti: {existingCourts.length}</div>
-                  <div>• Totale dopo import: {importStrategy === 'merge' ? existingCourts.length + importData.courts.length : importData.courts.length}</div>
-                  <div>• Fasce orarie totali: {importData.courts.reduce((sum, c) => sum + (c.timeSlots || []).length, 0)}</div>
+                  <div>
+                    • Totale dopo import:{' '}
+                    {importStrategy === 'merge'
+                      ? existingCourts.length + importData.courts.length
+                      : importData.courts.length}
+                  </div>
+                  <div>
+                    • Fasce orarie totali:{' '}
+                    {importData.courts.reduce((sum, c) => sum + (c.timeSlots || []).length, 0)}
+                  </div>
                 </div>
               </div>
 
@@ -425,7 +420,8 @@ export function ImportCourtsModal({ isOpen, onClose, onImport, existingCourts = 
                           {index + 1}. {court.name}
                         </div>
                         <div className="text-gray-400 text-xs mt-1">
-                          {court.courtType} | {court.maxPlayers} giocatori | {(court.timeSlots || []).length} fasce
+                          {court.courtType} | {court.maxPlayers} giocatori |{' '}
+                          {(court.timeSlots || []).length} fasce
                         </div>
                       </div>
                     ))}
@@ -464,4 +460,3 @@ export function ImportCourtsModal({ isOpen, onClose, onImport, existingCourts = 
 }
 
 export default { ExportCourtsModal, ImportCourtsModal };
-

@@ -6,7 +6,12 @@
 import React, { useState } from 'react';
 import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { createTournament } from '../../services/tournamentService';
-import { PARTICIPANT_TYPE, DEFAULT_STANDARD_POINTS, DEFAULT_RANKING_BASED_POINTS, POINTS_SYSTEM_TYPE } from '../../utils/tournamentConstants';
+import {
+  PARTICIPANT_TYPE,
+  DEFAULT_STANDARD_POINTS,
+  DEFAULT_RANKING_BASED_POINTS,
+  POINTS_SYSTEM_TYPE,
+} from '../../utils/tournamentConstants';
 import { validateTournamentName, validateGroupsConfig } from '../../utils/tournamentValidation';
 
 const STEPS = [
@@ -22,7 +27,7 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [creationProgress, setCreationProgress] = useState(null); // { current: 1, total: 8, message: 'Creazione torneo' }
-  
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -51,17 +56,17 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
   });
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setError(null);
   };
 
   const handleNext = () => {
     console.log('🔍 [TournamentWizard] handleNext called', { currentStep, formData });
-    
+
     // Validate current step
     const validation = validateCurrentStep();
     console.log('✅ [TournamentWizard] Validation result:', validation);
-    
+
     if (!validation.valid) {
       console.error('❌ [TournamentWizard] Validation failed:', validation.error);
       setError(validation.error);
@@ -70,38 +75,42 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
 
     if (currentStep < STEPS.length) {
       console.log('➡️ [TournamentWizard] Moving to next step:', currentStep + 1);
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
     }
   };
 
   const handleBack = () => {
     if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep((prev) => prev - 1);
       setError(null);
     }
   };
 
   const validateCurrentStep = () => {
     console.log('🔍 [validateCurrentStep] Current step:', currentStep);
-    
+
     if (currentStep === 1) {
       console.log('📝 [validateCurrentStep] Validating tournament name:', formData.name);
       const result = validateTournamentName(formData.name);
       console.log('📝 [validateCurrentStep] Name validation result:', result);
       return result;
     }
-    
+
     if (currentStep === 2) {
       console.log('⚙️ [validateCurrentStep] Validating groups config:', {
         numberOfGroups: formData.numberOfGroups,
         teamsPerGroup: formData.teamsPerGroup,
-        qualifiedPerGroup: formData.qualifiedPerGroup
+        qualifiedPerGroup: formData.qualifiedPerGroup,
       });
-      const result = validateGroupsConfig(formData.numberOfGroups, formData.teamsPerGroup, formData.qualifiedPerGroup);
+      const result = validateGroupsConfig(
+        formData.numberOfGroups,
+        formData.teamsPerGroup,
+        formData.qualifiedPerGroup
+      );
       console.log('⚙️ [validateCurrentStep] Groups validation result:', result);
       return result;
     }
-    
+
     console.log('✅ [validateCurrentStep] No validation needed for step', currentStep);
     return { valid: true };
   };
@@ -132,7 +141,7 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
       // Aggiorna il progresso incrementalmente
       for (let i = 0; i < steps.length - 1; i++) {
         setCreationProgress(steps[i]);
-        await new Promise(resolve => setTimeout(resolve, 300)); // Simula il processing
+        await new Promise((resolve) => setTimeout(resolve, 300)); // Simula il processing
       }
 
       setCreationProgress(steps[steps.length - 1]);
@@ -171,9 +180,7 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
   const renderBasicInfoStep = () => (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Nome Torneo *
-        </label>
+        <label className="block text-sm font-medium text-gray-300 mb-2">Nome Torneo *</label>
         <input
           type="text"
           value={formData.name}
@@ -184,9 +191,7 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Descrizione
-        </label>
+        <label className="block text-sm font-medium text-gray-300 mb-2">Descrizione</label>
         <textarea
           value={formData.description}
           onChange={(e) => handleInputChange('description', e.target.value)}
@@ -197,9 +202,7 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Tipo Partecipanti
-        </label>
+        <label className="block text-sm font-medium text-gray-300 mb-2">Tipo Partecipanti</label>
         <div className="grid grid-cols-2 gap-4">
           <button
             type="button"
@@ -210,14 +213,22 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
                 : 'border-gray-600 bg-gray-700/50 text-gray-300 hover:border-primary-400/50 hover:bg-gray-700'
             }`}
           >
-            <div className={`font-bold text-lg ${
-              formData.participantType === PARTICIPANT_TYPE.COUPLES ? 'text-primary-200' : 'text-gray-200'
-            }`}>
+            <div
+              className={`font-bold text-lg ${
+                formData.participantType === PARTICIPANT_TYPE.COUPLES
+                  ? 'text-primary-200'
+                  : 'text-gray-200'
+              }`}
+            >
               Coppie
             </div>
-            <div className={`text-sm mt-1 ${
-              formData.participantType === PARTICIPANT_TYPE.COUPLES ? 'text-primary-300' : 'text-gray-400'
-            }`}>
+            <div
+              className={`text-sm mt-1 ${
+                formData.participantType === PARTICIPANT_TYPE.COUPLES
+                  ? 'text-primary-300'
+                  : 'text-gray-400'
+              }`}
+            >
               2 giocatori per squadra
             </div>
           </button>
@@ -231,14 +242,22 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
                 : 'border-gray-600 bg-gray-700/50 text-gray-300 hover:border-primary-400/50 hover:bg-gray-700'
             }`}
           >
-            <div className={`font-bold text-lg ${
-              formData.participantType === PARTICIPANT_TYPE.TEAMS ? 'text-primary-200' : 'text-gray-200'
-            }`}>
+            <div
+              className={`font-bold text-lg ${
+                formData.participantType === PARTICIPANT_TYPE.TEAMS
+                  ? 'text-primary-200'
+                  : 'text-gray-200'
+              }`}
+            >
               Squadre
             </div>
-            <div className={`text-sm mt-1 ${
-              formData.participantType === PARTICIPANT_TYPE.TEAMS ? 'text-primary-300' : 'text-gray-400'
-            }`}>
+            <div
+              className={`text-sm mt-1 ${
+                formData.participantType === PARTICIPANT_TYPE.TEAMS
+                  ? 'text-primary-300'
+                  : 'text-gray-400'
+              }`}
+            >
               2-6 giocatori per squadra
             </div>
           </button>
@@ -250,9 +269,7 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
   const renderConfigurationStep = () => (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Numero di Gironi
-        </label>
+        <label className="block text-sm font-medium text-gray-300 mb-2">Numero di Gironi</label>
         <input
           type="number"
           min="2"
@@ -264,9 +281,7 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Squadre per Girone
-        </label>
+        <label className="block text-sm font-medium text-gray-300 mb-2">Squadre per Girone</label>
         <input
           type="number"
           min="3"
@@ -297,16 +312,21 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
           <ul className="mt-2 space-y-1">
             <li>• Totale squadre: {formData.numberOfGroups * formData.teamsPerGroup}</li>
             <li>• Squadre qualificate: {formData.numberOfGroups * formData.qualifiedPerGroup}</li>
-            <li>• Partite fase gironi: {formData.numberOfGroups * (formData.teamsPerGroup * (formData.teamsPerGroup - 1)) / 2}</li>
+            <li>
+              • Partite fase gironi:{' '}
+              {(formData.numberOfGroups * (formData.teamsPerGroup * (formData.teamsPerGroup - 1))) /
+                2}
+            </li>
             {(() => {
               const totalQualified = formData.numberOfGroups * formData.qualifiedPerGroup;
               const isPow2 = totalQualified > 0 && (totalQualified & (totalQualified - 1)) === 0;
               if (!isPow2 && totalQualified > 0) {
-                const nextPow2 = 1 << (Math.ceil(Math.log2(Math.max(2, totalQualified))));
+                const nextPow2 = 1 << Math.ceil(Math.log2(Math.max(2, totalQualified)));
                 const byes = nextPow2 - totalQualified;
                 return (
                   <li>
-                    • Knockout: verranno aggiunti automaticamente {byes} BYE per arrivare a {nextPow2} squadre
+                    • Knockout: verranno aggiunti automaticamente {byes} BYE per arrivare a{' '}
+                    {nextPow2} squadre
                   </li>
                 );
               }
@@ -323,9 +343,7 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
           onChange={(e) => handleInputChange('includeThirdPlaceMatch', e.target.checked)}
           className="h-4 w-4 text-primary-600 rounded border-gray-600"
         />
-        <label className="ml-2 text-sm text-gray-300">
-          Includi finale 3°/4° posto
-        </label>
+        <label className="ml-2 text-sm text-gray-300">Includi finale 3°/4° posto</label>
       </div>
 
       {/* Default ranking for non-participants */}
@@ -339,11 +357,14 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
           max="3000"
           step="50"
           value={formData.defaultRankingForNonParticipants}
-          onChange={(e) => handleInputChange('defaultRankingForNonParticipants', parseInt(e.target.value) || 1500)}
+          onChange={(e) =>
+            handleInputChange('defaultRankingForNonParticipants', parseInt(e.target.value) || 1500)
+          }
           className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
         />
         <p className="mt-1 text-xs text-gray-400">
-          Valore utilizzato per i giocatori del circolo che non partecipano al campionato quando vengono selezionati nelle squadre.
+          Valore utilizzato per i giocatori del circolo che non partecipano al campionato quando
+          vengono selezionati nelle squadre.
         </p>
       </div>
 
@@ -352,41 +373,54 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
         <div className="font-semibold text-gray-100 mb-3">Punti Campionato (bozza)</div>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Moltiplicatore RPA</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Moltiplicatore RPA
+            </label>
             <input
               type="number"
               min="0"
               step="0.1"
               value={formData.championshipPoints.rpaMultiplier}
-              onChange={(e) => setFormData(prev => ({
-                ...prev,
-                championshipPoints: { ...prev.championshipPoints, rpaMultiplier: Number(e.target.value) || 0 }
-              }))}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  championshipPoints: {
+                    ...prev.championshipPoints,
+                    rpaMultiplier: Number(e.target.value) || 0,
+                  },
+                }))
+              }
               className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
             />
-            <p className="mt-1 text-xs text-gray-400">Somma dei delta RPA per ogni partita (vittorie +, sconfitte −) × moltiplicatore</p>
+            <p className="mt-1 text-xs text-gray-400">
+              Somma dei delta RPA per ogni partita (vittorie +, sconfitte −) × moltiplicatore
+            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Punti piazzamento girone</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Punti piazzamento girone
+            </label>
             <div className="grid grid-cols-4 gap-2">
-              {[1,2,3,4].map(pos => (
+              {[1, 2, 3, 4].map((pos) => (
                 <div key={pos} className="flex flex-col">
                   <span className="text-xs text-gray-400">{pos}°</span>
                   <input
                     type="number"
                     min="0"
                     value={formData.championshipPoints.groupPlacementPoints[pos] || 0}
-                    onChange={(e) => setFormData(prev => ({
-                      ...prev,
-                      championshipPoints: {
-                        ...prev.championshipPoints,
-                        groupPlacementPoints: {
-                          ...prev.championshipPoints.groupPlacementPoints,
-                          [pos]: Number(e.target.value) || 0,
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        championshipPoints: {
+                          ...prev.championshipPoints,
+                          groupPlacementPoints: {
+                            ...prev.championshipPoints.groupPlacementPoints,
+                            [pos]: Number(e.target.value) || 0,
+                          },
                         },
-                      },
-                    }))}
+                      }))
+                    }
                     className="px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white"
                   />
                 </div>
@@ -396,7 +430,9 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
         </div>
 
         <div className="mt-4">
-          <label className="block text-sm font-medium text-gray-300 mb-2">Punti avanzamento Eliminazione Diretta (per vittoria)</label>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Punti avanzamento Eliminazione Diretta (per vittoria)
+          </label>
           <div className="grid md:grid-cols-5 gap-2">
             {[
               { key: 'round_of_16', label: 'Ottavi' },
@@ -411,16 +447,18 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
                   type="number"
                   min="0"
                   value={formData.championshipPoints.knockoutProgressPoints[r.key] || 0}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    championshipPoints: {
-                      ...prev.championshipPoints,
-                      knockoutProgressPoints: {
-                        ...prev.championshipPoints.knockoutProgressPoints,
-                        [r.key]: Number(e.target.value) || 0,
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      championshipPoints: {
+                        ...prev.championshipPoints,
+                        knockoutProgressPoints: {
+                          ...prev.championshipPoints.knockoutProgressPoints,
+                          [r.key]: Number(e.target.value) || 0,
+                        },
                       },
-                    },
-                  }))}
+                    }))
+                  }
                   className="px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white"
                 />
               </div>
@@ -510,7 +548,8 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
 
       <div className="bg-yellow-900/20 border border-yellow-800 p-4 rounded-lg">
         <div className="text-sm text-yellow-200">
-          <strong>Nota:</strong> Le date sono opzionali. Se non specificate, potrai aprire e chiudere le iscrizioni manualmente.
+          <strong>Nota:</strong> Le date sono opzionali. Se non specificate, potrai aprire e
+          chiudere le iscrizioni manualmente.
         </div>
       </div>
     </div>
@@ -520,63 +559,74 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
     <div className="space-y-6">
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
         <h3 className="font-semibold text-lg mb-4 text-white">Riepilogo Torneo</h3>
-        
+
         <div className="space-y-3 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-400">Nome:</span>
             <span className="font-medium text-white">{formData.name}</span>
           </div>
-          
+
           {formData.description && (
             <div className="flex justify-between">
               <span className="text-gray-400">Descrizione:</span>
-              <span className="font-medium text-white">{formData.description.substring(0, 50)}...</span>
+              <span className="font-medium text-white">
+                {formData.description.substring(0, 50)}...
+              </span>
             </div>
           )}
-          
+
           <div className="flex justify-between">
             <span className="text-gray-400">Partecipanti:</span>
             <span className="font-medium text-white">
               {formData.participantType === PARTICIPANT_TYPE.COUPLES ? 'Coppie' : 'Squadre'}
             </span>
           </div>
-          
+
           <div className="flex justify-between">
             <span className="text-gray-400">Gironi:</span>
             <span className="font-medium text-white">{formData.numberOfGroups}</span>
           </div>
-          
+
           <div className="flex justify-between">
             <span className="text-gray-400">Squadre per girone:</span>
             <span className="font-medium text-white">{formData.teamsPerGroup}</span>
           </div>
-          
+
           <div className="flex justify-between">
             <span className="text-gray-400">Qualificati per girone:</span>
             <span className="font-medium text-white">{formData.qualifiedPerGroup}</span>
           </div>
-          
+
           <div className="flex justify-between">
             <span className="text-gray-400">Sistema punti:</span>
             <span className="font-medium text-white">
-              {formData.pointsSystem.type === POINTS_SYSTEM_TYPE.STANDARD ? 'Standard' : 'Ranking-Based'}
+              {formData.pointsSystem.type === POINTS_SYSTEM_TYPE.STANDARD
+                ? 'Standard'
+                : 'Ranking-Based'}
             </span>
           </div>
-          
+
           <div className="flex justify-between">
             <span className="text-gray-400">Totale squadre:</span>
-            <span className="font-medium text-white">{formData.numberOfGroups * formData.teamsPerGroup}</span>
+            <span className="font-medium text-white">
+              {formData.numberOfGroups * formData.teamsPerGroup}
+            </span>
           </div>
 
           <div className="flex justify-between">
             <span className="text-gray-400">Ranking default non partecipanti:</span>
-            <span className="font-medium text-white">{formData.defaultRankingForNonParticipants}</span>
+            <span className="font-medium text-white">
+              {formData.defaultRankingForNonParticipants}
+            </span>
           </div>
 
           <div className="mt-4">
             <div className="text-sm font-semibold text-white mb-2">Punti Campionato</div>
             <div className="text-xs text-gray-400">
-              RPA×{formData.championshipPoints.rpaMultiplier} • Piazzamento girone: 1° {formData.championshipPoints.groupPlacementPoints[1]} / 2° {formData.championshipPoints.groupPlacementPoints[2]} • KO: Finale {formData.championshipPoints.knockoutProgressPoints.finals}
+              RPA×{formData.championshipPoints.rpaMultiplier} • Piazzamento girone: 1°{' '}
+              {formData.championshipPoints.groupPlacementPoints[1]} / 2°{' '}
+              {formData.championshipPoints.groupPlacementPoints[2]} • KO: Finale{' '}
+              {formData.championshipPoints.knockoutProgressPoints.finals}
             </div>
           </div>
         </div>
@@ -584,7 +634,8 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
 
       <div className="bg-green-900/20 border border-green-800 p-4 rounded-lg">
         <div className="text-sm text-green-200">
-          <strong>✓ Pronto!</strong> Il torneo verrà creato in stato "Bozza". Potrai aprire le iscrizioni quando sei pronto.
+          <strong>✓ Pronto!</strong> Il torneo verrà creato in stato "Bozza". Potrai aprire le
+          iscrizioni quando sei pronto.
         </div>
       </div>
     </div>
@@ -615,28 +666,28 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
                       step.id < currentStep
                         ? 'bg-green-500 text-white'
                         : step.id === currentStep
-                        ? 'bg-primary-600 text-white ring-4 ring-primary-900'
-                        : 'bg-gray-700 text-gray-400'
+                          ? 'bg-primary-600 text-white ring-4 ring-primary-900'
+                          : 'bg-gray-700 text-gray-400'
                     }`}
                   >
                     {step.id < currentStep ? <Check className="w-5 h-5" /> : step.id}
                   </div>
                   <div className="text-xs text-center mt-2 max-w-[80px]">
-                    <div className={`font-medium ${
-                      step.id === currentStep 
-                        ? 'text-primary-400' 
-                        : 'text-gray-400'
-                    }`}>
+                    <div
+                      className={`font-medium ${
+                        step.id === currentStep ? 'text-primary-400' : 'text-gray-400'
+                      }`}
+                    >
                       {step.name}
                     </div>
                   </div>
                 </div>
                 {index < STEPS.length - 1 && (
-                  <div className={`flex-1 h-0.5 mx-2 mb-6 ${
-                    step.id < currentStep 
-                      ? 'bg-green-500' 
-                      : 'bg-gray-700'
-                  }`} />
+                  <div
+                    className={`flex-1 h-0.5 mx-2 mb-6 ${
+                      step.id < currentStep ? 'bg-green-500' : 'bg-gray-700'
+                    }`}
+                  />
                 )}
               </React.Fragment>
             ))}
@@ -661,7 +712,9 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
                   <div className="mt-2 w-full bg-blue-900 rounded-full h-2 overflow-hidden">
                     <div
                       className="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-300"
-                      style={{ width: `${(creationProgress.current / creationProgress.total) * 100}%` }}
+                      style={{
+                        width: `${(creationProgress.current / creationProgress.total) * 100}%`,
+                      }}
                     />
                   </div>
                 </div>
@@ -669,7 +722,7 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
               </div>
             </div>
           )}
-          
+
           {!creationProgress && renderStep()}
         </div>
 
@@ -719,4 +772,3 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
 }
 
 export default TournamentWizard;
-

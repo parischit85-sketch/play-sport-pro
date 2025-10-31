@@ -209,10 +209,7 @@ export function BulkTimeSlotsWizard({
                 {targetCourts.length === 1 ? 'campo' : 'campi'} selezionati
               </p>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-300 text-3xl"
-            >
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-300 text-3xl">
               ×
             </button>
           </div>
@@ -245,9 +242,7 @@ export function BulkTimeSlotsWizard({
                   }`}
                 >
                   <div className="text-4xl mb-3">🕐</div>
-                  <div className="font-bold text-lg text-white mb-2">
-                    Ogni Ora
-                  </div>
+                  <div className="font-bold text-lg text-white mb-2">Ogni Ora</div>
                   <div className="text-sm text-gray-400">Fasce di 60 minuti</div>
                 </button>
 
@@ -260,9 +255,7 @@ export function BulkTimeSlotsWizard({
                   }`}
                 >
                   <div className="text-4xl mb-3">🕑</div>
-                  <div className="font-bold text-lg text-white mb-2">
-                    Ogni 30 Minuti
-                  </div>
+                  <div className="font-bold text-lg text-white mb-2">Ogni 30 Minuti</div>
                   <div className="text-sm text-gray-400">Fasce di 30 minuti</div>
                 </button>
 
@@ -275,9 +268,7 @@ export function BulkTimeSlotsWizard({
                   }`}
                 >
                   <div className="text-4xl mb-3">⚙️</div>
-                  <div className="font-bold text-lg text-white mb-2">
-                    Personalizzato
-                  </div>
+                  <div className="font-bold text-lg text-white mb-2">Personalizzato</div>
                   <div className="text-sm text-gray-400">Intervallo custom</div>
                 </button>
               </div>
@@ -312,9 +303,7 @@ export function BulkTimeSlotsWizard({
           {/* Step 2: Time Range */}
           {currentStep === 2 && (
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-white mb-4">
-                2️⃣ Imposta il Range Orario
-              </h3>
+              <h3 className="text-xl font-bold text-white mb-4">2️⃣ Imposta il Range Orario</h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -455,9 +444,7 @@ export function BulkTimeSlotsWizard({
           {/* Step 4: Pricing */}
           {currentStep === 4 && (
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-white mb-4">
-                4️⃣ Configurazione Prezzi
-              </h3>
+              <h3 className="text-xl font-bold text-white mb-4">4️⃣ Configurazione Prezzi</h3>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -502,9 +489,7 @@ export function BulkTimeSlotsWizard({
                     disabled
                   >
                     <div className="font-bold">⚙️ Custom</div>
-                    <div className="text-xs text-gray-400 mt-1">
-                      (Prossimamente)
-                    </div>
+                    <div className="text-xs text-gray-400 mt-1">(Prossimamente)</div>
                   </button>
                 </div>
               </div>
@@ -612,9 +597,7 @@ export function BulkTimeSlotsWizard({
           {/* Step 5: Preview & Settings */}
           {currentStep === 5 && (
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-white mb-4">
-                5️⃣ Anteprima e Conferma
-              </h3>
+              <h3 className="text-xl font-bold text-white mb-4">5️⃣ Anteprima e Conferma</h3>
 
               {/* Settings */}
               <div className="bg-gray-900 rounded-lg p-4 space-y-3">
@@ -669,9 +652,7 @@ export function BulkTimeSlotsWizard({
                         key={index}
                         className="text-sm bg-gray-800 p-3 rounded border border-gray-700"
                       >
-                        <div className="font-semibold text-white">
-                          {slot.label}
-                        </div>
+                        <div className="font-semibold text-white">{slot.label}</div>
                         <div className="text-gray-400 text-xs mt-1">
                           ⏰ {slot.from} - {slot.to} | 💰 €{slot.eurPerHour}/h
                           {slot.isPromo && <span className="ml-2 text-orange-600">🎁</span>}
@@ -684,9 +665,7 @@ export function BulkTimeSlotsWizard({
 
               {/* Summary */}
               <div className="bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-800 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-900 text-blue-300 mb-2">
-                  📊 Riepilogo
-                </h4>
+                <h4 className="font-semibold text-blue-900 text-blue-300 mb-2">📊 Riepilogo</h4>
                 <div className="text-sm text-blue-800 text-blue-300 space-y-1">
                   <p>• Campi interessati: {targetCourts.length}</p>
                   <p>• Fasce totali create: {previewSlots.length}</p>
@@ -750,13 +729,3 @@ export function BulkTimeSlotsWizard({
 }
 
 export default BulkTimeSlotsWizard;
-
-
-
-
-
-
-
-
-
-

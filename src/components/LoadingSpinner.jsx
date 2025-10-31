@@ -44,4 +44,3 @@ export function LoadingOverlay({ message = 'Caricamento...', visible = true }) {
     </div>
   );
 }
-

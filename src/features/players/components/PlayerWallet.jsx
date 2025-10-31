@@ -369,4 +369,3 @@ export default function PlayerWallet({ player, onUpdate, T }) {
     </div>
   );
 }
-

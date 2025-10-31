@@ -214,9 +214,7 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
                         clipRule="evenodd"
                       />
                     </svg>
-                    <span className={`${ds.bodySm} text-red-800 text-red-200`}>
-                      Riscaldamento
-                    </span>
+                    <span className={`${ds.bodySm} text-red-800 text-red-200`}>Riscaldamento</span>
                   </div>
                 )}
               </div>
@@ -283,6 +281,3 @@ export default function MyBookings({ bookings, user, onCancel, T }) {
     </Section>
   );
 }
-
-
-

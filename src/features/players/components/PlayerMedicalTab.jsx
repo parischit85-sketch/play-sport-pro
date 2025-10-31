@@ -17,7 +17,7 @@ import { useClub } from '@contexts/ClubContext.jsx';
 export default function PlayerMedicalTab({ player, onUpdate, T }) {
   const { currentUser } = useAuth();
   const { clubId } = useClub();
-  
+
   // 🔍 DEBUG: Log what we receive for player 70xe0dha
   useEffect(() => {
     if (player.id === '70xe0dha') {
@@ -32,7 +32,7 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
         expiryDate: player.medicalCertificates?.current?.expiryDate,
         certificateStatus: player.certificateStatus,
         editing: !player.medicalCertificates?.current?.expiryDate,
-        allKeys: Object.keys(player)
+        allKeys: Object.keys(player),
       });
     }
   }, [player]);
@@ -264,9 +264,7 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
           <div className="flex items-start gap-3">
             <span className="text-2xl">⏰</span>
             <div>
-              <h4 className="font-semibold text-orange-200">
-                Scadenza Imminente
-              </h4>
+              <h4 className="font-semibold text-orange-200">Scadenza Imminente</h4>
               <p className="text-sm text-orange-300 mt-1">
                 Il certificato scade tra {status.daysUntilExpiry} giorni. Rinnova al più presto!
               </p>
@@ -454,9 +452,7 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
               {cert.notes && (
                 <div className="md:col-span-2">
                   <span className={`text-xs ${T.subtext} block`}>Note</span>
-                  <p className={`${T.text} text-sm bg-gray-800 p-3 rounded-lg`}>
-                    {cert.notes}
-                  </p>
+                  <p className={`${T.text} text-sm bg-gray-800 p-3 rounded-lg`}>{cert.notes}</p>
                 </div>
               )}
 
@@ -552,7 +548,9 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
           <span>ℹ️</span> Informazioni Certificato Medico
         </h5>
         <ul className="text-sm text-blue-300 space-y-1">
-          <li>• La data di scadenza viene calcolata automaticamente a +1 anno dalla data di emissione</li>
+          <li>
+            • La data di scadenza viene calcolata automaticamente a +1 anno dalla data di emissione
+          </li>
           <li>• Puoi modificare manualmente la scadenza se necessario</li>
           <li>• I certificati scaduti impediscono al giocatore di effettuare prenotazioni</li>
           <li>• Riceverai notifiche automatiche 30, 15 e 7 giorni prima della scadenza</li>
@@ -561,4 +559,3 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
     </div>
   );
 }
-

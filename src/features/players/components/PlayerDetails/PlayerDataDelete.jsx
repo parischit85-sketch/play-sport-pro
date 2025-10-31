@@ -1,15 +1,15 @@
 /**
  * FASE 2: 2025-10-16 - GDPR Data Delete Component
- * 
+ *
  * Componente per cancellare PERMANENTEMENTE i dati del giocatore
  * Compliance GDPR Art. 17 (Right to Erasure / Right to be Forgotten)
- * 
+ *
  * Features:
  * - Double confirm per evitare cancellazioni accidentali
  * - Cancellazione permanente (NO soft delete)
  * - Solo Admin può cancellare
  * - Warning chiaro sulle conseguenze
- * 
+ *
  * @component PlayerDataDelete
  */
 
@@ -67,7 +67,9 @@ export const PlayerDataDelete = React.memo(function PlayerDataDelete({
 
       console.log(`✅ Player ${player.id} deleted permanently (GDPR Art. 17)`);
 
-      showSuccess(`Giocatore "${player.firstName} ${player.lastName}" cancellato permanentemente dal sistema`);
+      showSuccess(
+        `Giocatore "${player.firstName} ${player.lastName}" cancellato permanentemente dal sistema`
+      );
 
       // Callback per chiudere il modale e aggiornare la lista
       if (onDeleted) {
@@ -102,7 +104,8 @@ export const PlayerDataDelete = React.memo(function PlayerDataDelete({
         {confirmStep === 0 && (
           <div>
             <p className="text-sm text-red-700 text-red-400 mb-4">
-              Questa azione eliminerà <strong>PERMANENTEMENTE</strong> tutti i dati del giocatore dal sistema.
+              Questa azione eliminerà <strong>PERMANENTEMENTE</strong> tutti i dati del giocatore
+              dal sistema.
             </p>
             <button
               onClick={() => setConfirmStep(1)}
@@ -158,7 +161,11 @@ export const PlayerDataDelete = React.memo(function PlayerDataDelete({
                 🚨 ULTIMA CONFERMA RICHIESTA
               </p>
               <p className="text-sm text-red-600 text-red-400 mb-3">
-                Stai per eliminare <strong>{player.firstName} {player.lastName}</strong> (ID: {player.id})
+                Stai per eliminare{' '}
+                <strong>
+                  {player.firstName} {player.lastName}
+                </strong>{' '}
+                (ID: {player.id})
               </p>
               <p className="text-sm text-red-700 text-red-400 mb-4">
                 Per procedere, scrivi esattamente:
@@ -204,9 +211,10 @@ export const PlayerDataDelete = React.memo(function PlayerDataDelete({
         {/* Footer - Info GDPR */}
         <div className="mt-6 pt-4 border-t border-red-700">
           <p className="text-xs text-red-600 text-red-400">
-            <strong>Info GDPR:</strong> Il Regolamento Generale sulla Protezione dei Dati (GDPR) Art. 17 
-            garantisce il "diritto all'oblio". L'utente può richiedere la cancellazione permanente dei 
-            propri dati personali. Questa funzione è riservata agli amministratori di sistema.
+            <strong>Info GDPR:</strong> Il Regolamento Generale sulla Protezione dei Dati (GDPR)
+            Art. 17 garantisce il "diritto all'oblio". L'utente può richiedere la cancellazione
+            permanente dei propri dati personali. Questa funzione è riservata agli amministratori di
+            sistema.
           </p>
         </div>
       </div>
@@ -215,6 +223,3 @@ export const PlayerDataDelete = React.memo(function PlayerDataDelete({
 });
 
 export default PlayerDataDelete;
-
-
-

@@ -708,9 +708,7 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
               </div>
               <div>
                 <b>Backup Selezionato:</b>{' '}
-                <code className="bg-gray-800 px-1 rounded">
-                  {selectedBackup || leagueId}
-                </code>
+                <code className="bg-gray-800 px-1 rounded">{selectedBackup || leagueId}</code>
               </div>
               <div>
                 <b>Firebase Project:</b>{' '}
@@ -833,6 +831,3 @@ function CloudBackupPanel({ T, leagueId, setState, cloudMsg, setCloudMsg }) {
     </div>
   );
 }
-
-
-

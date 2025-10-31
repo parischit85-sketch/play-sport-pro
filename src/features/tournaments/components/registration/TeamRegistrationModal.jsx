@@ -408,9 +408,7 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                   <div className="flex items-center justify-between p-3 bg-primary-900/20 border border-primary-800 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-primary-800 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold text-primary-300">
-                          {position}
-                        </span>
+                        <span className="text-sm font-bold text-primary-300">{position}</span>
                       </div>
                       <div>
                         <p className="font-medium text-white">
@@ -468,9 +466,7 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                                 {player.name || player.userName}
                               </p>
                               {player.email && (
-                                <p className="text-xs text-gray-400">
-                                  {player.email}
-                                </p>
+                                <p className="text-xs text-gray-400">{player.email}</p>
                               )}
                             </div>
                             <span className="text-sm text-gray-400">
@@ -490,12 +486,8 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
           {Object.values(formData).filter(Boolean).length > 0 && (
             <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4 mb-6">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-300">
-                  Ranking Medio Squadra
-                </span>
-                <span className="text-lg font-bold text-blue-400">
-                  {calculateAverageRating()}
-                </span>
+                <span className="text-sm font-medium text-gray-300">Ranking Medio Squadra</span>
+                <span className="text-lg font-bold text-blue-400">{calculateAverageRating()}</span>
               </div>
             </div>
           )}
@@ -525,5 +517,3 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
 }
 
 export default TeamRegistrationModal;
-
-

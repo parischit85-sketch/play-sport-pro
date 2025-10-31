@@ -302,5 +302,3 @@ export default function InstructorLessonBookings({ compact = false }) {
     </div>
   );
 }
-
-

@@ -110,4 +110,3 @@ export function PublicRoute({ children }) {
   // If not authenticated, show the public page (login, register, etc.)
   return children;
 }
-

@@ -417,4 +417,3 @@ export const SecurityProvider = ({ children }) => {
 };
 
 export default SecurityProvider;
-

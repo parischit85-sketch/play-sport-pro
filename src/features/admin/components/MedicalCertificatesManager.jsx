@@ -44,17 +44,20 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
         certificateStatus,
       };
     });
-    
+
     // Debug: mostra i primi 3 giocatori con i loro status
-    console.log('📊 Players with status (sample):', result.slice(0, 3).map(p => ({
-      name: p.name,
-      expiryDate: p.medicalCertificates?.current?.expiryDate,
-      status: p.certificateStatus.status,
-      isExpired: p.certificateStatus.isExpired,
-      isExpiring: p.certificateStatus.isExpiring,
-      daysUntilExpiry: p.certificateStatus.daysUntilExpiry,
-    })));
-    
+    console.log(
+      '📊 Players with status (sample):',
+      result.slice(0, 3).map((p) => ({
+        name: p.name,
+        expiryDate: p.medicalCertificates?.current?.expiryDate,
+        status: p.certificateStatus.status,
+        isExpired: p.certificateStatus.isExpired,
+        isExpiring: p.certificateStatus.isExpiring,
+        daysUntilExpiry: p.certificateStatus.daysUntilExpiry,
+      }))
+    );
+
     return result;
   }, [players]);
 
@@ -106,13 +109,28 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
     const all = playersWithStatus.length;
     const expired = playersWithStatus.filter((p) => p.certificateStatus.isExpired).length;
     const urgent = playersWithStatus.filter(
-      (p) => !p.certificateStatus.isExpired && p.certificateStatus.isExpiring && p.certificateStatus.daysUntilExpiry !== null && p.certificateStatus.daysUntilExpiry <= 15
+      (p) =>
+        !p.certificateStatus.isExpired &&
+        p.certificateStatus.isExpiring &&
+        p.certificateStatus.daysUntilExpiry !== null &&
+        p.certificateStatus.daysUntilExpiry <= 15
     ).length;
     const expiring = playersWithStatus.filter(
-      (p) => !p.certificateStatus.isExpired && p.certificateStatus.isExpiring && p.certificateStatus.daysUntilExpiry !== null && p.certificateStatus.daysUntilExpiry > 15
+      (p) =>
+        !p.certificateStatus.isExpired &&
+        p.certificateStatus.isExpiring &&
+        p.certificateStatus.daysUntilExpiry !== null &&
+        p.certificateStatus.daysUntilExpiry > 15
     ).length;
-    const missing = playersWithStatus.filter((p) => p.certificateStatus.status === 'missing').length;
-    const valid = playersWithStatus.filter((p) => !p.certificateStatus.isExpired && !p.certificateStatus.isExpiring && p.certificateStatus.status === 'valid').length;
+    const missing = playersWithStatus.filter(
+      (p) => p.certificateStatus.status === 'missing'
+    ).length;
+    const valid = playersWithStatus.filter(
+      (p) =>
+        !p.certificateStatus.isExpired &&
+        !p.certificateStatus.isExpiring &&
+        p.certificateStatus.status === 'valid'
+    ).length;
 
     return {
       [FILTER_OPTIONS.ALL]: all,
@@ -182,7 +200,12 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
       return `Ciao ${name}, il tuo certificato medico risulta SCADUTO (scadenza: ${expiryDate}). Ti chiediamo di procedere al rinnovo e al caricamento del nuovo certificato.`;
     }
     if (isExpiring && typeof daysUntilExpiry === 'number') {
-      const when = daysUntilExpiry === 0 ? 'oggi' : daysUntilExpiry === 1 ? 'domani' : `tra ${daysUntilExpiry} giorni`;
+      const when =
+        daysUntilExpiry === 0
+          ? 'oggi'
+          : daysUntilExpiry === 1
+            ? 'domani'
+            : `tra ${daysUntilExpiry} giorni`;
       return `Ciao ${name}, il tuo certificato medico scade ${when} (scadenza: ${expiryDate}). Ti invitiamo a rinnovarlo per continuare le attività senza interruzioni.`;
     }
     return `Ciao ${name}, promemoria certificato medico (scadenza: ${expiryDate}).`;
@@ -232,7 +255,7 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
       const win = window.open(url, '_blank');
       if (win) opened++;
       // piccolo delay
-      // eslint-disable-next-line no-await-in-loop
+
       await new Promise((r) => setTimeout(r, 300));
     }
 
@@ -279,7 +302,7 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
     for (const { url } of links) {
       const win = window.open(url, '_blank');
       if (win) opened++;
-      // eslint-disable-next-line no-await-in-loop
+
       await new Promise((r) => setTimeout(r, 300));
     }
 
@@ -314,24 +337,24 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
       const { getFunctions, httpsCallable } = await import('firebase/functions');
       // Usa esplicitamente la regione della funzione callable
       const functions = getFunctions(undefined, 'us-central1');
-      
+
       console.log('🔧 [Debug] Firebase Functions instance:', {
         app: functions.app.name,
         region: 'us-central1',
-        customDomain: functions.customDomain
+        customDomain: functions.customDomain,
       });
 
       // IMPORTANTE: Usa la regione corretta e aumenta timeout per funzioni che potrebbero richiedere tempo
       const sendBulkNotifications = httpsCallable(functions, 'sendBulkCertificateNotifications', {
         timeout: 300000, // 5 minuti (300 secondi) - stesso timeout della funzione server
       });
-      
+
       console.log('📞 [Debug] Calling function with params:', {
         clubId,
         playerIds: Array.from(selectedPlayers),
         notificationType: type,
       });
-      
+
       const result = await sendBulkNotifications({
         clubId,
         playerIds: Array.from(selectedPlayers),
@@ -345,46 +368,47 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
       // Mostra risultati dettagliati
       if (failed > 0) {
         const failedPlayers = details
-          .filter(d => !d.success)
-          .map(d => `- ${d.playerName || d.playerId}: ${d.error}${d.code ? ` [${d.code}]` : ''}`)
+          .filter((d) => !d.success)
+          .map((d) => `- ${d.playerName || d.playerId}: ${d.error}${d.code ? ` [${d.code}]` : ''}`)
           .join('\n');
 
         // Caso specifico: nessun provider email configurato
         if (type === 'email' && sent === 0 && provider === 'none') {
           alert(
             `❌ Nessun servizio email configurato.\n\n` +
-            `Provider: ${provider}.\n` +
-            `Mittente: ${from || '-'}\n` +
-            `Configura SENDGRID_API_KEY oppure EMAIL_USER/EMAIL_PASSWORD e FROM_EMAIL nei Secret della funzione.\n\n` +
-            `Dettagli:\n${failedPlayers}`
+              `Provider: ${provider}.\n` +
+              `Mittente: ${from || '-'}\n` +
+              `Configura SENDGRID_API_KEY oppure EMAIL_USER/EMAIL_PASSWORD e FROM_EMAIL nei Secret della funzione.\n\n` +
+              `Dettagli:\n${failedPlayers}`
           );
         } else {
           alert(
             `⚠️ Invio completato con errori:\n\n` +
-            `✅ Inviate: ${sent}\n` +
-            `❌ Fallite: ${failed}\n` +
-            (provider ? `📨 Provider: ${provider}\n` : '') +
-            (from ? `📤 Mittente: ${from}\n` : '') +
-            (replyTo ? `↩️ Rispondi-a: ${replyTo}\n\n` : '\n') +
-            `Errori:\n${failedPlayers}`
+              `✅ Inviate: ${sent}\n` +
+              `❌ Fallite: ${failed}\n` +
+              (provider ? `📨 Provider: ${provider}\n` : '') +
+              (from ? `📤 Mittente: ${from}\n` : '') +
+              (replyTo ? `↩️ Rispondi-a: ${replyTo}\n\n` : '\n') +
+              `Errori:\n${failedPlayers}`
           );
         }
       } else {
         alert(
           `✅ ${type === 'email' ? 'Email inviate' : 'Notifiche push inviate'} con successo!\n\n` +
-          `Inviate: ${sent} / ${selectedPlayersList.length}`
-          (provider ? `\n📨 Provider: ${provider}` : '') +
-          (from ? `\n📤 Mittente: ${from}` : '') +
-          (replyTo ? `\n↩️ Rispondi-a: ${replyTo}` : '')
+            `Inviate: ${sent} / ${selectedPlayersList.length}`(
+              provider ? `\n📨 Provider: ${provider}` : ''
+            ) +
+            (from ? `\n📤 Mittente: ${from}` : '') +
+            (replyTo ? `\n↩️ Rispondi-a: ${replyTo}` : '')
         );
       }
 
       deselectAll();
     } catch (error) {
       console.error('❌ [Bulk Notifications] Error:', error);
-      
-      let errorMessage = 'Errore durante l\'invio';
-      
+
+      let errorMessage = "Errore durante l'invio";
+
       if (error.code === 'functions/unauthenticated') {
         errorMessage = 'Devi essere autenticato per inviare notifiche';
       } else if (error.code === 'functions/permission-denied') {
@@ -392,7 +416,7 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       alert('❌ ' + errorMessage);
     } finally {
       setSendingNotifications(false);
@@ -431,9 +455,7 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
               {label}
               <span
                 className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                  activeFilter === key
-                    ? 'bg-white/20'
-                    : 'bg-gray-700'
+                  activeFilter === key ? 'bg-white/20' : 'bg-gray-700'
                 }`}
               >
                 {stats[key]}
@@ -460,10 +482,7 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
               <span className={`text-sm font-medium ${T.text}`}>
                 {selectedPlayers.size} selezionati
               </span>
-              <button
-                onClick={deselectAll}
-                className="text-sm text-blue-400 hover:underline"
-              >
+              <button onClick={deselectAll} className="text-sm text-blue-400 hover:underline">
                 Deseleziona tutti
               </button>
             </div>
@@ -527,10 +546,7 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
           <>
             {/* Selezione rapida */}
             <div className="flex items-center justify-between mb-3">
-              <button
-                onClick={selectAll}
-                className="text-sm text-blue-600 hover:underline"
-              >
+              <button onClick={selectAll} className="text-sm text-blue-600 hover:underline">
                 Seleziona tutti ({filteredPlayers.length})
               </button>
             </div>
@@ -576,12 +592,8 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
                           )}
                         </div>
                         <div className="flex flex-wrap gap-2 text-sm">
-                          {player.email && (
-                            <span className={T.subtext}>📧 {player.email}</span>
-                          )}
-                          {player.phone && (
-                            <span className={T.subtext}>📱 {player.phone}</span>
-                          )}
+                          {player.email && <span className={T.subtext}>📧 {player.email}</span>}
+                          {player.phone && <span className={T.subtext}>📱 {player.phone}</span>}
                         </div>
                       </div>
 
@@ -589,9 +601,7 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
                       <div className="text-right shrink-0">
                         {status === 'missing' ? (
                           <>
-                            <p className="text-sm font-bold text-gray-400">
-                              Mancante
-                            </p>
+                            <p className="text-sm font-bold text-gray-400">Mancante</p>
                             <p className="text-xs text-gray-500">Nessun certificato</p>
                           </>
                         ) : isExpired ? (
@@ -626,9 +636,7 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
                           </>
                         ) : status === 'valid' ? (
                           <>
-                            <p className="text-sm font-bold text-green-400">
-                              Valido
-                            </p>
+                            <p className="text-sm font-bold text-green-400">Valido</p>
                             <p className="text-xs text-green-600">
                               {player.medicalCertificates?.current?.expiryDate
                                 ? new Date(
@@ -677,15 +685,11 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
             <div className="text-xs text-gray-500">Totale</div>
           </div>
           <div className="p-2 bg-red-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-red-400">
-              {stats[FILTER_OPTIONS.EXPIRED]}
-            </div>
+            <div className="text-2xl font-bold text-red-400">{stats[FILTER_OPTIONS.EXPIRED]}</div>
             <div className="text-xs text-red-400">Scaduti</div>
           </div>
           <div className="p-2 bg-orange-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-orange-400">
-              {stats[FILTER_OPTIONS.URGENT]}
-            </div>
+            <div className="text-2xl font-bold text-orange-400">{stats[FILTER_OPTIONS.URGENT]}</div>
             <div className="text-xs text-orange-400">Urgenti</div>
           </div>
           <div className="p-2 bg-yellow-900/20 rounded-lg">
@@ -695,15 +699,11 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
             <div className="text-xs text-yellow-400">In Scadenza</div>
           </div>
           <div className="p-2 bg-gray-800 rounded-lg">
-            <div className="text-2xl font-bold text-gray-400">
-              {stats[FILTER_OPTIONS.MISSING]}
-            </div>
+            <div className="text-2xl font-bold text-gray-400">{stats[FILTER_OPTIONS.MISSING]}</div>
             <div className="text-xs text-gray-400">Mancanti</div>
           </div>
           <div className="p-2 bg-green-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-green-400">
-              {stats[FILTER_OPTIONS.VALID]}
-            </div>
+            <div className="text-2xl font-bold text-green-400">{stats[FILTER_OPTIONS.VALID]}</div>
             <div className="text-xs text-green-400">Validi</div>
           </div>
         </div>
@@ -711,4 +711,3 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
     </div>
   );
 }
-

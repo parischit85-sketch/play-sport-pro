@@ -652,6 +652,3 @@ export default function CRMTools({ players, T, onBulkOperation, onRefreshData })
     </div>
   );
 }
-
-
-

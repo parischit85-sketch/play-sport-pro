@@ -834,9 +834,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
             className="bg-gray-800 rounded-lg shadow-sm border-2 border-emerald-600 p-3 sm:p-6 mb-4 sm:mb-6"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-3">
-              <h2 className="font-semibold text-white text-sm sm:text-base">
-                Seleziona l'orario
-              </h2>
+              <h2 className="font-semibold text-white text-sm sm:text-base">Seleziona l'orario</h2>
               <label className="flex items-center gap-2 text-xs sm:text-sm">
                 <input
                   type="checkbox"
@@ -890,9 +888,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
           >
             {/* Header con titolo e filtri affiancati */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <h2 className="font-semibold text-white text-sm sm:text-base">
-                Prenota un campo
-              </h2>
+              <h2 className="font-semibold text-white text-sm sm:text-base">Prenota un campo</h2>
 
               {/* Filtri per tipologia campo - affiancati al titolo */}
               {availableCourtTypes.length > 0 && (
@@ -944,11 +940,21 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
 
             <div className="space-y-3 sm:space-y-4">
               {filteredCourtsForDisplay.map((court) => {
-                console.log('🎾 Rendering court:', court.name, 'timeSlots:', court.timeSlots?.length || 0);
+                console.log(
+                  '🎾 Rendering court:',
+                  court.name,
+                  'timeSlots:',
+                  court.timeSlots?.length || 0
+                );
                 const slotDate = new Date(`${selectedDate}T${selectedTime}:00`);
                 const isWithinSchedule = isCourtBookableAt(slotDate, court.id, courtsFromState);
                 const free = checkSlotAvailability(court.id, selectedDate, selectedTime);
-                const hole = wouldCreateHalfHourHole(court.id, selectedDate, selectedTime, duration);
+                const hole = wouldCreateHalfHourHole(
+                  court.id,
+                  selectedDate,
+                  selectedTime,
+                  duration
+                );
                 const isTrapped = isTimeSlotTrapped(
                   court.id,
                   selectedDate,
@@ -963,7 +969,14 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                   <div
                     key={court.id}
                     onClick={() => {
-                      console.log('🏓 Click on court:', court.name, 'isAvailable:', isAvailable, 'courtId:', court.id);
+                      console.log(
+                        '🏓 Click on court:',
+                        court.name,
+                        'isAvailable:',
+                        isAvailable,
+                        'courtId:',
+                        court.id
+                      );
                       if (isAvailable) {
                         setSelectedCourt(court);
                         setShowBookingModal(true);
@@ -975,7 +988,12 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                           court_type: court.type,
                         });
                       } else {
-                        console.log('❌ Court not available:', { isWithinSchedule, free, hole, isTrapped });
+                        console.log('❌ Court not available:', {
+                          isWithinSchedule,
+                          free,
+                          hole,
+                          isTrapped,
+                        });
                       }
                     }}
                     className={`border-2 rounded-xl p-4 sm:p-5 transition-all duration-300 touch-manipulation ${
@@ -990,9 +1008,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                           <div>
                             <h3
                               className={`font-bold text-base sm:text-lg ${
-                                isAvailable
-                                  ? 'text-white'
-                                  : 'text-gray-400'
+                                isAvailable ? 'text-white' : 'text-gray-400'
                               }`}
                             >
                               {court.name}
@@ -1117,9 +1133,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
               {/* Riepilogo con design più accattivante */}
               <div className="bg-gradient-to-r from-blue-900/30 to-blue-800/30 p-4 rounded-xl mb-6 border border-blue-700">
                 <div className="flex items-center gap-3 mb-3">
-                  <h4 className="font-semibold text-white text-lg">
-                    {selectedCourt.name}
-                  </h4>
+                  <h4 className="font-semibold text-white text-lg">{selectedCourt.name}</h4>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-gray-300">
                   <div className="flex items-center gap-2">
@@ -1223,9 +1237,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                           className="rounded w-5 h-5 text-blue-500"
                         />
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-100">
-                            Illuminazione
-                          </div>
+                          <div className="text-sm font-medium text-gray-100">Illuminazione</div>
                           <div className="text-xs text-gray-400">
                             +{cfg.addons?.lightingFee || 0}€
                           </div>
@@ -1242,9 +1254,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                           className="rounded w-5 h-5 text-blue-500"
                         />
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-100">
-                            Riscaldamento
-                          </div>
+                          <div className="text-sm font-medium text-gray-100">Riscaldamento</div>
                           <div className="text-xs text-gray-400">
                             +{cfg.addons?.heatingFee || 0}€
                           </div>
@@ -1272,9 +1282,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       <div className="text-sm font-semibold text-white">
                         {user?.displayName || user?.email}
                       </div>
-                      <div className="text-xs text-blue-400 font-medium">
-                        Organizzatore
-                      </div>
+                      <div className="text-xs text-blue-400 font-medium">Organizzatore</div>
                     </div>
                   </div>
                 </div>
@@ -1290,12 +1298,8 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                         <span className="text-white text-sm">👤</span>
                       </div>
                       <div className="flex-1">
-                        <div className="text-sm font-medium text-gray-100">
-                          {player.name}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          Giocatore {index + 2}
-                        </div>
+                        <div className="text-sm font-medium text-gray-100">{player.name}</div>
+                        <div className="text-xs text-gray-400">Giocatore {index + 2}</div>
                       </div>
                       <button
                         onClick={() => removePlayer(player.id)}
@@ -1332,17 +1336,11 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
               {/* Prezzo finale - Design premium */}
               <div className="bg-gradient-to-r from-green-900/30 to-green-800/30 p-4 rounded-xl border border-green-700 mb-6">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold text-white">
-                    Totale partita
-                  </span>
-                  <span className="text-2xl font-bold text-green-400">
-                    {totalPrice}€
-                  </span>
+                  <span className="font-semibold text-white">Totale partita</span>
+                  <span className="text-2xl font-bold text-green-400">{totalPrice}€</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-300">
-                    Costo per giocatore
-                  </span>
+                  <span className="text-sm text-gray-300">Costo per giocatore</span>
                   <span className="text-lg font-semibold text-green-400">
                     {(totalPrice / Math.max(1, selectedCourt?.maxPlayers || 4))
                       .toFixed(1)
@@ -1351,9 +1349,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                   </span>
                 </div>
                 <div className="mt-2 pt-2 border-t border-green-700">
-                  <div className="text-xs text-green-300 font-medium">
-                    💰 Pagamento in loco
-                  </div>
+                  <div className="text-xs text-green-300 font-medium">💰 Pagamento in loco</div>
                 </div>
               </div>
             </div>
@@ -1475,13 +1471,9 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-white animate-fade-in">
-                  🎾 Fantastico!
-                </h3>
+                <h3 className="text-2xl font-bold text-white animate-fade-in">🎾 Fantastico!</h3>
                 <div className="bg-gradient-to-r from-green-900/20 to-emerald-900/20 p-4 rounded-xl border border-green-700">
-                  <p className="text-green-200 font-semibold">
-                    Prenotazione confermata!
-                  </p>
+                  <p className="text-green-200 font-semibold">Prenotazione confermata!</p>
                   <p className="text-green-300 text-sm mt-1">
                     Il tuo campo è stato riservato con successo
                   </p>
@@ -1546,9 +1538,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                 </svg>
               </div>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">
-              Slot già prenotato! ⚠️
-            </h3>
+            <h3 className="text-xl font-bold text-white mb-2">Slot già prenotato! ⚠️</h3>
             <p className="text-gray-300 text-sm">
               Questo orario è già stato prenotato da qualcun altro. Seleziona un altro orario.
             </p>
@@ -1566,4 +1556,3 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
 }
 
 export default ModernBookingInterface;
-

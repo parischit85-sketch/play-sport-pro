@@ -177,9 +177,7 @@ const AffiliationFilterBar = ({ filters, onFiltersChange, affiliationsCount }) =
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700 text-gray-300">
-            Ordina per:
-          </label>
+          <label className="text-sm font-medium text-gray-700 text-gray-300">Ordina per:</label>
           <select
             value={filters.sortBy}
             onChange={(e) => onFiltersChange({ ...filters, sortBy: e.target.value })}
@@ -251,9 +249,7 @@ const StatsOverview = ({ stats, loading }) => {
           <div className="text-2xl">❌</div>
           <div>
             <p className="text-sm font-medium text-red-700 text-red-300">Rifiutate</p>
-            <p className="text-xl font-semibold text-red-900 text-red-100">
-              {stats.rejected || 0}
-            </p>
+            <p className="text-xl font-semibold text-red-900 text-red-100">{stats.rejected || 0}</p>
           </div>
         </div>
       </div>
@@ -492,4 +488,3 @@ const AdminAffiliationsPage = () => {
 };
 
 export default AdminAffiliationsPage;
-

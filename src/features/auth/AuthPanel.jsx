@@ -442,4 +442,3 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
 
   return null; // L'utente è autenticato e ha completato il profilo
 }
-

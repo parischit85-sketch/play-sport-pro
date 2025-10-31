@@ -22,4 +22,3 @@ export default function Section({ title, right, children, T, variant = 'default'
     </section>
   );
 }
-

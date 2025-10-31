@@ -105,9 +105,7 @@ export default function UnifiedBookingFlow() {
         {/* Header */}
         <div className="text-center">
           <div className="text-6xl mb-4">🎾</div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Seleziona un Circolo
-          </h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Seleziona un Circolo</h1>
           <p className="text-gray-400">Scegli il circolo dove vuoi prenotare</p>
         </div>
 
@@ -116,13 +114,9 @@ export default function UnifiedBookingFlow() {
           <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl">🏆</span>
-              <h2 className="text-xl font-semibold text-white">
-                I Tuoi Circoli
-              </h2>
+              <h2 className="text-xl font-semibold text-white">I Tuoi Circoli</h2>
             </div>
-            <p className="text-gray-400 mb-4">
-              Circoli dove hai un'affiliazione attiva
-            </p>
+            <p className="text-gray-400 mb-4">Circoli dove hai un'affiliazione attiva</p>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {affiliatedClubs.map((club) => (
                 <div
@@ -146,13 +140,9 @@ export default function UnifiedBookingFlow() {
           <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl">📍</span>
-              <h2 className="text-xl font-semibold text-white">
-                Circoli Nelle Vicinanze
-              </h2>
+              <h2 className="text-xl font-semibold text-white">Circoli Nelle Vicinanze</h2>
             </div>
-            <p className="text-gray-400 mb-4">
-              Altri circoli disponibili per prenotazioni
-            </p>
+            <p className="text-gray-400 mb-4">Altri circoli disponibili per prenotazioni</p>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {nearbyClubs.map((club) => (
                 <div
@@ -183,9 +173,7 @@ export default function UnifiedBookingFlow() {
             <div className="space-y-6">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-2xl">🔍</span>
-                <h2 className="text-xl font-semibold text-white">
-                  Cerca Circolo
-                </h2>
+                <h2 className="text-xl font-semibold text-white">Cerca Circolo</h2>
               </div>
 
               <div className="relative max-w-md mx-auto">
@@ -241,15 +229,11 @@ export default function UnifiedBookingFlow() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="text-5xl mb-4">🎾</div>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              Cosa vuoi prenotare?
-            </h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Cosa vuoi prenotare?</h1>
             <p className="text-gray-400 mb-2">
               presso <strong>{selectedClub.name}</strong>
             </p>
-            {selectedClub.city && (
-              <p className="text-sm text-gray-500">{selectedClub.city}</p>
-            )}
+            {selectedClub.city && <p className="text-sm text-gray-500">{selectedClub.city}</p>}
           </div>
 
           {/* Booking Type Options */}
@@ -260,12 +244,8 @@ export default function UnifiedBookingFlow() {
               className="group p-8 bg-gradient-to-br from-green-900/20 to-emerald-900/20 border-2 border-green-800 rounded-xl hover:border-green-600 transition-all duration-300 hover:shadow-lg"
             >
               <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🎾</div>
-              <h3 className="text-xl font-bold text-white mb-2">
-                Prenota Campo
-              </h3>
-              <p className="text-gray-400">
-                Prenota un campo per giocare con i tuoi amici
-              </p>
+              <h3 className="text-xl font-bold text-white mb-2">Prenota Campo</h3>
+              <p className="text-gray-400">Prenota un campo per giocare con i tuoi amici</p>
             </button>
 
             {/* Prenota Lezione - Controlla se le lezioni sono abilitate */}
@@ -274,12 +254,8 @@ export default function UnifiedBookingFlow() {
               className="group p-8 bg-gradient-to-br from-blue-900/20 to-indigo-900/20 border-2 border-blue-800 rounded-xl hover:border-blue-600 transition-all duration-300 hover:shadow-lg"
             >
               <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">📚</div>
-              <h3 className="text-xl font-bold text-white mb-2">
-                Prenota Lezione
-              </h3>
-              <p className="text-gray-400">
-                Prenota una lezione con un istruttore
-              </p>
+              <h3 className="text-xl font-bold text-white mb-2">Prenota Lezione</h3>
+              <p className="text-gray-400">Prenota una lezione con un istruttore</p>
             </button>
           </div>
         </div>
@@ -289,4 +265,3 @@ export default function UnifiedBookingFlow() {
 
   return null;
 }
-

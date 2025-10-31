@@ -163,10 +163,7 @@ const ExperimentDashboard = ({ isOpen, onClose, T }) => {
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-          >
+          <button onClick={onClose} className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
             <X className="w-6 h-6 text-gray-600 text-gray-400" />
           </button>
         </div>
@@ -242,13 +239,9 @@ const ExperimentDashboard = ({ isOpen, onClose, T }) => {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 text-white mb-1">
-                          {flag.key}
-                        </h4>
+                        <h4 className="font-semibold text-gray-900 text-white mb-1">{flag.key}</h4>
                         {flag.description && (
-                          <p className="text-sm text-gray-600 text-gray-400">
-                            {flag.description}
-                          </p>
+                          <p className="text-sm text-gray-600 text-gray-400">{flag.description}</p>
                         )}
                         <p className="text-xs text-gray-500 text-gray-500 mt-2">
                           Created: {new Date(flag.createdAt).toLocaleDateString()}
@@ -301,9 +294,7 @@ const ExperimentDashboard = ({ isOpen, onClose, T }) => {
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h4 className="font-semibold text-gray-900 text-white">
-                              {exp.name}
-                            </h4>
+                            <h4 className="font-semibold text-gray-900 text-white">{exp.name}</h4>
                             <span
                               className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(
                                 exp.status
@@ -466,9 +457,7 @@ const ExperimentDashboard = ({ isOpen, onClose, T }) => {
                               <p className="text-xs text-gray-600 text-gray-400 mb-1">
                                 {eventName}
                               </p>
-                              <p className="text-lg font-bold text-gray-900 text-white">
-                                {count}
-                              </p>
+                              <p className="text-lg font-bold text-gray-900 text-white">{count}</p>
                             </div>
                           ))}
                         </div>
@@ -486,5 +475,3 @@ const ExperimentDashboard = ({ isOpen, onClose, T }) => {
 };
 
 export default ExperimentDashboard;
-
-

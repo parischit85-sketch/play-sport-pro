@@ -155,9 +155,7 @@ export default function MobileBookingView({
         {/* Swipe Hint */}
         {filteredCourts.length > 1 && (
           <div className="text-center pb-2">
-            <div className="text-xs text-gray-400">
-              ← Swipe per cambiare campo →
-            </div>
+            <div className="text-xs text-gray-400">← Swipe per cambiare campo →</div>
           </div>
         )}
       </div>
@@ -247,9 +245,3 @@ export default function MobileBookingView({
     </div>
   );
 }
-
-
-
-
-
-

@@ -24,4 +24,3 @@ const PlayerAvatar = ({ player, size = 'md' }) => {
 
 // 🚀 OTTIMIZZAZIONE: Memoizza per evitare re-render inutili
 export default React.memo(PlayerAvatar);
-

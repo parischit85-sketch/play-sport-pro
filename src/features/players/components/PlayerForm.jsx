@@ -185,7 +185,9 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
                   className={`${T.input} w-full ${errors.lastName ? 'border-red-500' : ''}`}
                   placeholder="Cognome del giocatore"
                 />
-                {errors.lastName && <p className={`${T.accentWarning} text-xs mt-1`}>{errors.lastName}</p>}
+                {errors.lastName && (
+                  <p className={`${T.accentWarning} text-xs mt-1`}>{errors.lastName}</p>
+                )}
               </div>
             </div>
 
@@ -636,4 +638,3 @@ export default function PlayerForm({ player, onSave, onCancel, T }) {
     </form>
   );
 }
-

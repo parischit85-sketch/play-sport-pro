@@ -84,4 +84,3 @@ export default function SportsSelector({ value = [], onChange, required = false 
     </div>
   );
 }
-

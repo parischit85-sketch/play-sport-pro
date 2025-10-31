@@ -12,4 +12,3 @@ export default function TournamentDetailsPageWrapper() {
 
   return <TournamentDetailsPage clubId={clubId} />;
 }
-

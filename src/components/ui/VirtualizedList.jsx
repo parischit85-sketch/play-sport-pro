@@ -108,4 +108,3 @@ export function useDynamicItemHeight(measureElement) {
 
   return { measureHeight, getHeight, averageHeight };
 }
-

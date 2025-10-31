@@ -45,8 +45,8 @@ export default function LanguageSelector({ variant = 'dropdown', size = 'medium'
           className={`
             flex items-center gap-2 px-3 py-2 rounded-lg border transition-all
             ${size === 'small' ? 'text-sm' : size === 'large' ? 'text-lg px-4 py-3' : 'text-base'}
-            ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 hover:bg-gray-700'}
-            bg-white bg-gray-800 border-gray-300 border-gray-600
+            ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'}
+            bg-gray-800 border-gray-600
           `}
           aria-label={t('profile.language')}
         >
@@ -64,7 +64,7 @@ export default function LanguageSelector({ variant = 'dropdown', size = 'medium'
             <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
 
             {/* Menu dropdown */}
-            <div className="absolute right-0 mt-2 w-48 bg-white bg-gray-800 rounded-lg shadow-lg border border-gray-200 border-gray-700 z-20">
+            <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-20">
               <div className="py-1">
                 {SUPPORTED_LANGUAGES.map((language) => (
                   <button
@@ -72,8 +72,8 @@ export default function LanguageSelector({ variant = 'dropdown', size = 'medium'
                     onClick={() => handleLanguageChange(language.code)}
                     disabled={loading}
                     className={`
-                      w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 hover:bg-gray-700 transition-colors
-                      ${language.code === currentLanguage.code ? 'bg-blue-50 bg-blue-900/20' : ''}
+                      w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-700 transition-colors
+                      ${language.code === currentLanguage.code ? 'bg-blue-900/20' : ''}
                     `}
                   >
                     <span className="text-lg">{language.flag}</span>
@@ -106,7 +106,7 @@ export default function LanguageSelector({ variant = 'dropdown', size = 'medium'
               ${
                 language.code === currentLanguage.code
                   ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white bg-gray-800 border-gray-300 border-gray-600 hover:bg-gray-50 hover:bg-gray-700'
+                  : 'bg-gray-800 border-gray-600 hover:bg-gray-700'
               }
               ${loading ? 'opacity-50 cursor-not-allowed' : ''}
             `}
@@ -129,8 +129,8 @@ export default function LanguageSelector({ variant = 'dropdown', size = 'medium'
           disabled={loading}
           className={`
             flex items-center gap-1 px-2 py-1 rounded border transition-all
-            ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 hover:bg-gray-700'}
-            bg-white bg-gray-800 border-gray-300 border-gray-600
+            ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'}
+            bg-gray-800 border-gray-600
           `}
           aria-label={t('profile.language')}
         >
@@ -141,7 +141,7 @@ export default function LanguageSelector({ variant = 'dropdown', size = 'medium'
         {isOpen && (
           <>
             <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-            <div className="absolute right-0 mt-1 w-32 bg-white bg-gray-800 rounded-lg shadow-lg border border-gray-200 border-gray-700 z-20">
+            <div className="absolute right-0 mt-1 w-32 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-20">
               <div className="py-1">
                 {SUPPORTED_LANGUAGES.map((language) => (
                   <button
@@ -149,8 +149,8 @@ export default function LanguageSelector({ variant = 'dropdown', size = 'medium'
                     onClick={() => handleLanguageChange(language.code)}
                     disabled={loading}
                     className={`
-                      w-full flex items-center justify-center gap-2 px-3 py-2 hover:bg-gray-50 hover:bg-gray-700 transition-colors
-                      ${language.code === currentLanguage.code ? 'bg-blue-50 bg-blue-900/20' : ''}
+                      w-full flex items-center justify-center gap-2 px-3 py-2 hover:bg-gray-700 transition-colors
+                      ${language.code === currentLanguage.code ? 'bg-blue-900/20' : ''}
                     `}
                   >
                     <span className="text-lg">{language.flag}</span>
@@ -217,9 +217,7 @@ export function LanguageSettings() {
         <h3 className="text-lg font-semibold text-gray-900 text-white mb-4">
           {t('profile.language')}
         </h3>
-        <p className="text-gray-600 text-gray-400 mb-6">
-          Scegli la lingua preferita per l'applicazione
-        </p>
+        <p className="text-gray-400 mb-6">Scegli la lingua preferita per l'applicazione</p>
       </div>
 
       <div className="grid gap-3">
@@ -232,8 +230,8 @@ export function LanguageSettings() {
               w-full flex items-center gap-4 p-4 rounded-lg border-2 transition-all
               ${
                 language.code === currentLanguage.code
-                  ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                  : 'border-gray-200 border-gray-700 hover:border-gray-300 hover:border-gray-600'
+                  ? 'border-blue-500 bg-blue-900/20'
+                  : 'border-gray-700 hover:border-gray-600'
               }
               ${loading ? 'opacity-50 cursor-not-allowed' : ''}
             `}
@@ -242,7 +240,7 @@ export function LanguageSettings() {
               <span className="text-2xl">{language.flag}</span>
               <div className="text-left">
                 <div className="font-semibold text-gray-900 text-white">{language.name}</div>
-                <div className="text-sm text-gray-600 text-gray-400">
+                <div className="text-sm text-gray-400">
                   {language.code === 'it' && 'Italiano'}
                   {language.code === 'en' && 'English'}
                   {language.code === 'es' && 'Español'}
@@ -260,9 +258,9 @@ export function LanguageSettings() {
         ))}
       </div>
 
-      <div className="bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-800 rounded-lg p-4">
-        <h4 className="font-semibold text-blue-900 text-blue-200 mb-2">💡 Suggerimento</h4>
-        <p className="text-sm text-blue-800 text-blue-300">
+      <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
+        <h4 className="font-semibold text-blue-200 mb-2">💡 Suggerimento</h4>
+        <p className="text-sm text-blue-300">
           La lingua selezionata verrà salvata automaticamente e utilizzata in tutte le sessioni
           future. Puoi cambiarla in qualsiasi momento da questa sezione.
         </p>
@@ -270,4 +268,3 @@ export function LanguageSettings() {
     </div>
   );
 }
-

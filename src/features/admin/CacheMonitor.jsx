@@ -158,9 +158,7 @@ export function CacheMonitor({ isOpen, onClose, T }) {
                 {/* IndexedDB Cache */}
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 from-purple-900/20 to-purple-800/20 rounded-lg p-4 border border-purple-200 border-purple-700">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-purple-900 text-purple-300">
-                      IndexedDB
-                    </h3>
+                    <h3 className="font-semibold text-purple-900 text-purple-300">IndexedDB</h3>
                     <span className="text-2xl">💿</span>
                   </div>
                   <div className="text-3xl font-bold text-purple-900 text-purple-100">
@@ -174,9 +172,7 @@ export function CacheMonitor({ isOpen, onClose, T }) {
                 {/* Operations */}
                 <div className="bg-gradient-to-br from-orange-50 to-orange-100 from-orange-900/20 to-orange-800/20 rounded-lg p-4 border border-orange-200 border-orange-700">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-semibold text-orange-900 text-orange-300">
-                      Operations
-                    </h3>
+                    <h3 className="font-semibold text-orange-900 text-orange-300">Operations</h3>
                     <span className="text-2xl">🔄</span>
                   </div>
                   <div className="text-lg font-bold text-orange-900 text-orange-100">
@@ -190,9 +186,7 @@ export function CacheMonitor({ isOpen, onClose, T }) {
 
               {/* Hit Rate Visualization */}
               <div className="bg-gray-50 bg-gray-900 rounded-lg p-4 mb-6">
-                <h3 className="font-bold text-gray-900 text-white mb-3">
-                  📊 Cache Performance
-                </h3>
+                <h3 className="font-bold text-gray-900 text-white mb-3">📊 Cache Performance</h3>
                 <div className="space-y-3">
                   <div>
                     <div className="flex justify-between text-sm mb-1">
@@ -268,9 +262,7 @@ export function CacheMonitor({ isOpen, onClose, T }) {
               {/* Collections Breakdown */}
               {stats.indexedDBCollections && Object.keys(stats.indexedDBCollections).length > 0 && (
                 <div className="bg-gray-50 bg-gray-900 rounded-lg p-4">
-                  <h3 className="font-bold text-gray-900 text-white mb-3">
-                    📦 Cached Collections
-                  </h3>
+                  <h3 className="font-bold text-gray-900 text-white mb-3">📦 Cached Collections</h3>
                   <div className="space-y-2">
                     {Object.entries(stats.indexedDBCollections).map(([collection, data]) => (
                       <div
@@ -351,4 +343,3 @@ export function CacheMonitor({ isOpen, onClose, T }) {
 }
 
 export default CacheMonitor;
-

@@ -62,4 +62,3 @@ export default function Badge({
 
 // Named export per compatibilità con shadcn/ui
 export { Badge };
-

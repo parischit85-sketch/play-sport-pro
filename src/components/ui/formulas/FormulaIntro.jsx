@@ -40,4 +40,3 @@ export function FormulaIntro({ sumA, sumB, teamALabel, teamBLabel }) {
     </div>
   );
 }
-

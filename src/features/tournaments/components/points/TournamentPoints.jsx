@@ -59,13 +59,13 @@ export default function TournamentPoints({ clubId, tournament }) {
 
   const handleApply = async () => {
     if (!clubId || !tournament?.id) return;
-    
+
     // Inizializza con data/ora corrente
     const now = new Date();
     const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
       .toISOString()
       .slice(0, 16);
-    
+
     setMatchDateTime(localDateTime);
     setShowDateModal(true);
   };
@@ -79,14 +79,14 @@ export default function TournamentPoints({ clubId, tournament }) {
     setApplyLoading(true);
     setError(null);
     setShowDateModal(false);
-    
+
     try {
       const selectedDate = new Date(matchDateTime).toISOString();
-      
+
       const res = await applyTournamentChampionshipPoints(clubId, tournament, {
         matchDate: selectedDate,
       });
-      
+
       if (res.success) {
         if (res.alreadyApplied) {
           setApplyInfo({ applied: true, appliedAt: res.appliedAt || null });
@@ -111,9 +111,7 @@ export default function TournamentPoints({ clubId, tournament }) {
   };
 
   if (loading) {
-    return (
-      <div className="p-6 text-sm text-gray-300">Calcolo punti in corso…</div>
-    );
+    return <div className="p-6 text-sm text-gray-300">Calcolo punti in corso…</div>;
   }
 
   if (error) {
@@ -243,10 +241,7 @@ export default function TournamentPoints({ clubId, tournament }) {
             )}
             {rows.map((r) => (
               <React.Fragment key={r.teamId}>
-                <tr
-                  key={r.teamId}
-                  className="border-t border-gray-700/50 odd:bg-gray-900/30"
-                >
+                <tr key={r.teamId} className="border-t border-gray-700/50 odd:bg-gray-900/30">
                   <td className="px-3 py-2 font-medium text-gray-100">
                     <div>{r.teamName}</div>
                   </td>
@@ -400,9 +395,7 @@ export default function TournamentPoints({ clubId, tournament }) {
                                           <span className={`ml-1 ${roundColorClass(c)}`}>
                                             ({tag})
                                             {isKoLoss && (
-                                              <span className="text-orange-400 ml-1">
-                                                - Persa
-                                              </span>
+                                              <span className="text-orange-400 ml-1">- Persa</span>
                                             )}
                                           </span>
                                         </div>
@@ -428,9 +421,9 @@ export default function TournamentPoints({ clubId, tournament }) {
                           )}
 
                         {r.details?.groupPlacement && (
-                            <div className="rounded-lg border border-gray-700 bg-gray-800 p-4">
-                              <div className="text-base font-semibold mb-2">Piazzamento Girone</div>
-                              <div className="flex items-center justify-between text-sm text-gray-300">
+                          <div className="rounded-lg border border-gray-700 bg-gray-800 p-4">
+                            <div className="text-base font-semibold mb-2">Piazzamento Girone</div>
+                            <div className="flex items-center justify-between text-sm text-gray-300">
                               <span>Posizione: {r.details.groupPlacement.position || '-'}</span>
                               {(() => {
                                 const points = Number(r.details.groupPlacement.points) || 0;
@@ -485,9 +478,7 @@ export default function TournamentPoints({ clubId, tournament }) {
                                         <div className="text-gray-300 truncate">
                                           {emoji} {label}
                                           {isLoss && (
-                                            <span className="text-orange-400 ml-1">
-                                              - Persa
-                                            </span>
+                                            <span className="text-orange-400 ml-1">- Persa</span>
                                           )}
                                         </div>
                                         <span
@@ -516,17 +507,13 @@ export default function TournamentPoints({ clubId, tournament }) {
       {showDateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">
-              Seleziona Data e Orario Match
-            </h3>
+            <h3 className="text-lg font-semibold text-white mb-4">Seleziona Data e Orario Match</h3>
             <p className="text-sm text-gray-400 mb-4">
               Inserisci la data e l&apos;orario in cui sono state giocate le partite del torneo.
               Questa data verrà usata per tutti i match nei dettagli statistici.
             </p>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Data e Orario
-              </label>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Data e Orario</label>
               <input
                 type="datetime-local"
                 value={matchDateTime}
@@ -560,4 +547,3 @@ export default function TournamentPoints({ clubId, tournament }) {
     </div>
   );
 }
-

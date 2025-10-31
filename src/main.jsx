@@ -461,4 +461,3 @@ createRoot(container).render(
     </NotificationProvider>
   </SecurityProvider>
 );
-

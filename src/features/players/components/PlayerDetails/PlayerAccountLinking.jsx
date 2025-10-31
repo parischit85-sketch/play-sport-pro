@@ -40,23 +40,23 @@ export default function PlayerAccountLinking({
   // Filtra account già linkati
   const filteredAccounts = React.useMemo(() => {
     if (!accounts) return [];
-    
+
     return accounts.filter((acc) => {
       const email = (acc.email || '').toLowerCase();
       const uid = acc.uid;
-      
+
       // Escludi account già linkati ad altri players
       if (linkedEmailsSet.has(email) || linkedIdsSet.has(uid)) {
         return false;
       }
-      
+
       // Filtra per search
       if (accountSearch && accountSearch.trim()) {
         const search = accountSearch.toLowerCase();
         const fullName = `${acc.firstName || ''} ${acc.lastName || ''}`.toLowerCase();
         return fullName.includes(search) || email.includes(search);
       }
-      
+
       return true;
     });
   }, [accounts, linkedEmailsSet, linkedIdsSet, accountSearch]);
@@ -64,12 +64,9 @@ export default function PlayerAccountLinking({
   return (
     <div className="border-t border-gray-700 pt-4">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        
         {/* Status account collegato */}
         <div className="flex items-center gap-3">
-          <span className={`text-sm font-medium ${T.text}`}>
-            Account Collegato:
-          </span>
+          <span className={`text-sm font-medium ${T.text}`}>Account Collegato:</span>
           {player.isAccountLinked && player.linkedAccountEmail ? (
             <div className="flex items-center gap-2">
               <span className="text-green-500 text-lg">🔗</span>
@@ -88,9 +85,7 @@ export default function PlayerAccountLinking({
               )}
             </div>
           ) : (
-            <span className={`text-sm ${T.muted}`}>
-              Nessun account collegato
-            </span>
+            <span className={`text-sm ${T.muted}`}>Nessun account collegato</span>
           )}
         </div>
 
@@ -129,13 +124,15 @@ export default function PlayerAccountLinking({
                 {/* Lista account disponibili */}
                 {loadingAccounts ? (
                   <div className="text-center py-8">
-                    <div className={`inline-block animate-spin rounded-full h-8 w-8 border-b-2 ${T.text}`}></div>
+                    <div
+                      className={`inline-block animate-spin rounded-full h-8 w-8 border-b-2 ${T.text}`}
+                    ></div>
                     <p className={`mt-2 text-sm ${T.muted}`}>Caricamento account...</p>
                   </div>
                 ) : filteredAccounts.length === 0 ? (
                   <div className={`text-center py-8 ${T.cardBg} ${T.border} rounded-lg`}>
                     <p className={`text-sm ${T.muted}`}>
-                      {accountSearch 
+                      {accountSearch
                         ? 'Nessun account trovato per questa ricerca'
                         : 'Nessun account disponibile'}
                     </p>
@@ -155,9 +152,7 @@ export default function PlayerAccountLinking({
                                 : acc.email || 'Senza nome'}
                             </div>
                             {acc.email && (
-                              <div className={`text-xs truncate ${T.muted}`}>
-                                {acc.email}
-                              </div>
+                              <div className={`text-xs truncate ${T.muted}`}>{acc.email}</div>
                             )}
                           </div>
                           <LoadingButton
@@ -175,9 +170,7 @@ export default function PlayerAccountLinking({
 
                 {/* Link via email manuale (opzionale) */}
                 <div className="pt-3 border-t border-gray-700">
-                  <p className={`text-xs ${T.muted} mb-2`}>
-                    Oppure collega manualmente via email:
-                  </p>
+                  <p className={`text-xs ${T.muted} mb-2`}>Oppure collega manualmente via email:</p>
                   <div className="flex gap-2">
                     <input
                       type="email"
@@ -208,8 +201,3 @@ export default function PlayerAccountLinking({
     </div>
   );
 }
-
-
-
-
-

@@ -65,9 +65,7 @@ export default function ReportsDashboard({ clubId, clubName }) {
           <div className="flex items-center gap-3">
             <FileText className="w-8 h-8 text-blue-600" />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 text-white">
-                Report & Analytics
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900 text-white">Report & Analytics</h1>
               <p className="text-gray-600 text-gray-400">
                 Genera report personalizzati per {clubName}
               </p>
@@ -104,9 +102,7 @@ export default function ReportsDashboard({ clubId, clubName }) {
                       </div>
                       <div className="flex-1 text-left">
                         <h3 className="font-semibold text-gray-900 text-white">{type.name}</h3>
-                        <p className="text-sm text-gray-600 text-gray-400">
-                          {type.description}
-                        </p>
+                        <p className="text-sm text-gray-600 text-gray-400">{type.description}</p>
                       </div>
                     </div>
                   </button>
@@ -158,7 +154,7 @@ export default function ReportsDashboard({ clubId, clubName }) {
             <h2 className="text-lg font-semibold mb-4">Periodo</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
                   Data Inizio
                 </label>
@@ -236,7 +232,7 @@ export default function ReportsDashboard({ clubId, clubName }) {
           <div className={`${T.card} p-6`}>
             <h2 className="text-lg font-semibold mb-4">Anteprima Report</h2>
 
-            <div className={`${T.cardBg} rounded-lg p-6 mb-6`}> 
+            <div className={`${T.cardBg} rounded-lg p-6 mb-6`}>
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600 text-gray-400">Tipo:</span>
@@ -308,4 +304,3 @@ export default function ReportsDashboard({ clubId, clubName }) {
     </div>
   );
 }
-
