@@ -264,7 +264,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
     // Solo admin possono modificare i risultati
     const canRecordResult = !!(team1 && team2 && canEditResults);
 
-    // TBD teams (not yet determined from previous round), BYE (admin selected), or Qalif. (auto-qualified)
+    // TBD teams (not yet determined from previous round), BYE (admin selected), or Qualif. (auto-qualified)
     const team1Name = team1?.teamName || match.team1Name || 'TBD';
     const team2Name = team2?.teamName || match.team2Name || 'TBD';
 
@@ -522,6 +522,10 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
     // Normal View: Full detailed match card
     const renderSetPills = (teamIndex) => {
       if (!hasSets) return null;
+      const isWinner =
+        (teamIndex === 1 && match.winnerId === team1?.id) ||
+        (teamIndex === 2 && match.winnerId === team2?.id);
+
       return (
         <div className="flex items-center gap-1 ml-2">
           {match.sets.map((s, i) => {
@@ -532,8 +536,14 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
             return (
               <span
                 key={`tb-pill-${match.id}-${teamIndex}-${i}`}
-                className={`px-1.5 py-0.5 rounded text-[10px] leading-4 ${
-                  win ? 'bg-emerald-900/30 text-emerald-300' : 'bg-gray-700 text-gray-300'
+                className={`px-1.5 py-0.5 rounded-md text-[10px] leading-4 font-semibold border transition-all ${
+                  win
+                    ? isFinale && isWinner
+                      ? 'bg-amber-900/40 text-amber-200 border-amber-600/50 shadow-sm shadow-amber-500/20'
+                      : isWinner
+                        ? 'bg-emerald-900/40 text-emerald-200 border-emerald-600/50 shadow-sm shadow-emerald-500/20'
+                        : 'bg-red-900/40 text-red-300 border-red-600/50'
+                    : 'bg-gray-700/60 text-gray-300 border-gray-600/50'
                 }`}
                 title={`Set ${i + 1}`}
               >
@@ -550,46 +560,57 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
         type="button"
         key={match.id}
         disabled={!canRecordResult || isPublicView}
-        className={`relative bg-gray-700 rounded-lg border-2 border-gray-700 p-2 sm:p-3 transition-all w-full lg:min-w-[200px] lg:w-[200px] text-left ${
+        className={`relative bg-gradient-to-br from-gray-800/90 via-gray-700/90 to-gray-800/90 backdrop-blur-sm rounded-xl border-2 shadow-lg p-2 sm:p-3 transition-all w-full lg:min-w-[200px] lg:w-[200px] text-left ${
           isPublicView
-            ? 'cursor-default'
-            : 'hover:border-primary-400 cursor-pointer active:scale-[0.99]'
-        } ${!canRecordResult && !hasBye && !isPublicView ? 'opacity-60 cursor-not-allowed' : ''}`}
+            ? 'cursor-default border-gray-600/50'
+            : 'hover:border-primary-500 hover:shadow-primary-500/20 cursor-pointer active:scale-[0.98] border-gray-700'
+        } ${!canRecordResult && !hasBye && !isPublicView ? 'opacity-60 cursor-not-allowed' : ''} ${
+          isFinale && isCompleted && isPublicView
+            ? 'border-amber-500/70 shadow-2xl shadow-amber-500/30'
+            : ''
+        }`}
         onClick={() => !isPublicView && canRecordResult && setSelectedMatch(match)}
       >
         {/* Match Number - only show in admin view */}
         {!isPublicView && (
-          <div className="absolute -top-2 -left-2 w-5 h-5 sm:w-6 sm:h-6 bg-primary-600 text-white rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold">
+          <div className="absolute -top-2 -left-2 w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-primary-600 to-primary-700 text-white rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold shadow-lg border-2 border-gray-800">
             {match.matchNumber || '?'}
           </div>
         )}
 
         {/* Team 1 */}
         <div
-          className={`flex items-center justify-between p-1.5 sm:p-2 rounded ${
+          className={`flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-all ${
             isCompleted && match.winnerId === team1?.id
-              ? 'bg-green-900/30 border border-green-700'
-              : 'bg-gradient-to-r from-gray-700 to-gray-600'
+              ? isFinale
+                ? 'bg-gradient-to-r from-amber-900/50 via-yellow-800/40 to-amber-900/50 border-2 border-amber-500/50 shadow-inner shadow-amber-500/20'
+                : 'bg-gradient-to-r from-emerald-900/40 via-emerald-800/30 to-emerald-900/40 border-2 border-emerald-500/50 shadow-inner shadow-emerald-500/20'
+              : 'bg-gradient-to-r from-gray-800/70 via-gray-700/70 to-gray-800/70 border border-gray-600/30'
           }`}
         >
           <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
             {team1?.seed && (
-              <span className="text-[10px] sm:text-xs font-bold text-gray-400 flex-shrink-0">
+              <span className="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 bg-gray-700/60 text-gray-300 rounded">
                 #{team1.seed}
               </span>
             )}
             <span
-              className={`text-xs sm:text-sm font-medium truncate ${
+              className={`text-sm sm:text-base font-semibold truncate ${
                 team1Name === 'BYE'
-                  ? 'text-orange-500 font-bold'
+                  ? 'text-orange-400 font-bold'
                   : isCompleted && match.winnerId === team1?.id
-                    ? 'text-green-200 font-bold'
+                    ? isFinale
+                      ? 'text-amber-100 font-bold drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]'
+                      : 'text-emerald-100 font-bold drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'
                     : team1
-                      ? 'text-white'
+                      ? 'text-gray-100'
                       : 'text-gray-500 italic'
               }`}
             >
               {team1Name}
+              {isFinale && isCompleted && match.winnerId === team1?.id && (
+                <Crown className="inline-block ml-1 w-4 h-4 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
+              )}
             </span>
           </div>
           {isCompleted &&
@@ -597,8 +618,12 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
               ? renderSetPills(1)
               : match.score && (
                   <span
-                    className={`${isPublicView ? 'text-xl sm:text-2xl' : 'text-lg sm:text-xl'} font-bold ml-2 flex-shrink-0 ${
-                      match.winnerId === team1?.id ? 'text-green-300' : 'text-gray-500'
+                    className={`${isPublicView ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'} font-bold ml-2 flex-shrink-0 px-2 py-0.5 rounded ${
+                      match.winnerId === team1?.id
+                        ? isFinale
+                          ? 'text-amber-200 bg-amber-900/30'
+                          : 'text-emerald-200 bg-emerald-900/30'
+                        : 'text-gray-400 bg-gray-800/30'
                     }`}
                   >
                     {match.score.team1}
@@ -607,40 +632,47 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
         </div>
 
         {/* VS Divider */}
-        <div className="flex items-center justify-center py-0.5 sm:py-1">
-          <div className="h-px bg-fuchsia-500 flex-1"></div>
-          <span className="px-1.5 sm:px-2 text-[10px] sm:text-xs text-fuchsia-400 font-bold">
+        <div className="flex items-center justify-center py-1 sm:py-1.5">
+          <div className="h-px bg-gradient-to-r from-transparent via-primary-500/50 to-transparent flex-1"></div>
+          <span className="px-2 sm:px-2.5 text-[10px] sm:text-xs text-primary-400 font-bold tracking-wider">
             VS
           </span>
-          <div className="h-px bg-fuchsia-500 flex-1"></div>
+          <div className="h-px bg-gradient-to-r from-transparent via-primary-500/50 to-transparent flex-1"></div>
         </div>
 
         {/* Team 2 */}
         <div
-          className={`flex items-center justify-between p-1.5 sm:p-2 rounded ${
+          className={`flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-all ${
             isCompleted && match.winnerId === team2?.id
-              ? 'bg-green-900/30 border border-green-700'
-              : 'bg-gradient-to-r from-gray-600 to-gray-700'
+              ? isFinale
+                ? 'bg-gradient-to-r from-amber-900/50 via-yellow-800/40 to-amber-900/50 border-2 border-amber-500/50 shadow-inner shadow-amber-500/20'
+                : 'bg-gradient-to-r from-emerald-900/40 via-emerald-800/30 to-emerald-900/40 border-2 border-emerald-500/50 shadow-inner shadow-emerald-500/20'
+              : 'bg-gradient-to-r from-gray-800/70 via-gray-700/70 to-gray-800/70 border border-gray-600/30'
           }`}
         >
           <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
             {team2?.seed && (
-              <span className="text-[10px] sm:text-xs font-bold text-gray-400 flex-shrink-0">
+              <span className="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 bg-gray-700/60 text-gray-300 rounded">
                 #{team2.seed}
               </span>
             )}
             <span
-              className={`text-xs sm:text-sm font-medium truncate ${
+              className={`text-sm sm:text-base font-semibold truncate ${
                 team2Name === 'BYE'
-                  ? 'text-orange-500 font-bold'
+                  ? 'text-orange-400 font-bold'
                   : isCompleted && match.winnerId === team2?.id
-                    ? 'text-green-200 font-bold'
+                    ? isFinale
+                      ? 'text-amber-100 font-bold drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]'
+                      : 'text-emerald-100 font-bold drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'
                     : team2
-                      ? 'text-white'
+                      ? 'text-gray-100'
                       : 'text-gray-500 italic'
               }`}
             >
               {team2Name}
+              {isFinale && isCompleted && match.winnerId === team2?.id && (
+                <Crown className="inline-block ml-1 w-4 h-4 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
+              )}
             </span>
           </div>
           {isCompleted &&
@@ -648,8 +680,12 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
               ? renderSetPills(2)
               : match.score && (
                   <span
-                    className={`${isPublicView ? 'text-xl sm:text-2xl' : 'text-lg sm:text-xl'} font-bold ml-2 flex-shrink-0 ${
-                      match.winnerId === team2?.id ? 'text-green-300' : 'text-gray-500'
+                    className={`${isPublicView ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'} font-bold ml-2 flex-shrink-0 px-2 py-0.5 rounded ${
+                      match.winnerId === team2?.id
+                        ? isFinale
+                          ? 'text-amber-200 bg-amber-900/30'
+                          : 'text-emerald-200 bg-emerald-900/30'
+                        : 'text-gray-400 bg-gray-800/30'
                     }`}
                   >
                     {match.score.team2}

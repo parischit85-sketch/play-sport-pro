@@ -5,7 +5,7 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { getEffectiveRanking } from './utils/playerRanking.js';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import Section from '@ui/Section.jsx';
 import Modal from '@ui/Modal.jsx';
 import ConfirmModal from '@ui/ConfirmModal.jsx';
@@ -170,14 +170,16 @@ export default function PlayersCRM({
     // Ordinamento
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'registration':
+        case 'registration': {
           const dateA = new Date(a.createdAt || a.registrationDate || 0);
           const dateB = new Date(b.createdAt || b.registrationDate || 0);
           return dateB - dateA; // Più recenti prima
-        case 'lastActivity':
+        }
+        case 'lastActivity': {
           const activityA = new Date(a.lastActivity || 0);
           const activityB = new Date(b.lastActivity || 0);
           return activityB - activityA; // Più recenti prima
+        }
         case 'rating': {
           // Usa il ranking effettivo (calcolato dal contesto + leaderboard)
           const ratingA = getEffectiveRanking(a, playersById) || 0;
@@ -541,10 +543,14 @@ export default function PlayersCRM({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Stato */}
                 <div>
-                  <label className={`text-sm font-medium ${T.text} mb-2 block`}>
+                  <label
+                    htmlFor="filter-status"
+                    className={`text-sm font-medium ${T.text} mb-2 block`}
+                  >
                     Stato Account
                   </label>
                   <select
+                    id="filter-status"
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                     className={`${T.input} w-full`}
@@ -557,10 +563,14 @@ export default function PlayersCRM({
 
                 {/* Data registrazione */}
                 <div>
-                  <label className={`text-sm font-medium ${T.text} mb-2 block`}>
+                  <label
+                    htmlFor="filter-registration"
+                    className={`text-sm font-medium ${T.text} mb-2 block`}
+                  >
                     Registrazione
                   </label>
                   <select
+                    id="filter-registration"
                     value={filterRegistrationDate}
                     onChange={(e) => setFilterRegistrationDate(e.target.value)}
                     className={`${T.input} w-full`}
@@ -574,10 +584,14 @@ export default function PlayersCRM({
 
                 {/* Ultimo accesso */}
                 <div>
-                  <label className={`text-sm font-medium ${T.text} mb-2 block`}>
+                  <label
+                    htmlFor="filter-last-activity"
+                    className={`text-sm font-medium ${T.text} mb-2 block`}
+                  >
                     Ultimo Accesso
                   </label>
                   <select
+                    id="filter-last-activity"
                     value={filterLastActivity}
                     onChange={(e) => setFilterLastActivity(e.target.value)}
                     className={`${T.input} w-full`}
@@ -689,22 +703,27 @@ export default function PlayersCRM({
                 </button>
               )}
             </div>
-          ) : filteredPlayers.length > 50 ? (
-            // Virtualized list per molte righe
+          ) : filteredPlayers.length > 1000 ? (
+            // Virtualized grid per molti giocatori (>1000)
             <VirtualizedList
               items={filteredPlayers}
-              itemHeight={120} // Altezza stimata del PlayerCard
+              itemHeight={280} // Altezza stimata del PlayerCard in griglia
               containerHeight={800}
               className="border border-gray-700 rounded-lg"
               T={T}
-              renderItem={(player, index) => (
-                <div className="p-2">
+              renderItem={(player) => (
+                <div
+                  className="inline-block w-1/5 p-2 align-top"
+                  style={{
+                    width: 'calc(100% / 5)',
+                    boxSizing: 'border-box',
+                  }}
+                >
                   <PlayerCard
                     player={player}
                     playersById={playersById}
                     onEdit={() => {
                       setSelectedPlayerId(player.id);
-                      setIsEditMode(true);
                     }}
                     onDelete={() => handleDeletePlayer(player.id)}
                     onView={() => setSelectedPlayerId(player.id)}
@@ -824,7 +843,6 @@ export default function PlayersCRM({
               value={accountSearch}
               onChange={(e) => setAccountSearch(e.target.value)}
               className={`${T.input} w-full`}
-              autoFocus
             />
 
             {/* Lista account */}
