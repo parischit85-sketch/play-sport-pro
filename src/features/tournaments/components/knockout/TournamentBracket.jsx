@@ -189,13 +189,42 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
 
     // TV View: Ultra compact match card with sets display
     if (isTVView) {
-      // Determine font sizes based on round
-      // Ottavi: 13px players, 15px scores
-      // Quarti/Semi/Finale: 20px players, 20px scores
-      const isAdvancedRound = roundIndex >= 1; // Quarti or later
-      const playerFontSize = isAdvancedRound ? 'text-[20px]' : 'text-[13px]';
-      const pillTextSize = isAdvancedRound ? 'text-[20px]' : 'text-[14px]';
-      const pillPadding = isAdvancedRound ? 'px-1.5 py-1' : 'px-1 py-0.5';
+      // Rilevo da quale round parte il tabellone
+      const firstRoundName = orderedRounds[0];
+      const firstRoundIsQuarters =
+        firstRoundName === KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.QUARTER_FINALS];
+      const firstRoundIsSemi = firstRoundName === KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.SEMI_FINALS];
+
+      // Determino font size in base al caso
+      let playerFontSize = 'text-[20px]';
+      let pillTextSize = 'text-[20px]';
+      let pillPadding = 'px-1.5 py-1';
+
+      if (firstRoundIsSemi) {
+        // Caso 3: parte da Semi
+        // Semi: 24px, Finale: 28px
+        playerFontSize = roundIndex === 0 ? 'text-[24px]' : 'text-[28px]';
+        pillTextSize = roundIndex === 0 ? 'text-[24px]' : 'text-[28px]';
+        pillPadding = 'px-2 py-1';
+      } else if (firstRoundIsQuarters) {
+        // Caso 2: parte da Quarti
+        // Quarti: 22px, Semi: 22px, Finale: 24px
+        if (roundIndex === 0 || roundIndex === 1) {
+          playerFontSize = 'text-[22px]';
+          pillTextSize = 'text-[22px]';
+        } else {
+          playerFontSize = 'text-[24px]';
+          pillTextSize = 'text-[24px]';
+        }
+        pillPadding = 'px-1.5 py-1';
+      } else {
+        // Caso 1: parte da Ottavi (default)
+        // Ottavi: 13px, Quarti/Semi/Finale: 20px
+        const isAdvancedRound = roundIndex >= 1;
+        playerFontSize = isAdvancedRound ? 'text-[20px]' : 'text-[13px]';
+        pillTextSize = isAdvancedRound ? 'text-[20px]' : 'text-[14px]';
+        pillPadding = isAdvancedRound ? 'px-1.5 py-1' : 'px-1 py-0.5';
+      }
 
       const renderTVSetPills = (teamIndex) => {
         if (!hasSets) return null;
@@ -238,7 +267,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
             className={`flex items-center justify-between px-2 py-0.5 ${playerFontSize} ${
               isCompleted && match.winnerId === team1?.id
                 ? 'bg-green-900/30 border border-green-700'
-                : 'bg-gray-700'
+                : 'bg-gradient-to-r from-gray-700 to-gray-600'
             }`}
           >
             <span
@@ -277,7 +306,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
             className={`flex items-center justify-between px-2 py-0.5 ${playerFontSize} ${
               isCompleted && match.winnerId === team2?.id
                 ? 'bg-green-900/30 border border-green-700'
-                : 'bg-gray-700'
+                : 'bg-gradient-to-r from-gray-600 to-gray-700'
             }`}
           >
             <span
@@ -364,7 +393,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
           className={`flex items-center justify-between p-1.5 sm:p-2 rounded ${
             isCompleted && match.winnerId === team1?.id
               ? 'bg-green-900/30 border border-green-700'
-              : 'bg-gray-700'
+              : 'bg-gradient-to-r from-gray-700 to-gray-600'
           }`}
         >
           <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
@@ -415,7 +444,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
           className={`flex items-center justify-between p-1.5 sm:p-2 rounded ${
             isCompleted && match.winnerId === team2?.id
               ? 'bg-green-900/30 border border-green-700'
-              : 'bg-gray-700'
+              : 'bg-gradient-to-r from-gray-600 to-gray-700'
           }`}
         >
           <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
@@ -478,6 +507,10 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
 
     // TV View: Bracket-style layout with proper positioning
     if (isTVView) {
+      // Determine the actual round index relative to displayed rounds
+      // This ensures proper centering whether starting from ottavi, quarti, or semi
+      const actualRoundIndex = orderedRounds.indexOf(roundName);
+
       return (
         <div key={roundName} className="flex flex-col justify-start w-full">
           {/* Round Header - Compact */}
@@ -494,38 +527,102 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
               // Calculate vertical position for bracket-style layout
               let topPosition = 0;
 
-              // Different match heights based on font sizes
-              // Ottavi: 13px font, compact -> ~60px height
-              // Quarti+: 20px font, larger -> ~75px height
-              const ottoviHeight = 60;
-              const advancedHeight = 75;
+              // Rilevo da quale round parte il tabellone
+              const firstRoundName = orderedRounds[0];
+              const firstRoundIsQuarters =
+                firstRoundName === KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.QUARTER_FINALS];
+              const firstRoundIsSemi =
+                firstRoundName === KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.SEMI_FINALS];
 
-              // For rounds after first, position matches between previous round matches
-              if (roundIndex > 0) {
-                // Calculate spacing based on previous round's height
-                // Round 1 (quarti): centered between ottavi pairs
-                // Round 2 (semi): centered between quarti pairs
-                // Round 3 (finale): centered between semi pairs
+              // Determino le dimensioni delle card in base al caso
+              let firstRoundHeight = 60;
+              let subsequentHeights = [75, 75, 75]; // default: Quarti, Semi, Finale dopo Ottavi
 
-                // Use ottavi height for first round calculations
-                const baseHeight = ottoviHeight;
-                const spacing = baseHeight * Math.pow(2, roundIndex);
+              if (firstRoundIsSemi) {
+                // Caso 3: Semi → Finale
+                firstRoundHeight = 90; // Semi
+                subsequentHeights = [100]; // Finale
+              } else if (firstRoundIsQuarters) {
+                // Caso 2: Quarti → Semi → Finale
+                firstRoundHeight = 80; // Quarti
+                subsequentHeights = [80, 90]; // Semi, Finale
+              }
+              // else: Caso 1 (default) Ottavi → Quarti → Semi → Finale
+              // firstRoundHeight = 60, subsequentHeights = [75, 75, 75]
 
-                // Position at center, accounting for current round's actual height
-                const currentHeight = advancedHeight;
-                topPosition = matchIndex * spacing + spacing / 2 - currentHeight / 2;
+              // Determino l'altezza della card corrente
+              let currentHeight = firstRoundHeight;
+              if (actualRoundIndex > 0) {
+                currentHeight =
+                  subsequentHeights[actualRoundIndex - 1] ||
+                  subsequentHeights[subsequentHeights.length - 1];
+              }
+
+              // Calcolo offset verticale per centrare semi e finale rispetto ai quarti
+              let verticalOffset = 0;
+              if (firstRoundIsQuarters) {
+                // I Quarti rimangono a offset 0 (in alto)
+                if (actualRoundIndex === 1) {
+                  // Semifinali: devono essere centrate tra i quarti
+                  // Semi 1: tra Quarti 1 (0px) e Quarti 2 (112px) = centro a 56px
+                  // Semi 2: tra Quarti 3 (224px) e Quarti 4 (336px) = centro a 280px
+                  // La formula automatica dà: Semi 1 a 80px, Semi 2 a 320px
+                  // Offset necessario: 56 - 80 = -24px
+                  verticalOffset = -24;
+                } else if (actualRoundIndex === 2) {
+                  // Finale: deve essere centrata tra le due semifinali
+                  // Semi 1 a 56px, Semi 2 a 296px = centro a 176px
+                  // La formula automatica dà la finale a 195px
+                  // Offset necessario: 176 - 195 = -19px
+                  verticalOffset = -19;
+                }
+              } else if (firstRoundIsSemi) {
+                // Caso 3: Semifinali → Finale
+                // Con gap 1.6, le semifinali sono a:
+                // Semi 1: top=0px, centro=45px (altezza 90px)
+                // Semi 2: top=144px, centro=189px
+                // Centro tra i due centri: (45 + 189) / 2 = 117px
+                // Ma voglio che il centro della finale (altezza 100px) sia a 117px
+                // Quindi top finale = 117 - 50 = 67px
+                // La formula automatica dà: 153 - 50 = 103px
+                // Offset necessario: 67 - 103 = -36px
+                if (actualRoundIndex === 1) {
+                  verticalOffset = -36;
+                }
+              }
+
+              if (actualRoundIndex > 0) {
+                // Subsequent rounds: position centered between previous round pairs
+                // Use first round height as base for all spacing calculations
+                const baseHeight = firstRoundHeight;
+
+                // CASO 2: Per quarti, aumento la spaziatura del 50%
+                // CASO 3: Per semi, aumento la spaziatura del 70%
+                const spacingMultiplier = firstRoundIsQuarters ? 1.5 : firstRoundIsSemi ? 1.7 : 1.0;
+                const spacing = baseHeight * Math.pow(2, actualRoundIndex) * spacingMultiplier;
+
+                // Position at center of spacing, accounting for current card height
+                topPosition =
+                  matchIndex * spacing + spacing / 2 - currentHeight / 2 + verticalOffset;
               } else {
-                // First round (ottavi): stack matches WITHOUT gap
-                topPosition = matchIndex * ottoviHeight;
+                // First round: stack matches with optional gap
+                // CASO 2: Per quarti al primo round, aggiungo gap del 40% tra le card
+                // CASO 3: Per semi al primo round, aggiungo gap del 60% tra le card
+                const gapMultiplier = firstRoundIsQuarters ? 1.4 : firstRoundIsSemi ? 1.6 : 1.0;
+                topPosition = matchIndex * firstRoundHeight * gapMultiplier + verticalOffset;
               }
 
               return (
                 <div
                   key={match.id}
                   className="absolute"
-                  style={{ top: `${topPosition}px`, width: '100%' }}
+                  style={{
+                    top: `${topPosition}px`,
+                    width: '100%',
+                    height: `${currentHeight}px`,
+                  }}
                 >
-                  {renderMatch(match, roundIndex)}
+                  {renderMatch(match, actualRoundIndex)}
                 </div>
               );
             })}
