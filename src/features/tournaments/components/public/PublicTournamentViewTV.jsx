@@ -28,6 +28,7 @@ function PublicTournamentViewTV() {
   const [groupData, setGroupData] = useState({});
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [dynamicCardHeight, setDynamicCardHeight] = useState(113); // Default height
 
   const intervalRef = useRef(null);
   const progressIntervalRef = useRef(null);
@@ -196,6 +197,68 @@ function PublicTournamentViewTV() {
     return pagesArray;
   }, [groups, tournament]);
 
+  // Calculate dynamic card height based on screen size and number of matches
+  useEffect(() => {
+    const calculateCardHeight = () => {
+      const currentPage = pages[currentPageIndex];
+      if (currentPage?.type !== 'group') {
+        setDynamicCardHeight(113); // Default per altre pagine
+        return;
+      }
+
+      const data = groupData[currentPage.groupId];
+      if (!data?.matches) {
+        setDynamicCardHeight(113);
+        return;
+      }
+
+      const matchesCount = data.matches.length;
+      if (matchesCount === 0) {
+        setDynamicCardHeight(113);
+        return;
+      }
+
+      // Calcola altezza disponibile per le partite
+      const screenHeight = window.innerHeight;
+      const headerHeight = 80; // Header TV
+      const standingsHeight = 400; // Classifica approssimativa
+      const titleHeight = 60; // Titolo "Partite"
+      const footerHeight = 60; // Footer
+      const padding = 40; // Padding vari
+      const gap = 16; // Gap tra le card (gap-4 = 1rem = 16px)
+
+      const availableHeight =
+        screenHeight - headerHeight - standingsHeight - titleHeight - footerHeight - padding;
+
+      // Calcola quante righe servono (assumendo 6 card per riga)
+      const cardsPerRow = 6;
+      const rows = Math.ceil(matchesCount / cardsPerRow);
+
+      // Calcola altezza massima per card (distribuisci equamente + gap)
+      const totalGapHeight = (rows - 1) * gap;
+      const cardHeight = Math.floor((availableHeight - totalGapHeight) / rows);
+
+      // Limiti min/max
+      const minHeight = 90;
+      const maxHeight = 150;
+      const finalHeight = Math.max(minHeight, Math.min(maxHeight, cardHeight));
+
+      setDynamicCardHeight(finalHeight);
+      console.log('📐 Dynamic card height calculated:', {
+        matchesCount,
+        rows,
+        availableHeight,
+        cardHeight: finalHeight,
+      });
+    };
+
+    calculateCardHeight();
+
+    // Ricalcola al resize dello schermo
+    window.addEventListener('resize', calculateCardHeight);
+    return () => window.removeEventListener('resize', calculateCardHeight);
+  }, [pages, currentPageIndex, groupData]);
+
   // Fullscreen toggle
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -301,7 +364,7 @@ function PublicTournamentViewTV() {
     };
   }, [pages, currentPageIndex, tournament]);
 
-  // Auto-scroll orizzontale INFINITO per le partite (carosello continuo senza reset)
+  // Auto-scroll orizzontale INFINITO per le partite (solo se più di 6 partite)
   useEffect(() => {
     // Reset refs when page changes
     scrollPositionRef.current = 0;
@@ -312,6 +375,21 @@ function PublicTournamentViewTV() {
       clearInterval(matchesScrollIntervalRef.current);
       matchesScrollIntervalRef.current = null;
       console.log('🧹 Cleared previous scroll interval');
+    }
+
+    // Determina se siamo su una pagina girone con partite
+    const currentPage = pages[currentPageIndex];
+    if (currentPage?.type !== 'group') {
+      return; // Non attivare scroll su altre pagine
+    }
+
+    const data = groupData[currentPage.groupId];
+    const matchesInGroup = data?.matches || [];
+
+    // CONDIZIONE: Scroll infinito solo se più di 6 partite
+    if (matchesInGroup.length <= 6) {
+      console.log('ℹ️ Few matches (≤6), no infinite scroll needed');
+      return;
     }
 
     // Attendi che il DOM si aggiorni e poi inizia lo scroll
@@ -331,6 +409,7 @@ function PublicTournamentViewTV() {
           const isOverflowing = scrollWidth > containerWidth;
 
           console.log('📏 Scroll check:', {
+            matchesCount: matchesInGroup.length,
             scrollWidth,
             containerWidth,
             isOverflowing,
@@ -376,7 +455,7 @@ function PublicTournamentViewTV() {
         matchesScrollIntervalRef.current = null;
       }
     };
-  }, [currentPageIndex, groupData]);
+  }, [pages, currentPageIndex, groupData]);
 
   if (loading) {
     return (
@@ -519,14 +598,18 @@ function PublicTournamentViewTV() {
           </div>
         </div>
 
-        {/* Matches - Scroll orizzontale INFINITO (carosello continuo) */}
+        {/* Matches - Layout adattivo: grid se poche partite, scroll infinito se tante */}
         <div>
           <h3 className="text-3xl font-bold text-white mb-3">Partite</h3>
           <div
             ref={matchesScrollRef}
-            className="flex gap-4 overflow-x-scroll hide-scrollbar pb-2"
+            className={
+              matches.length > 6
+                ? 'flex gap-4 overflow-x-auto hide-scrollbar pb-2'
+                : 'grid grid-cols-6 gap-4 pb-2'
+            }
             style={{
-              scrollBehavior: 'auto', // Auto per il reset seamless
+              scrollBehavior: 'auto',
             }}
           >
             {/* PRIMO SET: Partite originali */}
@@ -574,13 +657,16 @@ function PublicTournamentViewTV() {
               return (
                 <div
                   key={match.id}
-                  className={`bg-gray-800 rounded-xl p-3 shadow-lg min-h-[126px] min-w-[180px] flex-shrink-0 flex flex-col justify-center border-[2.5px] ${
+                  className={`bg-gray-800 rounded-xl p-3 shadow-lg flex flex-col justify-center border-[2.5px] ${
+                    matches.length > 6 ? 'min-w-[180px] flex-shrink-0' : ''
+                  } ${
                     isCompleted
                       ? 'border-fuchsia-500'
                       : isInProgress
                         ? 'border-red-500'
                         : 'border-fuchsia-700/60'
                   }`}
+                  style={{ minHeight: `${dynamicCardHeight}px` }}
                 >
                   {/* Status Badge - Only for IN PROGRESS */}
                   {isInProgress && (
@@ -676,8 +762,8 @@ function PublicTournamentViewTV() {
               );
             })}
 
-            {/* SECONDO SET: Partite duplicate per carosello infinito seamless */}
-            {matches.length > 0 &&
+            {/* SECONDO SET: Partite duplicate SOLO se più di 6 (per scroll infinito) */}
+            {matches.length > 6 &&
               matches.map((match) => {
                 const team1 = teams[match.team1Id];
                 const team2 = teams[match.team2Id];
@@ -689,7 +775,6 @@ function PublicTournamentViewTV() {
                 const isCompleted = match.status === 'completed';
                 const isInProgress = match.status === 'in_progress';
 
-                // Split team names to get individual players (assuming format "Player1 / Player2")
                 const team1Players = team1Name.split('/').map((p) => p.trim());
                 const team2Players = team2Name.split('/').map((p) => p.trim());
 
@@ -723,13 +808,14 @@ function PublicTournamentViewTV() {
                 return (
                   <div
                     key={`clone-${match.id}`}
-                    className={`bg-gray-800 rounded-xl p-3 shadow-lg min-h-[126px] min-w-[180px] flex-shrink-0 flex flex-col justify-center border-[2.5px] ${
+                    className={`bg-gray-800 rounded-xl p-3 shadow-lg min-w-[180px] flex-shrink-0 flex flex-col justify-center border-[2.5px] ${
                       isCompleted
                         ? 'border-fuchsia-500'
                         : isInProgress
                           ? 'border-red-500'
                           : 'border-fuchsia-700/60'
                     }`}
+                    style={{ minHeight: `${dynamicCardHeight}px` }}
                   >
                     {/* Status Badge - Only for IN PROGRESS */}
                     {isInProgress && (
@@ -1090,7 +1176,7 @@ function PublicTournamentViewTV() {
                   >
                     {currentPage?.type === 'group'
                       ? renderGroupPage(currentPage.groupId)
-                      : currentPage?.type === 'overall-standings'
+                      : currentPage?.type === 'standings'
                         ? renderBracketPage()
                         : currentPage?.type === 'points'
                           ? renderPointsPage()

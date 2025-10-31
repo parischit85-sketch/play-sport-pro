@@ -25,6 +25,12 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
   const [collapsedByRound, setCollapsedByRound] = useState({});
   const roundRefs = useRef({});
 
+  // Dynamic bracket card heights for TV view
+  const [dynamicBracketHeights, setDynamicBracketHeights] = useState({
+    first: 60,
+    subsequent: [75, 75, 75],
+  });
+
   // ✅ FIX: Check club-specific admin role, not global userRole
   const clubRole = userClubRoles?.[clubId];
   const isAdminClubRole = clubRole === 'admin' || clubRole === 'club_admin';
@@ -151,6 +157,86 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
     });
     setCollapsedByRound(initial);
   }, [matches, orderedRounds, rounds]);
+
+  // Calculate dynamic bracket card heights for TV view full-screen display
+  useEffect(() => {
+    if (!isTVView || orderedRounds.length === 0) return;
+
+    const screenHeight = window.innerHeight;
+    const headerHeight = 80; // Top header
+    const footerHeight = 0; // No footer in TV view
+    const roundHeaderHeight = 45; // Round title height
+    const padding = 40; // Top/bottom padding
+
+    const availableHeight =
+      screenHeight - headerHeight - footerHeight - roundHeaderHeight - padding;
+
+    // Detect starting round to determine number of matches in first round
+    const firstRoundName = orderedRounds[0];
+    const firstRoundMatches = rounds[firstRoundName]?.length || 0;
+
+    let firstRoundHeight = 60;
+    let subsequentHeights = [75, 75, 75];
+
+    // Case 1: Starts from Ottavi (8 matches in first round)
+    // Case 2: Starts from Quarti (4 matches in first round)
+    // Case 3: Starts from Semi (2 matches in first round)
+
+    if (firstRoundMatches === 2) {
+      // Starts from Semi → Finale
+      // 2 matches in Semi, need to fit on screen
+      const gapMultiplier = 1.6; // Gap between semi cards
+      const totalGapSpace = availableHeight * 0.15; // 15% for gaps
+      const cardSpace = availableHeight - totalGapSpace;
+
+      firstRoundHeight = Math.max(90, Math.min(150, cardSpace / (2 * gapMultiplier)));
+      subsequentHeights = [Math.max(100, firstRoundHeight * 1.1)]; // Finale slightly bigger
+
+      console.log('📐 TV Bracket Heights (Semi → Finale):', {
+        firstRoundHeight,
+        subsequentHeights,
+        availableHeight,
+      });
+    } else if (firstRoundMatches === 4) {
+      // Starts from Quarti → Semi → Finale
+      // 4 matches in Quarti, need to fit on screen
+      const gapMultiplier = 1.4; // Gap between quarti cards
+      const totalGapSpace = availableHeight * 0.2; // 20% for gaps
+      const cardSpace = availableHeight - totalGapSpace;
+
+      firstRoundHeight = Math.max(80, Math.min(120, cardSpace / (4 * gapMultiplier)));
+      subsequentHeights = [
+        Math.max(80, firstRoundHeight * 1.0), // Semi same size
+        Math.max(90, firstRoundHeight * 1.1), // Finale slightly bigger
+      ];
+
+      console.log('📐 TV Bracket Heights (Quarti → Semi → Finale):', {
+        firstRoundHeight,
+        subsequentHeights,
+        availableHeight,
+      });
+    } else if (firstRoundMatches === 8) {
+      // Starts from Ottavi → Quarti → Semi → Finale
+      // 8 matches in Ottavi, need to fit on screen
+      const totalGapSpace = availableHeight * 0.1; // 10% for gaps
+      const cardSpace = availableHeight - totalGapSpace;
+
+      firstRoundHeight = Math.max(60, Math.min(90, cardSpace / 8));
+      subsequentHeights = [
+        Math.max(75, firstRoundHeight * 1.25), // Quarti
+        Math.max(75, firstRoundHeight * 1.25), // Semi
+        Math.max(75, firstRoundHeight * 1.25), // Finale
+      ];
+
+      console.log('📐 TV Bracket Heights (Ottavi → Quarti → Semi → Finale):', {
+        firstRoundHeight,
+        subsequentHeights,
+        availableHeight,
+      });
+    }
+
+    setDynamicBracketHeights({ first: firstRoundHeight, subsequent: subsequentHeights });
+  }, [isTVView, orderedRounds, rounds]);
 
   // Icone colorate per round
   const getRoundIcon = (roundName) => {
@@ -535,20 +621,8 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
                 firstRoundName === KNOCKOUT_ROUND_NAMES[KNOCKOUT_ROUND.SEMI_FINALS];
 
               // Determino le dimensioni delle card in base al caso
-              let firstRoundHeight = 60;
-              let subsequentHeights = [75, 75, 75]; // default: Quarti, Semi, Finale dopo Ottavi
-
-              if (firstRoundIsSemi) {
-                // Caso 3: Semi → Finale
-                firstRoundHeight = 90; // Semi
-                subsequentHeights = [100]; // Finale
-              } else if (firstRoundIsQuarters) {
-                // Caso 2: Quarti → Semi → Finale
-                firstRoundHeight = 80; // Quarti
-                subsequentHeights = [80, 90]; // Semi, Finale
-              }
-              // else: Caso 1 (default) Ottavi → Quarti → Semi → Finale
-              // firstRoundHeight = 60, subsequentHeights = [75, 75, 75]
+              let firstRoundHeight = dynamicBracketHeights.first;
+              let subsequentHeights = dynamicBracketHeights.subsequent;
 
               // Determino l'altezza della card corrente
               let currentHeight = firstRoundHeight;
