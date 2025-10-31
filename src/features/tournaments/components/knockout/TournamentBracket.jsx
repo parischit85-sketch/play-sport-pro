@@ -319,7 +319,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
           (teamIndex === 2 && match.winnerId === team2?.id);
 
         return (
-          <div className="flex items-center gap-0.5 ml-1">
+          <div className="flex items-center gap-1 ml-2">
             {match.sets.map((s, i) => {
               const a = Number(s?.team1 ?? 0);
               const b = Number(s?.team2 ?? 0);
@@ -328,14 +328,14 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
               return (
                 <span
                   key={`tv-pill-${match.id}-${teamIndex}-${i}`}
-                  className={`${pillPadding} rounded ${pillTextSize} leading-3 font-bold ${
+                  className={`${pillPadding} rounded-md ${pillTextSize} leading-3 font-bold border transition-all ${
                     win
                       ? isWinner
-                        ? 'bg-emerald-900/30 text-emerald-300'
-                        : 'bg-red-900/30 text-red-400'
+                        ? 'bg-emerald-900/40 text-emerald-200 border-emerald-600/50 shadow-sm shadow-emerald-500/20'
+                        : 'bg-red-900/40 text-red-300 border-red-600/50 shadow-sm shadow-red-500/20'
                       : isWinner
-                        ? 'bg-gray-700 text-emerald-300'
-                        : 'bg-gray-700 text-red-400'
+                        ? 'bg-gray-700/60 text-emerald-300 border-gray-600/50'
+                        : 'bg-gray-700/60 text-red-400 border-gray-600/50'
                   }`}
                 >
                   {val}
@@ -347,30 +347,102 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
       };
 
       return (
-        <div key={match.id} className="bg-gray-700 w-full" style={{ margin: 0, padding: '0px' }}>
+        <div
+          key={match.id}
+          className={`w-full rounded-lg shadow-lg border-2 backdrop-blur-sm bg-gradient-to-br from-gray-800/90 via-gray-700/90 to-gray-800/90 relative ${
+            isFinale && isCompleted
+              ? 'border-amber-500/70 shadow-2xl shadow-amber-500/40'
+              : 'border-gray-600/50'
+          }`}
+          style={{
+            margin: 0,
+            padding: '0px',
+            overflow: 'visible',
+          }}
+        >
+          {/* Keyframes CSS injection for zoom animation */}
+          {isFinale && isCompleted && (
+            <style>
+              {`
+                @keyframes championZoom {
+                  0%, 100% { transform: scale(1); }
+                  50% { transform: scale(1.15); }
+                }
+              `}
+            </style>
+          )}
+          {/* Confetti/Sparkles effect for finale winner */}
+          {isFinale && isCompleted && (
+            <>
+              {/* Animated glow rings */}
+              <div className="absolute -inset-2 bg-gradient-to-r from-amber-500/20 via-yellow-500/20 to-amber-500/20 rounded-lg blur-xl animate-champion-glow pointer-events-none" />
+              <div
+                className="absolute -inset-1 bg-gradient-to-r from-amber-400/30 via-yellow-400/30 to-amber-400/30 rounded-lg blur-lg animate-champion-glow pointer-events-none"
+                style={{ animationDelay: '0.5s' }}
+              />
+
+              {/* Sparkle particles */}
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping pointer-events-none" />
+              <div
+                className="absolute -top-2 left-1/4 w-2 h-2 bg-amber-400 rounded-full animate-ping pointer-events-none"
+                style={{ animationDelay: '0.3s' }}
+              />
+              <div
+                className="absolute -bottom-1 -left-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping pointer-events-none"
+                style={{ animationDelay: '0.6s' }}
+              />
+              <div
+                className="absolute -bottom-2 right-1/3 w-2 h-2 bg-amber-400 rounded-full animate-ping pointer-events-none"
+                style={{ animationDelay: '0.9s' }}
+              />
+              <div
+                className="absolute top-1/2 -right-2 w-2 h-2 bg-yellow-200 rounded-full animate-ping pointer-events-none"
+                style={{ animationDelay: '0.4s' }}
+              />
+              <div
+                className="absolute top-1/3 -left-2 w-2 h-2 bg-amber-300 rounded-full animate-ping pointer-events-none"
+                style={{ animationDelay: '0.7s' }}
+              />
+            </>
+          )}
+
           {/* Team 1 */}
           <div
-            className={`flex items-center justify-between px-2 py-0.5 ${playerFontSize} ${
+            className={`flex items-center justify-between px-3 py-1 ${playerFontSize} transition-all duration-300 relative z-10 ${
               isCompleted && match.winnerId === team1?.id
-                ? 'bg-green-900/30 border border-green-700'
-                : 'bg-gradient-to-r from-gray-700 to-gray-600'
+                ? isFinale
+                  ? 'bg-gradient-to-r from-amber-900/50 via-yellow-800/40 to-amber-900/50 border-b-2 border-amber-400/70 shadow-amber-500/30 shadow-inner'
+                  : 'bg-gradient-to-r from-emerald-900/40 via-emerald-800/30 to-emerald-900/40 border-b-2 border-emerald-500/50 shadow-emerald-500/20 shadow-inner animate-pulse'
+                : 'bg-gradient-to-r from-gray-800/60 via-gray-700/60 to-gray-800/60 border-b border-gray-600/30'
             }`}
+            style={{
+              animation:
+                isFinale && isCompleted && match.winnerId === team1?.id
+                  ? 'championZoom 1.5s ease-in-out infinite'
+                  : 'none',
+            }}
           >
             <span
-              className={`font-semibold truncate ${
+              className={`font-semibold truncate flex items-center gap-1.5 ${
                 team1Name === 'BYE'
-                  ? 'text-orange-500 font-bold'
+                  ? 'text-orange-400 font-bold'
                   : isCompleted && match.winnerId === team1?.id
-                    ? 'text-green-200 font-bold'
+                    ? isFinale
+                      ? 'text-amber-100 font-bold drop-shadow-[0_0_12px_rgba(251,191,36,0.8)]'
+                      : 'text-emerald-100 font-bold drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]'
                     : team1
-                      ? 'text-white'
+                      ? 'text-gray-100'
                       : 'text-gray-500 italic'
               }`}
             >
-              {team1?.seed ? `#${team1.seed} ` : ''}
+              {team1?.seed && (
+                <span className="text-xs opacity-70 bg-gray-700/50 px-1.5 py-0.5 rounded">
+                  #{team1.seed}
+                </span>
+              )}
               {team1Name}
               {isFinale && isCompleted && match.winnerId === team1?.id && (
-                <Crown className="inline-block ml-1 w-5 h-5 text-amber-400 align-middle" />
+                <Crown className="inline-block w-5 h-5 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)] animate-bounce" />
               )}
             </span>
             {isCompleted &&
@@ -378,8 +450,10 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
                 ? renderTVSetPills(1)
                 : match.score && (
                     <span
-                      className={`${pillTextSize} font-bold ml-1 ${
-                        match.winnerId === team1?.id ? 'text-green-300' : 'text-red-400'
+                      className={`${pillTextSize} font-bold ml-1 px-2 py-0.5 rounded ${
+                        match.winnerId === team1?.id
+                          ? 'text-emerald-200 bg-emerald-900/30'
+                          : 'text-red-300 bg-red-900/20'
                       }`}
                     >
                       {match.score.team1}
@@ -389,27 +463,41 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
 
           {/* Team 2 */}
           <div
-            className={`flex items-center justify-between px-2 py-0.5 ${playerFontSize} ${
+            className={`flex items-center justify-between px-3 py-1 ${playerFontSize} transition-all duration-300 relative z-10 ${
               isCompleted && match.winnerId === team2?.id
-                ? 'bg-green-900/30 border border-green-700'
-                : 'bg-gradient-to-r from-gray-600 to-gray-700'
+                ? isFinale
+                  ? 'bg-gradient-to-r from-amber-900/50 via-yellow-800/40 to-amber-900/50 border-t-2 border-amber-400/70 shadow-amber-500/30 shadow-inner'
+                  : 'bg-gradient-to-r from-emerald-900/40 via-emerald-800/30 to-emerald-900/40 border-t-2 border-emerald-500/50 shadow-emerald-500/20 shadow-inner animate-pulse'
+                : 'bg-gradient-to-r from-gray-800/60 via-gray-700/60 to-gray-800/60'
             }`}
+            style={{
+              animation:
+                isFinale && isCompleted && match.winnerId === team2?.id
+                  ? 'championZoom 1.5s ease-in-out infinite'
+                  : 'none',
+            }}
           >
             <span
-              className={`font-semibold truncate ${
+              className={`font-semibold truncate flex items-center gap-1.5 ${
                 team2Name === 'BYE'
-                  ? 'text-orange-500 font-bold'
+                  ? 'text-orange-400 font-bold'
                   : isCompleted && match.winnerId === team2?.id
-                    ? 'text-green-200 font-bold'
+                    ? isFinale
+                      ? 'text-amber-100 font-bold drop-shadow-[0_0_12px_rgba(251,191,36,0.8)]'
+                      : 'text-emerald-100 font-bold drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]'
                     : team2
-                      ? 'text-white'
+                      ? 'text-gray-100'
                       : 'text-gray-500 italic'
               }`}
             >
-              {team2?.seed ? `#${team2.seed} ` : ''}
+              {team2?.seed && (
+                <span className="text-xs opacity-70 bg-gray-700/50 px-1.5 py-0.5 rounded">
+                  #{team2.seed}
+                </span>
+              )}
               {team2Name}
               {isFinale && isCompleted && match.winnerId === team2?.id && (
-                <Crown className="inline-block ml-1 w-5 h-5 text-amber-400 align-middle" />
+                <Crown className="inline-block w-5 h-5 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)] animate-bounce" />
               )}
             </span>
             {isCompleted &&
@@ -417,8 +505,10 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
                 ? renderTVSetPills(2)
                 : match.score && (
                     <span
-                      className={`${pillTextSize} font-bold ml-1 ${
-                        match.winnerId === team2?.id ? 'text-green-300' : 'text-red-400'
+                      className={`${pillTextSize} font-bold ml-1 px-2 py-0.5 rounded ${
+                        match.winnerId === team2?.id
+                          ? 'text-emerald-200 bg-emerald-900/30'
+                          : 'text-red-300 bg-red-900/20'
                       }`}
                     >
                       {match.score.team2}
@@ -599,11 +689,11 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
 
       return (
         <div key={roundName} className="flex flex-col justify-start w-full">
-          {/* Round Header - Compact */}
-          <div className="bg-gradient-to-r from-primary-900/40 to-blue-900/40 rounded-md px-2 py-1.5 mb-3 border border-primary-800">
-            <div className="flex items-center gap-1.5 justify-center">
+          {/* Round Header - Compact & Modern */}
+          <div className="bg-gradient-to-r from-indigo-900/50 via-blue-900/50 to-indigo-900/50 rounded-lg px-3 py-2 mb-4 border border-indigo-700/50 shadow-lg backdrop-blur-sm">
+            <div className="flex items-center gap-2 justify-center">
               {getRoundIcon(roundName)}
-              <h3 className="font-bold text-xs text-white truncate">{roundName}</h3>
+              <h3 className="font-bold text-sm text-white tracking-wide">{roundName}</h3>
             </div>
           </div>
 
