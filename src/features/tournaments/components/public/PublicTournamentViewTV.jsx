@@ -592,7 +592,8 @@ function PublicTournamentViewTV() {
 
         {/* Matches - Layout adattivo: grid se poche partite, scroll infinito se tante */}
         <div>
-          <h3 className="text-3xl font-bold text-white mb-3">Partite</h3>
+          {/* Show "Partite" title only if 7 or fewer matches */}
+          {matches.length <= 7 && <h3 className="text-3xl font-bold text-white mb-3">Partite</h3>}
           <div
             ref={matchesScrollRef}
             className={
