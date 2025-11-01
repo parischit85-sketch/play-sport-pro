@@ -6,7 +6,6 @@ import { useAuth } from './AuthContext.jsx';
 import { themeTokens } from '@lib/theme.js';
 import PerformanceDashboard from '../components/debug/PerformanceDashboard.jsx';
 import DatabaseDashboard from '../components/debug/DatabaseDashboard.jsx';
-import NotificationTestPanel from '../components/debug/NotificationTestPanel.jsx';
 
 const UIContext = createContext(null);
 
@@ -150,7 +149,6 @@ export function UIProvider({ children }) {
           <div className="mt-4">
             <DatabaseDashboard />
           </div>
-          <NotificationTestPanel />
         </>
       )}
     </UIContext.Provider>

@@ -9,7 +9,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, onSnapshot, collection } from 'firebase/firestore';
 import { db } from '@services/firebase.js';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, AlertCircle, Medal, Pause, Play } from 'lucide-react';
+import { Trophy, AlertCircle, Medal, Pause, Play, Crown, Activity } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import { getTeamsByTournament } from '../../services/teamsService.js';
 import { calculateGroupStandings } from '../../services/standingsService.js';
@@ -29,6 +29,7 @@ function PublicTournamentViewTV() {
   const [isPaused, setIsPaused] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [dynamicCardHeight, setDynamicCardHeight] = useState(113); // Default height
+  const [teams, setTeams] = useState([]); // Store all teams
 
   const intervalRef = useRef(null);
   const progressIntervalRef = useRef(null);
@@ -114,6 +115,9 @@ function PublicTournamentViewTV() {
     try {
       const teams = await getTeamsByTournament(clubId, tournamentId);
 
+      // Store all teams in state for winner lookup
+      setTeams(teams);
+
       // Combine groupIds from matches (type === 'group') and teams
       const groupIdsFromMatches = matches
         .filter((m) => m.type === 'group' && m.groupId)
@@ -191,11 +195,19 @@ function PublicTournamentViewTV() {
       pagesArray.push({ type: 'points' });
     }
 
+    // Check if finale is completed - add winners page
+    const finaleMatch = matches.find(
+      (m) => m.round === 'finals' && m.status === 'completed' && m.winnerId
+    );
+    if (finaleMatch) {
+      pagesArray.push({ type: 'winners', finaleMatch });
+    }
+
     // Always add QR page at the end
     pagesArray.push({ type: 'qr' });
 
     return pagesArray;
-  }, [groups, tournament]);
+  }, [groups, tournament, matches]);
 
   // Calculate dynamic card height based on screen size and number of matches
   useEffect(() => {
@@ -325,6 +337,8 @@ function PublicTournamentViewTV() {
       currentInterval = (pageIntervals.standings || 15) * 1000;
     } else if (currentPage?.type === 'points') {
       currentInterval = (pageIntervals.points || 15) * 1000;
+    } else if (currentPage?.type === 'winners') {
+      currentInterval = (pageIntervals.winners || 20) * 1000; // Longer for winners page
     } else if (currentPage?.type === 'qr') {
       currentInterval = (pageIntervals.qr || 15) * 1000;
     }
@@ -1030,6 +1044,169 @@ function PublicTournamentViewTV() {
     );
   };
 
+  const renderWinnersPage = (finaleMatch) => {
+    // Get winner team data from teams state
+    const winnerTeam = teams.find((t) => t.id === finaleMatch.winnerId);
+
+    if (!winnerTeam) {
+      return (
+        <div className="flex items-center justify-center h-full">
+          <p className="text-2xl text-gray-400">Caricamento vincitori...</p>
+        </div>
+      );
+    }
+
+    // Calculate statistics
+    const winnerMatches = matches.filter(
+      (m) =>
+        m.status === 'completed' && (m.team1Id === winnerTeam.id || m.team2Id === winnerTeam.id)
+    );
+    const winnerMatchesCount = winnerMatches.filter((m) => m.winnerId === winnerTeam.id).length;
+    const totalWinnerMatches = winnerMatches.length;
+
+    // Get finale score as sets games (e.g., "6-3, 7-5")
+    const finaleSets = finaleMatch.sets || [];
+    const finaleScore =
+      finaleSets.map((s) => `${s.team1 || 0}-${s.team2 || 0}`).join(', ') || '0-0';
+
+    return (
+      <div className="flex items-center justify-center h-full py-4 relative overflow-hidden">
+        {/* Confetti falling effect */}
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(50)].map((_, i) => {
+            const colors = [
+              '#fbbf24',
+              '#f59e0b',
+              '#ef4444',
+              '#ec4899',
+              '#a855f7',
+              '#3b82f6',
+              '#10b981',
+            ];
+            const delay = Math.random() * 5;
+            const duration = 3 + Math.random() * 2;
+            const leftPos = Math.random() * 100;
+
+            return (
+              <motion.div
+                key={`confetti-${i}`}
+                className="absolute w-3 h-3 rounded-sm"
+                style={{
+                  left: `${leftPos}%`,
+                  top: '-20px',
+                  background: colors[Math.floor(Math.random() * colors.length)],
+                  rotate: `${Math.random() * 360}deg`,
+                }}
+                animate={{
+                  y: ['0vh', '120vh'],
+                  rotate: [0, 360 * (Math.random() > 0.5 ? 1 : -1)],
+                  x: [0, (Math.random() - 0.5) * 100],
+                }}
+                transition={{
+                  duration: duration,
+                  repeat: Infinity,
+                  delay: delay,
+                  ease: 'linear',
+                }}
+              />
+            );
+          })}
+        </div>
+
+        <div className="max-w-5xl mx-auto w-full px-6 relative z-10">
+          {/* Championship Title with Animation */}
+          <motion.div
+            className="text-center mb-6"
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+          >
+            <div className="relative inline-block">
+              {/* Glow effect */}
+              <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/30 via-yellow-500/30 to-amber-500/30 rounded-full blur-3xl animate-pulse" />
+
+              {/* Crown icon */}
+              <Crown className="w-20 h-20 text-yellow-400 mx-auto mb-3 drop-shadow-2xl relative animate-bounce" />
+            </div>
+
+            <motion.h1
+              className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 mb-3 drop-shadow-lg"
+              animate={{
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+              }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+              style={{ backgroundSize: '200% 200%' }}
+            >
+              CAMPIONI
+            </motion.h1>
+          </motion.div>
+
+          {/* Winner Team Card */}
+          <motion.div
+            className="relative bg-gradient-to-br from-gray-800 via-gray-900 to-black rounded-2xl p-8 shadow-2xl mb-6 overflow-hidden border-4 border-yellow-500/50"
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          >
+            {/* Team Name */}
+            <div className="text-center relative z-10">
+              {/* Players with pulsing glow effect */}
+              <motion.div
+                className="text-5xl font-black leading-tight px-4 text-yellow-400"
+                animate={{
+                  textShadow: [
+                    '0 0 20px rgba(251, 191, 36, 0.8), 0 0 40px rgba(251, 191, 36, 0.4)',
+                    '0 0 30px rgba(251, 191, 36, 1), 0 0 60px rgba(251, 191, 36, 0.6)',
+                    '0 0 20px rgba(251, 191, 36, 0.8), 0 0 40px rgba(251, 191, 36, 0.4)',
+                  ],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              >
+                {winnerTeam.players
+                  ?.map((player) => player.playerName || player.name || player.id || '')
+                  .filter(Boolean)
+                  .join(' & ') || 'Giocatori non disponibili'}
+              </motion.div>
+            </div>
+          </motion.div>
+
+          {/* Statistics Grid */}
+          <motion.div
+            className="grid grid-cols-3 gap-4"
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+          >
+            {/* Total Matches Won */}
+            <div className="bg-gradient-to-br from-emerald-900/40 to-emerald-950/40 backdrop-blur-sm rounded-xl p-4 border-2 border-emerald-500/30 text-center">
+              <Trophy className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
+              <p className="text-4xl font-black text-white mb-1">{winnerMatchesCount}</p>
+              <p className="text-lg text-emerald-300 font-medium">Vittorie</p>
+            </div>
+
+            {/* Finals Score */}
+            <div className="bg-gradient-to-br from-amber-900/40 to-amber-950/40 backdrop-blur-sm rounded-xl p-4 border-2 border-amber-500/30 text-center">
+              <Medal className="w-10 h-10 text-amber-400 mx-auto mb-2" />
+              <p className="text-4xl font-black text-white mb-1">{finaleScore}</p>
+              <p className="text-lg text-amber-300 font-medium">Punteggio Finale</p>
+            </div>
+
+            {/* Tournament Matches */}
+            <div className="bg-gradient-to-br from-blue-900/40 to-blue-950/40 backdrop-blur-sm rounded-xl p-4 border-2 border-blue-500/30 text-center">
+              <Activity className="w-10 h-10 text-blue-400 mx-auto mb-2" />
+              <p className="text-4xl font-black text-white mb-1">{totalWinnerMatches}</p>
+              <p className="text-lg text-blue-300 font-medium">Partite Totali</p>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  };
+
   const renderQRPage = () => {
     return (
       <div className="flex items-center justify-center h-full py-4">
@@ -1173,7 +1350,9 @@ function PublicTournamentViewTV() {
                         ? renderBracketPage()
                         : currentPage?.type === 'points'
                           ? renderPointsPage()
-                          : renderQRPage()}
+                          : currentPage?.type === 'winners'
+                            ? renderWinnersPage(currentPage.finaleMatch)
+                            : renderQRPage()}
                   </motion.div>
                 </AnimatePresence>
               </>

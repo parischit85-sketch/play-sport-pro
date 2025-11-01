@@ -30,6 +30,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
     standings: 15, // Intervallo per tabellone
     points: 15, // Intervallo per punti
     qr: 15, // Intervallo per QR code
+    winners: 20, // Intervallo per pagina vincitori
   };
 
   const baseUrl = window.location.origin;
@@ -415,6 +416,28 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                     title="Intervallo per pagina QR code"
                   >
                     <option value={5}>5 secondi</option>
+                    <option value={10}>10 secondi</option>
+                    <option value={15}>15 secondi</option>
+                    <option value={20}>20 secondi</option>
+                    <option value={30}>30 secondi</option>
+                    <option value={45}>45 secondi</option>
+                    <option value={60}>60 secondi</option>
+                  </select>
+                </div>
+
+                {/* Vincitori */}
+                <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 flex-1">
+                    <span className="text-sm text-gray-300 font-medium">Vincitori</span>
+                    <span className="text-xs text-gray-500">(solo dopo finale)</span>
+                  </div>
+                  <select
+                    value={pageIntervals.winners || 20}
+                    onChange={(e) => handleUpdatePageInterval('winners', e.target.value)}
+                    disabled={loading}
+                    className="px-3 py-1.5 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm min-w-[140px]"
+                    title="Intervallo per pagina vincitori"
+                  >
                     <option value={10}>10 secondi</option>
                     <option value={15}>15 secondi</option>
                     <option value={20}>20 secondi</option>
