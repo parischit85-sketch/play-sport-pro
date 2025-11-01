@@ -195,6 +195,7 @@ export const getTournamentById = getTournament;
  * Get all tournaments for a club
  * @param {string} clubId
  * @param {Object} options - Query options
+ * @param {boolean} options.includeDeleted - Include deleted tournaments (default: false)
  * @returns {Promise<Array>}
  */
 export async function getTournaments(clubId, options = {}) {
@@ -218,13 +219,20 @@ export async function getTournaments(clubId, options = {}) {
       q = query(q, orderBy(sortBy, sortOrder));
     }
 
-    // Apply limit
-    if (options.limit) {
+    // Apply limit (multiply by 2 to account for deleted items filtering)
+    if (options.limit && !options.includeDeleted) {
+      q = query(q, limit(options.limit * 2));
+    } else if (options.limit) {
       q = query(q, limit(options.limit));
     }
 
     const snapshot = await getDocs(q);
     let items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    // Filter deleted tournaments client-side (unless includeDeleted is true)
+    if (!options.includeDeleted) {
+      items = items.filter((item) => item.deleted !== true);
+    }
 
     // Client-side sort when needed (e.g., status filtered queries)
     if (!shouldSortServerSide) {
@@ -594,12 +602,92 @@ export async function generateGroupStageMatches(clubId, tournamentId) {
 }
 
 /**
- * Delete tournament
+ * Get deleted tournaments (trash)
+ * @param {string} clubId
+ * @param {Object} options - Query options
+ * @returns {Promise<Array>}
+ */
+export async function getDeletedTournaments(clubId, options = {}) {
+  try {
+    const tournamentsRef = collection(db, 'clubs', clubId, COLLECTIONS.TOURNAMENTS);
+    let q = query(tournamentsRef, where('deleted', '==', true));
+
+    // Apply sorting (client-side to avoid index issues)
+    const snapshot = await getDocs(q);
+    let items = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    // Sort by deletedAt (most recent first)
+    items.sort((a, b) => {
+      const aTime = a?.deletedAt?.toMillis?.() || 0;
+      const bTime = b?.deletedAt?.toMillis?.() || 0;
+      return bTime - aTime;
+    });
+
+    // Apply limit if specified
+    if (options.limit && items.length > options.limit) {
+      items = items.slice(0, options.limit);
+    }
+
+    return items;
+  } catch (error) {
+    console.error('Error getting deleted tournaments:', error);
+    return [];
+  }
+}
+
+/**
+ * Move tournament to trash (soft delete)
  * @param {string} clubId
  * @param {string} tournamentId
  * @returns {Promise<{success: boolean, error?: string}>}
  */
-export async function deleteTournament(clubId, tournamentId) {
+export async function moveTournamentToTrash(clubId, tournamentId) {
+  try {
+    const tournamentRef = doc(db, 'clubs', clubId, COLLECTIONS.TOURNAMENTS, tournamentId);
+
+    await updateDoc(tournamentRef, {
+      deleted: true,
+      deletedAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error moving tournament to trash:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Restore tournament from trash
+ * @param {string} clubId
+ * @param {string} tournamentId
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export async function restoreTournamentFromTrash(clubId, tournamentId) {
+  try {
+    const tournamentRef = doc(db, 'clubs', clubId, COLLECTIONS.TOURNAMENTS, tournamentId);
+
+    await updateDoc(tournamentRef, {
+      deleted: false,
+      deletedAt: null,
+      updatedAt: Timestamp.now(),
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error restoring tournament from trash:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Delete tournament permanently (hard delete)
+ * @param {string} clubId
+ * @param {string} tournamentId
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export async function deleteTournamentPermanently(clubId, tournamentId) {
   try {
     // 1) Revert championship points if they were applied for this tournament
     try {
@@ -638,9 +726,20 @@ export async function deleteTournament(clubId, tournamentId) {
 
     return { success: true };
   } catch (error) {
-    console.error('Error deleting tournament:', error);
+    console.error('Error deleting tournament permanently:', error);
     return { success: false, error: error.message };
   }
+}
+
+/**
+ * Delete tournament (backwards compatibility - now moves to trash)
+ * @param {string} clubId
+ * @param {string} tournamentId
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export async function deleteTournament(clubId, tournamentId) {
+  // Now this function moves to trash instead of permanent deletion
+  return await moveTournamentToTrash(clubId, tournamentId);
 }
 
 /**
@@ -786,11 +885,15 @@ export default {
   getTournament,
   getTournamentById: getTournament, // Alias for getTournament
   getTournaments,
+  getDeletedTournaments,
   updateTournament,
   updateTournamentStatus,
   autoGenerateGroups,
   generateGroupStageMatches,
   deleteTournament,
+  moveTournamentToTrash,
+  restoreTournamentFromTrash,
+  deleteTournamentPermanently,
   openRegistration,
   closeRegistration,
   cancelTournament,

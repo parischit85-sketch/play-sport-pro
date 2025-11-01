@@ -7,23 +7,19 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Trophy, Users, Calendar, Filter } from 'lucide-react';
+import { Plus, Trophy, Users, Calendar, Filter, Trash2 } from 'lucide-react';
 import { getTournaments } from '../services/tournamentService';
 import TournamentList from './dashboard/TournamentList';
 import TournamentWizard from './creation/TournamentWizard';
+import TournamentTrash from './dashboard/TournamentTrash';
 import { TOURNAMENT_STATUS } from '../utils/tournamentConstants';
 
 function TournamentsPage({ clubId, isAdmin = false }) {
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showWizard, setShowWizard] = useState(false);
+  const [showTrash, setShowTrash] = useState(false);
   const [filterStatus, setFilterStatus] = useState('active');
-
-  useEffect(() => {
-    if (clubId) {
-      loadTournaments();
-    }
-  }, [clubId, filterStatus]);
 
   const loadTournaments = async () => {
     setLoading(true);
@@ -56,6 +52,13 @@ function TournamentsPage({ clubId, isAdmin = false }) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (clubId) {
+      loadTournaments();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clubId, filterStatus]);
 
   const handleCreateTournament = () => {
     setShowWizard(true);
@@ -98,13 +101,22 @@ function TournamentsPage({ clubId, isAdmin = false }) {
         </div>
 
         {isAdmin && (
-          <button
-            onClick={handleCreateTournament}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-          >
-            <Plus className="w-5 h-5" />
-            Nuovo Torneo
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowTrash(true)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 transition-colors"
+            >
+              <Trash2 className="w-5 h-5" />
+              Cestino
+            </button>
+            <button
+              onClick={handleCreateTournament}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              Nuovo Torneo
+            </button>
+          </div>
         )}
       </div>
 
@@ -239,6 +251,9 @@ function TournamentsPage({ clubId, isAdmin = false }) {
           onCancel={handleWizardCancel}
         />
       )}
+
+      {/* Tournament Trash Modal */}
+      {showTrash && <TournamentTrash clubId={clubId} onClose={() => setShowTrash(false)} />}
     </div>
   );
 }

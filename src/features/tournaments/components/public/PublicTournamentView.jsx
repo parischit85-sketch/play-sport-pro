@@ -54,8 +54,8 @@ function PublicTournamentView() {
   const [groupData, setGroupData] = useState({});
   const [progress, setProgress] = useState(0);
 
-  const intervalRef = useRef(null);
-  const progressIntervalRef = useRef(null);
+  // const intervalRef = useRef(null);
+  // const progressIntervalRef = useRef(null);
 
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
@@ -205,40 +205,10 @@ function PublicTournamentView() {
         // Swipe left - next page
         setCurrentPageIndex((prev) => (prev + 1) % pages.length);
         setProgress(0);
-        // Reset auto-scroll timer
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-        const interval = tournament?.publicView?.settings?.interval || 15000;
-        progressIntervalRef.current = setInterval(() => {
-          setProgress((prev) => {
-            const increment = (100 / interval) * 100;
-            if (prev >= 100) return 0;
-            return prev + increment;
-          });
-        }, 100);
-        intervalRef.current = setInterval(() => {
-          setCurrentPageIndex((prev) => (prev + 1) % pages.length);
-          setProgress(0);
-        }, interval);
       } else {
         // Swipe right - previous page
         setCurrentPageIndex((prev) => (prev - 1 + pages.length) % pages.length);
         setProgress(0);
-        // Reset auto-scroll timer
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-        const interval = tournament?.publicView?.settings?.interval || 15000;
-        progressIntervalRef.current = setInterval(() => {
-          setProgress((prev) => {
-            const increment = (100 / interval) * 100;
-            if (prev >= 100) return 0;
-            return prev + increment;
-          });
-        }, 100);
-        intervalRef.current = setInterval(() => {
-          setCurrentPageIndex((prev) => (prev + 1) % pages.length);
-          setProgress(0);
-        }, interval);
       }
     }
 
@@ -255,7 +225,8 @@ function PublicTournamentView() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Auto-scroll logic
+  // Auto-scroll logic - DISABLED for mobile view (manual swipe only)
+  /*
   useEffect(() => {
     if (pages.length === 0) return;
 
@@ -281,6 +252,7 @@ function PublicTournamentView() {
       if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
     };
   }, [pages.length, tournament]);
+  */
 
   if (loading) {
     return (

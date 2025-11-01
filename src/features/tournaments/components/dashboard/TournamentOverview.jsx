@@ -7,13 +7,12 @@ import { Calendar, Users, Trophy, Play, Pause, CheckCircle, Edit, Trash2 } from 
 import { useAuth, USER_ROLES } from '@contexts/AuthContext.jsx';
 import {
   updateTournamentStatus,
-  deleteTournament,
+  moveTournamentToTrash,
   autoGenerateGroups,
   generateGroupStageMatches,
 } from '../../services/tournamentService.js';
 import { updateStandingsAfterMatch } from '../../services/standingsService.js';
 import TournamentEditModal from './TournamentEditModal.jsx';
-import { createWorkflowManager } from '../../services/tournamentWorkflow.js';
 import KnockoutSetupModal from '../knockout/KnockoutSetupModal.jsx';
 import PublicViewSettings from '../admin/PublicViewSettings.jsx';
 import { rollbackToPreviousPhase } from '../../services/tournamentTransactions.js';
@@ -175,9 +174,12 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
   }, [clubId, tournament?.id]);
 
   const handleStatusChange = async (newStatus) => {
-    if (!window.confirm(`Sei sicuro di voler cambiare lo stato in "${newStatus}"?`)) {
-      return;
-    }
+    const confirmMessage =
+      newStatus === TOURNAMENT_STATUS.COMPLETED
+        ? `Confermi di voler completare il torneo "${tournament.name}"?\n\nIl torneo sarà marcato come completato e potrà essere riattivato successivamente.`
+        : `Confermi il cambio di stato del torneo "${tournament.name}"?`;
+
+    if (!window.confirm(confirmMessage)) return;
 
     setLoading(true);
     setError(null);
@@ -198,10 +200,10 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
     }
   };
 
-  const handleDelete = async () => {
+  const handleReactivate = async () => {
     if (
       !window.confirm(
-        `Sei sicuro di voler eliminare il torneo "${tournament.name}"?\n\nQuesta azione è irreversibile e eliminerà anche tutte le squadre, partite e classifiche associate.`
+        `Riattivare il torneo "${tournament.name}"?\n\nIl torneo tornerà alla fase a Eliminazione e potrai continuare a gestirlo.`
       )
     ) {
       return;
@@ -211,15 +213,47 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
     setError(null);
 
     try {
-      const result = await deleteTournament(clubId, tournament.id);
+      const result = await updateTournamentStatus(
+        clubId,
+        tournament.id,
+        TOURNAMENT_STATUS.KNOCKOUT_PHASE
+      );
+
+      if (result.success) {
+        onUpdate();
+      } else {
+        setError(result.error || 'Errore nella riattivazione');
+      }
+    } catch (err) {
+      setError('Errore nella riattivazione del torneo');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (
+      !window.confirm(
+        `Sei sicuro di voler spostare il torneo "${tournament.name}" nel cestino?\n\nPotrai ripristinarlo o eliminarlo definitivamente dal cestino.`
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await moveTournamentToTrash(clubId, tournament.id);
 
       if (result.success) {
         window.location.href = `/club/${clubId}/tournaments`;
       } else {
-        setError(result.error || "Errore nell'eliminazione");
+        setError(result.error || 'Errore nello spostamento nel cestino');
       }
     } catch (err) {
-      setError("Errore nell'eliminazione del torneo");
+      setError('Errore nello spostamento del torneo nel cestino');
       console.error(err);
     } finally {
       setLoading(false);
@@ -355,8 +389,12 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
   const canStartKnockout = tournament.status === TOURNAMENT_STATUS.GROUPS_PHASE;
   const canRollbackFromGroups = tournament.status === TOURNAMENT_STATUS.GROUPS_PHASE;
   const canRollbackFromKnockout = tournament.status === TOURNAMENT_STATUS.KNOCKOUT_PHASE;
-  // Il torneo si completa al termine della fase a eliminazione
-  const canComplete = tournament.status === TOURNAMENT_STATUS.KNOCKOUT_PHASE;
+  // Admin può completare il torneo in qualsiasi fase (non solo dalla fase a eliminazione)
+  const canComplete =
+    tournament.status !== TOURNAMENT_STATUS.COMPLETED &&
+    tournament.status !== TOURNAMENT_STATUS.DRAFT;
+  // Admin può riattivare un torneo completato
+  const canReactivate = tournament.status === TOURNAMENT_STATUS.COMPLETED;
 
   // Check if all group stage matches have results (using only group matches count)
   const allGroupMatchesCompleted =
@@ -487,18 +525,22 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
         <div className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label className="text-sm font-medium text-gray-400">Nome</label>
               <p className="text-white">{tournament.name}</p>
             </div>
             <div>
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label className="text-sm font-medium text-gray-400">Formato</label>
               <p className="text-white">{formatTournamentFormat(tournament.format)}</p>
             </div>
             <div>
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label className="text-sm font-medium text-gray-400">Data Inizio</label>
               <p className="text-white">{formatDate(tournament.startDate)}</p>
             </div>
             <div>
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label className="text-sm font-medium text-gray-400">Data Fine</label>
               <p className="text-white">{formatDate(tournament.endDate)}</p>
             </div>
@@ -506,6 +548,7 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
 
           {tournament.description && (
             <div>
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
               <label className="text-sm font-medium text-gray-400">Descrizione</label>
               <p className="text-white whitespace-pre-wrap">{tournament.description}</p>
             </div>
@@ -696,6 +739,17 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
                   >
                     <CheckCircle className="w-4 h-4" />
                     Completa Torneo
+                  </button>
+                )}
+
+                {canReactivate && (
+                  <button
+                    onClick={handleReactivate}
+                    disabled={loading}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Riattiva Torneo
                   </button>
                 )}
 
