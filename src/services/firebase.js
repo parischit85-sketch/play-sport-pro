@@ -5,6 +5,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
+import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
 
 const isTest =
   (typeof globalThis !== 'undefined' &&
@@ -18,6 +19,7 @@ const firebaseConfig = {
   authDomain: env.VITE_FIREBASE_AUTH_DOMAIN || (isTest ? 'test-auth' : undefined),
   projectId: env.VITE_FIREBASE_PROJECT_ID || (isTest ? 'test-project' : undefined),
   appId: env.VITE_FIREBASE_APP_ID || (isTest ? 'test-app' : undefined),
+  databaseURL: env.VITE_FIREBASE_DATABASE_URL || (isTest ? 'http://localhost:9000' : undefined),
   // opzionali, se presenti nel .env
   storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET || (isTest ? 'test-bucket' : undefined),
   messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID || (isTest ? 'test-sender' : undefined),
@@ -48,6 +50,15 @@ try {
 const auth = getAuth(app);
 const storage = getStorage(app);
 
+// Initialize Realtime Database
+let rtdb;
+try {
+  rtdb = getDatabase(app);
+} catch {
+  // In isolated test mocks, provide a harmless stub
+  rtdb = {};
+}
+
 // Imposta la lingua dell'interfaccia utente
 if (auth.useDeviceLanguage) {
   auth.useDeviceLanguage();
@@ -64,6 +75,7 @@ if (isDev && useEmu) {
     connectAuthEmulator(auth, 'http://127.0.0.1:9099');
     connectFirestoreEmulator(db, '127.0.0.1', 8080);
     connectStorageEmulator(storage, '127.0.0.1', 9199);
+    connectDatabaseEmulator(rtdb, '127.0.0.1', 9000);
   } catch {
     // Firebase emulators already connected or not available
   }
@@ -91,4 +103,4 @@ try {
   /* no-op */
 }
 
-export { app, db, auth, storage };
+export { app, db, auth, storage, rtdb };

@@ -7,9 +7,10 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, onSnapshot, collection } from 'firebase/firestore';
-import { db } from '@services/firebase.js';
+import { ref, onDisconnect, set, onValue, remove } from 'firebase/database';
+import { db, rtdb } from '@services/firebase.js';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, AlertCircle, Medal, Pause, Play, Crown, Activity } from 'lucide-react';
+import { Trophy, AlertCircle, Medal, Pause, Play, Crown, Activity, Users } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import { getTeamsByTournament } from '../../services/teamsService.js';
 import { calculateGroupStandings } from '../../services/standingsService.js';
@@ -32,6 +33,7 @@ function PublicTournamentViewTV() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [dynamicCardHeight, setDynamicCardHeight] = useState(113); // Default height
   const [teams, setTeams] = useState([]); // Store all teams
+  const [viewersCount, setViewersCount] = useState(0); // Number of active viewers
 
   const intervalRef = useRef(null);
   const progressIntervalRef = useRef(null);
@@ -135,6 +137,64 @@ function PublicTournamentViewTV() {
 
     return () => unsubscribe();
   }, [clubId, tournamentId]);
+
+  // Real-time presence tracking
+  useEffect(() => {
+    console.log('[TV DEBUG] Presence tracking effect - tournamentId:', tournamentId, 'rtdb:', rtdb);
+
+    if (!tournamentId) {
+      console.log('[TV DEBUG] No tournamentId, skipping presence tracking');
+      return;
+    }
+
+    if (!rtdb || typeof rtdb !== 'object' || Object.keys(rtdb).length === 0) {
+      console.error('[TV DEBUG] Realtime Database not initialized properly:', rtdb);
+      return;
+    }
+
+    // Generate unique device ID for this session
+    const deviceId = `device_${Math.random().toString(36).substr(2, 9)}`;
+    const presenceRef = ref(rtdb, `tournaments/${tournamentId}/viewers/${deviceId}`);
+    const viewersRef = ref(rtdb, `tournaments/${tournamentId}/viewers`);
+
+    console.log('[TV DEBUG] Setting up presence tracking for device:', deviceId);
+    console.log('[TV DEBUG] Presence path:', `tournaments/${tournamentId}/viewers/${deviceId}`);
+
+    // Mark this device as online
+    set(presenceRef, {
+      online: true,
+      connectedAt: Date.now(),
+    })
+      .then(() => console.log('[TV DEBUG] Device registered successfully'))
+      .catch((err) => console.error('[TV DEBUG] Error registering device:', err));
+
+    // When disconnected, remove this device automatically
+    onDisconnect(presenceRef)
+      .remove()
+      .then(() => console.log('[TV DEBUG] onDisconnect handler set'))
+      .catch((err) => console.error('[TV DEBUG] Error setting onDisconnect:', err));
+
+    // Listen to all viewers to count them
+    const unsubscribe = onValue(
+      viewersRef,
+      (snapshot) => {
+        const viewers = snapshot.val();
+        const count = viewers ? Object.keys(viewers).length : 0;
+        console.log('[TV DEBUG] Active viewers count:', count, 'Data:', viewers);
+        setViewersCount(count);
+      },
+      (err) => {
+        console.error('[TV DEBUG] Error listening to viewers:', err);
+      }
+    );
+
+    // Cleanup on unmount
+    return () => {
+      console.log('[TV DEBUG] Cleaning up presence for device:', deviceId);
+      remove(presenceRef); // Remove manually
+      unsubscribe();
+    };
+  }, [tournamentId]);
 
   // Load groups and data when tournament or matches changes
   const loadGroupsAndData = useCallback(async () => {
@@ -1335,8 +1395,18 @@ function PublicTournamentViewTV() {
                 <h1 className="text-3xl font-bold text-white">{tournament.name}</h1>
               </div>
 
-              {/* Right side: LIVE Badge + Fullscreen button */}
+              {/* Right side: Viewers + LIVE Badge + Fullscreen button */}
               <div className="flex items-center gap-3">
+                {/* Viewers Badge */}
+                {viewersCount > 0 && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-blue-600/80 rounded-full shadow-lg">
+                    <Users className="w-5 h-5 text-white" />
+                    <span className="text-white font-semibold text-lg">
+                      {viewersCount} {viewersCount === 1 ? 'spettatore' : 'spettatori'}
+                    </span>
+                  </div>
+                )}
+
                 {/* LIVE Badge */}
                 <div className="flex items-center gap-3 px-4 py-2 bg-red-500 rounded-full shadow-lg animate-pulse">
                   <div className="w-2.5 h-2.5 bg-white rounded-full"></div>

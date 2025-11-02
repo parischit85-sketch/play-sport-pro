@@ -7,7 +7,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '@services/firebase.js';
+import { ref, onDisconnect, set, remove } from 'firebase/database';
+import { db, rtdb } from '@services/firebase.js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, AlertCircle, ChevronLeft, ChevronRight, Medal } from 'lucide-react';
 import TournamentStandings from '../standings/TournamentStandings.jsx';
@@ -132,6 +133,56 @@ function PublicTournamentView() {
 
     return () => unsubscribe();
   }, [clubId, tournamentId, token]);
+
+  // Real-time presence tracking (Mobile)
+  useEffect(() => {
+    console.log(
+      '[MOBILE DEBUG] Presence tracking effect - tournamentId:',
+      tournamentId,
+      'rtdb:',
+      rtdb
+    );
+
+    if (!tournamentId) {
+      console.log('[MOBILE DEBUG] No tournamentId, skipping presence tracking');
+      return;
+    }
+
+    if (!rtdb || typeof rtdb !== 'object' || Object.keys(rtdb).length === 0) {
+      console.error('[MOBILE DEBUG] Realtime Database not initialized properly:', rtdb);
+      return;
+    }
+
+    // Generate unique device ID for this session
+    const deviceId = `mobile_${Math.random().toString(36).substr(2, 9)}`;
+    const presenceRef = ref(rtdb, `tournaments/${tournamentId}/viewers/${deviceId}`);
+
+    console.log('[MOBILE DEBUG] Setting up presence tracking for device:', deviceId);
+    console.log('[MOBILE DEBUG] Presence path:', `tournaments/${tournamentId}/viewers/${deviceId}`);
+
+    // Mark this device as online
+    set(presenceRef, {
+      online: true,
+      connectedAt: Date.now(),
+      deviceType: 'mobile',
+    })
+      .then(() => console.log('[MOBILE DEBUG] Device registered successfully'))
+      .catch((err) => console.error('[MOBILE DEBUG] Error registering device:', err));
+
+    // When disconnected, remove this device automatically
+    onDisconnect(presenceRef)
+      .remove()
+      .then(() => console.log('[MOBILE DEBUG] onDisconnect handler set'))
+      .catch((err) => console.error('[MOBILE DEBUG] Error setting onDisconnect:', err));
+
+    // Cleanup on unmount
+    return () => {
+      console.log('[MOBILE DEBUG] Component unmounting, removing presence');
+      remove(presenceRef).catch((err) =>
+        console.error('[MOBILE DEBUG] Error removing presence on unmount:', err)
+      );
+    };
+  }, [tournamentId]);
 
   // Load groups and data when tournament changes
   const loadGroupsAndData = useCallback(async () => {
