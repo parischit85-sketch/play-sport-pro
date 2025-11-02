@@ -20,6 +20,15 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
   // State per champEntries di tutti i giocatori
   const [allChampEntries, setAllChampEntries] = useState({});
 
+  // Formatta nome per mobile: "Nome Cognome" -> "N. Cognome" o "Nome di Marzio" -> "N. di Marzio"
+  const formatNameForMobile = (fullName) => {
+    const parts = fullName.trim().split(' ');
+    if (parts.length === 1) return fullName; // Solo cognome
+    const firstInitial = parts[0][0] + '.'; // Prima lettera del nome
+    const surname = parts.slice(1).join(' '); // Tutto il resto è il cognome (anche se composto)
+    return `${firstInitial} ${surname}`;
+  };
+
   // Combina match normali + match di torneo (come in StatisticheGiocatore)
   const allMatchesIncludingTournaments = useMemo(() => {
     const regular = clubMatches || matches || [];
@@ -766,7 +775,8 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-amber-400 w-6">#{idx + 1}</span>
                       <span className="text-sm font-medium text-gray-100">
-                        {couple.players[0].split(' ').pop()} & {couple.players[1].split(' ').pop()}
+                        {formatNameForMobile(couple.players[0])} &{' '}
+                        {formatNameForMobile(couple.players[1])}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">

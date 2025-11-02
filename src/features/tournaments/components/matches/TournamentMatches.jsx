@@ -20,6 +20,7 @@ import {
   recordMatchResult,
   updateMatchStatus,
   clearMatchResult,
+  deleteMatch,
 } from '../../services/matchService';
 import { getTeamsByTournament } from '../../services/teamsService';
 import { MATCH_STATUS, KNOCKOUT_ROUND_NAMES } from '../../utils/tournamentConstants';
@@ -120,6 +121,32 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
     } catch (error) {
       console.error('Error clearing result:', error);
       alert('Errore nella cancellazione del risultato');
+    }
+  };
+
+  const handleDeleteMatch = async (matchId) => {
+    if (
+      !window.confirm(
+        '⚠️ ATTENZIONE: Stai per eliminare questa partita in modo permanente.\n\nQuesta azione è IRREVERSIBILE e comporterà:\n• Perdita del risultato (se presente)\n• Rimozione dalla classifica\n• Impossibilità di recupero\n\nSei assolutamente sicuro di voler procedere?'
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const result = await deleteMatch(clubId, tournament.id, matchId);
+
+      if (result.success) {
+        loadData();
+        alert(
+          'Partita eliminata con successo. Ricorda di ricalcolare la classifica se necessario.'
+        );
+      } else {
+        alert(result.error || "Errore nell'eliminazione della partita");
+      }
+    } catch (error) {
+      console.error('Error deleting match:', error);
+      alert("Errore nell'eliminazione della partita");
     }
   };
 
@@ -486,10 +513,22 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
           isPublicView
             ? `border-[2.5px] ${isCompleted ? 'border-fuchsia-500' : 'border-fuchsia-700/60'}`
             : 'border border-gray-700 hover:border-primary-300'
-        }`}
+        } relative`}
       >
+        {/* Icona elimina partita - in alto a destra */}
+        {!isPublicView && canEditResults && (
+          <button
+            onClick={() => handleDeleteMatch(match.id)}
+            disabled={!canEditResults}
+            className="absolute top-2 right-2 p-1.5 rounded-lg bg-red-600/20 border border-red-500/50 text-red-500 hover:bg-red-600/30 hover:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10"
+            title="Elimina partita"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        )}
+
         {/* Match header - Mobile optimized */}
-        <div className="flex items-center justify-between mb-2 sm:mb-3 flex-wrap gap-2">
+        <div className="flex items-center justify-between mb-2 sm:mb-3 flex-wrap gap-2 pr-8">
           <div className="flex items-center gap-2">
             {getStatusIcon(match.status)}
             {/* Show status text only if not IN_PROGRESS in public view */}
@@ -694,23 +733,23 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
         )}
 
         {!isPublicView && isCompleted && (
-          <>
+          <div className="flex gap-2 mt-2">
             <button
               onClick={() => canEditResults && setSelectedMatch(match)}
               disabled={!canEditResults}
-              className="w-full mt-2 px-3 sm:px-4 py-2 rounded-lg border border-gray-600 text-gray-200 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+              className="flex-1 px-3 sm:px-4 py-2 rounded-lg border border-gray-600 text-gray-200 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
             >
               Modifica Risultato
             </button>
             <button
               onClick={() => canEditResults && handleClearResult(match.id)}
               disabled={!canEditResults}
-              className="w-full mt-2 px-3 sm:px-4 py-2 rounded-lg border border-red-600 text-red-400 hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center justify-center gap-2"
+              className="flex-1 px-3 sm:px-4 py-2 rounded-lg border border-red-600 text-red-400 hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center justify-center gap-2"
             >
               <Trash2 className="w-4 h-4" />
               Cancella Risultato
             </button>
-          </>
+          </div>
         )}
 
         {/* Scheduled date */}

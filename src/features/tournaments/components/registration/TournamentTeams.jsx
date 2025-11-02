@@ -36,7 +36,11 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
   };
 
   const handleDelete = async (teamId) => {
-    if (!window.confirm('Sei sicuro di voler eliminare questa squadra?')) {
+    if (
+      !window.confirm(
+        '⚠️ ATTENZIONE: Stai per eliminare questa squadra in modo permanente.\n\nQuesta azione è IRREVERSIBILE e comporterà:\n• Rimozione della squadra dal torneo\n• Perdita di tutte le partite associate\n• Impossibilità di recupero dei dati\n\nSei assolutamente sicuro di voler procedere?'
+      )
+    ) {
       return;
     }
 
@@ -44,6 +48,7 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
       await deleteTeam(clubId, tournament.id, teamId);
       loadTeams();
       onUpdate();
+      alert('Squadra eliminata con successo.');
     } catch (error) {
       console.error('Error deleting team:', error);
       alert("Errore nell'eliminazione della squadra");
@@ -286,17 +291,25 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
                 </div>
               )}
 
-              {canRegister && (
-                <div className="mt-3 flex justify-end">
+              {/* Pulsante elimina squadra - sempre visibile per admin */}
+              <div className="mt-3 flex justify-end gap-2">
+                {canEditTeams && (
                   <button
-                    onClick={() => handleDelete(team.id)}
-                    className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700"
+                    onClick={() => handleEditClick(team)}
+                    className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300"
                   >
-                    <Trash2 className="w-3 h-3" />
-                    Elimina squadra
+                    <Pencil className="w-3 h-3" />
+                    Modifica
                   </button>
-                </div>
-              )}
+                )}
+                <button
+                  onClick={() => handleDelete(team.id)}
+                  className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  Elimina squadra
+                </button>
+              </div>
             </div>
           ))}
         </div>

@@ -11,6 +11,7 @@ import {
   getDocs,
   addDoc,
   updateDoc,
+  deleteDoc,
   query,
   where,
   orderBy,
@@ -487,6 +488,36 @@ export async function clearMatchResult(clubId, tournamentId, matchId) {
   }
 }
 
+/**
+ * Delete a single match
+ * @param {string} clubId
+ * @param {string} tournamentId
+ * @param {string} matchId
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export async function deleteMatch(clubId, tournamentId, matchId) {
+  try {
+    const matchRef = doc(
+      db,
+      'clubs',
+      clubId,
+      COLLECTIONS.TOURNAMENTS,
+      tournamentId,
+      COLLECTIONS.MATCHES,
+      matchId
+    );
+
+    await deleteDoc(matchRef);
+
+    console.log('✅ Match deleted successfully');
+
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error deleting match:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 export default {
   createMatch,
   getMatch,
@@ -495,6 +526,7 @@ export default {
   getMatchesByRound,
   recordMatchResult,
   clearMatchResult,
+  deleteMatch,
   updateMatchStatus,
   scheduleMatch,
   getTeamMatches,

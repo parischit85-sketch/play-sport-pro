@@ -30,36 +30,46 @@ export default function ClassificaPage() {
 
     const loadTournamentMatches = async () => {
       try {
+        console.time('⚡ [ClassificaPage] Parallel loading tournament matches');
         const allMatches = [];
         const matchIds = new Set();
 
-        // For each player, load their entries and extract matchDetails
-        for (const player of players) {
+        // 🚀 OTTIMIZZAZIONE: Carica tutte le entries in PARALLELO invece di sequenzialmente
+        const playerPromises = players.map(async (player) => {
           try {
             const entriesRef = collection(db, 'clubs', clubId, 'leaderboard', player.id, 'entries');
             const entriesSnap = await getDocs(entriesRef);
+            return { playerId: player.id, docs: entriesSnap.docs };
+          } catch (e) {
+            console.warn(`Failed to load entries for player ${player.id}:`, e);
+            return { playerId: player.id, docs: [] };
+          }
+        });
 
-            for (const entryDoc of entriesSnap.docs) {
-              const entry = entryDoc.data();
-              if (Array.isArray(entry.matchDetails)) {
-                console.log(
-                  `📊 [ClassificaPage] Entry ${entryDoc.id}: ${entry.matchDetails.length} matchDetails`
-                );
-                for (const match of entry.matchDetails) {
-                  // Avoid duplicates
-                  if (!matchIds.has(match.matchId || match.id)) {
-                    console.log(`  ✅ Adding match: ${match.matchId || match.id}`);
-                    allMatches.push(match);
-                    matchIds.add(match.matchId || match.id);
-                  }
+        // Attendi tutte le query in parallelo
+        const results = await Promise.all(playerPromises);
+
+        // Processa i risultati
+        for (const { docs } of results) {
+          for (const entryDoc of docs) {
+            const entry = entryDoc.data();
+            if (Array.isArray(entry.matchDetails)) {
+              console.log(
+                `📊 [ClassificaPage] Entry ${entryDoc.id}: ${entry.matchDetails.length} matchDetails`
+              );
+              for (const match of entry.matchDetails) {
+                // Avoid duplicates
+                if (!matchIds.has(match.matchId || match.id)) {
+                  console.log(`  ✅ Adding match: ${match.matchId || match.id}`);
+                  allMatches.push(match);
+                  matchIds.add(match.matchId || match.id);
                 }
               }
             }
-          } catch (e) {
-            console.warn(`Failed to load entries for player ${player.id}:`, e);
           }
         }
 
+        console.timeEnd('⚡ [ClassificaPage] Parallel loading tournament matches');
         console.log(`🏆 [ClassificaPage] Total tournament matches loaded: ${allMatches.length}`);
         if (allMatches.length > 0) {
           console.log(`  First match keys:`, Object.keys(allMatches[0]).join(', '));

@@ -12,7 +12,6 @@ import { DEFAULT_RATING } from '@lib/ids.js';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { db } from '@services/firebase.js';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { getTournament as getTournamentById } from '@features/tournaments/services/tournamentService.js';
 
 export default function StatisticheGiocatore({
   players,
@@ -22,7 +21,7 @@ export default function StatisticheGiocatore({
   _onShowFormula,
   T,
 }) {
-  const { clubId, leaderboard } = useClub();
+  const { clubId } = useClub();
   const statsRef = useRef(null);
   const [pid, setPid] = useState(selectedPlayerId || players[0]?.id || '');
   const [comparePlayerId, setComparePlayerId] = useState('');
@@ -31,7 +30,6 @@ export default function StatisticheGiocatore({
   const [showRpaModal, setShowRpaModal] = useState(false);
   const [currentMatchForRpa, setCurrentMatchForRpa] = useState(null);
   const [champEntries, setChampEntries] = useState([]);
-  const [tournamentsById, setTournamentsById] = useState({});
 
   // DEBUG: Log quando il componente monta/aggiorna
   useEffect(() => {
@@ -77,56 +75,8 @@ export default function StatisticheGiocatore({
     }
   }, [clubId, pid]);
 
-  // Enrich tournament entries with tournament details from Tornei (by tournamentId)
-  useEffect(() => {
-    let active = true;
-    async function loadTournaments() {
-      if (!clubId) return;
-      const ids = Array.from(
-        new Set((champEntries || []).map((e) => e.tournamentId).filter(Boolean))
-      );
-      if (ids.length === 0) {
-        if (active) setTournamentsById({});
-        return;
-      }
-      try {
-        const results = await Promise.all(
-          ids.map(async (id) => {
-            try {
-              const t = await getTournamentById(clubId, id);
-              return t ? [id, t] : null;
-            } catch {
-              return null;
-            }
-          })
-        );
-        if (!active) return;
-        const map = {};
-        for (const pair of results) {
-          if (pair && pair[0] && pair[1]) map[pair[0]] = pair[1];
-        }
-        setTournamentsById(map);
-      } catch {
-        // ignore
-      }
-    }
-    loadTournaments();
-    return () => {
-      active = false;
-    };
-  }, [clubId, champEntries]);
-
   const nameById = useCallback((id) => players.find((p) => p.id === id)?.name || id, [players]);
   const player = players.find((p) => p.id === pid) || null;
-
-  // Punti campionato totali (stessa fonte della tab Giocatori)
-  const champTotals = useMemo(() => {
-    const lb = leaderboard?.[pid];
-    return {
-      totalPoints: typeof lb?.totalPoints === 'number' ? lb.totalPoints : 0,
-      entriesCount: typeof lb?.entriesCount === 'number' ? lb.entriesCount : 0,
-    };
-  }, [leaderboard, pid]);
 
   // Fast lookup map
   const playersById = useMemo(() => {
@@ -682,70 +632,6 @@ export default function StatisticheGiocatore({
     return filtered.sort((a, b) => (b.date?.getTime?.() || 0) - (a.date?.getTime?.() || 0));
   }, [filteredMatches, champEntries, pid, timeFilter]);
 
-  // Sezione Punti Torneo: totale, ultimi movimenti e breakdown per torneo
-  const tournamentPoints = useMemo(() => {
-    const toDate = (d) => {
-      if (!d) return null;
-      if (typeof d === 'number') return new Date(d);
-      if (d?.toDate) return d.toDate();
-      return new Date(d);
-    };
-    const fromDate = (() => {
-      if (timeFilter === 'all') return null;
-      const now = new Date();
-      const from = new Date();
-      switch (timeFilter) {
-        case '1w':
-          from.setDate(now.getDate() - 7);
-          break;
-        case '2w':
-          from.setDate(now.getDate() - 14);
-          break;
-        case '30d':
-          from.setDate(now.getDate() - 30);
-          break;
-        case '3m':
-          from.setMonth(now.getMonth() - 3);
-          break;
-        case '6m':
-          from.setMonth(now.getMonth() - 6);
-          break;
-        default:
-          return null;
-      }
-      return from;
-    })();
-
-    const entries = (champEntries || [])
-      .map((e) => ({ ...e, _date: toDate(e.createdAt) || toDate(e.appliedAt) || null }))
-      .filter((e) => (fromDate ? (e._date ? e._date >= fromDate : false) : true))
-      .sort((a, b) => (b._date?.getTime?.() || 0) - (a._date?.getTime?.() || 0));
-
-    const totalPoints = entries.reduce((sum, e) => sum + Number(e.points || 0), 0);
-    const byTournamentMap = new Map();
-    for (const e of entries) {
-      const key = e.tournamentId || e.tournamentName || 'Torneo';
-      const cur = byTournamentMap.get(key) || {
-        tournamentId: e.tournamentId || null,
-        tournamentName: e.tournamentName || 'Torneo',
-        points: 0,
-        count: 0,
-      };
-      // Keep the most reliable name (prefer details if available)
-      const tInfo = e.tournamentId ? tournamentsById?.[e.tournamentId] : null;
-      if (tInfo?.name) {
-        cur.tournamentName = tInfo.name;
-      }
-      cur.points += Number(e.points || 0);
-      cur.count += 1;
-      byTournamentMap.set(key, cur);
-    }
-    const byTournament = Array.from(byTournamentMap.values()).sort((a, b) => b.points - a.points);
-    const recent = entries.slice(0, 5).map((e) => ({ ...e, date: e._date }));
-
-    return { totalPoints, totalEntries: entries.length, byTournament, recent };
-  }, [champEntries, timeFilter, tournamentsById]);
-
   return (
     <Section
       title="📊 Statistiche Giocatore"
@@ -1219,124 +1105,6 @@ export default function StatisticheGiocatore({
           />
         </div>
 
-        {/* Punti Torneo - sezione dedicata */}
-        <div className="${T.cardBg} backdrop-blur-xl rounded-3xl border ${T.border} p-6 shadow-2xl">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold ${T.text} flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-yellow-600 rounded-lg flex items-center justify-center">
-                <span className="text-white">🏆</span>
-              </div>
-              Punti Torneo {timeFilter !== 'all' ? '(periodo filtrato)' : ''}
-            </h3>
-            <div className="bg-amber-900/30 text-amber-300 px-3 py-1 rounded-full text-sm font-medium">
-              {tournamentPoints.totalEntries} movimenti
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Totale card (valore assoluto) */}
-            <div className="lg:col-span-1 bg-gradient-to-br from-amber-50 to-yellow-50 from-amber-900/30 to-yellow-900/20 rounded-2xl border border-amber-200/40 border-amber-700/40 p-5">
-              <div className="text-sm font-medium text-amber-300 mb-2">Totale punti Tornei</div>
-              <div className="text-3xl font-extrabold text-amber-300">
-                {Math.round(champTotals.totalPoints || 0)}
-              </div>
-              <div className="flex items-center gap-2 mt-1 text-xs text-amber-300/70">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-900/30 text-amber-300">
-                  Movimenti totali: {champTotals.entriesCount}
-                </span>
-                <span className="opacity-80">•</span>
-                <span>Nel periodo: +{Math.round(tournamentPoints.totalPoints || 0)}</span>
-              </div>
-            </div>
-
-            {/* Ultimi movimenti */}
-            <div className="${T.cardBg} rounded-2xl border border-gray-700/30 p-5">
-              <div className="font-medium mb-3 flex items-center gap-2">
-                <span>🕒</span> Ultimi movimenti
-              </div>
-              {tournamentPoints.recent.length > 0 ? (
-                <div className="space-y-3">
-                  {tournamentPoints.recent.map((e) => (
-                    <div key={e.id} className="flex items-center justify-between">
-                      <div className="min-w-0">
-                        <div className="text-sm font-medium truncate">
-                          {e.tournamentId ? (
-                            <a
-                              href={`/club/${clubId}/tournaments/${e.tournamentId}`}
-                              className="text-amber-300 hover:underline"
-                              title="Vedi torneo"
-                            >
-                              {tournamentsById?.[e.tournamentId]?.name ||
-                                e.tournamentName ||
-                                'Punti torneo'}
-                            </a>
-                          ) : (
-                            e.tournamentName || 'Punti torneo'
-                          )}
-                        </div>
-                        <div className="text-xs ${T.subtext}">
-                          {e.date
-                            ? e.date.toLocaleDateString('it-IT', {
-                                day: '2-digit',
-                                month: 'short',
-                                year: '2-digit',
-                              })
-                            : ''}
-                          {e.tournamentId && tournamentsById?.[e.tournamentId]?.status ? (
-                            <span className="ml-2 px-1.5 py-0.5 rounded bg-amber-900/30 text-amber-300">
-                              {tournamentsById[e.tournamentId].status}
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div className="text-amber-300 font-bold">+{Math.round(e.points || 0)}</div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className={`text-sm ${T.subtext}`}>Nessun movimento disponibile</div>
-              )}
-            </div>
-
-            {/* Per torneo */}
-            <div className="${T.cardBg} rounded-2xl border border-gray-700/30 p-5">
-              <div className="font-medium mb-3 flex items-center gap-2">
-                <span>📚</span> Punti per torneo
-              </div>
-              {tournamentPoints.byTournament.length > 0 ? (
-                <div className="space-y-3">
-                  {tournamentPoints.byTournament.slice(0, 5).map((row) => (
-                    <div
-                      key={row.tournamentId || row.tournamentName}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="min-w-0">
-                        <div className="text-sm font-medium truncate">
-                          {row.tournamentId ? (
-                            <a
-                              href={`/club/${clubId}/tournaments/${row.tournamentId}`}
-                              className="text-amber-300 hover:underline"
-                              title="Vedi torneo"
-                            >
-                              {tournamentsById?.[row.tournamentId]?.name || row.tournamentName}
-                            </a>
-                          ) : (
-                            row.tournamentName
-                          )}
-                        </div>
-                        <div className="text-xs ${T.subtext}">{row.count} movimenti</div>
-                      </div>
-                      <div className="text-amber-300 font-bold">+{Math.round(row.points)}</div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className={`text-sm ${T.subtext}`}>Nessun torneo nel periodo</div>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Mini Classifiche - Mobile Optimized */}
         <div className="space-y-6">
           {/* Top 5 Compagni */}
@@ -1414,7 +1182,7 @@ export default function StatisticheGiocatore({
                       </div>
                       <div className="text-right shrink-0">
                         <div className="font-bold text-rose-600 text-sm">
-                          {Math.round(mate.winPct)}%
+                          {Math.round(100 - mate.winPct)}%
                         </div>
                         <div className="text-xs ${T.subtext}">
                           {mate.wins}V-{mate.losses}S
@@ -1435,7 +1203,7 @@ export default function StatisticheGiocatore({
           <div className="space-y-3">
             <h3 className="font-medium text-base flex items-center gap-2">
               <span className="text-emerald-600">🎯</span>
-              Top 5 Avversari Preferiti
+              Avversari Sconfitti Più Volte
             </h3>
             {partnerAndOppStats.topOpps.length > 0 ? (
               <div className={`rounded-xl ${T.cardBg} ${T.border} p-3 sm:p-4`}>
