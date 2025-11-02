@@ -38,6 +38,8 @@ function TournamentsPage({ clubId, isAdmin = false }) {
       // Filtra client-side per 'in corso'
       const activeStatuses = [
         TOURNAMENT_STATUS.REGISTRATION_OPEN,
+        TOURNAMENT_STATUS.REGISTRATION_CLOSED,
+        TOURNAMENT_STATUS.GROUPS_GENERATION,
         TOURNAMENT_STATUS.GROUPS_PHASE,
         TOURNAMENT_STATUS.KNOCKOUT_PHASE,
       ];
@@ -78,6 +80,8 @@ function TournamentsPage({ clubId, isAdmin = false }) {
     active: tournaments.filter((t) =>
       [
         TOURNAMENT_STATUS.REGISTRATION_OPEN,
+        TOURNAMENT_STATUS.REGISTRATION_CLOSED,
+        TOURNAMENT_STATUS.GROUPS_GENERATION,
         TOURNAMENT_STATUS.GROUPS_PHASE,
         TOURNAMENT_STATUS.KNOCKOUT_PHASE,
       ].includes(t.status)
