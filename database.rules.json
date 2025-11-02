@@ -1,0 +1,17 @@
+{
+  "rules": {
+    "tournaments": {
+      "$tournamentId": {
+        "viewers": {
+          ".read": true,
+          ".write": true,
+          "$viewerId": {
+            ".read": true,
+            ".write": true,
+            ".validate": "newData.hasChildren(['online', 'connectedAt'])"
+          }
+        }
+      }
+    }
+  }
+}
