@@ -19,6 +19,8 @@ function PublicTournamentViewTV() {
   const { clubId, tournamentId, token } = useParams();
   const navigate = useNavigate();
 
+  console.log('[TV DEBUG] Component mounted with params:', { clubId, tournamentId, token });
+
   const [tournament, setTournament] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -48,35 +50,51 @@ function PublicTournamentViewTV() {
 
   // Validate token and load tournament
   useEffect(() => {
+    console.log('[TV DEBUG] useEffect triggered - Loading tournament...');
+    console.log('[TV DEBUG] Firestore path:', `clubs/${clubId}/tournaments/${tournamentId}`);
+
     const unsubscribe = onSnapshot(
       doc(db, 'clubs', clubId, 'tournaments', tournamentId),
       (docSnapshot) => {
+        console.log('[TV DEBUG] Snapshot received. Exists:', docSnapshot.exists());
+
         if (!docSnapshot.exists()) {
+          console.error('[TV DEBUG] Tournament document not found');
           setError('Torneo non trovato');
           setLoading(false);
           return;
         }
 
         const data = { id: docSnapshot.id, ...docSnapshot.data() };
+        console.log('[TV DEBUG] Tournament data loaded:', data);
 
         // Validate public view settings
         if (!data.publicView?.enabled) {
+          console.error('[TV DEBUG] Public view not enabled');
           setError('Vista pubblica non abilitata per questo torneo');
           setLoading(false);
           return;
         }
 
+        console.log(
+          '[TV DEBUG] Token validation - Expected:',
+          data.publicView?.token,
+          'Received:',
+          token
+        );
         if (data.publicView?.token !== token) {
+          console.error('[TV DEBUG] Invalid token');
           setError('Token non valido');
           setLoading(false);
           return;
         }
 
+        console.log('[TV DEBUG] Tournament loaded successfully');
         setTournament(data);
         setLoading(false);
       },
       (err) => {
-        console.error('Error loading tournament:', err);
+        console.error('[TV DEBUG] Error loading tournament:', err);
         setError('Errore nel caricamento del torneo');
         setLoading(false);
       }
@@ -87,21 +105,31 @@ function PublicTournamentViewTV() {
 
   // Real-time listener for matches
   useEffect(() => {
-    if (!clubId || !tournamentId) return;
+    console.log('[TV DEBUG] Matches listener setup');
+    if (!clubId || !tournamentId) {
+      console.log('[TV DEBUG] Skipping matches listener - missing clubId or tournamentId');
+      return;
+    }
 
     const matchesRef = collection(db, 'clubs', clubId, 'tournaments', tournamentId, 'matches');
+    console.log(
+      '[TV DEBUG] Listening to matches at:',
+      `clubs/${clubId}/tournaments/${tournamentId}/matches`
+    );
 
     const unsubscribe = onSnapshot(
       matchesRef,
       (snapshot) => {
+        console.log('[TV DEBUG] Matches snapshot received. Count:', snapshot.docs.length);
         const matchesData = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
+        console.log('[TV DEBUG] Matches data:', matchesData);
         setMatches(matchesData);
       },
       (err) => {
-        console.error('Error loading matches:', err);
+        console.error('[TV DEBUG] Error loading matches:', err);
       }
     );
 
@@ -110,10 +138,19 @@ function PublicTournamentViewTV() {
 
   // Load groups and data when tournament or matches changes
   const loadGroupsAndData = useCallback(async () => {
-    if (!tournament || matches.length === 0) return;
+    console.log('[TV DEBUG] loadGroupsAndData called');
+    console.log('[TV DEBUG] Tournament:', tournament);
+    console.log('[TV DEBUG] Matches count:', matches.length);
+
+    if (!tournament || matches.length === 0) {
+      console.log('[TV DEBUG] Skipping loadGroupsAndData - missing tournament or matches');
+      return;
+    }
 
     try {
+      console.log('[TV DEBUG] Fetching teams...');
       const teams = await getTeamsByTournament(clubId, tournamentId);
+      console.log('[TV DEBUG] Teams loaded:', teams);
 
       // Store all teams in state for winner lookup
       setTeams(teams);
@@ -178,14 +215,18 @@ function PublicTournamentViewTV() {
   const pages = useMemo(() => {
     const pagesArray = [];
 
-    // Add group pages if enabled in settings
-    const displaySettings = tournament?.publicView?.settings?.displaySettings || {};
-    if (displaySettings.groupsMatches !== false) {
-      // Default to true if not set
-      pagesArray.push(...groups.map((g) => ({ type: 'group', groupId: g })));
-    }
+    // Add group pages if enabled in settings - PER SINGOLO GIRONE
+    const groupSettings = tournament?.publicView?.settings?.groupSettings || {};
+    groups.forEach((g) => {
+      // Ogni girone ha le sue impostazioni specifiche
+      const isGroupEnabled = groupSettings[g]?.enabled !== false; // Default true se non impostato
+      if (isGroupEnabled) {
+        pagesArray.push({ type: 'group', groupId: g });
+      }
+    });
 
     // Add overall standings page if enabled
+    const displaySettings = tournament?.publicView?.settings?.displaySettings || {};
     if (displaySettings.standings === true) {
       pagesArray.push({ type: 'standings' });
     }
@@ -327,12 +368,17 @@ function PublicTournamentViewTV() {
       qr: 15,
     };
 
+    // Impostazioni specifiche per ogni girone
+    const groupSettings = tournament?.publicView?.settings?.groupSettings || {};
+
     // Determina l'intervallo per la pagina corrente
     const currentPage = pages[currentPageIndex];
     let currentInterval = 15000; // Default fallback
 
     if (currentPage?.type === 'group') {
-      currentInterval = (pageIntervals.groups || 15) * 1000;
+      // Usa l'intervallo specifico del girone se disponibile, altrimenti il default
+      const groupInterval = groupSettings[currentPage.groupId]?.interval;
+      currentInterval = (groupInterval || pageIntervals.groups || 15) * 1000;
     } else if (currentPage?.type === 'standings') {
       currentInterval = (pageIntervals.standings || 15) * 1000;
     } else if (currentPage?.type === 'points') {
@@ -344,7 +390,7 @@ function PublicTournamentViewTV() {
     }
 
     console.log(
-      `⏱️ Page ${currentPageIndex} (${currentPage?.type}): interval = ${currentInterval}ms`
+      `⏱️ Page ${currentPageIndex} (${currentPage?.type}${currentPage?.groupId ? ` - ${currentPage.groupId}` : ''}): interval = ${currentInterval}ms`
     );
 
     // Progress bar update (every 100ms)
@@ -464,23 +510,31 @@ function PublicTournamentViewTV() {
   }, [pages, currentPageIndex, groupData]);
 
   if (loading) {
+    console.log('[TV DEBUG] Showing loading screen');
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-24 w-24 border-t-4 border-b-4 border-emerald-500 mx-auto mb-6"></div>
           <p className="text-white text-3xl font-bold">Caricamento torneo...</p>
+          <p className="text-gray-400 text-sm mt-4">
+            Params: {JSON.stringify({ clubId, tournamentId, token })}
+          </p>
         </div>
       </div>
     );
   }
 
   if (error) {
+    console.log('[TV DEBUG] Showing error screen:', error);
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-red-900 flex items-center justify-center p-6">
         <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-12 max-w-2xl w-full text-center">
           <AlertCircle className="w-24 h-24 text-white mx-auto mb-6" />
           <h2 className="text-4xl font-bold text-white mb-4">Accesso Negato</h2>
           <p className="text-white/80 text-xl mb-8">{error}</p>
+          <p className="text-white/60 text-sm mb-8">
+            Params: {JSON.stringify({ clubId, tournamentId, token })}
+          </p>
           <button
             onClick={() => navigate('/')}
             className="px-8 py-4 bg-white text-red-900 rounded-xl font-bold text-xl hover:bg-white/90 transition-colors"
@@ -1254,6 +1308,14 @@ function PublicTournamentViewTV() {
           scrollbar-width: none;
         }
       `}</style>
+      {console.log(
+        '[TV DEBUG] Rendering component. Loading:',
+        loading,
+        'Error:',
+        error,
+        'Tournament:',
+        tournament
+      )}
       <div className="min-h-screen bg-black flex flex-col">
         {/* Header - NO QR CODE - Ottimizzato per 16:9 */}
         <div className="bg-black border-b border-gray-800">

@@ -111,7 +111,9 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
 
       if (result.success) {
         loadData();
-        alert('Risultato cancellato. Ricorda di ricalcolare manualmente la classifica se necessario.');
+        alert(
+          'Risultato cancellato. Ricorda di ricalcolare manualmente la classifica se necessario.'
+        );
       } else {
         alert(result.error || 'Errore nella cancellazione del risultato');
       }

@@ -5,7 +5,7 @@ import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from '@contexts/AuthContext.jsx';
 import { UIProvider } from '@contexts/UIContext.jsx';
-import { ClubProvider } from '@contexts/ClubContext.jsx';
+// import { ClubProvider } from '@contexts/ClubContext.jsx'; // Not used in this file
 import ErrorBoundary from '@components/ErrorBoundary.jsx';
 import { LoadingPage } from '@components/LoadingSpinner.jsx';
 import { ProtectedRoute, PublicRoute, AuthAwareRoute } from '@components/ProtectedRoute.jsx';
@@ -16,8 +16,8 @@ import { trackPageView } from '@lib/analytics.js';
 const LoginPage = React.lazy(() => import('@pages/LoginPage.jsx'));
 const RegisterPage = React.lazy(() => import('@pages/RegisterPage.jsx'));
 const RegisterClubPage = React.lazy(() => import('@pages/RegisterClubPage.jsx'));
-const LandingPage = React.lazy(() => import('@pages/LandingPage.jsx'));
-const DashboardHomePage = React.lazy(() => import('@pages/DashboardHomePage.jsx'));
+// const LandingPage = React.lazy(() => import('@pages/LandingPage.jsx')); // Not used
+// const DashboardHomePage = React.lazy(() => import('@pages/DashboardHomePage.jsx')); // Not used
 const DashboardPage = React.lazy(() => import('@pages/DashboardPage.jsx'));
 const ClassificaPage = React.lazy(() => import('@pages/ClassificaPage.jsx'));
 const StatsPage = React.lazy(() => import('@pages/StatsPage.jsx'));
@@ -118,8 +118,8 @@ export default function AppRouter() {
                     </PublicRoute>
                   }
                 />
-
                 {/* Public Tournament Views - No authentication required */}
+                {/* Public tournament views */}
                 <Route
                   path="/public/tournament/:clubId/:tournamentId/:token"
                   element={<PublicTournamentView />}
@@ -128,7 +128,6 @@ export default function AppRouter() {
                   path="/public/tournament-tv/:clubId/:tournamentId/:token"
                   element={<PublicTournamentViewTV />}
                 />
-
                 {/* Main App Routes - Landing page for unauthenticated, protected routes for authenticated */}
                 <Route
                   path="/*"
@@ -175,7 +174,6 @@ export default function AppRouter() {
                   <Route path="bootstrap" element={<Bootstrap />} />
                   <Route path="dark-mode-test" element={<DarkModeTestPage />} />
                 </Route>
-
                 {/* Admin Routes - New System */}
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route
@@ -193,7 +191,6 @@ export default function AppRouter() {
                     </AdminProtectedRoute>
                   }
                 />
-
                 {/* Legacy Admin Routes */}
                 <Route
                   path="/legacy-admin/*"

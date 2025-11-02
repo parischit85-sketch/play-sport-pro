@@ -22,6 +22,12 @@ function PublicTournamentView() {
   const { clubId, tournamentId, token } = useParams();
   const navigate = useNavigate();
 
+  console.log('[MOBILE DEBUG] PublicTournamentView mounted with params:', {
+    clubId,
+    tournamentId,
+    token,
+  });
+
   const [tournament, setTournament] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -67,10 +73,20 @@ function PublicTournamentView() {
 
   // Validate token and load tournament
   useEffect(() => {
+    console.log('[MOBILE DEBUG] Loading tournament from Firestore:', {
+      path: `clubs/${clubId}/tournaments/${tournamentId}`,
+    });
+
     const unsubscribe = onSnapshot(
       doc(db, 'clubs', clubId, 'tournaments', tournamentId),
       (docSnapshot) => {
+        console.log('[MOBILE DEBUG] Tournament snapshot received:', {
+          exists: docSnapshot.exists(),
+          id: docSnapshot.id,
+        });
+
         if (!docSnapshot.exists()) {
+          console.error('[MOBILE DEBUG] Tournament not found');
           setError('Torneo non trovato');
           setLoading(false);
           return;
@@ -78,19 +94,32 @@ function PublicTournamentView() {
 
         const data = { id: docSnapshot.id, ...docSnapshot.data() };
 
+        console.log('[MOBILE DEBUG] Tournament data:', {
+          id: data.id,
+          name: data.name,
+          publicViewEnabled: data.publicView?.enabled,
+          tokenMatch: data.publicView?.token === token,
+        });
+
         // Validate public view settings
         if (!data.publicView?.enabled) {
+          console.error('[MOBILE DEBUG] Public view not enabled');
           setError('Vista pubblica non abilitata per questo torneo');
           setLoading(false);
           return;
         }
 
         if (data.publicView?.token !== token) {
+          console.error('[MOBILE DEBUG] Token mismatch:', {
+            expected: data.publicView?.token,
+            received: token,
+          });
           setError('Token non valido');
           setLoading(false);
           return;
         }
 
+        console.log('[MOBILE DEBUG] Tournament loaded successfully');
         setTournament(data);
         setLoading(false);
       },
