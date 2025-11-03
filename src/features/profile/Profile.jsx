@@ -61,7 +61,7 @@ export default function Profile({ T }) {
   if (isActuallyAdmin && actualClubId && !forceNormalProfile) {
     return (
       <div className="space-y-4">
-        <div className="flex justify-between items-center bg-blue-50 bg-blue-900/20 p-4 rounded-xl">
+        <div className={`flex justify-between items-center ${T.cardBg} border border-blue-500/30 p-4 rounded-xl`}>
           <div className="text-sm">
             <strong>👔 Modalità Admin</strong> - Stai visualizzando l'interfaccia di gestione del
             club
@@ -235,7 +235,7 @@ export default function Profile({ T }) {
 
       {/* Banner per admin che visualizzano profilo normale */}
       {isActuallyAdmin && forceNormalProfile && (
-        <div className="bg-orange-50 bg-orange-900/20 border border-orange-200 border-orange-700/30 p-4 rounded-xl">
+        <div className={`${T.cardBg} border border-orange-500/30 p-4 rounded-xl`}>
           <div className="flex justify-between items-center">
             <div className="text-sm">
               <strong>👤 Modalità Utente</strong> - Stai visualizzando il profilo come utente
@@ -253,9 +253,9 @@ export default function Profile({ T }) {
 
       {/* Informazioni Account */}
       <Section title="Profilo Utente 👤" T={T}>
-        <div className="bg-white/80/80 backdrop-blur-xl rounded-3xl border border-white/20 border-gray-700/20 p-6 space-y-6 shadow-2xl">
+        <div className={`${T.cardBg} ${T.border} rounded-3xl p-6 space-y-6 shadow-2xl`}>
           {/* Header con avatar e info principali */}
-          <div className="flex items-center gap-6 p-6 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 from-blue-900/20 to-indigo-900/20 rounded-2xl backdrop-blur-sm border border-blue-200/30 border-blue-700/30">
+          <div className={`flex items-center gap-6 p-6 ${T.cardBg} border border-blue-500/30 rounded-2xl`}>
             {user.photoURL ? (
               <img
                 src={user.photoURL}
@@ -269,21 +269,21 @@ export default function Profile({ T }) {
             )}
 
             <div className="flex-1 min-w-0">
-              <h3 className="text-2xl font-bold text-gray-900 text-white truncate mb-1">
+              <h3 className={`text-2xl font-bold ${T.text} truncate mb-1`}>
                 {user.displayName || 'Utente'}
               </h3>
-              <p className="text-blue-600 text-blue-400 text-lg truncate mb-2">{user.email}</p>
+              <p className={`${T.accentInfo} text-lg truncate mb-2`}>{user.email}</p>
               <div className="flex items-center gap-3">
                 {user.providerData[0] && getProviderIcon(user.providerData[0].providerId)}
-                <span className="text-sm font-medium text-gray-300">
+                <span className={`text-sm font-medium ${T.subtext}`}>
                   Accesso tramite{' '}
                   {user.providerData[0]
                     ? getProviderName(user.providerData[0].providerId)
                     : 'Email'}
                 </span>
-                <div className="flex items-center gap-1 bg-emerald-100 bg-emerald-900/30 px-3 py-1 rounded-full">
+                <div className={`flex items-center gap-1 ${T.cardBg} border border-emerald-500/30 px-3 py-1 rounded-full`}>
                   <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs font-medium text-emerald-700 text-emerald-400">
+                  <span className={`text-xs font-medium text-emerald-400`}>
                     Online
                   </span>
                 </div>
@@ -295,16 +295,16 @@ export default function Profile({ T }) {
           <PushNotificationPanel />
 
           {/* Stato Account */}
-          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-emerald-50 to-green-50 from-emerald-900/30 to-green-900/30 rounded-2xl border border-emerald-200/50 border-emerald-700/50 backdrop-blur-sm">
+          <div className={`flex items-center justify-between p-4 ${T.cardBg} border border-emerald-500/30 rounded-2xl`}>
             <div className="flex items-center gap-3">
               <div className="w-4 h-4 bg-emerald-500 rounded-full shadow-lg"></div>
-              <span className="text-lg font-bold text-emerald-700 text-emerald-400">
+              <span className="text-lg font-bold text-emerald-400">
                 Account Attivo
               </span>
             </div>
-            <div className="flex items-center gap-2 bg-emerald-100 bg-emerald-800/50 px-3 py-1 rounded-full">
+            <div className={`flex items-center gap-2 ${T.cardBg} border border-emerald-500/30 px-3 py-1 rounded-full`}>
               <svg
-                className="w-4 h-4 text-emerald-600 text-emerald-400"
+                className="w-4 h-4 text-emerald-400"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -314,29 +314,29 @@ export default function Profile({ T }) {
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-sm font-medium text-emerald-700 text-emerald-400">
+              <span className="text-sm font-medium text-emerald-400">
                 Email verificata
               </span>
             </div>
           </div>
 
           {/* Statistiche account */}
-          <div className="grid grid-cols-2 gap-6 pt-6 border-t border-white/20 border-gray-600/20">
-            <div className="text-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 from-blue-900/30 to-indigo-900/30 rounded-2xl border border-blue-200/30 border-blue-700/30">
-              <div className="text-2xl font-bold text-blue-600 text-blue-400 mb-1">
+          <div className={`grid grid-cols-2 gap-6 pt-6 border-t ${T.border}`}>
+            <div className={`text-center p-4 ${T.cardBg} border border-blue-500/30 rounded-2xl`}>
+              <div className="text-2xl font-bold text-blue-400 mb-1">
                 {user.metadata.creationTime
                   ? new Date(user.metadata.creationTime).toLocaleDateString('it-IT')
                   : 'N/A'}
               </div>
-              <div className="text-sm font-medium text-gray-300">Registrato il</div>
+              <div className={`text-sm font-medium ${T.subtext}`}>Registrato il</div>
             </div>
-            <div className="text-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 from-purple-900/30 to-pink-900/30 rounded-2xl border border-purple-200/30 border-purple-700/30">
-              <div className="text-2xl font-bold text-purple-600 text-purple-400 mb-1">
+            <div className={`text-center p-4 ${T.cardBg} border border-purple-500/30 rounded-2xl`}>
+              <div className="text-2xl font-bold text-purple-400 mb-1">
                 {user.metadata.lastSignInTime
                   ? new Date(user.metadata.lastSignInTime).toLocaleDateString('it-IT')
                   : 'N/A'}
               </div>
-              <div className="text-sm font-medium text-gray-300">Ultimo accesso</div>
+              <div className={`text-sm font-medium ${T.subtext}`}>Ultimo accesso</div>
             </div>
           </div>
 
@@ -346,11 +346,11 @@ export default function Profile({ T }) {
           {(userRole === 'super_admin' ||
             (user && user.userProfile?.role === 'admin') ||
             isClubAdmin(clubId)) && (
-            <div className="pt-6 border-t border-white/20 border-gray-600/20">
+            <div className={`pt-6 border-t ${T.border}`}>
               <button
                 type="button"
                 onClick={() => navigate('/extra')}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 backdrop-blur-xl"
+                className={`w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-medium text-white ${T.btnPrimary} transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -366,11 +366,11 @@ export default function Profile({ T }) {
           )}
 
           {/* Pulsante Logout */}
-          <div className="pt-6 border-t border-white/20 border-gray-600/20">
+          <div className={`pt-6 border-t ${T.border}`}>
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-medium text-white bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 backdrop-blur-xl"
+              className={`w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 rounded-2xl text-sm font-medium text-white bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -388,72 +388,72 @@ export default function Profile({ T }) {
 
       {/* Gestione Profilo */}
       <Section title="Gestione Dati 📝" T={T}>
-        <div className="bg-white/80/80 backdrop-blur-xl rounded-3xl border border-white/20 border-gray-700/20 p-6 shadow-2xl">
+        <div className={`${T.cardBg} ${T.border} rounded-3xl p-6 shadow-2xl`}>
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="text-sm">Caricamento profilo...</div>
+              <div className={`text-sm ${T.subtext}`}>Caricamento profilo...</div>
             </div>
           ) : (
             <div className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">Nome *</label>
+                  <label className={`text-sm font-semibold ${T.text}`}>Nome *</label>
                   <input
-                    className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.firstName}
                     onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
                     placeholder="Inserisci il tuo nome"
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">Cognome</label>
+                  <label className={`text-sm font-semibold ${T.text}`}>Cognome</label>
                   <input
-                    className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.lastName}
                     onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
                     placeholder="Inserisci il tuo cognome"
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">Telefono *</label>
+                  <label className={`text-sm font-semibold ${T.text}`}>Telefono *</label>
                   <input
-                    className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.phone}
                     onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
                     placeholder="+39 123 456 7890"
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">Codice Fiscale</label>
+                  <label className={`text-sm font-semibold ${T.text}`}>Codice Fiscale</label>
                   <input
-                    className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.fiscalCode}
                     onChange={(e) => setForm((f) => ({ ...f, fiscalCode: e.target.value }))}
                     placeholder="RSSMRA80A01H501U"
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">Data di nascita</label>
+                  <label className={`text-sm font-semibold ${T.text}`}>Data di nascita</label>
                   <input
                     type="date"
-                    className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.birthDate}
                     onChange={(e) => setForm((f) => ({ ...f, birthDate: e.target.value }))}
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">Email</label>
+                  <label className={`text-sm font-semibold ${T.text}`}>Email</label>
                   <input
                     type="email"
-                    className="px-4 py-3 bg-gray-100/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl text-gray-400 cursor-not-allowed"
+                    className={`px-4 py-3 ${T.inputBg} ${T.border} rounded-xl ${T.subtext} cursor-not-allowed`}
                     value={user.email || ''}
                     disabled
                   />
                 </div>
                 <div className="flex flex-col sm:col-span-2 space-y-2">
-                  <label className="text-sm font-semibold text-gray-300">Indirizzo</label>
+                  <label className={`text-sm font-semibold ${T.text}`}>Indirizzo</label>
                   <input
-                    className="px-4 py-3 bg-white/60/60 backdrop-blur-xl border border-gray-200/50 border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent transition-all duration-200"
+                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.address}
                     onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
                     placeholder="Via, Città, CAP"
@@ -461,10 +461,10 @@ export default function Profile({ T }) {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/20 border-gray-600/20">
+              <div className={`flex flex-col sm:flex-row gap-4 pt-6 border-t ${T.border}`}>
                 <button
                   type="button"
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={`${T.btnPrimary} text-white px-8 py-3 rounded-xl font-semibold ${T.transitionNormal} hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed`}
                   onClick={handleSaveProfile}
                   disabled={saving}
                 >
@@ -479,19 +479,19 @@ export default function Profile({ T }) {
                 </button>
               </div>
 
-              <p className="text-sm text-gray-400 italic">* Campi obbligatori</p>
+              <p className={`text-sm ${T.subtext} italic`}>* Campi obbligatori</p>
             </div>
           )}
         </div>
       </Section>
 
       {/* GDPR - Export & Delete Data */}
-      {userProfile && clubId && (
+      {userProfile && (
         <Section title="Protezione Dati (GDPR) 🔒" T={T}>
-          <UserGDPRPanel 
-            user={user} 
-            userProfile={userProfile} 
-            clubId={clubId} 
+          <UserGDPRPanel
+            user={user}
+            userProfile={userProfile}
+            clubId={clubId || userProfile.clubId || getFirstAdminClub?.()}
           />
         </Section>
       )}

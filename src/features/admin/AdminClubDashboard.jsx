@@ -777,26 +777,35 @@ const AdminClubDashboard = () => {
 
   // Componente per le statistiche rapide
   // ✅ FIX #13: Memoizzare StatCard per evitare re-render inutili
-  const StatCard = React.memo(({ title, value, subtitle, icon, color, onClick }) => (
-    <div
-      className={STYLE_CONSTANTS.statCard(T)}
-      onClick={onClick}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <div className={`text-xs sm:text-sm font-medium ${T.subtext} mb-0.5 sm:mb-1 truncate`}>
-            {title}
+  // ✅ Using ES6 default parameters instead of defaultProps (React 18+)
+  const StatCard = React.memo(
+    ({ title, value, subtitle = null, icon, color = 'text-blue-400', onClick = () => {} }) => (
+      <div
+        className={STYLE_CONSTANTS.statCard(T)}
+        onClick={onClick}
+        onKeyDown={(e) => e.key === 'Enter' && onClick()}
+        role="button"
+        tabIndex={0}
+      >
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <div className={`text-xs sm:text-sm font-medium ${T.subtext} mb-0.5 sm:mb-1 truncate`}>
+              {title}
+            </div>
+            <div className={`text-lg sm:text-xl lg:text-2xl font-bold ${color}`}>{value}</div>
+            {subtitle && (
+              <div className={`text-xs ${T.subtext} mt-0.5 sm:mt-1 hidden sm:block`}>
+                {subtitle}
+              </div>
+            )}
           </div>
-          <div className={`text-lg sm:text-xl lg:text-2xl font-bold ${color}`}>{value}</div>
-          {subtitle && (
-            <div className={`text-xs ${T.subtext} mt-0.5 sm:mt-1 hidden sm:block`}>{subtitle}</div>
-          )}
+          <div className={`text-xl sm:text-2xl lg:text-3xl opacity-70 flex-shrink-0`}>{icon}</div>
         </div>
-        <div className={`text-xl sm:text-2xl lg:text-3xl opacity-70 flex-shrink-0`}>{icon}</div>
       </div>
-    </div>
-  ));
+    )
+  );
   StatCard.displayName = 'StatCard';
+  // PropTypes validation still useful for development
   StatCard.propTypes = {
     title: PropTypes.string.isRequired,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -804,11 +813,6 @@ const AdminClubDashboard = () => {
     icon: PropTypes.string.isRequired,
     color: PropTypes.string,
     onClick: PropTypes.func,
-  };
-  StatCard.defaultProps = {
-    subtitle: null,
-    color: 'text-blue-400',
-    onClick: () => {},
   };
 
   // ✅ FIX #13: Memoizzare TodayBookingsCard per evitare re-render inutili

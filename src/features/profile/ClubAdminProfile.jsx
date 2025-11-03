@@ -12,6 +12,7 @@ import { loadAdminDashboardData } from '@services/adminDashboard.js';
 import { useClubSettings } from '@hooks/useClubSettings.js';
 import { db } from '@services/firebase.js';
 import { doc, updateDoc } from 'firebase/firestore';
+import GDPRRequestsPanel from '@features/admin/GDPRRequestsPanel.jsx';
 
 export default function ClubAdminProfile({ T, club, clubId }) {
   const navigate = useNavigate();
@@ -881,6 +882,13 @@ export default function ClubAdminProfile({ T, club, clubId }) {
               </button>
             </div>
           </div>
+        </div>
+      </Section>
+
+      {/* Richieste GDPR */}
+      <Section title="Richieste GDPR 🔒" T={T}>
+        <div className="bg-gray-800/80 backdrop-blur-xl rounded-3xl border border-gray-700/20 p-6 shadow-2xl">
+          <GDPRRequestsPanel clubId={clubId} />
         </div>
       </Section>
 
