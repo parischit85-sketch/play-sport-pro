@@ -3,15 +3,7 @@
  */
 
 import React from 'react';
-import {
-  CheckCircle,
-  AlertCircle,
-  AlertTriangle,
-  Loader2,
-  Users,
-  Trophy,
-  Calendar,
-} from 'lucide-react';
+import { CheckCircle, AlertCircle, AlertTriangle, Loader2, Trophy } from 'lucide-react';
 
 /**
  * Progress Bar Component
@@ -26,16 +18,16 @@ export const FormProgressBar = ({ progress, message, className = '' }) => {
   return (
     <div className={`w-full ${className}`}>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-gray-300">Completamento Form</span>
-        <span className="text-sm text-gray-400">{progress}%</span>
+        <span className="text-sm font-medium text-slate-300">Completamento Form</span>
+        <span className="text-sm text-slate-400">{progress}%</span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-2 bg-gray-700">
+      <div className="w-full bg-slate-700 rounded-full h-2">
         <div
           className={`h-2 rounded-full transition-all duration-300 ${getProgressColor()}`}
           style={{ width: `${progress}%` }}
         />
       </div>
-      {message && <div className="mt-2 text-sm text-gray-600 text-gray-400">{message.message}</div>}
+      {message && <div className="mt-2 text-sm text-slate-400">{message.message}</div>}
     </div>
   );
 };
@@ -152,7 +144,7 @@ export const EnhancedSetInput = ({
   const warning = validation?.warnings[fieldName];
   const hasIssue = error || warning;
 
-  const getInputClasses = (isTeamA = true) => {
+  const getInputClasses = (_isTeamA = true) => {
     const baseClasses = `${T.input} w-16 text-center transition-all duration-200`;
 
     if (error) {
@@ -279,7 +271,7 @@ export const EnhancedSubmitButton = ({
 };
 
 /**
- * Match Summary Card with enhanced feedback
+ * Match Summary Card - Compact version
  */
 export const MatchSummaryCard = ({ validation, playersById, formData, T, className = '' }) => {
   const { result, summary, canSubmit } = validation;
@@ -288,72 +280,76 @@ export const MatchSummaryCard = ({ validation, playersById, formData, T, classNa
   const getPlayerName = (id) => playersById[id]?.name || '—';
 
   return (
-    <div
-      className={`rounded-xl bg-gradient-to-r from-gray-50 to-blue-50 from-gray-800 to-blue-900/20 p-4 ${T.border} ${className}`}
-    >
-      <div className="flex items-center gap-2 mb-3">
-        <Trophy className="w-5 h-5 text-blue-400" />
-        <span className="font-medium text-gray-100">Riepilogo Partita</span>
+    <div className={`${T.borderMd} ${T.cardBg} p-4 ${T.border} ${className}`}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Trophy className="w-4 h-4 text-blue-400" />
+          <span className={`text-sm font-semibold ${T.text}`}>Riepilogo Partita</span>
+        </div>
+        {canSubmit && (
+          <span className="text-xs px-2 py-1 rounded bg-green-900/40 text-green-300 border border-green-700/40">
+            ✓ Pronta
+          </span>
+        )}
       </div>
 
-      {/* Teams Display */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-        <div className="bg-white bg-gray-700 rounded-lg p-3">
-          <div className="text-sm font-medium text-blue-400 mb-1">🅰️ Team A</div>
-          <div className="text-sm text-gray-300">
-            {getPlayerName(a1)} {a1 && a2 && '+'} {getPlayerName(a2)}
-          </div>
+      {/* Teams Comparison */}
+      <div className="grid grid-cols-3 gap-2 text-sm">
+        {/* Team A */}
+        <div className="bg-blue-900/20 rounded-lg p-2 border border-blue-700/30">
+          <div className="text-xs text-blue-300 font-semibold mb-1">🅰️ Team A</div>
+          <div className="text-xs text-white font-medium truncate">{getPlayerName(a1)}</div>
+          {a2 && <div className="text-xs text-blue-200 truncate">{getPlayerName(a2)}</div>}
         </div>
 
-        <div className="bg-white bg-gray-700 rounded-lg p-3">
-          <div className="text-sm font-medium text-red-400 mb-1">🅱️ Team B</div>
-          <div className="text-sm text-gray-300">
-            {getPlayerName(b1)} {b1 && b2 && '+'} {getPlayerName(b2)}
-          </div>
+        {/* Result */}
+        <div className="flex flex-col items-center justify-center bg-indigo-900/20 rounded-lg border border-indigo-700/30 py-2">
+          {result && summary.setsCompleted > 0 ? (
+            <>
+              <div className="text-xs text-slate-300 mb-0.5">Sets</div>
+              <div className="text-lg font-bold text-white">
+                <span className={result.setsA > result.setsB ? 'text-blue-300' : ''}>
+                  {result.setsA}
+                </span>
+                <span className="text-slate-400 mx-1">-</span>
+                <span className={result.setsB > result.setsA ? 'text-red-300' : ''}>
+                  {result.setsB}
+                </span>
+              </div>
+              {result.winner && (
+                <div className="text-xs text-green-300 mt-0.5">🏆 {result.winner}</div>
+              )}
+            </>
+          ) : (
+            <div className="text-xs text-slate-400">—</div>
+          )}
+        </div>
+
+        {/* Team B */}
+        <div className="bg-red-900/20 rounded-lg p-2 border border-red-700/30">
+          <div className="text-xs text-red-300 font-semibold mb-1">🅱️ Team B</div>
+          <div className="text-xs text-white font-medium truncate">{getPlayerName(b1)}</div>
+          {b2 && <div className="text-xs text-red-200 truncate">{getPlayerName(b2)}</div>}
         </div>
       </div>
 
-      {/* Result Display */}
+      {/* Games Detail */}
       {result && summary.setsCompleted > 0 && (
-        <div className="bg-white bg-gray-700 rounded-lg p-3 mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-300">Risultato</span>
-            {result.winner && (
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  result.winner === 'A'
-                    ? 'bg-blue-100 text-blue-700 bg-blue-900/30 text-blue-300'
-                    : 'bg-red-100 text-red-700 bg-red-900/30 text-red-300'
-                }`}
-              >
-                🏆 Vince Team {result.winner}
-              </span>
-            )}
-          </div>
-
-          <div className="text-sm text-gray-600 text-gray-400">
-            Sets:{' '}
-            <span className="font-mono font-medium">
-              {result.setsA}-{result.setsB}
-            </span>
-            {' | '}
-            Games:{' '}
-            <span className="font-mono font-medium">
-              {result.gamesA}-{result.gamesB}
-            </span>
-          </div>
+        <div className="mt-2 pt-2 border-t border-slate-700/30 text-xs text-slate-300 text-center">
+          Games:{' '}
+          <span className="font-mono">
+            {result.gamesA}-{result.gamesB}
+          </span>
         </div>
       )}
 
-      {/* Status Indicator */}
-      <div
-        className={`flex items-center gap-2 text-sm ${
-          canSubmit ? 'text-green-400' : 'text-gray-400'
-        }`}
-      >
-        {canSubmit ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
-        {canSubmit ? 'Pronta per il salvataggio' : 'In completamento...'}
-      </div>
+      {/* Status */}
+      {!canSubmit && (
+        <div className="mt-2 text-xs text-amber-300 flex items-center gap-1">
+          <AlertCircle className="w-3 h-3" />
+          Completa i dettagli
+        </div>
+      )}
     </div>
   );
 };
@@ -413,10 +409,7 @@ export const ToastNotification = ({
           <div className="text-sm font-medium text-gray-100">{message}</div>
         </div>
         {onClose && (
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 hover:text-gray-300"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-300">
             ×
           </button>
         )}
