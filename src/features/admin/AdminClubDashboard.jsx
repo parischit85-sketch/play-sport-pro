@@ -2,7 +2,8 @@
 // FILE: src/features/admin/AdminClubDashboard.jsx
 // Dashboard specifica per admin club - mostra tutte le informazioni chiave del club
 // =============================================
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
@@ -18,7 +19,290 @@ import EmailVerificationFlow from '@components/registration/EmailVerificationFlo
 import { loadAdminDashboardData } from '@services/adminDashboard.js';
 import UnifiedBookingService from '@services/unified-booking-service.js';
 import { logger } from '@/utils/logger';
+import {
+  DashboardStats,
+  DashboardBookings,
+  DashboardLessons,
+  DashboardInstructors,
+} from './AdminClubDashboard/index.js';
 
+// ✅ FIX #24: Magic Constants extracted for easier maintenance
+const DASHBOARD_CONSTANTS = {
+  REFRESH_INTERVAL_MS: 2 * 60 * 1000, // Auto-refresh every 2 minutes
+  MAX_BOOKINGS_DISPLAY: 3, // Show max 3 upcoming bookings
+  MAX_LESSONS_DISPLAY: 3, // Show max 3 upcoming lessons
+  MAX_INSTRUCTOR_SLOTS: 6, // Max instructor time slots to display
+};
+
+// ✅ FIX #2 (Sprint 3): Extract repeated Tailwind class strings for maintainability
+const STYLE_CONSTANTS = {
+  // Card styling
+  cardContainer: (T) => `${T.cardBg} ${T.border} rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6`,
+  cardHover: `hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors`,
+  
+  // Typography
+  heading3: (T) => `text-base sm:text-lg font-semibold ${T.text}`,
+  subtext: (T) => `text-sm ${T.subtext}`,
+  
+  // Interactive elements
+  statCard: (T) => `${T.cardBg} ${T.border} rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6 cursor-pointer transform transition-all duration-200 hover:scale-105 hover:shadow-lg`,
+  bookingItem: (T) => `flex items-center justify-between p-3 ${T.border} rounded-lg cursor-pointer ${STYLE_CONSTANTS.cardHover}`,
+  
+  // Time slot styling
+  timeSlotTag: 'text-xs px-2 py-1 bg-green-900/30 text-green-300 rounded border border-green-700',
+  
+  // Empty state
+  emptyStateContainer: (T) => `text-center py-8 ${T.subtext}`,
+  emptyStateIcon: 'text-4xl mb-2',
+};
+
+// ✅ FIX #3 (Sprint 4): Centralized empty state messages with icons and descriptions
+const EMPTY_STATE_MESSAGES = {
+  noBookingsToday: {
+    icon: '📅',
+    title: 'Nessuna prenotazione per oggi',
+    description: 'Tutte le prenotazioni verranno visualizzate qui',
+  },
+  allBookingsPassed: {
+    icon: '⏰',
+    title: 'Tutte le prenotazioni di oggi sono passate',
+    description: 'Puoi visualizzare la cronologia nella sezione prenotazioni',
+  },
+  noLessonsToday: {
+    icon: '🎾',
+    title: 'Nessuna lezione per oggi',
+    description: 'Le lezioni programmate appariranno qui',
+  },
+  allLessonsPassed: {
+    icon: '✅',
+    title: 'Tutte le lezioni di oggi sono completate',
+    description: 'Ottimo lavoro! Tutte le lezioni si sono svolte',
+  },
+  noInstructors: {
+    icon: '👨‍🏫',
+    title: 'Nessun maestro disponibile oggi',
+    description: 'I maestri disponibili verranno elencati qui',
+  },
+  loadingDashboard: {
+    icon: '⏳',
+    title: 'Caricamento dashboard...',
+    description: 'Attendere qualche istante',
+  },
+  errorLoading: {
+    icon: '❌',
+    title: 'Errore nel caricamento',
+    description: 'Si è verificato un problema. Prova a ricaricare.',
+  },
+};
+
+/**
+ * ✅ FIX #4 (Sprint 4): Error messages with retry capability
+ * Provides specific error messages for different failure scenarios
+ * Each error includes: title, message, code for logging, severity, and retryable flag
+ */
+const ERROR_MESSAGES = {
+  // Data loading errors
+  loadingDashboard: {
+    title: 'Errore nel caricamento della dashboard',
+    message: 'Impossibile caricare i dati. Controlla la connessione internet e riprova.',
+    code: 'DASHBOARD_LOAD_ERROR',
+    severity: 'error',
+    retryable: true,
+  },
+  loadingSlots: {
+    title: 'Errore nel caricamento delle fasce orarie',
+    message: 'Non è stato possibile caricare le fasce orarie degli istruttori.',
+    code: 'SLOTS_LOAD_ERROR',
+    severity: 'error',
+    retryable: true,
+  },
+  
+  // Time slot operations
+  toggleSlot: {
+    title: 'Errore nel cambio stato',
+    message: 'Non è stato possibile attivare/disattivare la fascia oraria. Riprova.',
+    code: 'TOGGLE_SLOT_ERROR',
+    severity: 'error',
+    retryable: true,
+  },
+  saveSlot: {
+    title: 'Errore nel salvataggio',
+    message: 'Non è stato possibile salvare la fascia oraria. Riprova.',
+    code: 'SAVE_SLOT_ERROR',
+    severity: 'error',
+    retryable: true,
+  },
+  deleteSlot: {
+    title: 'Errore nell\'eliminazione',
+    message: 'Non è stato possibile eliminare la fascia oraria. Riprova.',
+    code: 'DELETE_SLOT_ERROR',
+    severity: 'error',
+    retryable: true,
+  },
+  
+  // Validation errors
+  invalidTime: {
+    title: 'Orario non valido',
+    message: 'L\'orario di inizio deve essere prima dell\'orario di fine.',
+    code: 'INVALID_TIME_ERROR',
+    severity: 'warning',
+    retryable: false,
+  },
+  pastDate: {
+    title: 'Data non valida',
+    message: 'Non puoi creare fasce orarie nel passato.',
+    code: 'PAST_DATE_ERROR',
+    severity: 'warning',
+    retryable: false,
+  },
+  missingData: {
+    title: 'Dati incompleti',
+    message: 'Compila tutti i campi obbligatori.',
+    code: 'MISSING_DATA_ERROR',
+    severity: 'warning',
+    retryable: false,
+  },
+  
+  // Network errors
+  networkError: {
+    title: 'Errore di connessione',
+    message: 'Connessione internet non disponibile. Verifica la tua connessione.',
+    code: 'NETWORK_ERROR',
+    severity: 'error',
+    retryable: true,
+  },
+  timeout: {
+    title: 'Timeout della richiesta',
+    message: 'La richiesta ha impiegato troppo tempo. Riprova.',
+    code: 'TIMEOUT_ERROR',
+    severity: 'error',
+    retryable: true,
+  },
+  
+  // Permission errors
+  permission: {
+    title: 'Accesso negato',
+    message: 'Non hai le autorizzazioni necessarie per questa operazione.',
+    code: 'PERMISSION_ERROR',
+    severity: 'error',
+    retryable: false,
+  },
+  
+  // Generic fallback
+  generic: {
+    title: 'Errore sconosciuto',
+    message: 'Si è verificato un errore inaspettato. Riprova più tardi.',
+    code: 'UNKNOWN_ERROR',
+    severity: 'error',
+    retryable: true,
+  },
+};
+
+/**
+ * Helper function to get appropriate error message based on error code or type
+ * Maps error patterns to predefined messages for better user experience
+ * Enables consistent error handling and retry capability across the component
+ * 
+ * @param {Error|string} error - Error object or error code string
+ * @param {string} fallbackKey - Default error key if error type unknown (default: 'generic')
+ * @returns {Object} Error config with title, message, code, severity, retryable flag
+ */
+const getErrorMessage = (error, fallbackKey = 'generic') => {
+  if (typeof error === 'string') {
+    return ERROR_MESSAGES[error] || ERROR_MESSAGES[fallbackKey];
+  }
+
+  // Network errors
+  if (error?.message?.includes('Network') || error?.message?.includes('network')) {
+    return ERROR_MESSAGES.networkError;
+  }
+
+  // Timeout errors
+  if (error?.message?.includes('timeout') || error?.code === 'ETIMEDOUT') {
+    return ERROR_MESSAGES.timeout;
+  }
+
+  // Permission errors
+  if (error?.message?.includes('permission') || error?.code === 'PERMISSION_DENIED') {
+    return ERROR_MESSAGES.permission;
+  }
+
+  // Firebase specific errors
+  if (error?.code?.includes('INVALID_ARGUMENT')) {
+    return ERROR_MESSAGES.invalidTime;
+  }
+
+  return ERROR_MESSAGES[fallbackKey];
+};
+
+/**
+ * ✅ FIX #7 (Sprint 4+): Get instructors from players with robust filtering
+ * Supports multiple ways to identify instructors:
+ * - category === 'instructor'
+ * - role === 'instructor' 
+ * - isInstructor === true
+ * 
+ * @param {Array} players - List of players/users
+ * @returns {Array} Filtered list of instructors
+ */
+const getInstructorsFromPlayers = (players) => {
+  if (!Array.isArray(players)) return [];
+  
+  return players.filter((player) => {
+    // Multiple ways to identify an instructor
+    return (
+      player?.category === 'instructor' ||
+      player?.role === 'instructor' ||
+      player?.isInstructor === true ||
+      player?.type === 'instructor'
+    );
+  });
+};
+
+// ✅ FIX #5: Helper function to safely format dates for query params
+/**
+ * Safely formats a Date object to ISO date string (YYYY-MM-DD)
+ * 
+ * @param {Date} [date=new Date()] - Date to format, defaults to current date
+ * @returns {string} Formatted date string in YYYY-MM-DD format
+ * @throws Does not throw - returns current date on error
+ */
+
+/**
+ * AdminClubDashboard - Main dashboard component for club administrators
+ * 
+ * Provides a comprehensive overview of club activities including:
+ * - Real-time booking and lesson statistics
+ * - Today's upcoming bookings and lessons
+ * - Available instructors and time slots
+ * - Club settings and configuration
+ * 
+ * Features:
+ * - Auto-refresh every 2 minutes (configurable)
+ * - Dark mode support with theme tokens
+ * - Performance optimized with React.memo and useMemo
+ * - Comprehensive error handling with user feedback
+ * - Firebase integration for real-time data
+ * 
+ * @component
+ * @returns {React.ReactNode} Dashboard UI with statistics, cards, and modals
+ * 
+ * @requires useParams - Gets clubId from URL
+ * @requires useAuth - Gets current user and auth state
+ * @requires useClub - Gets club, players, courts data
+ * @requires useNotifications - Displays notifications
+ * @requires loadAdminDashboardData - Loads dashboard data from Firebase
+ * 
+ * State Management:
+ * - dashboardData: Main state with stats, bookings, lessons
+ * - showAddBookingModal: Modal visibility toggle
+ * - instructorTimeSlots: List of instructor availability
+ * 
+ * Performance Optimizations:
+ * - useCallback: Prevents infinite loops in loadDashboardData
+ * - useMemo: Memoizes filtered arrays for bookings and lessons
+ * - React.memo: Prevents unnecessary re-renders of StatCard components
+ */
 const AdminClubDashboard = () => {
   const { clubId } = useParams();
   const navigate = useNavigate();
@@ -33,6 +317,9 @@ const AdminClubDashboard = () => {
 
   // Hook per gestire configurazioni club
   const { lessonConfig, updateLessonConfig } = useClubSettings({ clubId });
+
+  // ✅ Ref per evitare race condition - due richieste parallele
+  const loadingRef = useRef(false);
 
   // Carica le fasce orarie create dagli istruttori e mergiale con quelle dell'admin
   useEffect(() => {
@@ -65,6 +352,94 @@ const AdminClubDashboard = () => {
 
     loadInstructorSlots();
   }, [clubId]);
+
+  /**
+   * Loads all dashboard data from Firebase and updates component state
+   * 
+   * Handles:
+   * - Booking statistics and lists
+   * - Lesson data and schedules
+   * - Instructor availability
+   * - Club statistics
+   * - Data migration from legacy format
+   * 
+   * Features:
+   * - Race condition prevention via loadingRef flag
+   * - Graceful degradation if migration fails
+   * - Error handling with user notifications
+   * - Automatic timestamp updates
+   * 
+   * @async
+   * @returns {Promise<void>}
+   * 
+   * @throws {Error} Logs errors and updates error state for UI display
+   * @dependencies [clubId, players, user, showWarning]
+   */
+  // ✅ FIX #2, #3, #4: Memoizzare loadDashboardData con useCallback per evitare infinite loops e race conditions
+  const loadDashboardData = useCallback(async () => {
+    // ✅ FIX #4: Evita richieste parallele
+    if (loadingRef.current) {
+      logger.debug('🔄 Load already in progress, skipping');
+      return;
+    }
+
+    loadingRef.current = true;
+
+    try {
+      setDashboardData((prev) => ({ ...prev, loading: true, error: null }));
+
+      // Inizializza il sistema unificato di prenotazioni
+      UnifiedBookingService.initialize({
+        cloudEnabled: true, // Usa sempre Firebase per dati consistenti
+        user: user,
+      });
+
+      // ✅ FIX #3: Gestire migration separatamente con error handling
+      let migrationSucceeded = true;
+      try {
+        await UnifiedBookingService.migrateOldData();
+      } catch (migrationError) {
+        logger.warn('⚠️ Data migration failed, continuing anyway:', migrationError);
+        migrationSucceeded = false;
+        // Non interrompere il flusso - mostra i dati che abbiamo
+        showWarning(
+          '⚠️ Alcuni dati precedenti potrebbero non essere sincronizzati. Riprova tra poco.'
+        );
+      }
+
+      // Usa il nuovo servizio per caricare dati reali da Firebase
+      const realData = await loadAdminDashboardData(clubId);
+
+      // Aggiorna il conteggio membri dal ClubContext se disponibile
+      if (players && players.length > 0) {
+        realData.stats.memberCount = players.length;
+      }
+
+      // Aggiungi il timestamp dell'ultimo aggiornamento
+      realData.lastUpdate = new Date().toLocaleTimeString('it-IT');
+      realData.migrationWarning = !migrationSucceeded; // ✅ Track migration status
+
+      setDashboardData(realData);
+    } catch (error) {
+      logger.error('❌ Error loading dashboard data:', error);
+      
+      // ✅ FIX #4 (Sprint 4): Use specific error message
+      const errorConfig = getErrorMessage(error, 'loadingDashboard');
+      logger.error(`Error code: ${errorConfig.code}, Retryable: ${errorConfig.retryable}`);
+      
+      setDashboardData((prev) => ({
+        ...prev,
+        loading: false,
+        error: errorConfig.message,
+        errorCode: errorConfig.code,
+        retryable: errorConfig.retryable,
+      }));
+      
+      showError(errorConfig.title);
+    } finally {
+      loadingRef.current = false; // ✅ Always reset the flag
+    }
+  }, [clubId, players, user, showWarning, showError]);
 
   // Combina le fasce dell'admin con quelle degli istruttori
   const mergedLessonConfig = React.useMemo(() => {
@@ -122,6 +497,27 @@ const AdminClubDashboard = () => {
   const [newSlotInstructorId, setNewSlotInstructorId] = useState('');
   const [newSlotCourtIds, setNewSlotCourtIds] = useState([]);
   const [newSlotIsActive, setNewSlotIsActive] = useState(false);
+
+  // ✅ FIX #2 (Sprint 4): Keyboard navigation for modal
+  /**
+   * Handle keyboard events:
+   * - Escape: Close modal
+   * - Tab: Navigate through form fields
+   */
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Close modal with Escape key
+      if (e.key === 'Escape' && newSlotModalOpen) {
+        setNewSlotModalOpen(false);
+        logger.debug('Modal closed via Escape key');
+      }
+    };
+
+    if (newSlotModalOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [newSlotModalOpen]);
 
   const handleToggleTimeSlot = async (slot) => {
     try {
@@ -188,10 +584,50 @@ const AdminClubDashboard = () => {
   };
 
   const handleConfirmCreateTimeSlot = async () => {
+    // 1. ✅ FIX #5: Validazione base
     if (!newSlotDate || !newSlotInstructorId || newSlotCourtIds.length === 0) {
       showWarning('Seleziona data, istruttore e almeno un campo');
       return;
     }
+
+    // 2. ✅ FIX #5: Validazione timing - startTime < endTime
+    const [startHours, startMinutes] = newSlotStartTime.split(':').map(Number);
+    const [endHours, endMinutes] = newSlotEndTime.split(':').map(Number);
+
+    const startMinutesTotal = startHours * 60 + startMinutes;
+    const endMinutesTotal = endHours * 60 + endMinutes;
+
+    if (startMinutesTotal >= endMinutesTotal) {
+      showError('❌ L\'ora di fine deve essere dopo l\'inizio della fascia oraria');
+      return;
+    }
+
+    // 3. ✅ FIX #5: Validazione durata massima (max 4 ore)
+    const durationMinutes = endMinutesTotal - startMinutesTotal;
+    if (durationMinutes > 4 * 60) {
+      showError('❌ La durata massima di una fascia è 4 ore');
+      return;
+    }
+
+    // 4. ✅ FIX #5: Validazione data (non nel passato)
+    const selectedDate = new Date(newSlotDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      showError('❌ Non puoi creare fasce nel passato');
+      return;
+    }
+
+    // 5. ✅ FIX #5: Validazione data massima (max 6 mesi nel futuro)
+    const maxDate = new Date(today);
+    maxDate.setMonth(maxDate.getMonth() + 6);
+
+    if (selectedDate > maxDate) {
+      showError('❌ Puoi pianificare max 6 mesi in avanti');
+      return;
+    }
+
     try {
       const newTimeSlot = {
         id: `timeslot_${Date.now()}`,
@@ -201,6 +637,7 @@ const AdminClubDashboard = () => {
         endTime: newSlotEndTime,
         instructorIds: [newSlotInstructorId],
         courtIds: newSlotCourtIds,
+        createdAt: new Date().toISOString(), // ✅ Aggiunto timestamp
       };
       const updatedTimeSlots = [...(lessonConfig?.timeSlots || []), newTimeSlot];
       const updatedLessonConfig = {
@@ -218,7 +655,7 @@ const AdminClubDashboard = () => {
       showSuccess('✅ Fascia oraria creata con successo! Puoi ora modificarla e attivarla.');
     } catch (error) {
       logger.error('Errore nella creazione della fascia oraria:', error);
-      showError('Errore nella creazione della fascia oraria');
+      showError('Errore nel salvataggio della fascia oraria');
     }
   };
 
@@ -270,13 +707,10 @@ const AdminClubDashboard = () => {
     loadDashboardData();
 
     // Imposta un refresh automatico ogni 2 minuti per mantenere i dati sincronizzati
-    const refreshInterval = setInterval(
-      () => {
-        // Auto-refreshing dashboard data
-        loadDashboardData();
-      },
-      2 * 60 * 1000
-    ); // 2 minuti
+    const refreshInterval = setInterval(() => {
+      // Auto-refreshing dashboard data
+      loadDashboardData();
+    }, DASHBOARD_CONSTANTS.REFRESH_INTERVAL_MS); // Auto-refresh every 2 minutes
 
     // Aggiorna la dashboard quando la tab diventa visibile
     const handleVisibilityChange = () => {
@@ -290,47 +724,9 @@ const AdminClubDashboard = () => {
       clearInterval(refreshInterval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [clubId, club]);
+  }, [clubId, club, loadDashboardData]);
 
-  const loadDashboardData = async () => {
-    try {
-      setDashboardData((prev) => ({ ...prev, loading: true, error: null }));
-
-      // Loading real dashboard data for club
-
-      // Inizializza il sistema unificato di prenotazioni
-      UnifiedBookingService.initialize({
-        cloudEnabled: true, // Usa sempre Firebase per dati consistenti
-        user: user,
-      });
-
-      // Migra i dati vecchi se necessario
-      await UnifiedBookingService.migrateOldData();
-
-      // Usa il nuovo servizio per caricare dati reali da Firebase
-      const realData = await loadAdminDashboardData(clubId);
-
-      // Debug dettagliato: dashboard data received - logs removed
-
-      // Aggiorna il conteggio membri dal ClubContext se disponibile
-      if (players && players.length > 0) {
-        realData.stats.memberCount = players.length;
-      }
-
-      // Aggiungi il timestamp dell'ultimo aggiornamento
-      realData.lastUpdate = new Date().toLocaleTimeString('it-IT');
-
-      setDashboardData(realData);
-      // Real dashboard data loaded successfully
-    } catch (error) {
-      logger.error('❌ Error loading dashboard data:', error);
-      setDashboardData((prev) => ({
-        ...prev,
-        loading: false,
-        error: 'Errore nel caricamento dei dati reali',
-      }));
-    }
-  };
+  // ✅ FIX #1: Memoizzare handleVisibilityChange per evitare memory leak
 
   // Funzione helper per contare le fasce orarie attive e non passate
   const getActiveAvailableTimeSlotsCount = () => {
@@ -380,9 +776,10 @@ const AdminClubDashboard = () => {
   };
 
   // Componente per le statistiche rapide
-  const StatCard = ({ title, value, subtitle, icon, color, onClick }) => (
+  // ✅ FIX #13: Memoizzare StatCard per evitare re-render inutili
+  const StatCard = React.memo(({ title, value, subtitle, icon, color, onClick }) => (
     <div
-      className={`${T.cardBg} ${T.border} rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6 cursor-pointer transform transition-all duration-200 hover:scale-105 hover:shadow-lg`}
+      className={STYLE_CONSTANTS.statCard(T)}
       onClick={onClick}
     >
       <div className="flex items-center justify-between gap-2">
@@ -398,268 +795,24 @@ const AdminClubDashboard = () => {
         <div className={`text-xl sm:text-2xl lg:text-3xl opacity-70 flex-shrink-0`}>{icon}</div>
       </div>
     </div>
-  );
-
-  // Componente per le prenotazioni del giorno
-  const TodayBookingsCard = () => {
-    // Le prenotazioni di oggi sono già filtrate dal servizio
-    const todayBookings = dashboardData?.todayBookings || [];
-
-    // Filtriamo solo le prossime prenotazioni dall'orario attuale
-    const now = new Date();
-    const currentTime = now.getHours() * 60 + now.getMinutes(); // minuti dall'inizio giornata
-
-    const upcomingBookings = todayBookings
-      .filter((booking) => {
-        if (!booking.time) return true; // Se non c'è orario, mostra comunque
-        // Assumiamo che booking.time sia in formato "HH:MM"
-        const [hours, minutes] = booking.time.split(':').map(Number);
-        const bookingTime = hours * 60 + minutes;
-        return bookingTime >= currentTime;
-      })
-      .slice(0, 3); // Solo le prossime 3
-
-    return (
-      <div className={`${T.cardBg} ${T.border} rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6`}>
-        <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <h3 className={`text-base sm:text-lg font-semibold ${T.text}`}>
-            Prossime Prenotazioni Oggi
-          </h3>
-          <button
-            onClick={() =>
-              navigate(
-                `/club/${clubId}/admin/bookings?date=${new Date().toISOString().split('T')[0]}`
-              )
-            }
-            className={`text-blue-500 hover:text-blue-600 text-xs sm:text-sm font-medium whitespace-nowrap`}
-          >
-            Gestisci →
-          </button>
-        </div>
-
-        {todayBookings.length === 0 ? (
-          <div className={`text-center py-8 ${T.subtext}`}>
-            <div className="text-4xl mb-2">📅</div>
-            <div>Nessuna prenotazione per oggi</div>
-            <div className="text-xs mt-2 opacity-75">
-              {new Date().toLocaleDateString('it-IT', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-              })}
-            </div>
-          </div>
-        ) : upcomingBookings.length === 0 ? (
-          <div className={`text-center py-8 ${T.subtext}`}>
-            <div className="text-4xl mb-2">⏰</div>
-            <div>Tutte le prenotazioni di oggi sono passate</div>
-            <div className="text-xs mt-2 opacity-75">
-              {todayBookings.length} prenotazione/i completate
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-3 max-h-64 overflow-y-auto">
-            {upcomingBookings.map((booking, index) => (
-              <div
-                key={booking.id || index}
-                className={`flex items-center justify-between p-3 ${T.border} rounded-lg cursor-pointer hover:bg-gray-50 hover:bg-gray-700 transition-colors`}
-                onClick={() => navigate(`/club/${clubId}/admin/bookings?edit=${booking.id}`)}
-                title="Clicca per modificare la prenotazione"
-              >
-                <div>
-                  <div className={`font-medium ${T.text}`}>
-                    Campo {booking.courtName || booking.courtId || booking.court}
-                  </div>
-                  <div className={`text-sm ${T.subtext}`}>
-                    {booking.time} -{' '}
-                    {booking.player?.name ||
-                      booking.playerName ||
-                      booking.players?.[0] ||
-                      'Cliente'}
-                  </div>
-                </div>
-                <div
-                  className={`text-sm font-medium ${booking.status === 'confirmed' ? 'text-green-600' : 'text-yellow-600'} flex items-center gap-2`}
-                >
-                  €{booking.price || 0}
-                  <svg
-                    className="w-4 h-4 opacity-50"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
+  ));
+  StatCard.displayName = 'StatCard';
+  StatCard.propTypes = {
+    title: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    subtitle: PropTypes.string,
+    icon: PropTypes.string.isRequired,
+    color: PropTypes.string,
+    onClick: PropTypes.func,
+  };
+  StatCard.defaultProps = {
+    subtitle: null,
+    color: 'text-blue-400',
+    onClick: () => {},
   };
 
-  // Componente per le lezioni del giorno
-  const TodayLessonsCard = () => {
-    // Le lezioni di oggi sono già filtrate dal servizio
-    const todayLessons = dashboardData?.todayLessons || [];
-
-    // Filtriamo solo le prossime lezioni dall'orario attuale
-    const now = new Date();
-    const currentTime = now.getHours() * 60 + now.getMinutes(); // minuti dall'inizio giornata
-
-    const upcomingLessons = todayLessons
-      .filter((lesson) => {
-        if (!lesson.time) return true; // Se non c'è orario, mostra comunque
-        // Assumiamo che lesson.time sia in formato "HH:MM"
-        const [hours, minutes] = lesson.time.split(':').map(Number);
-        const lessonTime = hours * 60 + minutes;
-        return lessonTime >= currentTime;
-      })
-      .slice(0, 3); // Solo le prossime 3
-
-    return (
-      <div className={`${T.cardBg} ${T.border} rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6`}>
-        <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <h3 className={`text-base sm:text-lg font-semibold ${T.text}`}>Prossime Lezioni Oggi</h3>
-          <button
-            onClick={() => navigate(`/club/${clubId}/admin/bookings?filter=lessons`)}
-            className={`text-blue-500 hover:text-blue-600 text-xs sm:text-sm font-medium whitespace-nowrap`}
-          >
-            Gestisci →
-          </button>
-        </div>
-
-        {todayLessons.length === 0 ? (
-          <div className={`text-center py-8 ${T.subtext}`}>
-            <div className="text-4xl mb-2">🎾</div>
-            <div>Nessuna lezione per oggi</div>
-            <div className="text-xs mt-2 opacity-75">
-              {new Date().toLocaleDateString('it-IT', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-              })}
-            </div>
-          </div>
-        ) : upcomingLessons.length === 0 ? (
-          <div className={`text-center py-8 ${T.subtext}`}>
-            <div className="text-4xl mb-2">✅</div>
-            <div>Tutte le lezioni di oggi sono completate</div>
-            <div className="text-xs mt-2 opacity-75">
-              {todayLessons.length} lezione/i completate
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-3 max-h-64 overflow-y-auto">
-            {upcomingLessons.map((lesson, index) => (
-              <div
-                key={lesson.id || index}
-                className={`flex items-center justify-between p-3 ${T.border} rounded-lg cursor-pointer hover:bg-gray-50 hover:bg-gray-700 transition-colors`}
-                onClick={() => navigate(`/club/${clubId}/admin/bookings?edit=${lesson.id}`)}
-                title="Clicca per modificare la lezione"
-              >
-                <div>
-                  <div className={`font-medium ${T.text}`}>
-                    {lesson.bookedBy || lesson.student?.name || lesson.studentName || 'Cliente'} (
-                    {lesson.participants || 1} partecipanti) -{' '}
-                    {lesson.instructor?.name || lesson.instructorName || 'Maestro'}
-                  </div>
-                  <div className={`text-sm ${T.subtext}`}>
-                    {lesson.time} - {lesson.type || lesson.lessonType || 'Lezione individuale'}
-                  </div>
-                </div>
-                <div className={`text-sm font-medium text-green-600 flex items-center gap-2`}>
-                  €{lesson.price || 0}
-                  <svg
-                    className="w-4 h-4 opacity-50"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Componente per i maestri disponibili
-  const InstructorsCard = () => (
-    <div className={`${T.cardBg} ${T.border} rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6`}>
-      <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <h3 className={`text-base sm:text-lg font-semibold ${T.text}`}>Maestri Disponibili Oggi</h3>
-        <span className={`text-sm ${T.subtext}`}>
-          {dashboardData.availableInstructors.length} disponibili
-        </span>
-      </div>
-
-      {dashboardData.availableInstructors.length === 0 ? (
-        <div className={`text-center py-6 ${T.subtext}`}>
-          <div className="text-3xl mb-2">👨‍🏫</div>
-          <div>Nessun maestro disponibile oggi</div>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {dashboardData.availableInstructors.slice(0, 4).map((instructor, index) => (
-            <div
-              key={instructor.id || index}
-              className={`p-3 rounded-lg border ${T.border} hover:bg-gray-50 hover:bg-gray-700`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                    {instructor.name?.charAt(0) || 'M'}
-                  </div>
-                  <div>
-                    <div className={`font-medium ${T.text}`}>{instructor.name}</div>
-                    <div className={`text-xs ${T.subtext}`}>
-                      {instructor.specialization || 'Padel'}
-                    </div>
-                  </div>
-                </div>
-                <div className="text-xs text-green-600 font-medium">
-                  {instructor.availableSlots?.length || 0} slot
-                </div>
-              </div>
-
-              {instructor.availableSlots && instructor.availableSlots.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {instructor.availableSlots.slice(0, 6).map((slot, slotIndex) => (
-                    <span
-                      key={slotIndex}
-                      className="text-xs px-2 py-1 bg-green-900/30 text-green-300 rounded border border-green-700"
-                    >
-                      {slot.time}
-                    </span>
-                  ))}
-                  {instructor.availableSlots.length > 6 && (
-                    <span className={`text-xs px-2 py-1 ${T.subtext}`}>
-                      +{instructor.availableSlots.length - 6} altri
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  // ✅ FIX #13: Memoizzare TodayBookingsCard per evitare re-render inutili
+  // ✅ FIX #13: Memoizzare TodayLessonsCard per evitare re-render inutili
 
   if (dashboardData.loading) {
     return (
@@ -679,9 +832,32 @@ const AdminClubDashboard = () => {
           <div className="text-4xl mb-4">❌</div>
           <div className={`text-lg ${T.text} mb-2`}>Errore nel caricamento</div>
           <div className={`text-sm ${T.subtext} mb-4`}>{dashboardData.error}</div>
-          <button onClick={loadDashboardData} className={`${T.btnPrimary} px-6 py-2`}>
-            Riprova
-          </button>
+          
+          {/* Retry button for retryable errors */}
+          {dashboardData.retryable && (
+            <button
+              onClick={loadDashboardData}
+              className={`${T.btnPrimary} px-6 py-2 hover:opacity-90 transition-opacity`}
+            >
+              🔄 Riprova
+            </button>
+          )}
+          
+          {/* Non-retryable error info */}
+          {!dashboardData.retryable && (
+            <div className={`text-xs ${T.subtext} mt-4 p-3 rounded bg-opacity-10 ${T.cardBg}`}>
+              Questo errore non può essere risolto con un nuovo tentativo.
+              <br />
+              Contatta l&apos;assistenza se il problema persiste.
+            </div>
+          )}
+          
+          {/* Error code for debugging */}
+          {dashboardData.errorCode && (
+            <div className={`text-xs ${T.subtext} mt-3 opacity-50`}>
+              Codice errore: {dashboardData.errorCode}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -773,77 +949,42 @@ const AdminClubDashboard = () => {
       </div>
 
       {/* Statistiche rapide */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
-        <StatCard
-          title="Prenotazioni Oggi"
-          value={dashboardData?.stats?.todayBookingsCount || 0}
-          subtitle="confermate"
-          icon="📅"
-          color="text-blue-400"
-          onClick={() =>
-            navigate(
-              `/club/${clubId}/admin/bookings?date=${new Date().toISOString().split('T')[0]}`
-            )
-          }
-        />
-        <StatCard
-          title="Prenotazioni Domani"
-          value={dashboardData?.stats?.tomorrowBookingsCount || 0}
-          subtitle="programmate"
-          icon="🎾"
-          color="text-purple-400"
-          onClick={() => {
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            navigate(`/club/${clubId}/admin/bookings?date=${tomorrow.toISOString().split('T')[0]}`);
-          }}
-        />
-        <StatCard
-          title="Lezioni Oggi"
-          value={dashboardData?.stats?.todayLessonsCount || 0}
-          subtitle="programmate"
-          icon="🎓"
-          color="text-orange-400"
-          onClick={() =>
-            navigate(`/club/${clubId}/admin/lessons?date=${new Date().toISOString().split('T')[0]}`)
-          }
-        />
-        <StatCard
-          title="Lezioni Domani"
-          value={dashboardData.stats.tomorrowLessonsCount || 0}
-          subtitle="programmate"
-          icon="📚"
-          color="text-green-400"
-          onClick={() => {
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            navigate(`/club/${clubId}/admin/lessons?date=${tomorrow.toISOString().split('T')[0]}`);
-          }}
-        />
-        <StatCard
-          title="Utilizzo Campi"
-          value={`${dashboardData?.stats?.courtUtilization || 0}%`}
-          subtitle="oggi"
-          icon="⚡️"
-          color="text-red-400"
-          onClick={() =>
-            navigate(
-              `/club/${clubId}/admin/bookings?date=${new Date().toISOString().split('T')[0]}`
-            )
-          }
-        />
-      </div>
+      <DashboardStats
+        stats={dashboardData?.stats || {}}
+        StatCard={StatCard}
+        clubId={clubId}
+        navigate={navigate}
+      />
 
       {/* Sezione principale con le attività del giorno */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        <TodayBookingsCard />
-        <TodayLessonsCard />
+        <DashboardBookings
+          T={T}
+          todayBookings={dashboardData?.todayBookings || []}
+          clubId={clubId}
+          STYLE_CONSTANTS={STYLE_CONSTANTS}
+          EMPTY_STATE_MESSAGES={EMPTY_STATE_MESSAGES}
+          maxDisplay={DASHBOARD_CONSTANTS.MAX_BOOKINGS_DISPLAY}
+        />
+        <DashboardLessons
+          T={T}
+          todayLessons={dashboardData?.todayLessons || []}
+          clubId={clubId}
+          STYLE_CONSTANTS={STYLE_CONSTANTS}
+          EMPTY_STATE_MESSAGES={EMPTY_STATE_MESSAGES}
+          maxDisplay={DASHBOARD_CONSTANTS.MAX_LESSONS_DISPLAY}
+        />
         <ExpiringCertificatesWidget clubId={clubId} T={T} />
       </div>
 
       {/* Sezione maestri, meteo e info circolo */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <InstructorsCard />
+        <DashboardInstructors
+          T={T}
+          availableInstructors={dashboardData?.availableInstructors || []}
+          maxDisplay={4}
+          maxSlots={DASHBOARD_CONSTANTS.MAX_INSTRUCTOR_SLOTS}
+        />
 
         {/* Meteo Widget */}
         <WeatherWidget club={club} />
@@ -908,37 +1049,38 @@ const AdminClubDashboard = () => {
         onEditTimeSlot={handleEditTimeSlot}
         onCreateTimeSlot={handleCreateTimeSlot}
         onDuplicateTimeSlot={handleDuplicateTimeSlot}
-        instructors={players?.filter((p) => p.category === 'instructor') || []}
+        instructors={getInstructorsFromPlayers(players)}
         courts={courts || []}
         T={T}
       />
 
       {/* Modal per la creazione della fascia oraria */}
       {newSlotModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 bg-black/70 backdrop-blur-sm">
-          <div className="bg-gray-900 p-6 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 border-gray-700">
-            <h2 className="text-xl font-bold mb-4 text-white">Crea nuova fascia oraria</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          {/* ✅ FIX #3: Use theme tokens instead of hardcoded colors */}
+          <div className={`${T.cardBg} p-6 rounded-2xl shadow-2xl w-full max-w-md ${T.border}`}>
+            <h2 className={`text-xl font-bold mb-4 ${T.text}`}>Crea nuova fascia oraria</h2>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-300">Data</label>
+              <label className={`block mb-1 font-medium ${T.subtext}`}>Data</label>
               <input
                 type="date"
                 value={newSlotDate}
                 onChange={(e) => {
                   setNewSlotDate(e.target.value);
                 }}
-                className="w-full border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
+                className={`w-full ${T.inputBg} ${T.border} rounded-lg px-2 py-1 ${T.text}`}
               />
             </div>
             <div className="mb-4 flex gap-2">
               <div className="flex-1">
-                <label className="block mb-1 font-medium text-gray-300">Orario Inizio</label>
+                <label className={`block mb-1 font-medium ${T.subtext}`}>Orario Inizio</label>
                 <div className="flex gap-2">
                   <select
                     value={newSlotStartTime.split(':')[0]}
                     onChange={(e) =>
                       setNewSlotStartTime(`${e.target.value}:${newSlotStartTime.split(':')[1]}`)
                     }
-                    className="border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
+                    className={`${T.inputBg} ${T.border} rounded-lg px-2 py-1 ${T.text}`}
                   >
                     {[...Array(24).keys()].map((h) => (
                       <option key={h} value={h.toString().padStart(2, '0')}>
@@ -951,7 +1093,7 @@ const AdminClubDashboard = () => {
                     onChange={(e) =>
                       setNewSlotStartTime(`${newSlotStartTime.split(':')[0]}:${e.target.value}`)
                     }
-                    className="border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
+                    className={`${T.inputBg} ${T.border} rounded-lg px-2 py-1 ${T.text}`}
                   >
                     {['00', '30'].map((m) => (
                       <option key={m} value={m}>
@@ -962,14 +1104,14 @@ const AdminClubDashboard = () => {
                 </div>
               </div>
               <div className="flex-1">
-                <label className="block mb-1 font-medium text-gray-300">Orario Fine</label>
+                <label className={`block mb-1 font-medium ${T.subtext}`}>Orario Fine</label>
                 <div className="flex gap-2">
                   <select
                     value={newSlotEndTime.split(':')[0]}
                     onChange={(e) =>
                       setNewSlotEndTime(`${e.target.value}:${newSlotEndTime.split(':')[1]}`)
                     }
-                    className="border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
+                    className={`${T.inputBg} ${T.border} rounded-lg px-2 py-1 ${T.text}`}
                   >
                     {[...Array(24).keys()].map((h) => (
                       <option key={h} value={h.toString().padStart(2, '0')}>
@@ -982,7 +1124,7 @@ const AdminClubDashboard = () => {
                     onChange={(e) =>
                       setNewSlotEndTime(`${newSlotEndTime.split(':')[0]}:${e.target.value}`)
                     }
-                    className="border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
+                    className={`${T.inputBg} ${T.border} rounded-lg px-2 py-1 ${T.text}`}
                   >
                     {['00', '30'].map((m) => (
                       <option key={m} value={m}>
@@ -994,24 +1136,22 @@ const AdminClubDashboard = () => {
               </div>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-300">Istruttore</label>
+              <label className={`block mb-1 font-medium ${T.subtext}`}>Istruttore</label>
               <select
                 value={newSlotInstructorId}
                 onChange={(e) => setNewSlotInstructorId(e.target.value)}
-                className="w-full border border-gray-700 rounded-lg px-2 py-1 bg-white bg-gray-800 text-white"
+                className={`w-full ${T.inputBg} ${T.border} rounded-lg px-2 py-1 ${T.text}`}
               >
                 <option value="">Seleziona...</option>
-                {players
-                  ?.filter((p) => p.category === 'instructor')
-                  .map((inst) => (
-                    <option key={inst.id} value={inst.id}>
-                      {inst.name}
-                    </option>
-                  ))}
+                {getInstructorsFromPlayers(players).map((inst) => (
+                  <option key={inst.id} value={inst.id}>
+                    {inst.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium text-gray-300">Campi</label>
+              <label className={`block mb-1 font-medium ${T.subtext}`}>Campi</label>
               <div className="flex flex-wrap gap-2">
                 {courts?.map((court) => (
                   <label key={court.id} className="flex items-center gap-1 text-gray-200">

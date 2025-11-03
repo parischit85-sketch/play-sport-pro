@@ -13,6 +13,7 @@ import { useClub } from '@contexts/ClubContext.jsx';
 import ClubAdminProfile from './ClubAdminProfile.jsx';
 import PushNotificationPanel from '@components/debug/PushNotificationPanel.jsx';
 import CertificateExpiryAlert from './CertificateExpiryAlert.jsx';
+import UserGDPRPanel from './UserGDPRPanel.jsx';
 
 export default function Profile({ T }) {
   const { showSuccess, showError, confirm } = useNotifications();
@@ -85,6 +86,7 @@ export default function Profile({ T }) {
     birthDate: '',
     address: '',
   });
+  const [userProfile, setUserProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -94,6 +96,7 @@ export default function Profile({ T }) {
       if (user) {
         const data = await getUserProfile(user.uid);
         if (active) {
+          setUserProfileData(data);
           setForm((f) => ({
             ...f,
             firstName: data.firstName || '',
@@ -481,6 +484,17 @@ export default function Profile({ T }) {
           )}
         </div>
       </Section>
+
+      {/* GDPR - Export & Delete Data */}
+      {userProfile && clubId && (
+        <Section title="Protezione Dati (GDPR) 🔒" T={T}>
+          <UserGDPRPanel 
+            user={user} 
+            userProfile={userProfile} 
+            clubId={clubId} 
+          />
+        </Section>
+      )}
     </div>
   );
 }

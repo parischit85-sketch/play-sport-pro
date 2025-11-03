@@ -115,5 +115,10 @@ export function themeTokens() {
     // Cards unificati
     card: `${THEME_CONSTANTS.borderRadius.lg} bg-gray-800 ring-1 ring-gray-600/50 ${THEME_CONSTANTS.spacing.md} ${THEME_CONSTANTS.shadows.card}`,
     cardHover: `${THEME_CONSTANTS.borderRadius.lg} bg-gray-800 ring-1 ring-gray-600/50 ${THEME_CONSTANTS.spacing.md} ${THEME_CONSTANTS.shadows.md} hover:shadow-lg ${THEME_CONSTANTS.transitions.normal}`,
+    
+    // ✅ FIX #4 (Sprint 3): Dark mode hover states (removes conflicting light mode classes)
+    hoverBg: 'hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors',
+    hoverBgSubtle: 'hover:bg-gray-700/50 dark:hover:bg-gray-700/50 transition-colors',
+    inputBg: 'bg-gray-700 dark:bg-gray-700',
   };
 }
