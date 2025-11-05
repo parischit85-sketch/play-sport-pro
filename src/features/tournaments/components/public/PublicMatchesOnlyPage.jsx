@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Filter, Calendar, Trophy, Flame, Clock, ArrowLeft, Loader } from 'lucide-react';
-import { DS_ANIMATIONS } from '../../../../shared/theme/design-system';
-import { themeTokens } from '../../../../shared/theme/theme-tokens';
+import { DS_ANIMATIONS } from '../../../../lib/design-system';
 import PublicMatchCard from './PublicMatchCard';
 
 /**
@@ -10,9 +9,8 @@ import PublicMatchCard from './PublicMatchCard';
  * Layout ottimizzato per tornei in modalità "solo partite"
  */
 function PublicMatchesOnlyPage() {
-  const { clubId, tournamentId } = useParams();
+  const { clubId, tournamentId, token } = useParams();
   const navigate = useNavigate();
-  const T = themeTokens();
 
   const [tournament, setTournament] = useState(null);
   const [teams, setTeams] = useState([]);
@@ -32,7 +30,7 @@ function PublicMatchesOnlyPage() {
       setError(null);
 
       const { getTournament } = await import('../../services/tournamentService');
-      const { getTeams } = await import('../../services/teamService');
+      const { getTeamsByTournament } = await import('../../services/teamsService');
       const { getMatches } = await import('../../services/matchService');
 
       // Carica torneo
@@ -43,7 +41,7 @@ function PublicMatchesOnlyPage() {
       setTournament(tournamentData);
 
       // Carica squadre
-      const teamsData = await getTeams(clubId, tournamentId);
+      const teamsData = await getTeamsByTournament(clubId, tournamentId);
       setTeams(teamsData || []);
 
       // Carica partite
@@ -139,7 +137,7 @@ function PublicMatchesOnlyPage() {
   return (
     <div className="min-h-screen bg-gray-950">
       {/* Header */}
-      <div className={`${T.cardBg} border-b border-gray-800 sticky top-0 z-40 shadow-xl`}>
+      <div className="bg-gray-800 border-b border-gray-800 sticky top-0 z-40 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 py-6">
           {/* Back Button & Title */}
           <div className="flex items-center gap-4 mb-6">
@@ -220,7 +218,7 @@ function PublicMatchesOnlyPage() {
 
       {/* Footer con Stats */}
       {matches.length > 0 && (
-        <div className={`${T.cardBg} border-t border-gray-800 mt-12`}>
+        <div className="bg-gray-800 border-t border-gray-800 mt-12">
           <div className="max-w-7xl mx-auto px-4 py-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <div className="text-center">
