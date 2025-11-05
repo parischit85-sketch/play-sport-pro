@@ -14,6 +14,7 @@ import { Trophy, AlertCircle, ChevronLeft, ChevronRight, Medal } from 'lucide-re
 import TournamentStandings from '../standings/TournamentStandings.jsx';
 import TournamentMatches from '../matches/TournamentMatches.jsx';
 import TournamentBracket from '../knockout/TournamentBracket.jsx';
+import PublicMatchCard from './PublicMatchCard.jsx';
 import { getMatches } from '../../services/matchService.js';
 import { getTeamsByTournament } from '../../services/teamsService.js';
 import { calculateGroupStandings } from '../../services/standingsService.js';
@@ -60,6 +61,8 @@ function PublicTournamentView() {
   const [showSwipeHint, setShowSwipeHint] = useState(true);
   const [groupData, setGroupData] = useState({});
   const [progress, setProgress] = useState(0);
+  const [allMatches, setAllMatches] = useState([]);
+  const [allTeams, setAllTeams] = useState([]);
 
   // const intervalRef = useRef(null);
   // const progressIntervalRef = useRef(null);
@@ -194,6 +197,10 @@ function PublicTournamentView() {
         getTeamsByTournament(clubId, tournamentId),
       ]);
 
+      // Save all matches and teams for matches-only view
+      setAllMatches(matches);
+      setAllTeams(teams);
+
       // Combine groupIds from matches (type === 'group') and teams
       const groupIdsFromMatches = matches
         .filter((m) => m.type === 'group' && m.groupId)
@@ -244,44 +251,66 @@ function PublicTournamentView() {
   // Create pages based on display settings
   const pages = [];
 
-  // Add group pages if enabled in settings
+  // Add group pages if enabled in settings (only for non-matches_only tournaments)
   const displaySettings = tournament?.publicView?.settings?.displaySettings || {};
-  if (displaySettings.groupsMatches !== false) {
+  if (displaySettings.groupsMatches !== false && tournament?.participantType !== 'matches_only') {
     // Default to true if not set
     pages.push(...groups.map((g) => ({ type: 'group', groupId: g })));
   }
 
-  // Add overall standings page if enabled
-  if (displaySettings.standings === true) {
+  // Add matches-only page if enabled (for tournaments with participantType: matches_only)
+  if (displaySettings.matchesOnly === true && tournament?.participantType === 'matches_only') {
+    pages.push({ type: 'matches-only' });
+  }
+
+  // Add overall standings page if enabled (only for non-matches_only tournaments)
+  if (displaySettings.standings === true && tournament?.participantType !== 'matches_only') {
     pages.push({ type: 'overall-standings' });
   }
 
-  // Add points page if enabled
-  if (displaySettings.points === true) {
+  // Add points page if enabled (only for non-matches_only tournaments)
+  if (displaySettings.points === true && tournament?.participantType !== 'matches_only') {
     pages.push({ type: 'points' });
   }
 
   // Always add QR page at the end
   pages.push({ type: 'qr' });
 
+  // Debug: log pages array
+  console.log('PublicTournamentView - Pages array:', pages);
+  console.log('PublicTournamentView - Tournament participantType:', tournament?.participantType);
+  console.log('PublicTournamentView - Display settings:', displaySettings);
+  console.log('PublicTournamentView - All matches count:', allMatches?.length);
+
   // Handle swipe gestures
+  const touchStartY = useRef(0);
+  const touchEndY = useRef(0);
+
   const handleTouchStart = (e) => {
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
     setShowSwipeHint(false); // Hide hint after first interaction
   };
 
   const handleTouchMove = (e) => {
     touchEndX.current = e.touches[0].clientX;
+    touchEndY.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = () => {
     if (!touchStartX.current || !touchEndX.current) return;
 
-    const swipeDistance = touchStartX.current - touchEndX.current;
+    const swipeDistanceX = touchStartX.current - touchEndX.current;
+    const swipeDistanceY = touchStartY.current - touchEndY.current;
     const minSwipeDistance = 50; // Minimum distance for a swipe
+    
+    // Calculate if swipe is predominantly horizontal
+    const absX = Math.abs(swipeDistanceX);
+    const absY = Math.abs(swipeDistanceY);
+    const isHorizontalSwipe = absX > absY * 1.5; // Horizontal must be 1.5x greater than vertical
 
-    if (Math.abs(swipeDistance) > minSwipeDistance) {
-      if (swipeDistance > 0) {
+    if (absX > minSwipeDistance && isHorizontalSwipe) {
+      if (swipeDistanceX > 0) {
         // Swipe left - next page
         setCurrentPageIndex((prev) => (prev + 1) % pages.length);
         setProgress(0);
@@ -294,6 +323,8 @@ function PublicTournamentView() {
 
     touchStartX.current = 0;
     touchEndX.current = 0;
+    touchStartY.current = 0;
+    touchEndY.current = 0;
   };
 
   // Auto-hide swipe hint after 5 seconds
@@ -415,6 +446,28 @@ function PublicTournamentView() {
               isPublicView={true}
             />
           </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderMatchesOnlyPage = () => {
+    console.log('Rendering matches-only page. Matches:', allMatches?.length, 'Teams:', allTeams?.length);
+    return (
+      <div className="space-y-6">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-white">Partite</h2>
+        </div>
+        <div className="space-y-4">
+          {allMatches && allMatches.length > 0 ? (
+            allMatches.map((match) => (
+              <PublicMatchCard key={match.id} match={match} teams={allTeams} />
+            ))
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-400">Nessuna partita disponibile</p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -560,7 +613,7 @@ function PublicTournamentView() {
       <div className="sticky top-0 z-50 bg-gray-800 border-b border-gray-700">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-start justify-between gap-4">
-            {/* Logo */}
+            {/* Logo Play Sport Pro */}
             <div className="flex items-center">
               <img
                 src="/play-sport-pro_horizontal.svg"
@@ -569,9 +622,18 @@ function PublicTournamentView() {
               />
             </div>
 
-            {/* Tournament name - centered */}
-            <div className="flex-1 text-center">
-              <h1 className="text-lg font-bold text-white leading-tight">{tournament.name}</h1>
+            {/* Tournament Logo and Name - centered */}
+            <div className="flex-1 flex flex-col items-center gap-2">
+              {tournament.logoUrl && (
+                <img 
+                  src={tournament.logoUrl} 
+                  alt="Tournament Logo" 
+                  className="h-12 w-auto object-contain" 
+                />
+              )}
+              <h1 className="text-lg font-bold text-white leading-tight text-center">
+                {tournament.name}
+              </h1>
             </div>
 
             {/* LIVE Badge */}
@@ -668,11 +730,13 @@ function PublicTournamentView() {
               >
                 {currentPage?.type === 'group'
                   ? renderGroupPage(currentPage.groupId)
-                  : currentPage?.type === 'overall-standings'
-                    ? renderBracketPage()
-                    : currentPage?.type === 'points'
-                      ? renderPointsPage()
-                      : renderQRPage()}
+                  : currentPage?.type === 'matches-only'
+                    ? renderMatchesOnlyPage()
+                    : currentPage?.type === 'overall-standings'
+                      ? renderBracketPage()
+                      : currentPage?.type === 'points'
+                        ? renderPointsPage()
+                        : renderQRPage()}
               </motion.div>
             </AnimatePresence>
           </>

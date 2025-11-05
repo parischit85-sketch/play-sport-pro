@@ -17,6 +17,9 @@ import {
   QrCode,
   ChevronDown,
   ChevronUp,
+  Upload,
+  Image as ImageIcon,
+  X,
 } from 'lucide-react';
 import QRCodeReact from 'react-qr-code';
 
@@ -25,12 +28,16 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
   const [copied, setCopied] = useState({ mobile: false, tv: false });
   const [showQR, setShowQR] = useState(false);
   const [groups, setGroups] = useState([]);
+  const [matchesPages, setMatchesPages] = useState([]);
+  const [tournamentName, setTournamentName] = useState(tournament?.name || '');
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const isEnabled = tournament?.publicView?.enabled || false;
 
   // Genera chiavi uniche per il localStorage basate su clubId e tournamentId
   const storageKey = `publicViewExpanded_${clubId}_${tournament?.id}`;
   const groupsStorageKey = `groupsExpanded_${clubId}_${tournament?.id}`;
+  const matchesOnlyStorageKey = `matchesOnlyExpanded_${clubId}_${tournament?.id}`;
 
   // Inizializza lo stato espanso da localStorage o apri se la vista è abilitata
   const getInitialExpandedState = () => {
@@ -61,8 +68,25 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
     }
   };
 
+  // Inizializza lo stato espanso di "Solo Partite" da localStorage
+  const getInitialMatchesOnlyExpandedState = () => {
+    try {
+      const saved = localStorage.getItem(matchesOnlyStorageKey);
+      if (saved !== null) {
+        return JSON.parse(saved);
+      }
+      return false; // Default chiuso
+    } catch (error) {
+      console.error('Error reading from localStorage:', error);
+      return false;
+    }
+  };
+
   const [isExpanded, setIsExpanded] = useState(getInitialExpandedState);
   const [groupsExpanded, setGroupsExpanded] = useState(getInitialGroupsExpandedState);
+  const [matchesOnlyExpanded, setMatchesOnlyExpanded] = useState(
+    getInitialMatchesOnlyExpandedState
+  );
 
   // Salva lo stato in localStorage quando cambia
   useEffect(() => {
@@ -82,12 +106,26 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
     }
   }, [groupsExpanded, groupsStorageKey]);
 
+  // Salva lo stato di "Solo Partite" in localStorage quando cambia
+  useEffect(() => {
+    try {
+      localStorage.setItem(matchesOnlyStorageKey, JSON.stringify(matchesOnlyExpanded));
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
+  }, [matchesOnlyExpanded, matchesOnlyStorageKey]);
+
   // Apri automaticamente se la vista pubblica viene abilitata
   useEffect(() => {
     if (isEnabled && !isExpanded) {
       setIsExpanded(true);
     }
   }, [isEnabled, isExpanded]);
+
+  // Aggiorna il nome quando cambia il torneo
+  useEffect(() => {
+    setTournamentName(tournament?.name || '');
+  }, [tournament?.name]);
 
   // Carica i gironi dal torneo
   useEffect(() => {
@@ -115,6 +153,48 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 
     loadGroups();
   }, [tournament?.id, clubId]);
+
+  // Carica le partite e calcola le pagine per matches_only
+  useEffect(() => {
+    const loadMatchesPages = async () => {
+      if (!tournament?.id || !clubId || tournament?.participantType !== 'matches_only') {
+        setMatchesPages([]);
+        return;
+      }
+
+      try {
+        const matchesRef = collection(
+          db,
+          'clubs',
+          clubId,
+          'tournaments',
+          tournament.id,
+          'matches'
+        );
+        const matchesSnap = await getDocs(matchesRef);
+        const allMatches = matchesSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+        // Dividi le partite in pagine di 4
+        const matchesPerPage = 4;
+        const totalPages = Math.ceil(allMatches.length / matchesPerPage);
+        const pages = [];
+
+        for (let i = 0; i < totalPages; i++) {
+          pages.push({
+            pageIndex: i,
+            pageNumber: i + 1,
+            totalMatches: Math.min(matchesPerPage, allMatches.length - i * matchesPerPage),
+          });
+        }
+
+        setMatchesPages(pages);
+      } catch (error) {
+        console.error('Error loading matches pages:', error);
+      }
+    };
+
+    loadMatchesPages();
+  }, [tournament?.id, clubId, tournament?.participantType]);
 
   const token = tournament?.publicView?.token || '';
   const showQRCode = tournament?.publicView?.showQRCode || false;
@@ -287,6 +367,118 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
     }
   };
 
+  const handleUpdateMatchesPageSettings = async (pageIndex, settings, e) => {
+    if (e) e.stopPropagation();
+    setLoading(true);
+    try {
+      const currentPageSettings = tournament?.publicView?.settings?.matchesPageSettings || {};
+      const newPageSettings = {
+        ...currentPageSettings,
+        [pageIndex]: {
+          ...currentPageSettings[pageIndex],
+          ...settings,
+        },
+      };
+      await updateDoc(doc(db, 'clubs', clubId, 'tournaments', tournament.id), {
+        'publicView.settings.matchesPageSettings': newPageSettings,
+      });
+
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      console.error('Error updating matches page settings:', error);
+      alert('Errore durante laggiornamento delle impostazioni della pagina');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateTournamentName = async (e) => {
+    if (e) e.stopPropagation();
+    const newName = tournamentName.trim();
+    if (!newName) {
+      alert('Il nome del torneo non può essere vuoto');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await updateDoc(doc(db, 'clubs', clubId, 'tournaments', tournament.id), {
+        name: newName,
+      });
+
+      if (onUpdate) onUpdate();
+      alert('Nome torneo aggiornato con successo!');
+    } catch (error) {
+      console.error('Error updating tournament name:', error);
+      alert('Errore durante laggiornamento del nome');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogoUpload = async (e) => {
+    e.stopPropagation();
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate image type
+    if (!file.type.startsWith('image/')) {
+      alert('Per favore seleziona un file immagine');
+      return;
+    }
+
+    // Validate size (max 500KB for Base64 to avoid Firestore 1MB limit)
+    if (file.size > 500 * 1024) {
+      alert('Il file è troppo grande. Dimensione massima: 500KB\n\nSuggerimento: comprimi l\'immagine prima di caricarla.');
+      return;
+    }
+
+    setUploadingLogo(true);
+    try {
+      // Convert image to Base64
+      const reader = new FileReader();
+      const base64Promise = new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const logoUrl = await base64Promise;
+
+      // Save Base64 directly to Firestore
+      await updateDoc(doc(db, 'clubs', clubId, 'tournaments', tournament.id), {
+        logoUrl,
+      });
+
+      if (onUpdate) onUpdate();
+      alert('Logo caricato con successo!');
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      alert('Errore durante il caricamento del logo');
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const handleRemoveLogo = async (e) => {
+    if (e) e.stopPropagation();
+    if (!confirm('Vuoi rimuovere il logo del torneo?')) return;
+
+    setLoading(true);
+    try {
+      await updateDoc(doc(db, 'clubs', clubId, 'tournaments', tournament.id), {
+        logoUrl: null,
+      });
+
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      console.error('Error removing logo:', error);
+      alert('Errore durante la rimozione del logo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const copyToClipboard = async (text, type) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -354,6 +546,90 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 
             {isEnabled && (
               <>
+                {/* Tournament Name and Logo */}
+                <div className="bg-gray-700 rounded-lg p-4 space-y-4">
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <ImageIcon className="w-5 h-5 text-primary-400" />
+                    Nome e Logo Torneo
+                  </h3>
+
+                  {/* Tournament Name */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Nome Torneo
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={tournamentName}
+                        onChange={(e) => setTournamentName(e.target.value)}
+                        className="flex-1 px-3 py-2 bg-gray-600 border border-gray-500 rounded-lg text-white"
+                        placeholder="Nome del torneo"
+                      />
+                      <button
+                        onClick={handleUpdateTournamentName}
+                        disabled={loading || tournamentName.trim() === tournament?.name}
+                        className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Salva Nome
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Tournament Logo */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Logo Torneo
+                    </label>
+                    
+                    {tournament?.logoUrl ? (
+                      <div className="space-y-3">
+                        {/* Logo Preview */}
+                        <div className="flex items-center gap-4 bg-gray-600 rounded-lg p-3">
+                          <img
+                            src={tournament.logoUrl}
+                            alt="Tournament Logo"
+                            className="w-16 h-16 object-contain rounded"
+                          />
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-300">Logo caricato</p>
+                            <p className="text-xs text-gray-400">Verrà visualizzato a sinistra del nome torneo</p>
+                          </div>
+                          <button
+                            onClick={handleRemoveLogo}
+                            disabled={loading}
+                            className="p-2 bg-red-900/20 text-red-400 rounded-lg hover:bg-red-900/30 transition-colors disabled:opacity-50"
+                            title="Rimuovi logo"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="block">
+                          <div className="border-2 border-dashed border-gray-500 rounded-lg p-4 text-center hover:border-primary-500 transition-colors cursor-pointer">
+                            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                            <p className="text-sm text-gray-300 mb-1">
+                              {uploadingLogo ? 'Caricamento in corso...' : 'Clicca per caricare un logo'}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              Formato: Immagine (JPG, PNG, ecc.) - Max 500KB
+                            </p>
+                          </div>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleLogoUpload}
+                            disabled={uploadingLogo}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Public Links */}
                 <div className="space-y-4">
                   {/* Mobile/Smartphone Link */}
@@ -468,142 +744,255 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                       Pagine Pubbliche da visualizzare
                     </div>
                     <div className="space-y-3">
-                      {/* Gironi & Partite - Collassabile */}
-                      <div className="bg-gray-700 rounded-lg overflow-hidden">
-                        {/* Header collassabile */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setGroupsExpanded(!groupsExpanded);
-                          }}
-                          className="w-full flex items-center justify-between p-3 hover:bg-gray-600 transition-colors"
-                          type="button"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-300 font-medium">
-                              Gironi & Partite
-                            </span>
-                            {groups.length > 0 && (
-                              <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 text-xs rounded-full">
-                                {groups.length} {groups.length === 1 ? 'girone' : 'gironi'}
-                              </span>
-                            )}
-                          </div>
-                          {groupsExpanded ? (
-                            <ChevronUp className="w-4 h-4 text-gray-400" />
-                          ) : (
-                            <ChevronDown className="w-4 h-4 text-gray-400" />
-                          )}
-                        </button>
-
-                        {/* Contenuto espandibile */}
-                        {groupsExpanded && (
-                          <div
-                            className="border-t border-gray-600 p-3 space-y-2"
-                            onClick={(e) => e.stopPropagation()}
-                            onKeyDown={(e) => e.stopPropagation()}
-                            role="button"
-                            tabIndex={0}
+                      {/* Gironi & Partite - Collassabile - Solo se NON è matches_only */}
+                      {tournament?.participantType !== 'matches_only' && (
+                        <div className="bg-gray-700 rounded-lg overflow-hidden">
+                          {/* Header collassabile */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setGroupsExpanded(!groupsExpanded);
+                            }}
+                            className="w-full flex items-center justify-between p-3 hover:bg-gray-600 transition-colors"
+                            type="button"
                           >
-                            {groups.length === 0 ? (
-                              <p className="text-sm text-gray-400 text-center py-2">
-                                Nessun girone disponibile
-                              </p>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-gray-300 font-medium">
+                                Gironi & Partite
+                              </span>
+                              {groups.length > 0 && (
+                                <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 text-xs rounded-full">
+                                  {groups.length} {groups.length === 1 ? 'girone' : 'gironi'}
+                                </span>
+                              )}
+                            </div>
+                            {groupsExpanded ? (
+                              <ChevronUp className="w-4 h-4 text-gray-400" />
                             ) : (
-                              groups.map((groupId) => {
-                                const groupSettings =
-                                  tournament?.publicView?.settings?.groupSettings?.[groupId] || {};
-                                const isGroupEnabled = groupSettings.enabled !== false;
-                                const groupInterval =
-                                  groupSettings.interval || pageIntervals.groups || 15;
+                              <ChevronDown className="w-4 h-4 text-gray-400" />
+                            )}
+                          </button>
 
-                                return (
-                                  <div
-                                    key={groupId}
-                                    className="flex items-center gap-3 bg-gray-600 p-2 rounded"
-                                  >
-                                    <label className="flex items-center gap-2 cursor-pointer flex-1">
-                                      <input
-                                        type="checkbox"
-                                        checked={isGroupEnabled}
+                          {/* Contenuto espandibile */}
+                          {groupsExpanded && (
+                            <div
+                              className="border-t border-gray-600 p-3 space-y-2"
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => e.stopPropagation()}
+                              role="button"
+                              tabIndex={0}
+                            >
+                              {groups.length === 0 ? (
+                                <p className="text-sm text-gray-400 text-center py-2">
+                                  Nessun girone disponibile
+                                </p>
+                              ) : (
+                                groups.map((groupId) => {
+                                  const groupSettings =
+                                    tournament?.publicView?.settings?.groupSettings?.[groupId] ||
+                                    {};
+                                  const isGroupEnabled = groupSettings.enabled !== false;
+                                  const groupInterval =
+                                    groupSettings.interval || pageIntervals.groups || 15;
+
+                                  return (
+                                    <div
+                                      key={groupId}
+                                      className="flex items-center gap-3 bg-gray-600 p-2 rounded"
+                                    >
+                                      <label className="flex items-center gap-2 cursor-pointer flex-1">
+                                        <input
+                                          type="checkbox"
+                                          checked={isGroupEnabled}
+                                          onChange={(e) => {
+                                            e.stopPropagation();
+                                            handleUpdateGroupSettings(
+                                              groupId,
+                                              { enabled: e.target.checked },
+                                              e
+                                            );
+                                          }}
+                                          disabled={loading}
+                                          className="w-4 h-4 rounded border-gray-300"
+                                        />
+                                        <span className="text-sm text-gray-300">
+                                          Girone {groupId.toUpperCase()}
+                                        </span>
+                                      </label>
+                                      <select
+                                        value={groupInterval}
                                         onChange={(e) => {
                                           e.stopPropagation();
                                           handleUpdateGroupSettings(
                                             groupId,
-                                            { enabled: e.target.checked },
+                                            { interval: Number(e.target.value) },
                                             e
                                           );
                                         }}
-                                        disabled={loading}
-                                        className="w-4 h-4 rounded border-gray-300"
-                                      />
-                                      <span className="text-sm text-gray-300">
-                                        Girone {groupId.toUpperCase()}
-                                      </span>
-                                    </label>
-                                    <select
-                                      value={groupInterval}
-                                      onChange={(e) => {
-                                        e.stopPropagation();
-                                        handleUpdateGroupSettings(
-                                          groupId,
-                                          { interval: Number(e.target.value) },
-                                          e
-                                        );
-                                      }}
-                                      disabled={loading || !isGroupEnabled}
-                                      className="px-2 py-1 bg-gray-700 border border-gray-500 rounded text-white text-xs min-w-[120px]"
-                                      title={`Intervallo per girone ${groupId.toUpperCase()}`}
-                                    >
-                                      <option value={5}>5 secondi</option>
-                                      <option value={10}>10 secondi</option>
-                                      <option value={15}>15 secondi</option>
-                                      <option value={20}>20 secondi</option>
-                                      <option value={30}>30 secondi</option>
-                                      <option value={45}>45 secondi</option>
-                                      <option value={60}>60 secondi</option>
-                                    </select>
-                                  </div>
-                                );
-                              })
-                            )}
-                          </div>
-                        )}
-                      </div>
+                                        disabled={loading || !isGroupEnabled}
+                                        className="px-2 py-1 bg-gray-700 border border-gray-500 rounded text-white text-xs min-w-[120px]"
+                                        title={`Intervallo per girone ${groupId.toUpperCase()}`}
+                                      >
+                                        <option value={5}>5 secondi</option>
+                                        <option value={10}>10 secondi</option>
+                                        <option value={15}>15 secondi</option>
+                                        <option value={20}>20 secondi</option>
+                                        <option value={30}>30 secondi</option>
+                                        <option value={45}>45 secondi</option>
+                                        <option value={60}>60 secondi</option>
+                                      </select>
+                                    </div>
+                                  );
+                                })
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
 
-                      {/* Tabellone */}
-                      <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">
-                        <label className="flex items-center gap-2 cursor-pointer flex-1">
-                          <input
-                            type="checkbox"
-                            checked={displaySettings.standings || false}
-                            onChange={(e) =>
-                              handleUpdateDisplaySettings({
-                                ...displaySettings,
-                                standings: e.target.checked,
-                              })
-                            }
-                            disabled={loading}
-                            className="w-4 h-4 rounded border-gray-300"
-                          />
-                          <span className="text-sm text-gray-300 font-medium">Tabellone</span>
-                        </label>
-                        <select
-                          value={pageIntervals.standings}
-                          onChange={(e) => handleUpdatePageInterval('standings', e.target.value)}
-                          disabled={loading || !displaySettings.standings}
-                          className="px-3 py-1.5 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm min-w-[140px]"
-                          title="Intervallo per tabellone"
-                        >
-                          <option value={5}>5 secondi</option>
-                          <option value={10}>10 secondi</option>
-                          <option value={15}>15 secondi</option>
-                          <option value={20}>20 secondi</option>
-                          <option value={30}>30 secondi</option>
-                          <option value={45}>45 secondi</option>
-                          <option value={60}>60 secondi</option>
-                        </select>
-                      </div>
+                      {/* Solo Partite - Solo se è matches_only - Collassabile */}
+                      {tournament?.participantType === 'matches_only' && (
+                        <div className="bg-gray-700 rounded-lg overflow-hidden">
+                          {/* Header collassabile */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setMatchesOnlyExpanded(!matchesOnlyExpanded);
+                            }}
+                            className="w-full flex items-center justify-between p-3 hover:bg-gray-600 transition-colors"
+                            type="button"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-gray-300 font-medium">
+                                Solo Partite
+                              </span>
+                              <span className="px-2 py-0.5 bg-fuchsia-500/20 text-fuchsia-300 text-xs rounded-full">
+                                Vista partite
+                              </span>
+                            </div>
+                            {matchesOnlyExpanded ? (
+                              <ChevronUp className="w-4 h-4 text-gray-400" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-gray-400" />
+                            )}
+                          </button>
+
+                          {/* Contenuto espandibile */}
+                          {matchesOnlyExpanded && (
+                            <div
+                              className="border-t border-gray-600 p-3 space-y-2"
+                              onClick={(e) => e.stopPropagation()}
+                              onKeyDown={(e) => e.stopPropagation()}
+                              role="button"
+                              tabIndex={0}
+                            >
+                              {matchesPages.length === 0 ? (
+                                <p className="text-sm text-gray-400 text-center py-2">
+                                  Nessuna partita disponibile
+                                </p>
+                              ) : (
+                                <>
+                                  <p className="text-xs text-gray-400 mb-2">
+                                    {matchesPages.length} {matchesPages.length === 1 ? 'pagina' : 'pagine'} generate (max 4 partite per pagina)
+                                  </p>
+                                  {matchesPages.map((page) => {
+                                    const pageSettings =
+                                      tournament?.publicView?.settings?.matchesPageSettings?.[page.pageIndex] ||
+                                      {};
+                                    const isPageEnabled = pageSettings.enabled !== false;
+                                    const pageInterval = pageSettings.interval || 15;
+
+                                    return (
+                                      <div
+                                        key={page.pageIndex}
+                                        className="flex items-center gap-3 bg-gray-600 p-2 rounded"
+                                      >
+                                        <label className="flex items-center gap-2 cursor-pointer flex-1">
+                                          <input
+                                            type="checkbox"
+                                            checked={isPageEnabled}
+                                            onChange={(e) => {
+                                              e.stopPropagation();
+                                              handleUpdateMatchesPageSettings(
+                                                page.pageIndex,
+                                                { enabled: e.target.checked },
+                                                e
+                                              );
+                                            }}
+                                            disabled={loading}
+                                            className="w-4 h-4 rounded border-gray-300"
+                                          />
+                                          <span className="text-sm text-gray-300">
+                                            Pagina {page.pageNumber} ({page.totalMatches} partite)
+                                          </span>
+                                        </label>
+                                        <select
+                                          value={pageInterval}
+                                          onChange={(e) => {
+                                            e.stopPropagation();
+                                            handleUpdateMatchesPageSettings(
+                                              page.pageIndex,
+                                              { interval: Number(e.target.value) },
+                                              e
+                                            );
+                                          }}
+                                          disabled={loading || !isPageEnabled}
+                                          className="px-2 py-1 bg-gray-700 border border-gray-500 rounded text-white text-xs min-w-[120px]"
+                                          title={`Intervallo per pagina ${page.pageNumber}`}
+                                        >
+                                          <option value={5}>5 secondi</option>
+                                          <option value={10}>10 secondi</option>
+                                          <option value={15}>15 secondi</option>
+                                          <option value={20}>20 secondi</option>
+                                          <option value={30}>30 secondi</option>
+                                          <option value={45}>45 secondi</option>
+                                          <option value={60}>60 secondi</option>
+                                        </select>
+                                      </div>
+                                    );
+                                  })}
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Tabellone - Solo se NON è matches_only */}
+                      {tournament?.participantType !== 'matches_only' && (
+                        <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">
+                          <label className="flex items-center gap-2 cursor-pointer flex-1">
+                            <input
+                              type="checkbox"
+                              checked={displaySettings.standings || false}
+                              onChange={(e) =>
+                                handleUpdateDisplaySettings({
+                                  ...displaySettings,
+                                  standings: e.target.checked,
+                                })
+                              }
+                              disabled={loading}
+                              className="w-4 h-4 rounded border-gray-300"
+                            />
+                            <span className="text-sm text-gray-300 font-medium">Tabellone</span>
+                          </label>
+                          <select
+                            value={pageIntervals.standings}
+                            onChange={(e) => handleUpdatePageInterval('standings', e.target.value)}
+                            disabled={loading || !displaySettings.standings}
+                            className="px-3 py-1.5 bg-gray-600 border border-gray-500 rounded-lg text-white text-sm min-w-[140px]"
+                            title="Intervallo per tabellone"
+                          >
+                            <option value={5}>5 secondi</option>
+                            <option value={10}>10 secondi</option>
+                            <option value={15}>15 secondi</option>
+                            <option value={20}>20 secondi</option>
+                            <option value={30}>30 secondi</option>
+                            <option value={45}>45 secondi</option>
+                            <option value={60}>60 secondi</option>
+                          </select>
+                        </div>
+                      )}
 
                       {/* Punti */}
                       <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">

@@ -70,6 +70,9 @@ const PublicTournamentView = React.lazy(
 const PublicTournamentViewTV = React.lazy(
   () => import('@features/tournaments/components/public/PublicTournamentViewTV.jsx')
 );
+const PublicMatchesOnlyPage = React.lazy(
+  () => import('@features/tournaments/components/public/PublicMatchesOnlyPage.jsx')
+);
 
 // Analytics page tracking component
 function AnalyticsPageTracker() {
@@ -127,6 +130,10 @@ export default function AppRouter() {
                 <Route
                   path="/public/tournament-tv/:clubId/:tournamentId/:token"
                   element={<PublicTournamentViewTV />}
+                />
+                <Route
+                  path="/public/matches-only/:clubId/:tournamentId/:token"
+                  element={<PublicMatchesOnlyPage />}
                 />
                 {/* Main App Routes - Landing page for unauthenticated, protected routes for authenticated */}
                 <Route

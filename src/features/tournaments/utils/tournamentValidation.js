@@ -97,15 +97,28 @@ export function validateTeamRegistration(teamName, players, participantType) {
   }
 
   // Check for duplicate players
-  const playerIds = players.map((p) => p.playerId);
+  // Per giocatori custom (senza playerId), controlla il nome
+  const playerIds = players
+    .filter((p) => p.playerId) // Solo giocatori con ID
+    .map((p) => p.playerId);
   const uniquePlayerIds = new Set(playerIds);
   if (playerIds.length !== uniquePlayerIds.size) {
     return { valid: false, error: 'Non puoi inserire lo stesso giocatore più volte' };
   }
 
+  // Check for duplicate custom players (by name)
+  const customPlayerNames = players
+    .filter((p) => !p.playerId && p.isCustom) // Giocatori custom
+    .map((p) => p.playerName.toLowerCase().trim());
+  const uniqueCustomNames = new Set(customPlayerNames);
+  if (customPlayerNames.length !== uniqueCustomNames.size) {
+    return { valid: false, error: 'Non puoi inserire lo stesso giocatore più volte' };
+  }
+
   // Validate each player has required fields
   for (const player of players) {
-    if (!player.playerId || !player.playerName) {
+    // playerId può essere null per custom players
+    if (!player.playerName) {
       return { valid: false, error: 'Informazioni giocatore incomplete' };
     }
   }

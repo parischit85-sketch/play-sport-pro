@@ -17,11 +17,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { COLLECTIONS, TEAM_STATUS, VALIDATION_MESSAGES } from '../utils/tournamentConstants.js';
-import {
-  validateTeamRegistration,
-  isRegistrationOpen,
-  sanitizeTeamName,
-} from '../utils/tournamentValidation.js';
+import { validateTeamRegistration, sanitizeTeamName } from '../utils/tournamentValidation.js';
 import { updateTournament } from './tournamentService.js';
 
 /**
@@ -47,10 +43,8 @@ export async function registerTeam(teamData) {
 
     const tournament = { id: tournamentSnap.id, ...tournamentSnap.data() };
 
-    // Check if registration is open
-    if (!isRegistrationOpen(tournament)) {
-      return { success: false, error: VALIDATION_MESSAGES.REGISTRATION_CLOSED };
-    }
+    // ✅ RIMOSSO CONTROLLO: Gli admin possono registrare squadre in qualsiasi momento
+    // Nessun controllo sullo stato di registrazione per permettere flessibilità
 
     // ⚠️ CONTROLLO RIMOSSO: L'admin può iscrivere squadre oltre il limite teorico
     // Nessun controllo sul maxTeamsAllowed per permettere flessibilità
@@ -77,8 +71,11 @@ export async function registerTeam(teamData) {
     const hasDuplicates = teamData.players.some((player) =>
       registeredPlayerIds.has(player.playerId)
     );
+    
+    // ⚠️ MODIFICATO: Mostra warning ma permette la registrazione
+    let warning = null;
     if (hasDuplicates) {
-      return { success: false, error: VALIDATION_MESSAGES.PLAYER_ALREADY_REGISTERED };
+      warning = VALIDATION_MESSAGES.PLAYER_ALREADY_REGISTERED;
     }
 
     // Calculate average ranking
@@ -123,7 +120,7 @@ export async function registerTeam(teamData) {
       registeredTeams: (tournament.registeredTeams || 0) + 1,
     });
 
-    return { success: true, teamId: docRef.id };
+    return { success: true, teamId: docRef.id, warning };
   } catch (error) {
     console.error('Error registering team:', error);
     return { success: false, error: error.message };
@@ -213,6 +210,27 @@ export async function getTeamsByTournament(clubId, tournamentId, options = {}) {
  * @param {Object} updates
  * @returns {Promise<{success: boolean, error?: string}>}
  */
+/**
+ * Remove undefined values from object (Firestore doesn't allow undefined)
+ */
+function cleanUndefined(obj) {
+  const cleaned = {};
+  for (const key in obj) {
+    if (obj[key] !== undefined) {
+      cleaned[key] = obj[key];
+    }
+  }
+  return cleaned;
+}
+
+/**
+ * Update team
+ * @param {string} clubId
+ * @param {string} tournamentId
+ * @param {string} teamId
+ * @param {Object} updates
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
 export async function updateTeam(clubId, tournamentId, teamId, updates) {
   try {
     const teamRef = doc(
@@ -225,7 +243,9 @@ export async function updateTeam(clubId, tournamentId, teamId, updates) {
       teamId
     );
 
-    await updateDoc(teamRef, updates);
+    // Rimuovi valori undefined prima di salvare
+    const cleanedUpdates = cleanUndefined(updates);
+    await updateDoc(teamRef, cleanedUpdates);
 
     return { success: true };
   } catch (error) {
@@ -244,9 +264,9 @@ export async function updateTeam(clubId, tournamentId, teamId, updates) {
  */
 export async function editTeamPlayers(clubId, tournamentId, teamId, payload) {
   try {
-    // Basic validation
+    // Basic validation - richiede almeno 1 giocatore
     if (!payload || !Array.isArray(payload.players) || payload.players.length === 0) {
-      return { success: false, error: VALIDATION_MESSAGES.INVALID_PLAYERS_COUNT };
+      return { success: false, error: 'Devi selezionare almeno un giocatore' };
     }
 
     // Load tournament for participantType rules (optional)
@@ -255,15 +275,15 @@ export async function editTeamPlayers(clubId, tournamentId, teamId, payload) {
     if (!tournamentSnap.exists()) {
       return { success: false, error: VALIDATION_MESSAGES.TOURNAMENT_NOT_FOUND };
     }
-    const tournament = tournamentSnap.data();
+    // tournament non più necessario dopo rimozione controllo playersPerTeam
 
-    // Validate player count based on participant type (default couples=2, else 4)
-    const playersPerTeam = tournament.participantType === 'couples' ? 2 : 4;
-    if (payload.players.length !== playersPerTeam) {
-      return { success: false, error: VALIDATION_MESSAGES.INVALID_PLAYERS_COUNT };
-    }
+    // ✅ RIMOSSO: Controllo sul numero esatto di giocatori - ora permette da 1 a 4 giocatori
+    // const playersPerTeam = tournament.participantType === 'couples' ? 2 : 4;
+    // if (payload.players.length !== playersPerTeam) {
+    //   return { success: false, error: VALIDATION_MESSAGES.INVALID_PLAYERS_COUNT };
+    // }
 
-    // Prevent duplicates across teams in the same tournament (excluding current team)
+    // Check for duplicates across teams - mostra warning ma permette il salvataggio
     const existingTeams = await getTeamsByTournament(clubId, tournamentId);
     const registeredPlayerIds = new Set();
     existingTeams.forEach((team) => {
@@ -271,8 +291,10 @@ export async function editTeamPlayers(clubId, tournamentId, teamId, payload) {
       (team.players || []).forEach((p) => registeredPlayerIds.add(p.playerId));
     });
     const hasDuplicates = payload.players.some((p) => registeredPlayerIds.has(p.playerId));
+    
+    let warning = null;
     if (hasDuplicates) {
-      return { success: false, error: VALIDATION_MESSAGES.PLAYER_ALREADY_REGISTERED };
+      warning = VALIDATION_MESSAGES.PLAYER_ALREADY_REGISTERED;
     }
 
     // Compute average ranking
@@ -280,20 +302,27 @@ export async function editTeamPlayers(clubId, tournamentId, teamId, payload) {
     const averageRanking =
       rankings.length > 0 ? rankings.reduce((sum, r) => sum + r, 0) / rankings.length : null;
 
-    // Normalize players structure and update
+    // Normalize players structure and update - filtra valori undefined
     const updates = {
       teamName: sanitizeTeamName(payload.teamName || ''),
       players: payload.players.map((p) => ({
-        playerId: p.playerId,
-        playerName: p.playerName,
+        playerId: p.playerId || null,
+        playerName: p.playerName || '',
         ranking: p.ranking ?? null,
-        avatarUrl: p.avatarUrl ?? null,
+        avatarUrl: p.avatarUrl || null,
       })),
-      averageRanking,
+      averageRanking: averageRanking ?? null,
       updatedAt: Timestamp.now(),
     };
 
-    return await updateTeam(clubId, tournamentId, teamId, updates);
+    const result = await updateTeam(clubId, tournamentId, teamId, updates);
+    
+    // Aggiungi warning al risultato se presente
+    if (result.success && warning) {
+      result.warning = warning;
+    }
+    
+    return result;
   } catch (error) {
     console.error('Error editing team players:', error);
     return { success: false, error: error.message };

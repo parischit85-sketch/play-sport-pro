@@ -202,12 +202,16 @@ export async function submitMatchResultWithTransaction(clubId, tournamentId, mat
       }
 
       // Now perform WRITES after all reads
+      // ✅ PRESERVE STATUS: If match is in_progress, keep it (provisional result)
+      // Otherwise, set to completed (final result)
+      const newStatus = match.status === 'in_progress' ? 'in_progress' : 'completed';
+      
       transaction.update(matchRef, {
         score: resultData.score,
         bestOf: resultData?.bestOf || null,
         sets: Array.isArray(resultData?.sets) ? resultData.sets : null,
         winnerId,
-        status: 'completed',
+        status: newStatus,
         completedAt: resultData.completedAt,
         updatedAt: new Date().toISOString(),
       });

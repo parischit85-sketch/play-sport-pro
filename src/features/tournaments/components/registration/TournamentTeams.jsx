@@ -200,15 +200,14 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
       {/* Header with Add button */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-white">Squadre Registrate ({teams.length})</h2>
-        {canRegister && (
-          <button
-            onClick={() => setShowRegistrationModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-          >
-            <UserPlus className="w-4 h-4" />
-            Aggiungi Squadra
-          </button>
-        )}
+        {/* Button always visible for admins */}
+        <button
+          onClick={() => setShowRegistrationModal(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+        >
+          <UserPlus className="w-4 h-4" />
+          Aggiungi Squadra
+        </button>
       </div>
 
       {/* Registration Modal */}

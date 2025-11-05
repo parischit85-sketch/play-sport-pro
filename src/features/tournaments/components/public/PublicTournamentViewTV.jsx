@@ -15,12 +15,11 @@ import QRCode from 'react-qr-code';
 import { getTeamsByTournament } from '../../services/teamsService.js';
 import { calculateGroupStandings } from '../../services/standingsService.js';
 import TournamentBracket from '../knockout/TournamentBracket.jsx';
+import PublicMatchCard from './PublicMatchCard.jsx';
 
 function PublicTournamentViewTV() {
   const { clubId, tournamentId, token } = useParams();
   const navigate = useNavigate();
-
-  console.log('[TV DEBUG] Component mounted with params:', { clubId, tournamentId, token });
 
   const [tournament, setTournament] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,6 +43,8 @@ function PublicTournamentViewTV() {
 
   // State for real-time matches
   const [matches, setMatches] = useState([]);
+  const [allMatches, setAllMatches] = useState([]);
+  const [allTeams, setAllTeams] = useState([]);
 
   // Funzione per ottenere il nome personalizzato del girone
   const getGroupDisplayName = (groupId) => {
@@ -52,46 +53,30 @@ function PublicTournamentViewTV() {
 
   // Validate token and load tournament
   useEffect(() => {
-    console.log('[TV DEBUG] useEffect triggered - Loading tournament...');
-    console.log('[TV DEBUG] Firestore path:', `clubs/${clubId}/tournaments/${tournamentId}`);
-
     const unsubscribe = onSnapshot(
       doc(db, 'clubs', clubId, 'tournaments', tournamentId),
       (docSnapshot) => {
-        console.log('[TV DEBUG] Snapshot received. Exists:', docSnapshot.exists());
-
         if (!docSnapshot.exists()) {
-          console.error('[TV DEBUG] Tournament document not found');
           setError('Torneo non trovato');
           setLoading(false);
           return;
         }
 
         const data = { id: docSnapshot.id, ...docSnapshot.data() };
-        console.log('[TV DEBUG] Tournament data loaded:', data);
 
         // Validate public view settings
         if (!data.publicView?.enabled) {
-          console.error('[TV DEBUG] Public view not enabled');
           setError('Vista pubblica non abilitata per questo torneo');
           setLoading(false);
           return;
         }
 
-        console.log(
-          '[TV DEBUG] Token validation - Expected:',
-          data.publicView?.token,
-          'Received:',
-          token
-        );
         if (data.publicView?.token !== token) {
-          console.error('[TV DEBUG] Invalid token');
           setError('Token non valido');
           setLoading(false);
           return;
         }
 
-        console.log('[TV DEBUG] Tournament loaded successfully');
         setTournament(data);
         setLoading(false);
       },
@@ -107,27 +92,19 @@ function PublicTournamentViewTV() {
 
   // Real-time listener for matches
   useEffect(() => {
-    console.log('[TV DEBUG] Matches listener setup');
     if (!clubId || !tournamentId) {
-      console.log('[TV DEBUG] Skipping matches listener - missing clubId or tournamentId');
       return;
     }
 
     const matchesRef = collection(db, 'clubs', clubId, 'tournaments', tournamentId, 'matches');
-    console.log(
-      '[TV DEBUG] Listening to matches at:',
-      `clubs/${clubId}/tournaments/${tournamentId}/matches`
-    );
 
     const unsubscribe = onSnapshot(
       matchesRef,
       (snapshot) => {
-        console.log('[TV DEBUG] Matches snapshot received. Count:', snapshot.docs.length);
         const matchesData = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        console.log('[TV DEBUG] Matches data:', matchesData);
         setMatches(matchesData);
       },
       (err) => {
@@ -140,10 +117,7 @@ function PublicTournamentViewTV() {
 
   // Real-time presence tracking
   useEffect(() => {
-    console.log('[TV DEBUG] Presence tracking effect - tournamentId:', tournamentId, 'rtdb:', rtdb);
-
     if (!tournamentId) {
-      console.log('[TV DEBUG] No tournamentId, skipping presence tracking');
       return;
     }
 
@@ -157,21 +131,15 @@ function PublicTournamentViewTV() {
     const presenceRef = ref(rtdb, `tournaments/${tournamentId}/viewers/${deviceId}`);
     const viewersRef = ref(rtdb, `tournaments/${tournamentId}/viewers`);
 
-    console.log('[TV DEBUG] Setting up presence tracking for device:', deviceId);
-    console.log('[TV DEBUG] Presence path:', `tournaments/${tournamentId}/viewers/${deviceId}`);
-
     // Mark this device as online
     set(presenceRef, {
       online: true,
       connectedAt: Date.now(),
-    })
-      .then(() => console.log('[TV DEBUG] Device registered successfully'))
-      .catch((err) => console.error('[TV DEBUG] Error registering device:', err));
+    }).catch((err) => console.error('[TV DEBUG] Error registering device:', err));
 
     // When disconnected, remove this device automatically
     onDisconnect(presenceRef)
       .remove()
-      .then(() => console.log('[TV DEBUG] onDisconnect handler set'))
       .catch((err) => console.error('[TV DEBUG] Error setting onDisconnect:', err));
 
     // Listen to all viewers to count them
@@ -180,7 +148,6 @@ function PublicTournamentViewTV() {
       (snapshot) => {
         const viewers = snapshot.val();
         const count = viewers ? Object.keys(viewers).length : 0;
-        console.log('[TV DEBUG] Active viewers count:', count, 'Data:', viewers);
         setViewersCount(count);
       },
       (err) => {
@@ -190,7 +157,6 @@ function PublicTournamentViewTV() {
 
     // Cleanup on unmount
     return () => {
-      console.log('[TV DEBUG] Cleaning up presence for device:', deviceId);
       remove(presenceRef); // Remove manually
       unsubscribe();
     };
@@ -198,22 +164,19 @@ function PublicTournamentViewTV() {
 
   // Load groups and data when tournament or matches changes
   const loadGroupsAndData = useCallback(async () => {
-    console.log('[TV DEBUG] loadGroupsAndData called');
-    console.log('[TV DEBUG] Tournament:', tournament);
-    console.log('[TV DEBUG] Matches count:', matches.length);
-
     if (!tournament || matches.length === 0) {
-      console.log('[TV DEBUG] Skipping loadGroupsAndData - missing tournament or matches');
       return;
     }
 
     try {
-      console.log('[TV DEBUG] Fetching teams...');
       const teams = await getTeamsByTournament(clubId, tournamentId);
-      console.log('[TV DEBUG] Teams loaded:', teams);
 
       // Store all teams in state for winner lookup
       setTeams(teams);
+
+      // Store all matches and teams for matches-only page
+      setAllMatches(matches);
+      setAllTeams(teams);
 
       // Combine groupIds from matches (type === 'group') and teams
       const groupIdsFromMatches = matches
@@ -260,7 +223,8 @@ function PublicTournamentViewTV() {
 
   useEffect(() => {
     loadGroupsAndData();
-  }, [loadGroupsAndData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tournament, matches]); // Only re-run when tournament or matches change, not when the function changes
 
   // Update current time every second
   useEffect(() => {
@@ -275,40 +239,72 @@ function PublicTournamentViewTV() {
   const pages = useMemo(() => {
     const pagesArray = [];
 
-    // Add group pages if enabled in settings - PER SINGOLO GIRONE
+    // Add group pages if enabled in settings - PER SINGOLO GIRONE (only for non-matches_only tournaments)
     const groupSettings = tournament?.publicView?.settings?.groupSettings || {};
-    groups.forEach((g) => {
-      // Ogni girone ha le sue impostazioni specifiche
-      const isGroupEnabled = groupSettings[g]?.enabled !== false; // Default true se non impostato
-      if (isGroupEnabled) {
-        pagesArray.push({ type: 'group', groupId: g });
-      }
-    });
+    if (tournament?.participantType !== 'matches_only') {
+      groups.forEach((g) => {
+        // Ogni girone ha le sue impostazioni specifiche
+        const isGroupEnabled = groupSettings[g]?.enabled !== false; // Default true se non impostato
+        if (isGroupEnabled) {
+          pagesArray.push({ type: 'group', groupId: g });
+        }
+      });
+    }
 
-    // Add overall standings page if enabled
+    // Add matches-only page if enabled (for tournaments with participantType: matches_only)
     const displaySettings = tournament?.publicView?.settings?.displaySettings || {};
-    if (displaySettings.standings === true) {
+    if (tournament?.participantType === 'matches_only') {
+      // Dividi le partite in gruppi di 4 (max 4 partite per pagina in layout 2x2)
+      const matchesPerPage = 4;
+      const totalMatches = allMatches?.length || 0;
+      const totalPages = Math.ceil(totalMatches / matchesPerPage);
+      const matchesPageSettings = tournament?.publicView?.settings?.matchesPageSettings || {};
+
+      for (let i = 0; i < totalPages; i++) {
+        const pageSettings = matchesPageSettings[i] || {};
+        const isPageEnabled = pageSettings.enabled !== false; // Default: abilitata
+
+        // Aggiungi la pagina solo se è abilitata
+        if (isPageEnabled) {
+          const startIndex = i * matchesPerPage;
+          const endIndex = Math.min(startIndex + matchesPerPage, totalMatches);
+          const pageMatches = allMatches.slice(startIndex, endIndex);
+
+          pagesArray.push({
+            type: 'matches-only',
+            pageIndex: i,
+            matches: pageMatches,
+            interval: pageSettings.interval || 15, // Intervallo personalizzato per questa pagina
+          });
+        }
+      }
+    }
+
+    // Add overall standings page if enabled (only for non-matches_only tournaments)
+    if (displaySettings.standings === true && tournament?.participantType !== 'matches_only') {
       pagesArray.push({ type: 'standings' });
     }
 
-    // Add points page if enabled
-    if (displaySettings.points === true) {
+    // Add points page if enabled (only for non-matches_only tournaments)
+    if (displaySettings.points === true && tournament?.participantType !== 'matches_only') {
       pagesArray.push({ type: 'points' });
     }
 
-    // Check if finale is completed - add winners page
-    const finaleMatch = matches.find(
-      (m) => m.round === 'finals' && m.status === 'completed' && m.winnerId
-    );
-    if (finaleMatch) {
-      pagesArray.push({ type: 'winners', finaleMatch });
+    // Check if finale is completed - add winners page (only for non-matches_only tournaments)
+    if (tournament?.participantType !== 'matches_only') {
+      const finaleMatch = matches.find(
+        (m) => m.round === 'finals' && m.status === 'completed' && m.winnerId
+      );
+      if (finaleMatch) {
+        pagesArray.push({ type: 'winners', finaleMatch });
+      }
     }
 
     // Always add QR page at the end
     pagesArray.push({ type: 'qr' });
 
     return pagesArray;
-  }, [groups, tournament, matches]);
+  }, [groups, tournament, matches, allMatches]);
 
   // Calculate dynamic card height based on screen size and number of matches
   useEffect(() => {
@@ -357,12 +353,6 @@ function PublicTournamentViewTV() {
       const finalHeight = Math.max(minHeight, Math.min(maxHeight, cardHeight));
 
       setDynamicCardHeight(finalHeight);
-      console.log('📐 Dynamic card height calculated:', {
-        matchesCount,
-        rows,
-        availableHeight,
-        cardHeight: finalHeight,
-      });
     };
 
     calculateCardHeight();
@@ -439,6 +429,9 @@ function PublicTournamentViewTV() {
       // Usa l'intervallo specifico del girone se disponibile, altrimenti il default
       const groupInterval = groupSettings[currentPage.groupId]?.interval;
       currentInterval = (groupInterval || pageIntervals.groups || 15) * 1000;
+    } else if (currentPage?.type === 'matches-only') {
+      // Usa l'intervallo personalizzato per questa specifica pagina di partite
+      currentInterval = (currentPage.interval || 15) * 1000;
     } else if (currentPage?.type === 'standings') {
       currentInterval = (pageIntervals.standings || 15) * 1000;
     } else if (currentPage?.type === 'points') {
@@ -448,10 +441,6 @@ function PublicTournamentViewTV() {
     } else if (currentPage?.type === 'qr') {
       currentInterval = (pageIntervals.qr || 15) * 1000;
     }
-
-    console.log(
-      `⏱️ Page ${currentPageIndex} (${currentPage?.type}${currentPage?.groupId ? ` - ${currentPage.groupId}` : ''}): interval = ${currentInterval}ms`
-    );
 
     // Progress bar update (every 100ms)
     progressIntervalRef.current = setInterval(() => {
@@ -486,7 +475,6 @@ function PublicTournamentViewTV() {
     if (matchesScrollIntervalRef.current) {
       clearInterval(matchesScrollIntervalRef.current);
       matchesScrollIntervalRef.current = null;
-      console.log('🧹 Cleared previous scroll interval');
     }
 
     // Determina se siamo su una pagina girone con partite
@@ -500,14 +488,12 @@ function PublicTournamentViewTV() {
 
     // CONDIZIONE: Scroll infinito solo se più di 6 partite
     if (matchesInGroup.length <= 6) {
-      console.log('ℹ️ Few matches (≤6), no infinite scroll needed');
       return;
     }
 
     // Attendi che il DOM si aggiorni e poi inizia lo scroll
     const startDelay = setTimeout(() => {
       if (!matchesScrollRef.current) {
-        console.log('⚠️ matchesScrollRef still not available after delay, page:', currentPageIndex);
         return;
       }
 
@@ -520,25 +506,9 @@ function PublicTournamentViewTV() {
           const containerWidth = container.clientWidth;
           const isOverflowing = scrollWidth > containerWidth;
 
-          console.log('📏 Scroll check:', {
-            matchesCount: matchesInGroup.length,
-            scrollWidth,
-            containerWidth,
-            isOverflowing,
-            page: currentPageIndex,
-          });
-
           if (isOverflowing) {
             const scrollStep = 3; // pixel per step
             const scrollDelay = 55; // ms tra gli step
-
-            console.log('🎬 Starting INFINITE horizontal scroll for matches (no reset)', {
-              scrollWidth,
-              containerWidth,
-              scrollStep,
-              scrollDelay,
-              page: currentPageIndex,
-            });
 
             matchesScrollIntervalRef.current = setInterval(() => {
               if (isPausedRef.current || !container) return;
@@ -548,11 +518,8 @@ function PublicTournamentViewTV() {
 
               // Nessun reset - scroll infinito continuo grazie al contenuto duplicato
             }, scrollDelay);
-
-            console.log('✅ Infinite scroll interval created:', matchesScrollIntervalRef.current);
           } else {
             // Reset scroll to start if content doesn't overflow
-            console.log('ℹ️ Content does not overflow, no scroll needed');
             container.scrollLeft = 0;
           }
         });
@@ -560,7 +527,6 @@ function PublicTournamentViewTV() {
     }, 1600); // Ritardo aumentato a 1.6 secondi per dare più tempo al DOM
 
     return () => {
-      console.log('🧹 Cleanup: page', currentPageIndex);
       clearTimeout(startDelay);
       if (matchesScrollIntervalRef.current) {
         clearInterval(matchesScrollIntervalRef.current);
@@ -570,31 +536,23 @@ function PublicTournamentViewTV() {
   }, [pages, currentPageIndex, groupData]);
 
   if (loading) {
-    console.log('[TV DEBUG] Showing loading screen');
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-24 w-24 border-t-4 border-b-4 border-emerald-500 mx-auto mb-6"></div>
           <p className="text-white text-3xl font-bold">Caricamento torneo...</p>
-          <p className="text-gray-400 text-sm mt-4">
-            Params: {JSON.stringify({ clubId, tournamentId, token })}
-          </p>
         </div>
       </div>
     );
   }
 
   if (error) {
-    console.log('[TV DEBUG] Showing error screen:', error);
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-red-900 flex items-center justify-center p-6">
         <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-12 max-w-2xl w-full text-center">
           <AlertCircle className="w-24 h-24 text-white mx-auto mb-6" />
           <h2 className="text-4xl font-bold text-white mb-4">Accesso Negato</h2>
           <p className="text-white/80 text-xl mb-8">{error}</p>
-          <p className="text-white/60 text-sm mb-8">
-            Params: {JSON.stringify({ clubId, tournamentId, token })}
-          </p>
           <button
             onClick={() => navigate('/')}
             className="px-8 py-4 bg-white text-red-900 rounded-xl font-bold text-xl hover:bg-white/90 transition-colors"
@@ -1321,6 +1279,31 @@ function PublicTournamentViewTV() {
     );
   };
 
+  const renderMatchesOnlyPage = (pageMatches) => {
+    const matchesToShow = pageMatches || allMatches || [];
+    const matchCount = matchesToShow.length;
+    // Usa sempre grid 2x2 per le partite
+    const useGrid = matchCount > 1;
+
+    return (
+      <div className="h-full overflow-y-auto px-4 py-6">
+        <div className="max-w-[1800px] mx-auto">
+          <div className={useGrid ? 'grid grid-cols-2 gap-6' : 'space-y-6'}>
+            {matchesToShow.length > 0 ? (
+              matchesToShow.map((match) => (
+                <PublicMatchCard key={match.id} match={match} teams={allTeams} />
+              ))
+            ) : (
+              <div className="text-center py-16 col-span-2">
+                <p className="text-3xl text-gray-400">Nessuna partita disponibile</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderQRPage = () => {
     return (
       <div className="flex items-center justify-center h-full py-4">
@@ -1336,8 +1319,17 @@ function PublicTournamentViewTV() {
               />
             </div>
 
-            {/* Tournament name */}
-            <h2 className="text-4xl font-bold text-white mb-6">{tournament.name}</h2>
+            {/* Tournament name with logo */}
+            <div className="flex items-center justify-center gap-4 mb-6">
+              {tournament.logoUrl && (
+                <img
+                  src={tournament.logoUrl}
+                  alt="Tournament Logo"
+                  className="h-16 w-auto object-contain"
+                />
+              )}
+              <h2 className="text-4xl font-bold text-white">{tournament.name}</h2>
+            </div>
 
             {/* Instructions */}
             <div className="space-y-4">
@@ -1368,14 +1360,6 @@ function PublicTournamentViewTV() {
           scrollbar-width: none;
         }
       `}</style>
-      {console.log(
-        '[TV DEBUG] Rendering component. Loading:',
-        loading,
-        'Error:',
-        error,
-        'Tournament:',
-        tournament
-      )}
       <div className="min-h-screen bg-black flex flex-col">
         {/* Header - NO QR CODE - Ottimizzato per 16:9 */}
         <div className="bg-black border-b border-gray-800">
@@ -1390,8 +1374,15 @@ function PublicTournamentViewTV() {
                 />
               </div>
 
-              {/* Center: Tournament name */}
-              <div className="flex-1 text-center">
+              {/* Center: Tournament name with logo */}
+              <div className="flex-1 flex items-center justify-center gap-3">
+                {tournament.logoUrl && (
+                  <img
+                    src={tournament.logoUrl}
+                    alt="Tournament Logo"
+                    className="h-10 w-auto object-contain"
+                  />
+                )}
                 <h1 className="text-3xl font-bold text-white">{tournament.name}</h1>
               </div>
 
@@ -1478,13 +1469,15 @@ function PublicTournamentViewTV() {
                   >
                     {currentPage?.type === 'group'
                       ? renderGroupPage(currentPage.groupId)
-                      : currentPage?.type === 'standings'
-                        ? renderBracketPage()
-                        : currentPage?.type === 'points'
-                          ? renderPointsPage()
-                          : currentPage?.type === 'winners'
-                            ? renderWinnersPage(currentPage.finaleMatch)
-                            : renderQRPage()}
+                      : currentPage?.type === 'matches-only'
+                        ? renderMatchesOnlyPage(currentPage.matches)
+                        : currentPage?.type === 'standings'
+                          ? renderBracketPage()
+                          : currentPage?.type === 'points'
+                            ? renderPointsPage()
+                            : currentPage?.type === 'winners'
+                              ? renderWinnersPage(currentPage.finaleMatch)
+                              : renderQRPage()}
                   </motion.div>
                 </AnimatePresence>
               </>

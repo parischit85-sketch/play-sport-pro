@@ -20,12 +20,14 @@ export const TOURNAMENT_FORMAT = {
   GROUPS: 'groups',
   KNOCKOUT: 'knockout',
   GROUPS_AND_KNOCKOUT: 'groups_and_knockout',
+  MATCHES_ONLY: 'matches_only',
 };
 
 // Participant Types
 export const PARTICIPANT_TYPE = {
   COUPLES: 'couples',
   TEAMS: 'teams',
+  MATCHES_ONLY: 'matches_only',
 };
 
 // Points System Types

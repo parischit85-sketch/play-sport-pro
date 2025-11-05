@@ -162,7 +162,7 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
   }, [formData]);
 
   const canSubmit = () =>
-    selectedPlayers.length === playersPerTeam && formData.teamName.trim().length > 0;
+    selectedPlayers.length > 0 && formData.teamName.trim().length > 0;
 
   const averageRating = useMemo(() => {
     if (selectedPlayers.length === 0) return 0;
@@ -187,6 +187,10 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
       };
       const res = await editTeamPlayers(clubId, tournament.id, team.id, payload);
       if (res.success) {
+        // Mostra warning se presente
+        if (res.warning) {
+          alert(`⚠️ ATTENZIONE:\n\n${res.warning}\n\nLa squadra è stata comunque aggiornata con successo.`);
+        }
         onSuccess();
       } else {
         setError(res.error || 'Errore nel salvataggio della squadra');
@@ -242,17 +246,17 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
           <div className="space-y-4 mb-6">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-sm font-medium text-gray-300">
-                Giocatori ({playersPerTeam} richiesti)
+                Giocatori (min. 1)
               </h3>
               <span className="text-sm text-gray-400">
-                {selectedPlayers.length} / {playersPerTeam}
+                {selectedPlayers.length} selezionati
               </span>
             </div>
 
             {[1, 2, 3, 4].slice(0, playersPerTeam).map((position) => (
               <div key={position} className="space-y-2">
                 <label className="block text-sm font-medium text-gray-400">
-                  Giocatore {position} *
+                  Giocatore {position}
                 </label>
                 {formData[`player${position}`] ? (
                   <div className="flex items-center justify-between p-3 bg-primary-900/20 border border-primary-800 rounded-lg">

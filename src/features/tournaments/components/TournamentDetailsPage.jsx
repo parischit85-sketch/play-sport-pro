@@ -58,12 +58,29 @@ function TournamentDetailsPage({ clubId }) {
     (clubId &&
       (userClubRoles?.[clubId] === USER_ROLES.CLUB_ADMIN || userClubRoles?.[clubId] === 'admin'));
 
-  // Filtra le tab in base al ruolo dell'utente e allo stato dei punti
+  // Filtra le tab in base al ruolo dell'utente, allo stato dei punti e al tipo di torneo
   // Per non-admin: mostra punti solo se sono stati applicati
+  // Per "Solo Partite": nascondi Gironi e Tabellone
   let visibleTabs = TABS;
-  if (!isClubAdmin && !pointsApplied) {
-    visibleTabs = TABS.filter((tab) => tab.id !== 'points');
+  
+  const isMatchesOnly = tournament?.participantType === 'matches_only';
+  
+  console.log('🔍 [TournamentDetailsPage] Tab filtering:', {
+    participantType: tournament?.participantType,
+    isMatchesOnly,
+    visibleTabsBefore: visibleTabs.map((t) => t.id),
+  });
+  
+  if (isMatchesOnly) {
+    // Per "Solo Partite": nascondi Gironi e Tabellone
+    visibleTabs = visibleTabs.filter((tab) => tab.id !== 'standings' && tab.id !== 'bracket');
   }
+  
+  if (!isClubAdmin && !pointsApplied) {
+    visibleTabs = visibleTabs.filter((tab) => tab.id !== 'points');
+  }
+
+  console.log('🔍 [TournamentDetailsPage] Visible tabs:', visibleTabs.map((t) => t.id));
 
   const loadTournament = useCallback(async () => {
     setLoading(true);

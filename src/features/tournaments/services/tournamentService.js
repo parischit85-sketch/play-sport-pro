@@ -47,14 +47,18 @@ export async function createTournament(tournamentData, userId) {
       return { success: false, error: nameValidation.error };
     }
 
-    // Validate groups configuration
-    const groupsValidation = validateGroupsConfig(
-      tournamentData.numberOfGroups,
-      tournamentData.teamsPerGroup,
-      tournamentData.qualifiedPerGroup
-    );
-    if (!groupsValidation.valid) {
-      return { success: false, error: groupsValidation.error };
+    const isMatchesOnly = tournamentData.participantType === 'matches_only';
+
+    // Validate groups configuration (solo per tornei con gironi)
+    if (!isMatchesOnly) {
+      const groupsValidation = validateGroupsConfig(
+        tournamentData.numberOfGroups,
+        tournamentData.teamsPerGroup,
+        tournamentData.qualifiedPerGroup
+      );
+      if (!groupsValidation.valid) {
+        return { success: false, error: groupsValidation.error };
+      }
     }
 
     // Validate points system
@@ -63,9 +67,13 @@ export async function createTournament(tournamentData, userId) {
       return { success: false, error: pointsValidation.error };
     }
 
-    // Calculate min/max teams - sistema rigido
-    const minTeams = tournamentData.numberOfGroups * tournamentData.teamsPerGroup;
-    const maxTeams = minTeams; // Sistema rigido: max = min
+    // Calculate min/max teams - sistema rigido (non applicabile a "Solo Partite")
+    const minTeams = isMatchesOnly 
+      ? 0 
+      : tournamentData.numberOfGroups * tournamentData.teamsPerGroup;
+    const maxTeams = isMatchesOnly 
+      ? 999 // Nessun limite per "Solo Partite"
+      : minTeams; // Sistema rigido: max = min
 
     // Create tournament document
     const tournament = {
@@ -74,13 +82,15 @@ export async function createTournament(tournamentData, userId) {
       description: tournamentData.description || null,
       status: TOURNAMENT_STATUS.DRAFT,
       participantType: tournamentData.participantType,
+      playersPerTeam: tournamentData.playersPerTeam || 
+        (tournamentData.participantType === 'couples' ? 2 : 4),
 
       configuration: {
-        numberOfGroups: tournamentData.numberOfGroups,
-        teamsPerGroup: tournamentData.teamsPerGroup,
-        qualifiedPerGroup: tournamentData.qualifiedPerGroup,
-        includeThirdPlaceMatch: tournamentData.includeThirdPlaceMatch ?? true,
-        automaticGroupsGeneration: true,
+        numberOfGroups: isMatchesOnly ? 0 : tournamentData.numberOfGroups,
+        teamsPerGroup: isMatchesOnly ? 0 : tournamentData.teamsPerGroup,
+        qualifiedPerGroup: isMatchesOnly ? 0 : tournamentData.qualifiedPerGroup,
+        includeThirdPlaceMatch: isMatchesOnly ? false : (tournamentData.includeThirdPlaceMatch ?? true),
+        automaticGroupsGeneration: !isMatchesOnly, // Solo per tornei con gironi
         minTeamsRequired: minTeams,
         maxTeamsAllowed: maxTeams,
         defaultRankingForNonParticipants:

@@ -8,6 +8,7 @@ import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { createTournament } from '../../services/tournamentService';
 import {
   PARTICIPANT_TYPE,
+  TOURNAMENT_FORMAT,
   DEFAULT_STANDARD_POINTS,
   DEFAULT_RANKING_BASED_POINTS,
   POINTS_SYSTEM_TYPE,
@@ -32,6 +33,7 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
     name: '',
     description: '',
     participantType: PARTICIPANT_TYPE.COUPLES,
+    playersPerTeam: 2, // Default per coppie, da 2 a 8
     numberOfGroups: 4,
     teamsPerGroup: 4,
     qualifiedPerGroup: 2,
@@ -97,6 +99,12 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
     }
 
     if (currentStep === 2) {
+      // Per "Solo Partite" non serve validare i gironi
+      if (formData.participantType === PARTICIPANT_TYPE.MATCHES_ONLY) {
+        console.log('✅ [validateCurrentStep] Solo Partite - skip groups validation');
+        return { valid: true };
+      }
+
       console.log('⚙️ [validateCurrentStep] Validating groups config:', {
         numberOfGroups: formData.numberOfGroups,
         teamsPerGroup: formData.teamsPerGroup,
@@ -203,10 +211,13 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
 
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-2">Tipo Partecipanti</label>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <button
             type="button"
-            onClick={() => handleInputChange('participantType', PARTICIPANT_TYPE.COUPLES)}
+            onClick={() => {
+              handleInputChange('participantType', PARTICIPANT_TYPE.COUPLES);
+              handleInputChange('playersPerTeam', 2);
+            }}
             className={`p-5 rounded-lg border-2 transition-all transform hover:scale-105 ${
               formData.participantType === PARTICIPANT_TYPE.COUPLES
                 ? 'border-primary-500 bg-gradient-to-br from-primary-600/40 to-primary-700/30 text-white ring-4 ring-primary-500/30 shadow-lg shadow-primary-500/20'
@@ -229,13 +240,18 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
                   : 'text-gray-400'
               }`}
             >
-              2 giocatori per squadra
+              Sempre 2 giocatori
             </div>
           </button>
 
           <button
             type="button"
-            onClick={() => handleInputChange('participantType', PARTICIPANT_TYPE.TEAMS)}
+            onClick={() => {
+              handleInputChange('participantType', PARTICIPANT_TYPE.TEAMS);
+              if (formData.playersPerTeam === 2) {
+                handleInputChange('playersPerTeam', 4); // Default per squadre
+              }
+            }}
             className={`p-5 rounded-lg border-2 transition-all transform hover:scale-105 ${
               formData.participantType === PARTICIPANT_TYPE.TEAMS
                 ? 'border-primary-500 bg-gradient-to-br from-primary-600/40 to-primary-700/30 text-white ring-4 ring-primary-500/30 shadow-lg shadow-primary-500/20'
@@ -258,139 +274,227 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
                   : 'text-gray-400'
               }`}
             >
-              2-6 giocatori per squadra
+              2-8 giocatori per squadra
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              handleInputChange('participantType', PARTICIPANT_TYPE.MATCHES_ONLY);
+              handleInputChange('format', TOURNAMENT_FORMAT.MATCHES_ONLY);
+              if (formData.playersPerTeam === 2) {
+                handleInputChange('playersPerTeam', 4); // Default per Solo Partite
+              }
+            }}
+            className={`p-5 rounded-lg border-2 transition-all transform hover:scale-105 ${
+              formData.participantType === PARTICIPANT_TYPE.MATCHES_ONLY
+                ? 'border-primary-500 bg-gradient-to-br from-primary-600/40 to-primary-700/30 text-white ring-4 ring-primary-500/30 shadow-lg shadow-primary-500/20'
+                : 'border-gray-600 bg-gray-700/50 text-gray-300 hover:border-primary-400/50 hover:bg-gray-700'
+            }`}
+          >
+            <div
+              className={`font-bold text-lg ${
+                formData.participantType === PARTICIPANT_TYPE.MATCHES_ONLY
+                  ? 'text-primary-200'
+                  : 'text-gray-200'
+              }`}
+            >
+              Solo Partite
+            </div>
+            <div
+              className={`text-sm mt-1 ${
+                formData.participantType === PARTICIPANT_TYPE.MATCHES_ONLY
+                  ? 'text-primary-300'
+                  : 'text-gray-400'
+              }`}
+            >
+              Squadre 2-8 giocatori
             </div>
           </button>
         </div>
+
+        {/* Selettore numero giocatori - mostrato solo per Squadre e Solo Partite */}
+        {(formData.participantType === PARTICIPANT_TYPE.TEAMS || 
+          formData.participantType === PARTICIPANT_TYPE.MATCHES_ONLY) && (
+          <div className="mt-4 p-4 bg-gray-700/50 rounded-lg border border-gray-600">
+            <label className="block text-sm font-medium text-gray-300 mb-3">
+              Numero di giocatori per squadra
+            </label>
+            <div className="grid grid-cols-7 gap-2">
+              {[2, 3, 4, 5, 6, 7, 8].map((num) => (
+                <button
+                  key={num}
+                  type="button"
+                  onClick={() => handleInputChange('playersPerTeam', num)}
+                  className={`py-3 px-4 rounded-lg border-2 transition-all font-semibold ${
+                    formData.playersPerTeam === num
+                      ? 'border-primary-500 bg-primary-600 text-white shadow-lg'
+                      : 'border-gray-600 bg-gray-700 text-gray-300 hover:border-primary-400 hover:bg-gray-600'
+                  }`}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-gray-400">
+              Seleziona il numero di giocatori che compongono ogni squadra (da 2 a 8)
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
 
-  const renderConfigurationStep = () => (
-    <div className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Numero di Gironi</label>
-        <input
-          type="number"
-          min="2"
-          max="8"
-          value={formData.numberOfGroups}
-          onChange={(e) => handleInputChange('numberOfGroups', parseInt(e.target.value))}
-          className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Squadre per Girone</label>
-        <input
-          type="number"
-          min="3"
-          max="8"
-          value={formData.teamsPerGroup}
-          onChange={(e) => handleInputChange('teamsPerGroup', parseInt(e.target.value))}
-          className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Qualificati per Girone
-        </label>
-        <input
-          type="number"
-          min="1"
-          max={formData.teamsPerGroup}
-          value={formData.qualifiedPerGroup}
-          onChange={(e) => handleInputChange('qualifiedPerGroup', parseInt(e.target.value))}
-          className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
-        />
-      </div>
-
-      <div className="bg-blue-900/20 border border-blue-800 p-4 rounded-lg">
-        <div className="text-sm text-blue-200">
-          <strong>Riepilogo:</strong>
-          <ul className="mt-2 space-y-1">
-            <li>• Totale squadre: {formData.numberOfGroups * formData.teamsPerGroup}</li>
-            <li>• Squadre qualificate: {formData.numberOfGroups * formData.qualifiedPerGroup}</li>
-            <li>
-              • Partite fase gironi:{' '}
-              {(formData.numberOfGroups * (formData.teamsPerGroup * (formData.teamsPerGroup - 1))) /
-                2}
-            </li>
-            {(() => {
-              const totalQualified = formData.numberOfGroups * formData.qualifiedPerGroup;
-              const isPow2 = totalQualified > 0 && (totalQualified & (totalQualified - 1)) === 0;
-              if (!isPow2 && totalQualified > 0) {
-                const nextPow2 = 1 << Math.ceil(Math.log2(Math.max(2, totalQualified)));
-                const byes = nextPow2 - totalQualified;
-                return (
-                  <li>
-                    • Knockout: verranno aggiunti automaticamente {byes} BYE per arrivare a{' '}
-                    {nextPow2} squadre
-                  </li>
-                );
-              }
-              return null;
-            })()}
-          </ul>
+  const renderConfigurationStep = () => {
+    // Se è "Solo Partite", non servono gironi/knockout
+    if (formData.participantType === PARTICIPANT_TYPE.MATCHES_ONLY) {
+      return (
+        <div className="space-y-6">
+          <div className="bg-blue-900/20 border border-blue-800 p-6 rounded-lg text-center">
+            <h3 className="text-lg font-semibold text-blue-200 mb-2">Modalità Solo Partite</h3>
+            <p className="text-sm text-blue-300">
+              Hai selezionato la modalità "Solo Partite". In questa modalità potrai:
+            </p>
+            <ul className="mt-4 text-sm text-blue-300 space-y-2 text-left max-w-md mx-auto">
+              <li>• Aggiungere squadre manualmente</li>
+              <li>• Creare partite senza gironi o tabelloni</li>
+              <li>• Gestire liberamente le partite dell'evento</li>
+            </ul>
+            <p className="mt-4 text-xs text-gray-400">
+              Non è necessaria alcuna configurazione di gironi o fase eliminazione.
+            </p>
+          </div>
         </div>
-      </div>
+      );
+    }
 
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          checked={formData.includeThirdPlaceMatch}
-          onChange={(e) => handleInputChange('includeThirdPlaceMatch', e.target.checked)}
-          className="h-4 w-4 text-primary-600 rounded border-gray-600"
-        />
-        <label className="ml-2 text-sm text-gray-300">Includi finale 3°/4° posto</label>
-      </div>
+    // Configurazione normale per tornei con gironi
+    return (
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Numero di Gironi</label>
+          <input
+            type="number"
+            min="2"
+            max="8"
+            value={formData.numberOfGroups}
+            onChange={(e) => handleInputChange('numberOfGroups', parseInt(e.target.value))}
+            className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
+          />
+        </div>
 
-      {/* Default ranking for non-participants */}
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Ranking predefinito per non partecipanti
-        </label>
-        <input
-          type="number"
-          min="500"
-          max="3000"
-          step="50"
-          value={formData.defaultRankingForNonParticipants}
-          onChange={(e) =>
-            handleInputChange('defaultRankingForNonParticipants', parseInt(e.target.value) || 1500)
-          }
-          className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
-        />
-        <p className="mt-1 text-xs text-gray-400">
-          Valore utilizzato per i giocatori del circolo che non partecipano al campionato quando
-          vengono selezionati nelle squadre.
-        </p>
-      </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Squadre per Girone</label>
+          <input
+            type="number"
+            min="3"
+            max="8"
+            value={formData.teamsPerGroup}
+            onChange={(e) => handleInputChange('teamsPerGroup', parseInt(e.target.value))}
+            className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
+          />
+        </div>
 
-      {/* Punti campionato (config) */}
-      <div className="rounded-lg border border-gray-700 p-4 bg-gray-800">
-        <div className="font-semibold text-gray-100 mb-3">Punti Campionato (bozza)</div>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Moltiplicatore RPA
-            </label>
-            <input
-              type="number"
-              min="0"
-              step="0.1"
-              value={formData.championshipPoints.rpaMultiplier}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  championshipPoints: {
-                    ...prev.championshipPoints,
-                    rpaMultiplier: Number(e.target.value) || 0,
-                  },
-                }))
-              }
-              className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Qualificati per Girone
+          </label>
+          <input
+            type="number"
+            min="1"
+            max={formData.teamsPerGroup}
+            value={formData.qualifiedPerGroup}
+            onChange={(e) => handleInputChange('qualifiedPerGroup', parseInt(e.target.value))}
+            className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
+          />
+        </div>
+
+        <div className="bg-blue-900/20 border border-blue-800 p-4 rounded-lg">
+          <div className="text-sm text-blue-200">
+            <strong>Riepilogo:</strong>
+            <ul className="mt-2 space-y-1">
+              <li>• Totale squadre: {formData.numberOfGroups * formData.teamsPerGroup}</li>
+              <li>• Squadre qualificate: {formData.numberOfGroups * formData.qualifiedPerGroup}</li>
+              <li>
+                • Partite fase gironi:{' '}
+                {(formData.numberOfGroups * (formData.teamsPerGroup * (formData.teamsPerGroup - 1))) /
+                  2}
+              </li>
+              {(() => {
+                const totalQualified = formData.numberOfGroups * formData.qualifiedPerGroup;
+                const isPow2 = totalQualified > 0 && (totalQualified & (totalQualified - 1)) === 0;
+                if (!isPow2 && totalQualified > 0) {
+                  const nextPow2 = 1 << Math.ceil(Math.log2(Math.max(2, totalQualified)));
+                  const byes = nextPow2 - totalQualified;
+                  return (
+                    <li>
+                      • Knockout: verranno aggiunti automaticamente {byes} BYE per arrivare a{' '}
+                      {nextPow2} squadre
+                    </li>
+                  );
+                }
+                return null;
+              })()}
+            </ul>
+          </div>
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            checked={formData.includeThirdPlaceMatch}
+            onChange={(e) => handleInputChange('includeThirdPlaceMatch', e.target.checked)}
+            className="h-4 w-4 text-primary-600 rounded border-gray-600"
+          />
+          <label className="ml-2 text-sm text-gray-300">Includi finale 3°/4° posto</label>
+        </div>
+
+        {/* Default ranking for non-participants */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Ranking predefinito per non partecipanti
+          </label>
+          <input
+            type="number"
+            min="500"
+            max="3000"
+            step="50"
+            value={formData.defaultRankingForNonParticipants}
+            onChange={(e) =>
+              handleInputChange('defaultRankingForNonParticipants', parseInt(e.target.value) || 1500)
+            }
+            className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
+          />
+          <p className="mt-1 text-xs text-gray-400">
+            Valore utilizzato per i giocatori del circolo che non partecipano al campionato quando
+            vengono selezionati nelle squadre.
+          </p>
+        </div>
+
+        {/* Punti campionato (config) */}
+        <div className="rounded-lg border border-gray-700 p-4 bg-gray-800">
+          <div className="font-semibold text-gray-100 mb-3">Punti Campionato (bozza)</div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Moltiplicatore RPA
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.1"
+                value={formData.championshipPoints.rpaMultiplier}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    championshipPoints: {
+                      ...prev.championshipPoints,
+                      rpaMultiplier: Number(e.target.value) || 0,
+                    },
+                  }))
+                }
+                className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-primary-500"
             />
             <p className="mt-1 text-xs text-gray-400">
               Somma dei delta RPA per ogni partita (vittorie +, sconfitte −) × moltiplicatore
@@ -468,8 +572,9 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
       </div>
     </div>
   );
+};
 
-  const renderPointsSystemStep = () => (
+const renderPointsSystemStep = () => (
     <div className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-4">

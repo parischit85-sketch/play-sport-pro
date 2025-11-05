@@ -13,6 +13,7 @@ import {
   ChevronUp,
   Info,
   Trash2,
+  Pencil,
 } from 'lucide-react';
 import { useAuth, USER_ROLES } from '../../../../contexts/AuthContext';
 import {
@@ -28,8 +29,16 @@ import { computeFromSets, calcParisDelta } from '../../../../lib/rpa.js';
 import { themeTokens } from '../../../../lib/theme.js';
 import MatchResultModal from './MatchResultModal';
 import FormulaModal from '../../../../components/modals/FormulaModal.jsx';
+import MatchCreationModal from './MatchCreationModal';
 
 function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicView = false }) {
+  console.log('🎯 [TournamentMatches] Component mounted/rendered', {
+    tournamentId: tournament?.id,
+    participantType: tournament?.participantType,
+    clubId,
+    isPublicView,
+  });
+
   const { userRole, userClubRoles } = useAuth();
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState({});
@@ -39,6 +48,8 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
   const [filter, setFilter] = useState('all');
   const [formulaModalOpen, setFormulaModalOpen] = useState(false);
   const [formulaMatchData, setFormulaMatchData] = useState(null);
+  const [showMatchCreationModal, setShowMatchCreationModal] = useState(false);
+  const [editingMatch, setEditingMatch] = useState(null);
 
   // ✅ FIX: Check club-specific admin role, not global userRole
   const clubRole = userClubRoles?.[clubId];
@@ -148,6 +159,11 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
       console.error('Error deleting match:', error);
       alert("Errore nell'eliminazione della partita");
     }
+  };
+
+  const handleEditMatch = (match) => {
+    setEditingMatch(match);
+    setShowMatchCreationModal(true);
   };
 
   const handleMarkAsInProgress = async (matchId) => {
@@ -459,7 +475,6 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
     if (!team1 || !team2) return null;
 
     const isCompleted = match.status === MATCH_STATUS.COMPLETED;
-    const canRecordResult = match.status !== MATCH_STATUS.COMPLETED;
 
     const team1Name = team1?.teamName || team1?.name || team1?.displayName || '—';
     const team2Name = team2?.teamName || team2?.name || team2?.displayName || '—';
@@ -517,14 +532,24 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
       >
         {/* Icona elimina partita - in alto a destra */}
         {!isPublicView && canEditResults && (
-          <button
-            onClick={() => handleDeleteMatch(match.id)}
-            disabled={!canEditResults}
-            className="absolute top-2 right-2 p-1.5 rounded-lg bg-red-600/20 border border-red-500/50 text-red-500 hover:bg-red-600/30 hover:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10"
-            title="Elimina partita"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          <>
+            <button
+              onClick={() => handleEditMatch(match)}
+              disabled={!canEditResults}
+              className="absolute top-2 right-12 p-1.5 rounded-lg bg-blue-600/20 border border-blue-500/50 text-blue-500 hover:bg-blue-600/30 hover:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10"
+              title="Modifica partita"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => handleDeleteMatch(match.id)}
+              disabled={!canEditResults}
+              className="absolute top-2 right-2 p-1.5 rounded-lg bg-red-600/20 border border-red-500/50 text-red-500 hover:bg-red-600/30 hover:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10"
+              title="Elimina partita"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </>
         )}
 
         {/* Match header - Mobile optimized */}
@@ -698,7 +723,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
           </button>
         )}
 
-        {!isPublicView && canRecordResult && (
+        {!isPublicView && canEditResults && (
           <>
             {match.status === MATCH_STATUS.SCHEDULED && (
               <button
@@ -722,40 +747,33 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
               </button>
             )}
 
+            {/* Pulsante Inserisci/Modifica Risultato - sempre visibile */}
             <button
-              onClick={() => canEditResults && setSelectedMatch(match)}
+              onClick={() => setSelectedMatch(match)}
               disabled={!canEditResults}
               className="w-full mt-3 px-3 sm:px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
             >
-              Inserisci Risultato
+              {isCompleted ? 'Modifica Risultato' : 'Inserisci Risultato'}
             </button>
-          </>
-        )}
 
-        {!isPublicView && isCompleted && (
-          <div className="flex gap-2 mt-2">
-            <button
-              onClick={() => canEditResults && setSelectedMatch(match)}
-              disabled={!canEditResults}
-              className="flex-1 px-3 sm:px-4 py-2 rounded-lg border border-gray-600 text-gray-200 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium"
-            >
-              Modifica Risultato
-            </button>
-            <button
-              onClick={() => canEditResults && handleClearResult(match.id)}
-              disabled={!canEditResults}
-              className="flex-1 px-3 sm:px-4 py-2 rounded-lg border border-red-600 text-red-400 hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center justify-center gap-2"
-            >
-              <Trash2 className="w-4 h-4" />
-              Cancella Risultato
-            </button>
-          </div>
+            {/* Pulsante Cancella Risultato - solo se completata */}
+            {isCompleted && (
+              <button
+                onClick={() => handleClearResult(match.id)}
+                disabled={!canEditResults}
+                className="w-full mt-2 px-3 sm:px-4 py-2 rounded-lg border border-red-600 text-red-400 hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center justify-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Cancella Risultato
+              </button>
+            )}
+          </>
         )}
 
         {/* Scheduled date */}
         {match.scheduledDate && (
           <div className="mt-3 pt-3 border-t border-gray-700">
-            <div className="flex items-center gap-2 text-xs text-gray-400">
+            <div className="flex items-center gap-2 text-xs text-blue-400">
               <Calendar className="w-3 h-3" />
               <span>
                 {new Date(match.scheduledDate.seconds * 1000).toLocaleString('it-IT', {
@@ -772,7 +790,16 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
     );
   };
 
+  console.log('🔍 [TournamentMatches] Render check:', {
+    loading,
+    matchesCount: matches.length,
+    participantType: tournament.participantType,
+    canEditResults,
+    showMatchCreationModal,
+  });
+
   if (loading) {
+    console.log('🔄 [TournamentMatches] Showing loader');
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
@@ -781,19 +808,93 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
   }
 
   if (matches.length === 0) {
+    console.log('📭 [TournamentMatches] No matches - showing empty state', {
+      participantType: tournament.participantType,
+      canEditResults,
+      shouldShowButton: tournament.participantType === 'matches_only' && canEditResults,
+    });
     return (
-      <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
-        <Trophy className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-white mb-2">Nessuna Partita</h3>
-        <p className="text-gray-400">
-          Le partite verranno generate dopo la chiusura delle iscrizioni
-        </p>
-      </div>
+      <>
+        <div className="text-center py-12 bg-gray-800 rounded-lg border border-gray-700">
+          <Trophy className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-white mb-2">Nessuna Partita</h3>
+          <p className="text-gray-400">
+            {tournament.participantType === 'matches_only'
+              ? 'Inizia a creare partite manualmente'
+              : 'Le partite verranno generate dopo la chiusura delle iscrizioni'}
+          </p>
+          {tournament.participantType === 'matches_only' && canEditResults && (
+            <button
+              onClick={() => {
+                console.log('🔘 [Empty State] Crea Prima Partita clicked');
+                setShowMatchCreationModal(true);
+              }}
+              className="mt-4 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors"
+            >
+              Crea Prima Partita
+            </button>
+          )}
+        </div>
+
+        {/* Match Creation Modal */}
+        {showMatchCreationModal && (
+          <>
+            {console.log('🔍 Rendering MatchCreationModal in empty state', {
+              showMatchCreationModal,
+              teams: Object.values(teams),
+              teamsCount: Object.values(teams).length,
+              editingMatch,
+            })}
+            <MatchCreationModal
+              tournament={tournament}
+              clubId={clubId}
+              teams={Object.values(teams)}
+              onClose={() => {
+                setShowMatchCreationModal(false);
+                setEditingMatch(null);
+              }}
+              onSuccess={loadData}
+              editingMatch={editingMatch}
+            />
+          </>
+        )}
+      </>
     );
   }
 
+  // Check if tournament is matches-only type
+  const isMatchesOnly = tournament.participantType === 'matches_only';
+
+  console.log('🔍 [TournamentMatches] Button visibility check:', {
+    isMatchesOnly,
+    participantType: tournament.participantType,
+    canEditResults,
+    isPublicView,
+    shouldShowButton: canEditResults && !isPublicView,
+  });
+
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Create Match Button - Available for all tournament types */}
+      {canEditResults && !isPublicView && (
+        <div className="flex justify-end">
+          <button
+            onClick={() => {
+              console.log('🔘 Crea Partita clicked', {
+                showMatchCreationModal,
+                teamsCount: Object.values(teams).length,
+                tournament,
+              });
+              setShowMatchCreationModal(true);
+            }}
+            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white rounded-lg transition-colors flex items-center gap-2"
+          >
+            <Trophy className="w-4 h-4" />
+            Crea Partita
+          </button>
+        </div>
+      )}
+
       {/* Filters - Mobile Optimized - Hidden in public view */}
       {!isPublicView && (
         <div className="flex items-center gap-2 overflow-x-auto pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
@@ -916,6 +1017,28 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
           }}
           matchData={formulaMatchData}
         />
+      )}
+
+      {showMatchCreationModal && (
+        <>
+          {console.log('🔍 Rendering MatchCreationModal', {
+            showMatchCreationModal,
+            teams: Object.values(teams),
+            teamsCount: Object.values(teams).length,
+            editingMatch,
+          })}
+          <MatchCreationModal
+            tournament={tournament}
+            clubId={clubId}
+            teams={Object.values(teams)}
+            onClose={() => {
+              setShowMatchCreationModal(false);
+              setEditingMatch(null);
+            }}
+            onSuccess={loadData}
+            editingMatch={editingMatch}
+          />
+        </>
       )}
     </div>
   );
