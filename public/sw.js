@@ -438,11 +438,11 @@ self.addEventListener('push', (event) => {
     data = event.data ? event.data.json() : {};
   } catch (error) {
     console.error('[SW] Push data parsing error:', error);
-    data = { title: 'Paris League', body: 'Nuova notifica disponibile!' };
+    data = { title: 'Play-sport.pro', body: 'Nuova notifica disponibile!' };
   }
 
   const options = {
-    title: data.title || 'Paris League',
+    title: data.title || 'Play-sport.pro',
     body: data.body || 'Hai una nuova notifica',
     icon: '/icons/icon.svg',
     badge: '/icons/icon.svg',

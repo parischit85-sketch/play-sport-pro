@@ -294,7 +294,7 @@ export default function NotificationSettings({ className = '' }) {
               <div>
                 <h4 className="text-sm font-medium text-red-800">Notifiche Bloccate</h4>
                 <p className="text-sm text-red-600">
-                  Per riattivare: Impostazioni browser → Notifiche → Paris League
+                  Per riattivare: Impostazioni browser → Notifiche → Play-sport.pro
                 </p>
               </div>
             </div>

@@ -229,7 +229,7 @@ const WeatherWidget = ({ club }) => {
       </div>
 
       {/* Oggi */}
-      <div className="bg-white/70/70 backdrop-blur-sm rounded-lg p-1.5 border border-blue-700/30">
+      <div className="bg-gray-800/70 backdrop-blur-sm rounded-lg p-1.5 border border-blue-700/30">
         <div className="flex items-center justify-between mb-1">
           <div className="text-xs font-bold text-blue-400">{formatDate(weather.today.date)}</div>
           <div className="flex items-center gap-1">
@@ -329,7 +329,7 @@ const WeatherWidget = ({ club }) => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header Modal con navigazione */}
-            <div className="bg-gradient-to-r from-blue-500 to-sky-500 p-4">
+            <div className="bg-gradient-to-r from-blue-600 to-sky-600 p-4">
               <div className="flex items-center justify-between mb-2">
                 <button
                   onClick={handlePrevDay}
@@ -408,7 +408,7 @@ const WeatherWidget = ({ club }) => {
             </div>
 
             {/* Contenuto Modal */}
-            <div className="p-4 overflow-y-auto max-h-[calc(80vh-100px)]">
+            <div className="p-4 overflow-y-auto max-h-[calc(80vh-100px)] bg-gray-800">
               {loadingHourly ? (
                 <div className="flex items-center justify-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -449,7 +449,7 @@ const WeatherWidget = ({ club }) => {
                             </div>
                           )}
 
-                          <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-full">
+                          <div className="flex items-center gap-1 bg-gray-700 px-2 py-1 rounded-full">
                             <span className="text-sm">💨</span>
                             <span className="text-sm font-medium text-gray-300">
                               {item.windSpeed} km/h

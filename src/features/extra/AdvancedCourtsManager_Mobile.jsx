@@ -104,20 +104,20 @@ function TimeSlotBottomSheet({ isOpen, onClose, slot, onSave, T, maxPlayers = 4 
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Bottom Sheet */}
-      <div className="relative w-full sm:max-w-2xl bg-white bg-gray-800 rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[90vh] overflow-hidden">
+      <div className="relative w-full sm:max-w-2xl bg-gray-800 rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[90vh] overflow-hidden">
         {/* Handle (mobile) */}
         <div className="sm:hidden flex justify-center pt-3 pb-2">
           <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
         </div>
 
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 border-gray-700 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
           <h3 className="text-xl font-bold">
             {slot?.id ? '✏️ Modifica Fascia' : '➕ Nuova Fascia'}
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 hover:text-gray-300 text-2xl w-10 h-10 flex items-center justify-center"
+            className="text-gray-400 hover:text-gray-300 text-2xl w-10 h-10 flex items-center justify-center"
           >
             ✕
           </button>
@@ -243,7 +243,7 @@ function TimeSlotBottomSheet({ isOpen, onClose, slot, onSave, T, maxPlayers = 4 
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 border-t border-gray-200 border-gray-700 bg-gray-50/50 bg-gray-800/50">
+        <div className="px-6 py-4 border-t border-gray-700 bg-gray-800">
           <div className="flex gap-3">
             <button
               onClick={onClose}
@@ -318,7 +318,7 @@ function CompactTimeSlotCard({ slot, onEdit, onRemove, T, maxPlayers }) {
   const activeDays = (slot.days || []).map((i) => days[i]).join('');
 
   return (
-    <div className="relative bg-white bg-gray-800 rounded-xl p-4 shadow-md border-2 border-gray-200 border-gray-700">
+    <div className="relative bg-gray-800 rounded-xl p-4 shadow-md border-2 border-gray-700">
       {/* Badge Promo */}
       {slot.isPromo && (
         <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full shadow-lg">
@@ -522,15 +522,15 @@ const MobileCourtCard = ({
 
         {/* Expanded Content */}
         {isExpanded && (
-          <div className="border-t-2 border-gray-200 border-gray-700">
+          <div className="border-t-2 border-gray-700">
             {/* Tab Navigation */}
-            <div className="flex border-b border-gray-200 border-gray-700 bg-gray-50/50 bg-gray-800/50">
+            <div className="flex border-b border-gray-700 bg-gray-800/50">
               <button
                 onClick={() => setActiveTab('info')}
                 className={`flex-1 py-4 px-4 font-semibold transition-all ${
                   activeTab === 'info'
-                    ? 'bg-white bg-gray-800 text-blue-600 text-blue-400 border-b-2 border-blue-600'
-                    : 'text-gray-400 hover:text-gray-700 hover:text-gray-300'
+                    ? 'bg-gray-800 text-blue-400 border-b-2 border-blue-600'
+                    : 'text-gray-400 hover:text-gray-300'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
@@ -543,8 +543,8 @@ const MobileCourtCard = ({
                 onClick={() => setActiveTab('slots')}
                 className={`flex-1 py-4 px-4 font-semibold transition-all ${
                   activeTab === 'slots'
-                    ? 'bg-white bg-gray-800 text-blue-600 text-blue-400 border-b-2 border-blue-600'
-                    : 'text-gray-400 hover:text-gray-700 hover:text-gray-300'
+                    ? 'bg-gray-800 text-blue-400 border-b-2 border-blue-600'
+                    : 'text-gray-400 hover:text-gray-300'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
@@ -662,7 +662,7 @@ const MobileCourtCard = ({
 
                   {/* Time Slots List */}
                   {(court.timeSlots || []).length === 0 ? (
-                    <div className="text-center py-12 border-2 border-dashed border-gray-300 border-gray-600 rounded-xl">
+                    <div className="text-center py-12 border-2 border-dashed border-gray-600 rounded-xl">
                       <div className="text-4xl mb-3">🕐</div>
                       <div className="font-medium text-gray-400 mb-1">Nessuna fascia oraria</div>
                       <div className="text-sm text-gray-500">
@@ -884,7 +884,7 @@ export default function AdvancedCourtsManager_Mobile({
   return (
     <div className="space-y-4">
       {/* Header Sticky */}
-      <div className="sticky top-0 z-40 bg-white bg-gray-800 pb-4 pt-2">
+      <div className="sticky top-0 z-40 bg-gray-800 pb-4 pt-2">
         {/* Title with Save Indicator */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
@@ -953,7 +953,7 @@ export default function AdvancedCourtsManager_Mobile({
       {/* Courts List */}
       <div className="space-y-4 pb-20">
         {filteredCourts.length === 0 ? (
-          <div className="text-center py-16 border-2 border-dashed border-gray-300 border-gray-600 rounded-2xl">
+          <div className="text-center py-16 border-2 border-dashed border-gray-600 rounded-2xl">
             <div className="text-6xl mb-4">🏟️</div>
             <h4 className="font-bold text-xl mb-2">
               {activeFilter === 'all' ? 'Nessun campo' : `Nessun campo ${activeFilter}`}

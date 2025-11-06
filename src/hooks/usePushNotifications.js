@@ -112,7 +112,7 @@ export function usePushNotifications() {
 
     if (permission === 'granted') {
       try {
-        new Notification('🎾 Paris League Test', {
+        new Notification('🎾 Play-sport.pro Test', {
           body: 'Le notifiche funzionano perfettamente!',
           icon: '/icons/icon.svg',
           badge: '/icons/icon.svg',

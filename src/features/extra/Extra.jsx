@@ -370,7 +370,7 @@ export default function Extra({
 
         {/* Le regole tariffarie sono ora gestite per-campo nel sistema avanzato */}
 
-        <div className="mt-4 rounded-xl p-3 border border-white/10">
+        <div className={`mt-4 rounded-xl p-3 ${T.cardBg} ${T.border}`}>
           <div className="font-medium mb-2">Opzioni per prenotazione (costo fisso)</div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="flex items-center gap-2">

@@ -7,7 +7,6 @@ import { themeTokens } from '@lib/theme.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useClubAdminRedirect } from '../hooks/useClubAdminRedirect.js';
-import PWABanner from '../components/ui/PWABanner.jsx';
 
 // Lazy load heavy components
 const UserBookingsCard = React.lazy(() => import('@ui/UserBookingsCard.jsx'));
@@ -85,7 +84,6 @@ export default function DashboardHomePage() {
     // simple loading fallback until ClubContext guarantees players array
     return (
       <div className="space-y-6 min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800    p-4">
-        <PWABanner />
         <div className="animate-pulse space-y-6">
           <div className="bg-white/60/60 backdrop-blur-xl rounded-3xl h-32 border border-white/20  shadow-xl"></div>
           <div className="grid grid-cols-2 gap-4">
@@ -103,9 +101,6 @@ export default function DashboardHomePage() {
 
   return (
     <div className="space-y-1 min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800">
-      {/* PWA Install Banner */}
-      <PWABanner />
-
       {/* Desktop: Layout fianco a fianco */}
       <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:items-start lg:p-2">
         {/* Le tue prenotazioni - Desktop (Lazy loaded) */}

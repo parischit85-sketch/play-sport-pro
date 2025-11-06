@@ -7,7 +7,6 @@ import { themeTokens } from '@lib/theme.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useClubAdminRedirect } from '../hooks/useClubAdminRedirect.js';
-import PWABanner from '../components/ui/PWABanner.jsx';
 import EmailVerificationBanner from '../components/auth/EmailVerificationBanner.jsx';
 // import StatsCard from '@ui/StatsCard.jsx';
 import BookingTypeModal from '../components/ui/BookingTypeModal.jsx';
@@ -126,7 +125,6 @@ export default function DashboardPage() {
     // simple loading fallback until ClubContext guarantees players array
     return (
       <div className="space-y-6 min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800 p-4">
-        <PWABanner />
         <div className="animate-pulse space-y-6">
           <div className="bg-gray-800/60 backdrop-blur-xl rounded-3xl h-32 border border-gray-700/20 shadow-xl"></div>
           <div className="grid grid-cols-2 gap-4">
@@ -144,9 +142,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-1 min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800 overflow-x-hidden">
-      {/* PWA Install Banner */}
-      <PWABanner />
-
       {/* Email Verification Banner */}
       <EmailVerificationBanner />
 

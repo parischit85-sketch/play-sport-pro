@@ -181,7 +181,7 @@ export function usePWA() {
         icon: '💻',
         instructions: [
           'Clicca sull\'icona "Installa" nella barra degli indirizzi',
-          'Oppure apri il menu (3 punti) → "Installa Paris League"',
+          'Oppure apri il menu (3 punti) → "Installa Play-sport.pro"',
           'Conferma cliccando "Installa"',
           "L'app apparirà nel menu Start/Applicazioni",
         ],

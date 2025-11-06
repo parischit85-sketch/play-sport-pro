@@ -101,7 +101,7 @@ export default function PWAInstallButton({ className = '' }) {
               <h3 className="text-xl font-bold text-gray-900 mb-2">{installInstructions.title}</h3>
 
               <p className="text-gray-600 mb-6">
-                Segui questi semplici passaggi per installare Paris League:
+                Segui questi semplici passaggi per installare Play-sport.pro:
               </p>
 
               <div className="text-left space-y-4 mb-8">

@@ -6,7 +6,6 @@ import React from 'react';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useNavigate } from 'react-router-dom';
-import PWABanner from '../components/ui/PWABanner.jsx';
 
 const InstructorDashboard = React.lazy(
   () => import('@features/instructor/InstructorDashboard.jsx')
@@ -57,7 +56,6 @@ export default function InstructorDashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800">
-      <PWABanner />
       <React.Suspense
         fallback={
           <div className="p-4">
