@@ -18,6 +18,7 @@ import PWAInstallButton from '@components/PWAInstallButton.jsx';
 import PWAFloatingButton from '@components/PWAFloatingButton.jsx';
 import PWAInstallPrompt from '@ui/PWAInstallPrompt.jsx';
 import BookingTypeModal from '@ui/BookingTypeModal.jsx';
+import AppDownloadModal from '@ui/AppDownloadModal.jsx';
 import CertificateExpiryAlert from '@features/players/components/CertificateExpiryAlert.jsx';
 import { logout } from '@services/auth.jsx';
 import { logger } from '@/utils/logger';
@@ -502,6 +503,9 @@ function AppLayoutInner() {
 
       {/* PWA Install Prompt with Permissions (Auto-show on first access) */}
       <PWAInstallPrompt />
+
+      {/* App Download Modal (Auto-show for native app download) */}
+      <AppDownloadModal />
 
       {/* Global Components */}
       <NotificationSystem />
