@@ -292,8 +292,7 @@ export default function AppDownloadModal() {
         {/* Istruzioni PWA */}
         <div className="bg-gray-800/50 rounded-lg p-4 mb-6">
           <p className="text-gray-300 text-sm mb-3 text-center">
-            Su alcuni dispositivi l'installazione avviene automaticamente.
-            Se necessario, segui questi passi:
+            Per installare l'app sul tuo dispositivo:
           </p>
           <div className="space-y-3">
             {PWA_INSTRUCTIONS[os]?.map((instruction, index) => (
@@ -305,61 +304,13 @@ export default function AppDownloadModal() {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Debug Info */}
-        <div className="bg-gray-900/50 rounded-lg p-3 mb-4">
-          <p className="text-xs text-gray-400 mb-2">Debug Info:</p>
-          <div className="text-xs text-gray-500 space-y-1">
-            <div>
-              Prompt disponibile:{' '}
-              <span className={deferredPrompt ? 'text-green-400' : 'text-red-400'}>
-                {deferredPrompt ? 'Sì' : 'No'}
-              </span>
-            </div>
-            <div>
-              Browser supporta PWA:{' '}
-              <span className={debugInfo.hasBeforeInstallPrompt ? 'text-green-400' : 'text-red-400'}>
-                {debugInfo.hasBeforeInstallPrompt ? 'Sì' : 'No'}
-              </span>
-            </div>
-            <div>
-              Service Worker:{' '}
-              <span className={debugInfo.hasServiceWorker ? 'text-green-400' : 'text-red-400'}>
-                {debugInfo.hasServiceWorker ? 'Sì' : 'No'}
-              </span>
-            </div>
-            <div>
-              Modal catturato:{' '}
-              <span className={debugInfo.promptCaptured ? 'text-green-400' : 'text-red-400'}>
-                {debugInfo.promptCaptured ? 'Sì' : 'No'}
-              </span>
-            </div>
-            <div>
-              Fonte evento: <span className="text-blue-400">{debugInfo.source || 'Nessuna'}</span>
-            </div>
-            <div>
-              App già installata:{' '}
-              <span className={debugInfo.isAppInstalled ? 'text-yellow-400' : 'text-green-400'}>
-                {debugInfo.isAppInstalled ? 'Sì' : 'No'}
-              </span>
-            </div>
-            <div>
-              Modalità standalone:{' '}
-              <span className={debugInfo.isStandalone ? 'text-yellow-400' : 'text-green-400'}>
-                {debugInfo.isStandalone ? 'Sì' : 'No'}
-              </span>
-            </div>
-            <div>OS: {os}</div>
-            {debugInfo.checkInstalledError && (
-              <div className="text-red-400">Errore check: {debugInfo.checkInstalledError}</div>
-            )}
-            <div className="mt-2 pt-2 border-t border-gray-700">
-              <p className="text-yellow-400 text-xs">
-                💡 Se il prompt non appare, cerca l'icona ⊕ nella barra degli indirizzi di Chrome
+          {os === 'windows' && (
+            <div className="mt-4 pt-4 border-t border-gray-700">
+              <p className="text-yellow-400 text-xs text-center">
+                💡 Cerca l'icona ⊕ nella barra degli indirizzi di Chrome per installare velocemente
               </p>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Pulsanti */}
