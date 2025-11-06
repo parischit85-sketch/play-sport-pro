@@ -72,6 +72,7 @@ export default function AppDownloadModal() {
   const [isDismissed, setIsDismissed] = useState(false);
   const [os, setOs] = useState('unknown');
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [debugInfo, setDebugInfo] = useState({});
 
   useEffect(() => {
     // Controlla se l'utente ha già ignorato il popup
@@ -81,12 +82,26 @@ export default function AppDownloadModal() {
       return;
     }
 
+    // Debug info iniziale
+    const initialDebug = {
+      userAgent: navigator.userAgent,
+      isStandalone: window.matchMedia('(display-mode: standalone)').matches,
+      navigatorStandalone: window.navigator.standalone,
+      hasBeforeInstallPrompt: 'onbeforeinstallprompt' in window,
+      hasServiceWorker: 'serviceWorker' in navigator,
+      timestamp: new Date().toISOString()
+    };
+    setDebugInfo(initialDebug);
+    console.log('PWA Debug Info:', initialDebug);
+
     // Cattura l'evento beforeinstallprompt per PWA
     const handleBeforeInstallPrompt = (e) => {
+      console.log('beforeinstallprompt event captured:', e);
       // Previene il prompt automatico del browser
       e.preventDefault();
       // Salva l'evento per usarlo dopo
       setDeferredPrompt(e);
+      setDebugInfo(prev => ({ ...prev, promptCaptured: true, promptEvent: e }));
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -101,6 +116,8 @@ export default function AppDownloadModal() {
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
                           window.navigator.standalone === true;
 
+      console.log('Checking if should show modal:', { isStandalone, deferredPrompt: !!deferredPrompt });
+
       // Non mostrare se è già una PWA installata
       if (!isStandalone) {
         setIsOpen(true);
@@ -114,14 +131,21 @@ export default function AppDownloadModal() {
   }, []);
 
   const handleDownload = async () => {
+    console.log('Install button clicked');
+    console.log('Deferred prompt available:', !!deferredPrompt);
+    console.log('Debug info:', debugInfo);
+
     // Se abbiamo il prompt di installazione PWA, mostralo
     if (deferredPrompt) {
       try {
+        console.log('Showing install prompt...');
         // Mostra il prompt di installazione
-        deferredPrompt.prompt();
+        const result = deferredPrompt.prompt();
+        console.log('Prompt result:', result);
 
         // Aspetta la risposta dell'utente
         const { outcome } = await deferredPrompt.userChoice;
+        console.log('User choice outcome:', outcome);
 
         // Resetta il prompt dopo l'uso
         setDeferredPrompt(null);
@@ -135,16 +159,21 @@ export default function AppDownloadModal() {
         // Se l'utente ha accettato, possiamo considerare l'app installata
         if (outcome === 'accepted') {
           console.log('PWA install accepted');
+          alert('Installazione avviata! L\'app dovrebbe apparire a breve.');
+        } else {
+          console.log('PWA install dismissed');
+          alert('Installazione annullata dall\'utente.');
         }
       } catch (error) {
         console.error('Error showing install prompt:', error);
+        alert('Errore durante l\'installazione: ' + error.message);
         // Fallback: chiudi il modal
         setIsOpen(false);
       }
     } else {
-      // Se non abbiamo il prompt, chiudi semplicemente il modal
-      // Questo può accadere su dispositivi che non supportano l'installazione diretta
-      setIsOpen(false);
+      console.log('No deferred prompt available, showing fallback message');
+      alert('Il browser non supporta l\'installazione automatica. Usa le istruzioni manuali qui sotto.');
+      // Non chiudere il modal per mostrare le istruzioni
     }
   };
 
@@ -237,6 +266,18 @@ export default function AppDownloadModal() {
                 <span className="text-gray-300 text-sm leading-relaxed">{instruction}</span>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Debug Info */}
+        <div className="bg-gray-900/50 rounded-lg p-3 mb-4">
+          <p className="text-xs text-gray-400 mb-2">Debug Info:</p>
+          <div className="text-xs text-gray-500 space-y-1">
+            <div>Prompt disponibile: <span className={deferredPrompt ? 'text-green-400' : 'text-red-400'}>{deferredPrompt ? 'Sì' : 'No'}</span></div>
+            <div>Browser supporta PWA: <span className={debugInfo.hasBeforeInstallPrompt ? 'text-green-400' : 'text-red-400'}>{debugInfo.hasBeforeInstallPrompt ? 'Sì' : 'No'}</span></div>
+            <div>Service Worker: <span className={debugInfo.hasServiceWorker ? 'text-green-400' : 'text-red-400'}>{debugInfo.hasServiceWorker ? 'Sì' : 'No'}</span></div>
+            <div>Modal catturato: <span className={debugInfo.promptCaptured ? 'text-green-400' : 'text-red-400'}>{debugInfo.promptCaptured ? 'Sì' : 'No'}</span></div>
+            <div>OS: {os}</div>
           </div>
         </div>
 
