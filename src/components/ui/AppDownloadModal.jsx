@@ -94,17 +94,28 @@ export default function AppDownloadModal() {
     setDebugInfo(initialDebug);
     console.log('PWA Debug Info:', initialDebug);
 
-    // Cattura l'evento beforeinstallprompt per PWA
+    // Cattura l'evento beforeinstallprompt per PWA - sia direttamente che dal service worker
     const handleBeforeInstallPrompt = (e) => {
-      console.log('beforeinstallprompt event captured:', e);
+      console.log('beforeinstallprompt event captured directly:', e);
       // Previene il prompt automatico del browser
       e.preventDefault();
       // Salva l'evento per usarlo dopo
       setDeferredPrompt(e);
-      setDebugInfo(prev => ({ ...prev, promptCaptured: true, promptEvent: e }));
+      setDebugInfo(prev => ({ ...prev, promptCaptured: true, promptEvent: e, source: 'direct' }));
+    };
+
+    // Ascolta messaggi dal service worker
+    const handleServiceWorkerMessage = (e) => {
+      if (e.data && e.data.type === 'BEFORE_INSTALL_PROMPT') {
+        console.log('beforeinstallprompt event received from service worker:', e.data.promptEvent);
+        // Il service worker ha inoltrato l'evento
+        setDeferredPrompt(e.data.promptEvent);
+        setDebugInfo(prev => ({ ...prev, promptCaptured: true, promptEvent: e.data.promptEvent, source: 'service_worker' }));
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    navigator.serviceWorker?.addEventListener('message', handleServiceWorkerMessage);
 
     // Rileva il sistema operativo
     const detectedOs = getOperatingSystem();
@@ -127,6 +138,7 @@ export default function AppDownloadModal() {
     return () => {
       clearTimeout(timer);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      navigator.serviceWorker?.removeEventListener('message', handleServiceWorkerMessage);
     };
   }, []);
 
@@ -277,6 +289,7 @@ export default function AppDownloadModal() {
             <div>Browser supporta PWA: <span className={debugInfo.hasBeforeInstallPrompt ? 'text-green-400' : 'text-red-400'}>{debugInfo.hasBeforeInstallPrompt ? 'Sì' : 'No'}</span></div>
             <div>Service Worker: <span className={debugInfo.hasServiceWorker ? 'text-green-400' : 'text-red-400'}>{debugInfo.hasServiceWorker ? 'Sì' : 'No'}</span></div>
             <div>Modal catturato: <span className={debugInfo.promptCaptured ? 'text-green-400' : 'text-red-400'}>{debugInfo.promptCaptured ? 'Sì' : 'No'}</span></div>
+            <div>Fonte evento: <span className="text-blue-400">{debugInfo.source || 'Nessuna'}</span></div>
             <div>OS: {os}</div>
           </div>
         </div>

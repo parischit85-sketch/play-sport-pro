@@ -393,10 +393,22 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// Notifica quando la PWA può essere installata
+// Notifica quando la PWA può essere installata - INOLTRA L'EVENTO AI CLIENT
 self.addEventListener('beforeinstallprompt', (event) => {
-  console.log('[SW] PWA installation prompt ready');
-  event.preventDefault();
+  console.log('[SW] PWA installation prompt ready - forwarding to clients');
+
+  // Inoltra l'evento a tutti i client (finestre del browser)
+  self.clients.matchAll().then((clients) => {
+    clients.forEach((client) => {
+      client.postMessage({
+        type: 'BEFORE_INSTALL_PROMPT',
+        promptEvent: event
+      });
+    });
+  });
+
+  // NON prevenire l'evento qui - lascialo arrivare al componente React
+  // event.preventDefault(); // COMMENTATO - lascia che arrivi al componente
 });
 
 // Gestione degli aggiornamenti dell'app
