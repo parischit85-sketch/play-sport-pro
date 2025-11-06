@@ -8,6 +8,7 @@ import { BOOKING_CONFIG } from '@services/bookings.js';
 import { searchUsers } from '@services/users.js';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@services/firebase.js';
+import { ds } from '@lib/design-system.js';
 
 export default function BookingDetailModal({
   booking,
@@ -581,7 +582,22 @@ export default function BookingDetailModal({
           {/* Note compatte (solo se presenti) */}
           {booking.notes && (
             <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 from-blue-900/30 to-indigo-900/30 backdrop-blur-xl border border-white/30 border-gray-700/30 rounded-xl p-4 shadow-lg shadow-blue-100/50 shadow-blue-900/20">
-              <div className="text-xs text-blue-700 text-blue-300 font-medium mb-2">📝 NOTE</div>
+              <div className="text-xs text-blue-700 text-blue-300 font-medium mb-2">
+                <svg
+                  className={`w-4 h-4 inline mr-1 ${ds.info}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+                NOTE
+              </div>
               <p className="text-sm text-gray-700 text-gray-300">{booking.notes}</p>
             </div>
           )}
@@ -593,7 +609,41 @@ export default function BookingDetailModal({
                 onClick={handleToggleEdit}
                 className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-4 px-4 rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
               >
-                {isEditingPlayers ? '💾 Salva Modifiche' : '✏️ Modifica Giocatori'}
+                {isEditingPlayers ? (
+                  <>
+                    <svg
+                      className={`w-4 h-4 inline mr-2 ${ds.success}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Salva Modifiche
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      className={`w-4 h-4 inline mr-2 ${ds.info}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
+                    Modifica Giocatori
+                  </>
+                )}
               </button>
             )}
 
@@ -602,14 +652,40 @@ export default function BookingDetailModal({
                 onClick={() => onEdit && onEdit(booking)}
                 className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-4 px-4 rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
               >
-                ✏️ Modifica Lezione
+                <svg
+                  className={`w-4 h-4 inline mr-2 ${ds.info}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+                Modifica Lezione
               </button>
             )}
 
             {/* Messaggio se non si può modificare */}
             {!isPast && !canEdit && (
               <div className="w-full bg-white/60 bg-gray-700/60 backdrop-blur-sm border border-white/30 border-gray-600/30 text-gray-600 text-gray-300 py-4 px-4 rounded-xl text-sm text-center shadow-sm">
-                ⏰ Modifiche disponibili fino a 30 ore prima
+                <svg
+                  className={`w-4 h-4 inline mr-2 ${ds.warning}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                Modifiche disponibili fino a 30 ore prima
               </div>
             )}
 
@@ -620,19 +696,58 @@ export default function BookingDetailModal({
                     onClick={() => onShare && onShare(booking)}
                     className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 px-4 rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                   >
-                    📧 Condividi
+                    <svg
+                      className={`w-4 h-4 inline mr-2 ${ds.info}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    Condividi
                   </button>
                   {canCancel ? (
                     <button
                       onClick={() => onCancel && onCancel(booking)}
                       className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-4 px-4 rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                     >
-                      🚫 Cancella
+                      <svg
+                        className={`w-4 h-4 inline mr-2 ${ds.warning}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                      Cancella
                     </button>
                   ) : (
-                    <div className="flex-1 bg-white/60 bg-gray-700/60 backdrop-blur-sm border border-white/30 border-gray-600/30 text-gray-600 text-gray-300 py-4 px-4 rounded-xl text-sm text-center shadow-sm">
-                      ⏰ Non cancellabile (meno di 30h)
-                    </div>
+                      <div className="flex-1 bg-white/60 bg-gray-700/60 backdrop-blur-sm border border-white/30 border-gray-600/30 text-gray-600 text-gray-300 py-4 px-4 rounded-xl text-sm text-center shadow-sm">
+                        <svg
+                          className={`w-4 h-4 inline mr-2 ${ds.warning}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        Non cancellabile (meno di 30h)
+                      </div>
                   )}
                 </>
               ) : (
@@ -640,7 +755,20 @@ export default function BookingDetailModal({
                   onClick={() => onReview && onReview(booking)}
                   className="w-full bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white py-4 px-4 rounded-xl text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
                 >
-                  ⭐ Lascia Recensione
+                  <svg
+                    className={`w-4 h-4 inline mr-2 ${ds.success}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                    />
+                  </svg>
+                  Lascia Recensione
                 </button>
               )}
             </div>

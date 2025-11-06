@@ -546,7 +546,7 @@ export default function InstructorDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 from-gray-900 via-slate-900 to-gray-800 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800 p-4">
         <div className="max-w-7xl mx-auto space-y-6 animate-pulse">
           <div className={`h-12 ${T.cardBg} bg-opacity-60 rounded-2xl`}></div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -561,11 +561,11 @@ export default function InstructorDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/30 from-gray-950 via-slate-900 to-gray-900 p-3 sm:p-4 lg:p-6 pb-20 sm:pb-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-slate-900 to-gray-900 p-3 sm:p-4 lg:p-6 pb-20 sm:pb-6">
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header Compatto */}
         <div className={`relative overflow-hidden ${T.card}`}>
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5 from-indigo-500/10 via-purple-500/10 to-pink-500/10"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10"></div>
 
           <div className="relative p-4 sm:p-6">
             <div className="flex items-center gap-3">
@@ -585,7 +585,7 @@ export default function InstructorDashboard() {
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                   Dashboard Istruttore
                 </h1>
                 <p className="text-xs sm:text-sm text-gray-400 truncate">
@@ -639,7 +639,7 @@ export default function InstructorDashboard() {
         {/* Main Content - Design Rinnovato */}
         <div className={`${T.card} overflow-hidden`}>
           {/* Tabs - In Unica Riga con Scroll Orizzontale */}
-          <div className="border-b border-gray-200 border-gray-800 bg-gradient-to-b from-gray-50/50 to-transparent from-gray-800/30 px-3 sm:px-4 py-3">
+          <div className="border-b border-gray-800 bg-gradient-to-b from-gray-800/30 px-3 sm:px-4 py-3">
             <div className="flex gap-2 overflow-x-auto scrollbar-hide">
               {[
                 { key: 'lessons', label: 'Lezioni', count: futureLessonsCount },
@@ -1079,7 +1079,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
           Nessuna fascia oraria configurata
         </h3>
         <p className="text-gray-400 mb-6">Aggiungi le tue fasce orarie per gestire le lezioni</p>
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 bg-blue-900/20 text-blue-600 text-blue-400 rounded-lg text-sm">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-900/20 text-blue-400 rounded-lg text-sm">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
@@ -1122,7 +1122,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
 
     return (
       <div
-        className={`group relative ${T.card} overflow-hidden ${isExpired ? 'opacity-60' : 'hover:shadow-xl hover:border-indigo-300 hover:border-indigo-600'} transition-all duration-300`}
+        className={`group relative ${T.card} overflow-hidden ${isExpired ? 'opacity-60' : 'hover:shadow-xl hover:border-indigo-600'} transition-all duration-300`}
       >
         {/* Decorative gradient bar */}
         <div
@@ -1131,7 +1131,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
 
         <div className="p-4 sm:p-6">
           {/* Header with Date and Status */}
-          <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-200 border-gray-700 gap-3">
+          <div className="flex items-start justify-between mb-4 pb-4 border-b border-gray-700 gap-3">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               <div
                 className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${isExpired ? 'from-gray-400 to-gray-500' : 'from-indigo-500 to-purple-600'} rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0`}
@@ -1202,7 +1202,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
         {/* Content Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6">
           {/* Orario */}
-          <div className="bg-gradient-to-br from-orange-50 to-red-50 from-orange-900/20 to-red-900/20 rounded-lg p-3 sm:p-4 border border-orange-200 border-orange-700/30">
+          <div className="bg-gradient-to-br from-orange-900/20 to-red-900/20 rounded-lg p-3 sm:p-4 border border-orange-700/30">
             <div className="flex items-center gap-2 mb-2">
               <svg
                 className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 text-orange-400 flex-shrink-0"
@@ -1227,7 +1227,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
           </div>
 
           {/* Maestro */}
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 from-green-900/20 to-emerald-900/20 rounded-lg p-3 sm:p-4 border border-green-200 border-green-700/30">
+          <div className="bg-gradient-to-br from-green-900/20 to-emerald-900/20 rounded-lg p-3 sm:p-4 border border-green-700/30">
             <div className="flex items-center gap-2 mb-2">
               <svg
                 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 text-green-400 flex-shrink-0"
@@ -1252,7 +1252,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
           </div>
 
           {/* Campi */}
-          <div className="bg-gradient-to-br from-purple-50 to-indigo-50 from-purple-900/20 to-indigo-900/20 rounded-lg p-3 sm:p-4 border border-purple-200 border-purple-700/30 sm:col-span-2 md:col-span-1">
+          <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 rounded-lg p-3 sm:p-4 border border-purple-700/30 sm:col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-2">
               <svg
                 className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 text-purple-400 flex-shrink-0"
@@ -1344,7 +1344,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
 
         {/* Notes */}
         {slot.notes && (
-          <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-blue-50 bg-blue-900/20 rounded-lg border border-blue-200 border-blue-700/30">
+          <div className="mb-3 sm:mb-4 p-2 sm:p-3 bg-blue-900/20 rounded-lg border border-blue-700/30">
             <p className="text-xs sm:text-sm text-blue-900 text-blue-100 break-words">
               {slot.notes}
             </p>
@@ -1352,7 +1352,7 @@ function TimeSlotsList({ timeSlots, onEdit, onDelete, onToggle }) {
         )}
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-200 border-gray-700">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-gray-700">
           <button
             onClick={() => onEdit(slot)}
             className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
@@ -1532,7 +1532,7 @@ function BookingDetail({ booking, type }) {
       {booking.notes && (
         <div>
           <div className="text-sm text-gray-400 mb-1">Note</div>
-          <div className="p-3 bg-blue-50 bg-blue-900/20 rounded-lg text-sm text-gray-900 text-white">
+          <div className="p-3 bg-blue-900/20 rounded-lg text-sm text-white">
             {booking.notes}
           </div>
         </div>

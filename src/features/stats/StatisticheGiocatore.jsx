@@ -718,7 +718,7 @@ export default function StatisticheGiocatore({
             <div className="text-xl sm:text-3xl font-bold text-blue-600">{position ?? '-'}</div>
           </div>
 
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 from-emerald-900/30 to-green-900/30 backdrop-blur-xl rounded-2xl border border-emerald-200/30 border-emerald-700/30 p-4 sm:p-6 shadow-xl">
+          <div className="bg-gradient-to-r from-emerald-900/30 to-green-900/30 backdrop-blur-xl rounded-2xl border border-emerald-700/30 p-4 sm:p-6 shadow-xl">
             <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
               <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
                 <svg
@@ -742,7 +742,7 @@ export default function StatisticheGiocatore({
             </div>
           </div>
 
-          <div className="col-span-2 sm:col-span-1 bg-gradient-to-r from-purple-50 to-pink-50 from-purple-900/30 to-pink-900/30 backdrop-blur-xl rounded-2xl border border-purple-200/30 border-purple-700/30 p-4 sm:p-6 shadow-xl">
+          <div className="col-span-2 sm:col-span-1 bg-gradient-to-r from-purple-900/30 to-pink-900/30 backdrop-blur-xl rounded-2xl border border-purple-700/30 p-4 sm:p-6 shadow-xl">
             <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
               <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
                 <svg
@@ -772,7 +772,7 @@ export default function StatisticheGiocatore({
         {/* Metriche Avanzate - Futuristic Grid - Mobile Optimized */}
         {advancedStats && (
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-gradient-to-r from-orange-50 to-amber-50 from-orange-900/30 to-amber-900/30 backdrop-blur-xl rounded-2xl border border-orange-200/30 border-orange-700/30 p-4 sm:p-6 shadow-xl">
+            <div className="bg-gradient-to-r from-orange-900/30 to-amber-900/30 backdrop-blur-xl rounded-2xl border border-orange-700/30 p-4 sm:p-6 shadow-xl">
               <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-orange-500 to-amber-600 rounded-lg flex items-center justify-center">
                   <svg
@@ -797,7 +797,7 @@ export default function StatisticheGiocatore({
               <div className="text-xs sm:text-sm ${T.subtext} mt-1">% game vinti</div>
             </div>
 
-            <div className="bg-gradient-to-r from-cyan-50 to-blue-50 from-cyan-900/30 to-blue-900/30 backdrop-blur-xl rounded-2xl border border-cyan-200/30 border-cyan-700/30 p-4 sm:p-6 shadow-xl">
+            <div className="bg-gradient-to-r from-cyan-900/30 to-blue-900/30 backdrop-blur-xl rounded-2xl border border-cyan-700/30 p-4 sm:p-6 shadow-xl">
               <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
                   <svg
@@ -828,7 +828,7 @@ export default function StatisticheGiocatore({
               <div className="text-xs sm:text-sm ${T.subtext} mt-1">punti per partita</div>
             </div>
 
-            <div className="bg-gradient-to-r from-rose-50 to-pink-50 from-rose-900/30 to-pink-900/30 backdrop-blur-xl rounded-2xl border border-rose-200/30 border-rose-700/30 p-4 sm:p-6 shadow-xl">
+            <div className="bg-gradient-to-r from-rose-900/30 to-pink-900/30 backdrop-blur-xl rounded-2xl border border-rose-700/30 p-4 sm:p-6 shadow-xl">
               <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
                 <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-rose-500 to-pink-600 rounded-lg flex items-center justify-center">
                   <svg
@@ -855,7 +855,7 @@ export default function StatisticheGiocatore({
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-violet-50 to-purple-50 from-violet-900/30 to-purple-900/30 backdrop-blur-xl rounded-2xl border border-violet-200/30 border-violet-700/30 p-6 shadow-xl">
+            <div className="bg-gradient-to-r from-violet-900/30 to-purple-900/30 backdrop-blur-xl rounded-2xl border border-violet-700/30 p-6 shadow-xl">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
                   <svg
@@ -1487,8 +1487,8 @@ export default function StatisticheGiocatore({
                           <div
                             className={`p-4 rounded-2xl border backdrop-blur-sm ${
                               won
-                                ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 from-emerald-900/40 to-emerald-800/30'
-                                : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 from-rose-900/40 to-rose-800/30'
+                                ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-900/40 to-emerald-800/30'
+                                : 'border-rose-400/30 bg-gradient-to-br from-rose-900/40 to-rose-800/30'
                             }`}
                           >
                             <div className="font-semibold ${T.text} mb-2 flex items-center gap-2">
@@ -1502,8 +1502,8 @@ export default function StatisticheGiocatore({
                           <div
                             className={`p-4 rounded-2xl border backdrop-blur-sm ${
                               !won
-                                ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 from-emerald-900/40 to-emerald-800/30'
-                                : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 from-rose-900/40 to-rose-800/30'
+                                ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-900/40 to-emerald-800/30'
+                                : 'border-rose-400/30 bg-gradient-to-br from-rose-900/40 to-rose-800/30'
                             }`}
                           >
                             <div className="font-semibold ${T.text} mb-2 flex items-center gap-2">
@@ -1566,17 +1566,17 @@ export default function StatisticheGiocatore({
                             Calcolo punti RPA:
                           </div>
                           <div className="text-sm space-y-3 ${T.text}">
-                            <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/60 from-blue-900/20 to-indigo-900/20 p-3 rounded-2xl border border-blue-200/30 border-blue-700/30 backdrop-blur-sm">
+                            <div className="bg-gradient-to-r from-blue-900/20 to-indigo-900/20 p-3 rounded-2xl border border-blue-700/30 backdrop-blur-sm">
                               <strong className="text-blue-300">Rating:</strong> A=
                               {Math.round(m.sumA || 0)} vs B=
                               {Math.round(m.sumB || 0)} (Gap: {Math.round(m.gap || 0)})
                             </div>
-                            <div className="bg-gradient-to-r from-purple-50/80 to-violet-50/60 from-purple-900/20 to-violet-900/20 p-3 rounded-2xl border border-purple-200/30 border-purple-700/30 backdrop-blur-sm">
+                            <div className="bg-gradient-to-r from-purple-900/20 to-violet-900/20 p-3 rounded-2xl border border-purple-700/30 backdrop-blur-sm">
                               <strong className="text-purple-300">Calcolo:</strong> Base:{' '}
                               {(m.base || 0).toFixed(1)} • DG: {m.gd || 0} • Factor:{' '}
                               {(m.factor || 1).toFixed(2)}
                             </div>
-                            <div className="bg-gradient-to-r from-emerald-50/80 to-green-50/60 from-emerald-900/20 to-green-900/20 p-3 rounded-2xl border border-emerald-200/30 border-emerald-700/30 backdrop-blur-sm">
+                            <div className="bg-gradient-to-r from-emerald-900/20 to-green-900/20 p-3 rounded-2xl border border-emerald-700/30 backdrop-blur-sm">
                               <strong className="text-emerald-300">Risultato:</strong>{' '}
                               <span
                                 className={`font-bold text-lg ${

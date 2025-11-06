@@ -285,3 +285,44 @@ export default {
   DS_PATTERNS,
   createDSClasses,
 };
+
+// =============================================
+// Design System Object (ds) - For easy access to common classes
+// =============================================
+
+export const ds = {
+  // Status colors with dark mode support
+  success: DS_COLORS.success,
+  error: DS_COLORS.error,
+  warning: DS_COLORS.warning,
+  info: DS_COLORS.info,
+
+  // Background utilities
+  bg: DS_COLORS.bg,
+
+  // Text utilities
+  text: DS_COLORS.text,
+
+  // Common layout classes
+  flexBetween: DS_LAYOUT.flexBetween,
+  flexCenter: DS_LAYOUT.flexCenter,
+  grid3: DS_LAYOUT.grid3,
+  grid4: DS_LAYOUT.grid4,
+
+  // Common spacing
+  sectionMb: DS_SPACING.sectionMb,
+  cardMb: DS_SPACING.cardMb,
+  elementMb: DS_SPACING.elementMb,
+
+  // Common shadows
+  card: DS_SHADOWS.card,
+  cardHover: DS_SHADOWS.cardHover,
+
+  // Common borders
+  rounded: DS_BORDERS.lg,
+  roundedXl: DS_BORDERS.xl,
+
+  // Common animations
+  transition: DS_ANIMATIONS.normal,
+  hoverScale: DS_ANIMATIONS.scaleHover,
+};

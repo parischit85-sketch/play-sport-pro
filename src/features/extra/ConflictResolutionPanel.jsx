@@ -312,12 +312,12 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white bg-gray-800 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="relative bg-gray-800 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 border-gray-700 bg-gradient-to-r from-red-50 to-orange-50 from-red-900/20 to-orange-900/20">
+        <div className="p-6 border-b border-gray-700 bg-gradient-to-r from-red-900/20 to-orange-900/20">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 text-white flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                 ⚠️ Risoluzione Conflitti
               </h2>
               <p className="text-sm text-gray-400 mt-1">
@@ -328,7 +328,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 hover:text-gray-300 text-3xl"
+              className="text-gray-400 hover:text-gray-300 text-3xl"
             >
               ×
             </button>
@@ -340,7 +340,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
           {conflicts.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-6xl mb-4">✅</div>
-              <h3 className="text-xl font-bold text-gray-900 text-white mb-2">
+              <h3 className="text-xl font-bold text-white mb-2">
                 Nessun Conflitto Rilevato
               </h3>
               <p className="text-gray-400">Tutte le fasce orarie sono configurate correttamente.</p>
@@ -358,8 +358,8 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
                       🔴 Conflitto #{conflictIndex + 1}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                      <div className="bg-white bg-gray-800 p-3 rounded-lg border border-gray-200 border-gray-700">
-                        <div className="font-semibold text-gray-900 text-white">
+                      <div className="bg-gray-800 p-3 rounded-lg border border-gray-700">
+                        <div className="font-semibold text-white">
                           {conflict.slot1.label}
                         </div>
                         <div className="text-gray-400">
@@ -367,8 +367,8 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
                         </div>
                         <div className="text-gray-400">💰 €{conflict.slot1.eurPerHour}/h</div>
                       </div>
-                      <div className="bg-white bg-gray-800 p-3 rounded-lg border border-gray-200 border-gray-700">
-                        <div className="font-semibold text-gray-900 text-white">
+                      <div className="bg-gray-800 p-3 rounded-lg border border-gray-700">
+                        <div className="font-semibold text-white">
                           {conflict.slot2.label}
                         </div>
                         <div className="text-gray-400">
@@ -384,7 +384,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
 
                   {/* Suggestions */}
                   <div>
-                    <h4 className="font-semibold text-gray-900 text-white mb-3">
+                    <h4 className="font-semibold text-white mb-3">
                       💡 Suggerimenti di Risoluzione
                     </h4>
                     <div className="grid grid-cols-1 gap-2">
@@ -400,7 +400,7 @@ export function ConflictResolutionPanel({ isOpen, onClose, court, courtIndex, on
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <div className="font-semibold text-gray-900 text-white mb-1">
+                              <div className="font-semibold text-white mb-1">
                                 {suggestion.title}
                               </div>
                               <div className="text-sm text-gray-400">{suggestion.description}</div>

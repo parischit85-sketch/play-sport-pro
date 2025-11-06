@@ -59,12 +59,12 @@ export function TemplateLibraryModal({ isOpen, onClose, onApply, T }) {
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="relative bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 from-blue-900/20 to-purple-900/20">
+        <div className="p-6 border-b border-gray-700 bg-gradient-to-r from-blue-900/20 to-purple-900/20">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 text-white flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                 📚 Libreria Template
               </h2>
               <p className="text-sm text-gray-400 mt-1">
@@ -181,9 +181,6 @@ export function TemplateLibraryModal({ isOpen, onClose, onApply, T }) {
     </div>
   );
 }
-
-// ============================================
-// COMPONENTE: Template Card
 // ============================================
 function TemplateCard({ template, isSelected, onSelect, onDelete, T }) {
   const [showDetails, setShowDetails] = useState(false);
@@ -218,7 +215,7 @@ function TemplateCard({ template, isSelected, onSelect, onDelete, T }) {
       className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
         isSelected
           ? 'border-blue-500 bg-blue-50 bg-blue-900/20 shadow-lg'
-          : 'border-gray-200 border-gray-700 hover:border-gray-300 hover:border-gray-600'
+          : 'border-gray-700 hover:border-gray-600'
       }`}
       onClick={onSelect}
     >
@@ -227,7 +224,7 @@ function TemplateCard({ template, isSelected, onSelect, onDelete, T }) {
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-2xl">{getCategoryIcon(template.category)}</span>
-            <h3 className="font-bold text-lg text-gray-900 text-white">{template.name}</h3>
+            <h3 className="font-bold text-lg text-white">{template.name}</h3>
             {template.isSystem && (
               <span className="text-xs px-2 py-1 bg-gray-700 text-gray-400 rounded-full">
                 Sistema
@@ -261,13 +258,13 @@ function TemplateCard({ template, isSelected, onSelect, onDelete, T }) {
       </div>
 
       {/* Time Slots Summary */}
-      <div className="border-t border-gray-200 border-gray-700 pt-3">
+      <div className="border-t border-gray-700 pt-3">
         <button
           onClick={(e) => {
             e.stopPropagation();
             setShowDetails(!showDetails);
           }}
-          className="text-xs text-blue-600 text-blue-400 hover:underline mb-2"
+          className="text-xs text-blue-400 hover:underline mb-2"
         >
           {showDetails ? '▼ Nascondi dettagli' : '▶ Mostra dettagli'}
         </button>
@@ -275,8 +272,8 @@ function TemplateCard({ template, isSelected, onSelect, onDelete, T }) {
         {showDetails && (
           <div className="space-y-2 mt-2">
             {template.timeSlots.map((slot, idx) => (
-              <div key={idx} className="text-xs bg-gray-50 bg-gray-800 p-2 rounded">
-                <div className="font-semibold text-gray-900 text-white">
+              <div key={idx} className="text-xs bg-gray-800 p-2 rounded">
+                <div className="font-semibold text-white">
                   {slot.label || `Fascia ${idx + 1}`}
                 </div>
                 <div className="text-gray-400">
@@ -292,7 +289,7 @@ function TemplateCard({ template, isSelected, onSelect, onDelete, T }) {
 
       {/* Selection Indicator */}
       {isSelected && (
-        <div className="mt-3 flex items-center justify-center text-blue-600 text-blue-400 font-semibold text-sm">
+        <div className="mt-3 flex items-center justify-center text-blue-400 font-semibold text-sm">
           ✓ Selezionato
         </div>
       )}
@@ -351,9 +348,9 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, sourceTimeSlots =
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 border-gray-700">
+        <div className="p-6 border-b border-gray-700">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 text-white">
@@ -497,9 +494,6 @@ export function CreateTemplateModal({ isOpen, onClose, onSave, sourceTimeSlots =
     </div>
   );
 }
-
-// ============================================
-// UTILITY FUNCTIONS
 // ============================================
 
 function formatDays(days) {

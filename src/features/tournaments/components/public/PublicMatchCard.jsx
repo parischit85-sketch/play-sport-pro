@@ -139,17 +139,32 @@ function PublicMatchCard({ match, teams }) {
   return (
     <div
       className={`
-        ${statusConfig.bgColor} 
-        ${match.status === 'in_progress' ? 'border-4 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.6)] animate-pulse' : `border-2 ${statusConfig.borderColor}`}
+        relative
+        md:h-full
+        md:flex
+        md:flex-col
+        ${match.status === 'in_progress' ? 'bg-gray-900' : statusConfig.bgColor}
+        ${
+          match.status === 'in_progress' 
+            ? 'shadow-[0_0_15px_rgba(239,68,68,0.6)]' 
+            : match.status === 'completed'
+            ? 'border-4 border-emerald-500'
+            : 'border-4 border-gray-400'
+        }
         rounded-xl 
         overflow-hidden
         hover:shadow-2xl hover:scale-[1.02]
         ${DS_ANIMATIONS.base}
       `}
+      data-match-live={match.status === 'in_progress' ? 'true' : 'false'}
     >
+      {/* Border glow animation per partite in corso */}
+      {match.status === 'in_progress' && (
+        <div className="absolute inset-0 border-4 border-red-500 rounded-xl opacity-0 [animation:pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] pointer-events-none" />
+      )}
       {/* Header con Status */}
       <div
-        className={`px-6 py-3 border-b ${statusConfig.borderColor} ${match.status === 'in_progress' ? 'bg-red-900/50 animate-pulse' : 'bg-gray-900/50'} flex items-center justify-between`}
+        className={`px-6 py-3 border-b ${statusConfig.borderColor} ${match.status === 'in_progress' ? 'bg-red-900/60 [animation:pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]' : 'bg-gray-900/50'} flex items-center justify-between`}
       >
         <div className="flex items-center gap-2">
           <StatusIcon
@@ -172,15 +187,15 @@ function PublicMatchCard({ match, teams }) {
       </div>
 
       {/* Main Content - Layout Responsive: Verticale su mobile, Orizzontale su desktop */}
-      <div className="md:grid md:grid-cols-[1fr_auto_1fr] flex flex-col gap-3 p-4 md:items-center">
+      <div className="flex md:grid md:grid-cols-[1fr_auto_1fr] flex-col gap-3 p-4 md:items-center md:flex-1 md:justify-center">
         {/* SQUADRA 1 */}
         <div
           className={`flex items-center md:justify-end justify-between ${getWinnerStyle(match.team1Id)} rounded-lg p-3 ${DS_ANIMATIONS.fast}`}
         >
           <div className="md:text-right text-left flex-1">
-            <h3 className="text-base md:text-lg font-bold text-white mb-1">{team1?.teamName || 'Squadra 1'}</h3>
+            <h3 className="text-base md:text-lg font-bold text-blue-400 mb-1">{team1?.teamName || 'Squadra 1'}</h3>
             {team1?.players && team1.players.length > 0 && (
-              <div className="text-xs md:text-sm text-gray-300 leading-snug">
+              <div className="text-sm md:text-base text-gray-300 leading-snug">
                 {team1.players
                   .map((p) => p.playerName || p.name || p.displayName || '')
                   .filter(Boolean)
@@ -289,9 +304,9 @@ function PublicMatchCard({ match, teams }) {
           className={`flex items-center md:justify-start justify-between ${getWinnerStyle(match.team2Id)} rounded-lg p-3 ${DS_ANIMATIONS.fast}`}
         >
           <div className="md:text-left text-left flex-1">
-            <h3 className="text-base md:text-lg font-bold text-white mb-1">{team2?.teamName || 'Squadra 2'}</h3>
+            <h3 className="text-base md:text-lg font-bold text-blue-400 mb-1">{team2?.teamName || 'Squadra 2'}</h3>
             {team2?.players && team2.players.length > 0 && (
-              <div className="text-xs md:text-sm text-gray-300 leading-snug">
+              <div className="text-sm md:text-base text-gray-300 leading-snug">
                 {team2.players
                   .map((p) => p.playerName || p.name || p.displayName || '')
                   .filter(Boolean)

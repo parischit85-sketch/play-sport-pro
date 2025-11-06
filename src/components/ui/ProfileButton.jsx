@@ -5,14 +5,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext.jsx';
-import { User, Bell, MessageCircle, LogIn } from 'lucide-react';
+import { User, LogIn } from 'lucide-react';
 
 export default function ProfileButton() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [hasNotifications, setHasNotifications] = useState(false);
-  const [hasMessages, setHasMessages] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
   const [messageCount, setMessageCount] = useState(0);
 
@@ -20,8 +18,6 @@ export default function ProfileButton() {
   // Per ora mostriamo badge di esempio
   useEffect(() => {
     if (!user) {
-      setHasNotifications(false);
-      setHasMessages(false);
       setNotificationCount(0);
       setMessageCount(0);
       return;
@@ -52,7 +48,7 @@ export default function ProfileButton() {
         ${
           isActive
             ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-            : 'bg-gray-100 hover:bg-gray-200 bg-gray-800 hover:bg-gray-700 text-gray-700 text-gray-300'
+            : 'bg-gray-800 hover:bg-gray-700 text-gray-300'
         }
         active:scale-95
       `}
@@ -68,19 +64,19 @@ export default function ProfileButton() {
 
       {/* Badge notifiche */}
       {user && notificationCount > 0 && (
-        <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-white border-gray-900">
+        <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-lg border-2 border-gray-900">
           {notificationCount > 9 ? '9+' : notificationCount}
         </span>
       )}
 
       {/* Indicatore messaggi (dot) */}
       {user && messageCount > 0 && notificationCount === 0 && (
-        <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-blue-500 rounded-full shadow-lg border-2 border-white border-gray-900" />
+        <span className="absolute -top-0.5 -right-0.5 h-3 w-3 bg-blue-500 rounded-full shadow-lg border-2 border-gray-900" />
       )}
 
       {/* Badge combinato se entrambi presenti */}
       {user && notificationCount > 0 && messageCount > 0 && (
-        <span className="absolute -bottom-1 -right-1 h-4 w-4 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-md border-2 border-white border-gray-900">
+        <span className="absolute -bottom-1 -right-1 h-4 w-4 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-md border-2 border-gray-900">
           {messageCount > 9 ? '9' : messageCount}
         </span>
       )}

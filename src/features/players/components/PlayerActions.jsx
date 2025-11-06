@@ -17,7 +17,7 @@ const PlayerActions = ({ onView, _onEdit, onStats, onDelete, T, layout = 'deskto
         </button>
         <button
           onClick={onDelete}
-          className="px-4 py-2 text-sm bg-red-50 bg-red-900/20 text-red-600 text-red-400 border border-red-200 border-red-800 rounded hover:bg-red-100 hover:bg-red-900/30 transition-colors"
+          className="px-4 py-2 text-sm bg-red-900/20 text-red-400 border border-red-800 rounded hover:bg-red-900/30 transition-colors"
         >
           🗑️
         </button>
@@ -44,7 +44,7 @@ const PlayerActions = ({ onView, _onEdit, onStats, onDelete, T, layout = 'deskto
       </button>
       <button
         onClick={onDelete}
-        className="px-3 py-1 text-sm bg-red-50 bg-red-900/20 text-red-600 text-red-400 border border-red-200 border-red-800 rounded hover:bg-red-100 hover:bg-red-900/30 transition-colors"
+        className="px-3 py-1 text-sm bg-red-900/20 text-red-400 border border-red-800 rounded hover:bg-red-900/30 transition-colors"
         title="Elimina"
       >
         🗑️

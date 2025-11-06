@@ -115,12 +115,12 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
     }
   }, [matchesOnlyExpanded, matchesOnlyStorageKey]);
 
-  // Apri automaticamente se la vista pubblica viene abilitata
+  // Apri automaticamente solo la prima volta che viene abilitata (se non c'è stato salvato in localStorage)
   useEffect(() => {
-    if (isEnabled && !isExpanded) {
+    if (isEnabled && !isExpanded && !localStorage.getItem(storageKey)) {
       setIsExpanded(true);
     }
-  }, [isEnabled, isExpanded]);
+  }, [isEnabled, isExpanded, storageKey]);
 
   // Aggiorna il nome quando cambia il torneo
   useEffect(() => {
@@ -510,9 +510,13 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
           </div>
 
           <div className="flex items-center gap-3">
-            {isEnabled && (
+            {isEnabled ? (
               <span className="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-sm font-medium">
                 Abilitata
+              </span>
+            ) : (
+              <span className="px-3 py-1 bg-gray-700 text-gray-400 rounded-full text-sm font-medium">
+                Disabilitata
               </span>
             )}
             {isExpanded ? (

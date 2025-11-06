@@ -60,7 +60,7 @@ export default function DashboardHomePage() {
         ),
         action: () => navigate('/search-clubs'),
         iconWrap:
-          'bg-gradient-to-r from-blue-50/80 to-cyan-50/60   text-blue-600  border-blue-200/50',
+          'bg-gradient-to-r from-blue-900/30 to-cyan-900/20   text-blue-400  border-blue-700/30',
       },
       {
         title: 'Prenota Campo/Lezione',
@@ -74,7 +74,7 @@ export default function DashboardHomePage() {
         ),
         action: () => navigate('/prenota'),
         iconWrap:
-          'bg-gradient-to-r from-emerald-50/80 to-green-50/60   text-emerald-600  border-emerald-200/50',
+          'bg-gradient-to-r from-emerald-900/30 to-green-900/20   text-emerald-400  border-emerald-700/30',
       },
     ],
     [navigate]
@@ -84,7 +84,7 @@ export default function DashboardHomePage() {
   if (!players) {
     // simple loading fallback until ClubContext guarantees players array
     return (
-      <div className="space-y-6 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100    p-4">
+      <div className="space-y-6 min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800    p-4">
         <PWABanner />
         <div className="animate-pulse space-y-6">
           <div className="bg-white/60/60 backdrop-blur-xl rounded-3xl h-32 border border-white/20  shadow-xl"></div>
@@ -102,7 +102,7 @@ export default function DashboardHomePage() {
   }
 
   return (
-    <div className="space-y-1 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="space-y-1 min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800">
       {/* PWA Install Banner */}
       <PWABanner />
 
@@ -112,7 +112,7 @@ export default function DashboardHomePage() {
         <div>
           <React.Suspense
             fallback={
-              <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 rounded-2xl p-6 animate-pulse backdrop-blur-sm border border-white/30">
+              <div className="bg-gradient-to-r from-gray-800/60 to-gray-700/40 rounded-2xl p-6 animate-pulse backdrop-blur-sm border border-gray-600/30">
                 <div className="h-4 bg-gray-200/80 rounded w-32 mb-4"></div>
                 <div className="space-y-3">
                   {[1, 2].map((i) => (
@@ -160,7 +160,7 @@ export default function DashboardHomePage() {
         <div>
           <React.Suspense
             fallback={
-              <div className="bg-gradient-to-r from-gray-50/80 to-gray-100/60 rounded-2xl p-4 animate-pulse backdrop-blur-sm border border-white/30">
+              <div className="bg-gradient-to-r from-gray-800/60 to-gray-700/40 rounded-2xl p-4 animate-pulse backdrop-blur-sm border border-gray-600/30">
                 <div className="h-3 bg-gray-200/80 rounded w-24 mb-3"></div>
                 <div className="flex gap-2 overflow-x-auto pb-2">
                   {[1, 2, 3].map((i) => (

@@ -2,7 +2,7 @@
 // FILE: src/features/extra/BulkTimeSlotsWizard.jsx
 // Bulk Time Slots Creation Wizard
 // =============================================
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 
 // ============================================
 // COMPONENTE: Bulk Time Slots Wizard Modal
@@ -43,15 +43,13 @@ export function BulkTimeSlotsWizard({
 
   const [previewSlots, setPreviewSlots] = useState([]);
 
-  if (!isOpen) return null;
-
   const targetCourts =
     selectedCourtIndices.length > 0
       ? courts.filter((_, index) => selectedCourtIndices.includes(index))
       : courts;
 
   // Generate preview slots based on wizard data
-  const generatePreviewSlots = () => {
+  const generatePreviewSlots = useCallback(() => {
     const slots = [];
     const {
       startTime,
@@ -139,14 +137,22 @@ export function BulkTimeSlotsWizard({
     }
 
     return slots;
-  };
+  }, [wizardData]);
 
-  // Update preview when wizard data changes
-  useMemo(() => {
+  // Calculate preview slots using useMemo (pure function)
+  const calculatedPreviewSlots = useMemo(() => {
     if (currentStep >= 4) {
-      setPreviewSlots(generatePreviewSlots());
+      return generatePreviewSlots();
     }
-  }, [wizardData, currentStep]);
+    return [];
+  }, [currentStep, generatePreviewSlots]);
+
+  // Sync preview slots state
+  useEffect(() => {
+    setPreviewSlots(calculatedPreviewSlots);
+  }, [calculatedPreviewSlots, setPreviewSlots]);
+
+  if (!isOpen) return null;
 
   const handleNext = () => {
     if (currentStep < 5) {
@@ -198,7 +204,7 @@ export function BulkTimeSlotsWizard({
       {/* Modal */}
       <div className="relative bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="p-6 border-b border-gray-700 bg-gradient-to-r from-purple-50 to-blue-50 from-purple-900/20 to-blue-900/20">
+        <div className="p-6 border-b border-gray-700 bg-gradient-to-r from-purple-900/20 to-blue-900/20">
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -237,8 +243,8 @@ export function BulkTimeSlotsWizard({
                   onClick={() => setWizardData({ ...wizardData, pattern: 'hourly' })}
                   className={`p-6 rounded-xl border-2 transition-all ${
                     wizardData.pattern === 'hourly'
-                      ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                      : 'border-gray-700 hover:border-gray-300 hover:border-gray-600'
+                      ? 'border-blue-500 bg-blue-900/20'
+                      : 'border-gray-700 hover:border-gray-600'
                   }`}
                 >
                   <div className="text-4xl mb-3">🕐</div>
@@ -250,8 +256,8 @@ export function BulkTimeSlotsWizard({
                   onClick={() => setWizardData({ ...wizardData, pattern: 'halfHourly' })}
                   className={`p-6 rounded-xl border-2 transition-all ${
                     wizardData.pattern === 'halfHourly'
-                      ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                      : 'border-gray-700 hover:border-gray-300 hover:border-gray-600'
+                      ? 'border-blue-500 bg-blue-900/20'
+                      : 'border-gray-700 hover:border-gray-600'
                   }`}
                 >
                   <div className="text-4xl mb-3">🕑</div>
@@ -263,8 +269,8 @@ export function BulkTimeSlotsWizard({
                   onClick={() => setWizardData({ ...wizardData, pattern: 'custom' })}
                   className={`p-6 rounded-xl border-2 transition-all ${
                     wizardData.pattern === 'custom'
-                      ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                      : 'border-gray-700 hover:border-gray-300 hover:border-gray-600'
+                      ? 'border-blue-500 bg-blue-900/20'
+                      : 'border-gray-700 hover:border-gray-600'
                   }`}
                 >
                   <div className="text-4xl mb-3">⚙️</div>
@@ -331,9 +337,9 @@ export function BulkTimeSlotsWizard({
                 </div>
               </div>
 
-              <div className="bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-800 rounded-lg p-4 mt-4">
-                <h4 className="font-semibold text-blue-900 text-blue-300 mb-2">📊 Preview</h4>
-                <div className="text-sm text-blue-800 text-blue-300">
+              <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4 mt-4">
+                <h4 className="font-semibold text-blue-300 mb-2">📊 Preview</h4>
+                <div className="text-sm text-blue-300">
                   <p>
                     • Range: {wizardData.startTime} - {wizardData.endTime}
                   </p>
@@ -399,8 +405,8 @@ export function BulkTimeSlotsWizard({
                     }}
                     className={`p-4 rounded-xl border-2 transition-all ${
                       wizardData.selectedDays.includes(day)
-                        ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
-                        : 'border-gray-700 hover:border-gray-300 hover:border-gray-600'
+                        ? 'border-blue-500 bg-blue-900/20'
+                        : 'border-gray-700 hover:border-gray-600'
                     }`}
                   >
                     <div className="font-bold text-white">{dayNames[day]}</div>
@@ -432,8 +438,8 @@ export function BulkTimeSlotsWizard({
               </div>
 
               {wizardData.selectedDays.length === 0 && (
-                <div className="bg-yellow-50 bg-yellow-900/20 border border-yellow-200 border-yellow-800 rounded-lg p-4">
-                  <p className="text-sm text-yellow-800 text-yellow-300">
+                <div className="bg-yellow-900/20 border border-yellow-800 rounded-lg p-4">
+                  <p className="text-sm text-yellow-300">
                     ⚠️ Seleziona almeno un giorno
                   </p>
                 </div>
@@ -455,7 +461,7 @@ export function BulkTimeSlotsWizard({
                     onClick={() => setWizardData({ ...wizardData, pricingStrategy: 'uniform' })}
                     className={`p-4 rounded-xl border-2 transition-all ${
                       wizardData.pricingStrategy === 'uniform'
-                        ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
+                        ? 'border-blue-500 bg-blue-900/20'
                         : 'border-gray-700'
                     }`}
                   >
@@ -469,7 +475,7 @@ export function BulkTimeSlotsWizard({
                     onClick={() => setWizardData({ ...wizardData, pricingStrategy: 'peakOffPeak' })}
                     className={`p-4 rounded-xl border-2 transition-all ${
                       wizardData.pricingStrategy === 'peakOffPeak'
-                        ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
+                        ? 'border-blue-500 bg-blue-900/20'
                         : 'border-gray-700'
                     }`}
                   >
@@ -483,7 +489,7 @@ export function BulkTimeSlotsWizard({
                     onClick={() => setWizardData({ ...wizardData, pricingStrategy: 'custom' })}
                     className={`p-4 rounded-xl border-2 transition-all ${
                       wizardData.pricingStrategy === 'custom'
-                        ? 'border-blue-500 bg-blue-50 bg-blue-900/20'
+                        ? 'border-blue-500 bg-blue-900/20'
                         : 'border-gray-700'
                     }`}
                     disabled
@@ -664,9 +670,9 @@ export function BulkTimeSlotsWizard({
               </div>
 
               {/* Summary */}
-              <div className="bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-800 rounded-lg p-4">
-                <h4 className="font-semibold text-blue-900 text-blue-300 mb-2">📊 Riepilogo</h4>
-                <div className="text-sm text-blue-800 text-blue-300 space-y-1">
+              <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4">
+                <h4 className="font-semibold text-blue-300 mb-2">📊 Riepilogo</h4>
+                <div className="text-sm text-blue-300 space-y-1">
                   <p>• Campi interessati: {targetCourts.length}</p>
                   <p>• Fasce totali create: {previewSlots.length}</p>
                   <p>• Fasce per campo: {previewSlots.length}</p>

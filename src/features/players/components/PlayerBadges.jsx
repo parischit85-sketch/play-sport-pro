@@ -11,19 +11,19 @@ const PlayerBadges = ({ player, certStatus, _compact = false }) => {
 
   // Decide label e stile per il badge certificato
   let certLabel = 'Certificato';
-  let certClass = 'bg-gray-100 text-gray-700 bg-gray-800/60 text-gray-300';
+  let certClass = 'bg-gray-800/60 text-gray-300';
   if (status === 'expired') {
     certLabel = days != null ? `Scaduto da ${Math.abs(days)}g` : 'Scaduto';
-    certClass = 'bg-red-100 text-red-700 bg-red-900/30 text-red-300';
+    certClass = 'bg-red-900/30 text-red-300';
   } else if (status === 'expiring') {
     certLabel = days != null ? `In scadenza ${days}g` : 'In scadenza';
-    certClass = 'bg-orange-100 text-orange-700 bg-orange-900/30 text-orange-300';
+    certClass = 'bg-orange-900/30 text-orange-300';
   } else if (status === 'valid') {
     certLabel = days != null ? `Valido ${days}g` : 'Valido';
-    certClass = 'bg-green-100 text-green-700 bg-green-900/30 text-green-300';
+    certClass = 'bg-green-900/30 text-green-300';
   } else if (status === 'missing') {
     certLabel = 'Mancante';
-    certClass = 'bg-red-100 text-red-700 bg-red-900/30 text-red-300';
+    certClass = 'bg-red-900/30 text-red-300';
   }
 
   return (

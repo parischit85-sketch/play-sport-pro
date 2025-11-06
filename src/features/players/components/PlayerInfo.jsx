@@ -24,7 +24,7 @@ const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
           {/* Badges will be rendered separately */}
         </div>
 
-        <div className="text-sm text-gray-600 text-gray-400 mb-2 break-words">
+        <div className="text-sm text-gray-400 mb-2 break-words">
           {player.email || 'Email non disponibile'}
         </div>
 
@@ -57,7 +57,7 @@ const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
             {/* Badges will be rendered separately */}
           </div>
 
-          <div className="flex items-center gap-3 text-sm text-gray-600 text-gray-400 min-w-0">
+          <div className="flex items-center gap-3 text-sm text-gray-400 min-w-0">
             <span className="truncate max-w-[200px]">
               {player.email || 'Email non disponibile'}
             </span>
@@ -80,7 +80,7 @@ const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
         </span>
         {subscription ? (
           <span
-            className="text-[11px] text-green-700 text-green-300"
+            className="text-[11px] text-green-300"
             title={`Scadenza: ${subscription.endDate ? new Date(subscription.endDate).toLocaleDateString('it-IT') : 'N/D'}`}
           >
             {subscription.type || 'Abbonamento'}
@@ -93,10 +93,10 @@ const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
       {/* Note e Tag */}
       <div className="min-w-[180px] flex-1">
         <div className="flex items-center gap-2 text-xs mb-1">
-          <span className={`${notesCount > 0 ? 'text-orange-600 text-orange-400' : T.subtext}`}>
+          <span className={`${notesCount > 0 ? 'text-orange-400' : T.subtext}`}>
             📝 {notesCount} note
           </span>
-          <span className={`${tags.length > 0 ? 'text-blue-600 text-blue-400' : T.subtext}`}>
+          <span className={`${tags.length > 0 ? 'text-blue-400' : T.subtext}`}>
             🏷️ {tags.length} tag
           </span>
         </div>
@@ -104,7 +104,7 @@ const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
           {tags.slice(0, 2).map((tag, i) => (
             <span
               key={i}
-              className="px-2 py-0.5 bg-gray-100 bg-gray-800 text-gray-700 text-gray-300 rounded-full text-[11px] break-words max-w-[10rem]"
+              className="px-2 py-0.5 bg-gray-800 text-gray-300 rounded-full text-[11px] break-words max-w-[10rem]"
             >
               {tag}
             </span>

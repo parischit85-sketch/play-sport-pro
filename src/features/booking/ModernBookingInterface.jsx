@@ -790,7 +790,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         )}
 
         {/* Selezione Giorno - Migliorata per mobile */}
-        <div className="bg-gray-800 rounded-lg shadow-sm border-2 border-emerald-600 p-3 sm:p-6 mb-4 sm:mb-6">
+        <div className="bg-gray-800 rounded-lg shadow-sm border-2 border-gray-600 p-3 sm:p-6 mb-4 sm:mb-6">
           <h2 className="font-semibold text-white mb-3 sm:mb-4 text-sm sm:text-base">
             Seleziona il giorno
           </h2>
@@ -815,7 +815,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                   className={`flex-shrink-0 p-2 sm:p-3 rounded-lg border-2 text-center transition-all min-w-[60px] sm:min-w-[80px] ${
                     selectedDate === day.date
                       ? 'bg-blue-500 text-white border-blue-500 shadow-md'
-                      : 'bg-emerald-900/30 border-gray-600 hover:border-gray-500 hover:bg-gray-600 active:bg-gray-600 text-gray-100'
+                      : 'bg-gray-700/60 border-gray-600 hover:border-gray-500 hover:bg-gray-600 active:bg-gray-600 text-gray-100'
                   }`}
                 >
                   <div className="text-xs font-medium mb-1">{day.dayName}</div>
@@ -831,7 +831,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         {selectedDate && (
           <div
             ref={timeSectionRef}
-            className="bg-gray-800 rounded-lg shadow-sm border-2 border-emerald-600 p-3 sm:p-6 mb-4 sm:mb-6"
+            className="bg-gray-800 rounded-lg shadow-sm border-2 border-gray-600 p-3 sm:p-6 mb-4 sm:mb-6"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 gap-3">
               <h2 className="font-semibold text-white text-sm sm:text-base">Seleziona l'orario</h2>
@@ -856,7 +856,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                     selectedTime === slot.time
                       ? 'bg-blue-500 text-white border-blue-500 shadow-md'
                       : slot.isAvailable
-                        ? 'bg-emerald-900/30 border-gray-600 hover:border-blue-500 hover:bg-blue-900/30 cursor-pointer active:bg-blue-900/50 text-gray-100'
+                        ? 'bg-gray-700/60 border-gray-600 hover:border-blue-500 hover:bg-blue-900/30 cursor-pointer active:bg-blue-900/50 text-gray-100'
                         : 'bg-gray-700 border-gray-700 text-gray-500 cursor-not-allowed'
                   }`}
                 >
@@ -884,7 +884,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         {selectedTime && (
           <div
             ref={courtSectionRef}
-            className="bg-gray-800 rounded-lg shadow-sm border-2 border-emerald-600 p-3 sm:p-6 mb-4 sm:mb-6"
+            className="bg-gray-800 rounded-lg shadow-sm border-2 border-gray-600 p-3 sm:p-6 mb-4 sm:mb-6"
           >
             {/* Header con titolo e filtri affiancati */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
@@ -998,7 +998,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                     }}
                     className={`border-2 rounded-xl p-4 sm:p-5 transition-all duration-300 touch-manipulation ${
                       isAvailable
-                        ? 'bg-emerald-900/30 border-gray-600 hover:shadow-lg hover:shadow-blue-900/20 cursor-pointer hover:border-blue-500 hover:bg-blue-900/10 active:bg-blue-900/20 transform hover:scale-105 hover:-translate-y-1'
+                        ? 'bg-gray-700/60 border-gray-600 hover:shadow-lg hover:shadow-blue-900/20 cursor-pointer hover:border-blue-500 hover:bg-blue-900/20 active:bg-blue-900/30 transform hover:scale-105 hover:-translate-y-1'
                         : 'bg-gray-700 border-gray-700 cursor-not-allowed opacity-60'
                     }`}
                   >
@@ -1114,7 +1114,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
             </div>
 
             {/* Header fisso */}
-            <div className="px-4 py-3 sm:p-6 border-b border-emerald-600 flex-shrink-0 touch-select-none">
+            <div className="px-4 py-3 sm:p-6 border-b border-gray-600 flex-shrink-0 touch-select-none">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg sm:text-xl font-semibold text-white">
                   Conferma Prenotazione
@@ -1137,7 +1137,9 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-gray-300">
                   <div className="flex items-center gap-2">
-                    <span className="text-blue-500">📅</span>
+                    <svg className={`w-4 h-4 ${ds.info}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                     <span>
                       {new Date(selectedDate).toLocaleDateString('it-IT', {
                         weekday: 'short',
@@ -1147,11 +1149,18 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-blue-500">🕐</span>
+                    <svg className={`w-4 h-4 ${ds.info}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle cx={12} cy={12} r={10} />
+                      <polyline points="12,6 12,12 16,14" />
+                    </svg>
                     <span>{selectedTime}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-blue-500">⏱️</span>
+                    <svg className={`w-4 h-4 ${ds.info}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle cx={12} cy={12} r={10} />
+                      <polyline points="12,6 12,12 16,14" />
+                      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 6.34l1.41 1.41M15.24 15.24l1.41 1.41" />
+                    </svg>
                     <span>{duration} min</span>
                   </div>
                 </div>
@@ -1242,7 +1251,11 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                             +{cfg.addons?.lightingFee || 0}€
                           </div>
                         </div>
-                        <span className="text-2xl">💡</span>
+                        <span className="text-2xl">
+                          <svg className={`w-6 h-6 ${ds.warning}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                          </svg>
+                        </span>
                       </label>
                     )}
                     {cfg.addons?.heatingEnabled && selectedCourt?.hasHeating && (
@@ -1259,7 +1272,12 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                             +{cfg.addons?.heatingFee || 0}€
                           </div>
                         </div>
-                        <span className="text-2xl">🔥</span>
+                        <span className="text-2xl">
+                          <svg className={`w-6 h-6 ${ds.warning}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+                          </svg>
+                        </span>
                       </label>
                     )}
                   </div>
@@ -1276,7 +1294,9 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                 <div className="mb-3 p-4 bg-blue-900/30 rounded-xl border-l-4 border-blue-500">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm">👑</span>
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l14 9-14 9V3z" />
+                      </svg>
                     </div>
                     <div className="flex-1">
                       <div className="text-sm font-semibold text-white">
@@ -1295,7 +1315,9 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       className="p-3 bg-gray-700 rounded-xl flex items-center gap-3"
                     >
                       <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm">👤</span>
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
                       </div>
                       <div className="flex-1">
                         <div className="text-sm font-medium text-gray-100">{player.name}</div>
@@ -1349,7 +1371,12 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                   </span>
                 </div>
                 <div className="mt-2 pt-2 border-t border-green-700">
-                  <div className="text-xs text-green-300 font-medium">💰 Pagamento in loco</div>
+                  <div className="text-xs text-green-300 font-medium">
+                    <svg className={`w-4 h-4 inline mr-1 ${ds.success}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                    Pagamento in loco
+                  </div>
                 </div>
               </div>
             </div>
@@ -1471,7 +1498,12 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-white animate-fade-in">🎾 Fantastico!</h3>
+                <h3 className="text-2xl font-bold text-white animate-fade-in">
+                  <svg className={`w-8 h-8 inline mr-2 ${ds.success}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                  Fantastico!
+                </h3>
                 <div className="bg-gradient-to-r from-green-900/20 to-emerald-900/20 p-4 rounded-xl border border-green-700">
                   <p className="text-green-200 font-semibold">Prenotazione confermata!</p>
                   <p className="text-green-300 text-sm mt-1">
@@ -1482,7 +1514,16 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                 {/* Campo info recap */}
                 <div className="bg-gray-700 p-3 rounded-xl">
                   <div className="flex items-center justify-center gap-2 text-sm text-gray-300">
-                    <span>📅</span>
+                    <span>
+                      <svg className={`w-4 h-4 inline mr-1 ${ds.info}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {new Date(selectedDate).toLocaleDateString('it-IT', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short',
+                      })}
+                    </span>
                     <span>
                       {new Date(selectedDate).toLocaleDateString('it-IT', {
                         weekday: 'short',
@@ -1491,9 +1532,22 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       })}
                     </span>
                     <span>•</span>
-                    <span>🕐 {selectedTime}</span>
+                    <span>
+                      <svg className={`w-4 h-4 inline mr-1 ${ds.info}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx={12} cy={12} r={10} />
+                        <polyline points="12,6 12,12 16,14" />
+                      </svg>
+                      🕐 {selectedTime}
+                    </span>
                     <span>•</span>
-                    <span>🎾 {selectedCourt?.name}</span>
+                    <span>
+                      <svg className={`w-4 h-4 inline mr-1 ${ds.success}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx={12} cy={12} r={10} />
+                        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
+                        <path d="M12 17.5c.276 0 .5-.224.5-.5s-.224-.5-.5-.5-.5.224-.5.5.224.5.5.5z" />
+                      </svg>
+                      {selectedCourt?.name}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -1538,7 +1592,22 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                 </svg>
               </div>
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Slot già prenotato! ⚠️</h3>
+            <h3 className="text-xl font-bold text-white mb-2">
+              <svg
+                className={`w-6 h-6 inline mr-2 ${ds.warning}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                />
+              </svg>
+              Slot già prenotato!
+            </h3>
             <p className="text-gray-300 text-sm">
               Questo orario è già stato prenotato da qualcun altro. Seleziona un altro orario.
             </p>

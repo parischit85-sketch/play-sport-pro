@@ -22,7 +22,7 @@ const PlayerStats = ({ player, liveRating, T, layout = 'desktop' }) => {
         <div className="grid grid-cols-2 gap-4 mb-4 text-center">
           {balance > 0 && (
             <div>
-              <div className="font-semibold text-green-600 text-green-400">
+              <div className="font-semibold text-green-400">
                 €{balance.toFixed(2)}
               </div>
               <div className={`text-xs ${T.subtext}`}>Credito</div>
@@ -30,7 +30,7 @@ const PlayerStats = ({ player, liveRating, T, layout = 'desktop' }) => {
           )}
           {champPoints !== null && (
             <div>
-              <div className="font-semibold text-amber-600 text-amber-400">
+              <div className="font-semibold text-amber-400">
                 {champPoints.toFixed(1)}
               </div>
               <div className={`text-xs ${T.subtext}`}>
@@ -55,14 +55,14 @@ const PlayerStats = ({ player, liveRating, T, layout = 'desktop' }) => {
       <div className="text-center w-[70px] shrink-0">
         {player.tournamentData?.isParticipant && player.tournamentData?.isActive ? (
           <>
-            <div className="text-xl font-bold text-purple-600 text-purple-400">
+            <div className="text-xl font-bold text-purple-400">
               {Number(liveRating).toFixed(0)}
             </div>
             <div className={`text-xs ${T.subtext}`}>Ranking attuale</div>
           </>
         ) : (
           <>
-            <div className="text-lg text-gray-300 text-gray-600">-</div>
+            <div className="text-lg text-gray-600">-</div>
             <div className={`text-xs ${T.subtext}`}>Non partecipa</div>
           </>
         )}
@@ -71,7 +71,7 @@ const PlayerStats = ({ player, liveRating, T, layout = 'desktop' }) => {
       {/* Wallet (solo se > 0) */}
       {balance > 0 && (
         <div className="text-center w-[90px] shrink-0">
-          <div className="font-semibold text-green-600 text-green-400">€{balance.toFixed(2)}</div>
+          <div className="font-semibold text-green-400">€{balance.toFixed(2)}</div>
           <div className={`text-xs ${T.subtext}`}>Credito</div>
         </div>
       )}
@@ -79,7 +79,7 @@ const PlayerStats = ({ player, liveRating, T, layout = 'desktop' }) => {
       {/* Punti Campionato (se presenti) */}
       {champPoints !== null && (
         <div className="text-center w-[110px] shrink-0">
-          <div className="font-semibold text-amber-600 text-amber-400">
+          <div className="font-semibold text-amber-400">
             {champPoints.toFixed(1)}
           </div>
           <div className={`text-xs ${T.subtext}`}>

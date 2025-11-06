@@ -602,14 +602,7 @@ const AdminClubDashboard = () => {
       return;
     }
 
-    // 3. ✅ FIX #5: Validazione durata massima (max 4 ore)
-    const durationMinutes = endMinutesTotal - startMinutesTotal;
-    if (durationMinutes > 4 * 60) {
-      showError('❌ La durata massima di una fascia è 4 ore');
-      return;
-    }
-
-    // 4. ✅ FIX #5: Validazione data (non nel passato)
+    // 3. ✅ FIX #5: Validazione data (non nel passato)
     const selectedDate = new Date(newSlotDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -619,7 +612,7 @@ const AdminClubDashboard = () => {
       return;
     }
 
-    // 5. ✅ FIX #5: Validazione data massima (max 6 mesi nel futuro)
+    // 4. ✅ FIX #5: Validazione data massima (max 6 mesi nel futuro)
     const maxDate = new Date(today);
     maxDate.setMonth(maxDate.getMonth() + 6);
 

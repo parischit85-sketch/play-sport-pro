@@ -94,7 +94,7 @@ export default function PWABanner({ className = '' }) {
             <div className="flex items-center gap-2 flex-shrink-0">
               <button
                 onClick={handleInstall}
-                className="bg-white bg-blue-600 text-blue-600 text-white hover:bg-blue-50 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
+                className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -147,15 +147,15 @@ export default function PWABanner({ className = '' }) {
                       <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                         {index + 1}
                       </div>
-                      <p className="text-sm text-gray-700 text-gray-300 pt-1">{instruction}</p>
+                      <p className="text-sm text-gray-300 pt-1">{instruction}</p>
                     </div>
                   ))}
                 </div>
               )}
 
               {browserInfo && (
-                <div className="bg-gray-50 rounded-lg p-3 mb-6">
-                  <p className="text-xs text-gray-600 text-center">
+                <div className="bg-gray-800 rounded-lg p-3 mb-6">
+                  <p className="text-xs text-gray-300 text-center">
                     Browser:{' '}
                     {browserInfo.isChrome
                       ? 'Chrome'
@@ -178,7 +178,7 @@ export default function PWABanner({ className = '' }) {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowInstructionsModal(false)}
-                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-800 text-gray-200 py-3 px-4 rounded-lg font-medium transition-colors"
+                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-gray-200 py-3 px-4 rounded-lg font-medium transition-colors"
                 >
                   Ho capito
                 </button>

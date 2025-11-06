@@ -120,5 +120,8 @@ export function themeTokens() {
     hoverBg: 'hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors',
     hoverBgSubtle: 'hover:bg-gray-700/50 dark:hover:bg-gray-700/50 transition-colors',
     inputBg: 'bg-gray-700 dark:bg-gray-700',
+
+    // Modal
+    modalBackground: 'bg-gray-800',
   };
 }

@@ -279,12 +279,12 @@ export function SmartSuggestionsPanel({
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white bg-gray-800 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="relative bg-gray-800 rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 border-gray-700 bg-gradient-to-r from-purple-50 to-blue-50 from-purple-900/20 to-blue-900/20">
+        <div className="p-6 border-b border-gray-700 bg-gradient-to-r from-purple-900/20 to-blue-900/20">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 text-white flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
                 🧠 Smart Suggestions
               </h2>
               <p className="text-sm text-gray-400 mt-1">
@@ -293,7 +293,7 @@ export function SmartSuggestionsPanel({
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 hover:text-gray-300 text-3xl"
+              className="text-gray-400 hover:text-gray-300 text-3xl"
             >
               ×
             </button>
@@ -342,7 +342,7 @@ export function SmartSuggestionsPanel({
               {suggestions.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="text-6xl mb-4">📊</div>
-                  <h3 className="text-xl font-bold text-gray-900 text-white mb-2">
+                  <h3 className="text-xl font-bold text-white mb-2">
                     Nessun suggerimento disponibile
                   </h3>
                   <p className="text-gray-400">
@@ -390,7 +390,7 @@ export function SmartSuggestionsPanel({
                               selectedSuggestion?.id === suggestion.id ? null : suggestion
                             )
                           }
-                          className="px-3 py-1.5 bg-white bg-gray-700 text-gray-700 text-gray-300 rounded text-sm font-medium hover:bg-gray-100 hover:bg-gray-600 transition-colors"
+                          className="px-3 py-1.5 bg-gray-700 text-gray-300 rounded text-sm font-medium hover:bg-gray-600 transition-colors"
                         >
                           {selectedSuggestion?.id === suggestion.id ? '▲ Nascondi' : '▼ Dettagli'}
                         </button>
@@ -440,7 +440,7 @@ export function SmartSuggestionsPanel({
 
               {/* Booking by Day */}
               <div className="bg-gray-50 bg-gray-900 rounded-xl p-4">
-                <h3 className="font-bold text-lg mb-4 text-gray-900 text-white">
+                <h3 className="font-bold text-lg mb-4 text-white">
                   📅 Prenotazioni per Giorno
                 </h3>
                 <div className="space-y-2">
@@ -480,7 +480,7 @@ export function SmartSuggestionsPanel({
 
               {/* Booking by Hour */}
               <div className="bg-gray-50 bg-gray-900 rounded-xl p-4">
-                <h3 className="font-bold text-lg mb-4 text-gray-900 text-white">
+                <h3 className="font-bold text-lg mb-4 text-white">
                   ⏰ Prenotazioni per Ora
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -494,10 +494,10 @@ export function SmartSuggestionsPanel({
                           className={`p-3 rounded-lg border-2 ${
                             isPeak
                               ? 'bg-orange-50 bg-orange-900/20 border-orange-300 border-orange-700'
-                              : 'bg-white bg-gray-800 border-gray-200 border-gray-700'
+                              : 'bg-gray-800 border-gray-700'
                           }`}
                         >
-                          <div className="text-lg font-bold text-gray-900 text-white">
+                          <div className="text-lg font-bold text-white">
                             {hour}:00
                           </div>
                           <div className="text-sm text-gray-400">{count} prenotazioni</div>
@@ -539,9 +539,9 @@ export function SmartSuggestionsPanel({
                   return (
                     <div
                       key={index}
-                      className="flex items-center gap-3 bg-white bg-gray-800 p-3 rounded-lg border border-gray-200 border-gray-700"
+                      className="flex items-center gap-3 bg-gray-800 p-3 rounded-lg border border-gray-700"
                     >
-                      <div className="w-32 font-medium text-gray-900 text-white">
+                      <div className="w-32 font-medium text-white">
                         {slot.timeRange}
                       </div>
                       <div className="flex-1 bg-gray-700 rounded-full h-8 overflow-hidden">

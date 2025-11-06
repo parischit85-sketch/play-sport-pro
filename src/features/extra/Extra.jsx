@@ -54,7 +54,7 @@ export default function Extra({
   T,
 }) {
   const { loading } = useAuth();
-  const { cleanInvalidCourts, club, courts } = useClub();
+  const { club, courts } = useClub();
   const { showSuccess } = useNotifications();
   const [cloudMsg, setCloudMsg] = React.useState('');
   const navigate = useNavigate();
@@ -151,23 +151,23 @@ export default function Extra({
   };
 
   // Funzione per pulire campi non validi
-  const handleCleanInvalidCourts = async () => {
-    try {
-      if (import.meta?.env?.DEV) {
-        logger.debug('🧹 Starting invalid courts cleanup...');
-      }
-      await cleanInvalidCourts();
-      if (import.meta?.env?.DEV) {
-        logger.debug('✅ Invalid courts cleanup completed');
-      }
-      setCloudMsg('Campi non validi rimossi con successo');
-      setTimeout(() => setCloudMsg(''), 3000);
-    } catch (error) {
-      logger.error('❌ Error cleaning invalid courts:', error);
-      setCloudMsg('Errore durante la pulizia dei campi');
-      setTimeout(() => setCloudMsg(''), 3000);
-    }
-  };
+  // const handleCleanInvalidCourts = async () => {
+  //   try {
+  //     if (import.meta?.env?.DEV) {
+  //       logger.debug('🧹 Starting invalid courts cleanup...');
+  //     }
+  //     await cleanInvalidCourts();
+  //     if (import.meta?.env?.DEV) {
+  //       logger.debug('✅ Invalid courts cleanup completed');
+  //     }
+  //     setCloudMsg('Campi non validi rimossi con successo');
+  //     setTimeout(() => setCloudMsg(''), 3000);
+  //   } catch (error) {
+  //     logger.error('❌ Error cleaning invalid courts:', error);
+  //     setCloudMsg('Errore durante la pulizia dei campi');
+  //     setTimeout(() => setCloudMsg(''), 3000);
+  //   }
+  // };
 
   // Pulizia automatica rimossa - solo manuale
 
@@ -279,22 +279,14 @@ export default function Extra({
         />
       )}
       {/* Pulsante pulizia campi non validi */}
-      {cloudMsg && (
-        <div
-          className={`mb-4 p-3 rounded-lg ${cloudMsg.includes('Errore') ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}
-        >
-          {cloudMsg}
-        </div>
-      )}
-
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <button
           onClick={handleCleanInvalidCourts}
           className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors text-sm"
         >
           🧹 Pulisci Campi Non Validi
         </button>
-      </div>
+      </div> */}
 
       {/* Gestione Campi Avanzata - Responsive: Mobile o Desktop */}
       <ErrorBoundary>
