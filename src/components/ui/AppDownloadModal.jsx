@@ -89,10 +89,30 @@ export default function AppDownloadModal() {
       navigatorStandalone: window.navigator.standalone,
       hasBeforeInstallPrompt: 'onbeforeinstallprompt' in window,
       hasServiceWorker: 'serviceWorker' in navigator,
+      hasGetInstalledRelatedApps: 'getInstalledRelatedApps' in window.navigator,
       timestamp: new Date().toISOString()
     };
     setDebugInfo(initialDebug);
     console.log('PWA Debug Info:', initialDebug);
+
+    // Controlla se l'app è già installata
+    const checkIfAppIsInstalled = async () => {
+      try {
+        if ('getInstalledRelatedApps' in navigator) {
+          const relatedApps = await navigator.getInstalledRelatedApps();
+          const isInstalled = relatedApps.some(app => app.id === 'com.playsportpro.app' || app.url.includes('m-padelweb.web.app'));
+          console.log('Related apps check:', relatedApps, 'Is installed:', isInstalled);
+          setDebugInfo(prev => ({ ...prev, isAppInstalled: isInstalled, relatedApps }));
+          return isInstalled;
+        }
+      } catch (error) {
+        console.error('Error checking installed apps:', error);
+        setDebugInfo(prev => ({ ...prev, checkInstalledError: error.message }));
+      }
+      return false;
+    };
+
+    checkIfAppIsInstalled();
 
     // Cattura l'evento beforeinstallprompt per PWA - sia direttamente che dal service worker
     const handleBeforeInstallPrompt = (e) => {
@@ -290,7 +310,10 @@ export default function AppDownloadModal() {
             <div>Service Worker: <span className={debugInfo.hasServiceWorker ? 'text-green-400' : 'text-red-400'}>{debugInfo.hasServiceWorker ? 'Sì' : 'No'}</span></div>
             <div>Modal catturato: <span className={debugInfo.promptCaptured ? 'text-green-400' : 'text-red-400'}>{debugInfo.promptCaptured ? 'Sì' : 'No'}</span></div>
             <div>Fonte evento: <span className="text-blue-400">{debugInfo.source || 'Nessuna'}</span></div>
+            <div>App già installata: <span className={debugInfo.isAppInstalled ? 'text-yellow-400' : 'text-green-400'}>{debugInfo.isAppInstalled ? 'Sì' : 'No'}</span></div>
+            <div>Modalità standalone: <span className={debugInfo.isStandalone ? 'text-yellow-400' : 'text-green-400'}>{debugInfo.isStandalone ? 'Sì' : 'No'}</span></div>
             <div>OS: {os}</div>
+            {debugInfo.checkInstalledError && <div className="text-red-400">Errore check: {debugInfo.checkInstalledError}</div>}
           </div>
         </div>
 
