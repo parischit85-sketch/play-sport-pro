@@ -203,9 +203,15 @@ export default function AppDownloadModal() {
         setIsOpen(false);
       }
     } else {
-      console.log('No deferred prompt available, showing fallback message');
-      alert('Il browser non supporta l\'installazione automatica. Usa le istruzioni manuali qui sotto.');
-      // Non chiudere il modal per mostrare le istruzioni
+      // NESSUN PROMPT DISPONIBILE - Mostra istruzioni manuali
+      console.log('No deferred prompt available - Chrome might have already shown the install banner or user dismissed it');
+      
+      // Mostra alert con istruzioni dettagliate
+      const instructions = os === 'windows' 
+        ? 'Per installare l\'app:\n\n1. Clicca sull\'icona ⊕ nella barra degli indirizzi (a destra)\n2. Oppure: Menu Chrome (⋮) → "Installa Play Sport Pro..."\n3. Clicca "Installa" nella finestra popup\n\nSe non vedi queste opzioni, Chrome potrebbe aver già mostrato il banner di installazione che hai chiuso. In tal caso, prova a:\n- Svuotare la cache (Ctrl+Shift+Del)\n- Riaprire il sito in modalità incognito'
+        : 'Per installare l\'app:\n\n1. Tocca il menu del browser\n2. Seleziona "Aggiungi alla schermata home" o "Installa app"\n3. Conferma l\'installazione';
+      
+      alert(instructions);
     }
   };
 
@@ -305,15 +311,54 @@ export default function AppDownloadModal() {
         <div className="bg-gray-900/50 rounded-lg p-3 mb-4">
           <p className="text-xs text-gray-400 mb-2">Debug Info:</p>
           <div className="text-xs text-gray-500 space-y-1">
-            <div>Prompt disponibile: <span className={deferredPrompt ? 'text-green-400' : 'text-red-400'}>{deferredPrompt ? 'Sì' : 'No'}</span></div>
-            <div>Browser supporta PWA: <span className={debugInfo.hasBeforeInstallPrompt ? 'text-green-400' : 'text-red-400'}>{debugInfo.hasBeforeInstallPrompt ? 'Sì' : 'No'}</span></div>
-            <div>Service Worker: <span className={debugInfo.hasServiceWorker ? 'text-green-400' : 'text-red-400'}>{debugInfo.hasServiceWorker ? 'Sì' : 'No'}</span></div>
-            <div>Modal catturato: <span className={debugInfo.promptCaptured ? 'text-green-400' : 'text-red-400'}>{debugInfo.promptCaptured ? 'Sì' : 'No'}</span></div>
-            <div>Fonte evento: <span className="text-blue-400">{debugInfo.source || 'Nessuna'}</span></div>
-            <div>App già installata: <span className={debugInfo.isAppInstalled ? 'text-yellow-400' : 'text-green-400'}>{debugInfo.isAppInstalled ? 'Sì' : 'No'}</span></div>
-            <div>Modalità standalone: <span className={debugInfo.isStandalone ? 'text-yellow-400' : 'text-green-400'}>{debugInfo.isStandalone ? 'Sì' : 'No'}</span></div>
+            <div>
+              Prompt disponibile:{' '}
+              <span className={deferredPrompt ? 'text-green-400' : 'text-red-400'}>
+                {deferredPrompt ? 'Sì' : 'No'}
+              </span>
+            </div>
+            <div>
+              Browser supporta PWA:{' '}
+              <span className={debugInfo.hasBeforeInstallPrompt ? 'text-green-400' : 'text-red-400'}>
+                {debugInfo.hasBeforeInstallPrompt ? 'Sì' : 'No'}
+              </span>
+            </div>
+            <div>
+              Service Worker:{' '}
+              <span className={debugInfo.hasServiceWorker ? 'text-green-400' : 'text-red-400'}>
+                {debugInfo.hasServiceWorker ? 'Sì' : 'No'}
+              </span>
+            </div>
+            <div>
+              Modal catturato:{' '}
+              <span className={debugInfo.promptCaptured ? 'text-green-400' : 'text-red-400'}>
+                {debugInfo.promptCaptured ? 'Sì' : 'No'}
+              </span>
+            </div>
+            <div>
+              Fonte evento: <span className="text-blue-400">{debugInfo.source || 'Nessuna'}</span>
+            </div>
+            <div>
+              App già installata:{' '}
+              <span className={debugInfo.isAppInstalled ? 'text-yellow-400' : 'text-green-400'}>
+                {debugInfo.isAppInstalled ? 'Sì' : 'No'}
+              </span>
+            </div>
+            <div>
+              Modalità standalone:{' '}
+              <span className={debugInfo.isStandalone ? 'text-yellow-400' : 'text-green-400'}>
+                {debugInfo.isStandalone ? 'Sì' : 'No'}
+              </span>
+            </div>
             <div>OS: {os}</div>
-            {debugInfo.checkInstalledError && <div className="text-red-400">Errore check: {debugInfo.checkInstalledError}</div>}
+            {debugInfo.checkInstalledError && (
+              <div className="text-red-400">Errore check: {debugInfo.checkInstalledError}</div>
+            )}
+            <div className="mt-2 pt-2 border-t border-gray-700">
+              <p className="text-yellow-400 text-xs">
+                💡 Se il prompt non appare, cerca l'icona ⊕ nella barra degli indirizzi di Chrome
+              </p>
+            </div>
           </div>
         </div>
 
