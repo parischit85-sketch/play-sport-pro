@@ -32,9 +32,6 @@ export default function LoginPage() {
                 draggable={false}
               />
             </div>
-            <div className="text-lg sm:text-2xl font-bold tracking-wide truncate text-white">
-              Play-Sport.pro
-            </div>
           </div>
           <div />
         </div>

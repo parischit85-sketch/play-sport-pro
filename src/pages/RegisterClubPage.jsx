@@ -445,18 +445,17 @@ export default function RegisterClubPage() {
     formData.address.province;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className={`min-h-screen ${T.pageBg} ${T.text}`}>
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
+      <header className={`${T.headerBg} border-b ${T.border} sticky top-0 z-50`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3">
               <img src={LOGO_URL} alt="Play-Sport.pro" className="h-10" />
-              <span className="text-xl font-bold text-white">Play-Sport.pro</span>
             </Link>
             <Link
               to="/"
-              className="flex items-center gap-2 text-gray-300 hover:text-blue-400 transition-colors"
+              className={`flex items-center gap-2 ${T.subtext} hover:${T.link} transition-colors`}
             >
               <ArrowLeft className="w-4 h-4" />
               Torna alla home
@@ -472,8 +471,8 @@ export default function RegisterClubPage() {
           <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
             <Building2 className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-4">Registra il Tuo Circolo</h1>
-          <p className="text-xl text-gray-300">
+          <h1 className={`text-4xl font-bold ${T.text} mb-4`}>Registra il Tuo Circolo</h1>
+          <p className={`text-xl ${T.subtext}`}>
             Unisciti alla nostra piattaforma e gestisci il tuo circolo sportivo in modo
             professionale
           </p>
@@ -497,7 +496,7 @@ export default function RegisterClubPage() {
                     {step > s ? <Check className="w-5 h-5" /> : s}
                   </div>
                   <span
-                    className={`text-sm font-medium ${step >= s ? 'text-white' : 'text-gray-500'}`}
+                    className={`text-sm font-medium ${step >= s ? T.text : T.subtext}`}
                   >
                     {s === 1 ? 'Dati Circolo' : 'Dettagli & Indirizzo'}
                   </span>
@@ -513,7 +512,7 @@ export default function RegisterClubPage() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-8">
+        <form onSubmit={handleSubmit} className={`${T.cardBg} rounded-2xl shadow-xl p-8`}>
           {error && (
             <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-lg text-red-400">
               {error}
@@ -523,7 +522,7 @@ export default function RegisterClubPage() {
           {/* Step 1: Dati Circolo Base */}
           {step === 1 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white mb-6">📋 Dati del Circolo</h2>
+              <h2 className={`text-2xl font-bold ${T.text} mb-6`}>📋 Dati del Circolo</h2>
 
               <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4 mb-6">
                 <p className="text-sm text-blue-300">
@@ -533,7 +532,7 @@ export default function RegisterClubPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className={`block text-sm font-medium ${T.subtext} mb-2`}>
                   Nome del Circolo *
                 </label>
                 <div className="relative">
@@ -544,14 +543,14 @@ export default function RegisterClubPage() {
                     value={formData.clubName}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full pl-12 pr-4 py-3 ${T.input}`}
                     placeholder="es: Sporting Club Milano"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className={`block text-sm font-medium ${T.subtext} mb-2`}>
                   Email del Circolo *
                 </label>
                 <div className="relative">
@@ -562,17 +561,17 @@ export default function RegisterClubPage() {
                     value={formData.clubEmail}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full pl-12 pr-4 py-3 ${T.input}`}
                     placeholder="info@circolo.com"
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className={`mt-1 text-xs ${T.subtext}`}>
                   Questa email sarà usata per il login alla piattaforma
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className={`block text-sm font-medium ${T.subtext} mb-2`}>
                   Telefono del Circolo *
                 </label>
                 <div className="relative">
@@ -583,14 +582,14 @@ export default function RegisterClubPage() {
                     value={formData.clubPhone}
                     onChange={handleInputChange}
                     required
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full pl-12 pr-4 py-3 ${T.input}`}
                     placeholder="+39 02 1234567"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Password *</label>
+                <label className={`block text-sm font-medium ${T.subtext} mb-2`}>Password *</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
@@ -600,12 +599,12 @@ export default function RegisterClubPage() {
                     onChange={handleInputChange}
                     required
                     minLength={8}
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full pl-12 pr-4 py-3 ${T.input}`}
                     placeholder="Minimo 8 caratteri con 1 speciale"
                   />
                 </div>
                 <div className="mt-1 space-y-1">
-                  <p className="text-xs text-gray-400">
+                  <p className={`text-xs ${T.subtext}`}>
                     Deve contenere almeno 8 caratteri e un carattere speciale (!@#$%^&*...)
                   </p>
                   {formData.password && !isPasswordValid(formData.password) && (
@@ -620,7 +619,7 @@ export default function RegisterClubPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className={`block text-sm font-medium ${T.subtext} mb-2`}>
                   Conferma Password *
                 </label>
                 <div className="relative">
@@ -632,7 +631,7 @@ export default function RegisterClubPage() {
                     onChange={handleInputChange}
                     required
                     minLength={6}
-                    className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className={`w-full pl-12 pr-4 py-3 ${T.input}`}
                     placeholder="Ripeti la password"
                   />
                 </div>
@@ -657,11 +656,11 @@ export default function RegisterClubPage() {
           {/* Step 2: Logo e Dettagli */}
           {step === 2 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-white mb-6">📍 Dettagli & Indirizzo</h2>
+              <h2 className={`text-2xl font-bold ${T.text} mb-6`}>📍 Dettagli & Indirizzo</h2>
 
               {/* Logo Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className={`block text-sm font-medium ${T.subtext} mb-2`}>
                   Logo del Circolo (opzionale)
                 </label>
                 <div className="flex flex-col items-center gap-4">
@@ -687,7 +686,7 @@ export default function RegisterClubPage() {
                       accept="image/*"
                       onChange={handleLogoChange}
                       disabled={uploading}
-                      className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:cursor-pointer hover:file:bg-blue-100"
+                      className={`w-full px-4 py-3 ${T.input} file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:cursor-pointer hover:file:bg-blue-100`}
                     />
                     {uploading && (
                       <p className="text-sm text-blue-400 mt-2">📤 Caricamento in corso...</p>
@@ -698,7 +697,7 @@ export default function RegisterClubPage() {
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className={`block text-sm font-medium ${T.subtext} mb-2`}>
                   Descrizione (opzionale)
                 </label>
                 <textarea
@@ -706,7 +705,7 @@ export default function RegisterClubPage() {
                   value={formData.description}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  className={`w-full px-4 py-3 ${T.input} resize-none`}
                   placeholder="Breve descrizione del tuo circolo sportivo..."
                 />
               </div>
@@ -716,10 +715,10 @@ export default function RegisterClubPage() {
                 <div className="flex items-start gap-3 mb-3">
                   <Globe className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
                   <div className="flex-1">
-                    <h3 className="font-semibold text-white mb-1">
+                    <h3 className={`font-semibold ${T.text} mb-1`}>
                       Link Google Maps (opzionale ma consigliato)
                     </h3>
-                    <p className="text-sm text-gray-400">
+                    <p className={`text-sm ${T.subtext}`}>
                       Incolla il link completo da Google Maps per auto-compilare l'indirizzo
                     </p>
                   </div>
@@ -741,7 +740,7 @@ export default function RegisterClubPage() {
                       extractAddressFromMapsLink(e.target.value);
                     }
                   }}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className={`w-full px-4 py-3 ${T.input}`}
                   placeholder="https://www.google.com/maps/place/..."
                 />
                 {extractingAddress && (
@@ -754,11 +753,11 @@ export default function RegisterClubPage() {
 
               {/* Address Fields */}
               <div className="border-t border-gray-700 pt-6">
-                <h3 className="font-semibold text-white mb-4">Indirizzo Completo *</h3>
+                <h3 className={`font-semibold ${T.text} mb-4`}>Indirizzo Completo *</h3>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className={`block text-sm font-medium ${T.subtext} mb-2`}>
                       Via e numero civico *
                     </label>
                     <input
@@ -767,33 +766,33 @@ export default function RegisterClubPage() {
                       value={formData.address.street}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 ${T.input}`}
                       placeholder="Via Roma, 123"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Città *</label>
+                    <label className={`block text-sm font-medium ${T.subtext} mb-2`}>Città *</label>
                     <input
                       type="text"
                       name="address.city"
                       value={formData.address.city}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 ${T.input}`}
                       placeholder="Milano"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">CAP *</label>
+                    <label className={`block text-sm font-medium ${T.subtext} mb-2`}>CAP *</label>
                     <input
                       type="text"
                       name="address.postalCode"
                       value={formData.address.postalCode}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 ${T.input}`}
                       placeholder="20100"
                       maxLength={5}
                       pattern="[0-9]{5}"
@@ -801,7 +800,7 @@ export default function RegisterClubPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className={`block text-sm font-medium ${T.subtext} mb-2`}>
                       Provincia *
                     </label>
                     <input
@@ -810,7 +809,7 @@ export default function RegisterClubPage() {
                       value={formData.address.province}
                       onChange={handleInputChange}
                       required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-600 bg-white text-neutral-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className={`w-full px-4 py-3 ${T.input}`}
                       placeholder="MI"
                       maxLength={2}
                       style={{ textTransform: 'uppercase' }}
@@ -852,18 +851,18 @@ export default function RegisterClubPage() {
         {/* Google Maps Instructions Modal */}
         {showMapsInstructions && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-xl">
+            <div className={`${T.cardBg} rounded-lg p-6 max-w-md w-full shadow-xl`}>
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-white">Come ottenere il link Google Maps</h3>
+                <h3 className={`text-xl font-bold ${T.text}`}>Come ottenere il link Google Maps</h3>
                 <button
                   onClick={() => setShowMapsInstructions(false)}
-                  className="text-gray-400 hover:text-gray-200"
+                  className={`${T.subtext} hover:text-gray-200`}
                 >
                   <X className="w-6 h-6" />
                 </button>
               </div>
 
-              <div className="space-y-4 text-sm text-gray-300">
+              <div className={`space-y-4 text-sm ${T.subtext}`}>
                 <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-3 mb-4">
                   <p className="text-blue-200 font-medium">
                     💡 Usa il link completo dalla barra degli indirizzi del browser, NON il link
@@ -952,7 +951,7 @@ export default function RegisterClubPage() {
         )}
 
         {/* Footer Note */}
-        <div className="mt-8 text-center text-sm text-gray-400">
+        <div className={`mt-8 text-center text-sm ${T.subtext}`}>
           Hai già un account?{' '}
           <Link to="/login" className="text-blue-400 hover:underline font-medium">
             Accedi qui

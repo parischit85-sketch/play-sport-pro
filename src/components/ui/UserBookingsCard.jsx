@@ -665,19 +665,17 @@ export default function UserBookingsCard({ user, state, T, compact: _compact, on
       </div>
 
       {/* Modal per dettaglio prenotazione */}
-      {showDetailModal && (
-        <BookingDetailModal
-          booking={selectedBooking}
-          isOpen={showDetailModal}
-          onClose={handleCloseModal}
-          state={state}
-          T={T}
-          onShare={handleShare}
-          onCancel={handleCancel}
-          onEdit={handleEdit}
-          onReview={handleReview}
-        />
-      )}
+      <BookingDetailModal
+        booking={selectedBooking}
+        isOpen={showDetailModal}
+        onClose={handleCloseModal}
+        state={state}
+        T={T}
+        onShare={handleShare}
+        onCancel={handleCancel}
+        onEdit={handleEdit}
+        onReview={handleReview}
+      />
     </>
   );
 }

@@ -3,42 +3,43 @@
 // Visual password strength indicator with requirements checklist
 // =============================================
 import React from 'react';
+import { themeTokens } from '@lib/theme.js';
 import {
   calculatePasswordStrength,
   getPasswordStrengthLevel,
   getPasswordRequirements,
 } from '@utils/validators';
 
-export default function PasswordStrengthMeter({ password }) {
+export default function PasswordStrengthMeter({ password, T = themeTokens() }) {
   const strength = calculatePasswordStrength(password);
   const level = getPasswordStrengthLevel(strength);
   const requirements = getPasswordRequirements(password);
 
-  // Color schemes based on strength level
+  // Color schemes based on strength level using theme tokens
   const getColorClasses = () => {
     switch (level) {
       case 'weak':
         return {
           bg: 'bg-red-500',
-          text: 'text-red-600 text-red-400',
+          text: T.accentBad,
           border: 'border-red-500',
         };
       case 'medium':
         return {
           bg: 'bg-yellow-500',
-          text: 'text-yellow-600 text-yellow-400',
+          text: T.accentWarning,
           border: 'border-yellow-500',
         };
       case 'strong':
         return {
           bg: 'bg-green-500',
-          text: 'text-green-600 text-green-400',
+          text: T.accentGood,
           border: 'border-green-500',
         };
       default:
         return {
           bg: 'bg-gray-300',
-          text: 'text-gray-500',
+          text: T.subtext,
           border: 'border-gray-300',
         };
     }
@@ -56,7 +57,7 @@ export default function PasswordStrengthMeter({ password }) {
       {/* Strength Bar */}
       <div className="space-y-1">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-neutral-600 text-gray-400 font-medium">Sicurezza password</span>
+          <span className={`${T.subtext} font-medium`}>Sicurezza password</span>
           <span className={`font-semibold ${colors.text}`}>
             {level === 'weak' && '❌ Debole'}
             {level === 'medium' && '⚠️ Media'}
@@ -65,7 +66,7 @@ export default function PasswordStrengthMeter({ password }) {
         </div>
 
         {/* Progress bar */}
-        <div className="h-2 bg-gray-200 bg-gray-700 rounded-full overflow-hidden">
+        <div className={`h-2 ${T.inputBg} rounded-full overflow-hidden`}>
           <div
             className={`h-full ${colors.bg} transition-all duration-300 ease-out`}
             style={{ width: `${strength}%` }}
@@ -73,12 +74,12 @@ export default function PasswordStrengthMeter({ password }) {
         </div>
 
         {/* Percentage */}
-        <div className="text-xs text-right text-gray-500 text-gray-400">{strength}%</div>
+        <div className={`text-xs text-right ${T.subtext}`}>{strength}%</div>
       </div>
 
       {/* Requirements Checklist */}
-      <div className="bg-gray-50 bg-gray-800 rounded-lg p-3 space-y-1.5">
-        <p className="text-xs font-semibold text-neutral-700 text-gray-300 mb-2">
+      <div className={`${T.cardBg} rounded-lg p-3 space-y-1.5 border ${T.border}`}>
+        <p className={`text-xs font-semibold ${T.text} mb-2`}>
           Requisiti password:
         </p>
         {requirements.map((req, index) => (
@@ -87,10 +88,10 @@ export default function PasswordStrengthMeter({ password }) {
             <span
               className={`text-xs ${
                 req.met
-                  ? 'text-green-600 text-green-400 font-medium'
+                  ? T.accentGood + ' font-medium'
                   : req.required
-                    ? 'text-red-600 text-red-400'
-                    : 'text-gray-500 text-gray-400'
+                    ? T.accentBad
+                    : T.subtext
               }`}
             >
               {req.label}

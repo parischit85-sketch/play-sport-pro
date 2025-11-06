@@ -4,11 +4,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext.jsx';
+import { themeTokens } from '@lib/theme.js';
 import { requestAffiliation, getExistingAffiliation, calculateDistance } from '@services/clubs.js';
 
 const ClubCard = ({ club, userLocation, compact = false }) => {
   const navigate = useNavigate();
   const { user, userAffiliations, loadUserAffiliations, AFFILIATION_STATUS } = useAuth();
+  const T = React.useMemo(() => themeTokens(), []);
   const [userAffiliation, setUserAffiliation] = useState(null);
   const [isRequesting, setIsRequesting] = useState(false);
   const [message, setMessage] = useState(null);
@@ -74,10 +76,10 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
     return (
       <div
         onClick={handleEnterClub}
-        className="bg-white bg-gray-800 rounded-xl shadow-sm hover:shadow-md 
+        className={`${T.cardBg} ${T.border} rounded-xl shadow-sm hover:shadow-md 
                   transition-all duration-300 overflow-hidden cursor-pointer 
-                  border border-gray-100 border-gray-700 hover:border-blue-300 hover:border-blue-600
-                  transform hover:scale-102"
+                  hover:border-blue-600
+                  transform hover:scale-102`}
       >
         <div className="p-4 flex items-center gap-3">
           {/* Club Logo */}
@@ -85,18 +87,18 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
             <img
               src={club.logoUrl}
               alt={`${club.name} logo`}
-              className="h-12 w-12 rounded-lg object-cover shadow-sm border border-gray-200 border-gray-600 flex-shrink-0"
+              className="h-12 w-12 rounded-lg object-cover shadow-sm border border-gray-600 flex-shrink-0"
             />
           ) : (
-            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm border border-gray-200 border-gray-600 flex-shrink-0">
+            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm border border-gray-600 flex-shrink-0">
               <span className="text-xl">🏓</span>
             </div>
           )}
 
           {/* Nome e Città */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-bold text-gray-900 text-white truncate">{club.name}</h3>
-            <p className="text-xs text-gray-500 text-gray-400 truncate">📍 {city}</p>
+            <h3 className={`text-sm font-bold ${T.text} truncate`}>{club.name}</h3>
+            <p className={`text-xs ${T.subtext} truncate`}>📍 {city}</p>
           </div>
         </div>
       </div>
@@ -136,7 +138,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
         return (
           <div
             className="flex-1 bg-yellow-900/30 text-yellow-400 
-                        px-4 py-2 rounded-lg text-center font-medium border border-yellow-200 border-yellow-700"
+                        px-4 py-2 rounded-lg text-center font-medium border border-yellow-700"
           >
             ⏳ Richiesta in attesa
           </div>
@@ -158,7 +160,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
         return (
           <div
             className="flex-1 bg-red-900/30 text-red-400 
-                        px-4 py-2 rounded-lg text-center font-medium border border-red-200 border-red-700"
+                        px-4 py-2 rounded-lg text-center font-medium border border-red-700"
           >
             ❌ Richiesta rifiutata
           </div>
@@ -171,8 +173,8 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
 
   return (
     <div
-      className="bg-white bg-gray-800 rounded-xl shadow-md hover:shadow-lg 
-                  transition-shadow duration-300 overflow-hidden"
+      className={`${T.cardBg} rounded-xl shadow-md hover:shadow-lg 
+                  transition-shadow duration-300 overflow-hidden`}
     >
       {/* Header with club info */}
       <div className="p-6">
@@ -184,22 +186,22 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
                 <img
                   src={club.logoUrl}
                   alt={`${club.name} logo`}
-                  className="h-12 w-12 rounded-xl object-cover shadow-md border-2 border-white border-gray-700"
+                  className="h-12 w-12 rounded-xl object-cover shadow-md border-2 border-gray-700"
                 />
               ) : (
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md border-2 border-white border-gray-700">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md border-2 border-gray-700">
                   <span className="text-2xl">🏓</span>
                 </div>
               )}
               <div>
-                <h3 className="text-xl font-bold text-gray-900 text-white mb-1">{club.name}</h3>
-                <p className="text-gray-600 text-gray-400 text-sm mb-2">
+                <h3 className={`text-xl font-bold ${T.text} mb-1`}>{club.name}</h3>
+                <p className={`${T.subtext} text-sm mb-2`}>
                   📍 {club.location?.city}, {club.location?.region}
                 </p>
               </div>
             </div>
             {club.description && (
-              <p className="text-gray-700 text-gray-300 text-sm line-clamp-2">{club.description}</p>
+              <p className={`${T.subtext} text-sm line-clamp-2`}>{club.description}</p>
             )}
           </div>
 
@@ -217,7 +219,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
         </div>
 
         {/* Club stats */}
-        <div className="flex gap-4 text-sm text-gray-600 text-gray-400 mb-4">
+        <div className={`flex gap-4 text-sm ${T.subtext} mb-4`}>
           {club.stats?.totalCourts && (
             <div className="flex items-center gap-1">🎾 {club.stats.totalCourts} campi</div>
           )}
@@ -228,7 +230,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
 
         {/* Contact info */}
         {(club.contact?.phone || club.contact?.email) && (
-          <div className="space-y-1 text-sm text-gray-600 text-gray-400 mb-4">
+          <div className={`space-y-1 text-sm ${T.subtext} mb-4`}>
             {club.contact.phone && (
               <div className="flex items-center gap-2">📞 {club.contact.phone}</div>
             )}
@@ -240,7 +242,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
 
         {/* Address */}
         {club.location?.address && (
-          <div className="text-sm text-gray-600 text-gray-400 mb-4">📍 {club.location.address}</div>
+          <div className={`text-sm ${T.subtext} mb-4`}>📍 {club.location.address}</div>
         )}
 
         {/* Message display */}
@@ -264,9 +266,9 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
           {!userAffiliation || userAffiliation.status !== AFFILIATION_STATUS.APPROVED ? (
             <button
               onClick={handleEnterClub}
-              className="px-4 py-2 border border-blue-500 border-blue-600 
-                       text-blue-600 text-blue-400 rounded-lg font-medium
-                       hover:bg-blue-50 hover:bg-blue-900/20 transition-colors
+              className="px-4 py-2 border border-blue-600 
+                       text-blue-400 rounded-lg font-medium
+                       hover:bg-blue-900/20 transition-colors
                        inline-flex items-center gap-2"
             >
               👁️ Visualizza Club
@@ -276,7 +278,7 @@ const ClubCard = ({ club, userLocation, compact = false }) => {
       </div>
 
       {/* Additional features indicators */}
-      <div className="bg-gray-50 bg-gray-700/50 px-6 py-3">
+      <div className="bg-gray-700/50 px-6 py-3">
         <div className="flex flex-wrap gap-2 text-xs">
           {club.settings?.allowGuestBookings && (
             <span

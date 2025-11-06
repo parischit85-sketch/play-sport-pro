@@ -3,8 +3,9 @@
 // GDPR-compliant Terms of Service acceptance component
 // =============================================
 import React from 'react';
+import { themeTokens } from '@lib/theme.js';
 
-export default function TermsOfService({ accepted, onAcceptanceChange, showError = false }) {
+export default function TermsOfService({ accepted, onAcceptanceChange, showError = false, T = themeTokens() }) {
   return (
     <div className="space-y-3">
       {/* Main TOS checkbox */}
@@ -13,16 +14,16 @@ export default function TermsOfService({ accepted, onAcceptanceChange, showError
           type="checkbox"
           checked={accepted}
           onChange={(e) => onAcceptanceChange(e.target.checked)}
-          className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+          className={`mt-1 h-4 w-4 rounded ${T.border} text-blue-600 focus:ring-blue-500 cursor-pointer`}
           required
         />
-        <span className="text-sm text-neutral-700 text-gray-300 group-hover:text-neutral-900 group-hover:text-white transition-colors">
+        <span className={`text-sm ${T.text} group-hover:${T.neonText} transition-colors`}>
           Accetto i{' '}
           <a
-            href="/terms-of-service"
+            href="/terms-and-conditions"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-indigo-600 text-indigo-400 hover:text-indigo-800 hover:text-indigo-300 underline font-medium"
+            className={`${T.link} underline font-medium`}
             onClick={(e) => e.stopPropagation()}
           >
             Termini e Condizioni d&apos;Uso
@@ -32,7 +33,7 @@ export default function TermsOfService({ accepted, onAcceptanceChange, showError
             href="/privacy-policy"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-indigo-600 text-indigo-400 hover:text-indigo-800 hover:text-indigo-300 underline font-medium"
+            className={`${T.link} underline font-medium`}
             onClick={(e) => e.stopPropagation()}
           >
             Privacy Policy
@@ -42,7 +43,7 @@ export default function TermsOfService({ accepted, onAcceptanceChange, showError
 
       {/* Error message */}
       {showError && !accepted && (
-        <div className="flex items-start gap-2 text-xs text-red-600 text-red-400 bg-red-50 bg-red-900/20 border border-red-200 border-red-800 rounded-lg p-2">
+        <div className={`flex items-start gap-2 text-xs ${T.accentBad} ${T.cardBg} border ${T.border} rounded-lg p-2`}>
           <span className="text-sm">⚠️</span>
           <p className="font-medium">
             Devi accettare i Termini e Condizioni per procedere con la registrazione
@@ -51,11 +52,11 @@ export default function TermsOfService({ accepted, onAcceptanceChange, showError
       )}
 
       {/* GDPR info */}
-      <div className="bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-800 rounded-lg p-3">
-        <p className="text-xs font-semibold text-blue-700 text-blue-300 mb-2">
+      <div className={`${T.cardBg} border ${T.border} rounded-lg p-3`}>
+        <p className={`text-xs font-semibold ${T.text} mb-2`}>
           🔒 Protezione dei tuoi dati (GDPR)
         </p>
-        <ul className="text-xs text-blue-600 text-blue-400 space-y-1.5 ml-4 list-disc">
+        <ul className={`text-xs ${T.subtext} space-y-1.5 ml-4 list-disc`}>
           <li>I tuoi dati saranno trattati in conformità con il GDPR</li>
           <li>
             Puoi richiedere l&apos;accesso, la modifica o la cancellazione dei tuoi dati in
@@ -67,14 +68,14 @@ export default function TermsOfService({ accepted, onAcceptanceChange, showError
       </div>
 
       {/* Marketing consent (optional) */}
-      <div className="pt-2 border-t border-gray-200 border-gray-700">
+      <div className={`pt-2 border-t ${T.border}`}>
         <label className="flex items-start gap-3 cursor-pointer group">
           <input
             type="checkbox"
-            className="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+            className={`mt-1 h-4 w-4 rounded ${T.border} text-blue-600 focus:ring-blue-500 cursor-pointer`}
           />
-          <span className="text-sm text-neutral-600 text-gray-400 group-hover:text-neutral-800 group-hover:text-gray-200 transition-colors">
-            <span className="font-medium text-neutral-700 text-gray-300">(Facoltativo)</span>{' '}
+          <span className={`text-sm ${T.subtext} group-hover:${T.text} transition-colors`}>
+            <span className={`font-medium ${T.text}`}>(Facoltativo)</span>{' '}
             Desidero ricevere aggiornamenti, offerte e comunicazioni promozionali via email
           </span>
         </label>

@@ -4,6 +4,7 @@
 // =============================================
 import React, { useState, useEffect } from 'react';
 import { Phone } from 'lucide-react';
+import { themeTokens } from '@lib/theme.js';
 import {
   validatePhone,
   formatPhoneNumber,
@@ -19,6 +20,7 @@ export default function PhoneInput({
   placeholder = '+39 123 456 7890',
   helpText = '',
   required = false,
+  T = themeTokens(),
 }) {
   const [validation, setValidation] = useState(null);
   const [isValidating, setIsValidating] = useState(false);
@@ -61,11 +63,11 @@ export default function PhoneInput({
   return (
     <div>
       {/* Phone Input Label */}
-      <label className="block text-sm font-medium text-neutral-700 text-gray-300 mb-2">
+      <label className={`block text-sm font-medium ${T.text} mb-2`}>
         {label}
       </label>
       <div className="relative">
-        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Phone className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${T.subtext}`} />
         <input
           type="tel"
           value={value || ''}
@@ -73,25 +75,23 @@ export default function PhoneInput({
           onBlur={handleBlur}
           placeholder={placeholder}
           required={required}
-          className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 border-gray-600 bg-white bg-gray-700 text-neutral-900 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className={`${T.input} w-full pl-12 pr-4`}
         />
         {isValidating && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <div className="animate-spin h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full" />
+            <div className={`animate-spin h-4 w-4 border-2 ${T.subtext} border-t-transparent rounded-full`} />
           </div>
         )}
       </div>
-      {helpText && <p className="mt-1 text-xs text-gray-500 text-gray-400">{helpText}</p>}
-
-      {/* Validation feedback */}
+      {helpText && <p className={`mt-1 text-xs ${T.subtext}`}>{helpText}</p>}
 
       {/* Validation feedback */}
       {value && (
         <div className="space-y-2">
           {/* Validating indicator */}
           {isValidating && (
-            <div className="flex items-center gap-2 text-xs text-gray-500 text-gray-400">
-              <div className="animate-spin h-3 w-3 border-2 border-gray-400 border-t-transparent rounded-full" />
+            <div className={`flex items-center gap-2 text-xs ${T.subtext}`}>
+              <div className={`animate-spin h-3 w-3 border-2 ${T.subtext} border-t-transparent rounded-full`} />
               <span>Verifica numero...</span>
             </div>
           )}
@@ -101,15 +101,15 @@ export default function PhoneInput({
             <>
               {/* Success */}
               {validation.isValid && (
-                <div className="flex items-start gap-2 text-xs text-green-600 text-green-400 bg-green-50 bg-green-900/20 border border-green-200 border-green-800 rounded-lg p-2">
+                <div className={`flex items-start gap-2 text-xs ${T.accentGood} ${T.cardBg} border ${T.border} rounded-lg p-2`}>
                   <span className="text-sm">✅</span>
                   <div>
                     <p className="font-medium">Numero valido!</p>
-                    <p className="text-green-600/80 text-green-400/80 mt-1">
+                    <p className={`${T.accentGood} mt-1`}>
                       Formato: {validation.formatted}
                     </p>
                     {validation.country && (
-                      <p className="text-green-600/80 text-green-400/80">
+                      <p className={`${T.accentGood}`}>
                         Paese: {validation.country}
                       </p>
                     )}
@@ -119,7 +119,7 @@ export default function PhoneInput({
 
               {/* Errors */}
               {!validation.isValid && validation.errors && (
-                <div className="flex items-start gap-2 text-xs text-red-600 text-red-400 bg-red-50 bg-red-900/20 border border-red-200 border-red-800 rounded-lg p-2">
+                <div className={`flex items-start gap-2 text-xs ${T.accentBad} ${T.cardBg} border ${T.border} rounded-lg p-2`}>
                   <span className="text-sm">❌</span>
                   <div className="space-y-1">
                     {validation.errors.map((error, idx) => (
@@ -133,13 +133,13 @@ export default function PhoneInput({
 
               {/* Requirements checklist */}
               {requirements.length > 0 && (
-                <div className="bg-gray-50 bg-gray-800 rounded-lg p-2 space-y-1">
-                  <p className="text-xs font-semibold text-neutral-700 text-gray-300">Requisiti:</p>
+                <div className={`${T.cardBg} rounded-lg p-2 space-y-1`}>
+                  <p className={`text-xs font-semibold ${T.text}`}>Requisiti:</p>
                   {requirements.map((req, idx) => (
                     <div key={idx} className="flex items-center gap-2">
                       <span className="text-xs">{req.met ? '✅' : '❌'}</span>
                       <span
-                        className={`text-xs ${req.met ? 'text-green-600 text-green-400' : 'text-gray-600 text-gray-400'}`}
+                        className={`text-xs ${req.met ? T.accentGood : T.subtext}`}
                       >
                         {req.label}
                       </span>
@@ -152,7 +152,7 @@ export default function PhoneInput({
 
           {/* Help text */}
           {!validation && (
-            <p className="text-xs text-gray-500 text-gray-400">
+            <p className={`text-xs ${T.subtext}`}>
               💡 Formato: +39 seguito dal numero (es: +39 123 456 7890 o +39 02 1234 5678)
             </p>
           )}

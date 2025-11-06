@@ -8,6 +8,7 @@ import {
 import { getUserLocation, geocodeCity, LocationStatus } from '../../utils/location-service.js';
 import { getClubCoordinates } from '../../utils/maps-utils.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
+import { themeTokens } from '@lib/theme.js';
 import ClubCard from './ClubCard.jsx';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
 
@@ -18,6 +19,7 @@ const SEARCH_TYPES = {
 
 const ClubSearch = () => {
   const { user, userAffiliations } = useAuth();
+  const T = React.useMemo(() => themeTokens(), []);
   const [searchType, setSearchType] = useState(SEARCH_TYPES.TEXT);
   const [searchQuery, setSearchQuery] = useState('');
   const [allClubs, setAllClubs] = useState([]);
@@ -254,17 +256,17 @@ const ClubSearch = () => {
       {/* Header */}
       <div className="text-center mb-6">
         <div className="text-5xl mb-3">🏟️</div>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 text-white mb-2">
+        <h1 className={`text-2xl md:text-3xl font-bold ${T.text} mb-2`}>
           Trova il tuo Circolo
         </h1>
-        <p className="text-sm text-gray-600 text-gray-400">
+        <p className={`text-sm ${T.subtext}`}>
           Scopri i circoli sportivi e unisciti alla community
         </p>
       </div>
 
       {/* 1. I TUOI CIRCOLI - Circoli dove l'utente ha fatto accesso */}
       {user && affiliatedClubs.length > 0 && (
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 from-green-900/20 to-emerald-900/10 rounded-2xl border-2 border-green-200 border-green-700/30 p-6 shadow-lg">
+        <div className={`bg-gradient-to-br from-green-900/20 to-emerald-900/10 rounded-2xl border-2 border-green-700/30 p-6 shadow-lg`}>
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
               <svg
@@ -282,8 +284,8 @@ const ClubSearch = () => {
               </svg>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 text-white">I Tuoi Circoli</h2>
-              <p className="text-sm text-gray-600 text-gray-400">
+              <h2 className={`text-2xl font-bold ${T.text}`}>I Tuoi Circoli</h2>
+              <p className={`text-sm ${T.subtext}`}>
                 {affiliatedClubs.length}{' '}
                 {affiliatedClubs.length === 1 ? 'circolo affiliato' : 'circoli affiliati'}
               </p>
@@ -312,7 +314,7 @@ const ClubSearch = () => {
 
       {/* 2. I 3 PIÙ VICINI - Card più piccole e compatte */}
       {nearbyClubs.length > 0 && (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 from-blue-900/20 to-indigo-900/10 rounded-xl border border-blue-200 border-blue-700/30 p-4 shadow-md">
+        <div className={`bg-gradient-to-br from-blue-900/20 to-indigo-900/10 rounded-xl border border-blue-700/30 p-4 shadow-md`}>
           <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
               <svg
@@ -336,10 +338,10 @@ const ClubSearch = () => {
               </svg>
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 text-white">
+              <h2 className={`text-lg font-bold ${T.text}`}>
                 Circoli Nelle Vicinanze
               </h2>
-              <p className="text-xs text-gray-600 text-gray-400">
+              <p className={`text-xs ${T.subtext}`}>
                 I migliori circoli più vicini a te
               </p>
             </div>
@@ -360,7 +362,7 @@ const ClubSearch = () => {
       )}
 
       {/* 3. RICERCA PERSONALIZZATA - Collapsible */}
-      <div className="bg-white bg-gray-800 rounded-2xl border-2 border-gray-200 border-gray-700 p-6 shadow-lg">
+      <div className={`${T.cardBg} ${T.border} rounded-2xl p-6 shadow-lg`}>
         <div className="text-center mb-6">
           <button
             onClick={() => setShowCustomSearch(!showCustomSearch)}
@@ -382,18 +384,18 @@ const ClubSearch = () => {
           <div className="space-y-6">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl"></span>
-              <h2 className="text-xl font-semibold text-gray-900 text-white">
+              <h2 className={`text-xl font-semibold ${T.text}`}>
                 Ricerca Personalizzata
               </h2>
             </div>
 
-            <div className="flex bg-gray-100 bg-gray-700 rounded-lg p-1 max-w-md mx-auto">
+            <div className={`flex bg-gray-700 rounded-lg p-1 max-w-md mx-auto`}>
               <button
                 onClick={() => setSearchType(SEARCH_TYPES.TEXT)}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                   searchType === SEARCH_TYPES.TEXT
-                    ? 'bg-white bg-gray-600 text-gray-900 text-white shadow-sm'
-                    : 'text-gray-600 text-gray-400 hover:text-gray-900 hover:text-white'
+                    ? `${T.cardBg} ${T.text} shadow-sm`
+                    : `${T.subtext} hover:${T.text}`
                 }`}
               >
                 Ricerca per nome
@@ -402,8 +404,8 @@ const ClubSearch = () => {
                 onClick={() => setSearchType(SEARCH_TYPES.LOCATION)}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                   searchType === SEARCH_TYPES.LOCATION
-                    ? 'bg-white bg-gray-600 text-gray-900 text-white shadow-sm'
-                    : 'text-gray-600 text-gray-400 hover:text-gray-900 hover:text-white'
+                    ? `${T.cardBg} ${T.text} shadow-sm`
+                    : `${T.subtext} hover:${T.text}`
                 }`}
               >
                 Cerca nelle vicinanze
@@ -417,12 +419,12 @@ const ClubSearch = () => {
                   placeholder="Cerca per nome del club o città..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 border-gray-600 bg-white bg-gray-700 text-gray-900 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 placeholder-gray-400"
+                  className={`${T.input} w-full mt-1`}
                 />
                 {searchQuery && (
                   <button
                     onClick={clearSearch}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 hover:text-gray-300"
+                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${T.subtext} hover:${T.text}`}
                   ></button>
                 )}
               </div>
@@ -447,7 +449,7 @@ const ClubSearch = () => {
 
                     {(showManualLocationInput || geolocationAttempts > 0) && (
                       <div className="max-w-md mx-auto space-y-3">
-                        <div className="text-gray-600 text-gray-400 font-medium">
+                        <div className={`${T.text} font-medium`}>
                           Oppure inserisci la tua città:
                         </div>
                         <div className="flex gap-2">
@@ -461,17 +463,17 @@ const ClubSearch = () => {
                                 searchByCity(manualCity);
                               }
                             }}
-                            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 border-gray-600 bg-white bg-gray-700 text-gray-900 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className={`${T.input} flex-1 mt-1`}
                           />
                           <button
                             onClick={() => searchByCity(manualCity)}
                             disabled={!manualCity.trim() || searchLoading}
-                            className="bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+                            className={`${T.btnPrimary} px-6 py-2`}
                           >
                             🔍 Cerca
                           </button>
                         </div>
-                        <div className="text-xs text-gray-500 text-gray-400">
+                        <div className={`text-xs ${T.subtext}`}>
                           Cercheremo i circoli entro 25 km dalla città indicata
                         </div>
                       </div>
@@ -485,19 +487,19 @@ const ClubSearch = () => {
                     <div className="flex justify-center gap-2 flex-wrap">
                       <button
                         onClick={() => handleLocationSearch(5)}
-                        className="px-4 py-2 border border-gray-300 border-gray-600 rounded-lg hover:bg-gray-50 hover:bg-gray-600 transition-colors"
+                        className={`${T.btnGhost} px-4 py-2`}
                       >
                         Entro 5 km
                       </button>
                       <button
                         onClick={() => handleLocationSearch(10)}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                        className={`${T.btnPrimary} px-4 py-2`}
                       >
                         Entro 10 km
                       </button>
                       <button
                         onClick={() => handleLocationSearch(25)}
-                        className="px-4 py-2 border border-gray-300 border-gray-600 rounded-lg hover:bg-gray-50 hover:bg-gray-600 transition-colors"
+                        className={`${T.btnGhost} px-4 py-2`}
                       >
                         Entro 25 km
                       </button>
@@ -509,7 +511,7 @@ const ClubSearch = () => {
                         setShowManualLocationInput(false);
                         setGeolocationAttempts(0);
                       }}
-                      className="text-sm text-gray-500 hover:text-gray-700 text-gray-400 hover:text-gray-300 underline"
+                      className={`text-sm ${T.subtext} hover:${T.text} underline`}
                     >
                       Cambia posizione
                     </button>
@@ -520,7 +522,7 @@ const ClubSearch = () => {
 
             {error && (
               <div className="max-w-md mx-auto">
-                <div className="bg-red-50 bg-red-900/20 border border-red-200 border-red-800 rounded-lg p-4 text-red-700 text-red-400">
+                <div className={`bg-red-900/20 border border-red-800 rounded-lg p-4 ${T.accentBad}`}>
                   {error}
                 </div>
               </div>
@@ -536,7 +538,7 @@ const ClubSearch = () => {
               <>
                 {searchResults.length > 0 ? (
                   <>
-                    <div className="text-center text-gray-600 text-gray-400 mb-4">
+                    <div className={`text-center ${T.subtext} mb-4`}>
                       {searchResults.length === 1
                         ? 'Trovato 1 club'
                         : `Trovati ${searchResults.length} club`}
@@ -551,10 +553,10 @@ const ClubSearch = () => {
                 ) : (
                   <div className="text-center py-8">
                     <div className="text-4xl mb-4"></div>
-                    <h3 className="text-xl font-semibold text-gray-900 text-white mb-2">
+                    <h3 className={`text-xl font-semibold ${T.text} mb-2`}>
                       Nessun risultato trovato
                     </h3>
-                    <p className="text-gray-600 text-gray-400">
+                    <p className={T.subtext}>
                       Prova a modificare i criteri di ricerca
                     </p>
                   </div>
@@ -566,12 +568,12 @@ const ClubSearch = () => {
       </div>
 
       {allClubs.length === 0 && !loading && (
-        <div className="bg-white bg-gray-800 rounded-lg border border-gray-200 border-gray-700 p-6 text-center">
+        <div className={`${T.cardBg} ${T.border} rounded-lg p-6 text-center`}>
           <div className="text-4xl mb-4"></div>
-          <h3 className="text-xl font-semibold text-gray-900 text-white mb-2">
+          <h3 className={`text-xl font-semibold ${T.text} mb-2`}>
             Nessun circolo disponibile
           </h3>
-          <p className="text-gray-600 text-gray-400">Non ci sono circoli disponibili al momento</p>
+          <p className={T.subtext}>Non ci sono circoli disponibili al momento</p>
         </div>
       )}
     </div>

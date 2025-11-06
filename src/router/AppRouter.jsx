@@ -16,6 +16,8 @@ import { trackPageView } from '@lib/analytics.js';
 const LoginPage = React.lazy(() => import('@pages/LoginPage.jsx'));
 const RegisterPage = React.lazy(() => import('@pages/RegisterPage.jsx'));
 const RegisterClubPage = React.lazy(() => import('@pages/RegisterClubPage.jsx'));
+const TermsAndConditionsPage = React.lazy(() => import('@pages/TermsAndConditionsPage.jsx'));
+const PrivacyPolicyPage = React.lazy(() => import('@pages/PrivacyPolicyPage.jsx'));
 // const LandingPage = React.lazy(() => import('@pages/LandingPage.jsx')); // Not used
 // const DashboardHomePage = React.lazy(() => import('@pages/DashboardHomePage.jsx')); // Not used
 const DashboardPage = React.lazy(() => import('@pages/DashboardPage.jsx'));
@@ -120,6 +122,14 @@ export default function AppRouter() {
                       <RegisterClubPage />
                     </PublicRoute>
                   }
+                />
+                <Route
+                  path="/terms-and-conditions"
+                  element={<TermsAndConditionsPage />}
+                />
+                <Route
+                  path="/privacy-policy"
+                  element={<PrivacyPolicyPage />}
                 />
                 {/* Public Tournament Views - No authentication required */}
                 {/* Public tournament views */}

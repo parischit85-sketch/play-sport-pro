@@ -7,7 +7,6 @@ import { useNotifications } from '@contexts/NotificationContext';
 import Section from '@ui/Section.jsx';
 import {
   loginWithGoogle,
-  loginWithFacebook,
   sendMagicLink,
   completeMagicLinkIfPresent,
   logout,
@@ -70,15 +69,6 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
       }
 
       showError('Errore Google: ' + message);
-    }
-  };
-
-  const handleFacebookLogin = async () => {
-    try {
-      await loginWithFacebook();
-      // Il profilo verrà caricato automaticamente dall'App
-    } catch (e) {
-      showError('Errore Facebook: ' + (e?.message || e));
     }
   };
 
@@ -177,7 +167,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
   if (!user) {
     return (
       <div className="space-y-6">
-        <Section title="Benvenuto in Sporting Cat" T={T}>
+        <Section T={T}>
           <div className={`rounded-2xl ${T.cardBg} ${T.border} p-6 space-y-4`}>
             <div className="text-center space-y-2">
               <h2 className="text-xl font-bold">Accedi o Registrati</h2>
@@ -212,17 +202,6 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
                   />
                 </svg>
                 Continua con Google
-              </button>
-
-              <button
-                type="button"
-                className={`${T.btnGhost} flex items-center justify-center gap-2`}
-                onClick={handleFacebookLogin}
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
-                Continua con Facebook
               </button>
             </div>
 

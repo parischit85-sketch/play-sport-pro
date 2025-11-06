@@ -4,6 +4,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Users, UserPlus, Trash2, Pencil } from 'lucide-react';
+import { useAuth, USER_ROLES } from '../../../../contexts/AuthContext';
 import { getTeamsByTournament, deleteTeam, assignTeamToGroup } from '../../services/teamsService';
 import { TOURNAMENT_STATUS, GROUP_NAMES } from '../../utils/tournamentConstants';
 import { updateTournament } from '../../services/tournamentService';
@@ -11,6 +12,7 @@ import TeamRegistrationModal from './TeamRegistrationModal';
 import TeamEditModal from './TeamEditModal';
 
 function TournamentTeams({ tournament, onUpdate, clubId }) {
+  const { userRole, userClubRoles } = useAuth();
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
@@ -18,6 +20,13 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
   const [teamToEdit, setTeamToEdit] = useState(null);
   const [manualGroups, setManualGroups] = useState({}); // teamId -> groupId
   const [savingManual, setSavingManual] = useState(false);
+
+  // Determina se l'utente è un club admin
+  const isClubAdmin =
+    userRole === USER_ROLES.CLUB_ADMIN ||
+    userRole === USER_ROLES.SUPER_ADMIN ||
+    (clubId &&
+      (userClubRoles?.[clubId] === USER_ROLES.CLUB_ADMIN || userClubRoles?.[clubId] === 'admin'));
 
   useEffect(() => {
     loadTeams();
@@ -163,7 +172,7 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
 
   return (
     <div className="space-y-6">
-      {canAssignGroups && (
+      {canAssignGroups && isClubAdmin && (
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
           <h3 className="text-lg font-semibold text-white mb-3">Assegna Gironi Manualmente</h3>
           <p className="text-sm text-gray-400 mb-4">
@@ -200,18 +209,20 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
       {/* Header with Add button */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-white">Squadre Registrate ({teams.length})</h2>
-        {/* Button always visible for admins */}
-        <button
-          onClick={() => setShowRegistrationModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
-        >
-          <UserPlus className="w-4 h-4" />
-          Aggiungi Squadra
-        </button>
+        {/* Button only visible for admins and when registration is open */}
+        {isClubAdmin && canRegister && (
+          <button
+            onClick={() => setShowRegistrationModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+          >
+            <UserPlus className="w-4 h-4" />
+            Aggiungi Squadra
+          </button>
+        )}
       </div>
 
-      {/* Registration Modal */}
-      {showRegistrationModal && (
+      {/* Registration Modal - only for admins */}
+      {isClubAdmin && showRegistrationModal && (
         <TeamRegistrationModal
           tournament={tournament}
           clubId={clubId}
@@ -220,7 +231,8 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
         />
       )}
 
-      {showEditModal && teamToEdit && (
+      {/* Edit Modal - only for admins */}
+      {isClubAdmin && showEditModal && teamToEdit && (
         <TeamEditModal
           tournament={tournament}
           clubId={clubId}
@@ -255,7 +267,7 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
                   </h3>
                   {team.seed && <span className="text-sm text-gray-400">Seed #{team.seed}</span>}
                 </div>
-                {canEditTeams && (
+                {canEditTeams && isClubAdmin && (
                   <button
                     onClick={() => handleEditClick(team)}
                     className="p-1 text-primary-600 hover:bg-primary-900/20 rounded"
@@ -290,9 +302,9 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
                 </div>
               )}
 
-              {/* Pulsante elimina squadra - sempre visibile per admin */}
+              {/* Pulsante elimina squadra - solo per admin */}
               <div className="mt-3 flex justify-end gap-2">
-                {canEditTeams && (
+                {canEditTeams && isClubAdmin && (
                   <button
                     onClick={() => handleEditClick(team)}
                     className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300"
@@ -301,13 +313,15 @@ function TournamentTeams({ tournament, onUpdate, clubId }) {
                     Modifica
                   </button>
                 )}
-                <button
-                  onClick={() => handleDelete(team.id)}
-                  className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="w-3 h-3" />
-                  Elimina squadra
-                </button>
+                {isClubAdmin && (
+                  <button
+                    onClick={() => handleDelete(team.id)}
+                    className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Elimina squadra
+                  </button>
+                )}
               </div>
             </div>
           ))}

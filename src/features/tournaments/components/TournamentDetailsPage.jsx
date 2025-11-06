@@ -61,6 +61,7 @@ function TournamentDetailsPage({ clubId }) {
   // Filtra le tab in base al ruolo dell'utente, allo stato dei punti e al tipo di torneo
   // Per non-admin: mostra punti solo se sono stati applicati
   // Per "Solo Partite": nascondi Gironi e Tabellone
+  // Per utenti normali: mostra solo Gironi, Partite e Tabellone
   let visibleTabs = TABS;
   
   const isMatchesOnly = tournament?.participantType === 'matches_only';
@@ -74,6 +75,11 @@ function TournamentDetailsPage({ clubId }) {
   if (isMatchesOnly) {
     // Per "Solo Partite": nascondi Gironi e Tabellone
     visibleTabs = visibleTabs.filter((tab) => tab.id !== 'standings' && tab.id !== 'bracket');
+  }
+  
+  // Per utenti normali: nascondi Panoramica e Squadre, mostra solo Gironi, Partite e Tabellone
+  if (!isClubAdmin) {
+    visibleTabs = visibleTabs.filter((tab) => ['standings', 'matches', 'bracket'].includes(tab.id));
   }
   
   if (!isClubAdmin && !pointsApplied) {

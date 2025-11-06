@@ -157,27 +157,27 @@ export default function BookingDetailModal({
   const minutesUntil = Math.floor((timeUntilBooking % (1000 * 60 * 60)) / (1000 * 60));
 
   return (
-    <Modal open={isOpen} onClose={onClose} title="Dettaglio Prenotazione" T={T} size="md">
+    <Modal isOpen={isOpen} onClose={onClose} title="Dettaglio Prenotazione" T={T} size="md">
       <div className="space-y-6">
         {/* Club info in cima */}
         {clubInfo && (
-          <div className="bg-white/90 bg-gray-800/90 backdrop-blur-xl rounded-2xl p-4 border-2 border-gray-200/50 border-gray-700/50 shadow-lg">
+          <div className="bg-gray-800/90 backdrop-blur-xl rounded-2xl p-4 border-2 border-gray-700/50 shadow-lg">
             <div className="flex items-center gap-4">
               {/* Logo del club */}
               {clubInfo.logoUrl ? (
                 <img
                   src={clubInfo.logoUrl}
                   alt={clubInfo.name}
-                  className="w-16 h-16 rounded-xl object-cover shadow-md border-2 border-white border-gray-700"
+                  className="w-16 h-16 rounded-xl object-cover shadow-md border-2 border-gray-700"
                 />
               ) : (
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md border-2 border-white border-gray-700">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md border-2 border-gray-700">
                   <span className="text-2xl">🎾</span>
                 </div>
               )}
               {/* Nome e indirizzo club */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-bold text-gray-900 text-white truncate">
+                <h3 className="text-lg font-bold text-white truncate">
                   {clubInfo.name}
                 </h3>
                 {clubInfo.location && (
@@ -193,7 +193,7 @@ export default function BookingDetailModal({
 
         {/* Header compatto */}
         <div
-          className={`bg-gradient-to-br ${isLessonBooking ? 'from-green-500/90 to-green-600/90' : 'from-blue-500/90 to-blue-600/90'} backdrop-blur-xl rounded-2xl p-6 text-white shadow-lg ${isLessonBooking ? 'shadow-green-100/30 shadow-green-900/20' : 'shadow-blue-100/30 shadow-blue-900/20'}`}
+          className={`bg-gradient-to-br ${isLessonBooking ? 'from-green-500/90 to-green-600/90' : 'from-blue-500/90 to-blue-600/90'} backdrop-blur-xl rounded-2xl p-6 text-white shadow-lg ${isLessonBooking ? 'shadow-green-900/20' : 'shadow-blue-900/20'}`}
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-4">
@@ -243,7 +243,7 @@ export default function BookingDetailModal({
         </div>
 
         {/* Giocatori/Istruttore - Con stile della conferma prenotazione quando in editing */}
-        <div className="bg-white/80 bg-gray-800/80 backdrop-blur-xl border border-white/30 border-gray-700/30 rounded-xl p-5 shadow-lg shadow-gray-100/50 shadow-gray-900/20">
+        <div className="bg-gray-800/80 backdrop-blur-xl border border-gray-700/30 rounded-xl p-5 shadow-lg shadow-gray-900/20">
           <div className="text-xs text-gray-400 mb-4 font-medium">
             {isLessonBooking
               ? '🎾 DETTAGLI LEZIONE'
@@ -255,7 +255,7 @@ export default function BookingDetailModal({
             <div className="space-y-3">
               {/* Istruttore */}
               {booking.instructor && (
-                <div className="p-4 bg-gradient-to-r from-green-50/80 to-green-100/80 from-green-900/30 to-green-800/30 backdrop-blur-sm rounded-xl border-l-4 border-green-500 shadow-sm">
+                <div className="p-4 bg-gradient-to-r from-green-900/30 to-green-800/30 backdrop-blur-sm rounded-xl border-l-4 border-green-500 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg">
                       <span className="text-white text-sm">🎾</span>
@@ -278,7 +278,7 @@ export default function BookingDetailModal({
               )}
 
               {/* Informazioni lezione */}
-              <div className="p-4 bg-white/60 bg-gray-700/60 backdrop-blur-sm rounded-xl border border-white/20 border-gray-600/20 shadow-sm">
+              <div className="p-4 bg-gray-700/60 backdrop-blur-sm rounded-xl border border-gray-600/20 shadow-sm">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <div className="text-xs text-gray-400 mb-1">Livello</div>
@@ -297,7 +297,7 @@ export default function BookingDetailModal({
               </div>
 
               {/* Studente principale */}
-              <div className="p-4 bg-gradient-to-r from-blue-50/80 to-blue-100/80 from-blue-900/30 to-blue-800/30 backdrop-blur-sm rounded-xl border-l-4 border-blue-500 shadow-sm">
+              <div className="p-4 bg-gradient-to-r from-blue-900/30 to-blue-800/30 backdrop-blur-sm rounded-xl border-l-4 border-blue-500 shadow-sm">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-white text-sm">👤</span>
@@ -320,7 +320,7 @@ export default function BookingDetailModal({
             /* Modalità partita - Mostra giocatori come prima */
             <div className="space-y-3">
               {/* Organizzatore - Sempre visibile con stile blu */}
-              <div className="p-4 bg-gradient-to-r from-blue-50/80 to-blue-100/80 from-blue-900/30 to-blue-800/30 backdrop-blur-sm rounded-xl border-l-4 border-blue-500 shadow-sm">
+              <div className="p-4 bg-gradient-to-r from-blue-900/30 to-blue-800/30 backdrop-blur-sm rounded-xl border-l-4 border-blue-500 shadow-sm">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
                     <span className="text-white text-sm">👑</span>
@@ -355,7 +355,7 @@ export default function BookingDetailModal({
                     editedPlayers.slice(1).map((participant, index) => (
                       <div
                         key={index}
-                        className="p-4 bg-white/60 bg-gray-700/60 backdrop-blur-sm rounded-xl border border-white/20 border-gray-600/20 flex items-center gap-3 shadow-sm"
+                        className="p-4 bg-gray-700/60 backdrop-blur-sm rounded-xl border border-gray-600/20 flex items-center gap-3 shadow-sm"
                       >
                         <div className="w-10 h-10 bg-gradient-to-r from-gray-400 to-gray-500 rounded-full flex items-center justify-center shadow-lg">
                           <span className="text-white text-sm">👤</span>
@@ -397,7 +397,7 @@ export default function BookingDetailModal({
                   {/* Aggiungi nuovo giocatore - Sezione separata */}
                   {editedPlayers.length < 4 && (
                     <div className="mt-6 pt-6 border-t-2 border-dashed border-gray-600">
-                      <h4 className="text-sm font-semibold text-gray-700 text-gray-300 mb-3">
+                      <h4 className="text-sm font-semibold text-gray-300 mb-3">
                         ➕ Aggiungi giocatore
                       </h4>
 
@@ -439,12 +439,12 @@ export default function BookingDetailModal({
                               }
                             }}
                             placeholder="🔍 Cerca per nome, email o telefono..."
-                            className="w-full p-3 bg-white bg-gray-700 border-2 border-gray-300 border-gray-600 rounded-lg text-sm text-gray-900 text-white placeholder-gray-500 placeholder-gray-400 focus:border-blue-500 focus:border-blue-400 focus:ring-2 focus:ring-blue-200 focus:ring-blue-900/50 outline-none transition-all"
+                            className="w-full p-3 bg-gray-700 border-2 border-gray-600 rounded-lg text-sm text-white placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-900/50 outline-none transition-all"
                           />
 
                           {/* Dropdown risultati - Posizionamento assoluto migliorato */}
                           {showSearchResults && newPlayerName.length >= 2 && (
-                            <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-[9999] bg-white bg-gray-800 rounded-lg shadow-2xl border-2 border-blue-500 border-blue-400 max-h-64 overflow-y-auto">
+                            <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-[9999] bg-gray-800 rounded-lg shadow-2xl border-2 border-blue-400 max-h-64 overflow-y-auto">
                               {isSearching ? (
                                 <div className="p-4 text-center">
                                   <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
@@ -473,7 +473,7 @@ export default function BookingDetailModal({
                                         setShowSearchResults(false);
                                         setSearchResults([]);
                                       }}
-                                      className="w-full px-3 py-2 hover:bg-blue-50 hover:bg-gray-700 transition-colors flex items-center gap-3 text-left"
+                                      className="w-full px-3 py-2 hover:bg-gray-700 transition-colors flex items-center gap-3 text-left"
                                     >
                                       <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                                         <span className="text-white text-xs font-bold">
@@ -483,7 +483,7 @@ export default function BookingDetailModal({
                                         </span>
                                       </div>
                                       <div className="flex-1 min-w-0">
-                                        <div className="text-sm font-semibold text-gray-900 text-white truncate">
+                                        <div className="text-sm font-semibold text-white truncate">
                                           {user.displayName ||
                                             `${user.firstName || ''} ${user.lastName || ''}`.trim() ||
                                             'Utente'}
@@ -535,7 +535,7 @@ export default function BookingDetailModal({
                     booking.players.slice(1).map((participant, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-3 bg-white/60 bg-gray-700/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-white/20 border-gray-600/20 shadow-sm"
+                        className="flex items-center gap-3 bg-gray-700/60 backdrop-blur-sm rounded-xl px-4 py-3 border border-gray-600/20 shadow-sm"
                       >
                         <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center shadow-lg">
                           <span className="text-white text-sm font-bold">{index + 2}</span>
@@ -559,14 +559,14 @@ export default function BookingDetailModal({
                       Array.from({ length: slotsLiberi }).map((_, index) => (
                         <div
                           key={`empty-${index}`}
-                          className="flex items-center gap-3 bg-gray-100/60 bg-gray-700/40 backdrop-blur-sm rounded-xl px-4 py-3 border-dashed border border-gray-200/60 border-gray-600/40"
+                          className="flex items-center gap-3 bg-gray-700/40 backdrop-blur-sm rounded-xl px-4 py-3 border-dashed border border-gray-600/40"
                         >
-                          <div className="w-8 h-8 rounded-full bg-gray-300 bg-gray-500 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center">
                             <span className="text-gray-400 text-sm">?</span>
                           </div>
                           <div className="flex-1">
                             <div className="text-sm text-gray-400 italic">Slot libero</div>
-                            <div className="text-xs text-gray-400 text-gray-500">
+                            <div className="text-xs text-gray-500">
                               Giocatore {currentPlayers + index + 1}
                             </div>
                           </div>
@@ -581,8 +581,8 @@ export default function BookingDetailModal({
 
           {/* Note compatte (solo se presenti) */}
           {booking.notes && (
-            <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 from-blue-900/30 to-indigo-900/30 backdrop-blur-xl border border-white/30 border-gray-700/30 rounded-xl p-4 shadow-lg shadow-blue-100/50 shadow-blue-900/20">
-              <div className="text-xs text-blue-700 text-blue-300 font-medium mb-2">
+            <div className="bg-gradient-to-r from-blue-900/30 to-indigo-900/30 backdrop-blur-xl border border-gray-700/30 rounded-xl p-4 shadow-lg shadow-blue-900/20">
+              <div className="text-xs text-blue-300 font-medium mb-2">
                 <svg
                   className={`w-4 h-4 inline mr-1 ${ds.info}`}
                   fill="none"
@@ -598,7 +598,7 @@ export default function BookingDetailModal({
                 </svg>
                 NOTE
               </div>
-              <p className="text-sm text-gray-700 text-gray-300">{booking.notes}</p>
+              <p className="text-sm text-gray-300">{booking.notes}</p>
             </div>
           )}
 
@@ -671,7 +671,7 @@ export default function BookingDetailModal({
 
             {/* Messaggio se non si può modificare */}
             {!isPast && !canEdit && (
-              <div className="w-full bg-white/60 bg-gray-700/60 backdrop-blur-sm border border-white/30 border-gray-600/30 text-gray-600 text-gray-300 py-4 px-4 rounded-xl text-sm text-center shadow-sm">
+              <div className="w-full bg-gray-700/60 backdrop-blur-sm border border-gray-600/30 text-gray-300 py-4 px-4 rounded-xl text-sm text-center shadow-sm">
                 <svg
                   className={`w-4 h-4 inline mr-2 ${ds.warning}`}
                   fill="none"
@@ -732,7 +732,7 @@ export default function BookingDetailModal({
                       Cancella
                     </button>
                   ) : (
-                      <div className="flex-1 bg-white/60 bg-gray-700/60 backdrop-blur-sm border border-white/30 border-gray-600/30 text-gray-600 text-gray-300 py-4 px-4 rounded-xl text-sm text-center shadow-sm">
+                      <div className="flex-1 bg-gray-700/60 backdrop-blur-sm border border-gray-600/30 text-gray-300 py-4 px-4 rounded-xl text-sm text-center shadow-sm">
                         <svg
                           className={`w-4 h-4 inline mr-2 ${ds.warning}`}
                           fill="none"
