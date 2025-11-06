@@ -71,6 +71,7 @@ export default function AppDownloadModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
   const [os, setOs] = useState('unknown');
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   useEffect(() => {
     // Controlla se l'utente ha già ignorato il popup
@@ -79,6 +80,16 @@ export default function AppDownloadModal() {
       setIsDismissed(true);
       return;
     }
+
+    // Cattura l'evento beforeinstallprompt per PWA
+    const handleBeforeInstallPrompt = (e) => {
+      // Previene il prompt automatico del browser
+      e.preventDefault();
+      // Salva l'evento per usarlo dopo
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     // Rileva il sistema operativo
     const detectedOs = getOperatingSystem();
@@ -96,12 +107,45 @@ export default function AppDownloadModal() {
       }
     }, 2000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
 
-  const handleDownload = () => {
-    // Non serve più aprire link agli store, ora mostriamo istruzioni PWA
-    setIsOpen(false);
+  const handleDownload = async () => {
+    // Se abbiamo il prompt di installazione PWA, mostralo
+    if (deferredPrompt) {
+      try {
+        // Mostra il prompt di installazione
+        deferredPrompt.prompt();
+
+        // Aspetta la risposta dell'utente
+        const { outcome } = await deferredPrompt.userChoice;
+
+        // Resetta il prompt dopo l'uso
+        setDeferredPrompt(null);
+
+        // Chiudi il modal
+        setIsOpen(false);
+
+        // Log dell'esito per debug
+        console.log('Install prompt outcome:', outcome);
+
+        // Se l'utente ha accettato, possiamo considerare l'app installata
+        if (outcome === 'accepted') {
+          console.log('PWA install accepted');
+        }
+      } catch (error) {
+        console.error('Error showing install prompt:', error);
+        // Fallback: chiudi il modal
+        setIsOpen(false);
+      }
+    } else {
+      // Se non abbiamo il prompt, chiudi semplicemente il modal
+      // Questo può accadere su dispositivi che non supportano l'installazione diretta
+      setIsOpen(false);
+    }
   };
 
   const handleDismiss = () => {
@@ -175,11 +219,15 @@ export default function AppDownloadModal() {
         {/* Descrizione */}
         <p className="text-gray-300 mb-6 leading-relaxed">
           Trasforma il portale in un'app nativa sul tuo dispositivo.
-          Segui questi semplici passi per installare la PWA:
+          Clicca "Installa ora" per avviare l'installazione automatica:
         </p>
 
         {/* Istruzioni PWA */}
         <div className="bg-gray-800/50 rounded-lg p-4 mb-6">
+          <p className="text-gray-300 text-sm mb-3 text-center">
+            Su alcuni dispositivi l'installazione avviene automaticamente.
+            Se necessario, segui questi passi:
+          </p>
           <div className="space-y-3">
             {PWA_INSTRUCTIONS[os]?.map((instruction, index) => (
               <div key={index} className="flex items-start gap-3">
