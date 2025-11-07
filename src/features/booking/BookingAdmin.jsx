@@ -5,12 +5,16 @@ import Modal from '@ui/Modal.jsx';
 import { createDSClasses } from '@lib/design-system.js';
 import {
   BOOKING_CONFIG,
-  getTimeSlots,
   getAvailableDays,
+  isSlotAvailable,
   calculatePrice,
   calculateLessonPrice,
+  validateBooking,
+  createBooking,
   updateBooking,
   cancelBooking,
+  loadBookings,
+  saveBookings,
   getAdminBookings,
   BOOKING_STATUS,
 } from '@services/bookings.js';
@@ -362,7 +366,7 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
     booking || {
       courtId: '',
       date: '',
-      time: '',
+      time: '08:00',
       duration: 60,
       lighting: false,
       heating: false,
@@ -379,6 +383,17 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave(formData);
+  };
+
+  // Helper per estrarre ore e minuti in modo sicuro
+  const getHour = () => {
+    const parts = (formData.time || '08:00').split(':');
+    return parts[0] || '08';
+  };
+
+  const getMinute = () => {
+    const parts = (formData.time || '08:00').split(':');
+    return parts[1] || '00';
   };
 
   const selectedCourt = BOOKING_CONFIG.courts.find((c) => c.id === formData.courtId);
@@ -460,19 +475,46 @@ function BookingModal({ booking, isOpen, onClose, onSave, T, ds }) {
             {/* Orario */}
             <div>
               <label className={`${ds.bodySm} block mb-2 font-medium`}>Orario</label>
-              <select
-                value={formData.time}
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                className={`w-full p-3 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing} rounded-lg`}
-                required
-              >
-                <option value="">Seleziona orario</option>
-                {getTimeSlots().map((time) => (
-                  <option key={time} value={time}>
-                    {time}
-                  </option>
-                ))}
-              </select>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className={`text-xs ${T.subtext} mb-1 block`}>Ora</label>
+                  <select
+                    value={getHour()}
+                    onChange={(e) => {
+                      const hour = e.target.value;
+                      const minute = getMinute();
+                      setFormData({ ...formData, time: `${hour}:${minute}` });
+                    }}
+                    className={`w-full p-3 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing} rounded-lg`}
+                    required
+                  >
+                    {Array.from({ length: 24 }, (_, i) => {
+                      const hour = String(i).padStart(2, '0');
+                      return (
+                        <option key={hour} value={hour}>
+                          {hour}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div>
+                  <label className={`text-xs ${T.subtext} mb-1 block`}>Minuti</label>
+                  <select
+                    value={getMinute()}
+                    onChange={(e) => {
+                      const hour = getHour();
+                      const minute = e.target.value;
+                      setFormData({ ...formData, time: `${hour}:${minute}` });
+                    }}
+                    className={`w-full p-3 ${T.cardBg} ${T.border} ${T.borderMd} focus:outline-none focus:ring-2 ${T.primaryRing} rounded-lg`}
+                    required
+                  >
+                    <option value="00">00</option>
+                    <option value="30">30</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
             {/* Durata */}

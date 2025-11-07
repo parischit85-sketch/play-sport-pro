@@ -370,21 +370,67 @@ function TimeSlotEditor({ slot, onUpdate, onRemove, T, maxPlayers = 4 }) {
           <div className="grid grid-cols-2 gap-2">
             <div className="flex flex-col">
               <label className={`text-xs ${T.subtext} mb-1`}>Ora inizio</label>
-              <input
-                type="time"
-                value={toTime(slot.from)}
-                onChange={(e) => onUpdate({ from: toTime(e.target.value) })}
-                className={T.input}
-              />
+              <div className="flex gap-2">
+                <select
+                  value={toTime(slot.from).split(':')[0]}
+                  onChange={(e) => {
+                    const hour = e.target.value;
+                    const minute = toTime(slot.from).split(':')[1];
+                    onUpdate({ from: `${hour}:${minute}` });
+                  }}
+                  className={`${T.input} flex-1`}
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={String(i).padStart(2, '0')}>
+                      {String(i).padStart(2, '0')}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={toTime(slot.from).split(':')[1]}
+                  onChange={(e) => {
+                    const hour = toTime(slot.from).split(':')[0];
+                    const minute = e.target.value;
+                    onUpdate({ from: `${hour}:${minute}` });
+                  }}
+                  className={`${T.input} flex-1`}
+                >
+                  <option value="00">00</option>
+                  <option value="30">30</option>
+                </select>
+              </div>
             </div>
             <div className="flex flex-col">
               <label className={`text-xs ${T.subtext} mb-1`}>Ora fine</label>
-              <input
-                type="time"
-                value={toTime(slot.to)}
-                onChange={(e) => onUpdate({ to: toTime(e.target.value) })}
-                className={T.input}
-              />
+              <div className="flex gap-2">
+                <select
+                  value={toTime(slot.to).split(':')[0]}
+                  onChange={(e) => {
+                    const hour = e.target.value;
+                    const minute = toTime(slot.to).split(':')[1];
+                    onUpdate({ to: `${hour}:${minute}` });
+                  }}
+                  className={`${T.input} flex-1`}
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={String(i).padStart(2, '0')}>
+                      {String(i).padStart(2, '0')}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={toTime(slot.to).split(':')[1]}
+                  onChange={(e) => {
+                    const hour = toTime(slot.to).split(':')[0];
+                    const minute = e.target.value;
+                    onUpdate({ to: `${hour}:${minute}` });
+                  }}
+                  className={`${T.input} flex-1`}
+                >
+                  <option value="00">00</option>
+                  <option value="30">30</option>
+                </select>
+              </div>
             </div>
           </div>
 

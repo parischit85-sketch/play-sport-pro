@@ -319,8 +319,7 @@ export default function Extra({
             <label htmlFor="slotMinutes" className={`text-xs ${T.subtext}`}>
               Minuti slot
             </label>
-            <input
-              type="number"
+            <select
               id="slotMinutes"
               value={cfgDraft.slotMinutes}
               onChange={(e) =>
@@ -330,7 +329,10 @@ export default function Extra({
                 }))
               }
               className={T.input}
-            />
+            >
+              <option value="30">30 minuti</option>
+              <option value="60">60 minuti (1 ora)</option>
+            </select>
           </div>
           <div className="flex flex-col">
             <label htmlFor="dayStartHour" className={`text-xs ${T.subtext}`}>

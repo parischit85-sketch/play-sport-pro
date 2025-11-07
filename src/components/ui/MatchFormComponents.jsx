@@ -18,16 +18,16 @@ export const FormProgressBar = ({ progress, message, className = '' }) => {
   return (
     <div className={`w-full ${className}`}>
       <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-slate-300">Completamento Form</span>
-        <span className="text-sm text-slate-400">{progress}%</span>
+        <span className="text-sm font-medium text-gray-300">Completamento Form</span>
+        <span className="text-sm text-gray-400">{progress}%</span>
       </div>
-      <div className="w-full bg-slate-700 rounded-full h-2">
+      <div className="w-full bg-gray-700 rounded-full h-2">
         <div
           className={`h-2 rounded-full transition-all duration-300 ${getProgressColor()}`}
           style={{ width: `${progress}%` }}
         />
       </div>
-      {message && <div className="mt-2 text-sm text-slate-400">{message.message}</div>}
+      {message && <div className="mt-2 text-sm text-gray-400">{message.message}</div>}
     </div>
   );
 };
@@ -82,12 +82,12 @@ export const EnhancedPlayerSelect = ({
 
     switch (fieldState) {
       case 'error':
-        return `${baseClasses} border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-50 bg-red-900/20`;
+        return `${baseClasses} border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-900/20`;
       case 'warning':
-        return `${baseClasses} border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500 bg-yellow-50 bg-yellow-900/20`;
+        return `${baseClasses} border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500 bg-yellow-900/20`;
       case 'valid':
         return value
-          ? `${baseClasses} border-green-300 focus:border-green-500 focus:ring-green-500 bg-green-50 bg-green-900/20`
+          ? `${baseClasses} border-green-300 focus:border-green-500 focus:ring-green-500 bg-green-900/20`
           : baseClasses;
       default:
         return baseClasses;
@@ -148,13 +148,13 @@ export const EnhancedSetInput = ({
     const baseClasses = `${T.input} w-16 text-center transition-all duration-200`;
 
     if (error) {
-      return `${baseClasses} border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-50 bg-red-900/20`;
+      return `${baseClasses} border-red-300 focus:border-red-500 focus:ring-red-500 bg-red-900/20`;
     }
     if (warning) {
-      return `${baseClasses} border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500 bg-yellow-50 bg-yellow-900/20`;
+      return `${baseClasses} border-yellow-300 focus:border-yellow-500 focus:ring-yellow-500 bg-yellow-900/20`;
     }
     if (setData.a !== '' && setData.b !== '') {
-      return `${baseClasses} border-green-300 focus:border-green-500 focus:ring-green-500 bg-green-50 bg-green-900/20`;
+      return `${baseClasses} border-green-300 focus:border-green-500 focus:ring-green-500 bg-green-900/20`;
     }
 
     return baseClasses;

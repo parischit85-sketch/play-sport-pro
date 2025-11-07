@@ -93,7 +93,7 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
 
     return (
       <div
-        className={`relative rounded-3xl bg-white/80 bg-gray-800/80 backdrop-blur-xl border border-white/20 border-gray-700/30 shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 ${isExpanded ? 'ring-2 ring-blue-500/60 shadow-blue-500/20' : ''}`}
+        className={`relative rounded-3xl ${T.cardBg} backdrop-blur-xl ${T.border} shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300 ${isExpanded ? 'ring-2 ring-blue-500/60 shadow-blue-500/20' : ''}`}
       >
         {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
@@ -115,12 +115,12 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
               <span
-                className={`px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm border ${winA ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-700 text-emerald-300' : 'bg-rose-500/20 border-rose-400/30 text-rose-700 text-rose-300'}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium backdrop-blur-sm border ${winA ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300' : 'bg-rose-500/20 border-rose-400/30 text-rose-300'}`}
               >
                 {winA ? '✨ Team A vince' : '✨ Team B vince'}
               </span>
               {dateStr && (
-                <span className="text-xs text-gray-600 text-gray-400 bg-gray-100/50 bg-gray-700/50 px-2 py-1 rounded-lg backdrop-blur-sm">
+                <span className={`text-xs ${T.subtext} bg-gray-700/50 px-2 py-1 rounded-lg backdrop-blur-sm`}>
                   {dateStr}
                 </span>
               )}
@@ -132,7 +132,7 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
                 >
                   {A}
                 </div>
-                <div className="hidden sm:block text-gray-400 text-gray-500">vs</div>
+                <div className="hidden sm:block text-gray-500">vs</div>
                 <div
                   className={`${bCls} font-semibold bg-gradient-to-r from-current to-current bg-clip-text`}
                 >
@@ -140,33 +140,33 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
                 </div>
               </div>
             </div>
-            <div className="text-xs text-gray-600 text-gray-400 bg-gray-50/50 bg-gray-700/30 px-3 py-1.5 rounded-xl backdrop-blur-sm">
+            <div className={`text-xs ${T.subtext} bg-gray-700/30 px-3 py-1.5 rounded-xl backdrop-blur-sm`}>
               Sets {m.setsA}–{m.setsB} • Games {m.gamesA}–{m.gamesB}
             </div>
           </div>
           <div className="shrink-0 text-right flex items-center gap-3">
-            <div className="bg-gradient-to-br from-gray-50/80 to-gray-100/80 from-gray-700/50 to-gray-800/50 backdrop-blur-sm rounded-2xl px-3 py-2 border border-white/20 border-gray-600/30">
+            <div className="bg-gradient-to-br from-gray-700/50 to-gray-800/50 backdrop-blur-sm rounded-2xl px-3 py-2 border border-gray-600/30">
               <div className="flex gap-2 items-center text-xs mb-1">
                 <span
-                  className={`font-bold ${Math.round(deltaA) >= 0 ? 'text-emerald-600 text-emerald-400' : 'text-rose-600 text-rose-400'}`}
+                  className={`font-bold ${Math.round(deltaA) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}
                 >
                   A: {Math.round(deltaA) >= 0 ? '+' : ''}
                   {Math.round(deltaA)}
                 </span>
                 <span className="text-gray-400">|</span>
                 <span
-                  className={`font-bold ${Math.round(deltaB) >= 0 ? 'text-emerald-600 text-emerald-400' : 'text-rose-600 text-rose-400'}`}
+                  className={`font-bold ${Math.round(deltaB) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}
                 >
                   B: {Math.round(deltaB) >= 0 ? '+' : ''}
                   {Math.round(deltaB)}
                 </span>
               </div>
-              <div className="text-[10px] text-gray-500 text-gray-400 font-medium text-center">
+              <div className="text-[10px] text-gray-400 font-medium text-center">
                 punti RPA
               </div>
             </div>
             <div
-              className={`text-gray-400 text-gray-300 text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
+              className={`text-gray-300 text-sm transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
             >
               ▼
             </div>
@@ -175,29 +175,29 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
 
         {/* Dettagli espansi */}
         {isExpanded && (
-          <div className="border-t border-white/20 border-gray-700/30 bg-gradient-to-b from-gray-50/50 to-gray-100/50 from-gray-800/40 to-gray-900/40 backdrop-blur-sm">
+          <div className="border-t border-gray-700/30 bg-gradient-to-b from-gray-800/40 to-gray-900/40 backdrop-blur-sm">
             <div className="p-4 space-y-4">
               {/* Squadre - Stacked su mobile */}
               <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4 text-sm">
                 <div
-                  className={`p-4 rounded-2xl border backdrop-blur-sm ${winA ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 from-emerald-900/40 to-emerald-800/30' : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 from-rose-900/40 to-rose-800/30'}`}
+                  className={`p-4 rounded-2xl border backdrop-blur-sm ${winA ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-900/40 to-emerald-800/30' : 'border-rose-400/30 bg-gradient-to-br from-rose-900/40 to-rose-800/30'}`}
                 >
-                  <div className="font-semibold text-gray-900 text-white mb-2 flex items-center gap-2">
+                  <div className="font-semibold text-white mb-2 flex items-center gap-2">
                     {winA && <span className="text-emerald-500">👑</span>}
                     {AFull}
                   </div>
-                  <div className="text-xs text-gray-700 text-gray-300 bg-white/40 bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                  <div className="text-xs text-gray-300 bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                     Sets: {m.setsA} • Games: {m.gamesA}
                   </div>
                 </div>
                 <div
-                  className={`p-4 rounded-2xl border backdrop-blur-sm ${!winA ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-50/80 to-emerald-100/60 from-emerald-900/40 to-emerald-800/30' : 'border-rose-400/30 bg-gradient-to-br from-rose-50/80 to-rose-100/60 from-rose-900/40 to-rose-800/30'}`}
+                  className={`p-4 rounded-2xl border backdrop-blur-sm ${!winA ? 'border-emerald-400/30 bg-gradient-to-br from-emerald-900/40 to-emerald-800/30' : 'border-rose-400/30 bg-gradient-to-br from-rose-900/40 to-rose-800/30'}`}
                 >
-                  <div className="font-semibold text-gray-900 text-white mb-2 flex items-center gap-2">
+                  <div className="font-semibold text-white mb-2 flex items-center gap-2">
                     {!winA && <span className="text-emerald-500">👑</span>}
                     {BFull}
                   </div>
-                  <div className="text-xs text-gray-700 text-gray-300 bg-white/40 bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
+                  <div className="text-xs text-gray-300 bg-gray-800/40 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                     Sets: {m.setsB} • Games: {m.gamesB}
                   </div>
                 </div>
@@ -206,7 +206,7 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
               {/* Set dettaglio - Mobile scroll */}
               {Array.isArray(m.sets) && m.sets.length > 0 && (
                 <div>
-                  <div className="text-sm font-semibold text-gray-700 text-gray-200 mb-3 flex items-center gap-2">
+                  <div className="text-sm font-semibold text-gray-200 mb-3 flex items-center gap-2">
                     <span className="bg-gradient-to-r from-blue-500 to-indigo-600 text-transparent bg-clip-text">
                       📊
                     </span>
@@ -225,8 +225,8 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
                           key={`${m.id}-set-${i}`}
                           className={`px-4 py-3 rounded-2xl text-sm font-semibold shrink-0 backdrop-blur-sm shadow-lg border ${
                             isWinningSet
-                              ? 'bg-gradient-to-br from-emerald-100/90 to-emerald-200/70 from-emerald-800/70 to-emerald-900/50 border-emerald-400/40 border-emerald-500/40 text-emerald-900 text-emerald-100'
-                              : 'bg-gradient-to-br from-rose-100/90 to-rose-200/70 from-rose-800/70 to-rose-900/50 border-rose-400/40 border-rose-500/40 text-rose-900 text-rose-100'
+                              ? 'bg-gradient-to-br from-emerald-800/70 to-emerald-900/50 border-emerald-500/40 text-emerald-100'
+                              : 'bg-gradient-to-br from-rose-800/70 to-rose-900/50 border-rose-500/40 text-rose-100'
                           }`}
                         >
                           <div className="text-center">
@@ -243,40 +243,40 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
               )}
 
               {/* Formula compatta - Mobile collapsible */}
-              <div className="border-t border-white/20 border-gray-700/30 pt-4">
-                <div className="text-sm font-semibold text-gray-700 text-gray-200 mb-3 flex items-center gap-2">
+              <div className="border-t border-gray-700/30 pt-4">
+                  <div className="text-sm font-semibold text-gray-200 mb-3 flex items-center gap-2">
                   <span className="bg-gradient-to-r from-purple-500 to-pink-600 text-transparent bg-clip-text">
                     🧮
                   </span>
                   Calcolo punti RPA:
                 </div>
-                <div className="text-sm space-y-3 text-gray-800 text-gray-100">
-                  <div className="bg-gradient-to-r from-white/60 to-gray-50/40 from-gray-700/40 to-gray-800/30 backdrop-blur-sm p-3 rounded-xl border border-white/30 border-gray-600/20">
-                    <strong className="text-gray-900 text-white">Rating:</strong>{' '}
-                    <span className="text-gray-700 text-gray-200">
+                <div className="text-sm space-y-3 text-gray-100">
+                  <div className="bg-gradient-to-r from-gray-700/40 to-gray-800/30 backdrop-blur-sm p-3 rounded-xl border border-gray-600/20">
+                    <strong className="text-white">Rating:</strong>{' '}
+                    <span className="text-gray-200">
                       A={Math.round(sumA)} vs B={Math.round(sumB)}{' '}
-                      <span className="text-xs text-gray-500 text-gray-400">
+                      <span className="text-xs text-gray-400">
                         (Gap: {Math.round(gap)})
                       </span>
                     </span>
                   </div>
-                  <div className="bg-gradient-to-r from-white/60 to-gray-50/40 from-gray-700/40 to-gray-800/30 backdrop-blur-sm p-3 rounded-xl border border-white/30 border-gray-600/20">
-                    <strong className="text-gray-900 text-white">Calcolo:</strong>{' '}
-                    <span className="text-gray-700 text-gray-200">
+                  <div className="bg-gradient-to-r from-gray-700/40 to-gray-800/30 backdrop-blur-sm p-3 rounded-xl border border-gray-600/20">
+                    <strong className="text-white">Calcolo:</strong>{' '}
+                    <span className="text-gray-200">
                       Base: {base.toFixed(1)} • DG: {GD} • Factor: {factor.toFixed(2)}
                     </span>
                   </div>
-                  <div className="bg-gradient-to-br from-emerald-50/60 to-green-100/40 from-emerald-900/30 to-green-900/20 backdrop-blur-sm p-3 rounded-xl border border-emerald-300/30 border-emerald-600/20">
-                    <strong className="text-gray-900 text-white block mb-2">Risultato:</strong>
+                  <div className="bg-gradient-to-br from-emerald-900/30 to-green-900/20 backdrop-blur-sm p-3 rounded-xl border border-emerald-600/20">
+                    <strong className="text-white block mb-2">Risultato:</strong>
                     <div className="flex gap-4 text-sm flex-wrap">
                       <span
-                        className={`font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm ${Math.round(deltaA) >= 0 ? 'bg-emerald-500/20 text-emerald-700 text-emerald-300' : 'bg-rose-500/20 text-rose-700 text-rose-300'}`}
+                        className={`font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm ${Math.round(deltaA) >= 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`}
                       >
                         Team A: {Math.round(deltaA) >= 0 ? '+' : ''}
                         {Math.round(deltaA)}
                       </span>
                       <span
-                        className={`font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm ${Math.round(deltaB) >= 0 ? 'bg-emerald-500/20 text-emerald-700 text-emerald-300' : 'bg-rose-500/20 text-rose-700 text-rose-300'}`}
+                        className={`font-bold px-3 py-1.5 rounded-lg backdrop-blur-sm ${Math.round(deltaB) >= 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`}
                       >
                         Team B: {Math.round(deltaB) >= 0 ? '+' : ''}
                         {Math.round(deltaB)}
@@ -287,7 +287,7 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
               </div>
 
               {/* Azioni */}
-              <div className="flex justify-between items-center pt-2 border-t border-gray-300 border-gray-500">
+              <div className="flex justify-between items-center pt-2 border-t border-gray-500">
                 <button
                   type="button"
                   onClick={() => {
@@ -333,7 +333,7 @@ export default function MatchRow({ m, playersById, onShowFormula, onDelete, T })
 
                 <button
                   type="button"
-                  className="flex items-center gap-2 bg-white/60 bg-gray-800/60 backdrop-blur-sm border border-rose-300/50 border-rose-700/50 text-rose-600 text-rose-400 hover:bg-rose-50 hover:bg-rose-900/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                  className="flex items-center gap-2 bg-gray-800/60 backdrop-blur-sm border border-rose-700/50 text-rose-400 hover:bg-rose-900/30 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg"
                   onClick={onDelete}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

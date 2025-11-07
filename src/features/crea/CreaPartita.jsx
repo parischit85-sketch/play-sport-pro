@@ -26,47 +26,6 @@ import {
 } from '../../components/ui/MatchFormComponents';
 import analyticsModule from '../../lib/analytics';
 
-const toLocalInputValue = (d) => {
-  const pad = (n) => String(n).padStart(2, '0');
-  const dt = new Date(d);
-  const y = dt.getFullYear(),
-    m = pad(dt.getMonth() + 1),
-    day = pad(dt.getDate());
-  const hh = pad(dt.getHours()),
-    mm = pad(dt.getMinutes());
-  return `${y}-${m}-${day}T${hh}:${mm}`;
-};
-
-function PlayerSelect({ players, value, onChange, disabledIds, T }) {
-  // Filtra solo i giocatori con nome valido o displayName
-  const validPlayers = players.filter((p) => {
-    const name = (p.name || '').trim();
-    const displayName = (p.displayName || '').trim();
-
-    // Escludi profili admin (anche con role undefined ma isClubAdmin true)
-    if (p.role === 'admin' || p.isClubAdmin === true) return false;
-
-    // Escludi profili senza name (solo displayName non è sufficiente per i giocatori)
-    if (!p.name || p.name === undefined || name.length === 0) return false;
-
-    return true;
-  });
-  return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className={`${T.input} pr-8 w-full`}
-    >
-      <option value="">—</option>
-      {validPlayers.map((p) => (
-        <option key={p.id} value={p.id} disabled={disabledIds?.has(p.id)}>
-          {p.name || p.displayName}
-        </option>
-      ))}
-    </select>
-  );
-}
-
 export default function CreaPartita({
   state, // { players } minimal per retrofit multi-club
   setState, // legacy setState (fallback se manca clubId)
@@ -132,18 +91,15 @@ export default function CreaPartita({
     validation,
     isSubmitting,
     toast,
-    playersById: formPlayersById,
     updatePlayer,
     updateSet,
     updateDate,
     handleSubmit,
     resetForm,
     getDisabledPlayerIds,
-    showToast,
     hideToast,
     canSubmit,
     progress,
-    summary,
   } = useMatchForm(playersAlpha, async (formData, result) => {
     // This is the actual submission logic
     await addMatchWithValidation(formData, result);
@@ -155,7 +111,7 @@ export default function CreaPartita({
   const b1 = formData.b1;
   const b2 = formData.b2;
   const sets = formData.sets;
-  const when = formData.data || toLocalInputValue(new Date());
+  const when = formData.data || new Date().toISOString().slice(0, 16);
 
   // Usa i rating computati dai props invece del sistema live Firebase
   const selectedPlayerIds = [a1, a2, b1, b2].filter(Boolean);
@@ -171,9 +127,6 @@ export default function CreaPartita({
     const player = playersMap.get(playerId);
     return player ? player.rating : DEFAULT_RATING;
   };
-
-  const rr = computeFromSets(sets);
-  const ready = validation.canSubmit;
 
   // 🔍 DEBUG: Validation state
   console.log('🎯 FORM VALIDATION STATE:', {
@@ -385,11 +338,6 @@ export default function CreaPartita({
   };
 
   const showPreviewFormula = () => {
-    const nameA1 = playersById[a1]?.name || '—';
-    const nameA2 = playersById[a2]?.name || '—';
-    const nameB1 = playersById[b1]?.name || '—';
-    const nameB2 = playersById[b2]?.name || '—';
-
     // Usa i rating computati invece di quelli da playersById
     const sA1 = a1 ? getRating(a1) : null;
     const sA2 = a2 ? getRating(a2) : null;
@@ -422,24 +370,6 @@ export default function CreaPartita({
       factor,
       pts: P,
     });
-  };
-
-  // Legacy addMatch function for backward compatibility
-  const addMatch = async () => {
-    if (!ready) {
-      showToast(
-        'Seleziona 4 giocatori e inserisci i set (best of 3). Il risultato non può finire 1-1.',
-        'error'
-      );
-      return;
-    }
-
-    try {
-      await handleSubmit();
-    } catch (error) {
-      console.error('Error in legacy addMatch:', error);
-      showToast('Errore durante la creazione della partita.', 'error');
-    }
   };
 
   const delMatch = async (id) => {
@@ -504,9 +434,7 @@ export default function CreaPartita({
               <span className="flex items-center gap-2">
                 🅰️ <span>Team A</span>
               </span>
-              <span
-                className={`text-xs ${T.subtext} bg-blue-50 bg-blue-900/20 px-2 py-1 rounded-full`}
-              >
+              <span className={`text-xs ${T.subtext} bg-blue-900/20 px-2 py-1 rounded-full`}>
                 Ranking: <b>{pairAText}</b>
               </span>
             </div>
@@ -539,9 +467,7 @@ export default function CreaPartita({
               <span className="flex items-center gap-2">
                 🅱️ <span>Team B</span>
               </span>
-              <span
-                className={`text-xs ${T.subtext} bg-red-50 bg-red-900/20 px-2 py-1 rounded-full`}
-              >
+              <span className={`text-xs ${T.subtext} bg-red-900/20 px-2 py-1 rounded-full`}>
                 Ranking: <b>{pairBText}</b>
               </span>
             </div>
@@ -574,12 +500,123 @@ export default function CreaPartita({
         <div className="mt-6 space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6">
           <div className={`rounded-xl ${T.cardBg} ${T.border} p-4`}>
             <div className="font-medium mb-3 flex items-center gap-2">📅 Data e ora</div>
-            <input
-              type="datetime-local"
-              value={when}
-              onChange={(e) => updateDate(e.target.value)}
-              className={`${T.input} w-full`}
-            />
+            <div className="space-y-3">
+              {/* Date selection with separate selects for proper theming */}
+              <div className="grid grid-cols-3 gap-2">
+                {/* Day select */}
+                <select
+                  value={when.split('T')[0]?.split('-')[2] || '01'}
+                  onChange={(e) => {
+                    const year = when.split('T')[0]?.split('-')[0] || new Date().getFullYear();
+                    const month = when.split('T')[0]?.split('-')[1] || '01';
+                    const time = when.split('T')[1] || '00:00';
+                    updateDate(`${year}-${month}-${e.target.value}T${time}`);
+                  }}
+                  className={`${T.input}`}
+                >
+                  {Array.from({ length: 31 }, (_, i) => {
+                    const day = String(i + 1).padStart(2, '0');
+                    return (
+                      <option key={day} value={day}>
+                        {day}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                {/* Month select */}
+                <select
+                  value={when.split('T')[0]?.split('-')[1] || '01'}
+                  onChange={(e) => {
+                    const year = when.split('T')[0]?.split('-')[0] || new Date().getFullYear();
+                    const day = when.split('T')[0]?.split('-')[2] || '01';
+                    const time = when.split('T')[1] || '00:00';
+                    updateDate(`${year}-${e.target.value}-${day}T${time}`);
+                  }}
+                  className={`${T.input}`}
+                >
+                  {Array.from({ length: 12 }, (_, i) => {
+                    const month = String(i + 1).padStart(2, '0');
+                    const monthNames = [
+                      'Gen',
+                      'Feb',
+                      'Mar',
+                      'Apr',
+                      'Mag',
+                      'Giu',
+                      'Lug',
+                      'Ago',
+                      'Set',
+                      'Ott',
+                      'Nov',
+                      'Dic',
+                    ];
+                    return (
+                      <option key={month} value={month}>
+                        {monthNames[i]}
+                      </option>
+                    );
+                  })}
+                </select>
+
+                {/* Year select */}
+                <select
+                  value={when.split('T')[0]?.split('-')[0] || new Date().getFullYear()}
+                  onChange={(e) => {
+                    const month = when.split('T')[0]?.split('-')[1] || '01';
+                    const day = when.split('T')[0]?.split('-')[2] || '01';
+                    const time = when.split('T')[1] || '00:00';
+                    updateDate(`${e.target.value}-${month}-${day}T${time}`);
+                  }}
+                  className={`${T.input}`}
+                >
+                  {Array.from({ length: 5 }, (_, i) => {
+                    const year = new Date().getFullYear() - 2 + i;
+                    return (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
+              {/* Time input with restricted minutes */}
+              <div className="flex gap-2">
+                <select
+                  value={when.split('T')[1]?.split(':')[0] || '00'}
+                  onChange={(e) => {
+                    const currentDate =
+                      when.split('T')[0] || new Date().toISOString().split('T')[0];
+                    const currentMinutes = when.split('T')[1]?.split(':')[1] || '00';
+                    updateDate(`${currentDate}T${e.target.value}:${currentMinutes}`);
+                  }}
+                  className={`${T.input} flex-1`}
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={String(i).padStart(2, '0')}>
+                      {String(i).padStart(2, '0')}
+                    </option>
+                  ))}
+                </select>
+
+                <span className={`flex items-center ${T.text}`}>:</span>
+
+                <select
+                  value={when.split('T')[1]?.split(':')[1] || '00'}
+                  onChange={(e) => {
+                    const currentDate =
+                      when.split('T')[0] || new Date().toISOString().split('T')[0];
+                    const currentHour = when.split('T')[1]?.split(':')[0] || '00';
+                    updateDate(`${currentDate}T${currentHour}:${e.target.value}`);
+                  }}
+                  className={`${T.input} flex-1`}
+                >
+                  <option value="00">00</option>
+                  <option value="30">30</option>
+                </select>
+              </div>
+            </div>
           </div>
 
           <div className={`rounded-xl ${T.cardBg} ${T.border} p-4`}>
@@ -599,7 +636,7 @@ export default function CreaPartita({
               ))}
             </div>
 
-            <div className={`mt-3 text-xs ${T.subtext} bg-amber-50 bg-amber-900/20 p-2 rounded-lg`}>
+            <div className={`mt-3 text-xs ${T.subtext} bg-amber-900/20 p-2 rounded-lg`}>
               💡 Se dopo 2 set è 1–1, inserisci il 3° set per decidere.
             </div>
           </div>
@@ -663,7 +700,7 @@ export default function CreaPartita({
               .slice() // Crea copia per non modificare l'originale
               .sort((a, b) => new Date(b.date) - new Date(a.date)) // Ordina dalla più recente alla più vecchia
               .slice(0, 20) // Prendi le prime 20 partite (più recenti)
-              .map((m, index) => {
+              .map((m, _index) => {
                 // console.log(`🎾 MATCHROW DEBUG ${index}:`, {
                 //   id: m.id,
                 //   teamA: m.teamA,
