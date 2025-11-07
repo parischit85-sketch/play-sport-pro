@@ -133,9 +133,63 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Prepara il payload della notifica
-    const payload = JSON.stringify(notification);
-    console.log('[send-push] Payload prepared, length:', payload.length);
+    // Prepara il payload della notifica con supporto per notifiche rich
+    const richNotification = {
+      // Campi base
+      title: notification.title || 'Play-sport.pro',
+      body: notification.body || 'Hai una nuova notifica',
+      icon: notification.icon || '/icons/icon.svg',
+      badge: notification.badge || '/icons/icon.svg',
+      tag: notification.tag || 'default',
+      requireInteraction: notification.requireInteraction || false,
+      silent: notification.silent || false,
+      timestamp: notification.timestamp || Date.now(),
+
+      // Campi avanzati per notifiche rich
+      image: notification.image, // Immagine grande
+      actions: notification.actions || [
+        {
+          action: 'open',
+          title: 'Apri App',
+          icon: '/icons/icon.svg',
+        },
+        {
+          action: 'dismiss',
+          title: 'Ignora',
+        },
+      ],
+
+      // Dati personalizzati
+      data: {
+        url: notification.url || '/',
+        type: notification.type || 'general',
+        playerId: notification.playerId,
+        clubId: notification.clubId,
+        matchId: notification.matchId,
+        bookingId: notification.bookingId,
+        tournamentId: notification.tournamentId,
+        deepLink: notification.deepLink,
+        actionButtons: notification.actionButtons,
+        priority: notification.priority || 'normal',
+        category: notification.category || 'general',
+        ...notification.data,
+      },
+
+      // Suoni e vibrazione
+      vibrate: notification.vibrate || [200, 100, 200],
+      sound: notification.sound,
+
+      // Notifiche persistenti
+      persistent: notification.persistent || false,
+      renotify: notification.renotify || false,
+
+      // Lingua e direzione testo
+      lang: notification.lang || 'it',
+      dir: notification.dir || 'ltr',
+    };
+
+    const payload = JSON.stringify(richNotification);
+    console.log('[send-push] Rich notification payload prepared, length:', payload.length);
 
     // Invia la notifica a tutte le sottoscrizioni dell'utente
     const sendPromises = [];

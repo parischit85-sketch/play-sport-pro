@@ -22,7 +22,7 @@ export const FUNCTIONS_BASE_URL = import.meta.env.DEV
   : '/.netlify/functions';
 
 /**
- * Genera un device ID univoco basato su browser fingerprint
+ * Genera un device ID univoco basato su browser fingerprint avanzato
  */
 async function generateDeviceId() {
   const components = [
@@ -35,6 +35,9 @@ async function generateDeviceId() {
     !!window.indexedDB,
     navigator.hardwareConcurrency || 'unknown',
     navigator.platform,
+    navigator.cookieEnabled,
+    navigator.doNotTrack,
+    navigator.maxTouchPoints || 0,
   ];
 
   // Aggiungi canvas fingerprint se disponibile
@@ -43,22 +46,224 @@ async function generateDeviceId() {
     const ctx = canvas.getContext('2d');
     ctx.textBaseline = 'top';
     ctx.font = '14px Arial';
-    ctx.fillText('Fingerprint', 2, 2);
-    components.push(canvas.toDataURL());
+    ctx.fillText('PlaySportPro-Fingerprint', 2, 2);
+    ctx.fillRect(10, 10, 5, 5);
+    components.push(canvas.toDataURL().slice(0, 50)); // Solo primi 50 caratteri per performance
   } catch (e) {
     components.push('canvas-not-supported');
   }
 
-  // Crea hash dei componenti
-  const fingerprint = components.join('|');
-  let hash = 0;
-  for (let i = 0; i < fingerprint.length; i++) {
-    const char = fingerprint.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
+  // Aggiungi WebGL fingerprint se disponibile
+  try {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (gl) {
+      const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+      if (debugInfo) {
+        components.push(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+        components.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+      }
+    }
+  } catch (e) {
+    components.push('webgl-not-supported');
   }
 
-  return 'device-' + Math.abs(hash).toString(36).substring(0, 12);
+  // Aggiungi audio fingerprint se disponibile
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const analyser = audioContext.createAnalyser();
+    oscillator.connect(analyser);
+    analyser.connect(audioContext.destination);
+    oscillator.frequency.setValueAtTime(10000, audioContext.currentTime);
+    oscillator.start();
+    const buffer = new Float32Array(analyser.frequencyBinCount);
+    analyser.getFloatFrequencyData(buffer);
+    components.push(buffer.slice(0, 10).join(',')); // Solo primi 10 valori
+    oscillator.stop();
+  } catch (e) {
+    components.push('audio-not-supported');
+  }
+
+  // Crea hash dei componenti
+  const fingerprint = components.join('|');
+  let hash1 = 0;
+  let hash2 = 0;
+
+  // Double hash per ridurre collisioni
+  for (let i = 0; i < fingerprint.length; i++) {
+    const char = fingerprint.charCodeAt(i);
+    hash1 = (hash1 << 5) - hash1 + char;
+    hash1 = hash1 & hash1; // Convert to 32-bit integer
+    hash2 = (hash2 << 7) - hash2 + char;
+    hash2 = hash2 & hash2;
+  }
+
+  // Combina i due hash per device ID più robusto
+  const combinedHash = Math.abs(hash1) ^ Math.abs(hash2);
+  return combinedHash.toString();
+}
+
+/**
+ * Verifica se una subscription esistente è ancora valida
+ */
+async function validateExistingSubscription(subscription, userId) {
+  try {
+    // Verifica struttura della subscription
+    if (!subscription || !subscription.endpoint) {
+      console.log('[validateExistingSubscription] Invalid subscription structure');
+      return false;
+    }
+
+    // Verifica se la subscription è nel database e attiva
+    const deviceId = await generateDeviceId();
+    const response = await fetch(`${FUNCTIONS_BASE_URL}/check-subscription-status`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        deviceId,
+        endpoint: subscription.endpoint,
+      }),
+    });
+
+    if (!response.ok) {
+      console.warn('[validateExistingSubscription] Failed to check subscription status');
+      return false;
+    }
+
+    const status = await response.json();
+    return status.isValid && status.isActive;
+
+  } catch (error) {
+    console.warn('[validateExistingSubscription] Error validating subscription:', error);
+    return false;
+  }
+}
+
+/**
+ * Gestisce conflitti di dispositivi (stesso user, device diverso)
+ */
+async function handleDeviceConflict(userId, currentDeviceId) {
+  try {
+    console.log('[handleDeviceConflict] Checking for device conflicts...');
+
+    const response = await fetch(`${FUNCTIONS_BASE_URL}/get-user-devices`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        currentDeviceId,
+      }),
+    });
+
+    if (!response.ok) {
+      console.warn('[handleDeviceConflict] Failed to get user devices');
+      return;
+    }
+
+    const data = await response.json();
+
+    if (data.hasConflicts && data.conflictingDevices.length > 0) {
+      console.log(`[handleDeviceConflict] Found ${data.conflictingDevices.length} conflicting devices`);
+
+      // In un'implementazione completa, qui potremmo:
+      // 1. Mostrare un dialog all'utente per scegliere quale dispositivo mantenere
+      // 2. Disattivare automaticamente dispositivi vecchi
+      // 3. Loggare il conflitto per analytics
+
+      // Per ora, loggiamo solo il conflitto
+      console.warn('[handleDeviceConflict] Device conflict detected:', data.conflictingDevices);
+
+      // Potremmo disattivare automaticamente dispositivi molto vecchi
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const oldDevices = data.conflictingDevices.filter(device =>
+        new Date(device.lastUsedAt || device.createdAt) < thirtyDaysAgo
+      );
+
+      if (oldDevices.length > 0) {
+        console.log(`[handleDeviceConflict] Auto-deactivating ${oldDevices.length} old devices`);
+
+        await fetch(`${FUNCTIONS_BASE_URL}/deactivate-old-devices`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId,
+            deviceIds: oldDevices.map((d) => d.deviceId),
+          }),
+        });
+      }
+    }
+
+  } catch (error) {
+    console.warn('[handleDeviceConflict] Error handling device conflict:', error);
+  }
+}
+
+/**
+ * Effettua cleanup manuale delle subscriptions obsolete
+ */
+export async function cleanupObsoleteSubscriptions(userId) {
+  try {
+    console.log('[cleanupObsoleteSubscriptions] Starting manual cleanup...');
+
+    const response = await fetch(`${FUNCTIONS_BASE_URL}/cleanup-user-subscriptions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        forceCleanup: true,
+      }),
+    });
+
+    if (!response.ok) {
+      console.warn('[cleanupObsoleteSubscriptions] Cleanup request failed');
+      return false;
+    }
+
+    const result = await response.json();
+    console.log('[cleanupObsoleteSubscriptions] Cleanup completed:', result);
+
+    return result.cleanedCount > 0;
+
+  } catch (error) {
+    console.warn('[cleanupObsoleteSubscriptions] Error during cleanup:', error);
+    return false;
+  }
+}
+
+/**
+ * Riprova un'operazione con backoff esponenziale
+ */
+async function retryWithBackoff(operation, maxRetries = 3, baseDelay = 1000) {
+  let lastError;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+      console.warn(`[retryWithBackoff] Attempt ${attempt + 1} failed:`, error.message);
+
+      if (attempt < maxRetries - 1) {
+        const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
+        console.log(`[retryWithBackoff] Retrying in ${Math.round(delay)}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+
+  throw lastError;
 }
 
 /**
@@ -167,6 +372,16 @@ export async function subscribeToPush(userId) {
     // Controlla se esiste già una sottoscrizione
     let subscription = await registration.pushManager.getSubscription();
 
+    if (subscription) {
+      // Verifica se la subscription esistente è ancora valida
+      const isValid = await validateExistingSubscription(subscription, userId);
+      if (!isValid) {
+        console.log('[subscribeToPush] Existing subscription is invalid, unsubscribing...');
+        await subscription.unsubscribe();
+        subscription = null;
+      }
+    }
+
     if (!subscription) {
       // Crea nuova sottoscrizione
       subscription = await registration.pushManager.subscribe({
@@ -174,6 +389,10 @@ export async function subscribeToPush(userId) {
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
       });
     }
+
+    // Gestisci conflitti di dispositivi
+    const deviceId = await generateDeviceId();
+    await handleDeviceConflict(userId, deviceId);
 
     // Salva la sottoscrizione sul server
     await saveSubscription(userId, subscription);
@@ -328,8 +547,8 @@ export async function sendTestNotification(userId) {
         notification: {
           title: 'Notifica di Test',
           body: 'Questa è una notifica push di test!',
-          icon: '/icon-192x192.png',
-          badge: '/badge-72x72.png',
+          icon: '/icons/icon.svg',
+          badge: '/icons/icon.svg',
           tag: 'test-notification',
           data: {
             url: '/',
@@ -349,6 +568,191 @@ export async function sendTestNotification(userId) {
     console.error("Errore nell'invio della notifica di test:", error);
     return false;
   }
+}
+
+/**
+ * Invia notifiche push bulk a più utenti
+ */
+export async function sendBulkPushNotification(userIds, notificationData, filters = {}) {
+  try {
+    // Controlla se siamo in mock mode
+    if (window.__MOCK_PUSH_MODE__) {
+      console.log('🎭 [MOCK] Using mock send bulk notification');
+      return await mockSendBulkPushNotification(userIds, notificationData, filters);
+    }
+
+    const response = await fetch(`${FUNCTIONS_BASE_URL}/send-bulk-push`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userIds,
+        notification: notificationData,
+        filters,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error("Errore nell'invio delle notifiche bulk: " + (errorData.error || response.statusText));
+    }
+
+    const result = await response.json();
+    console.log('✅ Notifiche push bulk inviate con successo:', result);
+    return result;
+  } catch (error) {
+    console.error("❌ Errore nell'invio delle notifiche push bulk:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Crea una notifica push per una prenotazione
+ */
+export function createBookingNotification(bookingData) {
+  return {
+    title: 'Nuova Prenotazione',
+    body: `Prenotazione confermata per ${bookingData.courtName} il ${bookingData.date}`,
+    icon: '/icons/icon.svg',
+    badge: '/icons/icon.svg',
+    image: bookingData.courtImage,
+    tag: `booking-${bookingData.id}`,
+    requireInteraction: true,
+    category: 'booking',
+    priority: 'high',
+    actions: [
+      { action: 'view-booking', title: 'Vedi Prenotazione', icon: '/icons/icon.svg' },
+      { action: 'open', title: 'Apri App', icon: '/icons/icon.svg' },
+    ],
+    data: {
+      url: `/bookings/${bookingData.id}`,
+      type: 'booking-confirmation',
+      bookingId: bookingData.id,
+      clubId: bookingData.clubId,
+      courtName: bookingData.courtName,
+      date: bookingData.date,
+      time: bookingData.time,
+    },
+  };
+}
+
+/**
+ * Crea una notifica push per un match
+ */
+export function createMatchNotification(matchData) {
+  return {
+    title: 'Aggiornamento Partita',
+    body: `${matchData.team1} vs ${matchData.team2} - ${matchData.status}`,
+    icon: '/icons/icon.svg',
+    badge: '/icons/icon.svg',
+    image: matchData.matchImage,
+    tag: `match-${matchData.id}`,
+    requireInteraction: matchData.urgent || false,
+    category: 'match',
+    priority: matchData.urgent ? 'high' : 'normal',
+    actions: [
+      { action: 'view-match', title: 'Vedi Partita', icon: '/icons/icon.svg' },
+      { action: 'open', title: 'Apri App', icon: '/icons/icon.svg' },
+    ],
+    data: {
+      url: `/matches/${matchData.id}`,
+      type: 'match-update',
+      matchId: matchData.id,
+      tournamentId: matchData.tournamentId,
+      team1: matchData.team1,
+      team2: matchData.team2,
+      status: matchData.status,
+      urgent: matchData.urgent,
+    },
+  };
+}
+
+/**
+ * Crea una notifica push per un certificato
+ */
+export function createCertificateNotification(certificateData) {
+  return {
+    title: 'Certificato Disponibile',
+    body: `Il certificato di ${certificateData.playerName} è pronto per il download`,
+    icon: '/icons/icon.svg',
+    badge: '/icons/icon.svg',
+    image: certificateData.certificateImage,
+    tag: `certificate-${certificateData.playerId}`,
+    requireInteraction: true,
+    category: 'certificate',
+    priority: 'normal',
+    actions: [
+      { action: 'view-certificate', title: 'Vedi Certificato', icon: '/icons/icon.svg' },
+      { action: 'download-certificate', title: 'Scarica PDF', icon: '/icons/icon.svg' },
+      { action: 'open', title: 'Apri App', icon: '/icons/icon.svg' },
+    ],
+    data: {
+      url: `/players/${certificateData.playerId}/certificate`,
+      type: 'certificate-ready',
+      playerId: certificateData.playerId,
+      playerName: certificateData.playerName,
+      certificateType: certificateData.type,
+      issueDate: certificateData.issueDate,
+    },
+  };
+}
+
+/**
+ * Crea una notifica push per un torneo
+ */
+export function createTournamentNotification(tournamentData) {
+  return {
+    title: 'Aggiornamento Torneo',
+    body: `${tournamentData.name}: ${tournamentData.message}`,
+    icon: '/icons/icon.svg',
+    badge: '/icons/icon.svg',
+    image: tournamentData.tournamentImage,
+    tag: `tournament-${tournamentData.id}`,
+    requireInteraction: tournamentData.important || false,
+    category: 'tournament',
+    priority: tournamentData.important ? 'high' : 'normal',
+    actions: [
+      { action: 'view-tournament', title: 'Vedi Torneo', icon: '/icons/icon.svg' },
+      { action: 'open', title: 'Apri App', icon: '/icons/icon.svg' },
+    ],
+    data: {
+      url: `/tournaments/${tournamentData.id}`,
+      type: 'tournament-update',
+      tournamentId: tournamentData.id,
+      tournamentName: tournamentData.name,
+      message: tournamentData.message,
+      important: tournamentData.important,
+    },
+  };
+}
+
+/**
+ * Crea una notifica push generale personalizzabile
+ */
+export function createCustomNotification(options) {
+  return {
+    title: options.title || 'Notifica',
+    body: options.body || 'Hai una nuova notifica',
+    icon: options.icon || '/icons/icon.svg',
+    badge: options.badge || '/icons/icon.svg',
+    image: options.image,
+    tag: options.tag || 'custom',
+    requireInteraction: options.requireInteraction || false,
+    silent: options.silent || false,
+    category: options.category || 'general',
+    priority: options.priority || 'normal',
+    actions: options.actions || [
+      { action: 'open', title: 'Apri App', icon: '/icons/icon.svg' },
+      { action: 'dismiss', title: 'Ignora' },
+    ],
+    vibrate: options.vibrate || [200, 100, 200],
+    data: {
+      url: options.url || '/',
+      type: options.type || 'custom',
+      ...options.data,
+    },
+  };
 }
 
 /**
@@ -531,6 +935,113 @@ async function mockSendTestNotification(userId) {
 
   console.log('✅ [MOCK] Test notification sent');
   return true;
+}
+
+/**
+ * Mock send rich notification
+ */
+async function mockSendRichNotification(userId, notificationData) {
+  console.log('🎭 [MOCK] Sending rich notification');
+
+  const subscriptions = JSON.parse(localStorage.getItem('mock-push-subscriptions') || '[]');
+  const userSubscription = subscriptions.find((sub) => sub.userId === userId);
+
+  if (!userSubscription) {
+    console.warn('🎭 [MOCK] No subscription found for user');
+    return { success: false, error: 'No subscription found' };
+  }
+
+  // Simula delay di rete
+  await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 2000));
+
+  // Mostra notifica mock con dati rich
+  const notification = new Notification(notificationData.title || 'Notifica Rich (Mock)', {
+    body: notificationData.body || 'Questa è una notifica push rich simulata!',
+    icon: notificationData.icon || '/icon-192x192.png',
+    badge: notificationData.badge || '/badge-72x72.png',
+    image: notificationData.image,
+    tag: notificationData.tag || 'rich-notification',
+    requireInteraction: notificationData.requireInteraction || false,
+    data: {
+      ...notificationData.data,
+      mock: true,
+      timestamp: Date.now(),
+    },
+  });
+
+  // Auto-close dopo 8 secondi per notifiche rich
+  setTimeout(() => {
+    notification.close();
+  }, 8000);
+
+  console.log('✅ [MOCK] Rich notification sent');
+  return { success: true, sent: 1, mock: true };
+}
+
+/**
+ * Mock send bulk push notification
+ */
+async function mockSendBulkPushNotification(userIds, notificationData, filters = {}) {
+  console.log('🎭 [MOCK] Sending bulk notification to users:', userIds?.length || 'all');
+
+  const subscriptions = JSON.parse(localStorage.getItem('mock-push-subscriptions') || '[]');
+  let targetSubscriptions = [];
+
+  if (userIds && userIds.length > 0) {
+    targetSubscriptions = subscriptions.filter((sub) => userIds.includes(sub.userId));
+  } else {
+    targetSubscriptions = subscriptions;
+  }
+
+  if (targetSubscriptions.length === 0) {
+    console.warn('🎭 [MOCK] No target subscriptions found');
+    return { success: false, error: 'No subscriptions found', sent: 0 };
+  }
+
+  // Simula delay di rete più lungo per bulk
+  await new Promise((resolve) => setTimeout(resolve, 2000 + Math.random() * 3000));
+
+  let sentCount = 0;
+  const uniqueUsers = new Set();
+
+  // Mostra notifiche mock per ogni utente
+  for (const sub of targetSubscriptions) {
+    uniqueUsers.add(sub.userId);
+
+    const notification = new Notification(
+      `${notificationData.title || 'Notifica Bulk (Mock)'} - ${sub.userId}`,
+      {
+        body: notificationData.body || 'Questa è una notifica push bulk simulata!',
+        icon: notificationData.icon || '/icon-192x192.png',
+        badge: notificationData.badge || '/badge-72x72.png',
+        image: notificationData.image,
+        tag: notificationData.tag || 'bulk-notification',
+        requireInteraction: notificationData.requireInteraction || false,
+        data: {
+          ...notificationData.data,
+          mock: true,
+          userId: sub.userId,
+          timestamp: Date.now(),
+        },
+      }
+    );
+
+    // Auto-close dopo 6 secondi per notifiche bulk
+    setTimeout(() => {
+      notification.close();
+    }, 6000);
+
+    sentCount++;
+  }
+
+  console.log("✅ [MOCK] Bulk notification sent to " + sentCount + " subscriptions (" + uniqueUsers.size + " users)");
+  return {
+    success: true,
+    sent: sentCount,
+    uniqueUsers: uniqueUsers.size,
+    mock: true,
+    bulkId: "mock-bulk-" + Date.now(),
+  };
 }
 
 /**

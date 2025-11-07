@@ -1,6 +1,7 @@
 // =============================================
 // FILE: functions/sendBulkNotifications.clean.js
-// Cloud Function callable per invio manuale notifiche certificati
+// Cloud Function callable per invio notifiche certificati con fallback intelligente
+// Supporta: email, push, auto (determina automaticamente il canale migliore)
 // =============================================
 
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
@@ -107,8 +108,137 @@ if (WEB_PUSH_ENABLED) {
 }
 
 // =============================================
-// HELPER: invio email
+// HELPER: determina canale ottimale per utente
 // =============================================
+async function determineOptimalChannel(userId, hasEmail) {
+  // Verifica se l'utente ha subscriptions push attive
+  const subsSnap = await db
+    .collection('pushSubscriptions')
+    .where('userId', '==', userId)
+    .where('isActive', '==', true)
+    .where('expiresAt', '>', new Date().toISOString())
+    .limit(1)
+    .get();
+
+  const hasPushSubscription = !subsSnap.empty;
+
+  // Logica di priorità per canale:
+  // 1. Push (se disponibile) - migliore UX
+  // 2. Email (se disponibile)
+  // 3. Nessuno
+
+  if (hasPushSubscription) {
+    return 'push';
+  } else if (hasEmail && EMAIL_PROVIDER !== 'none') {
+    return 'email';
+  } else {
+    return null; // Nessun canale disponibile
+  }
+}
+
+// =============================================
+// HELPER: lifecycle management subscriptions
+// =============================================
+async function cleanupExpiredSubscriptions() {
+  try {
+    const now = new Date().toISOString();
+    console.log('🧹 [Cleanup] Starting expired subscriptions cleanup at:', now);
+
+    // Trova subscriptions scadute (più vecchie di 7 giorni)
+    const expiredSubs = await db
+      .collection('pushSubscriptions')
+      .where('expiresAt', '<', now)
+      .where('isActive', '==', true)
+      .get();
+
+    console.log('🧹 [Cleanup] Found', expiredSubs.size, 'expired subscriptions');
+
+    if (!expiredSubs.empty) {
+      const batch = db.batch();
+      expiredSubs.docs.forEach(doc => {
+        batch.update(doc.ref, {
+          isActive: false,
+          deactivatedAt: now,
+          deactivationReason: 'expired'
+        });
+      });
+
+      await batch.commit();
+      console.log('🧹 [Cleanup] Deactivated', expiredSubs.size, 'expired subscriptions');
+    }
+
+    // Trova subscriptions duplicate per user/device (mantieni solo la più recente)
+    const usersSnap = await db.collection('pushSubscriptions').where('isActive', '==', true).get();
+    const userDevices = new Map();
+
+    usersSnap.docs.forEach(doc => {
+      const data = doc.data();
+      const key = `${data.userId}-${data.deviceId}`;
+
+      if (!userDevices.has(key)) {
+        userDevices.set(key, []);
+      }
+      userDevices.get(key).push({ id: doc.id, ...data });
+    });
+
+    let duplicatesRemoved = 0;
+    const duplicateBatch = db.batch();
+
+    for (const [key, subs] of userDevices) {
+      if (subs.length > 1) {
+        // Ordina per lastUsedAt (più recente prima)
+        subs.sort((a, b) => new Date(b.lastUsedAt || b.createdAt) - new Date(a.lastUsedAt || a.createdAt));
+
+        // Mantieni solo la prima (più recente), disattiva le altre
+        for (let i = 1; i < subs.length; i++) {
+          duplicateBatch.update(db.collection('pushSubscriptions').doc(subs[i].id), {
+            isActive: false,
+            deactivatedAt: now,
+            deactivationReason: 'duplicate-device'
+          });
+          duplicatesRemoved++;
+        }
+      }
+    }
+
+    if (duplicatesRemoved > 0) {
+      await duplicateBatch.commit();
+      console.log('🧹 [Cleanup] Removed', duplicatesRemoved, 'duplicate subscriptions');
+    }
+
+    return {
+      expiredDeactivated: expiredSubs.size,
+      duplicatesRemoved,
+      totalProcessed: usersSnap.size
+    };
+
+  } catch (error) {
+    console.error('🧹 [Cleanup] Error during cleanup:', error);
+    throw error;
+  }
+}
+
+// =============================================
+// HELPER: analytics notifiche
+// =============================================
+async function trackNotificationEvent(eventData) {
+  try {
+    const event = {
+      id: `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date().toISOString(),
+      ...eventData,
+    };
+
+    await db.collection('notificationEvents').add(event);
+    console.log('📊 [Analytics] Tracked event:', event.type, 'for user:', event.userId);
+  } catch (error) {
+    console.error('📊 [Analytics] Failed to track event:', error);
+    // Non bloccare l'invio della notifica per errori di analytics
+  }
+}
+
+// =============================================
+// HELPER: invio email
 async function sendEmailNotification(player, club, status) {
   const { email, name } = player;
   if (!email || !email.includes('@')) {
@@ -196,7 +326,7 @@ async function sendPushNotificationToUser(userId, notification) {
     console.error('❌ [Push] VAPID keys not configured!', {
       publicKeyPresent: !!VAPID_PUBLIC_KEY,
       privateKeyPresent: !!VAPID_PRIVATE_KEY,
-      envVarsList: Object.keys(process.env).filter(k => k.includes('VAPID')),
+      envVarsList: Object.keys(process.env).filter((k) => k.includes('VAPID')),
     });
     throw new Error('Servizio Push non configurato (VAPID mancante) [push-service-unconfigured]');
   }
@@ -300,8 +430,8 @@ export const sendBulkCertificateNotifications = onCall(
     if (!Array.isArray(playerIds) || playerIds.length === 0) {
       throw new HttpsError('invalid-argument', 'playerIds deve essere un array non vuoto');
     }
-    if (!['email', 'push'].includes(notificationType)) {
-      throw new HttpsError('invalid-argument', 'notificationType deve essere "email" o "push"');
+    if (!['email', 'push', 'auto'].includes(notificationType)) {
+      throw new HttpsError('invalid-argument', 'notificationType deve essere "email", "push" o "auto"');
     }
 
     // Verifica permessi admin
@@ -422,6 +552,20 @@ export const sendBulkCertificateNotifications = onCall(
 
         if (usersSnap.empty && !profileDocSnap.exists) {
           results.failed++;
+          
+          // Track player not found event
+          await trackNotificationEvent({
+            type: 'failed',
+            channel: 'none',
+            userId: playerId,
+            clubId,
+            notificationType: 'certificate',
+            platform: 'unknown',
+            success: false,
+            error: 'Giocatore non trovato nel club',
+            errorCode: 'player-not-found'
+          });
+          
           results.details.push({ playerId, success: false, error: 'Giocatore non trovato nel club' });
           continue;
         }
@@ -440,12 +584,66 @@ export const sendBulkCertificateNotifications = onCall(
           email: profile?.email || clubUser?.userEmail || clubUser?.email || '',
         };
 
+        // Determina il canale da usare
+        let actualChannel = notificationType;
+        if (notificationType === 'auto') {
+          const hasEmail = !!(player.email && player.email.includes('@'));
+          actualChannel = await determineOptimalChannel(playerId, hasEmail);
+          
+          // Track channel determination for auto mode
+          await trackNotificationEvent({
+            type: 'channel-determined',
+            channel: actualChannel || 'none',
+            userId: playerId,
+            clubId,
+            notificationType: 'certificate',
+            platform: actualChannel === 'push' ? 'web' : actualChannel === 'email' ? 'email' : 'unknown',
+            success: !!actualChannel,
+            metadata: {
+              requestedType: 'auto',
+              determinedChannel: actualChannel,
+              hasEmail,
+              pushAvailable: actualChannel === 'push'
+            }
+          });
+
+          if (!actualChannel) {
+            results.failed++;
+            
+            // Track no channel available event
+            await trackNotificationEvent({
+              type: 'failed',
+              channel: 'none',
+              userId: playerId,
+              clubId,
+              notificationType: 'certificate',
+              platform: 'unknown',
+              success: false,
+              error: 'Nessun canale di notifica disponibile (né push né email)',
+              errorCode: 'no-channel-available',
+              metadata: {
+                hasEmail: !!(player.email && player.email.includes('@')),
+                pushChannelAvailable: false // Will be determined by determineOptimalChannel
+              }
+            });
+            
+            results.details.push({
+              playerId,
+              playerName: player.name,
+              success: false,
+              error: 'Nessun canale di notifica disponibile (né push né email)',
+              code: 'no-channel-available'
+            });
+            continue;
+          }
+        }
+
         // Certificato: preferisci profiles.medicalCertificates.current.expiryDate, fallback a users.medicalCertificate.expiryDate
         const expiryDate =
           profile?.medicalCertificates?.current?.expiryDate ||
           clubUser?.medicalCertificate?.expiryDate;
 
-  if (notificationType === 'email') {
+        if (actualChannel === 'email') {
           try {
             let status;
             if (!expiryDate) {
@@ -458,6 +656,25 @@ export const sendBulkCertificateNotifications = onCall(
             }
 
             await sendEmailNotification(player, club, status);
+            
+            // Track analytics event
+            await trackNotificationEvent({
+              type: 'sent',
+              channel: 'email',
+              userId: playerId,
+              clubId,
+              notificationType: 'certificate',
+              platform: 'email',
+              success: true,
+              metadata: {
+                hasExpiryDate: !!expiryDate,
+                daysUntilExpiry: status.daysUntilExpiry,
+                isMissing: status.type === 'missing',
+                isExpired: status.daysUntilExpiry < 0,
+                isExpiring: status.daysUntilExpiry >= 0 && status.daysUntilExpiry <= 30
+              }
+            });
+            
             results.sent++;
             results.details.push({ playerId, playerName: player.name, success: true, method: 'email' });
           } catch (err) {
@@ -478,9 +695,27 @@ export const sendBulkCertificateNotifications = onCall(
                 mappedCode = 'sendgrid-from-not-verified';
               }
             }
+            
+            // Track failed email event
+            await trackNotificationEvent({
+              type: 'failed',
+              channel: 'email',
+              userId: playerId,
+              clubId,
+              notificationType: 'certificate',
+              platform: 'email',
+              success: false,
+              error: err.message,
+              errorCode: mappedCode,
+              metadata: {
+                hasExpiryDate: !!expiryDate,
+                smtpResponseCode: respCode
+              }
+            });
+            
             results.details.push({ playerId, playerName: player.name, success: false, error: err.message, code: mappedCode });
           }
-        } else {
+        } else if (actualChannel === 'push') {
           // Forza il provider corretto per chiarezza nel risultato quando si inviano PUSH
           results.provider = 'push';
           try {
@@ -507,6 +742,27 @@ export const sendBulkCertificateNotifications = onCall(
             };
 
             await sendPushNotificationToUser(playerId, pushNotification);
+            
+            // Track analytics event
+            await trackNotificationEvent({
+              type: 'sent',
+              channel: 'push',
+              userId: playerId,
+              clubId,
+              notificationType: 'certificate',
+              platform: 'web',
+              success: true,
+              metadata: {
+                hasExpiryDate: !!expiryDate,
+                daysUntilExpiry: status?.daysUntilExpiry,
+                isMissing: !expiryDate,
+                isExpired: status?.daysUntilExpiry < 0,
+                isExpiring: status?.daysUntilExpiry >= 0 && status?.daysUntilExpiry <= 30,
+                title: pushNotification.title,
+                tag: pushNotification.tag
+              }
+            });
+            
             results.sent++;
             results.details.push({ playerId, playerName: player.name, success: true, method: 'push' });
           } catch (err) {
@@ -530,21 +786,95 @@ export const sendBulkCertificateNotifications = onCall(
                   status = { expiryDate: expiry.toLocaleDateString('it-IT'), daysUntilExpiry };
                 }
                 await sendEmailNotification(player, club, status);
+                
+                // Track successful fallback event
+                await trackNotificationEvent({
+                  type: 'sent',
+                  channel: 'email',
+                  userId: playerId,
+                  clubId,
+                  notificationType: 'certificate',
+                  platform: 'email',
+                  success: true,
+                  fallbackFrom: 'push',
+                  fallbackReason: 'push-no-subscription',
+                  metadata: {
+                    hasExpiryDate: !!expiryDate,
+                    daysUntilExpiry: status.daysUntilExpiry,
+                    isMissing: status.type === 'missing',
+                    isExpired: status.daysUntilExpiry < 0,
+                    isExpiring: status.daysUntilExpiry >= 0 && status.daysUntilExpiry <= 30
+                  }
+                });
+                
                 // Conta come inviato via fallback
                 results.sent++;
                 results.details.push({ playerId, playerName: player.name, success: true, method: 'email-fallback', reason: 'push-no-subscription' });
               } catch (emailErr) {
                 results.failed++;
+                
+                // Track failed fallback event
+                await trackNotificationEvent({
+                  type: 'failed',
+                  channel: 'email',
+                  userId: playerId,
+                  clubId,
+                  notificationType: 'certificate',
+                  platform: 'email',
+                  success: false,
+                  fallbackFrom: 'push',
+                  fallbackReason: 'push-no-subscription',
+                  error: emailErr.message,
+                  errorCode: 'email-fallback-error',
+                  metadata: {
+                    originalPushError: mappedCode,
+                    hasExpiryDate: !!expiryDate
+                  }
+                });
+                
                 results.details.push({ playerId, playerName: player.name, success: false, error: emailErr.message, code: 'email-fallback-error', fromPushError: mappedCode, statusCode });
               }
             } else {
               results.failed++;
+              
+              // Track failed push event (no fallback)
+              await trackNotificationEvent({
+                type: 'failed',
+                channel: 'push',
+                userId: playerId,
+                clubId,
+                notificationType: 'certificate',
+                platform: 'web',
+                success: false,
+                error: err.message,
+                errorCode: mappedCode,
+                metadata: {
+                  hasExpiryDate: !!expiryDate,
+                  webPushReady: WEB_PUSH_READY,
+                  statusCode
+                }
+              });
+              
               results.details.push({ playerId, playerName: player.name, success: false, error: err.message, code: mappedCode, statusCode, webPushReady: WEB_PUSH_READY });
             }
           }
         }
       } catch (err) {
         results.failed++;
+        
+        // Track unexpected error event
+        await trackNotificationEvent({
+          type: 'failed',
+          channel: 'unknown',
+          userId: playerId,
+          clubId,
+          notificationType: 'certificate',
+          platform: 'unknown',
+          success: false,
+          error: err.message,
+          errorCode: 'unexpected-error'
+        });
+        
         results.details.push({ playerId, success: false, error: err.message, code: 'unexpected-error' });
       }
     }

@@ -6,8 +6,6 @@ import { euro2 } from '@lib/format.js';
 import {
   validateTimeSlot,
   detectTimeSlotOverlaps,
-  sanitizeCourt,
-  logValidationErrors,
 } from '@utils/court-validation.js';
 import { TemplateLibraryModal, CreateTemplateModal } from './TemplateManager.jsx';
 import { ExportCourtsModal, ImportCourtsModal } from './ImportExportModal.jsx';
@@ -271,7 +269,7 @@ function DayToggles({ value = [], onChange, T }) {
           onClick={() => toggle(i)}
           className={`px-2 h-6 rounded-md text-xs ring-1 transition-all ${
             value.includes(i)
-              ? 'bg-emerald-500 text-black text-white ring-emerald-500'
+              ? 'bg-emerald-500 text-white ring-emerald-500'
               : `${T.ghostRing} ${T.cardBg}`
           }`}
         >
@@ -333,7 +331,7 @@ function TimeSlotEditor({ slot, onUpdate, onRemove, T, maxPlayers = 4 }) {
       {hasErrors && (
         <div className="mb-3 p-2 bg-red-900/20 border border-red-800 rounded text-xs">
           <div className="font-semibold text-red-300 mb-1">⚠️ Errori:</div>
-          <ul className="list-disc list-inside text-red-700 text-red-400 space-y-0.5">
+          <ul className="list-disc list-inside text-red-400 space-y-0.5">
             {validationErrors.map((error, index) => (
               <li key={index}>{error}</li>
             ))}
@@ -703,7 +701,7 @@ const ExpandableCourtCard = ({
                   className={`text-xs px-2 py-1 rounded transition-colors ${
                     isFirst
                       ? 'text-gray-400 cursor-not-allowed'
-                      : 'text-blue-600 hover:bg-blue-50 hover:bg-blue-900'
+                      : 'text-blue-600 hover:bg-blue-900'
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -719,7 +717,7 @@ const ExpandableCourtCard = ({
                   className={`text-xs px-2 py-1 rounded transition-colors ${
                     isLast
                       ? 'text-gray-400 cursor-not-allowed'
-                      : 'text-blue-600 hover:bg-blue-50 hover:bg-blue-900'
+                      : 'text-blue-600 hover:bg-blue-900'
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -793,7 +791,7 @@ const ExpandableCourtCard = ({
 
       {/* Contenuto espandibile */}
       {isExpanded && (
-        <div className="border-t border-gray-700 p-4 bg-gray-50 bg-gray-900">
+        <div className="border-t border-gray-700 p-4 bg-gray-900">
           {/* Configurazioni base del campo */}
           <div className="mb-6">
             <h4 className="font-medium mb-3 flex items-center gap-2">
@@ -855,7 +853,7 @@ const ExpandableCourtCard = ({
                   type="checkbox"
                   checked={court.hasHeating || false}
                   onChange={toggleHeating}
-                  className="w-5 h-5 text-orange-600 bg-gray-100 border-gray-300 rounded focus:ring-orange-500 focus:ring-orange-600 ring-offset-gray-800 focus:ring-2 border-gray-600"
+                  className="w-5 h-5 text-orange-600 rounded focus:ring-orange-500 ring-offset-gray-800 focus:ring-2 border-gray-600"
                 />
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🔥</span>
@@ -2041,7 +2039,7 @@ export default function AdvancedCourtsManager({
             </div>
           </div>
 
-          <div className={`text-xs ${T.subtext} mt-3 p-3 bg-blue-50 bg-blue-900 rounded-lg`}>
+          <div className={`text-xs ${T.subtext} mt-3 p-3 bg-blue-900 rounded-lg`}>
             <div className="font-medium mb-1">💡 Ordinamento Campi</div>
             <div>
               I campi sono ordinati per posizione. Usa i pulsanti ⬆️ ⬇️ accanto a ciascun campo per

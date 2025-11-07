@@ -6,15 +6,10 @@ import { createDSClasses } from '@lib/design-system.js';
 import {
   BOOKING_CONFIG,
   getAvailableDays,
-  isSlotAvailable,
   calculatePrice,
   calculateLessonPrice,
-  validateBooking,
-  createBooking,
   updateBooking,
   cancelBooking,
-  loadBookings,
-  saveBookings,
   getAdminBookings,
   BOOKING_STATUS,
 } from '@services/bookings.js';

@@ -457,10 +457,20 @@ if (!container) {
 // Register Service Worker for PWA functionality
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    // Fix per PWA installate: usa scope relativo per permettere registrazione
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches;
+    const registrationOptions = {
+      scope: isPWA ? './' : '/', // Scope relativo per PWA installate
+    };
+
     navigator.serviceWorker
-      .register('/sw.js')
+      .register('/sw.js', registrationOptions)
       .then((registration) => {
-        console.log('✅ Service Worker registrato con successo:', registration.scope);
+        console.log('✅ Service Worker registrato con successo:', {
+          scope: registration.scope,
+          isPWA,
+          state: registration.active?.state || 'installing',
+        });
 
         // Check for updates
         registration.addEventListener('updatefound', () => {
@@ -478,6 +488,14 @@ if ('serviceWorker' in navigator) {
       })
       .catch((error) => {
         console.error('❌ Errore nella registrazione del Service Worker:', error);
+        // In PWA installate, logga più dettagli per debug
+        if (isPWA) {
+          console.error('❌ PWA Service Worker registration failed:', {
+            error: error.message,
+            isPWA: true,
+            userAgent: navigator.userAgent,
+          });
+        }
       });
   });
 } else {

@@ -429,7 +429,38 @@ self.addEventListener('controllerchange', () => {
 // PUSH NOTIFICATIONS
 // ============================================
 
-// Gestione ricezione push notifications
+// Funzione helper per tracciare analytics notifiche
+async function trackNotificationAnalytics(eventData) {
+  try {
+    const event = {
+      id: `sw-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date().toISOString(),
+      ...eventData,
+      platform: 'web',
+      userAgent: navigator.userAgent,
+      swVersion: CACHE_VERSION,
+    };
+
+    // Invia analytics al backend via fetch (non bloccante)
+    fetch('/api/analytics/notification-event', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(event),
+      // Non aspettare la risposta per non bloccare il SW
+      keepalive: true,
+    }).catch((error) => {
+      console.warn('[SW] Analytics tracking failed (non-blocking):', error);
+    });
+
+    console.log('[SW] 📊 Analytics tracked:', event.type, 'for notification');
+  } catch (error) {
+    console.warn('[SW] Analytics tracking error:', error);
+  }
+}
+
+// Gestione ricezione push notifications con supporto rich notifications
 self.addEventListener('push', (event) => {
   console.log('[SW] Push notification received');
 
@@ -441,18 +472,21 @@ self.addEventListener('push', (event) => {
     data = { title: 'Play-sport.pro', body: 'Nuova notifica disponibile!' };
   }
 
+  // Costruisci opzioni avanzate per notifiche rich
   const options = {
+    // Campi base
     title: data.title || 'Play-sport.pro',
     body: data.body || 'Hai una nuova notifica',
-    icon: '/icons/icon.svg',
-    badge: '/icons/icon.svg',
-    image: data.image || '/logo.png',
-    data: {
-      url: data.url || '/',
-      timestamp: Date.now(),
-      ...data.data,
-    },
-    actions: [
+    icon: data.icon || '/icons/icon.svg',
+    badge: data.badge || '/icons/icon.svg',
+    tag: data.tag || 'default',
+    requireInteraction: data.requireInteraction || false,
+    silent: data.silent || false,
+    timestamp: data.timestamp || Date.now(),
+
+    // Campi avanzati per notifiche rich
+    image: data.image, // Immagine grande (hero image)
+    actions: data.actions || [
       {
         action: 'open',
         title: 'Apri App',
@@ -461,27 +495,126 @@ self.addEventListener('push', (event) => {
       {
         action: 'dismiss',
         title: 'Ignora',
-        icon: '/icons/icon.svg',
       },
     ],
-    tag: data.tag || 'default',
-    requireInteraction: data.requireInteraction || false,
-    silent: data.silent || false,
-    vibrate: [200, 100, 200],
-    timestamp: Date.now(),
+
+    // Dati personalizzati per deep linking e azioni
+    data: {
+      url: data.data?.url || '/',
+      type: data.data?.type || 'general',
+      playerId: data.data?.playerId,
+      clubId: data.data?.clubId,
+      matchId: data.data?.matchId,
+      bookingId: data.data?.bookingId,
+      tournamentId: data.data?.tournamentId,
+      deepLink: data.data?.deepLink,
+      actionButtons: data.data?.actionButtons,
+      priority: data.data?.priority || 'normal',
+      category: data.data?.category || 'general',
+      timestamp: Date.now(),
+      ...data.data,
+    },
+
+    // Suoni e vibrazione
+    vibrate: data.vibrate || [200, 100, 200],
+
+    // Notifiche persistenti e ri-notifica
+    renotify: data.renotify || false,
+
+    // Lingua e direzione testo
+    lang: data.lang || 'it',
+    dir: data.dir || 'ltr',
   };
+
+  // Gestione priorità notifiche
+  if (data.data?.priority === 'high') {
+    options.requireInteraction = true;
+    options.silent = false;
+    options.vibrate = [300, 100, 300, 100, 300];
+  } else if (data.data?.priority === 'low') {
+    options.silent = true;
+    options.vibrate = [];
+  }
+
+  // Gestione categorie specifiche
+  if (data.data?.category === 'booking') {
+    options.actions = [
+      { action: 'view-booking', title: 'Vedi Prenotazione', icon: '/icons/icon.svg' },
+      { action: 'open', title: 'Apri App', icon: '/icons/icon.svg' },
+      { action: 'dismiss', title: 'Ignora' },
+    ];
+  } else if (data.data?.category === 'match') {
+    options.actions = [
+      { action: 'view-match', title: 'Vedi Partita', icon: '/icons/icon.svg' },
+      { action: 'open', title: 'Apri App', icon: '/icons/icon.svg' },
+      { action: 'dismiss', title: 'Ignora' },
+    ];
+  } else if (data.data?.category === 'certificate') {
+    options.actions = [
+      { action: 'view-certificate', title: 'Vedi Certificato', icon: '/icons/icon.svg' },
+      { action: 'download-certificate', title: 'Scarica PDF', icon: '/icons/icon.svg' },
+      { action: 'open', title: 'Apri App', icon: '/icons/icon.svg' },
+    ];
+  }
 
   event.waitUntil(
     self.registration
       .showNotification(options.title, options)
-      .then(() => console.log('[SW] Notification displayed'))
-      .catch((error) => console.error('[SW] Notification display failed:', error))
+      .then(() => {
+        console.log('[SW] Rich notification displayed');
+
+        // Track notification delivered event con metadati ricchi
+        trackNotificationAnalytics({
+          type: 'delivered',
+          channel: 'push',
+          notificationType: data.data?.type || 'general',
+          category: data.data?.category || 'general',
+          priority: data.data?.priority || 'normal',
+          userId: data.data?.playerId,
+          clubId: data.data?.clubId,
+          matchId: data.data?.matchId,
+          bookingId: data.data?.bookingId,
+          tournamentId: data.data?.tournamentId,
+          success: true,
+          metadata: {
+            title: options.title,
+            tag: options.tag,
+            hasImage: !!options.image,
+            hasActions: options.actions?.length > 0,
+            actionCount: options.actions?.length || 0,
+            requireInteraction: options.requireInteraction,
+            isSilent: options.silent,
+            hasVibration: options.vibrate?.length > 0,
+            language: options.lang,
+          },
+        });
+      })
+      .catch((error) => {
+        console.error('[SW] Rich notification display failed:', error);
+
+        // Track notification delivery failed event
+        trackNotificationAnalytics({
+          type: 'delivery-failed',
+          channel: 'push',
+          notificationType: data.data?.type || 'general',
+          category: data.data?.category || 'general',
+          userId: data.data?.playerId,
+          clubId: data.data?.clubId,
+          success: false,
+          error: error.message,
+          metadata: {
+            title: options.title,
+            tag: options.tag,
+            hasImage: !!options.image,
+          },
+        });
+      })
   );
 });
 
-// Gestione click su notifica
+// Gestione click su notifica con supporto per azioni personalizzate
 self.addEventListener('notificationclick', (event) => {
-  console.log('[SW] Notification clicked:', event.notification);
+  console.log('[SW] Notification clicked:', event.notification, 'Action:', event.action);
 
   const notification = event.notification;
   const action = event.action;
@@ -489,42 +622,167 @@ self.addEventListener('notificationclick', (event) => {
 
   notification.close();
 
-  if (action === 'dismiss') {
-    console.log('[SW] Notification dismissed');
-    return;
+  // Determina l'URL da aprire basato sull'azione e sui dati
+  let urlToOpen = data.url || '/';
+
+  // Gestione azioni personalizzate
+  switch (action) {
+    case 'view-booking':
+      if (data.bookingId) {
+        urlToOpen = `/bookings/${data.bookingId}`;
+      } else {
+        urlToOpen = '/bookings';
+      }
+      break;
+
+    case 'view-match':
+      if (data.matchId) {
+        urlToOpen = `/matches/${data.matchId}`;
+      } else {
+        urlToOpen = '/matches';
+      }
+      break;
+
+    case 'view-certificate':
+      if (data.playerId) {
+        urlToOpen = `/players/${data.playerId}/certificate`;
+      } else {
+        urlToOpen = '/certificates';
+      }
+      break;
+
+    case 'download-certificate':
+      if (data.playerId) {
+        // Per il download, apri prima la pagina del certificato
+        urlToOpen = `/players/${data.playerId}/certificate?download=true`;
+      } else {
+        urlToOpen = '/certificates';
+      }
+      break;
+
+    case 'view-tournament':
+      if (data.tournamentId) {
+        urlToOpen = `/tournaments/${data.tournamentId}`;
+      } else {
+        urlToOpen = '/tournaments';
+      }
+      break;
+
+    case 'open':
+    case 'default':
+      // Usa l'URL specificato nei dati o quello di default
+      urlToOpen = data.url || '/';
+      break;
+
+    case 'dismiss':
+      console.log('[SW] Notification dismissed via action');
+      // Track dismiss action
+      trackNotificationAnalytics({
+        type: 'dismissed',
+        channel: 'push',
+        notificationType: data.type || 'general',
+        category: data.category || 'general',
+        userId: data.playerId,
+        clubId: data.clubId,
+        success: true,
+        metadata: {
+          action: 'dismiss',
+          tag: notification.tag,
+          url: data.url,
+          timestamp: data.timestamp,
+        },
+      });
+      return; // Non aprire nessuna pagina
+
+    default:
+      // Azione personalizzata o sconosciuta
+      if (data.deepLink) {
+        urlToOpen = data.deepLink;
+      } else {
+        urlToOpen = data.url || '/';
+      }
+      break;
   }
 
-  // Apri/Focus app
-  const urlToOpen = action === 'open' || !action ? data.url || '/' : '/';
+  // Track notification clicked event con azione specifica
+  trackNotificationAnalytics({
+    type: 'clicked',
+    channel: 'push',
+    notificationType: data.type || 'general',
+    category: data.category || 'general',
+    userId: data.playerId,
+    clubId: data.clubId,
+    matchId: data.matchId,
+    bookingId: data.bookingId,
+    tournamentId: data.tournamentId,
+    success: true,
+    metadata: {
+      action: action || 'default',
+      tag: notification.tag,
+      url: urlToOpen,
+      timestamp: data.timestamp,
+      timeToClick: Date.now() - (data.timestamp || Date.now()),
+      deepLinkUsed: !!data.deepLink,
+    },
+  });
 
+  // Apri/Focus app con l'URL determinato
   event.waitUntil(
-    clients
+    self.clients
       .matchAll({ type: 'window', includeUncontrolled: true })
       .then((clients) => {
-        // Cerca una finestra già aperta
+        // Cerca una finestra già aperta che corrisponda all'URL
+        const baseUrl = urlToOpen.split('?')[0]; // Ignora query parameters per matching
         for (const client of clients) {
-          if (client.url.includes(urlToOpen.split('?')[0]) && 'focus' in client) {
-            console.log('[SW] Focusing existing window');
+          if (client.url.includes(baseUrl) && 'focus' in client) {
+            console.log('[SW] Focusing existing window:', baseUrl);
             return client.focus();
           }
         }
 
-        // Apri nuova finestra
-        if (clients.openWindow) {
+        // Apri nuova finestra con l'URL specifico
+        if (self.clients.openWindow) {
           console.log('[SW] Opening new window:', urlToOpen);
-          return clients.openWindow(urlToOpen);
+          return self.clients.openWindow(urlToOpen);
         }
       })
-      .catch((error) => console.error('[SW] Notification click handling failed:', error))
+      .catch((error) => {
+        console.error('[SW] Notification click handling failed:', error);
+        // Fallback: apri homepage
+        if (self.clients.openWindow) {
+          return self.clients.openWindow('/');
+        }
+      })
   );
 });
 
-// Gestione chiusura notifica
+// Gestione chiusura notifica con metadati ricchi
 self.addEventListener('notificationclose', (event) => {
   console.log('[SW] Notification closed:', event.notification.tag);
 
-  // Analytics tracking opzionale
-  // gtag('event', 'notification_closed', {
-  //   notification_tag: event.notification.tag
-  // });
+  const notification = event.notification;
+  const data = notification.data || {};
+
+  // Track notification closed event (solo se non è stata cliccata)
+  trackNotificationAnalytics({
+    type: 'closed',
+    channel: 'push',
+    notificationType: data.type || 'general',
+    category: data.category || 'general',
+    priority: data.priority || 'normal',
+    userId: data.playerId,
+    clubId: data.clubId,
+    matchId: data.matchId,
+    bookingId: data.bookingId,
+    tournamentId: data.tournamentId,
+    success: true,
+    metadata: {
+      tag: notification.tag,
+      url: data.url,
+      timestamp: data.timestamp,
+      displayDuration: Date.now() - (data.timestamp || Date.now()),
+      deepLink: data.deepLink,
+      wasInteracted: false, // Non è stata cliccata, solo chiusa
+    },
+  });
 });

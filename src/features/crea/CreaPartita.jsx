@@ -1,7 +1,7 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useNotifications } from '@contexts/NotificationContext';
 import { createClubMatch, deleteClubMatch } from '@services/club-matches.js';
-import { getHistoricalRatings, savePreMatchRatings } from '@services/rating-history.js';
+import { getHistoricalRatings } from '@services/rating-history.js';
 import {
   updatePlayerRatingsAfterMatch,
   calculatePlayerDeltas,
@@ -13,8 +13,6 @@ import { byPlayerFirstAlpha } from '@lib/names.js';
 import { DEFAULT_RATING, uid } from '@lib/ids.js';
 import { computeFromSets, rpaFactor } from '@lib/rpa.js';
 import MatchRow from '@features/matches/MatchRow.jsx';
-import { FormulaIntro } from '@ui/formulas/FormulaIntro.jsx';
-import { FormulaExplainer } from '@ui/formulas/FormulaExplainer.jsx';
 import { useMatchForm } from '../../hooks/useMatchForm';
 import {
   FormProgressBar,
