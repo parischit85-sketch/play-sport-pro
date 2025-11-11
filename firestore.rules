@@ -131,19 +131,19 @@ service cloud.firestore {
       
       // Nested club users
       match /users/{userId} {
-        allow read: if isAdmin();
+        allow read: if isAuthenticated();
         allow write: if isAdmin();
       }
       
       // Nested club profiles
       match /profiles/{profileId} {
-        allow read: if isAdmin();
-        allow write: if isAdmin();
+        allow read: if isAuthenticated();
+        allow write: if isAuthenticated();
       }
       
       // Nested club matches
       match /matches/{matchId} {
-        allow read: if isAdmin();
+        allow read: if isAuthenticated();
         allow write: if isAdmin();
       }
     }
