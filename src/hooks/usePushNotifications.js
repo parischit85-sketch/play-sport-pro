@@ -53,7 +53,7 @@ export function usePushNotifications() {
   // Sottoscrivi alle push notifications
   const subscribeToPush = async () => {
     console.log('🔔 [subscribeToPush] Starting...', { isSupported, permission });
-    
+
     if (!isSupported || permission !== 'granted') {
       console.warn('⚠️ [subscribeToPush] Cannot subscribe:', { isSupported, permission });
       return null;
@@ -120,7 +120,7 @@ export function usePushNotifications() {
     console.log('🧪 [TEST NOTIFICATION] Function called');
     console.log('🧪 [TEST] Current permission:', permission);
     console.log('🧪 [TEST] isSupported:', isSupported);
-    
+
     if (permission !== 'granted') {
       console.log('🧪 [TEST] Permission not granted, requesting...');
       await requestPermission();
@@ -131,7 +131,7 @@ export function usePushNotifications() {
         console.log('🧪 [TEST] Creating browser Notification...');
         console.log('🧪 [TEST] ⚠️ THIS BYPASSES FIRESTORE & CLOUD FUNCTION!');
         console.log('🧪 [TEST] This is just a local browser notification');
-        
+
         new Notification('🎾 Play-sport.pro Test', {
           body: 'Le notifiche funzionano perfettamente!',
           icon: '/icons/icon.svg',
@@ -246,64 +246,27 @@ async function sendSubscriptionToServer(subscription) {
       deviceId: subscriptionData.deviceId,
     });
 
-    // In produzione usa Netlify Function, in sviluppo salva direttamente su Firestore
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    
-    if (isDevelopment) {
-      console.log('🔧 [DEV MODE] Saving directly to Firestore...');
-      const { getFirestore, collection, doc, setDoc, query, where, getDocs } = await import('firebase/firestore');
-      const db = getFirestore();
-      
-      // Verifica se esiste già una subscription per questo userId + deviceId
-      const q = query(
-        collection(db, 'pushSubscriptions'),
-        where('userId', '==', user.uid),
-        where('deviceId', '==', subscriptionData.deviceId)
-      );
-      
-      const existingDocs = await getDocs(q);
-      
-      if (!existingDocs.empty) {
-        // Aggiorna esistente
-        const docId = existingDocs.docs[0].id;
-        await setDoc(doc(db, 'pushSubscriptions', docId), {
-          ...subscriptionData,
-          updatedAt: new Date().toISOString(),
-        });
-        console.log('✅ [DEV MODE] Subscription updated in Firestore:', docId);
-        return true;
-      } else {
-        // Crea nuova
-        const docRef = doc(collection(db, 'pushSubscriptions'));
-        await setDoc(docRef, subscriptionData);
-        console.log('✅ [DEV MODE] Subscription saved in Firestore:', docRef.id);
-        return true;
-      }
-    } else {
-      // Produzione: usa Netlify Function
-      console.log('🔗 Calling Netlify Function: /.netlify/functions/save-push-subscription');
-      const response = await fetch('/.netlify/functions/save-push-subscription', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(subscriptionData),
-      });
+    // Always use Netlify Function (never write directly to Firestore from client)
+    console.log('🔗 Calling Netlify Function: /.netlify/functions/save-push-subscription');
+    const response = await fetch('/.netlify/functions/save-push-subscription', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(subscriptionData),
+    });
 
-      console.log('📡 Response status:', response.status, response.statusText);
+    console.log('📡 Response status:', response.status, response.statusText);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ Netlify Function error:', errorText);
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log('✅ Subscription saved successfully:', result);
-      console.log('🔍 Check Firestore → pushSubscriptions collection for userId:', user.uid);
-      return true;
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Netlify Function error:', errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
+    const result = await response.json();
+    console.log('✅ Subscription saved successfully:', result);
+    console.log('🔍 Check Firestore → pushSubscriptions collection for userId:', user.uid);
     return true;
   } catch (error) {
     console.error('❌ Failed to save subscription to server:', error);
