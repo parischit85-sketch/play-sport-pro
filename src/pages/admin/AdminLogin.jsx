@@ -5,6 +5,13 @@ import { auth, db } from '../../services/firebase.js';
 import { doc, getDoc } from 'firebase/firestore';
 import { Eye, EyeOff, Shield, AlertCircle } from 'lucide-react';
 
+// Lista degli admin autorizzati - Spostato fuori dal componente per evitare dipendenze cicliche
+const AUTHORIZED_ADMINS = [
+  'paris.andrea@live.it',
+  'admin@playsport.it',
+  // Aggiungi qui altri email admin
+];
+
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,13 +20,6 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Lista degli admin autorizzati (potrai espandere questo sistema)
-  const AUTHORIZED_ADMINS = [
-    'paris.andrea@live.it',
-    'admin@playsport.it',
-    // Aggiungi qui altri email admin
-  ];
 
   useEffect(() => {
     // Se l'utente è già loggato come admin, reindirizza alla dashboard
@@ -49,6 +49,29 @@ const AdminLogin = () => {
     setError('');
 
     try {
+      // 🔧 DEVELOPMENT BYPASS: In development mode, allow any authorized email with any password
+      if (import.meta.env.DEV && AUTHORIZED_ADMINS.includes(email)) {
+        console.log('🔐 [DEV MODE] Admin login bypass activated for:', email);
+
+        // Create mock admin user for development
+        const mockAdminUser = {
+          uid: `admin-dev-${email.replace(/[^a-z0-9]/g, '')}`,
+          email: email,
+          displayName: 'Admin Developer',
+          isAdmin: true,
+        };
+
+        // Store admin session in localStorage
+        localStorage.setItem('adminSession', JSON.stringify(mockAdminUser));
+        console.log('✅ [DEV MODE] Admin session created:', mockAdminUser);
+
+        // Reindirizza alla dashboard admin
+        const from = location.state?.from?.pathname || '/admin/dashboard';
+        navigate(from, { replace: true });
+        return;
+      }
+
+      // PRODUCTION: Use Firebase authentication
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
