@@ -132,6 +132,18 @@ service cloud.firestore {
         allow read: if isAdmin();
         allow write: if isAdmin();
       }
+      
+      // Nested club profiles
+      match /profiles/{profileId} {
+        allow read: if isAdmin();
+        allow write: if isAdmin();
+      }
+      
+      // Nested club matches
+      match /matches/{matchId} {
+        allow read: if isAdmin();
+        allow write: if isAdmin();
+      }
     }
     
     // ==========================================
