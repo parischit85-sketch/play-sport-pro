@@ -246,28 +246,53 @@ async function sendSubscriptionToServer(subscription) {
       deviceId: subscriptionData.deviceId,
     });
 
-    // Always use Netlify Function (never write directly to Firestore from client)
-    console.log('🔗 Calling Netlify Function: /.netlify/functions/save-push-subscription');
-    const response = await fetch('/.netlify/functions/save-push-subscription', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(subscriptionData),
-    });
+    // Development vs Production handling
+    const isDevelopment = import.meta.env.DEV;
 
-    console.log('📡 Response status:', response.status, response.statusText);
+    if (isDevelopment) {
+      // In development: Netlify Functions not available via /.netlify/functions path
+      // Instead, we mock the save (actual testing on production)
+      console.log('🔧 [DEV MODE] Simulating Netlify Function call (will work in production)...');
+      console.log('📋 [DEV] Subscription data that would be saved:', {
+        userId: subscriptionData.userId,
+        endpoint: subscriptionData.endpoint.substring(0, 80) + '...',
+        deviceId: subscriptionData.deviceId,
+        timestamp: subscriptionData.createdAt,
+      });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Netlify Function error:', errorText);
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
+      // Store in sessionStorage for reference during testing
+      sessionStorage.setItem(
+        `push_subscription_${subscriptionData.deviceId}`,
+        JSON.stringify(subscriptionData)
+      );
+
+      console.log('✅ [DEV] Subscription data stored in sessionStorage');
+      console.log('💡 [DEV] In production, this will be saved to Firestore via Netlify Function');
+      return true;
+    } else {
+      // Production: Call actual Netlify Function
+      console.log('🔗 Calling Netlify Function: /.netlify/functions/save-push-subscription');
+      const response = await fetch('/.netlify/functions/save-push-subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(subscriptionData),
+      });
+
+      console.log('📡 Response status:', response.status, response.statusText);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Netlify Function error:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Subscription saved successfully:', result);
+      console.log('🔍 Check Firestore → pushSubscriptions collection for userId:', user.uid);
+      return true;
     }
-
-    const result = await response.json();
-    console.log('✅ Subscription saved successfully:', result);
-    console.log('🔍 Check Firestore → pushSubscriptions collection for userId:', user.uid);
-    return true;
   } catch (error) {
     console.error('❌ Failed to save subscription to server:', error);
     return false;
