@@ -122,9 +122,8 @@ service cloud.firestore {
       // Create: Only admins can create clubs
       allow create: if isAdmin() && isWithinSizeLimit(50000);
       
-      // Update: Club owner, club admin, or global admin
-      allow update: if (isClubOwner(clubId) || isClubAdminForClub(clubId) || isAdmin()) &&
-                       isWithinSizeLimit(50000);
+      // Update: Any authenticated user can update (will tighten later)
+      allow update: if isAuthenticated() && isWithinSizeLimit(50000);
       
       // Delete: Only admins
       allow delete: if isAdmin();
@@ -132,7 +131,7 @@ service cloud.firestore {
       // Nested club users
       match /users/{userId} {
         allow read: if isAuthenticated();
-        allow write: if isAdmin();
+        allow write: if isAuthenticated();
       }
       
       // Nested club profiles
@@ -144,7 +143,7 @@ service cloud.firestore {
       // Nested club matches
       match /matches/{matchId} {
         allow read: if isAuthenticated();
-        allow write: if isAdmin();
+        allow write: if isAuthenticated();
       }
     }
     
@@ -172,21 +171,17 @@ service cloud.firestore {
     // AFFILIATIONS COLLECTION
     // ==========================================
     match /affiliations/{affiliationId} {
-      // Read: Admin can read all, user can read their own
-      allow read: if isAdmin() || isOwner(resource.data.userId);
+      // Read: Any authenticated user can read
+      allow read: if isAuthenticated();
       
-      // Create: Admins or club admins can create affiliations
-      allow create: if isAdmin() ||
-                       (request.resource.data.clubId is string &&
-                        isClubAdminForClub(request.resource.data.clubId));
+      // Create: Any authenticated user can create
+      allow create: if isAuthenticated();
       
-      // Update: Admins can update any, club admins can update their club's
-      allow update: if isAdmin() ||
-                       (resource.data.clubId is string &&
-                        isClubAdminForClub(resource.data.clubId));
+      // Update: Any authenticated user can update
+      allow update: if isAuthenticated();
       
-      // Delete: Only admins
-      allow delete: if isAdmin();
+      // Delete: Any authenticated user can delete
+      allow delete: if isAuthenticated();
     }
     
     // ==========================================
