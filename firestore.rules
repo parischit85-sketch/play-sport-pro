@@ -28,26 +28,26 @@ service cloud.firestore {
     }
     
     // Check if user is admin or super admin
+    // Primary check: Firebase Auth custom claims (cryptographically signed, always available)
+    // Fallback: Check admin collection as secondary verification
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.admin == true ||
         request.auth.token.role == 'super_admin' ||
         request.auth.token.role == 'admin' ||
-        get(/databases/$(database)/documents/admin/$(request.auth.uid)).data.role == 'super_admin' ||
-        (exists(/databases/$(database)/documents/profiles/$(request.auth.uid)) && 
-         get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == 'SUPER_ADMIN')
+        // Fallback to admin collection (only if token claims fail)
+        exists(/databases/$(database)/documents/admin/$(request.auth.uid))
       );
     }
     
     // Check if user is club admin for specific club
+    // Super admins can manage all clubs
     function isClubAdminForClub(clubId) {
       return isAuthenticated() &&
              (request.auth.token.admin == true ||
               request.auth.token.role == 'super_admin' ||
               (exists(/databases/$(database)/documents/clubs/$(clubId)) &&
-               get(/databases/$(database)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid) ||
-              (exists(/databases/$(database)/documents/clubs/$(clubId)/users/$(request.auth.uid)) &&
-               get(/databases/$(database)/documents/clubs/$(clubId)/users/$(request.auth.uid)).data.isClubAdmin == true));
+               get(/databases/$(database)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid));
     }
 
     // Check if user is club owner
@@ -162,6 +162,27 @@ service cloud.firestore {
       allow update: if (isClubAdminForClub(resource.data.clubId) || isAdmin()) &&
                        isWithinSizeLimit(20000);
 
+      // Delete: Only admins
+      allow delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // AFFILIATIONS COLLECTION
+    // ==========================================
+    match /affiliations/{affiliationId} {
+      // Read: Admin can read all, user can read their own
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      
+      // Create: Admins or club admins can create affiliations
+      allow create: if isAdmin() ||
+                       (request.resource.data.clubId is string &&
+                        isClubAdminForClub(request.resource.data.clubId));
+      
+      // Update: Admins can update any, club admins can update their club's
+      allow update: if isAdmin() ||
+                       (resource.data.clubId is string &&
+                        isClubAdminForClub(resource.data.clubId));
+      
       // Delete: Only admins
       allow delete: if isAdmin();
     }
@@ -298,24 +319,6 @@ service cloud.firestore {
     match /experiments/{experimentId} {
       allow read: if isAuthenticated(); // All users can read experiments
       allow write: if isAdmin(); // Only admins can modify
-    }
-    
-    // ==========================================
-    // ADMIN COLLECTION (Super admin access)
-    // ==========================================
-    match /admin/{adminId} {
-      allow read: if isAdmin();
-      allow write: if isAdmin();
-    }
-    
-    // ==========================================
-    // PROFILES COLLECTION (Extended user profiles)
-    // ==========================================
-    match /profiles/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId) || isAdmin();
-      allow delete: if isAdmin();
     }
     
     // ==========================================
