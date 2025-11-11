@@ -30,8 +30,10 @@ service cloud.firestore {
     // Check if user is admin or super admin
     function isAdmin() {
       return isAuthenticated() && (
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super_admin' ||
+        request.auth.token.admin == true ||
+        request.auth.token.role == 'super_admin' ||
+        request.auth.token.role == 'admin' ||
+        get(/databases/$(database)/documents/admin/$(request.auth.uid)).data.role == 'super_admin' ||
         (exists(/databases/$(database)/documents/profiles/$(request.auth.uid)) && 
          get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == 'SUPER_ADMIN')
       );
@@ -40,9 +42,10 @@ service cloud.firestore {
     // Check if user is club admin for specific club
     function isClubAdminForClub(clubId) {
       return isAuthenticated() &&
-             (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'club_admin' ||
-              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') &&
-             (get(/databases/$(database)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid ||
+             (request.auth.token.admin == true ||
+              request.auth.token.role == 'super_admin' ||
+              (exists(/databases/$(database)/documents/clubs/$(clubId)) &&
+               get(/databases/$(database)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid) ||
               (exists(/databases/$(database)/documents/clubs/$(clubId)/users/$(request.auth.uid)) &&
                get(/databases/$(database)/documents/clubs/$(clubId)/users/$(request.auth.uid)).data.isClubAdmin == true));
     }
@@ -52,13 +55,6 @@ service cloud.firestore {
       return isAuthenticated() &&
              get(/databases/$(database)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid;
     }
-
-    // Check if user is admin for specific club (legacy club_admin role)
-    function isClubAdmin() {
-      return isAuthenticated() &&
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'club_admin';
-    }
-    
     // Validate email format
     function isValidEmail(email) {
       return email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
