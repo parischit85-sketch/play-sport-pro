@@ -50,9 +50,13 @@ const AdminLogin = () => {
 
     try {
       // Use Firebase authentication
-      console.log('� Authenticating with Firebase...');
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+
+      // CRITICAL: Force token refresh to ensure custom claims are included
+      console.log('Refreshing token to load custom claims...');
+      await user.getIdToken(true); // Force refresh the token
+      console.log('Token refreshed with custom claims');
 
       // Doppia verifica che l'utente sia autorizzato
       if (!AUTHORIZED_ADMINS.includes(user.email)) {
