@@ -22,7 +22,16 @@ export default function NotificationSettings({ className = '' }) {
   const handleEnableNotifications = async () => {
     setIsLoading(true);
     try {
-      await requestPermission();
+      console.log('🔔 [NotificationSettings] Requesting push permission...');
+      const result = await requestPermission();
+      console.log('🔔 [NotificationSettings] Permission result:', result);
+      
+      if (result) {
+        console.log('✅ [NotificationSettings] Subscription should be saved to Firestore now!');
+        console.log('📊 Check Firestore console: pushSubscriptions collection');
+      }
+    } catch (error) {
+      console.error('❌ [NotificationSettings] Error enabling notifications:', error);
     } finally {
       setIsLoading(false);
     }
@@ -40,7 +49,15 @@ export default function NotificationSettings({ className = '' }) {
   const handleTestNotification = async () => {
     setIsLoading(true);
     try {
-      await sendTestNotification();
+      console.log('🧪 [NotificationSettings] Sending test notification...');
+      const result = await sendTestNotification();
+      console.log('🧪 [NotificationSettings] Test notification result:', result);
+      
+      if (result) {
+        console.log('✅ [NotificationSettings] Test notification sent successfully!');
+      }
+    } catch (error) {
+      console.error('❌ [NotificationSettings] Error sending test notification:', error);
     } finally {
       setIsLoading(false);
     }

@@ -685,11 +685,7 @@ async function loadCloudBookings() {
       };
     });
   }
-  const q = query(
-    collection(db, COLLECTIONS.BOOKINGS),
-    orderBy('date', 'asc'),
-    orderBy('time', 'asc')
-  );
+  const q = query(collection(db, COLLECTIONS.BOOKINGS));
 
   const snapshot = await getDocs(q);
   const allBookings = snapshot.docs.map((d) => {
@@ -708,6 +704,17 @@ async function loadCloudBookings() {
     // Debug log completely removed
 
     return processedBooking;
+  });
+
+  // Sort bookings by date and time in memory
+  allBookings.sort((a, b) => {
+    const dateA = a.date || '';
+    const dateB = b.date || '';
+    const dateCompare = dateA.localeCompare(dateB);
+    if (dateCompare !== 0) return dateCompare;
+    const timeA = a.time || '';
+    const timeB = b.time || '';
+    return timeA.localeCompare(timeB);
   });
 
   const activeBookings = allBookings.filter((booking) => {

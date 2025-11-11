@@ -3,6 +3,7 @@
 // Servizio centralizzato per invio email con retry e queue
 // =============================================
 
+import process from 'node:process';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import sgMail from '@sendgrid/mail';
@@ -11,35 +12,48 @@ import nodemailer from 'nodemailer';
 // Inizializza Firebase Admin (se non già fatto)
 try {
   initializeApp();
-} catch (error) {
+} catch {
   // App già inizializzata
 }
 
 const db = getFirestore();
+const { env } = process;
 
 // =============================================
 // CONFIGURAZIONE
 // =============================================
 
-const SENDGRID_ENABLED = !!process.env.SENDGRID_API_KEY;
+// 🔍 DIAGNOSTIC LOGGING
+console.log('🔧 [EmailService Init] Environment variables check:', {
+  SENDGRID_API_KEY_present: !!env.SENDGRID_API_KEY,
+  SENDGRID_API_KEY_length: env.SENDGRID_API_KEY?.length || 0,
+  EMAIL_USER_present: !!env.EMAIL_USER,
+  EMAIL_PASSWORD_present: !!env.EMAIL_PASSWORD,
+  FROM_EMAIL: env.FROM_EMAIL,
+});
+
+const SENDGRID_ENABLED = !!env.SENDGRID_API_KEY;
 if (SENDGRID_ENABLED) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  console.log('✅ [EmailService] SendGrid ENABLED - Setting API key');
+  sgMail.setApiKey(env.SENDGRID_API_KEY);
+} else {
+  console.warn('⚠️ [EmailService] SendGrid DISABLED - SENDGRID_API_KEY not found');
 }
 
-const NODEMAILER_ENABLED = !!(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD);
+const NODEMAILER_ENABLED = !!(env.EMAIL_USER && env.EMAIL_PASSWORD);
 let transporter = null;
 
 if (NODEMAILER_ENABLED) {
   transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
+      user: env.EMAIL_USER,
+      pass: env.EMAIL_PASSWORD,
     },
   });
 }
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@play-sport.pro';
+const FROM_EMAIL = env.FROM_EMAIL || 'noreply@play-sport.pro';
 const FROM_NAME = 'Play-Sport.pro';
 
 // Configurazione retry
@@ -57,7 +71,17 @@ class EmailService {
   /**
    * Invia email con retry automatico e fallback
    */
-  async sendEmail({ to, subject, text, html, from = null, attachments = [] }) {
+  async sendEmail({
+    to,
+    subject,
+    text,
+    html,
+    from = null,
+    replyTo = null,
+    attachments = [],
+    type = 'transactional',
+    clubId = null,
+  }) {
     // Validazione
     if (!to || !to.includes('@')) {
       throw new Error('Invalid email recipient');
@@ -79,19 +103,38 @@ class EmailService {
       attempt++;
       
       try {
-        // Prova SendGrid
-        if (SENDGRID_ENABLED) {
-          await this._sendViaSendGrid({ to, subject, text, html, from, attachments });
+        // Prova SendGrid (check a runtime)
+        if (process.env.SENDGRID_API_KEY) {
+          console.log('🔑 [EmailService] Using SendGrid (API key found at runtime)');
+          await this._sendViaSendGrid({ to, subject, text, html, from, replyTo, attachments });
           console.log(`✅ [EmailService] Email sent via SendGrid (attempt ${attempt})`);
-          await this._logEmail({ to, subject, service: 'SendGrid', status: 'sent', attempt });
+          await this._logEmail({
+            to,
+            subject,
+            service: 'SendGrid',
+            status: 'sent',
+            attempt,
+            type,
+            clubId,
+            replyTo,
+          });
           return { success: true, service: 'SendGrid', attempt };
         }
 
         // Fallback a Nodemailer
-        if (NODEMAILER_ENABLED) {
-          await this._sendViaNodemailer({ to, subject, text, html, from, attachments });
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
+          await this._sendViaNodemailer({ to, subject, text, html, from, replyTo, attachments });
           console.log(`✅ [EmailService] Email sent via Nodemailer (attempt ${attempt})`);
-          await this._logEmail({ to, subject, service: 'Nodemailer', status: 'sent', attempt });
+          await this._logEmail({
+            to,
+            subject,
+            service: 'Nodemailer',
+            status: 'sent',
+            attempt,
+            type,
+            clubId,
+            replyTo,
+          });
           return { success: true, service: 'Nodemailer', attempt };
         }
 
@@ -115,7 +158,17 @@ class EmailService {
 
     // Tutti i tentativi falliti
     console.error(`❌ [EmailService] All attempts failed for ${to}`);
-    await this._logEmail({ to, subject, service: 'Failed', status: 'failed', attempt, error: lastError.message });
+    await this._logEmail({
+      to,
+      subject,
+      service: 'Failed',
+      status: 'failed',
+      attempt,
+      error: lastError.message,
+      type,
+      clubId,
+      replyTo,
+    });
     
     throw new Error(`Failed to send email after ${RETRY_CONFIG.maxAttempts} attempts: ${lastError.message}`);
   }
@@ -123,20 +176,51 @@ class EmailService {
   /**
    * Invia email via SendGrid
    */
-  async _sendViaSendGrid({ to, subject, text, html, from, attachments }) {
+  async _sendViaSendGrid({ to, subject, text, html, from, replyTo, attachments }) {
+    // Imposta API key a runtime (quando i secrets sono disponibili)
+    console.log('🔍 [_sendViaSendGrid] Starting SendGrid send...');
+    console.log('🔍 [_sendViaSendGrid] SENDGRID_API_KEY present:', !!process.env.SENDGRID_API_KEY);
+    console.log('🔍 [_sendViaSendGrid] SENDGRID_API_KEY length:', process.env.SENDGRID_API_KEY?.length || 0);
+    console.log('🔍 [_sendViaSendGrid] FROM_EMAIL env:', process.env.FROM_EMAIL);
+    
+    if (process.env.SENDGRID_API_KEY) {
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      console.log('✅ [_sendViaSendGrid] API key set successfully');
+    } else {
+      console.error('❌ [_sendViaSendGrid] SENDGRID_API_KEY not available!');
+      throw new Error('SENDGRID_API_KEY not available');
+    }
+
+    const fromEmail = (process.env.FROM_EMAIL || FROM_EMAIL).trim();
+    console.log('📧 [_sendViaSendGrid] From email:', fromEmail);
+    console.log('📧 [_sendViaSendGrid] To email:', to);
+    console.log('📧 [_sendViaSendGrid] Subject:', subject);
+    
     const msg = {
       to,
       from: from || {
-        email: FROM_EMAIL,
+        email: fromEmail,
         name: FROM_NAME,
       },
       subject,
       text,
       html,
     };
+    
+    console.log('📤 [_sendViaSendGrid] Message object:', JSON.stringify(msg, null, 2));
+
+    if (replyTo) {
+      msg.replyTo =
+        typeof replyTo === 'string'
+          ? replyTo
+          : {
+              email: replyTo.email,
+              name: replyTo.name,
+            };
+    }
 
     if (attachments && attachments.length > 0) {
-      msg.attachments = attachments.map(att => ({
+      msg.attachments = attachments.map((att) => ({
         content: att.content,
         filename: att.filename,
         type: att.type || 'application/pdf',
@@ -144,23 +228,43 @@ class EmailService {
       }));
     }
 
-    await sgMail.send(msg);
+    try {
+      console.log('🚀 [_sendViaSendGrid] Calling SendGrid API...');
+      const response = await sgMail.send(msg);
+      console.log('✅ [_sendViaSendGrid] SendGrid response:', JSON.stringify(response, null, 2));
+      return response;
+    } catch (error) {
+      console.error('❌ [_sendViaSendGrid] SendGrid error:', error.message);
+      console.error('❌ [_sendViaSendGrid] Error code:', error.code);
+      if (error.response) {
+        console.error('❌ [_sendViaSendGrid] Response status:', error.response.statusCode);
+        console.error('❌ [_sendViaSendGrid] Response body:', JSON.stringify(error.response.body, null, 2));
+      }
+      throw error;
+    }
   }
 
   /**
    * Invia email via Nodemailer
    */
-  async _sendViaNodemailer({ to, subject, text, html, from, attachments }) {
+  async _sendViaNodemailer({ to, subject, text, html, from, replyTo, attachments }) {
     const mailOptions = {
-      from: from || `"${FROM_NAME}" <${process.env.EMAIL_USER}>`,
+      from: from || `"${FROM_NAME}" <${env.EMAIL_USER}>`,
       to,
       subject,
       text,
       html,
     };
 
+    if (replyTo) {
+      mailOptions.replyTo =
+        typeof replyTo === 'string'
+          ? replyTo
+          : `"${replyTo.name || FROM_NAME}" <${replyTo.email}>`;
+    }
+
     if (attachments && attachments.length > 0) {
-      mailOptions.attachments = attachments.map(att => ({
+      mailOptions.attachments = attachments.map((att) => ({
         content: att.content,
         filename: att.filename,
         contentType: att.type || 'application/pdf',
@@ -384,7 +488,7 @@ class EmailService {
       byType: {},
     };
 
-    snapshot.forEach(doc => {
+  snapshot.forEach((doc) => {
       const data = doc.data();
       
       if (data.status === 'sent') stats.sent++;
@@ -400,7 +504,7 @@ class EmailService {
   /**
    * Log email inviate (per analytics)
    */
-  async _logEmail({ to, subject, service, status, attempt, error = null, type = 'transactional', clubId = null }) {
+  async _logEmail({ to, subject, service, status, attempt, error = null, type = 'transactional', clubId = null, replyTo = null }) {
     try {
       await db.collection('emailLogs').add({
         to,
@@ -411,6 +515,7 @@ class EmailService {
         error,
         type,
         clubId,
+        replyTo,
         timestamp: new Date(),
       });
     } catch (err) {

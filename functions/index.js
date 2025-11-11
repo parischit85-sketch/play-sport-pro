@@ -9,6 +9,7 @@ export { scheduledNotificationCleanup, getCleanupStatus } from './scheduledNotif
 
 // Callable Functions
 export { sendBulkCertificateNotifications } from './sendBulkNotifications.clean.js';
+export { sendClubEmail } from './sendClubEmail.js';
 
 // Email Notification Triggers (CHK-401)
 export { onBookingCreated, onBookingDeleted } from './sendBookingEmail.js';

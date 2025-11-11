@@ -20,6 +20,7 @@ import {
   revertTournamentChampionshipPoints,
   getChampionshipApplyStatus,
 } from '../../features/tournaments/services/championshipApplyService.js';
+import PushTestPanel from '../../components/PushTestPanel.jsx';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -273,6 +274,11 @@ const AdminDashboard = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 🧪 TEST PANEL - Push Notifications Subscription Test */}
+        <div className="mb-8">
+          <PushTestPanel />
+        </div>
+
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Benvenuto nel Portale Admin</h2>

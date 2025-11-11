@@ -1,9 +1,10 @@
 // =============================================
 // FILE: src/features/players/components/PlayerCommunications.jsx
 // Sistema di comunicazioni per email/SMS/notifiche
+// Mostra: Email certificati, Push notifications, WhatsApp
 // =============================================
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 export default function PlayerCommunications({ player, T }) {
   const [newMessage, setNewMessage] = useState({
@@ -46,50 +47,113 @@ export default function PlayerCommunications({ player, T }) {
       type: 'email',
     },
     {
-      id: 'sms_booking',
-      name: 'SMS Prenotazione Confermata',
-      content: `🏟️ Prenotazione confermata!\n📅 ${new Date().toLocaleDateString()}\n⏰ [ORARIO]\nCampo: [CAMPO]\nPlay Sport Pro`,
-      type: 'sms',
+      id: 'whatsapp_booking',
+      name: 'WhatsApp Prenotazione Confermata',
+      content: `🏟️ Ciao ${player.firstName}! Prenotazione confermata!\n📅 ${new Date().toLocaleDateString()}\n⏰ [ORARIO]\nCampo: [CAMPO]\n\nCi vediamo in campo! 🎾`,
+      type: 'whatsapp',
     },
     {
-      id: 'sms_reminder',
-      name: 'SMS Promemoria',
-      content: `⚡ Promemoria: prenotazione domani alle [ORARIO] - Campo [CAMPO]. Ci vediamo! 🎾`,
-      type: 'sms',
+      id: 'whatsapp_reminder',
+      name: 'WhatsApp Promemoria',
+      content: `⚡ Ciao ${player.firstName}! Ti ricordiamo la prenotazione di domani alle [ORARIO] - Campo [CAMPO]. A presto! �️`,
+      type: 'whatsapp',
     },
   ];
 
-  // Storico comunicazioni (mock data)
-  const communicationHistory = [
-    {
-      id: 'comm1',
-      type: 'email',
-      subject: 'Benvenuto in Play Sport Pro!',
-      sentDate: '2025-09-01T10:00:00',
-      status: 'delivered',
-      openDate: '2025-09-01T10:30:00',
-      template: 'welcome',
-    },
-    {
-      id: 'comm2',
-      type: 'sms',
-      subject: 'Prenotazione confermata',
-      sentDate: '2025-09-05T15:30:00',
-      status: 'delivered',
-      template: 'sms_booking',
-    },
-    {
-      id: 'comm3',
-      type: 'push',
-      subject: 'Nuovo torneo disponibile',
-      sentDate: '2025-09-07T09:00:00',
-      status: 'delivered',
-      clickDate: '2025-09-07T09:15:00',
-    },
-  ];
+  // Carica tutte le comunicazioni dal player (email, push, whatsapp)
+  const communicationHistory = useMemo(() => {
+    const allCommunications = [];
+
+    // 1. Email certificati medici
+    const emailHistory = player?.medicalCertificates?.emailHistory || [];
+    emailHistory.forEach((email) => {
+      allCommunications.push({
+        id: `email-cert-${email.sentAt}`,
+        type: 'email',
+        subject: email.subject || 'Email certificato medico',
+        sentDate: email.sentAt,
+        status: email.success ? 'delivered' : 'failed',
+        template: email.templateType,
+        category: 'Certificato Medico',
+      });
+    });
+
+    // 2. Notifiche push (se disponibili)
+    const pushNotifications = player?.pushNotifications || [];
+    pushNotifications.forEach((push) => {
+      allCommunications.push({
+        id: `push-${push.sentAt || push.id}`,
+        type: 'push',
+        subject: push.title || push.subject || 'Notifica push',
+        sentDate: push.sentAt || push.timestamp,
+        status: push.success ? 'delivered' : 'failed',
+        clickDate: push.clickedAt,
+        category: push.category || 'Notifica',
+      });
+    });
+
+    // 3. WhatsApp (se disponibili)
+    const whatsappMessages = player?.whatsappMessages || [];
+    whatsappMessages.forEach((whatsapp) => {
+      allCommunications.push({
+        id: `whatsapp-${whatsapp.sentAt || whatsapp.id}`,
+        type: 'whatsapp',
+        subject: whatsapp.message || 'Messaggio WhatsApp',
+        sentDate: whatsapp.sentAt || whatsapp.timestamp,
+        status: whatsapp.success ? 'delivered' : 'failed',
+        category: whatsapp.category || 'WhatsApp',
+      });
+    });
+
+    // 4. Altre comunicazioni generiche
+    const genericComms = player?.communications || [];
+    genericComms.forEach((comm) => {
+      allCommunications.push({
+        id: comm.id || `comm-${comm.sentDate}`,
+        type: comm.type || 'email',
+        subject: comm.subject || comm.message,
+        sentDate: comm.sentDate || comm.timestamp,
+        status: comm.status || 'delivered',
+        openDate: comm.openDate,
+        clickDate: comm.clickDate,
+        category: comm.category || 'Generale',
+      });
+    });
+
+    // Ordina per data (più recenti prima)
+    return allCommunications.sort((a, b) => new Date(b.sentDate) - new Date(a.sentDate));
+  }, [player]);
 
   const handleSendMessage = () => {
-    // Qui implementeremo l'invio del messaggio
+    // Se è WhatsApp, apri WhatsApp Web
+    if (newMessage.type === 'whatsapp') {
+      const phoneNumber = player.phone || player.phoneNumber || '';
+      if (!phoneNumber) {
+        alert('Numero di telefono non disponibile per questo giocatore.');
+        return;
+      }
+
+      // Rimuovi spazi, trattini e altri caratteri non numerici
+      const cleanPhone = phoneNumber.replace(/\D/g, '');
+      
+      // Costruisci l'URL di WhatsApp Web con il messaggio precompilato
+      const encodedMessage = encodeURIComponent(newMessage.message);
+      const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`;
+      
+      // Apri WhatsApp Web in una nuova finestra
+      window.open(whatsappUrl, '_blank');
+      
+      // Reset form
+      setNewMessage({
+        type: 'email',
+        subject: '',
+        message: '',
+        priority: 'normal',
+      });
+      return;
+    }
+
+    // Altri tipi di messaggio (email, push)
     console.log('Invio messaggio:', newMessage);
 
     // Reset form
@@ -120,10 +184,10 @@ export default function PlayerCommunications({ player, T }) {
     switch (type) {
       case 'email':
         return '📧';
-      case 'sms':
-        return '💬';
       case 'push':
         return '🔔';
+      case 'whatsapp':
+        return '💚';
       default:
         return '📨';
     }
@@ -145,8 +209,8 @@ export default function PlayerCommunications({ player, T }) {
   const stats = {
     totalSent: communicationHistory.length,
     emails: communicationHistory.filter((c) => c.type === 'email').length,
-    sms: communicationHistory.filter((c) => c.type === 'sms').length,
     push: communicationHistory.filter((c) => c.type === 'push').length,
+    whatsapp: communicationHistory.filter((c) => c.type === 'whatsapp').length,
     opened: communicationHistory.filter((c) => c.openDate || c.clickDate).length,
   };
 
@@ -155,23 +219,31 @@ export default function PlayerCommunications({ player, T }) {
       {/* Statistiche comunicazioni */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-blue-600 text-blue-400">{stats.totalSent}</div>
+          <div className="text-2xl font-bold text-blue-600 text-blue-400">
+            {stats.totalSent}
+          </div>
           <div className={`text-xs ${T.subtext}`}>Totali</div>
         </div>
 
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-purple-600 text-purple-400">{stats.emails}</div>
+          <div className="text-2xl font-bold text-purple-600 text-purple-400">
+            {stats.emails}
+          </div>
           <div className={`text-xs ${T.subtext}`}>📧 Email</div>
         </div>
 
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-green-600 text-green-400">{stats.sms}</div>
-          <div className={`text-xs ${T.subtext}`}>💬 SMS</div>
+          <div className="text-2xl font-bold text-orange-600 text-orange-400">
+            {stats.push}
+          </div>
+          <div className={`text-xs ${T.subtext}`}>🔔 Push</div>
         </div>
 
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
-          <div className="text-2xl font-bold text-orange-600 text-orange-400">{stats.push}</div>
-          <div className={`text-xs ${T.subtext}`}>🔔 Push</div>
+          <div className="text-2xl font-bold text-emerald-600 text-emerald-400">
+            {stats.whatsapp}
+          </div>
+          <div className={`text-xs ${T.subtext}`}>💚 WhatsApp</div>
         </div>
 
         <div className={`${T.cardBg} ${T.border} rounded-xl p-4 text-center`}>
@@ -195,7 +267,7 @@ export default function PlayerCommunications({ player, T }) {
               className={`${T.input} w-full`}
             >
               <option value="email">📧 Email</option>
-              <option value="sms">💬 SMS</option>
+              <option value="whatsapp">� WhatsApp</option>
               <option value="push">🔔 Push Notification</option>
             </select>
           </div>
@@ -380,7 +452,7 @@ export default function PlayerCommunications({ player, T }) {
       {showTemplateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className={`${T.modalBg} rounded-2xl w-full max-w-4xl max-h-[80vh] overflow-hidden`}>
-            <div className="p-6 border-b border-gray-700">
+            <div className="p-6 border-b border-gray-200 border-gray-700">
               <div className="flex items-center justify-between">
                 <h3 className={`text-xl font-bold ${T.text}`}>📋 Template Messaggi</h3>
                 <button
@@ -423,3 +495,4 @@ export default function PlayerCommunications({ player, T }) {
     </div>
   );
 }
+

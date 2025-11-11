@@ -25,6 +25,7 @@ import {
   DashboardLessons,
   DashboardInstructors,
 } from './AdminClubDashboard/index.js';
+import PushTestPanel from '@components/PushTestPanel.jsx';
 
 // ✅ FIX #24: Magic Constants extracted for easier maintenance
 const DASHBOARD_CONSTANTS = {
@@ -862,6 +863,9 @@ const AdminClubDashboard = () => {
 
   return (
     <div className="p-2 sm:p-4 space-y-4 sm:space-y-6 w-full">
+      {/* 🧪 TEST PANEL - Push Notifications Subscription Test */}
+      <PushTestPanel />
+
       {/* Email Verification Warning */}
       <EmailVerificationFlow />
 

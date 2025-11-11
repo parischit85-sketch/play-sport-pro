@@ -27,6 +27,92 @@ webpush.setVapidDetails(
 );
 
 // =============================================
+// CIRCUIT BREAKER IMPLEMENTATION
+// =============================================
+
+/**
+ * Simple Circuit Breaker to prevent cascading failures
+ * States: CLOSED → OPEN → HALF_OPEN → CLOSED
+ */
+class CircuitBreaker {
+  constructor(name = 'default', config = {}) {
+    this.name = name;
+    this.state = 'CLOSED'; // CLOSED | OPEN | HALF_OPEN
+    this.failureCount = 0;
+    this.failureThreshold = config.failureThreshold || 5; // Open after N failures
+    this.successThreshold = config.successThreshold || 2; // Close after N successes in HALF_OPEN
+    this.resetTimeout = config.resetTimeout || 60000; // Try to recover after 1 minute
+    this.lastFailureTime = null;
+    this.successCount = 0;
+  }
+
+  // Record success
+  success() {
+    if (this.state === 'HALF_OPEN') {
+      this.successCount++;
+      if (this.successCount >= this.successThreshold) {
+        this.state = 'CLOSED';
+        this.failureCount = 0;
+        this.successCount = 0;
+        console.log(`[CircuitBreaker] ${this.name} CLOSED`);
+      }
+    } else if (this.state === 'CLOSED') {
+      this.failureCount = Math.max(0, this.failureCount - 1);
+    }
+  }
+
+  // Record failure
+  failure() {
+    this.failureCount++;
+    this.lastFailureTime = Date.now();
+
+    if (this.state === 'CLOSED' && this.failureCount >= this.failureThreshold) {
+      this.state = 'OPEN';
+      console.warn(`[CircuitBreaker] ${this.name} OPENED after ${this.failureCount} failures`);
+    } else if (this.state === 'HALF_OPEN') {
+      this.state = 'OPEN';
+      console.warn(`[CircuitBreaker] ${this.name} re-OPENED after failure in HALF_OPEN`);
+    }
+  }
+
+  // Check if circuit is open and eligible for reset
+  canAttempt() {
+    if (this.state === 'CLOSED') {
+      return true;
+    }
+
+    if (this.state === 'OPEN') {
+      const timeSinceLastFailure = Date.now() - this.lastFailureTime;
+      if (timeSinceLastFailure > this.resetTimeout) {
+        this.state = 'HALF_OPEN';
+        this.successCount = 0;
+        console.log(`[CircuitBreaker] ${this.name} HALF_OPEN (testing recovery)`);
+        return true;
+      }
+      return false;
+    }
+
+    return this.state === 'HALF_OPEN';
+  }
+
+  // Get circuit state for logging
+  getState() {
+    return {
+      state: this.state,
+      failureCount: this.failureCount,
+      successCount: this.successCount,
+    };
+  }
+}
+
+// Global circuit breaker for web-push service
+const pushServiceCircuitBreaker = new CircuitBreaker('web-push', {
+  failureThreshold: 10,
+  successThreshold: 5,
+  resetTimeout: 60000, // 1 minute before retry
+});
+
+// =============================================
 // UTILITY FUNCTIONS
 // =============================================
 
@@ -36,18 +122,35 @@ webpush.setVapidDetails(
 async function sendWithRetry(subscription, payload, subscriptionId, maxRetries = 3) {
   let lastError;
 
+  // Check circuit breaker BEFORE attempting
+  if (!pushServiceCircuitBreaker.canAttempt()) {
+    const cbState = pushServiceCircuitBreaker.getState();
+    console.warn(`[send-push] Circuit breaker OPEN, rejecting request. State:`, cbState);
+    throw new Error(`Circuit breaker open for web-push service. State: ${cbState.state}`);
+  }
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       console.log(`[send-push] Attempt ${attempt}/${maxRetries} for subscription: ${subscriptionId}`);
       await webpush.sendNotification(subscription, payload);
+      
+      // Record success
+      pushServiceCircuitBreaker.success();
       return; // Success
     } catch (error) {
       lastError = error;
       console.warn(`[send-push] Attempt ${attempt} failed for ${subscriptionId}:`, error.message);
 
-      // Non ritentare per errori permanenti
+      // Non ritentare per errori permanenti (client-side)
       if (error.statusCode === 410 || error.statusCode === 404 || error.statusCode === 400) {
+        // These are permanent subscription errors - don't record as circuit breaker failure
         throw error;
+      }
+
+      // Record failure for circuit breaker (server-side errors only)
+      if (error.statusCode >= 500) {
+        pushServiceCircuitBreaker.failure();
+        console.warn(`[send-push] Recording server error to circuit breaker:`, pushServiceCircuitBreaker.getState());
       }
 
       // Se non è l'ultimo tentativo, aspetta prima di riprovare
@@ -60,6 +163,7 @@ async function sendWithRetry(subscription, payload, subscriptionId, maxRetries =
   }
 
   // Tutti i tentativi falliti
+  pushServiceCircuitBreaker.failure();
   throw lastError;
 }
 

@@ -5,7 +5,6 @@
 
 import {
   PushServiceError,
-  PushConfigurationError,
   PushSubscriptionError,
   PushSendError,
   logPushError,
@@ -49,7 +48,7 @@ async function generateDeviceId() {
     ctx.fillText('PlaySportPro-Fingerprint', 2, 2);
     ctx.fillRect(10, 10, 5, 5);
     components.push(canvas.toDataURL().slice(0, 50)); // Solo primi 50 caratteri per performance
-  } catch (e) {
+  } catch {
     components.push('canvas-not-supported');
   }
 
@@ -64,7 +63,7 @@ async function generateDeviceId() {
         components.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
       }
     }
-  } catch (e) {
+  } catch {
     components.push('webgl-not-supported');
   }
 
@@ -81,7 +80,7 @@ async function generateDeviceId() {
     analyser.getFloatFrequencyData(buffer);
     components.push(buffer.slice(0, 10).join(',')); // Solo primi 10 valori
     oscillator.stop();
-  } catch (e) {
+  } catch {
     components.push('audio-not-supported');
   }
 
@@ -240,30 +239,6 @@ export async function cleanupObsoleteSubscriptions(userId) {
     console.warn('[cleanupObsoleteSubscriptions] Error during cleanup:', error);
     return false;
   }
-}
-
-/**
- * Riprova un'operazione con backoff esponenziale
- */
-async function retryWithBackoff(operation, maxRetries = 3, baseDelay = 1000) {
-  let lastError;
-
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      return await operation();
-    } catch (error) {
-      lastError = error;
-      console.warn(`[retryWithBackoff] Attempt ${attempt + 1} failed:`, error.message);
-
-      if (attempt < maxRetries - 1) {
-        const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
-        console.log(`[retryWithBackoff] Retrying in ${Math.round(delay)}ms...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
-      }
-    }
-  }
-
-  throw lastError;
 }
 
 /**
@@ -573,12 +548,12 @@ export async function sendTestNotification(userId) {
 /**
  * Invia notifiche push bulk a più utenti
  */
-export async function sendBulkPushNotification(userIds, notificationData, filters = {}) {
+export async function sendBulkPushNotification(userIds, notificationData) {
   try {
     // Controlla se siamo in mock mode
     if (window.__MOCK_PUSH_MODE__) {
       console.log('🎭 [MOCK] Using mock send bulk notification');
-      return await mockSendBulkPushNotification(userIds, notificationData, filters);
+      return await mockSendBulkPushNotification(userIds, notificationData);
     }
 
     const response = await fetch(`${FUNCTIONS_BASE_URL}/send-bulk-push`, {
@@ -589,7 +564,6 @@ export async function sendBulkPushNotification(userIds, notificationData, filter
       body: JSON.stringify({
         userIds,
         notification: notificationData,
-        filters,
       }),
     });
 
@@ -938,50 +912,9 @@ async function mockSendTestNotification(userId) {
 }
 
 /**
- * Mock send rich notification
- */
-async function mockSendRichNotification(userId, notificationData) {
-  console.log('🎭 [MOCK] Sending rich notification');
-
-  const subscriptions = JSON.parse(localStorage.getItem('mock-push-subscriptions') || '[]');
-  const userSubscription = subscriptions.find((sub) => sub.userId === userId);
-
-  if (!userSubscription) {
-    console.warn('🎭 [MOCK] No subscription found for user');
-    return { success: false, error: 'No subscription found' };
-  }
-
-  // Simula delay di rete
-  await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 2000));
-
-  // Mostra notifica mock con dati rich
-  const notification = new Notification(notificationData.title || 'Notifica Rich (Mock)', {
-    body: notificationData.body || 'Questa è una notifica push rich simulata!',
-    icon: notificationData.icon || '/icon-192x192.png',
-    badge: notificationData.badge || '/badge-72x72.png',
-    image: notificationData.image,
-    tag: notificationData.tag || 'rich-notification',
-    requireInteraction: notificationData.requireInteraction || false,
-    data: {
-      ...notificationData.data,
-      mock: true,
-      timestamp: Date.now(),
-    },
-  });
-
-  // Auto-close dopo 8 secondi per notifiche rich
-  setTimeout(() => {
-    notification.close();
-  }, 8000);
-
-  console.log('✅ [MOCK] Rich notification sent');
-  return { success: true, sent: 1, mock: true };
-}
-
-/**
  * Mock send bulk push notification
  */
-async function mockSendBulkPushNotification(userIds, notificationData, filters = {}) {
+async function mockSendBulkPushNotification(userIds, notificationData) {
   console.log('🎭 [MOCK] Sending bulk notification to users:', userIds?.length || 'all');
 
   const subscriptions = JSON.parse(localStorage.getItem('mock-push-subscriptions') || '[]');

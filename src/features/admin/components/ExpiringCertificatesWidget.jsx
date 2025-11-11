@@ -12,7 +12,7 @@ import { useClub } from '@contexts/ClubContext.jsx';
 
 export default function ExpiringCertificatesWidget({ clubId, T }) {
   const navigate = useNavigate();
-  const { players: allPlayers } = useClub();
+  const { players: allPlayers, refreshPlayers } = useClub();
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -258,6 +258,10 @@ export default function ExpiringCertificatesWidget({ clubId, T }) {
           clubId={clubId}
           players={allPlayers}
           onClose={() => setShowManager(false)}
+          onEmailSent={async () => {
+            // Ricarica i players dopo l'invio email per mostrare i badge
+            await refreshPlayers?.();
+          }}
           T={T}
         />
       </Modal>

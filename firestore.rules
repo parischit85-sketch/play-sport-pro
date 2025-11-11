@@ -260,6 +260,26 @@ service cloud.firestore {
     }
     
     // ==========================================
+    // PUSH SUBSCRIPTIONS COLLECTION
+    // ==========================================
+    match /pushSubscriptions/{subscriptionId} {
+      // Read: Only Cloud Functions and authenticated user can read own
+      // For performance: this is mostly written by Netlify Functions, 
+      // but we allow Cloud Functions to query for sending notifications
+      allow read: if false; // Cloud Functions use admin SDK (bypass rules)
+      
+      // Create: Netlify Functions only (via service auth)
+      // Since Netlify Functions are external, we use admin SDK which bypasses rules
+      allow create: if false;
+      
+      // Update: Netlify Functions only
+      allow update: if false;
+      
+      // Delete: Cloud Functions for TTL cleanup
+      allow delete: if false;
+    }
+    
+    // ==========================================
     // DENY ALL OTHER COLLECTIONS
     // ==========================================
     match /{document=**} {

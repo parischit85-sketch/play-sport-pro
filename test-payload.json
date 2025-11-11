@@ -1,0 +1,7 @@
+{
+  "clubId": "Kp8XqBRkF0yiPOZt0S7t",
+  "recipients": ["parischit85@gmail.com"],
+  "subject": "🧪 Test email da callable",
+  "body": "Questa è una email di test inviata dal callable sendClubEmail.\n\nSe ricevi questa email, il sistema funziona correttamente!",
+  "isHTML": false
+}

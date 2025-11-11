@@ -17,9 +17,19 @@ export default defineConfig(({ command, mode }) => {
         'firebase/app',
         'firebase/auth',
         'firebase/firestore',
+        '@capacitor/core',
+        '@capacitor/push-notifications',
+        '@capacitor/device',
       ],
       // Avoid forcing re-optimization on every restart in dev (can cause churn/crashes)
       force: false,
+      // Prevent React duplicate instances during HMR
+      esbuildOptions: {
+        target: 'esnext',
+        supported: {
+          'top-level-await': true
+        },
+      },
     },
     resolve: {
       dedupe: [

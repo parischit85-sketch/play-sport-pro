@@ -330,7 +330,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
     },
     {
       id: 'communications',
-      label: 'Email',
+      label: 'Comunicazioni',
       icon: '📧',
       description: 'Storico comunicazioni',
       counter: player.communications?.length || 0,

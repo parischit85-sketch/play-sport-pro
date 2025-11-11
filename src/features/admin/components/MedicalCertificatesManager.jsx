@@ -6,6 +6,10 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { calculateCertificateStatus } from '@services/medicalCertificates.js';
+import { getLastEmailSent, formatLastEmailDate } from '@services/emailTracking.js';
+import SendEmailModal from './SendEmailModal.jsx';
+import SendCertificateEmailModal from './SendCertificateEmailModal.jsx';
+import EmailTemplateManager from './EmailTemplateManager.jsx';
 
 const FILTER_OPTIONS = {
   ALL: 'all',
@@ -25,12 +29,15 @@ const FILTER_LABELS = {
   [FILTER_OPTIONS.VALID]: 'Validi',
 };
 
-export default function MedicalCertificatesManager({ clubId, players, onClose, T }) {
+export default function MedicalCertificatesManager({ clubId, players, onClose, onEmailSent, T }) {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState(FILTER_OPTIONS.ALL);
   const [selectedPlayers, setSelectedPlayers] = useState(new Set());
   const [searchTerm, setSearchTerm] = useState('');
   const [sendingNotifications, setSendingNotifications] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showCertificateEmailModal, setShowCertificateEmailModal] = useState(false);
+  const [showTemplateManager, setShowTemplateManager] = useState(false);
   const DEFAULT_COUNTRY_CODE = '+39'; // Assunzione: Italia; valuta di leggere da impostazioni club in futuro
 
   // Calcola lo status del certificato per ogni giocatore
@@ -327,11 +334,18 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
     setSendingNotifications(true);
 
     try {
-      console.log('📧 [Bulk Notifications] Starting send...', {
+      console.log('═══════════════════════════════════════════════════');
+      console.log('📧 [GESTIONE CERTIFICATI] STARTING NOTIFICATION SEND');
+      console.log('═══════════════════════════════════════════════════');
+      console.log('📧 [Bulk Notifications] Config:', {
         type,
         count: selectedPlayersList.length,
         playerIds: Array.from(selectedPlayers),
+        playerNames: selectedPlayersList.map(p => p.name),
       });
+      console.log('🔍 [IMPORTANT] This WILL call Cloud Function');
+      console.log('🔍 [IMPORTANT] This WILL query Firestore pushSubscriptions');
+      console.log('🔍 [IMPORTANT] Different from Test button (local only)');
 
       // Importa Firebase Functions SDK v2
       const { getFunctions, httpsCallable } = await import('firebase/functions');
@@ -346,7 +360,7 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
 
       // IMPORTANTE: Usa la regione corretta e aumenta timeout per funzioni che potrebbero richiedere tempo
       const sendBulkNotifications = httpsCallable(functions, 'sendBulkCertificateNotifications', {
-        timeout: 300000, // 5 minuti (300 secondi) - stesso timeout della funzione server
+        timeout: 540000, // 9 minuti (540 secondi) - più del timeout server di 5min per evitare race condition
       });
 
       console.log('📞 [Debug] Calling function with params:', {
@@ -354,6 +368,7 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
         playerIds: Array.from(selectedPlayers),
         notificationType: type,
       });
+      console.log('⏳ [Debug] Waiting for Cloud Function response...');
 
       const result = await sendBulkNotifications({
         clubId,
@@ -361,7 +376,25 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
         notificationType: type,
       });
 
+      console.log('═══════════════════════════════════════════════════');
+      console.log('✅ [GESTIONE CERTIFICATI] CLOUD FUNCTION RESPONSE:');
+      console.log('═══════════════════════════════════════════════════');
       console.log('✅ [Bulk Notifications] Result:', result.data);
+      console.log('📊 [Result Details]:', {
+        success: result.data.success,
+        sent: result.data.sent,
+        failed: result.data.failed,
+        provider: result.data.provider,
+        from: result.data.from,
+        details: result.data.details,
+      });
+      
+      if (result.data.details && result.data.details.length > 0) {
+        console.log('📋 [Per-Player Results]:');
+        result.data.details.forEach((detail, i) => {
+          console.log(`  Player ${i + 1}:`, detail);
+        });
+      }
 
       const { sent, failed, details, provider, from, replyTo } = result.data;
 
@@ -395,9 +428,8 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
       } else {
         alert(
           `✅ ${type === 'email' ? 'Email inviate' : 'Notifiche push inviate'} con successo!\n\n` +
-            `Inviate: ${sent} / ${selectedPlayersList.length}`(
-              provider ? `\n📨 Provider: ${provider}` : ''
-            ) +
+            `Inviate: ${sent} / ${selectedPlayersList.length}` +
+            (provider ? `\n📨 Provider: ${provider}` : '') +
             (from ? `\n📤 Mittente: ${from}` : '') +
             (replyTo ? `\n↩️ Rispondi-a: ${replyTo}` : '')
         );
@@ -488,11 +520,27 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => handleSendNotifications('email')}
-                disabled={sendingNotifications}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                onClick={() => setShowTemplateManager(true)}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                title="Gestisci i template delle email per i certificati"
               >
-                {sendingNotifications ? '⏳ Invio...' : '📧 Invia Email'}
+                ⚙️ Gestione Template
+              </button>
+              <button
+                onClick={() => setShowCertificateEmailModal(true)}
+                disabled={sendingNotifications || selectedPlayers.size === 0}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                title="Invia email personalizzate ai giocatori selezionati in base allo stato del certificato"
+              >
+                {sendingNotifications ? '⏳ Invio...' : '📧 Invia Email Certificati'}
+              </button>
+              <button
+                onClick={() => setShowEmailModal(true)}
+                disabled={sendingNotifications || selectedPlayers.size === 0}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                title="Componi e invia email personalizzata generica"
+              >
+                {sendingNotifications ? '⏳ Invio...' : '✉️ Email Personalizzata'}
               </button>
               <button
                 onClick={() => handleSendNotifications('push')}
@@ -661,6 +709,51 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
                         )}
                       </div>
 
+                      {/* Icona Email Inviata */}
+                      {(() => {
+                        const lastEmail = getLastEmailSent(player);
+                        if (!lastEmail) return null;
+                        
+                        const emailDate = formatLastEmailDate(player);
+                        
+                        return (
+                          <div 
+                            className="shrink-0 group relative cursor-help"
+                            title={`Email inviata: ${emailDate}\nTipo: ${lastEmail.templateType}\nOggetto: ${lastEmail.subject || 'N/A'}`}
+                          >
+                            <div className="flex items-center gap-1 px-2 py-1 bg-blue-900/30 border border-blue-600/50 rounded-lg">
+                              <span className="text-lg">📧</span>
+                              <span className="text-xs text-blue-300 font-medium">
+                                {emailDate}
+                              </span>
+                            </div>
+                            {/* Tooltip dettagliato */}
+                            <div className="absolute right-0 top-full mt-2 w-64 bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                              <div className="text-xs space-y-1.5">
+                                <div className="flex items-center gap-2 text-blue-300 font-semibold border-b border-gray-700 pb-1.5">
+                                  <span>📧</span>
+                                  <span>Email Inviata</span>
+                                </div>
+                                <div className="text-gray-300">
+                                  <span className="text-gray-500">Data:</span> {emailDate}
+                                </div>
+                                <div className="text-gray-300">
+                                  <span className="text-gray-500">Tipo:</span> {lastEmail.templateType}
+                                </div>
+                                {lastEmail.subject && (
+                                  <div className="text-gray-300">
+                                    <span className="text-gray-500">Oggetto:</span>
+                                    <div className="mt-0.5 text-white text-xs italic">
+                                      "{lastEmail.subject}"
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
                       {/* Azioni */}
                       <button
                         onClick={() => openPlayerDetail(player.id)}
@@ -708,6 +801,47 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, T
           </div>
         </div>
       </div>
+
+      {/* Modal per invio email personalizzate */}
+      {showEmailModal && (
+        <SendEmailModal
+          clubId={clubId}
+          selectedPlayers={Array.from(selectedPlayers)
+            .map((id) => playersWithStatus.find((p) => p.id === id))
+            .filter(Boolean)}
+          onClose={() => setShowEmailModal(false)}
+          onSuccess={async () => {
+            await onEmailSent?.();
+            setShowEmailModal(false);
+            deselectAll();
+          }}
+        />
+      )}
+
+      {/* Modal per invio email certificati con template */}
+      {showCertificateEmailModal && (
+        <SendCertificateEmailModal
+          clubId={clubId}
+          clubName={clubId} // TODO: passa il nome effettivo del club se disponibile
+          selectedPlayers={Array.from(selectedPlayers)
+            .map((id) => playersWithStatus.find((p) => p.id === id))
+            .filter(Boolean)}
+          onClose={() => setShowCertificateEmailModal(false)}
+          onSuccess={async () => {
+            await onEmailSent?.();
+            setShowCertificateEmailModal(false);
+            deselectAll();
+          }}
+        />
+      )}
+
+      {/* Modal per gestione template email */}
+      {showTemplateManager && (
+        <EmailTemplateManager
+          clubId={clubId}
+          onClose={() => setShowTemplateManager(false)}
+        />
+      )}
     </div>
   );
 }

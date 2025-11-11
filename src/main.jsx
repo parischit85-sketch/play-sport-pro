@@ -89,8 +89,8 @@ initWebVitals();
 if (import.meta.env.DEV) {
   import('./utils/health-check.js');
   import('./utils/debugClubAdmin.js'); // Debug utilities
-  // Assicura che nessun vecchio service worker resti attivo in dev
-  import('./utils/unregister-sw-dev.js');
+  // DISABLED FOR PUSH NOTIFICATIONS TESTING - SW must stay active
+  // import('./utils/unregister-sw-dev.js');
 }
 
 // Performance monitoring in production
@@ -120,14 +120,14 @@ if (import.meta.env.PROD) {
     }
   });
 } else {
-  // Development: register SW only if explicitly enabled via ?enableSW
+  // Development: ALWAYS enable SW for push notifications testing
   window.addEventListener('load', async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const enableSW = urlParams.has('enableSW');
+    const enableSW = true; // FORCED FOR PUSH TESTING - was: urlParams.has('enableSW');
     const mockPush = urlParams.has('mockPush');
 
     if (enableSW) {
-      console.log('🔧 [DEV] Attempting Service Worker registration (explicit enable)...');
+      console.log('🔧 [DEV] Attempting Service Worker registration (FORCED ENABLE FOR PUSH)...');
 
       // Timeout per evitare hang in dev
       const timeoutPromise = new Promise((_, reject) => {

@@ -10,9 +10,11 @@ import {
   updateCertificateData,
   calculateCertificateStatus,
 } from '@services/medicalCertificates.js';
+import { getLastEmailSent, formatLastEmailDate } from '@services/emailTracking.js';
 import { CERTIFICATE_TYPES } from '../types/playerTypes.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 export default function PlayerMedicalTab({ player, onUpdate, T }) {
   const { currentUser } = useAuth();
@@ -79,6 +81,80 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
   const cert = player.medicalCertificates?.current;
   const history = player.medicalCertificates?.history || [];
   const status = calculateCertificateStatus(cert?.expiryDate);
+  
+  // Stati per invio notifica
+  const [sendingNotification, setSendingNotification] = useState(false);
+  const [notificationResult, setNotificationResult] = useState(null);
+
+  /**
+   * Invia notifica certificato in scadenza
+   */
+  const handleSendNotification = async () => {
+    if (!cert?.expiryDate) {
+      alert('⚠️ Nessun certificato attivo da notificare');
+      return;
+    }
+
+    const days = calculateDaysUntilExpiry(cert.expiryDate);
+    if (!confirm(
+      `Vuoi inviare una notifica di scadenza certificato a ${player.firstName} ${player.lastName}?\n\n` +
+      `Giorni alla scadenza: ${days}\n` +
+      `Scadenza: ${new Date(cert.expiryDate).toLocaleDateString('it-IT')}`
+    )) {
+      return;
+    }
+
+    setSendingNotification(true);
+    setNotificationResult(null);
+
+    try {
+      const functions = getFunctions();
+      const sendBulkCertificateNotifications = httpsCallable(
+        functions,
+        'sendBulkCertificateNotifications',
+        { timeout: 120000 }
+      );
+
+      const result = await sendBulkCertificateNotifications({
+        playerIds: [player.id],
+        clubId: clubId,
+        notificationType: 'auto', // auto seleziona push o email automaticamente
+        certificateData: {
+          expiryDate: cert.expiryDate,
+          daysUntilExpiry: days,
+          status: days < 0 ? 'expired' : days <= 15 ? 'urgent' : 'expiring_soon',
+        },
+      });
+
+      console.log('📨 Notification sent:', result.data);
+
+      setNotificationResult({
+        type: 'success',
+        message: `✅ Notifica inviata con successo! ${result.data.sent || 0} inviate, ${result.data.failed || 0} fallite.`,
+        details: result.data,
+      });
+
+      setTimeout(() => setNotificationResult(null), 5000);
+    } catch (error) {
+      console.error('Error sending notification:', error);
+      
+      let errorMsg = `❌ Errore: ${error.message}`;
+      if (error.code === 'deadline-exceeded') {
+        errorMsg = '⏱️ TIMEOUT: La Cloud Function sta impiegando troppo tempo. Riprova tra qualche minuto.';
+      } else if (error.code === 'failed-precondition') {
+        errorMsg = '🔍 Errore configurazione database. Contatta il supporto tecnico.';
+      }
+
+      setNotificationResult({
+        type: 'error',
+        message: errorMsg,
+      });
+
+      setTimeout(() => setNotificationResult(null), 8000);
+    } finally {
+      setSendingNotification(false);
+    }
+  };
 
   /**
    * Calcola giorni fino alla scadenza
@@ -135,6 +211,53 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
       <span className="px-3 py-1 bg-green-500 text-white rounded-full text-sm font-medium">
         ✅ Valido - Scade tra {days} giorni
       </span>
+    );
+  };
+
+  /**
+   * Badge email inviata
+   */
+  const getEmailBadge = () => {
+    const lastEmail = getLastEmailSent(player);
+    if (!lastEmail) return null;
+
+    const emailDate = formatLastEmailDate(player);
+
+    return (
+      <div 
+        className="group relative cursor-help"
+        title={`Email inviata: ${emailDate}\nTipo: ${lastEmail.templateType}\nOggetto: ${lastEmail.subject || 'N/A'}`}
+      >
+        <div className="flex items-center gap-2 px-3 py-1 bg-blue-900/30 border border-blue-600/50 rounded-full">
+          <span className="text-lg">📧</span>
+          <span className="text-sm text-blue-300 font-medium">
+            {emailDate}
+          </span>
+        </div>
+        {/* Tooltip dettagliato */}
+        <div className="absolute right-0 top-full mt-2 w-72 bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+          <div className="text-xs space-y-1.5">
+            <div className="flex items-center gap-2 text-blue-300 font-semibold border-b border-gray-700 pb-1.5">
+              <span>📧</span>
+              <span>Email Inviata</span>
+            </div>
+            <div className="text-gray-300">
+              <span className="text-gray-500">Data:</span> {emailDate}
+            </div>
+            <div className="text-gray-300">
+              <span className="text-gray-500">Tipo:</span> {lastEmail.templateType}
+            </div>
+            {lastEmail.subject && (
+              <div className="text-gray-300">
+                <span className="text-gray-500">Oggetto:</span>
+                <div className="mt-0.5 text-white text-xs italic">
+                  &quot;{lastEmail.subject}&quot;
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     );
   };
 
@@ -237,7 +360,10 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
               <span className="text-4xl">🏥</span>
               <h3 className={`text-2xl font-bold ${T.text}`}>Certificato Medico Sportivo</h3>
             </div>
-            {getStatusBadge()}
+            <div className="flex items-center gap-3 flex-wrap">
+              {getStatusBadge()}
+              {getEmailBadge()}
+            </div>
           </div>
         </div>
       </div>
@@ -247,7 +373,7 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
         <div className="bg-red-900/20 border-l-4 border-red-500 p-4 rounded">
           <div className="flex items-start gap-3">
             <span className="text-2xl">⚠️</span>
-            <div>
+            <div className="flex-1">
               <h4 className="font-semibold text-red-200">Certificato Scaduto</h4>
               <p className="text-sm text-red-300 mt-1">
                 Il certificato è scaduto da {Math.abs(status.daysUntilExpiry)} giorni. Il giocatore
@@ -263,7 +389,7 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
         <div className="bg-orange-900/20 border-l-4 border-orange-500 p-4 rounded">
           <div className="flex items-start gap-3">
             <span className="text-2xl">⏰</span>
-            <div>
+            <div className="flex-1">
               <h4 className="font-semibold text-orange-200">Scadenza Imminente</h4>
               <p className="text-sm text-orange-300 mt-1">
                 Il certificato scade tra {status.daysUntilExpiry} giorni. Rinnova al più presto!
@@ -471,12 +597,48 @@ export default function PlayerMedicalTab({ player, onUpdate, T }) {
                 ✏️ Modifica
               </button>
               <button
+                onClick={handleSendNotification}
+                disabled={sendingNotification}
+                className={`px-4 py-2 ${
+                  sendingNotification
+                    ? 'bg-gray-600 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                } text-white rounded-lg transition-colors`}
+                title="Invia notifica push/email al giocatore"
+              >
+                {sendingNotification ? '⏳ Invio...' : '📨 Invia Notifica'}
+              </button>
+              <button
                 onClick={handleDelete}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 🗑️ Archivia
               </button>
             </div>
+
+            {/* Messaggio risultato notifica */}
+            {notificationResult && (
+              <div
+                className={`mt-4 p-4 rounded-lg ${
+                  notificationResult.type === 'success'
+                    ? 'bg-green-900/30 border border-green-700'
+                    : 'bg-red-900/30 border border-red-700'
+                }`}
+              >
+                <p
+                  className={`${
+                    notificationResult.type === 'success' ? 'text-green-200' : 'text-red-200'
+                  } font-medium`}
+                >
+                  {notificationResult.message}
+                </p>
+                {notificationResult.details && (
+                  <pre className="text-xs mt-2 opacity-70">
+                    {JSON.stringify(notificationResult.details, null, 2)}
+                  </pre>
+                )}
+              </div>
+            )}
           </div>
         )
       )}

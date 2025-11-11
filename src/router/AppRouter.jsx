@@ -11,6 +11,7 @@ import { LoadingPage } from '@components/LoadingSpinner.jsx';
 import { ProtectedRoute, PublicRoute, AuthAwareRoute } from '@components/ProtectedRoute.jsx';
 import AppLayout from '@layouts/AppLayout.jsx';
 import { trackPageView } from '@lib/analytics.js';
+import { AutoPushSubscription } from '@components/AutoPushSubscription.jsx';
 
 // Lazy load pages for better performance
 const LoginPage = React.lazy(() => import('@pages/LoginPage.jsx'));
@@ -36,6 +37,8 @@ import ProfilePage from '@pages/ProfilePage.jsx';
 // ExtraPage removed - functionality integrated into AdminBookingsPage settings
 const AdminBookingsPage = React.lazy(() => import('@pages/AdminBookingsPage.jsx'));
 const DarkModeTestPage = React.lazy(() => import('@pages/DarkModeTestPage.jsx'));
+const PushNotificationsTestPage = React.lazy(() => import('@pages/PushNotificationsTestPage.jsx'));
+
 
 // Bootstrap page
 const Bootstrap = React.lazy(() => import('@pages/Bootstrap.jsx'));
@@ -95,6 +98,7 @@ export default function AppRouter() {
       <Router>
         <AnalyticsPageTracker />
         <AuthProvider>
+          <AutoPushSubscription />
           <UIProvider>
             <Suspense fallback={<LoadingPage />}>
               <Routes>
@@ -190,6 +194,7 @@ export default function AppRouter() {
                   {/* Utility routes */}
                   <Route path="bootstrap" element={<Bootstrap />} />
                   <Route path="dark-mode-test" element={<DarkModeTestPage />} />
+                  <Route path="push-test" element={<PushNotificationsTestPage />} />
                 </Route>
                 {/* Admin Routes - New System */}
                 <Route path="/admin/login" element={<AdminLogin />} />

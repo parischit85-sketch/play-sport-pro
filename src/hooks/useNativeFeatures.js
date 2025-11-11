@@ -1,10 +1,11 @@
-/* eslint-disable import/no-unresolved */
 import { useState, useEffect, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
+import { unifiedPushService } from '@/services/unifiedPushService';
 
 export const useNativeFeatures = () => {
   const [location, setLocation] = useState(null);
   const [isNative] = useState(Capacitor.isNativePlatform());
+  const [pushSubscribed, setPushSubscribed] = useState(false);
   // Lazy refs for Capacitor plugins to avoid unresolved imports in web context
   const pluginsRef = useRef({
     Geolocation: null,
@@ -31,7 +32,7 @@ export const useNativeFeatures = () => {
           LocalNotifications,
           Share,
         };
-      } catch (e) {
+      } catch {
         // Silently ignore if plugins are not available in current runtime
         pluginsRef.current = {
           Geolocation: null,
@@ -74,36 +75,48 @@ export const useNativeFeatures = () => {
     }
   };
 
-  // Push Notifications Setup
-  const setupPushNotifications = async () => {
-    if (!isNative) return;
+  // Push Notifications Setup - REFACTORED con UnifiedPushService
+  const setupPushNotifications = async (userId) => {
+    if (!userId) {
+      console.warn('[useNativeFeatures] setupPushNotifications called without userId');
+      return;
+    }
 
     try {
-      const { PushNotifications } = pluginsRef.current;
-      if (!PushNotifications) return;
-      const permission = await PushNotifications.requestPermissions();
-      if (permission.receive === 'granted') {
-        await PushNotifications.register();
+      const subscribed = await unifiedPushService.isSubscribed(userId);
+      setPushSubscribed(subscribed);
 
-        PushNotifications.addListener('registration', (token) => {
-          console.log('Push registration success, token: ' + token.value);
-          // Salva il token per invii futuri
-        });
+      if (!subscribed) {
+        console.log('[useNativeFeatures] User not subscribed, requesting permissions...');
+        const hasPermission = await unifiedPushService.requestPermissions();
 
-        PushNotifications.addListener('registrationError', (error) => {
-          console.error('Error on registration: ' + JSON.stringify(error));
-        });
-
-        PushNotifications.addListener('pushNotificationReceived', (notification) => {
-          console.log('Push received: ' + JSON.stringify(notification));
-        });
-
-        PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-          console.log('Push action performed: ' + JSON.stringify(notification));
-        });
+        if (hasPermission) {
+          const result = await unifiedPushService.subscribe(userId);
+          console.log('[useNativeFeatures] Push subscription successful:', result);
+          setPushSubscribed(true);
+          return result;
+        } else {
+          console.warn('[useNativeFeatures] Push permissions denied');
+          setPushSubscribed(false);
+          return null;
+        }
       }
     } catch (error) {
-      console.error('Push notification setup error:', error);
+      console.error('[useNativeFeatures] Push notification setup error:', error);
+      setPushSubscribed(false);
+    }
+  };
+
+  // Unsubscribe from push notifications
+  const unsubscribeFromPush = async (userId) => {
+    if (!userId) return;
+
+    try {
+      await unifiedPushService.unsubscribe(userId);
+      setPushSubscribed(false);
+      console.log('[useNativeFeatures] Unsubscribed from push notifications');
+    } catch (error) {
+      console.error('[useNativeFeatures] Unsubscribe error:', error);
     }
   };
 
@@ -162,15 +175,17 @@ export const useNativeFeatures = () => {
   };
 
   useEffect(() => {
-    if (isNative) {
-      setupPushNotifications();
-    }
+    // Non chiamare più automaticamente setupPushNotifications
+    // Deve essere chiamato dal componente con userId
   }, [isNative]);
 
   return {
     location,
     isNative,
+    pushSubscribed,
     getCurrentLocation,
+    setupPushNotifications,
+    unsubscribeFromPush,
     scheduleLocalNotification,
     shareContent,
   };

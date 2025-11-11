@@ -53,30 +53,44 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // INPUT VALIDATION - Prevent abuse and malformed data
+    const validation = validateSubscriptionData({ userId, subscription, endpoint, timestamp });
+    if (!validation.valid) {
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({
+          error: validation.error,
+          code: validation.code,
+          resolution: validation.resolution,
+        }),
+      };
+    }
+
     const now = new Date();
     const expiresAt = new Date(now.getTime() + (7 * 24 * 60 * 60 * 1000)); // 7 giorni
 
     // Genera deviceId se non fornito (backward compatibility)
     const finalDeviceId = deviceId || generateDeviceId(subscription);
 
+    // OPTIMIZATION: Use composite key (userId_deviceId) for efficient storage
+    // This eliminates the need for queries - direct document ID access
+    const compositeDocId = `${userId}_${finalDeviceId}`;
+
     console.log('[save-push-subscription] Processing subscription:', {
       userId,
       endpoint: endpoint.substring(0, 50) + '...',
       deviceId: finalDeviceId,
-      hasExistingSubscription: false
+      docId: compositeDocId,
+      timestamp: now.toISOString(),
     });
 
-    // Verifica se esiste già una sottoscrizione per questo userId + deviceId
-    const existingSubscription = await db
-      .collection('pushSubscriptions')
-      .where('userId', '==', userId)
-      .where('deviceId', '==', finalDeviceId)
-      .get();
-
-    if (!existingSubscription.empty) {
-      // Aggiorna la sottoscrizione esistente
-      const docId = existingSubscription.docs[0].id;
-      await db.collection('pushSubscriptions').doc(docId).update({
+    // SINGLE OPERATION: set() with merge=true
+    // - If document exists: update fields (merge mode)
+    // - If document doesn't exist: create new document
+    // This eliminates expensive queries and saves Firestore quota
+    await db.collection('pushSubscriptions').doc(compositeDocId).set(
+      {
         userId,
         deviceId: finalDeviceId,
         subscription,
@@ -84,82 +98,22 @@ exports.handler = async (event, context) => {
         timestamp: timestamp || now.toISOString(),
         lastUsedAt: now.toISOString(),
         expiresAt: expiresAt.toISOString(),
-        updatedAt: now.toISOString(),
         isActive: true,
-      });
+        createdAt: now.toISOString(), // Only set on create, not on update
+      },
+      { merge: true } // Preserves createdAt on updates
+    );
 
-      console.log('[save-push-subscription] Updated existing subscription:', docId);
-
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          success: true,
-          message: 'Sottoscrizione aggiornata',
-          id: docId,
-          action: 'updated',
-        }),
-      };
-    }
-
-    // Verifica se esiste già una sottoscrizione con questo endpoint (cleanup vecchi record)
-    const endpointCheck = await db
-      .collection('pushSubscriptions')
-      .where('endpoint', '==', endpoint)
-      .get();
-
-    if (!endpointCheck.empty) {
-      // Aggiorna il record esistente invece di crearne uno nuovo
-      const docId = endpointCheck.docs[0].id;
-      await db.collection('pushSubscriptions').doc(docId).update({
-        userId,
-        deviceId: finalDeviceId,
-        subscription,
-        endpoint,
-        timestamp: timestamp || now.toISOString(),
-        lastUsedAt: now.toISOString(),
-        expiresAt: expiresAt.toISOString(),
-        updatedAt: now.toISOString(),
-        isActive: true,
-      });
-
-      console.log('[save-push-subscription] Updated subscription by endpoint:', docId);
-
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          success: true,
-          message: 'Sottoscrizione aggiornata (endpoint esistente)',
-          id: docId,
-          action: 'updated',
-        }),
-      };
-    }
-
-    // Crea una nuova sottoscrizione
-    const docRef = await db.collection('pushSubscriptions').add({
-      userId,
-      deviceId: finalDeviceId,
-      subscription,
-      endpoint,
-      timestamp: timestamp || now.toISOString(),
-      createdAt: now.toISOString(),
-      lastUsedAt: now.toISOString(),
-      expiresAt: expiresAt.toISOString(),
-      isActive: true,
-    });
-
-    console.log('[save-push-subscription] Created new subscription:', docRef.id);
+    console.log('[save-push-subscription] Subscription saved/updated:', compositeDocId);
 
     return {
-      statusCode: 201,
+      statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
         message: 'Sottoscrizione salvata',
-        id: docRef.id,
-        action: 'created',
+        id: compositeDocId,
+        action: 'saved',
       }),
     };
   } catch (error) {
@@ -206,4 +160,122 @@ function generateDeviceId(subscription) {
   }
 
   return 'device-' + Math.abs(hash).toString(36);
+}
+
+/**
+ * Valida i dati della subscription per prevenire abusi e dati malformati
+ */
+function validateSubscriptionData(data) {
+  const { userId, subscription, endpoint, timestamp } = data;
+
+  // 1. Validate userId format (Firebase UID format)
+  if (typeof userId !== 'string' || userId.length < 10 || userId.length > 128) {
+    return {
+      valid: false,
+      error: 'Invalid userId format',
+      code: 'INVALID_USER_ID',
+      resolution: 'userId deve essere una stringa di 10-128 caratteri (Firebase UID)',
+    };
+  }
+
+  // 2. Validate endpoint is a valid HTTPS URL
+  try {
+    const url = new URL(endpoint);
+    if (url.protocol !== 'https:') {
+      throw new Error('Must be HTTPS');
+    }
+    // Check common push service providers
+    const validHosts = [
+      'fcm.googleapis.com',
+      'updates.push.services.mozilla.com',
+      'updates.push.services.mozilla.com',
+      'web.push.apple.com',
+    ];
+    const isKnownProvider = validHosts.some(host => url.hostname.includes(host));
+    if (!isKnownProvider && !url.hostname.includes('push')) {
+      // Allow other endpoints but log for monitoring
+      console.warn('Unknown push service provider:', url.hostname);
+    }
+  } catch (error) {
+    return {
+      valid: false,
+      error: 'Invalid endpoint URL. Must be valid HTTPS URL',
+      code: 'INVALID_ENDPOINT',
+      resolution: 'endpoint deve essere un URL HTTPS valido da un push service provider',
+    };
+  }
+
+  // 3. Validate subscription structure
+  if (!subscription || typeof subscription !== 'object') {
+    return {
+      valid: false,
+      error: 'subscription deve essere un oggetto',
+      code: 'INVALID_SUBSCRIPTION_FORMAT',
+      resolution: 'subscription deve contenere endpoint e keys.p256dh e keys.auth',
+    };
+  }
+
+  if (!subscription.endpoint || typeof subscription.endpoint !== 'string') {
+    return {
+      valid: false,
+      error: 'subscription.endpoint mancante o non valido',
+      code: 'MISSING_SUBSCRIPTION_ENDPOINT',
+      resolution: 'subscription.endpoint è obbligatorio e deve essere una stringa',
+    };
+  }
+
+  if (!subscription.keys || typeof subscription.keys !== 'object') {
+    return {
+      valid: false,
+      error: 'subscription.keys mancante o non valido',
+      code: 'MISSING_SUBSCRIPTION_KEYS',
+      resolution: 'subscription.keys è obbligatorio e deve contenere p256dh e auth',
+    };
+  }
+
+  if (!subscription.keys.p256dh || typeof subscription.keys.p256dh !== 'string') {
+    return {
+      valid: false,
+      error: 'subscription.keys.p256dh mancante o non valido',
+      code: 'MISSING_P256DH_KEY',
+      resolution: 'p256dh è una chiave di crittografia obbligatoria',
+    };
+  }
+
+  if (!subscription.keys.auth || typeof subscription.keys.auth !== 'string') {
+    return {
+      valid: false,
+      error: 'subscription.keys.auth mancante o non valido',
+      code: 'MISSING_AUTH_KEY',
+      resolution: 'auth è una chiave di autenticazione obbligatoria',
+    };
+  }
+
+  // 4. Validate subscription object size (< 4KB web push limit)
+  const subscriptionSize = JSON.stringify(subscription).length;
+  if (subscriptionSize > 4000) {
+    return {
+      valid: false,
+      error: `subscription troppo grande: ${subscriptionSize} bytes (max 4000)`,
+      code: 'SUBSCRIPTION_TOO_LARGE',
+      resolution: 'La subscription è troppo grande per il web push (max 4KB)',
+    };
+  }
+
+  // 5. Validate timestamp if provided (must be ISO string)
+  if (timestamp) {
+    try {
+      new Date(timestamp).toISOString();
+    } catch (error) {
+      return {
+        valid: false,
+        error: 'Invalid timestamp format. Must be ISO 8601 string',
+        code: 'INVALID_TIMESTAMP',
+        resolution: 'timestamp deve essere in formato ISO 8601 (es: 2025-11-11T10:00:00Z)',
+      };
+    }
+  }
+
+  // All validations passed
+  return { valid: true };
 }
