@@ -28,14 +28,16 @@ service cloud.firestore {
     }
     
     // Check if user is admin or super admin
-    // Primary check: Firebase Auth custom claims (cryptographically signed, always available)
-    // Fallback: Check admin collection as secondary verification
+    // Primary check: Firebase Auth custom claims (cryptographically signed)
+    // Secondary check: Admin email whitelist (fast, reliable fallback)
+    // Tertiary check: Admin collection (if all else fails)
     function isAdmin() {
       return isAuthenticated() && (
         request.auth.token.admin == true ||
         request.auth.token.role == 'super_admin' ||
         request.auth.token.role == 'admin' ||
-        // Fallback to admin collection (only if token claims fail)
+        request.auth.token.admin_email == 'paris.andrea@live.it' ||
+        request.auth.email == 'paris.andrea@live.it' ||
         exists(/databases/$(database)/documents/admin/$(request.auth.uid))
       );
     }
