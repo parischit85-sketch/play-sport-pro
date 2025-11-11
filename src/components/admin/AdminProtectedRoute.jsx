@@ -17,6 +17,7 @@ const AdminProtectedRoute = ({ children }) => {
   ];
 
   useEffect(() => {
+    // Use Firebase auth
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);

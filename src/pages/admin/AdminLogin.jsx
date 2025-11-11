@@ -49,29 +49,8 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      // 🔧 DEVELOPMENT BYPASS: In development mode, allow any authorized email with any password
-      if (import.meta.env.DEV && AUTHORIZED_ADMINS.includes(email)) {
-        console.log('🔐 [DEV MODE] Admin login bypass activated for:', email);
-
-        // Create mock admin user for development
-        const mockAdminUser = {
-          uid: `admin-dev-${email.replace(/[^a-z0-9]/g, '')}`,
-          email: email,
-          displayName: 'Admin Developer',
-          isAdmin: true,
-        };
-
-        // Store admin session in localStorage
-        localStorage.setItem('adminSession', JSON.stringify(mockAdminUser));
-        console.log('✅ [DEV MODE] Admin session created:', mockAdminUser);
-
-        // Reindirizza alla dashboard admin
-        const from = location.state?.from?.pathname || '/admin/dashboard';
-        navigate(from, { replace: true });
-        return;
-      }
-
-      // PRODUCTION: Use Firebase authentication
+      // Use Firebase authentication
+      console.log('� Authenticating with Firebase...');
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
