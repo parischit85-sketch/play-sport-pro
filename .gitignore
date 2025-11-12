@@ -117,5 +117,10 @@ AUDIT_*
 *REPORT.md
 temp_*
 TEMP_*
+
+# Test files with sensitive data
+test-sendgrid-direct.mjs
+test-*.mjs
+
 # Local Netlify folder
 .netlify

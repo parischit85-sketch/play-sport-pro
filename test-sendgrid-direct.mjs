@@ -1,10 +1,22 @@
 // Test diretto API SendGrid
+// ⚠️ SECURITY WARNING: Never hardcode API keys in source files!
+// Use environment variables instead: process.env.SENDGRID_API_KEY
 import sgMail from '@sendgrid/mail';
+import dotenv from 'dotenv';
 
-const SENDGRID_API_KEY = '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';
+// Load environment variables
+dotenv.config();
+
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+
+if (!SENDGRID_API_KEY) {
+  console.error('❌ ERROR: SENDGRID_API_KEY not found in environment variables');
+  console.error('Please set SENDGRID_API_KEY in your .env file or environment');
+  process.exit(1);
+}
 
 console.log('🔑 Testing SendGrid API Key...');
-console.log('API Key:', SENDGRID_API_KEY.substring(0, 20) + '...');
+console.log('API Key:', SENDGRID_API_KEY.substring(0, 10) + '...[REDACTED]');
 
 sgMail.setApiKey(SENDGRID_API_KEY);
 
