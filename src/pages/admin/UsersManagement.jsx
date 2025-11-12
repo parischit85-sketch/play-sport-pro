@@ -1,24 +1,14 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../services/firebase.js';
-import {
-  collection,
-  getDocs,
-  doc,
-  updateDoc,
-  setDoc,
-  addDoc,
-  query,
-  orderBy,
-} from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, setDoc, query } from 'firebase/firestore';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { invalidateUserProfileCache } from '../../services/auth.jsx';
 import {
   Users,
   ArrowLeft,
   Search,
-  Shield,
-  ShieldCheck,
   Mail,
   Calendar,
   UserCog,
@@ -26,8 +16,6 @@ import {
   Building2,
   Edit,
   UserX,
-  Phone,
-  FileText,
 } from 'lucide-react';
 
 const UsersManagement = () => {
@@ -67,7 +55,6 @@ const UsersManagement = () => {
       setClubs(clubsData);
 
       // Carica tutti gli utenti da tutti i circoli
-      const usersData = [];
       const userMap = new Map(); // Per evitare duplicati
 
       for (const club of clubsData) {
@@ -162,7 +149,11 @@ const UsersManagement = () => {
             }
           }
         } catch (error) {
-          console.warn(`Errore nel caricare i profili per ${club.id}:`, error);
+          // Errore non critico - i dati verranno caricati dalla collezione 'users' globale
+          console.debug(
+            `⚠️ [UsersManagement] Impossibile caricare profili per ${club.id} (non critico):`,
+            error.code
+          );
         }
       }
 
@@ -230,65 +221,112 @@ const UsersManagement = () => {
   };
 
   const handlePromoteToAdmin = async (user, clubId) => {
+    console.log('🚀 [PROMOTE DEBUG] Inizio promozione utente:', {
+      userId: user.id,
+      userEmail: user.email,
+      userName: user.displayName,
+      clubId: clubId,
+      timestamp: new Date().toISOString(),
+    });
+
     try {
       const club = clubs.find((c) => c.id === clubId);
       if (!club) {
+        console.error('❌ [PROMOTE DEBUG] Circolo non trovato:', clubId);
         alert('Circolo non trovato');
         return;
       }
 
+      console.log('✅ [PROMOTE DEBUG] Circolo trovato:', {
+        clubId: club.id,
+        clubName: club.name,
+        currentManagers: club.managers || [],
+      });
+
       // 1. Aggiorna il profilo dell'utente nel circolo con ruolo admin
+      console.log(
+        '📝 [PROMOTE DEBUG] STEP 1: Aggiornamento profilo utente in clubs/{clubId}/profiles/{userId}'
+      );
       const userProfileRef = doc(db, 'clubs', clubId, 'profiles', user.id);
-      await updateDoc(userProfileRef, {
+      const profileData = {
         role: 'admin',
         isClubAdmin: true,
         promotedToAdminAt: new Date().toISOString(),
         _updatedAt: new Date().toISOString(),
-      });
+      };
+      console.log('📝 [PROMOTE DEBUG] Dati profilo da salvare:', profileData);
+
+      await updateDoc(userProfileRef, profileData);
+      console.log('✅ [PROMOTE DEBUG] STEP 1 COMPLETATO: Profilo aggiornato con successo');
 
       // 2. Aggiorna/crea l'affiliazione dell'utente nel circolo (collezione globale)
+      console.log(
+        '📝 [PROMOTE DEBUG] STEP 2: Aggiornamento affiliazione in affiliations/{affiliationId}'
+      );
       const affiliationId = `${user.id}_${clubId}`;
       const affiliationRef = doc(db, 'affiliations', affiliationId);
+      const affiliationData = {
+        userId: user.id,
+        clubId: clubId,
+        role: 'admin',
+        isClubAdmin: true,
+        status: 'approved',
+        promotedToAdminAt: new Date().toISOString(),
+        _updatedAt: new Date().toISOString(),
+      };
+      console.log('📝 [PROMOTE DEBUG] Dati affiliazione da salvare:', {
+        affiliationId,
+        ...affiliationData,
+      });
 
       // Usa setDoc con merge per gestire sia creazione che aggiornamento
-      await setDoc(
-        affiliationRef,
-        {
-          userId: user.id,
-          clubId: clubId,
-          role: 'admin',
-          isClubAdmin: true,
-          status: 'approved',
-          promotedToAdminAt: new Date().toISOString(),
-          _updatedAt: new Date().toISOString(),
-        },
-        { merge: true }
-      );
+      await setDoc(affiliationRef, affiliationData, { merge: true });
+      console.log('✅ [PROMOTE DEBUG] STEP 2 COMPLETATO: Affiliazione salvata con successo');
 
       // 3. Aggiorna il documento del circolo con la lista dei manager
+      console.log('📝 [PROMOTE DEBUG] STEP 3: Aggiornamento managers in clubs/{clubId}');
       const clubRef = doc(db, 'clubs', clubId);
       const currentManagers = club.managers || [];
+      console.log('📝 [PROMOTE DEBUG] Managers attuali:', currentManagers);
+
       if (!currentManagers.includes(user.id)) {
+        const newManagers = [...currentManagers, user.id];
+        console.log('📝 [PROMOTE DEBUG] Nuova lista managers:', newManagers);
+
         await updateDoc(clubRef, {
-          managers: [...currentManagers, user.id],
+          managers: newManagers,
           _updatedAt: new Date().toISOString(),
         });
+        console.log('✅ [PROMOTE DEBUG] STEP 3 COMPLETATO: Lista managers aggiornata');
+      } else {
+        console.log('⚠️ [PROMOTE DEBUG] STEP 3 SALTATO: Utente già presente in managers');
       }
 
+      console.log('🎉 [PROMOTE DEBUG] PROMOZIONE COMPLETATA CON SUCCESSO!');
       alert(`✅ ${user.displayName} è stato promosso ad amministratore del circolo "${club.name}"`);
 
       // Ricarica i dati per mostrare i cambiamenti
+      console.log('🔄 [PROMOTE DEBUG] Ricaricamento dati in corso...');
       await loadData();
+      console.log('✅ [PROMOTE DEBUG] Dati ricaricati');
 
       // Se l'utente promosso è l'utente corrente, ricarica i suoi dati di autorizzazione
       if (currentUser && currentUser.uid === user.id) {
+        console.log('🔄 [PROMOTE DEBUG] Ricaricamento dati utente corrente...');
         await reloadUserData();
+        console.log('✅ [PROMOTE DEBUG] Dati utente ricaricati');
       }
 
       setShowPromoteModal(false);
       setSelectedUser(null);
+      console.log('✅ [PROMOTE DEBUG] Modal chiuso e stato pulito');
     } catch (error) {
-      console.error('Errore nella promozione:', error);
+      console.error('❌ [PROMOTE DEBUG] ERRORE DURANTE LA PROMOZIONE:', {
+        message: error.message,
+        code: error.code,
+        stack: error.stack,
+        fullError: error,
+      });
       alert(`❌ Errore nella promozione dell'utente: ${error.message}`);
     }
   };
@@ -871,7 +909,8 @@ const UsersManagement = () => {
                   </label>
                 </div>
                 <p className="text-xs text-gray-500 ml-6">
-                  ⚠️ L'utente dovrà disconnettersi e riconnettersi per applicare questa modifica
+                  ⚠️ L&apos;utente dovrà disconnettersi e riconnettersi per applicare questa
+                  modifica
                 </p>
               </div>
 
