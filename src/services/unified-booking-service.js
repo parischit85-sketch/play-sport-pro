@@ -52,8 +52,6 @@ const BOOKING_TYPES = {
 let useCloudStorage = false;
 let bookingCache = new Map(); // chiave: `${scope}|${clubId||'all'}`
 let subscriptions = new Map();
-// Track the current authenticated user for optional cloud ops
-let currentUser = null;
 // Initialization & migration guards
 const MIGRATION_FLAG_KEY = 'unified-bookings-migration-done-v1';
 let initialized = false;
@@ -92,7 +90,6 @@ export function initialize(options = {}) {
 
   initialized = true; // Mark as initialized to prevent multiple calls
   useCloudStorage = options.cloudEnabled || false;
-  currentUser = options.user || null;
 
   // ClubId non persistito qui: passato per ogni operazione (scelta multi-club)
 
@@ -162,7 +159,7 @@ function setupRealtimeSubscriptions(clubId = null) {
     });
 
     subscriptions.set(subKey, unsubscribe);
-  } catch (_error) {
+  } catch {
     // Ignore subscription errors
   }
 }
@@ -307,7 +304,7 @@ export async function createBooking(bookingData, user, options = {}) {
   if (useCloudStorage && user) {
     try {
       result = await createCloudBooking(booking);
-    } catch (_error) {
+    } catch {
       // Fallback to local storage on cloud error
       result = createLocalBooking(booking);
     }
@@ -337,7 +334,7 @@ export async function updateBooking(bookingId, updates, user) {
   if (useCloudStorage && user) {
     try {
       result = await updateCloudBooking(bookingId, updateData);
-    } catch (_error) {
+    } catch {
       // Fallback to local storage on cloud error
       result = updateLocalBooking(bookingId, updateData);
     }
@@ -381,7 +378,7 @@ export async function deleteBooking(bookingId, user) {
       await deleteCloudBooking(bookingId);
 
       scheduleSync(400);
-    } catch (_error) {
+    } catch {
       // Fallback to local storage on cloud error
       deleteLocalBooking(bookingId);
     }
@@ -437,7 +434,7 @@ export async function getPublicBookings(options = {}) {
   if (useCloudStorage) {
     try {
       bookings = await loadCloudBookings();
-    } catch (_error) {
+    } catch {
       // Fallback to local storage on cloud error
       bookings = loadLocalBookings();
     }
@@ -504,7 +501,7 @@ export async function getUserBookings(user, options = {}) {
     snapshot.docs.forEach((doc) => {
       const data = doc.data();
       const legacyId = data.id && data.id !== doc.id ? data.id : data.legacyId;
-      const { id: _id, ...bookingData } = data;
+      const { id, ...bookingData } = data; // eslint-disable-line no-unused-vars
 
       bookingMap.set(doc.id, {
         ...bookingData,
@@ -658,72 +655,71 @@ async function deleteCloudBooking(bookingId) {
     if (!snap.exists()) {
       return;
     }
-  } catch (e) {}
+  } catch {
+    // Ignore errors
+  }
   await deleteDoc(docRef);
 }
 
 async function loadCloudBookings() {
-  // Raw loader including cancelled (admin use)
-  async function loadCloudBookingsRaw() {
-    const q = query(
-      collection(db, COLLECTIONS.BOOKINGS),
-      orderBy('date', 'asc'),
-      orderBy('time', 'asc')
-    );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => {
-      const raw = d.data() || {};
-      const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId;
-      const { id: _discardId, ...rest } = raw; // eslint-disable-line no-unused-vars
+  console.log('🔍 [loadCloudBookings] Starting Firestore query for bookings...');
+  const q = query(collection(db, COLLECTIONS.BOOKINGS));
 
-      return {
+  try {
+    const snapshot = await getDocs(q);
+    console.log('✅ [loadCloudBookings] Firestore query successful:', {
+      totalDocs: snapshot.docs.length,
+      collectionPath: COLLECTIONS.BOOKINGS,
+    });
+
+    const allBookings = snapshot.docs.map((d) => {
+      const raw = d.data() || {};
+      const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId; // support both old & new storage
+      const { id, ...rest } = raw; // eslint-disable-line no-unused-vars
+
+      const processedBooking = {
         ...rest,
         id: d.id,
         legacyId,
         createdAt: raw.createdAt?.toDate?.()?.toISOString() || raw.createdAt,
         updatedAt: raw.updatedAt?.toDate?.()?.toISOString() || raw.updatedAt,
       };
+
+      return processedBooking;
     });
+
+    // Sort bookings by date and time in memory
+    allBookings.sort((a, b) => {
+      const dateA = a.date || '';
+      const dateB = b.date || '';
+      const dateCompare = dateA.localeCompare(dateB);
+      if (dateCompare !== 0) return dateCompare;
+      const timeA = a.time || '';
+      const timeB = b.time || '';
+      return timeA.localeCompare(timeB);
+    });
+
+    const activeBookings = allBookings.filter((booking) => {
+      const status = booking.status || BOOKING_STATUS.CONFIRMED;
+      const isActive = status !== BOOKING_STATUS.CANCELLED;
+      return isActive;
+    });
+
+    console.log('✅ [loadCloudBookings] Bookings processed:', {
+      total: allBookings.length,
+      active: activeBookings.length,
+    });
+
+    return activeBookings;
+  } catch (error) {
+    console.error('❌ [loadCloudBookings] Firestore query failed:', {
+      errorCode: error?.code,
+      errorMessage: error?.message,
+      collectionPath: COLLECTIONS.BOOKINGS,
+      fullError: error,
+    });
+    throw error;
   }
-  const q = query(collection(db, COLLECTIONS.BOOKINGS));
-
-  const snapshot = await getDocs(q);
-  const allBookings = snapshot.docs.map((d) => {
-    const raw = d.data() || {};
-    const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId; // support both old & new storage
-    const { id: _discardId, ...rest } = raw; // remove conflicting embedded id field
-
-    const processedBooking = {
-      ...rest,
-      id: d.id,
-      legacyId,
-      createdAt: raw.createdAt?.toDate?.()?.toISOString() || raw.createdAt,
-      updatedAt: raw.updatedAt?.toDate?.()?.toISOString() || raw.updatedAt,
-    };
-
-    // Debug log completely removed
-
-    return processedBooking;
-  });
-
-  // Sort bookings by date and time in memory
-  allBookings.sort((a, b) => {
-    const dateA = a.date || '';
-    const dateB = b.date || '';
-    const dateCompare = dateA.localeCompare(dateB);
-    if (dateCompare !== 0) return dateCompare;
-    const timeA = a.time || '';
-    const timeB = b.time || '';
-    return timeA.localeCompare(timeB);
-  });
-
-  const activeBookings = allBookings.filter((booking) => {
-    const status = booking.status || BOOKING_STATUS.CONFIRMED;
-    const isActive = status !== BOOKING_STATUS.CANCELLED;
-    return isActive;
-  });
-
-  return activeBookings;
 }
 
 // =============================================
@@ -773,10 +769,7 @@ function loadLocalBookings() {
     // Filtra prenotazioni cancellate (considera anche booking senza status come confirmed)
     const activeBookings = allBookings.filter((booking) => {
       const status = booking.status || BOOKING_STATUS.CONFIRMED; // Default a confirmed se status mancante
-      const isActive = status !== BOOKING_STATUS.CANCELLED;
-      if (!isActive) {
-      }
-      return isActive;
+      return status !== BOOKING_STATUS.CANCELLED;
     });
 
     return activeBookings;
@@ -795,7 +788,7 @@ async function syncLocalWithCloud() {
       (b) => (b.status || BOOKING_STATUS.CONFIRMED) !== BOOKING_STATUS.CANCELLED
     );
     localStorage.setItem(STORAGE_KEY, JSON.stringify(activeCloudBookings));
-  } catch (_error) {
+  } catch {
     // Ignore localStorage errors
   }
 }
@@ -848,7 +841,7 @@ export async function migrateOldData() {
       const parsed = JSON.parse(oldBookings);
       migrations.push(...parsed.map((b) => ({ ...b, type: BOOKING_TYPES.COURT })));
     }
-  } catch (_error) {
+  } catch {
     // Ignore migration errors
   }
 
@@ -866,7 +859,7 @@ export async function migrateOldData() {
         }))
       );
     }
-  } catch (_error) {
+  } catch {
     // Ignore migration errors
   }
 
@@ -1027,7 +1020,7 @@ function normalizeTime(t) {
 /**
  * Check if a time slot would be trapped between bookings (DISABLED)
  */
-export function isTimeSlotTrapped(courtId, date, startTime, duration, existingBookings) {
+export function isTimeSlotTrapped() {
   // Always return false - trapped slot logic disabled along with hole prevention
   return false;
 }
@@ -1267,7 +1260,7 @@ export async function searchBookingsForPlayer({ userId, email, name }) {
         result.value.docs.forEach((doc) => {
           const data = doc.data() || {};
           const legacyId = data.id && data.id !== doc.id ? data.id : data.legacyId;
-          const { id, ...bookingData } = data;
+          const { id, ...bookingData } = data; // eslint-disable-line no-unused-vars
 
           bookingMap.set(doc.id, {
             ...bookingData,

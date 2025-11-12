@@ -5,7 +5,7 @@
 // DEBUG LOGS CLEANED - Updated
 // =============================================
 import { db } from './firebase.js';
-import { collection, getDocs, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import UnifiedBookingService from './unified-booking-service.js';
 import { getClubSettings } from './club-settings.js';
 
@@ -429,15 +429,65 @@ export async function loadAdminDashboardData(clubId) {
     if (!clubId) {
       throw new Error('clubId mancante in loadAdminDashboardData');
     }
-    // Loading admin dashboard data for club
+    console.log('🔍 [loadAdminDashboardData] Starting data load for club:', clubId);
 
-    // Carica tutti i dati in parallelo
+    // Carica tutti i dati in parallelo con try-catch individuali
+    const bookingsPromise = loadClubBookings(clubId)
+      .then((r) => {
+        console.log('✅ [loadAdminDashboardData] Bookings loaded:', r.length);
+        return r;
+      })
+      .catch((e) => {
+        console.error('❌ [loadAdminDashboardData] Bookings FAILED:', e.code, e.message);
+        throw e;
+      });
+
+    const lessonsPromise = loadClubLessons(clubId)
+      .then((r) => {
+        console.log('✅ [loadAdminDashboardData] Lessons loaded:', r.length);
+        return r;
+      })
+      .catch((e) => {
+        console.error('❌ [loadAdminDashboardData] Lessons FAILED:', e.code, e.message);
+        throw e;
+      });
+
+    const instructorsPromise = loadClubInstructors(clubId)
+      .then((r) => {
+        console.log('✅ [loadAdminDashboardData] Instructors loaded:', r.length);
+        return r;
+      })
+      .catch((e) => {
+        console.error('❌ [loadAdminDashboardData] Instructors FAILED:', e.code, e.message);
+        throw e;
+      });
+
+    const courtsPromise = loadClubCourts(clubId)
+      .then((r) => {
+        console.log('✅ [loadAdminDashboardData] Courts loaded:', r.length);
+        return r;
+      })
+      .catch((e) => {
+        console.error('❌ [loadAdminDashboardData] Courts FAILED:', e.code, e.message);
+        throw e;
+      });
+
+    const clubSettingsPromise = getClubSettings(clubId)
+      .then((r) => {
+        console.log('✅ [loadAdminDashboardData] Club settings loaded');
+        return r;
+      })
+      .catch((e) => {
+        console.error('❌ [loadAdminDashboardData] Club settings FAILED:', e.code, e.message);
+        throw e;
+      });
+
     const [bookings, lessons, instructors, courts, clubSettings] = await Promise.all([
-      loadClubBookings(clubId),
-      loadClubLessons(clubId),
-      loadClubInstructors(clubId),
-      loadClubCourts(clubId),
-      getClubSettings(clubId),
+      bookingsPromise,
+      lessonsPromise,
+      instructorsPromise,
+      courtsPromise,
+      clubSettingsPromise,
     ]);
 
     const today = new Date().toISOString().split('T')[0];
@@ -452,20 +502,20 @@ export async function loadAdminDashboardData(clubId) {
       // Sample bookings debug removed
 
       // Debug: mostra tutte le date uniche nelle prenotazioni
-      const uniqueDates = [
-        ...new Set(
-          bookings.map((b) => {
-            if (typeof b.date === 'string') {
-              return b.date.split('T')[0];
-            } else if (b.date && b.date.toDate) {
-              return b.date.toDate().toISOString().split('T')[0];
-            } else if (b.date instanceof Date) {
-              return b.date.toISOString().split('T')[0];
-            }
-            return 'invalid-date';
-          })
-        ),
-      ].sort();
+      // const uniqueDates = [
+      //   ...new Set(
+      //     bookings.map((b) => {
+      //       if (typeof b.date === 'string') {
+      //         return b.date.split('T')[0];
+      //       } else if (b.date && b.date.toDate) {
+      //         return b.date.toDate().toISOString().split('T')[0];
+      //       } else if (b.date instanceof Date) {
+      //         return b.date.toISOString().split('T')[0];
+      //       }
+      //       return 'invalid-date';
+      //     })
+      //   ),
+      // ].sort();
 
       // All booking dates found - debug removed
       // Looking for today - debug removed

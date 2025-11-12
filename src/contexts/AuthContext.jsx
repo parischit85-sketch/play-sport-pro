@@ -313,6 +313,18 @@ export function AuthProvider({ children }) {
               skipEmailVerification: profile?.skipEmailVerification,
             });
             console.log('🔍 [AuthContext] Full profile object:', profile);
+
+            // 🔍 DEBUG: Verifica ruolo e permessi
+            console.log('🔍🔍🔍 [DEBUG] User Role and Permissions:', {
+              role: profile?.role,
+              clubId: profile?.clubId,
+              isAdmin: profile?.role === 'admin',
+              isClubAdmin: profile?.role === 'club_admin',
+              isInstructor: profile?.role === 'instructor',
+              hasRole: !!profile?.role,
+              profileKeys: Object.keys(profile || {}),
+            });
+
             setUserProfile(profile);
 
             // Merge profile data with Firebase user (include skipEmailVerification)
@@ -457,7 +469,7 @@ export function AuthProvider({ children }) {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [userRole]);
 
   const isAuthenticated = !!user;
   const isProfileComplete = userProfile?.firstName && userProfile?.phone;

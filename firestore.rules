@@ -28,26 +28,27 @@ service cloud.firestore {
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
     
-    // Check if user is club admin for specific club
-    function isClubAdminForClub(clubId) {
-      return isAuthenticated() &&
-             (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'club_admin' ||
-              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') &&
-             (get(/databases/$(database)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid ||
-              (exists(/databases/$(database)/documents/clubs/$(clubId)/users/$(request.auth.uid)) &&
-               get(/databases/$(database)/documents/clubs/$(clubId)/users/$(request.auth.uid)).data.isClubAdmin == true));
+    // Check if user is club admin
+    function isClubAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'club_admin';
     }
-
+    
+    // Check if user is instructor
+    function isInstructor() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'instructor';
+    }
+    
+    // Check if user owns the resource
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
     // Check if user is club owner
     function isClubOwner(clubId) {
-      return isAuthenticated() &&
+      return isAuthenticated() && 
              get(/databases/$(database)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid;
-    }
-
-    // Check if user is admin for specific club (legacy club_admin role)
-    function isClubAdmin() {
-      return isAuthenticated() &&
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'club_admin';
     }
     
     // Validate email format
@@ -91,8 +92,11 @@ service cloud.firestore {
     // CLUBS COLLECTION
     // ==========================================
     match /clubs/{clubId} {
-      // Read: Public (all clubs visible)
+      // Read: Public (all clubs visible) - includes both get (document) and list (collection)
       allow read: if true;
+      
+      // Explicit get for club documents and subcollections (settings, etc.)
+      allow get: if true;
       
       // Create: Only admins can create clubs
       allow create: if isAdmin() && 
@@ -112,16 +116,15 @@ service cloud.firestore {
     match /courts/{courtId} {
       // Read: Public (all courts visible)
       allow read: if true;
-
-      // Create: Club admin/owner or admin (must specify clubId in document)
-      allow create: if request.resource.data.clubId is string &&
-                       (isClubAdminForClub(request.resource.data.clubId) || isAdmin()) &&
+      
+      // Create: Club admin/owner or admin
+      allow create: if (isClubAdmin() || isAdmin()) &&
                        isWithinSizeLimit(20000);
-
-      // Update: Club admin/owner or admin (validate club ownership)
-      allow update: if (isClubAdminForClub(resource.data.clubId) || isAdmin()) &&
+      
+      // Update: Club admin/owner or admin
+      allow update: if (isClubAdmin() || isAdmin()) &&
                        isWithinSizeLimit(20000);
-
+      
       // Delete: Only admins
       allow delete: if isAdmin();
     }
@@ -131,24 +134,24 @@ service cloud.firestore {
     // ==========================================
     match /bookings/{bookingId} {
       // Read: User can read own bookings, club admins can read their club bookings, admins can read all
-      allow read: if isOwner(resource.data.userId) ||
-                     isClubAdminForClub(resource.data.clubId) ||
+      allow read: if isOwner(resource.data.userId) || 
+                     isClubAdmin() || 
                      isAdmin();
-
+      
       // Create: Authenticated users only, must be own booking, valid timestamp
-      allow create: if isAuthenticated() &&
+      allow create: if isAuthenticated() && 
                        request.resource.data.userId == request.auth.uid &&
                        isValidFutureTimestamp(request.resource.data.startTime) &&
                        request.resource.data.status == 'pending' &&
                        isWithinSizeLimit(10000);
-
-      // Update: Owner can update own booking (limited fields), club admin can update status for their club
-      allow update: if (isOwner(resource.data.userId) &&
+      
+      // Update: Owner can update own booking (limited fields), club admin can update status
+      allow update: if (isOwner(resource.data.userId) && 
                          request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'notes']) == false) ||
-                       (isClubAdminForClub(resource.data.clubId) &&
+                       (isClubAdmin() && 
                          request.resource.data.diff(resource.data).affectedKeys().hasAny(['status']) == true) ||
                        isAdmin();
-
+      
       // Delete: Owner or admin
       allow delete: if isOwner(resource.data.userId) || isAdmin();
     }
@@ -195,16 +198,15 @@ service cloud.firestore {
     match /tournaments/{tournamentId} {
       // Read: Public
       allow read: if true;
-
-      // Create: Club admin or admin (must specify clubId)
-      allow create: if request.resource.data.clubId is string &&
-                       (isClubAdminForClub(request.resource.data.clubId) || isAdmin()) &&
+      
+      // Create: Club admin or admin
+      allow create: if (isClubAdmin() || isAdmin()) &&
                        isWithinSizeLimit(50000);
-
-      // Update: Club admin or admin (validate club ownership)
-      allow update: if (isClubAdminForClub(resource.data.clubId) || isAdmin()) &&
+      
+      // Update: Club admin or admin
+      allow update: if (isClubAdmin() || isAdmin()) &&
                        isWithinSizeLimit(50000);
-
+      
       // Delete: Admins only
       allow delete: if isAdmin();
     }
@@ -260,23 +262,130 @@ service cloud.firestore {
     }
     
     // ==========================================
-    // PUSH SUBSCRIPTIONS COLLECTION
+    // PUSH NOTIFICATIONS SYSTEM
     // ==========================================
     match /pushSubscriptions/{subscriptionId} {
-      // Read: Only Cloud Functions and authenticated user can read own
-      // For performance: this is mostly written by Netlify Functions, 
-      // but we allow Cloud Functions to query for sending notifications
-      allow read: if false; // Cloud Functions use admin SDK (bypass rules)
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create, update: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isOwner(resource.data.userId);
+    }
+    
+    match /scheduledNotifications/{notificationId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    
+    match /notificationEvents/{eventId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    
+    match /notificationDeliveries/{deliveryId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    
+    // ==========================================
+    // INSTRUCTORS, PROFILES, AFFILIATIONS
+    // ==========================================
+    match /instructors/{instructorId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdmin() || isAdmin();
+    }
+    
+    match /profiles/{profileId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdmin() || isAdmin();
+    }
+    
+    match /affiliations/{affiliationId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdmin() || isAdmin();
+    }
+    
+    // ==========================================
+    // CLUBS SUBCOLLECTIONS
+    // ==========================================
+    match /clubs/{clubId}/players/{playerId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+    }
+    
+    match /clubs/{clubId}/matches/{matchId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+    }
+    
+    match /clubs/{clubId}/tournaments/{tournamentId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
       
-      // Create: Netlify Functions only (via service auth)
-      // Since Netlify Functions are external, we use admin SDK which bypasses rules
-      allow create: if false;
+      // Tournament subcollections: standings, matches, teams
+      match /standings/{standingId} {
+        allow read: if isAuthenticated();
+        allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+      }
       
-      // Update: Netlify Functions only
-      allow update: if false;
+      match /matches/{matchId} {
+        allow read: if isAuthenticated();
+        allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+      }
       
-      // Delete: Cloud Functions for TTL cleanup
-      allow delete: if false;
+      match /teams/{teamId} {
+        allow read: if isAuthenticated();
+        allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+      }
+    }
+    
+    match /clubs/{clubId}/profiles/{profileId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+    }
+    
+    match /clubs/{clubId}/users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+    }
+    
+    match /clubs/{clubId}/courts/{courtId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+    }
+    
+    match /clubs/{clubId}/statsCache/{statId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+    }
+    
+    match /clubs/{clubId}/instructors/{instructorId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+    }
+    
+    match /clubs/{clubId}/timeSlots/{slotId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+    }
+    
+    match /clubs/{clubId}/settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+    }
+    
+    match /clubs/{clubId}/applied/{appliedId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+    }
+    
+    match /clubs/{clubId}/leaderboard/{playerId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+      
+      // Leaderboard entries subcollection
+      match /entries/{entryId} {
+        allow read: if isAuthenticated();
+        allow write: if isClubOwner(clubId) || isClubAdmin() || isAdmin();
+      }
     }
     
     // ==========================================

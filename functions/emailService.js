@@ -3,6 +3,10 @@
 // Servizio centralizzato per invio email con retry e queue
 // =============================================
 
+// Load environment variables from .env file
+import dotenv from 'dotenv';
+dotenv.config();
+
 import process from 'node:process';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -101,7 +105,7 @@ class EmailService {
     // Retry loop
     while (attempt < RETRY_CONFIG.maxAttempts) {
       attempt++;
-      
+
       try {
         // Prova SendGrid (check a runtime)
         if (process.env.SENDGRID_API_KEY) {
@@ -169,8 +173,10 @@ class EmailService {
       clubId,
       replyTo,
     });
-    
-    throw new Error(`Failed to send email after ${RETRY_CONFIG.maxAttempts} attempts: ${lastError.message}`);
+
+    throw new Error(
+      `Failed to send email after ${RETRY_CONFIG.maxAttempts} attempts: ${lastError.message}`
+    );
   }
 
   /**
@@ -180,9 +186,12 @@ class EmailService {
     // Imposta API key a runtime (quando i secrets sono disponibili)
     console.log('🔍 [_sendViaSendGrid] Starting SendGrid send...');
     console.log('🔍 [_sendViaSendGrid] SENDGRID_API_KEY present:', !!process.env.SENDGRID_API_KEY);
-    console.log('🔍 [_sendViaSendGrid] SENDGRID_API_KEY length:', process.env.SENDGRID_API_KEY?.length || 0);
+    console.log(
+      '🔍 [_sendViaSendGrid] SENDGRID_API_KEY length:',
+      process.env.SENDGRID_API_KEY?.length || 0
+    );
     console.log('🔍 [_sendViaSendGrid] FROM_EMAIL env:', process.env.FROM_EMAIL);
-    
+
     if (process.env.SENDGRID_API_KEY) {
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       console.log('✅ [_sendViaSendGrid] API key set successfully');
@@ -195,7 +204,7 @@ class EmailService {
     console.log('📧 [_sendViaSendGrid] From email:', fromEmail);
     console.log('📧 [_sendViaSendGrid] To email:', to);
     console.log('📧 [_sendViaSendGrid] Subject:', subject);
-    
+
     const msg = {
       to,
       from: from || {
@@ -206,7 +215,7 @@ class EmailService {
       text,
       html,
     };
-    
+
     console.log('📤 [_sendViaSendGrid] Message object:', JSON.stringify(msg, null, 2));
 
     if (replyTo) {
@@ -238,7 +247,10 @@ class EmailService {
       console.error('❌ [_sendViaSendGrid] Error code:', error.code);
       if (error.response) {
         console.error('❌ [_sendViaSendGrid] Response status:', error.response.statusCode);
-        console.error('❌ [_sendViaSendGrid] Response body:', JSON.stringify(error.response.body, null, 2));
+        console.error(
+          '❌ [_sendViaSendGrid] Response body:',
+          JSON.stringify(error.response.body, null, 2)
+        );
       }
       throw error;
     }
@@ -258,9 +270,7 @@ class EmailService {
 
     if (replyTo) {
       mailOptions.replyTo =
-        typeof replyTo === 'string'
-          ? replyTo
-          : `"${replyTo.name || FROM_NAME}" <${replyTo.email}>`;
+        typeof replyTo === 'string' ? replyTo : `"${replyTo.name || FROM_NAME}" <${replyTo.email}>`;
     }
 
     if (attachments && attachments.length > 0) {
@@ -291,8 +301,10 @@ class EmailService {
     const batchSize = 100;
     for (let i = 0; i < emails.length; i += batchSize) {
       const batch = emails.slice(i, i + batchSize);
-      
-      console.log(`📧 [EmailService] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(emails.length / batchSize)}`);
+
+      console.log(
+        `📧 [EmailService] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(emails.length / batchSize)}`
+      );
 
       const promises = batch.map(async (email) => {
         try {
@@ -315,7 +327,9 @@ class EmailService {
       }
     }
 
-    console.log(`✅ [EmailService] Bulk send completed: ${results.sent} sent, ${results.failed} failed`);
+    console.log(
+      `✅ [EmailService] Bulk send completed: ${results.sent} sent, ${results.failed} failed`
+    );
     return results;
   }
 
@@ -365,7 +379,7 @@ class EmailService {
 
       try {
         await this.sendEmail(emailData);
-        
+
         // Marca come inviata
         await doc.ref.update({
           status: 'sent',
@@ -390,8 +404,11 @@ class EmailService {
           });
         } else {
           // Riprova più tardi (exponential backoff)
-          const nextAttempt = new Date(Date.now() + RETRY_CONFIG.delayMs * Math.pow(RETRY_CONFIG.backoffMultiplier, newAttempts));
-          
+          const nextAttempt = new Date(
+            Date.now() +
+              RETRY_CONFIG.delayMs * Math.pow(RETRY_CONFIG.backoffMultiplier, newAttempts)
+          );
+
           await doc.ref.update({
             attempts: newAttempts,
             scheduledFor: nextAttempt,
@@ -403,7 +420,9 @@ class EmailService {
       }
     }
 
-    console.log(`✅ [EmailService] Queue processing completed: ${results.sent} sent, ${results.failed} failed`);
+    console.log(
+      `✅ [EmailService] Queue processing completed: ${results.sent} sent, ${results.failed} failed`
+    );
     return results;
   }
 
@@ -446,7 +465,9 @@ class EmailService {
     console.log('🔧 [EmailService] Configuration:', config);
 
     if (!SENDGRID_ENABLED && !NODEMAILER_ENABLED) {
-      throw new Error('No email service configured. Set SENDGRID_API_KEY or EMAIL_USER/EMAIL_PASSWORD');
+      throw new Error(
+        'No email service configured. Set SENDGRID_API_KEY or EMAIL_USER/EMAIL_PASSWORD'
+      );
     }
 
     // Test connessione Nodemailer
@@ -470,9 +491,7 @@ class EmailService {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    let query = db
-      .collection('emailLogs')
-      .where('timestamp', '>=', startDate);
+    let query = db.collection('emailLogs').where('timestamp', '>=', startDate);
 
     if (clubId) {
       query = query.where('clubId', '==', clubId);
@@ -488,9 +507,9 @@ class EmailService {
       byType: {},
     };
 
-  snapshot.forEach((doc) => {
+    snapshot.forEach((doc) => {
       const data = doc.data();
-      
+
       if (data.status === 'sent') stats.sent++;
       if (data.status === 'failed') stats.failed++;
 
@@ -504,7 +523,17 @@ class EmailService {
   /**
    * Log email inviate (per analytics)
    */
-  async _logEmail({ to, subject, service, status, attempt, error = null, type = 'transactional', clubId = null, replyTo = null }) {
+  async _logEmail({
+    to,
+    subject,
+    service,
+    status,
+    attempt,
+    error = null,
+    type = 'transactional',
+    clubId = null,
+    replyTo = null,
+  }) {
     try {
       await db.collection('emailLogs').add({
         to,
@@ -528,7 +557,7 @@ class EmailService {
    * Sleep utility
    */
   async _sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
 

@@ -389,29 +389,47 @@ export function ClubProvider({ children }) {
       if (!clubId || (matchesLoaded && !forceReload)) return;
 
       try {
+        console.log('🔍 [ClubContext] Starting to load matches for club:', { clubId });
+
         // 🆕 LOGICA: Carica SOLO partite regolari + legacy bookings (NO tornei qui)
         // I tornei vengono aggregati in championshipApplyService quando premi "Applica Punti"
 
         // 1️⃣ Carica partite regolari
         let regularMatches = [];
         try {
+          console.log('🔍 [ClubContext] Loading regular matches from clubs subcollection...');
           const newMatchesSnapshot = await getDocs(collection(db, 'clubs', clubId, 'matches'));
           regularMatches = newMatchesSnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }));
-        } catch {
-          // Silent fail for regular matches
+          console.log('✅ [ClubContext] Regular matches loaded:', { count: regularMatches.length });
+        } catch (error) {
+          console.error('❌ [ClubContext] Failed to load regular matches:', {
+            clubId,
+            errorCode: error?.code,
+            errorMessage: error?.message,
+          });
         }
 
         // 2️⃣ Carica dalle vecchie bookings (legacy)
+        console.log('🔍 [ClubContext] Loading legacy bookings from root collection...');
         const allBookingsSnapshot = await getDocs(collection(db, 'bookings'));
+        console.log('✅ [ClubContext] All bookings loaded:', {
+          total: allBookingsSnapshot.docs.length,
+        });
+
         const allClubBookings = allBookingsSnapshot.docs
           .map((doc) => ({
             id: doc.id,
             ...doc.data(),
           }))
           .filter((booking) => booking.clubId === clubId);
+
+        console.log('✅ [ClubContext] Club bookings filtered:', {
+          clubId,
+          count: allClubBookings.length,
+        });
 
         // 3️⃣ Combina SOLO partite regolari + legacy bookings (i tornei sono gestiti separatamente)
         const allMatches = [...regularMatches, ...allClubBookings];

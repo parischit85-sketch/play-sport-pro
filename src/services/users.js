@@ -46,16 +46,36 @@ export async function getUser(uid) {
   if (!uid) return null;
 
   try {
+    console.log('🔍 [getUser] Attempting to read user from Firestore:', { uid });
     const userRef = doc(db, 'users', uid);
     const userSnap = await getDoc(userRef);
 
     if (userSnap.exists()) {
-      return { uid, ...userSnap.data() };
+      const userData = { uid, ...userSnap.data() };
+      console.log('✅ [getUser] User data retrieved successfully:', {
+        uid,
+        role: userData.role,
+        email: userData.email,
+        clubId: userData.clubId,
+        hasAllFields: {
+          role: !!userData.role,
+          email: !!userData.email,
+          firstName: !!userData.firstName,
+          lastName: !!userData.lastName,
+        },
+      });
+      return userData;
     }
 
+    console.warn('⚠️ [getUser] User document does not exist:', { uid });
     return null;
   } catch (error) {
-    console.error('Error getting user:', error);
+    console.error('❌ [getUser] Firestore permission error or other error:', {
+      uid,
+      errorCode: error?.code,
+      errorMessage: error?.message,
+      fullError: error,
+    });
     throw error;
   }
 }

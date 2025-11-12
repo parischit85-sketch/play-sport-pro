@@ -37,11 +37,11 @@ export function usePushNotifications() {
       setPermission(permission);
 
       if (permission === 'granted') {
-        console.log('✅ Push notification permission granted');
+        // console.log('✅ Push notification permission granted');
         await subscribeToPush();
         return true;
       } else {
-        console.log('❌ Push notification permission denied');
+        // console.log('❌ Push notification permission denied');
         return false;
       }
     } catch (error) {
@@ -52,25 +52,25 @@ export function usePushNotifications() {
 
   // Sottoscrivi alle push notifications
   const subscribeToPush = async () => {
-    console.log('🔔 [subscribeToPush] Starting...', { isSupported, permission });
-    
+    // console.log('🔔 [subscribeToPush] Starting...', { isSupported, permission });
+
     if (!isSupported || permission !== 'granted') {
       console.warn('⚠️ [subscribeToPush] Cannot subscribe:', { isSupported, permission });
       return null;
     }
 
     try {
-      console.log('🔔 [subscribeToPush] Getting service worker registration...');
+      // console.log('🔔 [subscribeToPush] Getting service worker registration...');
       const registration = await navigator.serviceWorker.ready;
-      console.log('✅ [subscribeToPush] Service worker ready');
+      // console.log('✅ [subscribeToPush] Service worker ready');
 
       // Verifica se esiste già una subscription
       let sub = await registration.pushManager.getSubscription();
-      console.log('🔍 [subscribeToPush] Existing subscription:', sub ? 'FOUND' : 'NOT FOUND');
+      // console.log('🔍 [subscribeToPush] Existing subscription:', sub ? 'FOUND' : 'NOT FOUND');
 
       if (!sub) {
         // Crea nuova subscription
-        console.log('🔔 [subscribeToPush] Creating new subscription...');
+        // console.log('🔔 [subscribeToPush] Creating new subscription...');
         const vapidPublicKey = getVapidPublicKey();
 
         sub = await registration.pushManager.subscribe({
@@ -78,15 +78,13 @@ export function usePushNotifications() {
           applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
         });
 
-        console.log('✅ [subscribeToPush] Push subscription created');
+        // console.log('✅ [subscribeToPush] Push subscription created');
       }
 
       setSubscription(sub);
 
-      // Invia subscription al server (da implementare)
-      console.log('📤 [subscribeToPush] Sending to server...');
-      const serverResult = await sendSubscriptionToServer(sub);
-      console.log('📤 [subscribeToPush] Server result:', serverResult);
+      // Invia subscription al server
+      await sendSubscriptionToServer(sub);
 
       return sub;
     } catch (error) {
@@ -103,7 +101,7 @@ export function usePushNotifications() {
       const success = await subscription.unsubscribe();
       if (success) {
         setSubscription(null);
-        console.log('✅ Push subscription cancelled');
+        // console.log('✅ Push subscription cancelled');
 
         // Rimuovi subscription dal server
         await removeSubscriptionFromServer(subscription);
@@ -117,21 +115,21 @@ export function usePushNotifications() {
 
   // Invia notifica di test locale
   const sendTestNotification = async () => {
-    console.log('🧪 [TEST NOTIFICATION] Function called');
-    console.log('🧪 [TEST] Current permission:', permission);
-    console.log('🧪 [TEST] isSupported:', isSupported);
-    
+    // console.log('🧪 [TEST NOTIFICATION] Function called');
+    // console.log('🧪 [TEST] Current permission:', permission);
+    // console.log('🧪 [TEST] isSupported:', isSupported);
+
     if (permission !== 'granted') {
-      console.log('🧪 [TEST] Permission not granted, requesting...');
+      // console.log('🧪 [TEST] Permission not granted, requesting...');
       await requestPermission();
     }
 
     if (permission === 'granted') {
       try {
-        console.log('🧪 [TEST] Creating browser Notification...');
-        console.log('🧪 [TEST] ⚠️ THIS BYPASSES FIRESTORE & CLOUD FUNCTION!');
-        console.log('🧪 [TEST] This is just a local browser notification');
-        
+        // console.log('🧪 [TEST] Creating browser Notification...');
+        // console.log('🧪 [TEST] ⚠️ THIS BYPASSES FIRESTORE & CLOUD FUNCTION!');
+        // console.log('🧪 [TEST] This is just a local browser notification');
+
         new Notification('🎾 Play-sport.pro Test', {
           body: 'Le notifiche funzionano perfettamente!',
           icon: '/icons/icon.svg',
@@ -141,9 +139,9 @@ export function usePushNotifications() {
           data: { url: '/dashboard', timestamp: Date.now() },
         });
 
-        console.log('✅ [TEST] Test notification sent successfully');
-        console.log('🧪 [TEST] NO Cloud Function was called');
-        console.log('🧪 [TEST] NO Firestore query was executed');
+        // console.log('✅ [TEST] Test notification sent successfully');
+        // console.log('🧪 [TEST] NO Cloud Function was called');
+        // console.log('🧪 [TEST] NO Firestore query was executed');
         return true;
       } catch (error) {
         console.error('❌ [TEST] Test notification failed:', error);
@@ -240,29 +238,32 @@ async function sendSubscriptionToServer(subscription) {
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 giorni
     };
 
-    console.log('📤 Sending subscription to server...', {
-      userId: user.uid,
-      endpoint: subscription.endpoint.substring(0, 50) + '...',
-      deviceId: subscriptionData.deviceId,
-    });
+    // console.log('📤 Sending subscription to server...', {
+    //   userId: user.uid,
+    //   endpoint: subscription.endpoint.substring(0, 50) + '...',
+    //   deviceId: subscriptionData.deviceId,
+    // });
 
     // In produzione usa Netlify Function, in sviluppo salva direttamente su Firestore
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    
+    const isDevelopment =
+      window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
     if (isDevelopment) {
-      console.log('🔧 [DEV MODE] Saving directly to Firestore...');
-      const { getFirestore, collection, doc, setDoc, query, where, getDocs } = await import('firebase/firestore');
+      // console.log('🔧 [DEV MODE] Saving directly to Firestore...');
+      const { getFirestore, collection, doc, setDoc, query, where, getDocs } = await import(
+        'firebase/firestore'
+      );
       const db = getFirestore();
-      
+
       // Verifica se esiste già una subscription per questo userId + deviceId
       const q = query(
         collection(db, 'pushSubscriptions'),
         where('userId', '==', user.uid),
         where('deviceId', '==', subscriptionData.deviceId)
       );
-      
+
       const existingDocs = await getDocs(q);
-      
+
       if (!existingDocs.empty) {
         // Aggiorna esistente
         const docId = existingDocs.docs[0].id;
@@ -270,18 +271,16 @@ async function sendSubscriptionToServer(subscription) {
           ...subscriptionData,
           updatedAt: new Date().toISOString(),
         });
-        console.log('✅ [DEV MODE] Subscription updated in Firestore:', docId);
         return true;
       } else {
         // Crea nuova
         const docRef = doc(collection(db, 'pushSubscriptions'));
         await setDoc(docRef, subscriptionData);
-        console.log('✅ [DEV MODE] Subscription saved in Firestore:', docRef.id);
         return true;
       }
     } else {
       // Produzione: usa Netlify Function
-      console.log('🔗 Calling Netlify Function: /.netlify/functions/save-push-subscription');
+      // console.log('🔗 Calling Netlify Function: /.netlify/functions/save-push-subscription');
       const response = await fetch('/.netlify/functions/save-push-subscription', {
         method: 'POST',
         headers: {
@@ -290,7 +289,7 @@ async function sendSubscriptionToServer(subscription) {
         body: JSON.stringify(subscriptionData),
       });
 
-      console.log('📡 Response status:', response.status, response.statusText);
+      // console.log('📡 Response status:', response.status, response.statusText);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -298,10 +297,9 @@ async function sendSubscriptionToServer(subscription) {
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
-      const result = await response.json();
-      console.log('✅ Subscription saved successfully:', result);
-      console.log('🔍 Check Firestore → pushSubscriptions collection for userId:', user.uid);
-      return true;
+      await response.json();
+      // console.log('✅ Subscription saved successfully:', result);
+      // console.log('🔍 Check Firestore → pushSubscriptions collection for userId:', user.uid);
     }
 
     return true;
@@ -324,11 +322,11 @@ async function removeSubscriptionFromServer(subscription) {
   try {
     const deviceId = generateDeviceId();
 
-    console.log('🗑️ Removing subscription from server...', {
-      userId: user.uid,
-      endpoint: subscription.endpoint.substring(0, 50) + '...',
-      deviceId,
-    });
+    // console.log('🗑️ Removing subscription from server...', {
+    //   userId: user.uid,
+    //   endpoint: subscription.endpoint.substring(0, 50) + '...',
+    //   deviceId,
+    // });
 
     // Chiama Netlify Function per rimuovere da Firestore
     const response = await fetch('/.netlify/functions/remove-push-subscription', {
@@ -348,8 +346,8 @@ async function removeSubscriptionFromServer(subscription) {
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
-    const result = await response.json();
-    console.log('✅ Subscription removed successfully:', result);
+    await response.json();
+    // console.log('✅ Subscription removed successfully:', result);
 
     return true;
   } catch (error) {

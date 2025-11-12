@@ -1,3 +1,7 @@
+// Load environment variables from .env file
+import dotenv from 'dotenv';
+dotenv.config();
+
 import process from 'node:process';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { getApps, initializeApp } from 'firebase-admin/app';
@@ -212,12 +216,16 @@ export const sendClubEmail = onCall(
   async (request) => {
     console.log('🚀 [sendClubEmail] INIZIO - Function chiamata');
     console.log('🔑 [sendClubEmail] Secrets disponibili:', {
-      FROM_EMAIL: process.env.FROM_EMAIL ? `${process.env.FROM_EMAIL.substring(0, 10)}...` : 'MISSING',
-      SENDGRID_API_KEY: process.env.SENDGRID_API_KEY ? `${process.env.SENDGRID_API_KEY.substring(0, 10)}... (${process.env.SENDGRID_API_KEY.length} chars)` : 'MISSING',
+      FROM_EMAIL: process.env.FROM_EMAIL
+        ? `${process.env.FROM_EMAIL.substring(0, 10)}...`
+        : 'MISSING',
+      SENDGRID_API_KEY: process.env.SENDGRID_API_KEY
+        ? `${process.env.SENDGRID_API_KEY.substring(0, 10)}... (${process.env.SENDGRID_API_KEY.length} chars)`
+        : 'MISSING',
       EMAIL_USER: process.env.EMAIL_USER ? 'present' : 'MISSING',
       EMAIL_PASSWORD: process.env.EMAIL_PASSWORD ? 'present' : 'MISSING',
     });
-    
+
     if (!request.auth) {
       throw new HttpsError('unauthenticated', 'User must be authenticated');
     }
@@ -226,7 +234,13 @@ export const sendClubEmail = onCall(
     const userEmail = request.auth.token.email || 'unknown';
     const { clubId, recipients, subject, body, isHTML = false, replyTo } = request.data || {};
 
-    console.log('📋 [sendClubEmail] Request data:', { clubId, userId, userEmail, recipientsCount: recipients?.length, subject });
+    console.log('📋 [sendClubEmail] Request data:', {
+      clubId,
+      userId,
+      userEmail,
+      recipientsCount: recipients?.length,
+      subject,
+    });
 
     if (!clubId || typeof clubId !== 'string') {
       throw new HttpsError('invalid-argument', 'clubId is required');
@@ -287,7 +301,7 @@ export const sendClubEmail = onCall(
     let failed = 0;
 
     console.log('📧 [sendClubEmail] Invio email a', validRecipients.length, 'destinatari');
-    
+
     const sendResults = await Promise.allSettled(
       validRecipients.map((recipient) =>
         emailService.sendEmail({
@@ -302,12 +316,15 @@ export const sendClubEmail = onCall(
       )
     );
 
-    console.log('📊 [sendClubEmail] Risultati Promise.allSettled:', sendResults.map((r, i) => ({
-      recipient: validRecipients[i].email,
-      status: r.status,
-      value: r.status === 'fulfilled' ? r.value : undefined,
-      reason: r.status === 'rejected' ? r.reason?.message : undefined,
-    })));
+    console.log(
+      '📊 [sendClubEmail] Risultati Promise.allSettled:',
+      sendResults.map((r, i) => ({
+        recipient: validRecipients[i].email,
+        status: r.status,
+        value: r.status === 'fulfilled' ? r.value : undefined,
+        reason: r.status === 'rejected' ? r.reason?.message : undefined,
+      }))
+    );
 
     sendResults.forEach((result, index) => {
       const recipient = validRecipients[index];
@@ -318,7 +335,7 @@ export const sendClubEmail = onCall(
         value: result.status === 'fulfilled' ? result.value : null,
         error: result.status === 'rejected' ? result.reason?.message : null,
       });
-      
+
       if (result.status === 'fulfilled') {
         sent += 1;
         details.push({
