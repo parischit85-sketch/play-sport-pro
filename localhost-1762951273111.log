@@ -1,0 +1,795 @@
+ 🔧 [SW] Installing Enhanced Service Worker v1.11.0
+ 📦 [SW] Caching critical resources...
+ ✅ [SW] Critical resources cached successfully
+ 🚀 [SW] Activating Enhanced Service Worker v1.11.0
+ ✅ [SW] Service Worker activated with enhanced performance
+The FetchEvent for "http://localhost:5173/club/sporting-cat/admin/dashboard" resulted in a network error response: the promise was rejected.
+sw.js:1 Uncaught (in promise) 
+sw.js:1 Uncaught (in promise) 
+The FetchEvent for "http://localhost:5173/club/sporting-cat/admin/dashboard" resulted in a network error response: the promise was rejected.
+sw.js:1 Uncaught (in promise) 
+sw.js:1 Uncaught (in promise) 
+The FetchEvent for "http://localhost:5173/club/sporting-cat/admin/dashboard" resulted in a network error response: the promise was rejected.
+sw.js:1 Uncaught (in promise) 
+sw.js:1 Uncaught (in promise) 
+ Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+ 📊 Google Analytics not configured, skipping initialization
+ ✅ Manual Web Vitals tracking enabled
+ ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+warnOnce @ react-router-dom.js?v=8203edbc:4393
+logDeprecation @ react-router-dom.js?v=8203edbc:4396
+logV6DeprecationWarnings @ react-router-dom.js?v=8203edbc:4399
+(anonymous) @ react-router-dom.js?v=8203edbc:5271
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+warnOnce @ react-router-dom.js?v=8203edbc:4393
+logDeprecation @ react-router-dom.js?v=8203edbc:4396
+logV6DeprecationWarnings @ react-router-dom.js?v=8203edbc:4402
+(anonymous) @ react-router-dom.js?v=8203edbc:5271
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ 🔒 CSP setup skipped in development mode
+ 🔧 [DEV] Attempting Service Worker registration (FORCED ENABLE FOR PUSH)...
+ auth_state_changed Object
+ 🔍 [getUser] Attempting to read user from Firestore: Object
+ WebSocket connection to 'ws://localhost:5173/?token=oYJ4p7s_Drio' failed: 
+createConnection @ client:745
+connect @ client:411
+connect @ client:751
+connect @ client:289
+connect @ client:373
+(anonymous) @ client:823
+ [UpdateService] Service Worker registrato: http://localhost:5173/
+ [HashChecker] Temporarily disabled to prevent refresh loops
+ ✅ [DEV] Service Worker enabled successfully
+ ✅ Service Worker registrato con successo: Object
+ WebSocket connection to 'ws://localhost:5173/?token=oYJ4p7s_Drio' failed: 
+createConnection @ client:755
+connect @ client:411
+connect @ client:759
+ [vite] failed to connect to websocket.
+your current setup:
+  (browser) localhost:5173/ <--[HTTP]--> localhost:5173/ (server)
+  (browser) localhost:5173/ <--[WebSocket (failing)]--> localhost:5173/ (server)
+Check out your Vite / network configuration and https://vite.dev/config/server-options.html#server-hmr .
+console.error @ web-vitals.js:331
+connect @ client:765
+ ✅ [getUser] User data retrieved successfully: Object
+ 🔍 [AuthContext] User profile loaded: Object
+ 🔍 [AuthContext] Full profile object: Object
+ 🔍🔍🔍 [DEBUG] User Role and Permissions: Object
+ ✅ [AuthContext] User enriched user: Object
+ ✅ [AuthContext] Full enriched user object: Object
+ 🔍 [loadCloudBookings] Starting Firestore query for bookings...
+ ✅ [loadCloudBookings] Firestore query successful: Object
+ ✅ [loadCloudBookings] Bookings processed: Object
+ 🔍 [TournamentDetailsPage] Tab filtering: Object
+ 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+ 🔍 [ClubContext] Starting to load matches for club: Object
+ 🔍 [ClubContext] Loading regular matches from clubs subcollection...
+ 🔍 [TournamentDetailsPage] Tab filtering: Object
+ 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+ 🔍 [TournamentDetailsPage] Tab filtering: Object
+ 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+ [2025-11-12T12:40:19.253Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+ ✅ [ClubContext] Regular matches loaded: Object
+ 🔍 [ClubContext] Loading legacy bookings from root collection...
+ Impossibile caricare lo stato dei punti: 
+(anonymous) @ TournamentDetailsPage.jsx:89
+ 🔍 [TournamentDetailsPage] Tab filtering: Object
+ 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+ 🎬 [Actions Section] isAdmin: true
+ 🔍 [TournamentOverview] Admin check: Object
+ 📊 [TournamentOverview] Tournament snapshot updated: Object
+ ✅ [ClubContext] All bookings loaded: Object
+ ✅ [ClubContext] Club bookings filtered: Object
+ Impossibile caricare stato applicazione punti: 
+loadApplyStatus @ TournamentOverview.jsx:101
+ 🎬 [Actions Section] isAdmin: true
+ 🔍 [TournamentDetailsPage] Tab filtering: Object
+ 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+ 🎯 [TournamentMatches] Component mounted/rendered Object
+ 🔍 [TournamentMatches] Render check: Object
+ 🔄 [TournamentMatches] Showing loader
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentMatches.jsx:35 🎯 [TournamentMatches] Component mounted/rendered Object
+TournamentMatches.jsx:793 🔍 [TournamentMatches] Render check: Object
+TournamentMatches.jsx:868 🔍 [TournamentMatches] Button visibility check: Object
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentOverview.jsx:600 🎬 [Actions Section] isAdmin: true
+TournamentOverview.jsx:60 🔍 [TournamentOverview] Admin check: Object
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentOverview.jsx:126 📊 [TournamentOverview] Tournament snapshot updated: Object
+TournamentOverview.jsx:600 🎬 [Actions Section] isAdmin: true
+TournamentOverview.jsx:106 Impossibile caricare stato applicazione punti: FirebaseError: Missing or insufficient permissions.
+loadApplyStatus @ TournamentOverview.jsx:106
+TournamentOverview.jsx:600 🎬 [Actions Section] isAdmin: true
+logger.js:20 🔍 [DEBUG] Tab clicked Object
+logger.js:20 🔍 [DEBUG] handleTabChange called Object
+logger.js:20 🔍 [DEBUG] Navigating to Object
+ClassificaPage.jsx:99 🎯 [ClassificaPage] ========== CALCOLO RANKING ==========
+ClassificaPage.jsx:100 📊 Tournament players: 67
+ClassificaPage.jsx:101 📊 Regular matches: 1
+ClassificaPage.jsx:102 📊 Tournament matches: 0
+ClassificaPage.jsx:103 📊 Leaderboard entries: 0
+ClassificaPage.jsx:112 🏆 [ClassificaPage] Ranking calcolato:
+ClassificaPage.jsx:114   1. Alessio Compagno: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   2. Alfredo Di Donato: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   3. Andrea Paris: rating=1570, baseRating=1500
+ClassificaPage.jsx:114   4. Angelica Amicucci: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   5. Angelo Di Mattia: rating=1430, baseRating=1500
+ClassificaPage.jsx:118 ==========================================
+recharts.js?v=8203edbc:9088 The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn2 @ recharts.js?v=8203edbc:9088
+(anonymous) @ recharts.js?v=8203edbc:9336
+renderWithHooks @ chunk-E22KYI7D.js?v=8203edbc:11596
+updateForwardRef @ chunk-E22KYI7D.js?v=8203edbc:14373
+beginWork @ chunk-E22KYI7D.js?v=8203edbc:15994
+beginWork$1 @ chunk-E22KYI7D.js?v=8203edbc:19806
+performUnitOfWork @ chunk-E22KYI7D.js?v=8203edbc:19251
+workLoopConcurrent @ chunk-E22KYI7D.js?v=8203edbc:19242
+renderRootConcurrent @ chunk-E22KYI7D.js?v=8203edbc:19217
+performConcurrentWorkOnRoot @ chunk-E22KYI7D.js?v=8203edbc:18728
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+web-vitals.js:331 [2025-11-12T12:40:26.251Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+ClassificaPage.jsx:44 Failed to load entries for player PsxTmN2SvrGTgTtaxHZM: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+web-vitals.js:331 [2025-11-12T12:40:26.259Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:26.260Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:26.262Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+ClassificaPage.jsx:44 Failed to load entries for player Fm5Sjh3SptamDgauUWoD: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 70xe0dha: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player hbbyqt6y: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player sjqi9anh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player nGrzP1lMNXWHT7SylUEa: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player EmHgY1NcYhPFedn9qbe2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player WRB8XzlPoHxXZts5Q1vZ: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player qazdz9zt: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player uq6bqUk9hJqnojIqXF7w: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 8mviXGcFprJiOkpDeGcn: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 2W8KGNGwGMQlXiRDFyJc: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player GeScf9IDL70epjiUcWeD: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player QgKl6y5zjwyqDs6fCTRR: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player oOeKwooSmaSMJuFqf666: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+web-vitals.js:331 [2025-11-12T12:40:26.271Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+ClassificaPage.jsx:44 Failed to load entries for player bkHPl3cTxnint8lHOeo8: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player bJhXmZ3xHU5lxRcnCCF2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player KIFemtvcoqRHFR1uRHsz: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 67LZU9UuTphzoyh8cnYv: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player T5DkDu1WeMrfN3gWFB0h: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player byQzKbCUu1G195yrJ1Ey: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player DZLpFk2Sj2uVleXTTsd0: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player ixy2e6h8: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 466tjbfc: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player kb1xbwle: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player LQWVdpMDLr8bZRfkAKIq: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player QD23udXuB3B0GT3k8rSS: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player v8h4dgdh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player vGn2cZGm6OTccdi9hFY9: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player NhN9YIJFBghjbExhLimFMHcrj2v2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player ncroqybw: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 8RGFf0StiuEX84PUQVeW: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player pRH7xJait5G5xpHa13YC: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player yD7H1oJkR7gXpBBlrPDi: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player F5f9XGUnzxrb3EG7dJso: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player Y3o7UxPqUPRZSlLM3DA9sKr2SEB2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player YhtRbqNIr3KOPq26fqVD: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player t0aq8efd: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player p2v18iff: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 3sg14giw: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player lax34vmf: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player WE0oAWXbUCyS8UcPg75y: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player ev79SHPWD7lwgSRXD0vT: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player MQ8jVfyS1YQZ2zGzdxNI: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player MITgjGyaLuqOoAnOrASg: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player hlTRPKZdPbqj1hsZLFFu: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player tqd6o3o6: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player uqnj3o1h: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player kqvopxcj: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player LQ9q0yi6evCfyzNr2b4i: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player zlez2hkh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player mevxhk7i: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player X3VVnSgzgS4w2goQr5YJ: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player FoqdMJ6vCFfshRPlz4CYrCl0fpu1: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player MvvBTapLX4iZZDqPf0B4: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player bh1ld5ew: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player nIyim0cqhhGtla5IQNn8: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player N7C4hJAP7z0KsxO1JRyI: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player LMLDa0mGxa8cVDugn3ef: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player mkcqwzbs: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 7m9oy3oo: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player CgD1lTWOCFWwJvaCNOGy: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player qq5wbKeFEaT9PTNwUI69: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 4dtp4cr1: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player fDUEC7DpDWJPc2BNbAjS: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 0JNPvBx6rPPujTZUatEBVDxo0Df1: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player sd3j52tzIMzs10dGukke: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player p7psrcfh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player zvuipoma: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player ux7o3edh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:72 ⚡ [ClassificaPage] Parallel loading tournament matches: 309.35302734375 ms
+ClassificaPage.jsx:73 🏆 [ClassificaPage] Total tournament matches loaded: 0
+ClassificaPage.jsx:99 🎯 [ClassificaPage] ========== CALCOLO RANKING ==========
+ClassificaPage.jsx:100 📊 Tournament players: 67
+ClassificaPage.jsx:101 📊 Regular matches: 1
+ClassificaPage.jsx:102 📊 Tournament matches: 0
+ClassificaPage.jsx:103 📊 Leaderboard entries: 0
+ClassificaPage.jsx:112 🏆 [ClassificaPage] Ranking calcolato:
+ClassificaPage.jsx:114   1. Alessio Compagno: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   2. Alfredo Di Donato: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   3. Andrea Paris: rating=1570, baseRating=1500
+ClassificaPage.jsx:114   4. Angelica Amicucci: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   5. Angelo Di Mattia: rating=1430, baseRating=1500
+ClassificaPage.jsx:118 ==========================================
+web-vitals.js:331 [2025-11-12T12:40:26.445Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:26.502Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:26.503Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:26.505Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:26.506Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+logger.js:20 🔍 [DEBUG] Tab clicked Object
+logger.js:20 🔍 [DEBUG] handleTabChange called Object
+logger.js:20 🔍 [DEBUG] Navigating to Object
+recharts.js?v=8203edbc:9088 The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn2 @ recharts.js?v=8203edbc:9088
+(anonymous) @ recharts.js?v=8203edbc:9336
+renderWithHooks @ chunk-E22KYI7D.js?v=8203edbc:11596
+updateForwardRef @ chunk-E22KYI7D.js?v=8203edbc:14373
+beginWork @ chunk-E22KYI7D.js?v=8203edbc:15994
+beginWork$1 @ chunk-E22KYI7D.js?v=8203edbc:19806
+performUnitOfWork @ chunk-E22KYI7D.js?v=8203edbc:19251
+workLoopConcurrent @ chunk-E22KYI7D.js?v=8203edbc:19242
+renderRootConcurrent @ chunk-E22KYI7D.js?v=8203edbc:19217
+performConcurrentWorkOnRoot @ chunk-E22KYI7D.js?v=8203edbc:18728
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+StatisticheGiocatore.jsx:36 📊 [StatisticheGiocatore] Component mounted/updated Object
+web-vitals.js:331 [2025-11-12T12:40:28.154Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+logger.js:20 🔍 [DEBUG] Tab clicked Object
+logger.js:20 🔍 [DEBUG] handleTabChange called Object
+logger.js:20 🔍 [DEBUG] Navigating to Object
+ClassificaPage.jsx:99 🎯 [ClassificaPage] ========== CALCOLO RANKING ==========
+ClassificaPage.jsx:100 📊 Tournament players: 67
+ClassificaPage.jsx:101 📊 Regular matches: 1
+ClassificaPage.jsx:102 📊 Tournament matches: 0
+ClassificaPage.jsx:103 📊 Leaderboard entries: 0
+ClassificaPage.jsx:112 🏆 [ClassificaPage] Ranking calcolato:
+ClassificaPage.jsx:114   1. Alessio Compagno: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   2. Alfredo Di Donato: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   3. Andrea Paris: rating=1570, baseRating=1500
+ClassificaPage.jsx:114   4. Angelica Amicucci: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   5. Angelo Di Mattia: rating=1430, baseRating=1500
+ClassificaPage.jsx:118 ==========================================
+recharts.js?v=8203edbc:9088 The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn2 @ recharts.js?v=8203edbc:9088
+(anonymous) @ recharts.js?v=8203edbc:9336
+renderWithHooks @ chunk-E22KYI7D.js?v=8203edbc:11596
+updateForwardRef @ chunk-E22KYI7D.js?v=8203edbc:14373
+beginWork @ chunk-E22KYI7D.js?v=8203edbc:15994
+beginWork$1 @ chunk-E22KYI7D.js?v=8203edbc:19806
+performUnitOfWork @ chunk-E22KYI7D.js?v=8203edbc:19251
+workLoopSync @ chunk-E22KYI7D.js?v=8203edbc:19190
+renderRootSync @ chunk-E22KYI7D.js?v=8203edbc:19169
+performSyncWorkOnRoot @ chunk-E22KYI7D.js?v=8203edbc:18927
+flushSyncCallbacks @ chunk-E22KYI7D.js?v=8203edbc:9166
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:18677
+web-vitals.js:331 [2025-11-12T12:40:29.319Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:29.441Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:29.443Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:29.444Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:29.456Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+ClassificaPage.jsx:44 Failed to load entries for player EmHgY1NcYhPFedn9qbe2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player WE0oAWXbUCyS8UcPg75y: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player bkHPl3cTxnint8lHOeo8: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player Y3o7UxPqUPRZSlLM3DA9sKr2SEB2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player p2v18iff: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player Fm5Sjh3SptamDgauUWoD: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player ev79SHPWD7lwgSRXD0vT: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player lax34vmf: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player QgKl6y5zjwyqDs6fCTRR: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 466tjbfc: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 2W8KGNGwGMQlXiRDFyJc: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player nGrzP1lMNXWHT7SylUEa: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player T5DkDu1WeMrfN3gWFB0h: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player t0aq8efd: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player bJhXmZ3xHU5lxRcnCCF2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 67LZU9UuTphzoyh8cnYv: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player PsxTmN2SvrGTgTtaxHZM: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player sjqi9anh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player hbbyqt6y: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player tqd6o3o6: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player KIFemtvcoqRHFR1uRHsz: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player v8h4dgdh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 3sg14giw: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 8RGFf0StiuEX84PUQVeW: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player kb1xbwle: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player F5f9XGUnzxrb3EG7dJso: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player ixy2e6h8: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player ux7o3edh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player byQzKbCUu1G195yrJ1Ey: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player qazdz9zt: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player GeScf9IDL70epjiUcWeD: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player uq6bqUk9hJqnojIqXF7w: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player yD7H1oJkR7gXpBBlrPDi: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player LQWVdpMDLr8bZRfkAKIq: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player N7C4hJAP7z0KsxO1JRyI: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player WRB8XzlPoHxXZts5Q1vZ: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player YhtRbqNIr3KOPq26fqVD: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 8mviXGcFprJiOkpDeGcn: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 70xe0dha: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player pRH7xJait5G5xpHa13YC: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player DZLpFk2Sj2uVleXTTsd0: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player QD23udXuB3B0GT3k8rSS: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player NhN9YIJFBghjbExhLimFMHcrj2v2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player oOeKwooSmaSMJuFqf666: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player ncroqybw: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player vGn2cZGm6OTccdi9hFY9: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player MQ8jVfyS1YQZ2zGzdxNI: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player zlez2hkh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player zvuipoma: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player bh1ld5ew: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player nIyim0cqhhGtla5IQNn8: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player hlTRPKZdPbqj1hsZLFFu: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player MITgjGyaLuqOoAnOrASg: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player mevxhk7i: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player p7psrcfh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player FoqdMJ6vCFfshRPlz4CYrCl0fpu1: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player LMLDa0mGxa8cVDugn3ef: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 4dtp4cr1: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player MvvBTapLX4iZZDqPf0B4: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 0JNPvBx6rPPujTZUatEBVDxo0Df1: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player X3VVnSgzgS4w2goQr5YJ: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player uqnj3o1h: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player 7m9oy3oo: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player sd3j52tzIMzs10dGukke: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player CgD1lTWOCFWwJvaCNOGy: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player LQ9q0yi6evCfyzNr2b4i: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player qq5wbKeFEaT9PTNwUI69: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player mkcqwzbs: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player kqvopxcj: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:44 Failed to load entries for player fDUEC7DpDWJPc2BNbAjS: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+ClassificaPage.jsx:72 ⚡ [ClassificaPage] Parallel loading tournament matches: 271.035888671875 ms
+ClassificaPage.jsx:73 🏆 [ClassificaPage] Total tournament matches loaded: 0
+ClassificaPage.jsx:99 🎯 [ClassificaPage] ========== CALCOLO RANKING ==========
+ClassificaPage.jsx:100 📊 Tournament players: 67
+ClassificaPage.jsx:101 📊 Regular matches: 1
+ClassificaPage.jsx:102 📊 Tournament matches: 0
+ClassificaPage.jsx:103 📊 Leaderboard entries: 0
+ClassificaPage.jsx:112 🏆 [ClassificaPage] Ranking calcolato:
+ClassificaPage.jsx:114   1. Alessio Compagno: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   2. Alfredo Di Donato: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   3. Andrea Paris: rating=1570, baseRating=1500
+ClassificaPage.jsx:114   4. Angelica Amicucci: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   5. Angelo Di Mattia: rating=1430, baseRating=1500
+ClassificaPage.jsx:118 ==========================================
+web-vitals.js:331 [2025-11-12T12:40:29.614Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:29.685Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:29.685Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:29.687Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+web-vitals.js:331 [2025-11-12T12:40:29.689Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+logger.js:20 🔍 [DEBUG] Tab clicked Object
+logger.js:20 🔍 [DEBUG] handleTabChange called Object
+logger.js:20 🔍 [DEBUG] Navigating to Object
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentDetailsPage.jsx:103 Impossibile caricare lo stato dei punti: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ TournamentDetailsPage.jsx:103
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentOverview.jsx:600 🎬 [Actions Section] isAdmin: true
+TournamentOverview.jsx:60 🔍 [TournamentOverview] Admin check: Object
+TournamentOverview.jsx:126 📊 [TournamentOverview] Tournament snapshot updated: Object
+TournamentOverview.jsx:600 🎬 [Actions Section] isAdmin: true
+TournamentOverview.jsx:106 Impossibile caricare stato applicazione punti: FirebaseError: Missing or insufficient permissions.
+loadApplyStatus @ TournamentOverview.jsx:106
+TournamentOverview.jsx:600 🎬 [Actions Section] isAdmin: true
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentMatches.jsx:35 🎯 [TournamentMatches] Component mounted/rendered Object
+TournamentMatches.jsx:793 🔍 [TournamentMatches] Render check: Object
+TournamentMatches.jsx:802 🔄 [TournamentMatches] Showing loader
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentMatches.jsx:35 🎯 [TournamentMatches] Component mounted/rendered Object
+TournamentMatches.jsx:793 🔍 [TournamentMatches] Render check: Object
+TournamentMatches.jsx:868 🔍 [TournamentMatches] Button visibility check: Object
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: Object
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: Array(6)
+championshipApplyService.js:56 ⚠️ Failed to get last applied tournament date: FirebaseError: Missing or insufficient permissions.
+getLastAppliedTournamentDate @ championshipApplyService.js:56
+firestore.googleapis.com/v1/projects/m-padelweb/databases/(default)/documents:batchGet:1  Failed to load resource: the server responded with a status of 403 ()
+chunk-I2CL3AES.js?v=8203edbc:1535 [2025-11-12T12:40:50.680Z]  @firebase/firestore: Firestore (12.5.0): RestConnection RPC 'BatchGetDocuments' 0x24bd77ba failed with error:  {"code":"permission-denied","name":"FirebaseError"} url:  https://firestore.googleapis.com/v1/projects/m-padelweb/databases/(default)/documents:batchGet request: {"documents":["projects/m-padelweb/databases/(default)/documents/clubs/sporting-cat/applied/n7AjYDUYPNZMZOXZHzcM"]}
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+warn @ chunk-I2CL3AES.js?v=8203edbc:1599
+__PRIVATE_logWarn @ firebase_firestore.js?v=8203edbc:2569
+(anonymous) @ firebase_firestore.js?v=8203edbc:12420
+web-vitals.js:331 ❌ applyTournamentChampionshipPoints failed: FirebaseError: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+applyTournamentChampionshipPoints @ championshipApplyService.js:355
+web-vitals.js:331 ❌ Errore applicazione punti torneo: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+handleConfirmApply @ TournamentPoints.jsx:102

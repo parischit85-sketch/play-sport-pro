@@ -149,6 +149,12 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   const { user } = useAuth();
   const { showSuccess, showError, showWarning, confirm } = useNotifications();
 
+  console.log('🏢 [PrenotazioneCampi] Component loaded with:', {
+    clubId,
+    hasState: !!state,
+    courtsCount: state?.courts?.length || 0,
+  });
+
   // Use unified booking service
   const {
     bookings: allBookings,
@@ -223,7 +229,12 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
   // Convert unified bookings to local format
   const bookings = useMemo(() => {
     return (allBookings || [])
-      .filter((b) => b.status === 'confirmed')
+      .filter((b) => {
+        // CRITICAL FIX: Include both confirmed AND pending bookings
+        // Pending bookings should block availability just like confirmed ones
+        const validStatuses = ['confirmed', 'pending'];
+        return validStatuses.includes(b.status);
+      })
       .map((b) => {
         try {
           const startIso = new Date(
@@ -338,14 +349,43 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
   const dayLabel = dayLabelDesktop; // Default per ora, modifichiamo il display dopo
 
-  const dayBookings = useMemo(
-    () =>
-      (bookings || [])
-        .filter((b) => b && b.status !== 'cancelled')
-        .filter((b) => sameDay(new Date(b.start), day))
-        .sort((a, b) => new Date(a.start) - new Date(b.start)),
-    [bookings, day]
-  );
+  const dayBookings = useMemo(() => {
+    const filtered = (bookings || [])
+      .filter((b) => b && b.status !== 'cancelled')
+      .filter((b) => {
+        // CRITICAL FIX: Support both date field and start field
+        // New bookings have: date (YYYY-MM-DD) + time (HH:MM)
+        // Old bookings might have: start (ISO string or timestamp)
+        if (b.date) {
+          // New format: use date field directly
+          const bookingDate = new Date(b.date + 'T00:00:00');
+          return sameDay(bookingDate, day);
+        } else if (b.start) {
+          // Old format: parse start field
+          return sameDay(new Date(b.start), day);
+        }
+        return false;
+      })
+      .sort((a, b) => new Date(a.start || a.date) - new Date(b.start || b.date));
+
+    console.log('📅 [PrenotazioneCampi] Day bookings filtered:', {
+      selectedDate: day.toISOString().split('T')[0],
+      totalBookings: bookings?.length || 0,
+      afterStatusFilter: bookings?.filter((b) => b && b.status !== 'cancelled').length || 0,
+      afterDateFilter: filtered.length,
+      firstFewBookings: filtered.slice(0, 3).map((b) => ({
+        id: b.id,
+        date: b.date,
+        time: b.time,
+        start: b.start,
+        courtId: b.courtId,
+        clubId: b.clubId,
+      })),
+      allBookingDates: [...new Set(bookings?.map((b) => b.date).filter(Boolean))].sort(),
+    });
+
+    return filtered;
+  }, [bookings, day]);
 
   const bookingsByCourt = useMemo(() => {
     const map = new Map(filteredCourts.map((c) => [c.id, []]));

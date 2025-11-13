@@ -1,0 +1,2942 @@
+chunk-E22KYI7D.js?v=8203edbc:21609 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+analytics.js:18 📊 Google Analytics not configured, skipping initialization
+web-vitals.js:134 ✅ Manual Web Vitals tracking enabled
+react-router-dom.js?v=8203edbc:4393 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+warnOnce @ react-router-dom.js?v=8203edbc:4393
+logDeprecation @ react-router-dom.js?v=8203edbc:4396
+logV6DeprecationWarnings @ react-router-dom.js?v=8203edbc:4399
+(anonymous) @ react-router-dom.js?v=8203edbc:5271
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+react-router-dom.js?v=8203edbc:4393 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+warnOnce @ react-router-dom.js?v=8203edbc:4393
+logDeprecation @ react-router-dom.js?v=8203edbc:4396
+logV6DeprecationWarnings @ react-router-dom.js?v=8203edbc:4402
+(anonymous) @ react-router-dom.js?v=8203edbc:5271
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+security.js:495 🔒 CSP setup skipped in development mode
+main.jsx:130 🔧 [DEV] Attempting Service Worker registration (FORCED ENABLE FOR PUSH)...
+updateService.js:22 [UpdateService] Service Worker registrato: http://localhost:5173/
+hashChecker.js:47 [HashChecker] Temporarily disabled to prevent refresh loops
+main.jsx:140 ✅ [DEV] Service Worker enabled successfully
+main.jsx:469 ✅ Service Worker registrato con successo: {scope: 'http://localhost:5173/', isPWA: false, state: 'activated'}
+auth.jsx:46 auth_state_changed {userId: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', emailVerified: false}
+users.js:49 🔍 [getUser] Attempting to read user from Firestore: {uid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1'}
+users.js:55 ✅ [getUser] User data retrieved successfully: {uid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', role: 'club_admin', email: 'sportingcat@gmil.com', clubId: 'sporting-cat', hasAllFields: {…}}
+AuthContext.jsx:309 🔍 [AuthContext] User profile loaded: {userId: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', email: 'sportingcat@gmil.com', emailVerified: false, skipEmailVerification: true}
+AuthContext.jsx:315 🔍 [AuthContext] Full profile object: {uid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', updatedAt: _Timestamp, fiscalCode: '', _updatedAt: '2025-10-28T11:28:08.790Z', notes: '', …}
+AuthContext.jsx:318 🔍🔍🔍 [DEBUG] User Role and Permissions: {role: 'club_admin', clubId: 'sporting-cat', isAdmin: false, isClubAdmin: true, isInstructor: false, …}
+AuthContext.jsx:335 ✅ [AuthContext] User enriched user: {uid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', email: 'sportingcat@gmil.com', emailVerified: false, skipEmailVerification: true}
+AuthContext.jsx:341 ✅ [AuthContext] Full enriched user object: {providerId: 'firebase', proactiveRefresh: ProactiveRefresh, reloadUserInfo: {…}, reloadListener: null, uid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', …}
+unified-booking-service.js:666 🔍 [loadCloudBookings] Starting Firestore query for bookings...
+unified-booking-service.js:671 ✅ [loadCloudBookings] Firestore query successful: {totalDocs: 375, collectionPath: 'bookings'}
+unified-booking-service.js:709 ✅ [loadCloudBookings] Bookings processed: {total: 375, active: 313}
+ClubContext.jsx:392 🔍 [ClubContext] Starting to load matches for club: {clubId: 'sporting-cat'}
+ClubContext.jsx:400 🔍 [ClubContext] Loading regular matches from clubs subcollection...
+adminDashboard.js:432 🔍 [loadAdminDashboardData] Starting data load for club: sporting-cat
+unified-booking-service.js:666 🔍 [loadCloudBookings] Starting Firestore query for bookings...
+unified-booking-service.js:666 🔍 [loadCloudBookings] Starting Firestore query for bookings...
+adminDashboard.js:468 ✅ [loadAdminDashboardData] Club settings loaded
+web-vitals.js:331 [2025-11-12T12:37:06.772Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+adminDashboard.js:460 ✅ [loadAdminDashboardData] Courts loaded: 7
+ClubContext.jsx:406 ✅ [ClubContext] Regular matches loaded: {count: 1}
+ClubContext.jsx:416 🔍 [ClubContext] Loading legacy bookings from root collection...
+unified-booking-service.js:671 ✅ [loadCloudBookings] Firestore query successful: {totalDocs: 375, collectionPath: 'bookings'}
+unified-booking-service.js:709 ✅ [loadCloudBookings] Bookings processed: {total: 375, active: 313}
+adminDashboard.js:436 ✅ [loadAdminDashboardData] Bookings loaded: 296
+unified-booking-service.js:671 ✅ [loadCloudBookings] Firestore query successful: {totalDocs: 375, collectionPath: 'bookings'}
+unified-booking-service.js:709 ✅ [loadCloudBookings] Bookings processed: {total: 375, active: 313}
+adminDashboard.js:444 ✅ [loadAdminDashboardData] Lessons loaded: 17
+logger.js:20 🔍 [DEBUG] Loaded instructor slots 3
+logger.js:20 🔍 [DEBUG] 🔄 Load already in progress, skipping
+ClubContext.jsx:418 ✅ [ClubContext] All bookings loaded: {total: 375}
+ClubContext.jsx:427 ✅ [ClubContext] Club bookings filtered: {clubId: 'sporting-cat', count: 375}
+adminDashboard.js:452 ✅ [loadAdminDashboardData] Instructors loaded: 3
+adminDashboard.js:526 🔍 Raw bookings for today (2025-11-12): 0
+adminDashboard.js:177 🔍 Calculating available instructors: {today: '2025-11-12', timeSlotsCount: 2, instructorsCount: 3, activeTimeSlots: 2}
+adminDashboard.js:195 🔍 [calculateInstructorsAvailableToday] All today bookings: {count: 0, bookings: Array(0)}
+adminDashboard.js:412 ✅ Available instructors calculated: {totalInstructors: 0, instructorsWithSlots: Array(0)}
+auth.jsx:539 🔍 [isEmailVerified] Checking email verification: {email: 'sportingcat@gmil.com', emailVerified: false, skipEmailVerification: true}
+auth.jsx:547 ✅ [isEmailVerified] Email verification SKIPPED (admin override)
+TimeSlotsSlidePanel.jsx:41 🔍 TimeSlotsSlidePanel - DATI CORRETTI: {timeSlotsCount: 5, instructorsCount: 4, slotsWithInstructorIds: 5, slotsWithCourtIds: 5, sampleSlot: {…}}
+medicalCertificates.js:232 Found 28 players with expiring/expired certificates
+auth.jsx:539 🔍 [isEmailVerified] Checking email verification: {email: 'sportingcat@gmil.com', emailVerified: false, skipEmailVerification: true}
+auth.jsx:547 ✅ [isEmailVerified] Email verification SKIPPED (admin override)
+TimeSlotsSlidePanel.jsx:41 🔍 TimeSlotsSlidePanel - DATI CORRETTI: {timeSlotsCount: 5, instructorsCount: 4, slotsWithInstructorIds: 5, slotsWithCourtIds: 5, sampleSlot: {…}}
+logger.js:20 🔍 [DEBUG] Tab clicked {tabId: 'classifica', label: 'Classifica', path: '/club/sporting-cat/classifica', currentActive: 'dashboard', timestamp: '2025-11-12T12:37:17.210Z'}
+logger.js:20 🔍 [DEBUG] handleTabChange called {newTabId: 'classifica', currentTabId: 'dashboard', currentPath: '/club/sporting-cat/admin/dashboard', clubId: 'sporting-cat', hasClub: true, …}
+logger.js:20 🔍 [DEBUG] Navigating to {tabId: 'classifica', path: '/club/sporting-cat/classifica', label: 'Classifica', method: 'replace'}
+ClassificaPage.jsx:99 🎯 [ClassificaPage] ========== CALCOLO RANKING ==========
+ClassificaPage.jsx:100 📊 Tournament players: 67
+ClassificaPage.jsx:101 📊 Regular matches: 1
+ClassificaPage.jsx:102 📊 Tournament matches: 0
+ClassificaPage.jsx:103 📊 Leaderboard entries: 0
+ClassificaPage.jsx:112 🏆 [ClassificaPage] Ranking calcolato:
+ClassificaPage.jsx:114   1. Alessio Compagno: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   2. Alfredo Di Donato: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   3. Andrea Paris: rating=1570, baseRating=1500
+ClassificaPage.jsx:114   4. Angelica Amicucci: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   5. Angelo Di Mattia: rating=1430, baseRating=1500
+ClassificaPage.jsx:118 ==========================================
+recharts.js?v=8203edbc:9088 The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn2 @ recharts.js?v=8203edbc:9088
+(anonymous) @ recharts.js?v=8203edbc:9336
+renderWithHooks @ chunk-E22KYI7D.js?v=8203edbc:11596
+updateForwardRef @ chunk-E22KYI7D.js?v=8203edbc:14373
+beginWork @ chunk-E22KYI7D.js?v=8203edbc:15994
+beginWork$1 @ chunk-E22KYI7D.js?v=8203edbc:19806
+performUnitOfWork @ chunk-E22KYI7D.js?v=8203edbc:19251
+workLoopConcurrent @ chunk-E22KYI7D.js?v=8203edbc:19242
+renderRootConcurrent @ chunk-E22KYI7D.js?v=8203edbc:19217
+performConcurrentWorkOnRoot @ chunk-E22KYI7D.js?v=8203edbc:18728
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+web-vitals.js:331 [2025-11-12T12:37:17.771Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+web-vitals.js:331 [2025-11-12T12:37:17.785Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+ClassificaPage.jsx:44 Failed to load entries for player T5DkDu1WeMrfN3gWFB0h: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player PsxTmN2SvrGTgTtaxHZM: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player lax34vmf: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player v8h4dgdh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player ev79SHPWD7lwgSRXD0vT: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player N7C4hJAP7z0KsxO1JRyI: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player Y3o7UxPqUPRZSlLM3DA9sKr2SEB2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player oOeKwooSmaSMJuFqf666: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player sjqi9anh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player 70xe0dha: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player WRB8XzlPoHxXZts5Q1vZ: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player ux7o3edh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player Fm5Sjh3SptamDgauUWoD: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player nGrzP1lMNXWHT7SylUEa: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player 2W8KGNGwGMQlXiRDFyJc: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player F5f9XGUnzxrb3EG7dJso: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+web-vitals.js:331 [2025-11-12T12:37:17.801Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+web-vitals.js:331 [2025-11-12T12:37:17.802Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+web-vitals.js:331 [2025-11-12T12:37:17.805Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+ClassificaPage.jsx:44 Failed to load entries for player p2v18iff: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player WE0oAWXbUCyS8UcPg75y: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player bkHPl3cTxnint8lHOeo8: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player LQWVdpMDLr8bZRfkAKIq: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player byQzKbCUu1G195yrJ1Ey: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player KIFemtvcoqRHFR1uRHsz: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player yD7H1oJkR7gXpBBlrPDi: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player uq6bqUk9hJqnojIqXF7w: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player t0aq8efd: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player NhN9YIJFBghjbExhLimFMHcrj2v2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player 8mviXGcFprJiOkpDeGcn: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player 466tjbfc: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player EmHgY1NcYhPFedn9qbe2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player 67LZU9UuTphzoyh8cnYv: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player pRH7xJait5G5xpHa13YC: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player 8RGFf0StiuEX84PUQVeW: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player ixy2e6h8: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player YhtRbqNIr3KOPq26fqVD: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player kb1xbwle: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player GeScf9IDL70epjiUcWeD: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player QD23udXuB3B0GT3k8rSS: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player qazdz9zt: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player vGn2cZGm6OTccdi9hFY9: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player hbbyqt6y: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player ncroqybw: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player QgKl6y5zjwyqDs6fCTRR: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player DZLpFk2Sj2uVleXTTsd0: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player bJhXmZ3xHU5lxRcnCCF2: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player MITgjGyaLuqOoAnOrASg: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player bh1ld5ew: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player mevxhk7i: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player LMLDa0mGxa8cVDugn3ef: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player qq5wbKeFEaT9PTNwUI69: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player X3VVnSgzgS4w2goQr5YJ: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player kqvopxcj: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player uqnj3o1h: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player LQ9q0yi6evCfyzNr2b4i: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player zlez2hkh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player FoqdMJ6vCFfshRPlz4CYrCl0fpu1: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player CgD1lTWOCFWwJvaCNOGy: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player 7m9oy3oo: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player mkcqwzbs: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player fDUEC7DpDWJPc2BNbAjS: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player tqd6o3o6: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player 4dtp4cr1: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player nIyim0cqhhGtla5IQNn8: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player MvvBTapLX4iZZDqPf0B4: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player sd3j52tzIMzs10dGukke: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player zvuipoma: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player 0JNPvBx6rPPujTZUatEBVDxo0Df1: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player p7psrcfh: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player hlTRPKZdPbqj1hsZLFFu: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player 3sg14giw: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:44 Failed to load entries for player MQ8jVfyS1YQZ2zGzdxNI: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ ClassificaPage.jsx:44
+await in (anonymous)
+loadTournamentMatches @ ClassificaPage.jsx:38
+(anonymous) @ ClassificaPage.jsx:83
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+ClassificaPage.jsx:72 ⚡ [ClassificaPage] Parallel loading tournament matches: 305.01708984375 ms
+ClassificaPage.jsx:73 🏆 [ClassificaPage] Total tournament matches loaded: 0
+ClassificaPage.jsx:99 🎯 [ClassificaPage] ========== CALCOLO RANKING ==========
+ClassificaPage.jsx:100 📊 Tournament players: 67
+ClassificaPage.jsx:101 📊 Regular matches: 1
+ClassificaPage.jsx:102 📊 Tournament matches: 0
+ClassificaPage.jsx:103 📊 Leaderboard entries: 0
+ClassificaPage.jsx:112 🏆 [ClassificaPage] Ranking calcolato:
+ClassificaPage.jsx:114   1. Alessio Compagno: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   2. Alfredo Di Donato: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   3. Andrea Paris: rating=1570, baseRating=1500
+ClassificaPage.jsx:114   4. Angelica Amicucci: rating=1500, baseRating=1500
+ClassificaPage.jsx:114   5. Angelo Di Mattia: rating=1430, baseRating=1500
+ClassificaPage.jsx:118 ==========================================
+web-vitals.js:331 [2025-11-12T12:37:17.973Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+web-vitals.js:331 [2025-11-12T12:37:18.026Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+web-vitals.js:331 [2025-11-12T12:37:18.027Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+web-vitals.js:331 [2025-11-12T12:37:18.027Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+web-vitals.js:331 [2025-11-12T12:37:18.041Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+logger.js:20 🔍 [DEBUG] Tab clicked {tabId: 'stats', label: 'Statistiche', path: '/club/sporting-cat/stats', currentActive: 'classifica', timestamp: '2025-11-12T12:37:18.837Z'}
+logger.js:20 🔍 [DEBUG] handleTabChange called {newTabId: 'stats', currentTabId: 'classifica', currentPath: '/club/sporting-cat/classifica', clubId: 'sporting-cat', hasClub: true, …}
+logger.js:20 🔍 [DEBUG] Navigating to {tabId: 'stats', path: '/club/sporting-cat/stats', label: 'Statistiche', method: 'replace'}
+recharts.js?v=8203edbc:9088 The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(undefined) or use aspect(undefined) to control the
+       height and width.
+warn2 @ recharts.js?v=8203edbc:9088
+(anonymous) @ recharts.js?v=8203edbc:9336
+renderWithHooks @ chunk-E22KYI7D.js?v=8203edbc:11596
+updateForwardRef @ chunk-E22KYI7D.js?v=8203edbc:14373
+beginWork @ chunk-E22KYI7D.js?v=8203edbc:15994
+beginWork$1 @ chunk-E22KYI7D.js?v=8203edbc:19806
+performUnitOfWork @ chunk-E22KYI7D.js?v=8203edbc:19251
+workLoopSync @ chunk-E22KYI7D.js?v=8203edbc:19190
+renderRootSync @ chunk-E22KYI7D.js?v=8203edbc:19169
+performConcurrentWorkOnRoot @ chunk-E22KYI7D.js?v=8203edbc:18728
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+StatisticheGiocatore.jsx:36 📊 [StatisticheGiocatore] Component mounted/updated {playersCount: 67, matchesCount: 1, selectedPlayerId: '', pid: 'EmHgY1NcYhPFedn9qbe2', statsRefCurrent: true}
+web-vitals.js:331 [2025-11-12T12:37:19.198Z]  @firebase/firestore: Firestore (12.5.0): Uncaught Error in snapshot listener: FirebaseError: [code=permission-denied]: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+defaultLogHandler @ chunk-I2CL3AES.js?v=8203edbc:1535
+error @ chunk-I2CL3AES.js?v=8203edbc:1603
+__PRIVATE_logError @ firebase_firestore.js?v=8203edbc:2563
+error @ firebase_firestore.js?v=8203edbc:14975
+onError @ firebase_firestore.js?v=8203edbc:13801
+__PRIVATE_eventManagerOnWatchError @ firebase_firestore.js?v=8203edbc:13754
+__PRIVATE_removeAndCleanupTarget @ firebase_firestore.js?v=8203edbc:14473
+(anonymous) @ firebase_firestore.js?v=8203edbc:14410
+Promise.then
+__PRIVATE_syncEngineRejectListen @ firebase_firestore.js?v=8203edbc:14410
+__PRIVATE_handleTargetError @ firebase_firestore.js?v=8203edbc:13253
+__PRIVATE_onWatchStreamChange @ firebase_firestore.js?v=8203edbc:13254
+onNext @ firebase_firestore.js?v=8203edbc:12912
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12871
+u_ @ firebase_firestore.js?v=8203edbc:12485
+(anonymous) @ firebase_firestore.js?v=8203edbc:12624
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+logger.js:20 🔍 [DEBUG] Tab clicked {tabId: 'tournaments', label: 'Tornei', path: '/club/sporting-cat/tournaments', currentActive: 'stats', timestamp: '2025-11-12T12:37:19.970Z'}
+logger.js:20 🔍 [DEBUG] handleTabChange called {newTabId: 'tournaments', currentTabId: 'stats', currentPath: '/club/sporting-cat/stats', clubId: 'sporting-cat', hasClub: true, …}
+logger.js:20 🔍 [DEBUG] Navigating to {tabId: 'tournaments', path: '/club/sporting-cat/tournaments', label: 'Tornei', method: 'replace'}
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: undefined, isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: undefined, isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: undefined, isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: 'couples', isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+TournamentDetailsPage.jsx:103 Impossibile caricare lo stato dei punti: FirebaseError: Missing or insufficient permissions.
+(anonymous) @ TournamentDetailsPage.jsx:103
+await in (anonymous)
+(anonymous) @ TournamentDetailsPage.jsx:118
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: 'couples', isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+TournamentOverview.jsx:600 🎬 [Actions Section] isAdmin: true
+TournamentOverview.jsx:60 🔍 [TournamentOverview] Admin check: {userRole: 'user', userClubRoles: {…}, clubId: 'sporting-cat', userClubRoles?.[clubId]: 'admin', isAdmin: true, …}
+TournamentOverview.jsx:126 📊 [TournamentOverview] Tournament snapshot updated: {completedMatches: 10, totalMatches: 10}
+web-vitals.js:331 Error loading groups: FirebaseError: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+loadGroups @ PublicViewSettings.jsx:150
+await in loadGroups
+(anonymous) @ PublicViewSettings.jsx:154
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+TournamentOverview.jsx:86 Errore nel caricamento del numero di squadre: FirebaseError: Missing or insufficient permissions.
+loadTeamsCount @ TournamentOverview.jsx:86
+await in loadTeamsCount
+(anonymous) @ TournamentOverview.jsx:90
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+TournamentOverview.jsx:106 Impossibile caricare stato applicazione punti: FirebaseError: Missing or insufficient permissions.
+loadApplyStatus @ TournamentOverview.jsx:106
+await in loadApplyStatus
+(anonymous) @ TournamentOverview.jsx:109
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+TournamentOverview.jsx:600 🎬 [Actions Section] isAdmin: true
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: 'couples', isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: 'couples', isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+web-vitals.js:331 Error getting teams: FirebaseError: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+getTeamsByTournament @ teamsService.js:200
+await in getTeamsByTournament
+(anonymous) @ TournamentStandings.jsx:93
+(anonymous) @ TournamentStandings.jsx:133
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+commitRootImpl @ chunk-E22KYI7D.js?v=8203edbc:19469
+commitRoot @ chunk-E22KYI7D.js?v=8203edbc:19330
+performSyncWorkOnRoot @ chunk-E22KYI7D.js?v=8203edbc:18948
+flushSyncCallbacks @ chunk-E22KYI7D.js?v=8203edbc:9166
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:18677
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: 'couples', isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: 'couples', isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+web-vitals.js:331 Error getting teams: FirebaseError: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+getTeamsByTournament @ teamsService.js:200
+await in getTeamsByTournament
+loadTeams @ TournamentTeams.jsx:38
+(anonymous) @ TournamentTeams.jsx:32
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+commitRootImpl @ chunk-E22KYI7D.js?v=8203edbc:19469
+commitRoot @ chunk-E22KYI7D.js?v=8203edbc:19330
+performSyncWorkOnRoot @ chunk-E22KYI7D.js?v=8203edbc:18948
+flushSyncCallbacks @ chunk-E22KYI7D.js?v=8203edbc:9166
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:18677
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: 'couples', isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+TournamentMatches.jsx:35 🎯 [TournamentMatches] Component mounted/rendered {tournamentId: 'rEhZyRM6xwnCmT7zpyLy', participantType: 'couples', clubId: 'sporting-cat', isPublicView: false}
+TournamentMatches.jsx:793 🔍 [TournamentMatches] Render check: {loading: true, matchesCount: 0, participantType: 'couples', canEditResults: true, showMatchCreationModal: false}
+TournamentMatches.jsx:802 🔄 [TournamentMatches] Showing loader
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: 'couples', isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+web-vitals.js:331 Error getting teams: FirebaseError: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+getTeamsByTournament @ teamsService.js:200
+await in getTeamsByTournament
+loadData @ TournamentMatches.jsx:65
+(anonymous) @ TournamentMatches.jsx:85
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+commitRootImpl @ chunk-E22KYI7D.js?v=8203edbc:19469
+commitRoot @ chunk-E22KYI7D.js?v=8203edbc:19330
+performSyncWorkOnRoot @ chunk-E22KYI7D.js?v=8203edbc:18948
+flushSyncCallbacks @ chunk-E22KYI7D.js?v=8203edbc:9166
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:18677
+TournamentMatches.jsx:35 🎯 [TournamentMatches] Component mounted/rendered {tournamentId: 'rEhZyRM6xwnCmT7zpyLy', participantType: 'couples', clubId: 'sporting-cat', isPublicView: false}
+TournamentMatches.jsx:793 🔍 [TournamentMatches] Render check: {loading: false, matchesCount: 10, participantType: 'couples', canEditResults: true, showMatchCreationModal: false}
+TournamentMatches.jsx:868 🔍 [TournamentMatches] Button visibility check: {isMatchesOnly: false, participantType: 'couples', canEditResults: true, isPublicView: false, shouldShowButton: true}
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: 'couples', isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+TournamentDetailsPage.jsx:69 🔍 [TournamentDetailsPage] Tab filtering: {participantType: 'couples', isMatchesOnly: false, visibleTabsBefore: Array(6)}
+TournamentDetailsPage.jsx:89 🔍 [TournamentDetailsPage] Visible tabs: (6) ['overview', 'teams', 'standings', 'matches', 'bracket', 'points']
+web-vitals.js:331 Error getting teams: FirebaseError: Missing or insufficient permissions.
+console.error @ web-vitals.js:331
+getTeamsByTournament @ teamsService.js:200
+await in getTeamsByTournament
+(anonymous) @ TournamentBracket.jsx:45
+(anonymous) @ TournamentBracket.jsx:63
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+commitRootImpl @ chunk-E22KYI7D.js?v=8203edbc:19469
+commitRoot @ chunk-E22KYI7D.js?v=8203edbc:19330
+performSyncWorkOnRoot @ chunk-E22KYI7D.js?v=8203edbc:18948
+flushSyncCallbacks @ chunk-E22KYI7D.js?v=8203edbc:9166
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:18677

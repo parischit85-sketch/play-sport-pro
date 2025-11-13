@@ -1,5 +1,5 @@
 // Script per analizzare la struttura completa del database Firebase
-import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc, query, where } from 'firebase/firestore';
 import { db } from '../services/firebase.node.js';
 
 async function analyzeClubStructure(clubId) {
@@ -30,15 +30,17 @@ async function analyzeClubStructure(clubId) {
     console.log(`    Dati completi:`, data);
   });
 
-  // 3. Subcollection bookings per vedere riferimenti ai campi
-  const bookingsRef = collection(db, 'clubs', clubId, 'bookings');
-  const bookingsSnap = await getDocs(bookingsRef);
+  // 3. Prenotazioni del club (da root collection con filtro clubId)
+  const bookingsRef = collection(db, 'bookings');
+  const bookingsQuery = query(bookingsRef, where('clubId', '==', clubId));
+  const bookingsSnap = await getDocs(bookingsQuery);
   const courtReferences = new Set();
   bookingsSnap.forEach((doc) => {
     const data = doc.data();
     if (data.courtId) courtReferences.add(data.courtId);
   });
   console.log('\n📅 Riferimenti ai campi nelle prenotazioni:', Array.from(courtReferences));
+  console.log(`   Totale prenotazioni club: ${bookingsSnap.size}`);
 }
 
 async function analyzeGlobalCollections() {

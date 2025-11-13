@@ -2,6 +2,7 @@
 // FILE: src/pages/BookingPage.jsx
 // =============================================
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { themeTokens } from '@lib/theme.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
@@ -11,10 +12,14 @@ import ClubSelectionForBooking from '@components/booking/ClubSelectionForBooking
 
 export default function BookingPage() {
   const { user } = useAuth();
-  const { clubId, hasClub } = useClub();
+  const { clubId: urlClubId } = useParams(); // Get clubId from URL
+  const { clubId: userClubId, hasClub, selectedClub } = useClub();
   const T = React.useMemo(() => themeTokens(), []);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState('');
+
+  // Determine effective club ID: URL > user's club > selected club
+  const effectiveClubId = urlClubId || userClubId || selectedClub?.id;
 
   // BLOCCO: Email non verificata
   if (user && !isEmailVerified(user)) {
@@ -149,12 +154,18 @@ export default function BookingPage() {
   }
 
   // Se non c'è un circolo selezionato, mostra la selezione del circolo
-  if (!hasClub || !clubId) {
+  if (!hasClub && !selectedClub) {
     return <ClubSelectionForBooking bookingType="campo" T={T} />;
   }
 
   // Se c'è un circolo selezionato, mostra l'interfaccia di prenotazione normale
   return (
-    <ModernBookingInterface T={T} user={user} state={null} setState={() => {}} clubId={clubId} />
+    <ModernBookingInterface
+      T={T}
+      user={user}
+      state={null}
+      setState={() => {}}
+      clubId={effectiveClubId}
+    />
   );
 }

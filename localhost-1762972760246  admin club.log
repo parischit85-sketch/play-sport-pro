@@ -1,0 +1,340 @@
+chunk-E22KYI7D.js?v=8203edbc:21609 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+analytics.js:18 📊 Google Analytics not configured, skipping initialization
+web-vitals.js:134 ✅ Manual Web Vitals tracking enabled
+main.jsx:130 🔧 [DEV] Attempting Service Worker registration (FORCED ENABLE FOR PUSH)...
+updateService.js:22 [UpdateService] Service Worker registrato: http://localhost:5173/
+hashChecker.js:47 [HashChecker] Temporarily disabled to prevent refresh loops
+main.jsx:140 ✅ [DEV] Service Worker enabled successfully
+main.jsx:469 ✅ Service Worker registrato con successo: {scope: 'http://localhost:5173/', isPWA: false, state: 'activated'}
+react-router-dom.js?v=8203edbc:4393 ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+warnOnce @ react-router-dom.js?v=8203edbc:4393
+logDeprecation @ react-router-dom.js?v=8203edbc:4396
+logV6DeprecationWarnings @ react-router-dom.js?v=8203edbc:4399
+(anonymous) @ react-router-dom.js?v=8203edbc:5271
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+react-router-dom.js?v=8203edbc:4393 ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+warnOnce @ react-router-dom.js?v=8203edbc:4393
+logDeprecation @ react-router-dom.js?v=8203edbc:4396
+logV6DeprecationWarnings @ react-router-dom.js?v=8203edbc:4402
+(anonymous) @ react-router-dom.js?v=8203edbc:5271
+commitHookEffectListMount @ chunk-E22KYI7D.js?v=8203edbc:16963
+commitPassiveMountOnFiber @ chunk-E22KYI7D.js?v=8203edbc:18206
+commitPassiveMountEffects_complete @ chunk-E22KYI7D.js?v=8203edbc:18179
+commitPassiveMountEffects_begin @ chunk-E22KYI7D.js?v=8203edbc:18169
+commitPassiveMountEffects @ chunk-E22KYI7D.js?v=8203edbc:18159
+flushPassiveEffectsImpl @ chunk-E22KYI7D.js?v=8203edbc:19543
+flushPassiveEffects @ chunk-E22KYI7D.js?v=8203edbc:19500
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:19381
+workLoop @ chunk-E22KYI7D.js?v=8203edbc:197
+flushWork @ chunk-E22KYI7D.js?v=8203edbc:176
+performWorkUntilDeadline @ chunk-E22KYI7D.js?v=8203edbc:384
+security.js:495 🔒 CSP setup skipped in development mode
+auth.jsx:46 auth_state_changed {userId: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', emailVerified: false}
+users.js:49 🔍 [getUser] Attempting to read user from Firestore: {uid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1'}
+users.js:55 ✅ [getUser] User data retrieved successfully: {uid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', role: 'club_admin', email: 'sportingcat@gmil.com', clubId: 'sporting-cat', hasAllFields: {…}}
+AuthContext.jsx:309 🔍 [AuthContext] User profile loaded: {userId: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', email: 'sportingcat@gmil.com', emailVerified: false, skipEmailVerification: true}
+AuthContext.jsx:315 🔍 [AuthContext] Full profile object: {uid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', createdAt: _Timestamp, registeredAt: _Timestamp, bio: '', notes: '', …}
+AuthContext.jsx:318 🔍🔍🔍 [DEBUG] User Role and Permissions: {role: 'club_admin', clubId: 'sporting-cat', isAdmin: false, isClubAdmin: true, isInstructor: false, …}
+AuthContext.jsx:351 ✅ [AuthContext] User enriched user: {uid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', email: 'sportingcat@gmil.com', emailVerified: false, skipEmailVerification: true}
+AuthContext.jsx:357 ✅ [AuthContext] Full enriched user object: {providerId: 'firebase', proactiveRefresh: ProactiveRefresh, reloadUserInfo: {…}, reloadListener: null, uid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1', …}
+unified-booking-service.js:671 🔍 [loadCloudBookings] Starting Firestore query for bookings...
+unified-booking-service.js:676 ✅ [loadCloudBookings] Firestore query successful: {totalDocs: 379, collectionPath: 'bookings'}
+unified-booking-service.js:716 ✅ [loadCloudBookings] Bookings processed: {total: 379, active: 317}
+unified-booking-service.js:671 🔍 [loadCloudBookings] Starting Firestore query for bookings...
+PrenotazioneCampi.jsx:403 🔄 modalOpen state changed: false
+ClubContext.jsx:392 🔍 [ClubContext] Starting to load matches for club: {clubId: 'sporting-cat'}
+ClubContext.jsx:400 🔍 [ClubContext] Loading regular matches from clubs subcollection...
+unified-booking-service.js:676 ✅ [loadCloudBookings] Firestore query successful: {totalDocs: 379, collectionPath: 'bookings'}
+unified-booking-service.js:716 ✅ [loadCloudBookings] Bookings processed: {total: 379, active: 317}
+ClubContext.jsx:406 ✅ [ClubContext] Regular matches loaded: {count: 1}
+ClubContext.jsx:416 🔍 [ClubContext] Loading legacy bookings from root collection...
+ClubContext.jsx:418 ✅ [ClubContext] All bookings loaded: {total: 379}
+ClubContext.jsx:429 ✅ [ClubContext] Club bookings filtered: {clubId: 'sporting-cat', count: 379}
+PrenotazioneCampi.jsx:1062 🎾 Click slot libero! {courtId: 'jlvr9xwu', time: Wed Nov 12 2025 21:00:00 GMT+0100 (Ora standard dell’Europa centrale)}
+PrenotazioneCampi.jsx:443 🚀 openCreate called {courtId: 'jlvr9xwu', start: Wed Nov 12 2025 21:00:00 GMT+0100 (Ora standard dell’Europa centrale)}
+PrenotazioneCampi.jsx:463 📝 Form set, calling setModalOpen(true)
+PrenotazioneCampi.jsx:465 ✅ setModalOpen(true) called
+web-vitals.js:331 Warning: validateDOMNesting(...): <svg> cannot appear as a child of <option>.
+    at svg
+    at option
+    at select
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Modal (http://localhost:5173/src/components/ui/Modal.jsx:20:3)
+    at div
+    at section
+    at Section (http://localhost:5173/src/components/ui/Section.jsx:18:35)
+    at PrenotazioneCampi (http://localhost:5173/src/features/prenota/PrenotazioneCampi.jsx:179:45)
+    at div
+    at AdminBookingsPage (http://localhost:5173/src/pages/AdminBookingsPage.jsx:31:20)
+    at RenderedRoute (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=8203edbc:4088:5)
+    at Outlet (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=8203edbc:4494:26)
+    at main
+    at div
+    at AppLayoutInner (http://localhost:5173/src/layouts/AppLayout.jsx:41:62)
+    at ClubProvider (http://localhost:5173/src/contexts/ClubContext.jsx:74:32)
+    at AppLayout
+    at ProtectedRoute (http://localhost:5173/src/components/ProtectedRoute.jsx:28:34)
+    at AuthAwareRoute (http://localhost:5173/src/components/ProtectedRoute.jsx:91:34)
+    at RenderedRoute (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=8203edbc:4088:5)
+    at Routes (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=8203edbc:4558:5)
+    at Suspense
+    at UIProvider (http://localhost:5173/src/contexts/UIContext.jsx:33:30)
+    at AuthProvider (http://localhost:5173/src/contexts/AuthContext.jsx:47:32)
+    at Router (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=8203edbc:4501:15)
+    at BrowserRouter (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=8203edbc:5247:5)
+    at ErrorBoundary (http://localhost:5173/src/components/ErrorBoundary.jsx:9:5)
+    at AppRouter
+    at NotificationProvider (http://localhost:5173/src/contexts/NotificationContext.jsx:22:40)
+    at SecurityProvider (http://localhost:5173/src/contexts/SecurityContext.jsx:31:36)
+console.error @ web-vitals.js:331
+printWarning @ chunk-E22KYI7D.js?v=8203edbc:521
+error @ chunk-E22KYI7D.js?v=8203edbc:505
+validateDOMNesting @ chunk-E22KYI7D.js?v=8203edbc:8301
+createInstance @ chunk-E22KYI7D.js?v=8203edbc:8375
+completeWork @ chunk-E22KYI7D.js?v=8203edbc:16338
+completeUnitOfWork @ chunk-E22KYI7D.js?v=8203edbc:19277
+performUnitOfWork @ chunk-E22KYI7D.js?v=8203edbc:19259
+workLoopSync @ chunk-E22KYI7D.js?v=8203edbc:19190
+renderRootSync @ chunk-E22KYI7D.js?v=8203edbc:19169
+performSyncWorkOnRoot @ chunk-E22KYI7D.js?v=8203edbc:18927
+flushSyncCallbacks @ chunk-E22KYI7D.js?v=8203edbc:9166
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:18677
+PrenotazioneCampi.jsx:403 🔄 modalOpen state changed: true
+unified-booking-service.js:671 🔍 [loadCloudBookings] Starting Firestore query for bookings...
+unified-booking-service.js:676 ✅ [loadCloudBookings] Firestore query successful: {totalDocs: 379, collectionPath: 'bookings'}
+unified-booking-service.js:716 ✅ [loadCloudBookings] Bookings processed: {total: 379, active: 317}
+bookingEvents.js:80 📢 [BookingEvents] Emitting BOOKING_CREATED {type: 'court', courtId: 'jlvr9xwu', courtName: 'Campo 5 (Outdoor)', date: '2025-11-12', time: '21:00', …}
+unified-booking-service.js:671 🔍 [loadCloudBookings] Starting Firestore query for bookings...
+unified-booking-service.js:676 ✅ [loadCloudBookings] Firestore query successful: {totalDocs: 380, collectionPath: 'bookings'}
+unified-booking-service.js:716 ✅ [loadCloudBookings] Bookings processed: {total: 380, active: 318}active: 318total: 380[[Prototype]]: Objectconstructor: ƒ Object()hasOwnProperty: ƒ hasOwnProperty()isPrototypeOf: ƒ isPrototypeOf()propertyIsEnumerable: ƒ propertyIsEnumerable()toLocaleString: ƒ toLocaleString()toString: ƒ toString()valueOf: ƒ valueOf()__defineGetter__: ƒ __defineGetter__()__defineSetter__: ƒ __defineSetter__()__lookupGetter__: ƒ __lookupGetter__()__lookupSetter__: ƒ __lookupSetter__()__proto__: (...)get __proto__: ƒ __proto__()set __proto__: ƒ __proto__()
+unified-booking-service.js:594  POST https://firestore.googleapis.com/google.firestore.v1.Firestore/Write/channel?VER=8&database=projects%2Fm-padelweb%2Fdatabases%2F(default)&gsessionid=Rkgkiw8_VWGJrPFTKlvd310fQKU2rEjQa55I9RuD0vw&SID=Yv7UD_EooZss1Zm6_2FR_A&RID=46489&TYPE=terminate&zx=mi7p1ht1hhj5 400 (Bad Request)
+cc @ firebase_firestore.js?v=8203edbc:2073
+Y2.close @ firebase_firestore.js?v=8203edbc:2428
+(anonymous) @ firebase_firestore.js?v=8203edbc:12623
+(anonymous) @ firebase_firestore.js?v=8203edbc:12588
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Z2.qa @ firebase_firestore.js?v=8203edbc:2477
+Lb @ firebase_firestore.js?v=8203edbc:1387
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Ma @ firebase_firestore.js?v=8203edbc:1746
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Pa @ firebase_firestore.js?v=8203edbc:1732
+Promise.then
+h.send @ firebase_firestore.js?v=8203edbc:1712
+h.ea @ firebase_firestore.js?v=8203edbc:1853
+Eb @ firebase_firestore.js?v=8203edbc:1182
+$c @ firebase_firestore.js?v=8203edbc:2278
+h.Da @ firebase_firestore.js?v=8203edbc:2245
+sa @ firebase_firestore.js?v=8203edbc:624
+Promise.then
+u @ firebase_firestore.js?v=8203edbc:618
+ac @ firebase_firestore.js?v=8203edbc:2231
+Lb @ firebase_firestore.js?v=8203edbc:1384
+N2.Y @ firebase_firestore.js?v=8203edbc:1238
+N2.ba @ firebase_firestore.js?v=8203edbc:1189
+Va @ firebase_firestore.js?v=8203edbc:920
+D @ firebase_firestore.js?v=8203edbc:888
+Qc @ firebase_firestore.js?v=8203edbc:1885
+h.Xa @ firebase_firestore.js?v=8203edbc:1880
+h.Ca @ firebase_firestore.js?v=8203edbc:1877
+Gc @ firebase_firestore.js?v=8203edbc:1778
+h.Ma @ firebase_firestore.js?v=8203edbc:1745
+Promise.then
+Ic @ firebase_firestore.js?v=8203edbc:1736
+h.Pa @ firebase_firestore.js?v=8203edbc:1732
+Promise.then
+h.send @ firebase_firestore.js?v=8203edbc:1712
+h.ea @ firebase_firestore.js?v=8203edbc:1853
+Eb @ firebase_firestore.js?v=8203edbc:1177
+Cb @ firebase_firestore.js?v=8203edbc:1152
+h.Ea @ firebase_firestore.js?v=8203edbc:2154
+sa @ firebase_firestore.js?v=8203edbc:624
+Promise.then
+u @ firebase_firestore.js?v=8203edbc:618
+bc @ firebase_firestore.js?v=8203edbc:2098
+h.connect @ firebase_firestore.js?v=8203edbc:2058
+Y2.m @ firebase_firestore.js?v=8203edbc:2425
+Yo @ firebase_firestore.js?v=8203edbc:12582
+send @ firebase_firestore.js?v=8203edbc:12473
+q_ @ firebase_firestore.js?v=8203edbc:12789
+ra @ firebase_firestore.js?v=8203edbc:12992
+__PRIVATE_onWriteStreamOpen @ firebase_firestore.js?v=8203edbc:13344
+(anonymous) @ firebase_firestore.js?v=8203edbc:12867
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+(anonymous) @ firebase_firestore.js?v=8203edbc:12891
+(anonymous) @ firebase_firestore.js?v=8203edbc:12867
+__ @ firebase_firestore.js?v=8203edbc:12479
+(anonymous) @ firebase_firestore.js?v=8203edbc:12629
+setTimeout
+T_ @ firebase_firestore.js?v=8203edbc:12628
+j_ @ firebase_firestore.js?v=8203edbc:12971
+G_ @ firebase_firestore.js?v=8203edbc:12864
+(anonymous) @ firebase_firestore.js?v=8203edbc:12854
+Promise.then
+auth @ firebase_firestore.js?v=8203edbc:12850
+start @ firebase_firestore.js?v=8203edbc:12749
+start @ firebase_firestore.js?v=8203edbc:12965
+__PRIVATE_startWriteStream @ firebase_firestore.js?v=8203edbc:13341
+__PRIVATE_fillWritePipeline @ firebase_firestore.js?v=8203edbc:13327
+await in __PRIVATE_fillWritePipeline
+__PRIVATE_syncEngineWrite @ firebase_firestore.js?v=8203edbc:14345
+await in __PRIVATE_syncEngineWrite
+(anonymous) @ firebase_firestore.js?v=8203edbc:17988
+await in (anonymous)
+(anonymous) @ firebase_firestore.js?v=8203edbc:15977
+(anonymous) @ firebase_firestore.js?v=8203edbc:16008
+Promise.then
+cc @ firebase_firestore.js?v=8203edbc:16008
+enqueue @ firebase_firestore.js?v=8203edbc:15977
+enqueueAndForget @ firebase_firestore.js?v=8203edbc:15959
+__PRIVATE_firestoreClientWrite @ firebase_firestore.js?v=8203edbc:17988
+executeWrite @ firebase_firestore.js?v=8203edbc:17989
+addDoc @ firebase_firestore.js?v=8203edbc:17838
+createCloudBooking @ unified-booking-service.js:594
+createBooking @ unified-booking-service.js:310
+await in createBooking
+(anonymous) @ useUnifiedBookings.js:117
+saveBooking @ PrenotazioneCampi.jsx:697
+callCallback2 @ chunk-E22KYI7D.js?v=8203edbc:3680
+invokeGuardedCallbackDev @ chunk-E22KYI7D.js?v=8203edbc:3705
+invokeGuardedCallback @ chunk-E22KYI7D.js?v=8203edbc:3739
+invokeGuardedCallbackAndCatchFirstError @ chunk-E22KYI7D.js?v=8203edbc:3742
+executeDispatch @ chunk-E22KYI7D.js?v=8203edbc:7046
+processDispatchQueueItemsInOrder @ chunk-E22KYI7D.js?v=8203edbc:7066
+processDispatchQueue @ chunk-E22KYI7D.js?v=8203edbc:7075
+dispatchEventsForPlugins @ chunk-E22KYI7D.js?v=8203edbc:7083
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:7206
+batchedUpdates$1 @ chunk-E22KYI7D.js?v=8203edbc:18966
+batchedUpdates @ chunk-E22KYI7D.js?v=8203edbc:3585
+dispatchEventForPluginEventSystem @ chunk-E22KYI7D.js?v=8203edbc:7205
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-E22KYI7D.js?v=8203edbc:5484
+dispatchEvent @ chunk-E22KYI7D.js?v=8203edbc:5478
+dispatchDiscreteEvent @ chunk-E22KYI7D.js?v=8203edbc:5455
+push-notifications-integration.js:24  POST http://localhost:5173/api/send-push net::ERR_ABORTED 404 (Not Found)
+sendPushNotification @ push-notifications-integration.js:24
+sendBookingConfirmationPush @ push-notifications-integration.js:139
+await in sendBookingConfirmationPush
+saveBooking @ PrenotazioneCampi.jsx:707
+await in saveBooking
+callCallback2 @ chunk-E22KYI7D.js?v=8203edbc:3680
+invokeGuardedCallbackDev @ chunk-E22KYI7D.js?v=8203edbc:3705
+invokeGuardedCallback @ chunk-E22KYI7D.js?v=8203edbc:3739
+invokeGuardedCallbackAndCatchFirstError @ chunk-E22KYI7D.js?v=8203edbc:3742
+executeDispatch @ chunk-E22KYI7D.js?v=8203edbc:7046
+processDispatchQueueItemsInOrder @ chunk-E22KYI7D.js?v=8203edbc:7066
+processDispatchQueue @ chunk-E22KYI7D.js?v=8203edbc:7075
+dispatchEventsForPlugins @ chunk-E22KYI7D.js?v=8203edbc:7083
+(anonymous) @ chunk-E22KYI7D.js?v=8203edbc:7206
+batchedUpdates$1 @ chunk-E22KYI7D.js?v=8203edbc:18966
+batchedUpdates @ chunk-E22KYI7D.js?v=8203edbc:3585
+dispatchEventForPluginEventSystem @ chunk-E22KYI7D.js?v=8203edbc:7205
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-E22KYI7D.js?v=8203edbc:5484
+dispatchEvent @ chunk-E22KYI7D.js?v=8203edbc:5478
+dispatchDiscreteEvent @ chunk-E22KYI7D.js?v=8203edbc:5455
+PrenotazioneCampi.jsx:403 🔄 modalOpen state changed: false
+logger.js:20 🔍 [DEBUG] Tab clicked {tabId: 'prenota-campo', label: 'Prenota Campo', path: '/club/sporting-cat/booking', currentActive: 'admin-bookings', timestamp: '2025-11-12T18:38:56.460Z'}
+logger.js:20 🔍 [DEBUG] handleTabChange called {newTabId: 'prenota-campo', currentTabId: 'admin-bookings', currentPath: '/club/sporting-cat/admin/bookings', clubId: 'sporting-cat', hasClub: true, …}
+logger.js:20 🔍 [DEBUG] Navigating to {tabId: 'prenota-campo', path: '/club/sporting-cat/booking', label: 'Prenota Campo', method: 'replace'}
+auth.jsx:539 🔍 [isEmailVerified] Checking email verification: {email: 'sportingcat@gmil.com', emailVerified: false, skipEmailVerification: true}
+auth.jsx:547 ✅ [isEmailVerified] Email verification SKIPPED (admin override)
+ModernBookingInterface.jsx:593 🕐 Click on time slot: 21:00 isAvailable: true
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 1 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 2 (indoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 3 (coperto) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 4 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 5 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Tennis timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Calcetto timeSlots: 1
+ModernBookingInterface.jsx:972 🏓 Click on court: Campo 2 (indoor) isAvailable: true courtId: xcuhXQ1IO1TPS0M3xlG6
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 1 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 2 (indoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 3 (coperto) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 4 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 5 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Tennis timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Calcetto timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 1 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 2 (indoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 3 (coperto) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 4 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 5 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Tennis timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Calcetto timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 1 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 2 (indoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 3 (coperto) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 4 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 5 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Tennis timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Calcetto timeSlots: 1
+unified-booking-service.js:671 🔍 [loadCloudBookings] Starting Firestore query for bookings...
+unified-booking-service.js:676 ✅ [loadCloudBookings] Firestore query successful: {totalDocs: 380, collectionPath: 'bookings'}
+unified-booking-service.js:716 ✅ [loadCloudBookings] Bookings processed: {total: 380, active: 318}
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 1 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 2 (indoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 3 (coperto) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 4 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 5 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Tennis timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Calcetto timeSlots: 1
+bookingEvents.js:80 📢 [BookingEvents] Emitting BOOKING_CREATED {type: 'court', courtId: 'xcuhXQ1IO1TPS0M3xlG6', courtName: 'Campo 2 (indoor)', date: '2025-11-12', time: '21:00', …}
+unified-booking-service.js:671 🔍 [loadCloudBookings] Starting Firestore query for bookings...
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 1 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 2 (indoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 3 (coperto) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 4 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 5 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Tennis timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Calcetto timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 1 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 2 (indoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 3 (coperto) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 4 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Campo 5 (Outdoor) timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Tennis timeSlots: 1
+ModernBookingInterface.jsx:943 🎾 Rendering court: Calcetto timeSlots: 1
+unified-booking-service.js:676 ✅ [loadCloudBookings] Firestore query successful: {totalDocs: 381, collectionPath: 'bookings'}
+unified-booking-service.js:716 ✅ [loadCloudBookings] Bookings processed: {total: 381, active: 319}
+logger.js:20 🔍 [DEBUG] Admin tab clicked {tabId: 'admin-bookings', label: 'Gestione Campi', path: '/club/sporting-cat/admin/bookings', currentActive: 'prenota-campo', timestamp: '2025-11-12T18:39:11.243Z'}
+logger.js:20 🔍 [DEBUG] handleTabChange called {newTabId: 'admin-bookings', currentTabId: 'prenota-campo', currentPath: '/club/sporting-cat/booking', clubId: 'sporting-cat', hasClub: true, …}
+logger.js:20 🔍 [DEBUG] Navigating to {tabId: 'admin-bookings', path: '/club/sporting-cat/admin/bookings', label: 'Gestione Campi', method: 'replace'}
+PrenotazioneCampi.jsx:403 🔄 modalOpen state changed: false

@@ -243,6 +243,7 @@ export async function createUserIfNeeded(firebaseUser) {
     firstName: extractFirstName(firebaseUser.displayName),
     lastName: extractLastName(firebaseUser.displayName),
     avatar: firebaseUser.photoURL || '',
+    role: 'user', // Default role for Firestore rules compatibility
     globalRole: USER_GLOBAL_ROLES.USER,
     status: USER_STATUS.ACTIVE,
     isActive: true,

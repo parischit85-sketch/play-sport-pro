@@ -1,5 +1,5 @@
 // Service Worker per PlaySport Pro - Enhanced Performance Optimization
-const CACHE_VERSION = 'v1.12.0';
+const CACHE_VERSION = 'v1.14.0';
 const STATIC_CACHE = `playsport-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `playsport-dynamic-${CACHE_VERSION}`;
 const API_CACHE = `playsport-api-${CACHE_VERSION}`;
@@ -45,7 +45,7 @@ const urlsToCache = [
 
 // Enhanced installation with critical resource caching
 self.addEventListener('install', (event) => {
-  console.log('🔧 [SW] Installing Enhanced Service Worker v1.11.0');
+  console.log('🔧 [SW] Installing Enhanced Service Worker v1.14.0');
 
   event.waitUntil(
     caches
@@ -66,7 +66,7 @@ self.addEventListener('install', (event) => {
 
 // Enhanced activation with smart cache cleanup
 self.addEventListener('activate', (event) => {
-  console.log('🚀 [SW] Activating Enhanced Service Worker v1.11.0');
+  console.log('🚀 [SW] Activating Enhanced Service Worker v1.14.0');
 
   event.waitUntil(
     caches
@@ -143,7 +143,7 @@ async function cacheFirstStrategy(request) {
     }
 
     const networkResponse = await fetch(request);
-    if (networkResponse.ok) {
+    if (networkResponse && networkResponse.ok) {
       const cache = await caches.open(STATIC_CACHE);
       // Safely cache response, ignoring CSP/CORS errors
       try {
@@ -154,14 +154,12 @@ async function cacheFirstStrategy(request) {
     }
 
     performanceMetrics.cacheMisses++;
-    return networkResponse;
+    return networkResponse || new Response('Network error', { status: 503 });
   } catch (error) {
-    // Only log non-CSP errors
-    if (!error.message?.includes('Content Security Policy')) {
-      console.warn('⚠️ [SW] Cache first failed:', error);
-    }
+    // Silently handle errors - expected in development
     performanceMetrics.offlineRequests++;
-    return getOfflineFallback(request);
+    const fallback = await getOfflineFallback(request);
+    return fallback || new Response('Offline', { status: 503 });
   }
 }
 
@@ -172,7 +170,7 @@ async function networkFirstStrategy(request) {
   try {
     const networkResponse = await fetch(request);
 
-    if (networkResponse.ok) {
+    if (networkResponse && networkResponse.ok) {
       // Cache successful API responses with TTL
       const cache = await caches.open(API_CACHE);
       const responseToCache = networkResponse.clone();
@@ -195,13 +193,9 @@ async function networkFirstStrategy(request) {
       }
     }
 
-    return networkResponse;
+    return networkResponse || new Response('Network error', { status: 503 });
   } catch (error) {
-    // Only log non-CSP errors
-    if (!error.message?.includes('Content Security Policy')) {
-      console.warn('⚠️ [SW] Network first fallback to cache:', error);
-    }
-
+    // Silently handle errors - expected in development
     const cachedResponse = await caches.match(request);
     if (cachedResponse && isCacheValid(cachedResponse)) {
       performanceMetrics.cacheHits++;
@@ -209,7 +203,11 @@ async function networkFirstStrategy(request) {
     }
 
     performanceMetrics.offlineRequests++;
-    return getApiOfflineFallback(request);
+    const fallback = await getApiOfflineFallback(request);
+    return fallback || new Response(JSON.stringify({ error: 'Offline' }), { 
+      status: 503,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }
 
@@ -223,12 +221,12 @@ async function staleWhileRevalidateStrategy(request) {
   // Fetch in background to update cache
   const fetchPromise = fetch(request)
     .then((networkResponse) => {
-      if (networkResponse.ok) {
+      if (networkResponse && networkResponse.ok) {
         cache.put(request, networkResponse.clone());
       }
-      return networkResponse;
+      return networkResponse || cachedResponse || new Response('Network error', { status: 503 });
     })
-    .catch(() => cachedResponse);
+    .catch(() => cachedResponse || new Response('Offline', { status: 503 }));
 
   if (cachedResponse) {
     performanceMetrics.cacheHits++;
@@ -251,16 +249,21 @@ async function dynamicCacheStrategy(request) {
     }
 
     const networkResponse = await fetch(request);
-    if (networkResponse.ok) {
+    if (networkResponse && networkResponse.ok) {
       const cache = await caches.open(DYNAMIC_CACHE);
-      cache.put(request, networkResponse.clone());
+      try {
+        cache.put(request, networkResponse.clone());
+      } catch (cacheError) {
+        // Silently ignore cache errors
+      }
     }
 
     performanceMetrics.cacheMisses++;
-    return networkResponse;
+    return networkResponse || new Response('Network error', { status: 503 });
   } catch (error) {
     performanceMetrics.offlineRequests++;
-    return getOfflineFallback(request);
+    const fallback = await getOfflineFallback(request);
+    return fallback || new Response('Offline', { status: 503 });
   }
 }
 

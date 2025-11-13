@@ -1,0 +1,487 @@
+{
+  "project": "m-padelweb",
+  "database": "Firestore",
+  "timestamp": "2025-01-15T00:00:00Z",
+  "collections": {
+    "bookings": {
+      "type": "root_collection",
+      "purpose": "Store all court and lesson bookings",
+      "documentCount": "300-1000",
+      "estimatedSize": "3-10 MB",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Firestore document ID",
+          "indexed": false
+        },
+        "userId": {
+          "type": "string",
+          "description": "Booker's Firebase UID",
+          "indexed": true,
+          "searchable": true
+        },
+        "courtId": {
+          "type": "string",
+          "description": "Court identifier",
+          "indexed": true
+        },
+        "date": {
+          "type": "string",
+          "format": "YYYY-MM-DD",
+          "description": "Booking date",
+          "indexed": true
+        },
+        "time": {
+          "type": "string",
+          "format": "HH:mm",
+          "description": "Booking start time",
+          "indexed": true
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in minutes (60, 90, 120)",
+          "indexed": false
+        },
+        "status": {
+          "type": "enum",
+          "values": ["confirmed", "cancelled", "pending"],
+          "description": "Booking status",
+          "indexed": true
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "Creator's Firebase UID",
+          "indexed": true,
+          "queryable": true
+        },
+        "createdAt": {
+          "type": "Timestamp",
+          "description": "Server timestamp of creation",
+          "indexed": true,
+          "sortable": "descending"
+        },
+        "updatedAt": {
+          "type": "Timestamp",
+          "description": "Last update timestamp",
+          "indexed": false
+        },
+        "clubId": {
+          "type": "string",
+          "description": "Club reference",
+          "indexed": true
+        },
+        "courtName": {
+          "type": "string",
+          "description": "Human-readable court name",
+          "indexed": false
+        },
+        "price": {
+          "type": "number",
+          "description": "Booking price in €",
+          "indexed": false
+        },
+        "lighting": {
+          "type": "boolean",
+          "description": "Court has lighting",
+          "indexed": false
+        },
+        "heating": {
+          "type": "boolean",
+          "description": "Court has heating",
+          "indexed": false
+        },
+        "bookedForUserId": {
+          "type": "string",
+          "description": "Cross-club visibility user ID (optional)",
+          "indexed": false,
+          "optional": true
+        },
+        "isLessonBooking": {
+          "type": "boolean",
+          "description": "Is this a lesson booking",
+          "indexed": false
+        },
+        "instructorId": {
+          "type": "string",
+          "description": "Instructor reference (for lessons)",
+          "indexed": true
+        },
+        "type": {
+          "type": "enum",
+          "values": ["court", "lesson"],
+          "description": "Booking type",
+          "indexed": true
+        },
+        "color": {
+          "type": "string",
+          "description": "UI color code",
+          "indexed": false,
+          "optional": true
+        },
+        "players": {
+          "type": "array",
+          "itemType": "object",
+          "description": "List of players",
+          "indexed": false
+        },
+        "notes": {
+          "type": "string",
+          "description": "User notes",
+          "indexed": false
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "Booker email",
+          "indexed": false,
+          "sensitive": true
+        },
+        "userPhone": {
+          "type": "string",
+          "description": "Booker phone",
+          "indexed": false,
+          "sensitive": true
+        },
+        "medicalCertificate": {
+          "type": "object",
+          "description": "Medical certificate data",
+          "fields": {
+            "expiresAt": "Timestamp",
+            "status": "string",
+            "validated": "boolean"
+          },
+          "optional": true
+        }
+      },
+      "subcollections": [
+        {
+          "name": "clubs/{clubId}/bookings",
+          "purpose": "Booking statistics per club",
+          "schema": "Same as root bookings"
+        }
+      ],
+      "indexes": [
+        {
+          "id": 1,
+          "fields": [
+            { "fieldPath": "createdBy", "order": "ASCENDING" },
+            { "fieldPath": "date", "order": "DESCENDING" },
+            { "fieldPath": "time", "order": "DESCENDING" }
+          ],
+          "purpose": "User bookings timeline query",
+          "status": "DEPLOYED"
+        },
+        {
+          "id": 2,
+          "fields": [
+            { "fieldPath": "clubId", "order": "ASCENDING" },
+            { "fieldPath": "bookedBy", "order": "ASCENDING" },
+            { "fieldPath": "status", "order": "ASCENDING" }
+          ],
+          "purpose": "Club bookings by creator",
+          "status": "DEPLOYED"
+        },
+        {
+          "id": 3,
+          "fields": [
+            { "fieldPath": "clubId", "order": "ASCENDING" },
+            { "fieldPath": "date", "order": "ASCENDING" },
+            { "fieldPath": "status", "order": "ASCENDING" }
+          ],
+          "purpose": "Court availability by date",
+          "status": "DEPLOYED"
+        },
+        {
+          "id": 4,
+          "fields": [
+            { "fieldPath": "instructorId", "order": "ASCENDING" },
+            { "fieldPath": "status", "order": "ASCENDING" },
+            { "fieldPath": "date", "order": "ASCENDING" }
+          ],
+          "purpose": "Instructor lesson bookings",
+          "status": "DEPLOYED"
+        }
+      ],
+      "securityRules": {
+        "read": "isAuthenticated()",
+        "create": "isAuthenticated() && request.resource.data.userId == request.auth.uid",
+        "update": "isOwner(resource.data.userId) || isClubAdmin() || isAdmin()",
+        "delete": "isOwner(resource.data.userId) || isAdmin()"
+      },
+      "growthRate": "50-100 docs/month"
+    },
+    "users": {
+      "type": "root_collection",
+      "purpose": "User profiles and authentication data",
+      "documentCount": "50-500",
+      "estimatedSize": "1-5 MB",
+      "fields": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Authentication UID (doc ID)",
+          "indexed": true
+        },
+        "email": {
+          "type": "string",
+          "description": "User email",
+          "indexed": true,
+          "unique": true,
+          "sensitive": true
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name",
+          "indexed": false
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "Profile photo URL",
+          "indexed": false
+        },
+        "role": {
+          "type": "enum",
+          "values": ["user", "instructor", "club_admin", "admin"],
+          "description": "User role for RBAC",
+          "indexed": false,
+          "protected": true
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number",
+          "indexed": false,
+          "sensitive": true
+        },
+        "clubId": {
+          "type": "string",
+          "description": "Primary club affiliation",
+          "indexed": false
+        },
+        "createdAt": {
+          "type": "Timestamp",
+          "description": "Account creation date",
+          "indexed": false
+        },
+        "updatedAt": {
+          "type": "Timestamp",
+          "description": "Last profile update",
+          "indexed": false
+        }
+      },
+      "securityRules": {
+        "read": "isOwner(userId) || isAdmin()",
+        "create": "isAuthenticated() && request.auth.uid == userId",
+        "update": "isOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])",
+        "delete": "isAdmin()"
+      }
+    },
+    "clubs": {
+      "type": "root_collection",
+      "purpose": "Club information and settings",
+      "documentCount": "1-50",
+      "estimatedSize": "50-500 KB",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Club identifier (doc ID)",
+          "indexed": false
+        },
+        "name": {
+          "type": "string",
+          "description": "Club name",
+          "indexed": false
+        },
+        "location": {
+          "type": "string",
+          "description": "Physical location",
+          "indexed": false
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Owner's Firebase UID",
+          "indexed": true
+        },
+        "verified": {
+          "type": "boolean",
+          "description": "Club verification status",
+          "indexed": false
+        },
+        "createdAt": {
+          "type": "Timestamp",
+          "description": "Creation date",
+          "indexed": false
+        }
+      },
+      "subcollections": [
+        {
+          "name": "clubs/{clubId}/bookings",
+          "purpose": "Booking statistics"
+        },
+        {
+          "name": "clubs/{clubId}/courts",
+          "purpose": "Club courts"
+        },
+        {
+          "name": "clubs/{clubId}/instructors",
+          "purpose": "Club instructors"
+        },
+        {
+          "name": "clubs/{clubId}/players",
+          "purpose": "Club members"
+        },
+        {
+          "name": "clubs/{clubId}/tournaments",
+          "purpose": "Club tournaments"
+        }
+      ],
+      "securityRules": {
+        "read": true,
+        "create": "isAdmin()",
+        "update": "isClubOwner(clubId) || isAdmin()",
+        "delete": "isAdmin()"
+      }
+    },
+    "tournaments": {
+      "type": "root_collection",
+      "purpose": "Tournament management",
+      "documentCount": "10-100",
+      "estimatedSize": "1-5 MB",
+      "fields": {
+        "id": {
+          "type": "string",
+          "description": "Tournament ID",
+          "indexed": false
+        },
+        "name": {
+          "type": "string",
+          "description": "Tournament name",
+          "indexed": false
+        },
+        "clubId": {
+          "type": "string",
+          "description": "Organizing club",
+          "indexed": true
+        },
+        "status": {
+          "type": "enum",
+          "values": ["draft", "active", "completed"],
+          "description": "Tournament status",
+          "indexed": true
+        },
+        "startDate": {
+          "type": "Timestamp",
+          "description": "Start date",
+          "indexed": false
+        },
+        "endDate": {
+          "type": "Timestamp",
+          "description": "End date",
+          "indexed": false
+        }
+      },
+      "securityRules": {
+        "read": true,
+        "create": "isClubAdmin() || isAdmin()",
+        "update": "isClubAdmin() || isAdmin()",
+        "delete": "isAdmin()"
+      }
+    },
+    "pushSubscriptions": {
+      "type": "root_collection",
+      "purpose": "Push notification subscriptions",
+      "documentCount": "100-1000",
+      "estimatedSize": "500 KB - 5 MB",
+      "fields": {
+        "userId": {
+          "type": "string",
+          "description": "User ID",
+          "indexed": true
+        },
+        "subscription": {
+          "type": "object",
+          "description": "Push subscription object",
+          "indexed": false
+        },
+        "createdAt": {
+          "type": "Timestamp",
+          "description": "Subscription date",
+          "indexed": true,
+          "sortable": "descending"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Is subscription active",
+          "indexed": false
+        }
+      },
+      "indexes": [
+        {
+          "fields": [
+            { "fieldPath": "userId", "order": "ASCENDING" },
+            { "fieldPath": "createdAt", "order": "DESCENDING" }
+          ],
+          "purpose": "Get user's subscriptions by date",
+          "status": "DEPLOYED"
+        }
+      ],
+      "securityRules": {
+        "read": "isOwner(resource.data.userId) || isAdmin()",
+        "create": "isAuthenticated() && request.resource.data.userId == request.auth.uid",
+        "update": "isAuthenticated() && request.resource.data.userId == request.auth.uid",
+        "delete": "isOwner(resource.data.userId) || isAdmin()"
+      }
+    }
+  },
+  "commonQueries": [
+    {
+      "name": "Get user bookings",
+      "collection": "bookings",
+      "where": [
+        ["createdBy", "==", "userId"]
+      ],
+      "orderBy": [
+        ["createdAt", "desc"]
+      ],
+      "indexRequired": 1,
+      "codeExample": "query(collection(db, 'bookings'), where('createdBy', '==', userId), orderBy('createdAt', 'desc'))"
+    },
+    {
+      "name": "Check court availability",
+      "collection": "bookings",
+      "where": [
+        ["clubId", "==", "clubId"],
+        ["date", "==", "bookingDate"],
+        ["status", "!=", "cancelled"]
+      ],
+      "indexRequired": 3,
+      "codeExample": "query(collection(db, 'bookings'), where('clubId', '==', clubId), where('date', '==', date), where('status', '!=', 'cancelled'))"
+    },
+    {
+      "name": "Get instructor lessons",
+      "collection": "bookings",
+      "where": [
+        ["instructorId", "==", "instructorId"],
+        ["type", "==", "lesson"]
+      ],
+      "orderBy": [
+        ["date", "asc"]
+      ],
+      "indexRequired": 4,
+      "codeExample": "query(collection(db, 'bookings'), where('instructorId', '==', instructorId), where('type', '==', 'lesson'), orderBy('date', 'asc'))"
+    }
+  ],
+  "deploymentStatus": {
+    "firestore_rules": "✅ DEPLOYED",
+    "firestore_indexes": "✅ DEPLOYED (12 indexes)",
+    "security_enabled": true,
+    "rbac_implemented": true
+  },
+  "notes": [
+    "All timestamps are server-generated to prevent clock-skew issues",
+    "Dates for bookings are stored as YYYY-MM-DD strings for easier filtering",
+    "Soft deletes are used - bookings are never physically deleted",
+    "Dual-write pattern: bookings written to both root and club subcollection",
+    "Medical certificates stored inline in booking documents",
+    "Cross-club visibility via bookedForUserId field",
+    "Real-time sync uses onSnapshot subscriptions",
+    "All sensitive fields (email, phone) are protected by Firestore rules"
+  ]
+}

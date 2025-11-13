@@ -39,7 +39,10 @@ async function sendPushNotification(subscription, options) {
     logger.debug('Push notification sent successfully');
     return true;
   } catch (error) {
-    logger.error('Error sending push notification:', error);
+    // Only log in production - expected to fail in dev (no backend)
+    if (import.meta.env.PROD) {
+      logger.error('Error sending push notification:', error);
+    }
     return false;
   }
 }

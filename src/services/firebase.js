@@ -2,7 +2,7 @@
 // FILE: src/services/firebase.js
 // =============================================
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
@@ -42,10 +42,24 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 // Keep it simple and compatible with test mocks
 let db;
 try {
-  db = getFirestore(app);
-} catch {
-  // In isolated test mocks, getFirestore might be missing; provide a harmless stub
-  db = {};
+  // Use specific Firestore database if specified in env (e.g., for restored backups)
+  const databaseId = env.VITE_FIRESTORE_DATABASE_ID;
+  
+  if (databaseId && databaseId !== '(default)') {
+    // Initialize with specific database ID for restored backups
+    db = initializeFirestore(app, { databaseId });
+  } else {
+    // Use default database
+    db = getFirestore(app);
+  }
+} catch (error) {
+  // If already initialized or in test mode, try to get existing instance
+  try {
+    db = getFirestore(app);
+  } catch {
+    // In isolated test mocks, provide a harmless stub
+    db = {};
+  }
 }
 const auth = getAuth(app);
 const storage = getStorage(app);

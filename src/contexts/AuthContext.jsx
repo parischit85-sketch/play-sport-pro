@@ -325,6 +325,22 @@ export function AuthProvider({ children }) {
               profileKeys: Object.keys(profile || {}),
             });
 
+            // 🔧 FIX: Add missing role field for legacy users
+            if (!profile?.role && profile?.globalRole === 'user') {
+              console.log('⚠️ [AuthContext] User missing role field, adding default...');
+              try {
+                const { doc, updateDoc } = await import('firebase/firestore');
+                const { db } = await import('@services/firebase');
+                const userRef = doc(db, 'users', firebaseUser.uid);
+                await updateDoc(userRef, { role: 'user' });
+                profile.role = 'user'; // Update local profile
+                console.log('✅ [AuthContext] Role field added successfully');
+              } catch (roleError) {
+                console.warn('⚠️ [AuthContext] Could not add role field:', roleError.message);
+                // Non blocca il login, l'utente può comunque procedere
+              }
+            }
+
             setUserProfile(profile);
 
             // Merge profile data with Firebase user (include skipEmailVerification)

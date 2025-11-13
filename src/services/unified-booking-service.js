@@ -117,19 +117,14 @@ function setupRealtimeSubscriptions(clubId = null) {
   if (subscriptions.has(subKey)) return; // Already subscribed
 
   try {
-    // Base query
+    // Optimized query: removed 'where' with '!=' operator (requires composite index)
+    // Instead, we filter cancelled bookings in client-side code below
+    // This improves performance and avoids composite index requirement
     let qBase = query(
       collection(db, COLLECTIONS.BOOKINGS),
-      where('status', '!=', 'cancelled'),
-      orderBy('status'),
       orderBy('date', 'asc'),
       orderBy('time', 'asc')
     );
-    // Se clubId presente, aggiungere filtro clubId (richiede indice Firestore)
-    if (clubId) {
-      // Firestore non consente aggiungere where dopo orderBy multipli senza indice; potremmo necessitare di query separata (semplificata).
-      // Per compatibilità, facciamo una query secondaria filtrando in memoria se l'indice non è pronto.
-    }
 
     const unsubscribe = onSnapshot(qBase, (snapshot) => {
       const bookings = snapshot.docs.map((d) => {
@@ -150,9 +145,13 @@ function setupRealtimeSubscriptions(clubId = null) {
         return finalBooking;
       });
 
-      const filtered = clubId
-        ? bookings.filter((b) => b.clubId === clubId || (!b.clubId && clubId === 'default-club'))
-        : bookings;
+      // Filter out cancelled bookings on client side (better performance than Firestore != operator)
+      let filtered = bookings.filter((b) => b.status !== BOOKING_STATUS.CANCELLED);
+      
+      if (clubId) {
+        filtered = filtered.filter((b) => b.clubId === clubId || (!b.clubId && clubId === 'default-club'));
+      }
+      
       bookingCache.set(subKey, filtered);
 
       emit('bookingsUpdated', { type: subKey, bookings: filtered });
@@ -292,20 +291,43 @@ export async function createBooking(bookingData, user, options = {}) {
     courtBookingId: bookingData.courtBookingId, // Reference to associated court booking
 
     // Metadata
-    status: BOOKING_STATUS.CONFIRMED,
+    status: BOOKING_STATUS.PENDING,
     createdBy: user?.uid || null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     clubId: clubId || 'default-club',
+    userId: user?.uid,
+    startTime: new Date(`${bookingData.date}T${bookingData.time}:00`).getTime(),
+
+    // CRITICITÀ 2: Admin booking metadata
+    isAdminCreated: options.isAdminCreated || false,
+    createdByRole: options.createdByRole || 'user',
+    adminNotes: options.adminNotes || null,
+    isProxyBooking: options.isProxyBooking || false,
+    proxyBookedBy: options.proxyBookedBy || null,
+    proxyRelation: options.proxyRelation || null,
   };
+
+  console.log('🏢 [createBooking] CLUB ID CHECK:', {
+    passedClubId: clubId,
+    finalClubId: booking.clubId,
+    userUid: user?.uid,
+    courtId: booking.courtId,
+  });
 
   let result;
 
   if (useCloudStorage && user) {
     try {
       result = await createCloudBooking(booking);
-    } catch {
+      
+      // CRITICAL FIX: Invalidate cache after creating booking
+      // This ensures new bookings are immediately visible
+      bookingCache.clear();
+      console.log('✅ [createBooking] Cache invalidated after creating booking');
+    } catch (error) {
       // Fallback to local storage on cloud error
+      console.warn('Cloud booking failed, using local storage:', error);
       result = createLocalBooking(booking);
     }
   } else {
@@ -314,8 +336,62 @@ export async function createBooking(bookingData, user, options = {}) {
 
   // Emit event for real-time updates
   emitBookingCreated(result);
-
   return result;
+}
+
+/**
+ * CRITICITÀ 2: Create admin booking with special permissions and metadata
+ * 
+ * @param {Object} bookingData - Booking details
+ * @param {Object} adminUser - The admin user creating the booking
+ * @param {Object} options - Additional options
+ * @param {string} options.targetUserId - If proxy booking, the user being booked for
+ * @param {string} options.proxyRelation - admin|parent|coach
+ * @param {string} options.adminNotes - Internal admin notes
+ * @returns {Promise<Object>} Created booking
+ */
+export async function createAdminBooking(bookingData, adminUser, options = {}) {
+  if (!adminUser) {
+    throw new Error('Admin user required for admin booking');
+  }
+
+  // Determine user role from adminUser object
+  const userRole = adminUser.role || 'user';
+  
+  // Verify admin has permission (club_admin or admin)
+  if (!['club_admin', 'admin'].includes(userRole)) {
+    throw new Error('Insufficient permissions: Only club admins and super admins can create admin bookings');
+  }
+
+  // Determine if this is a proxy booking
+  const isProxyBooking = !!options.targetUserId && options.targetUserId !== adminUser.uid;
+  
+  // For proxy bookings, userId should be the target user
+  // For regular admin bookings, userId is the admin
+  const effectiveUserId = isProxyBooking ? options.targetUserId : adminUser.uid;
+
+  console.log('🔐 [createAdminBooking] Creating admin booking:', {
+    adminUid: adminUser.uid,
+    adminRole: userRole,
+    isProxyBooking,
+    targetUserId: options.targetUserId,
+    effectiveUserId,
+    clubId: bookingData.clubId,
+  });
+
+  // Call regular createBooking with admin metadata
+  return createBooking(bookingData, adminUser, {
+    ...options,
+    // Admin metadata - CRITICITÀ 2
+    isAdminCreated: true,
+    createdByRole: userRole,
+    adminNotes: options.adminNotes || null,
+    isProxyBooking,
+    proxyBookedBy: isProxyBooking ? adminUser.uid : null,
+    proxyRelation: options.proxyRelation || (isProxyBooking ? 'admin' : null),
+    // Override userId for proxy bookings
+    userId: effectiveUserId,
+  });
 }
 
 /**
@@ -334,6 +410,10 @@ export async function updateBooking(bookingId, updates, user) {
   if (useCloudStorage && user) {
     try {
       result = await updateCloudBooking(bookingId, updateData);
+      
+      // CRITICAL FIX: Invalidate cache after updating booking
+      bookingCache.clear();
+      console.log('✅ [updateBooking] Cache invalidated after updating booking');
     } catch {
       // Fallback to local storage on cloud error
       result = updateLocalBooking(bookingId, updateData);
@@ -376,6 +456,10 @@ export async function deleteBooking(bookingId, user) {
   if (useCloudStorage && user) {
     try {
       await deleteCloudBooking(bookingId);
+      
+      // CRITICAL FIX: Invalidate cache after deleting booking
+      bookingCache.clear();
+      console.log('✅ [deleteBooking] Cache invalidated after deleting booking');
 
       scheduleSync(400);
     } catch {
@@ -433,7 +517,9 @@ export async function getPublicBookings(options = {}) {
 
   if (useCloudStorage) {
     try {
-      bookings = await loadCloudBookings();
+      // CRITICAL FIX: Pass clubId to loadCloudBookings for security rules compliance
+      // Club admins can only read bookings with matching clubId filter
+      bookings = await loadCloudBookings(clubId);
     } catch {
       // Fallback to local storage on cloud error
       bookings = loadLocalBookings();
@@ -448,7 +534,15 @@ export async function getPublicBookings(options = {}) {
   // Filter by clubId if provided
   if (clubId) {
     const isLegacyClub = ['sporting-cat', 'default-club'].includes(clubId);
-    bookings = bookings.filter((b) => b.clubId === clubId || (isLegacyClub && !b.clubId));
+    bookings = bookings.filter(
+      (b) =>
+        b.clubId === clubId ||
+        (isLegacyClub && !b.clubId) ||
+        // If filtering for sporting-cat, also include default-club bookings
+        (clubId === 'sporting-cat' && b.clubId === 'default-club') ||
+        // If filtering for default-club, also include sporting-cat bookings
+        (clubId === 'default-club' && b.clubId === 'sporting-cat')
+    );
   }
 
   if (!includeLesson) {
@@ -560,13 +654,15 @@ export async function getUserBookings(user, options = {}) {
 
 /**
  * Get lesson bookings specifically
+ * @param {Object} user - Optional user object to filter by user
+ * @param {string} clubId - Optional clubId to filter by club (required for club admins)
  */
-export async function getLessonBookings(user = null) {
+export async function getLessonBookings(user = null, clubId = null) {
   if (user) {
-    return getUserBookings(user, { lessonOnly: true });
+    return getUserBookings(user, { lessonOnly: true, clubId });
   }
 
-  const allBookings = await getPublicBookings();
+  const allBookings = await getPublicBookings({ clubId });
   return allBookings.filter((b) => b.isLessonBooking);
 }
 
@@ -661,28 +757,44 @@ async function deleteCloudBooking(bookingId) {
   await deleteDoc(docRef);
 }
 
-async function loadCloudBookings() {
-  console.log('🔍 [loadCloudBookings] Starting Firestore query for bookings...');
-  const q = query(collection(db, COLLECTIONS.BOOKINGS));
+async function loadCloudBookings(clubId = null) {
+  console.log('🔍 [loadCloudBookings] Starting Firestore query for bookings...', { clubId });
+  
+  // CRITICAL FIX: Add clubId filter for security rules compliance
+  // Club admins can ONLY read bookings with their clubId
+  let q = query(collection(db, COLLECTIONS.BOOKINGS));
+  
+  if (clubId) {
+    q = query(
+      collection(db, COLLECTIONS.BOOKINGS),
+      where('clubId', '==', clubId)
+    );
+    console.log('✅ [loadCloudBookings] Applied clubId filter:', clubId);
+  }
 
   try {
     const snapshot = await getDocs(q);
     console.log('✅ [loadCloudBookings] Firestore query successful:', {
       totalDocs: snapshot.docs.length,
       collectionPath: COLLECTIONS.BOOKINGS,
+      clubIdFilter: clubId || 'none',
     });
 
     const allBookings = snapshot.docs.map((d) => {
       const raw = d.data() || {};
-      const legacyId = raw.id && raw.id !== d.id ? raw.id : raw.legacyId; // support both old & new storage
+      const customId = raw.id; // Custom ID saved in document
+      const legacyId = raw.legacyId;
       const { id, ...rest } = raw; // eslint-disable-line no-unused-vars
 
       const processedBooking = {
         ...rest,
-        id: d.id,
-        legacyId,
+        id: customId || d.id, // Prefer custom ID, fallback to Firestore ID
+        firestoreId: d.id, // Always save Firestore document ID
+        legacyId: legacyId || customId,
         createdAt: raw.createdAt?.toDate?.()?.toISOString() || raw.createdAt,
         updatedAt: raw.updatedAt?.toDate?.()?.toISOString() || raw.updatedAt,
+        // Calculate 'start' field from date + time for PrenotazioneCampi compatibility
+        start: raw.date && raw.time ? `${raw.date}T${raw.time}:00` : raw.start,
       };
 
       return processedBooking;
@@ -780,16 +892,24 @@ function loadLocalBookings() {
 }
 
 // Sync localStorage with cloud (debounced externally)
+// NOTE: This sync is only for users with global read access (admins)
+// Club admins will get permission-denied, which is expected
 async function syncLocalWithCloud() {
   if (!useCloudStorage || migrationInProgress) return;
   try {
-    const cloudBookings = await loadCloudBookings();
+    // This will fail for club_admin users (no global read access)
+    // Only super admins can read all bookings without clubId filter
+    const cloudBookings = await loadCloudBookings(); // No clubId = all bookings
     const activeCloudBookings = cloudBookings.filter(
       (b) => (b.status || BOOKING_STATUS.CONFIRMED) !== BOOKING_STATUS.CANCELLED
     );
     localStorage.setItem(STORAGE_KEY, JSON.stringify(activeCloudBookings));
-  } catch {
-    // Ignore localStorage errors
+  } catch (error) {
+    // Expected for club_admin users - they don't have global read access
+    // Only log if it's NOT a permission error
+    if (error?.code !== 'permission-denied') {
+      console.error('❌ [syncLocalWithCloud] Unexpected error:', error);
+    }
   }
 }
 
@@ -1002,6 +1122,9 @@ function timeToMinutes(time) {
   return hours * 60 + minutes;
 }
 
+/**
+ * Calculate end time from start date, time and duration
+ */
 function normalizeTime(t) {
   if (!t) return t;
   const match = String(t)

@@ -1,0 +1,169 @@
+// =============================================
+// FILE: src/services/unified-booking-service.js
+// SERVIZIO UNIFICATO PER TUTTE LE PRENOTAZIONI
+// DEBUG LOGS CLEANED - Updated
+// FROM BACKUP 30-10-2025
+// =============================================
+import {
+  collection,
+  doc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  setDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
+  getDoc,
+} from 'firebase/firestore';
+import { db } from './firebase.js';
+import { invalidateUserBookingsCache } from '@hooks/useBookingPerformance.js';
+import {
+  emitBookingCreated,
+  emitBookingUpdated,
+  emitBookingDeleted,
+} from '@utils/bookingEvents.js';
+import { calculateCertificateStatus } from './medicalCertificates.js';
+
+// =============================================
+// CONSTANTS
+// =============================================
+const STORAGE_KEY = 'unified-bookings';
+const COLLECTIONS = {
+  BOOKINGS: 'bookings',
+};
+
+const BOOKING_STATUS = {
+  CONFIRMED: 'confirmed',
+  CANCELLED: 'cancelled',
+  PENDING: 'pending',
+};
+
+const BOOKING_TYPES = {
+  COURT: 'court',
+  LESSON: 'lesson',
+};
+
+// =============================================
+// GLOBAL STATE MANAGEMENT
+// =============================================
+let useCloudStorage = false;
+let bookingCache = new Map(); // chiave: `${scope}|${clubId||'all'}`
+let subscriptions = new Map();
+// Track the current authenticated user for optional cloud ops
+let currentUser = null;
+// Initialization & migration guards
+const MIGRATION_FLAG_KEY = 'unified-bookings-migration-done-v1';
+let initialized = false;
+let migrationInProgress = false;
+let pendingSyncTimeout = null;
+
+// Event emitter per notifiche real-time
+const eventListeners = new Map();
+
+function emit(event, data) {
+  const listeners = eventListeners.get(event) || [];
+  listeners.forEach((callback) => callback(data));
+}
+
+export function addEventListener(event, callback) {
+  if (!eventListeners.has(event)) {
+    eventListeners.set(event, []);
+  }
+  eventListeners.get(event).push(callback);
+
+  // Return unsubscribe function
+  return () => {
+    const listeners = eventListeners.get(event) || [];
+    const index = listeners.indexOf(callback);
+    if (index > -1) listeners.splice(index, 1);
+  };
+}
+
+// =============================================
+// CONFIGURATION
+// =============================================
+export function initialize(options = {}) {
+  if (initialized) {
+    return;
+  }
+
+  initialized = true; // Mark as initialized to prevent multiple calls
+  useCloudStorage = options.cloudEnabled || false;
+  currentUser = options.user || null;
+
+  // ClubId non persistito qui: passato per ogni operazione (scelta multi-club)
+
+  if (useCloudStorage) {
+    setupRealtimeSubscriptions();
+    // One-time migration, then sync
+    if (!localStorage.getItem(MIGRATION_FLAG_KEY)) {
+      migrationInProgress = true;
+      migrateOldData()
+        .catch((e) => console.warn('Migration failed:', e))
+        .finally(() => {
+          localStorage.setItem(MIGRATION_FLAG_KEY, '1');
+          migrationInProgress = false;
+          scheduleSync(300);
+        });
+    } else {
+      scheduleSync(300);
+    }
+  }
+  initialized = true;
+}
+
+function setupRealtimeSubscriptions(clubId = null) {
+  const subKey = `public|${clubId || 'all'}`;
+  if (subscriptions.has(subKey)) return; // Already subscribed
+
+  try {
+    // Base query
+    let qBase = query(
+      collection(db, COLLECTIONS.BOOKINGS),
+      where('status', '!=', 'cancelled'),
+      orderBy('status'),
+      orderBy('date', 'asc'),
+      orderBy('time', 'asc')
+    );
+    // Se clubId presente, aggiungere filtro clubId (richiede indice Firestore)
+    if (clubId) {
+      // Firestore non consente aggiungere where dopo orderBy multipli senza indice; potremmo necessitare di query separata (semplificata).
+      // Per compatibilità, facciamo una query secondaria filtrando in memoria se l'indice non è pronto.
+    }
+
+    const unsubscribe = onSnapshot(qBase, (snapshot) => {
+      const bookings = snapshot.docs.map((d) => {
+        const raw = d.data() || {};
+        // Preserve legacy custom id (stored previously inside document data as 'id')
+        const legacyId = raw.id && raw.id !== d.id ? raw.id : undefined;
+        // Avoid overwriting Firestore doc.id with embedded raw.id
+        const { id: _discardId, ...rest } = raw; // eslint-disable-line no-unused-vars
+
+        const finalBooking = {
+          ...rest,
+          id: d.id, // Canonical identifier
+          legacyId, // Optional: useful for debugging / future migration
+          createdAt: raw.createdAt?.toDate?.()?.toISOString() || raw.createdAt,
+          updatedAt: raw.updatedAt?.toDate?.()?.toISOString() || raw.updatedAt,
+        };
+
+        return finalBooking;
+      });
+
+      const filtered = clubId
+        ? bookings.filter((b) => b.clubId === clubId || (!b.clubId && clubId === 'default-club'))
+        : bookings;
+      bookingCache.set(subKey, filtered);
+
+      emit('bookingsUpdated', { type: subKey, bookings: filtered });
+    });
+
+    subscriptions.set(subKey, unsubscribe);
+  } catch (_error) {
+    // Ignore subscription errors
+  }
+}

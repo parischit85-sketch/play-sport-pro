@@ -48,6 +48,7 @@ export function useUnifiedBookings(options = {}) {
           forceRefresh,
           clubId,
         });
+
         setBookings(allBookings);
 
         // Load user-specific bookings if user is available
@@ -58,7 +59,8 @@ export function useUnifiedBookings(options = {}) {
 
         // Load lesson bookings if requested
         if (autoLoadLessons) {
-          const lessonData = await UnifiedBookingService.getLessonBookings();
+          // CRITICAL FIX: Pass clubId for security rules compliance
+          const lessonData = await UnifiedBookingService.getLessonBookings(null, clubId);
           setLessonBookings(lessonData);
         }
       } catch (err) {
@@ -88,17 +90,15 @@ export function useUnifiedBookings(options = {}) {
 
     const unsubscribeCreated = UnifiedBookingService.addEventListener(
       'bookingCreated',
-      (booking) => {
+      (_booking) => {
         loadBookings(true); // Refresh all data
       }
     );
 
     const unsubscribeDeleted = UnifiedBookingService.addEventListener(
       'bookingDeleted',
-      ({ id }) => {
-        setBookings((prev) => prev.filter((b) => b.id !== id));
-        setUserBookings((prev) => prev.filter((b) => b.id !== id));
-        setLessonBookings((prev) => prev.filter((b) => b.id !== id));
+      (_bookingId) => {
+        loadBookings(true); // Refresh all data
       }
     );
 
@@ -107,7 +107,7 @@ export function useUnifiedBookings(options = {}) {
       unsubscribeCreated();
       unsubscribeDeleted();
     };
-  }, [enableRealtime, loadBookings]);
+  }, [enableRealtime, loadBookings, clubId]);
 
   // Booking operations
   const createBooking = useCallback(
@@ -316,7 +316,8 @@ export function useLessonBookings(options = {}) {
   );
 
   const clearAllLessons = useCallback(async () => {
-    const allLessons = await UnifiedBookingService.getLessonBookings();
+    // CRITICAL FIX: Pass clubId for security rules compliance
+    const allLessons = await UnifiedBookingService.getLessonBookings(null, clubId);
 
     for (const lesson of allLessons) {
       try {
@@ -336,7 +337,7 @@ export function useLessonBookings(options = {}) {
     await refresh(true);
 
     return allLessons.length;
-  }, [user, refresh]);
+  }, [user, clubId, refresh]);
 
   return {
     lessonBookings,
