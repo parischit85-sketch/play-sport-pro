@@ -223,6 +223,17 @@ service cloud.firestore {
     }
     
     // ==========================================
+    // PUBLIC TOURNAMENTS INDEX (for "Tornei Live")
+    // ==========================================
+    match /publicTournaments/{indexId} {
+  // Read: Public (anyone can see the list of live tournaments)
+  allow read: if true;
+      
+      // Write: Admins and club admins (via Cloud Functions/admin panel)
+      allow write: if isAdmin() || isClubAdmin();
+    }
+    
+    // ==========================================
     // NOTIFICATIONS COLLECTION
     // ==========================================
     match /notifications/{notificationId} {
@@ -352,22 +363,26 @@ service cloud.firestore {
     }
     
     match /clubs/{clubId}/tournaments/{tournamentId} {
-      allow read: if isAuthenticated();
+      // Public read allowed ONLY if tournament has publicView.enabled == true
+      allow read: if isAuthenticated() || resource.data.publicView.enabled == true;
       allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
       
       // Tournament subcollections: standings, matches, teams
       match /standings/{standingId} {
-        allow read: if isAuthenticated();
+        // Public read if parent tournament public view is enabled
+        allow read: if isAuthenticated() || get(/databases/$(database)/documents/clubs/$(clubId)/tournaments/$(tournamentId)).data.publicView.enabled == true;
         allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
       }
       
       match /matches/{matchId} {
-        allow read: if isAuthenticated();
+        // Public read if parent tournament public view is enabled
+        allow read: if isAuthenticated() || get(/databases/$(database)/documents/clubs/$(clubId)/tournaments/$(tournamentId)).data.publicView.enabled == true;
         allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
       }
       
       match /teams/{teamId} {
-        allow read: if isAuthenticated();
+        // Public read if parent tournament public view is enabled
+        allow read: if isAuthenticated() || get(/databases/$(database)/documents/clubs/$(clubId)/tournaments/$(tournamentId)).data.publicView.enabled == true;
         allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
       }
     }

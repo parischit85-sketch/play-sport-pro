@@ -502,6 +502,14 @@ if ('serviceWorker' in navigator) {
   console.warn('⚠️ Service Worker non supportato da questo browser');
 }
 
+// Development utility: Load backfill function
+if (import.meta.env.DEV) {
+  import('./utils/backfillPublicIndex.js').then(module => {
+    window.backfillPublicTournamentsIndex = module.backfillPublicTournamentsIndex;
+    console.log('💡 Dev utility loaded: window.backfillPublicTournamentsIndex()');
+  }).catch(err => console.warn('Could not load backfill utility:', err));
+}
+
 createRoot(container).render(
   <SecurityProvider>
     <NotificationProvider>

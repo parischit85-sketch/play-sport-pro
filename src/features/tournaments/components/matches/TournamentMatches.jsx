@@ -30,6 +30,7 @@ import { themeTokens } from '../../../../lib/theme.js';
 import MatchResultModal from './MatchResultModal';
 import FormulaModal from '../../../../components/modals/FormulaModal.jsx';
 import MatchCreationModal from './MatchCreationModal';
+import MatchEditModal from './MatchEditModal';
 
 function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicView = false }) {
   console.log('🎯 [TournamentMatches] Component mounted/rendered', {
@@ -49,6 +50,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
   const [formulaModalOpen, setFormulaModalOpen] = useState(false);
   const [formulaMatchData, setFormulaMatchData] = useState(null);
   const [showMatchCreationModal, setShowMatchCreationModal] = useState(false);
+  const [showMatchEditModal, setShowMatchEditModal] = useState(false);
   const [editingMatch, setEditingMatch] = useState(null);
 
   // ✅ FIX: Check club-specific admin role, not global userRole
@@ -163,7 +165,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
 
   const handleEditMatch = (match) => {
     setEditingMatch(match);
-    setShowMatchCreationModal(true);
+    setShowMatchEditModal(true);
   };
 
   const handleMarkAsInProgress = async (matchId) => {
@@ -528,7 +530,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
           isPublicView
             ? `border-[2.5px] ${isCompleted ? 'border-fuchsia-500' : 'border-fuchsia-700/60'}`
             : 'border border-gray-700 hover:border-primary-300'
-        } relative`}
+        } relative ${!isPublicView && canEditResults ? 'pb-10' : ''}`}
       >
         {/* Icona elimina partita - in alto a destra */}
         {!isPublicView && canEditResults && (
@@ -536,7 +538,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
             <button
               onClick={() => handleEditMatch(match)}
               disabled={!canEditResults}
-              className="absolute top-2 right-12 p-1.5 rounded-lg bg-blue-600/20 border border-blue-500/50 text-blue-500 hover:bg-blue-600/30 hover:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10"
+              className="absolute bottom-2 right-12 p-1.5 rounded-lg bg-blue-600/20 border border-blue-500/50 text-blue-500 hover:bg-blue-600/30 hover:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10"
               title="Modifica partita"
             >
               <Pencil className="w-4 h-4" />
@@ -544,7 +546,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
             <button
               onClick={() => handleDeleteMatch(match.id)}
               disabled={!canEditResults}
-              className="absolute top-2 right-2 p-1.5 rounded-lg bg-red-600/20 border border-red-500/50 text-red-500 hover:bg-red-600/30 hover:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10"
+              className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-red-600/20 border border-red-500/50 text-red-500 hover:bg-red-600/30 hover:border-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10"
               title="Elimina partita"
             >
               <Trash2 className="w-4 h-4" />
@@ -553,7 +555,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
         )}
 
         {/* Match header - Mobile optimized */}
-        <div className="flex items-center justify-between mb-2 sm:mb-3 flex-wrap gap-2 pr-8">
+  <div className="flex items-center justify-between mb-2 sm:mb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             {getStatusIcon(match.status)}
             {/* Show status text only if not IN_PROGRESS in public view */}
@@ -1039,6 +1041,20 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
             editingMatch={editingMatch}
           />
         </>
+      )}
+
+      {showMatchEditModal && editingMatch && (
+        <MatchEditModal
+          match={editingMatch}
+          clubId={clubId}
+          tournamentId={tournament.id}
+          teams={Object.values(teams)}
+          onClose={() => {
+            setShowMatchEditModal(false);
+            setEditingMatch(null);
+          }}
+          onSuccess={loadData}
+        />
       )}
     </div>
   );

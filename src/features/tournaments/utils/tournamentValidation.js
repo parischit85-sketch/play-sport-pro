@@ -205,6 +205,7 @@ export function validateStatusTransition(currentStatus, newStatus) {
     ],
     [TOURNAMENT_STATUS.GROUPS_PHASE]: [
       TOURNAMENT_STATUS.KNOCKOUT_PHASE,
+      TOURNAMENT_STATUS.COMPLETED, // Allow direct completion from groups phase
       TOURNAMENT_STATUS.CANCELLED,
     ],
     [TOURNAMENT_STATUS.KNOCKOUT_PHASE]: [TOURNAMENT_STATUS.COMPLETED, TOURNAMENT_STATUS.CANCELLED],

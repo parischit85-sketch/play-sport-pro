@@ -180,71 +180,55 @@ Client genera ID timestamp-based, Firestore genera ID diverso → campo `legacyI
 
 ## 🟡 CRITICITÀ 4: VALIDAZIONE CERTIFICATO MEDICO PERMISSIVA
 **Severità**: ⭐⭐⭐ MEDIA  
-**Effort**: 3h  
-**Priorità**: P1
+**Effort**: 3h → **RIDOTTO A 1.5h (Soluzione Light)**  
+**Priorità**: P1  
+**Status**: ✅ **COMPLETATA (Light Version)**
 
 ### Descrizione
 Check certificato troppo permissivo: errori permission ignored, in scadenza non blocca, nessun check per utenti senza player profile.
 
+**SOLUZIONE IMPLEMENTATA (Light):**
+- ✅ Warning visibili all'utente (non blocco prenotazione)
+- ✅ Badge certificato nella dashboard admin
+- ❌ NO strict mode (permette sempre prenotazione)
+- ❌ NO club settings configurabili
+
 ### Checklist
-- [ ] **Step 4.1**: Strict mode per certificati (1h)
-  - [ ] Aggiungere flag `strictCertificateCheck` in options
-  - [ ] Default: `true` (strict mode)
-  - [ ] Se player profile non trovato → error (invece di skip)
-  - [ ] Se certificato non presente → error
-  - [ ] Se permission denied → error in strict mode
+- [x] **Step 4.1 LIGHT**: Tracking stato certificato (30min)
+  - [x] Aggiunto campo `certificateStatus` al booking
+  - [x] Valori: valid, missing, expired, expiring_critical, expiring_soon, no_profile, error
+  - [x] Campo `certificateWarning` con messaggio specifico
+  - [x] NON blocca prenotazione, solo tracking
 
-- [ ] **Step 4.2**: Critical expiry blocking (1h)
-  - [ ] Aggiungere parametro `criticalExpiryDays` (default: 3)
-  - [ ] Se certificato scade in <= 3 giorni → block booking
-  - [ ] Messaggio chiaro: "Certif. scade tra X giorni, rinnova prima"
-  - [ ] Log warning per scadenza 4-7 giorni (non block)
-  - [ ] Test vari scenari scadenza
+- [x] **Step 4.2 LIGHT**: Warning messaggi all'utente (30min)
+  - [x] Certificato scaduto → ❌ Warning rosso (ma permette prenotazione)
+  - [x] Scade in ≤3 giorni → ⚠️ Warning arancione critico
+  - [x] Scade in 4-7 giorni → ⚠️ Warning giallo
+  - [x] Nessun certificato → ⚠️ Warning grigio
+  - [x] No profile → ⚠️ Warning info
 
-- [ ] **Step 4.3**: Club settings configurabili (1h)
-  - [ ] Aggiungere config in `clubs/{clubId}/settings/bookings`:
-    ```javascript
-    certificateChecks: {
-      enabled: true,
-      strictMode: true,
-      criticalExpiryDays: 3,
-      requireForAllBookings: true,
-      adminBypass: false
-    }
-    ```
-  - [ ] Caricare settings in `createBooking()`
-  - [ ] Applicare settings invece di hardcoded values
-  - [ ] Admin panel per modificare settings
+- [x] **Step 4.3 LIGHT**: Badge admin view (30min)
+  - [x] Badge colorato in `DashboardBookings.jsx`
+  - [x] Colori: verde (OK), rosso (scaduto), arancione (critico), giallo (7gg), grigio (mancante/no profile)
+  - [x] Tooltip con messaggio certificateWarning
+  - [x] Visibile solo all'admin club
 
-- [ ] **Step 4.4**: Error messages migliorati (30min)
-  - [ ] Messaggi specifici per ogni scenario:
-    - Profilo player non trovato
-    - Certificato non presente
-    - Certificato scaduto (con giorni)
-    - Certificato in scadenza critica
-    - Errore tecnico verifica
-  - [ ] UI mostrare errori chiaramente
-  - [ ] Suggerire azione (es: "Contatta circolo")
+- [ ] ~~**Step 4.4**: Club settings configurabili~~ (SKIPPED - non necessario per soluzione light)
+- [ ] ~~**Step 4.5**: Strict blocking mode~~ (SKIPPED - utente ha richiesto solo warning)
 
-- [ ] **Step 4.5**: Testing scenari certificato (30min)
-  - [ ] Test: Utente senza player profile → blocked
-  - [ ] Test: Player senza certificato → blocked
-  - [ ] Test: Certificato scaduto → blocked con messaggio
-  - [ ] Test: Certificato scade in 2 giorni → blocked
-  - [ ] Test: Certificato scade in 5 giorni → warning, allowed
-  - [ ] Test: Certificato valido → success
-  - [ ] Test: Admin bypass (se abilitato) → success
+**Files modificati**:
+- ✅ `src/services/unified-booking-service.js` (linee 182-234, 322-325, 356-360)
+- ✅ `src/features/prenota/PrenotazioneCampi.jsx` (linee 739-747)
+- ✅ `src/features/admin/AdminClubDashboard/DashboardBookings.jsx` (linee 82-107)
 
-**Files da modificare**:
-- `src/services/unified-booking-service.js` (linea 181-233)
-- `src/hooks/useClubSettings.js` (per caricare config)
-- Admin panel per gestire certificate settings
-
-**Test cases**:
-- Strict mode ON + no player → error
-- Strict mode OFF + no player → warning, proceed
-- Expiry in 2 days → blocked
-- Expiry in 5 days → warning only
+**Test cases da verificare**:
+**Test cases da verificare**:
+- [ ] User con certificato valido → prenotazione OK + badge verde in admin
+- [ ] User con certificato scaduto → warning rosso utente + badge rosso admin + prenotazione OK
+- [ ] User certificato scade in 2 giorni → warning arancione + badge arancione + OK
+- [ ] User certificato scade in 5 giorni → warning giallo + badge giallo + OK
+- [ ] User senza certificato → warning grigio + badge grigio + OK
+- [ ] User senza player profile → warning info + badge grigio + OK
 
 ---
 

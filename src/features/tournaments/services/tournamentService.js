@@ -11,12 +11,14 @@ import {
   getDocs,
   addDoc,
   updateDoc,
+  setDoc,
   deleteDoc,
   query,
   where,
   orderBy,
   limit,
   Timestamp,
+  serverTimestamp,
 } from 'firebase/firestore';
 import { TOURNAMENT_STATUS, COLLECTIONS } from '../utils/tournamentConstants.js';
 import { getTeamsByTournament } from './teamsService.js';
@@ -68,12 +70,10 @@ export async function createTournament(tournamentData, userId) {
     }
 
     // Calculate min/max teams - sistema rigido (non applicabile a "Solo Partite")
-    const minTeams = isMatchesOnly 
-      ? 0 
+    const minTeams = isMatchesOnly
+      ? 0
       : tournamentData.numberOfGroups * tournamentData.teamsPerGroup;
-    const maxTeams = isMatchesOnly 
-      ? 999 // Nessun limite per "Solo Partite"
-      : minTeams; // Sistema rigido: max = min
+    const maxTeams = isMatchesOnly ? 999 : minTeams; // Nessun limite per "Solo Partite"; sistema rigido: max = min
 
     // Create tournament document
     const tournament = {
@@ -82,14 +82,18 @@ export async function createTournament(tournamentData, userId) {
       description: tournamentData.description || null,
       status: TOURNAMENT_STATUS.DRAFT,
       participantType: tournamentData.participantType,
-      playersPerTeam: tournamentData.playersPerTeam || 
-        (tournamentData.participantType === 'couples' ? 2 : 4),
+      playersPerTeam:
+        tournamentData.playersPerTeam || (tournamentData.participantType === 'couples'
+          ? 2
+          : 4),
 
       configuration: {
         numberOfGroups: isMatchesOnly ? 0 : tournamentData.numberOfGroups,
         teamsPerGroup: isMatchesOnly ? 0 : tournamentData.teamsPerGroup,
         qualifiedPerGroup: isMatchesOnly ? 0 : tournamentData.qualifiedPerGroup,
-        includeThirdPlaceMatch: isMatchesOnly ? false : (tournamentData.includeThirdPlaceMatch ?? true),
+        includeThirdPlaceMatch: isMatchesOnly
+          ? false
+          : (tournamentData.includeThirdPlaceMatch ?? true),
         automaticGroupsGeneration: !isMatchesOnly, // Solo per tornei con gironi
         minTeamsRequired: minTeams,
         maxTeamsAllowed: maxTeams,
@@ -820,6 +824,45 @@ export async function getPublicTournaments(options = {}) {
   try {
     const { getClubs } = await import('../../../services/clubs.js');
 
+    // 1) Fast path: try public index collection to avoid permission-denied on subcollection queries
+    try {
+      const indexRef = collection(db, 'publicTournaments');
+      const qIdx = query(indexRef, where('enabled', '==', true), limit(options.limit || 20));
+      const snapIdx = await getDocs(qIdx);
+      if (!snapIdx.empty) {
+        const items = snapIdx.docs
+          .map((d) => ({ id: d.id, ...d.data() }))
+          // Defensive: require minimal fields
+          .filter((x) => x.clubId && x.tournamentId && x.token)
+          .map((x) => ({
+            id: x.tournamentId,
+            clubId: x.clubId,
+            clubName: x.clubName || 'Club',
+            name: x.name || 'Torneo',
+            description: x.description || null,
+            status: x.status || 'draft',
+            registeredTeams: x.registeredTeams || 0,
+            publicView: { enabled: true, token: x.token },
+            createdAt: x.createdAt || null,
+            updatedAt: x.updatedAt || null,
+          }));
+
+        // Sort client-side by updatedAt desc if present
+        items.sort((a, b) => {
+          const at = a?.updatedAt?.toMillis?.() || a?.updatedAt?.getTime?.() || 0;
+          const bt = b?.updatedAt?.toMillis?.() || b?.updatedAt?.getTime?.() || 0;
+          return bt - at;
+        });
+
+        console.log(`📊 Final result (index): ${items.length} public tournaments`);
+        return items;
+      }
+    } catch (idxErr) {
+      const msg = String(idxErr?.message || '');
+      // Non-blocking: fall back to per-club scan
+      console.warn('⚠️ Public index not available, falling back to per-club scan:', msg);
+    }
+
     // Get ALL clubs (not just active ones) to show public tournaments from any club
     const clubs = await getClubs({ activeOnly: false });
     console.log('🏓 Found clubs:', clubs.length);
@@ -830,18 +873,19 @@ export async function getPublicTournaments(options = {}) {
     const publicTournaments = [];
     const maxLimit = options.limit || 20;
 
-    // For each club, get tournaments and filter client-side to show only public ones
+    // 2) Fallback: For each club, get tournaments and filter client-side to show only public ones
     for (const club of clubs) {
       if (publicTournaments.length >= maxLimit) break;
 
       try {
         console.log(`🔍 Checking tournaments for club: ${club.name} (${club.id})`);
         const tournamentsRef = collection(db, 'clubs', club.id, COLLECTIONS.TOURNAMENTS);
-        // Get more tournaments than needed to allow for client-side filtering
+        // Server-side filter for public tournaments to satisfy security rules
+        // Avoid orderBy here to reduce composite index requirements
         const q = query(
           tournamentsRef,
-          orderBy('updatedAt', 'desc'),
-          limit(Math.min(maxLimit * 2, 50)) // Get more to filter client-side
+          where('publicView.enabled', '==', true),
+          limit(Math.min(maxLimit, 50))
         );
 
         const snapshot = await getDocs(q);
@@ -857,7 +901,8 @@ export async function getPublicTournaments(options = {}) {
           console.log(`       Has token: ${!!tournamentData.publicView?.token}`);
 
           // Client-side filtering for public view enabled - show tournaments from ANY club
-          if (tournamentData.publicView?.enabled === true) {
+          // Only include tournaments that also have a valid public token, otherwise the link wouldn't work
+          if (tournamentData.publicView?.enabled === true && !!tournamentData.publicView?.token) {
             console.log(`       ✅ ADDED TO PUBLIC LIST`);
             publicTournaments.push({
               id: doc.id,
@@ -872,7 +917,7 @@ export async function getPublicTournaments(options = {}) {
               updatedAt: tournamentData.updatedAt,
             });
           } else {
-            console.log(`       ❌ SKIPPED (public view not enabled)`);
+            console.log(`       ❌ SKIPPED (public view not enabled or missing token)`);
           }
         }
       } catch (error) {
@@ -887,6 +932,78 @@ export async function getPublicTournaments(options = {}) {
   } catch (error) {
     console.error('❌ Error getting public tournaments:', error);
     return [];
+  }
+}
+
+/**
+ * Upsert public tournaments index for fast, rule-compliant listing
+ * Document ID: `${clubId}_${tournamentId}`
+ */
+export async function upsertPublicTournamentIndex({
+  clubId,
+  tournamentId,
+  name,
+  description = null,
+  status,
+  registeredTeams = 0,
+  token,
+}) {
+  try {
+    const { getClub } = await import('../../../services/clubs.js');
+    let clubName = '';
+    try {
+      const club = await getClub(clubId);
+      clubName = club?.name || '';
+    } catch {
+      // Non-blocking if club doc not readable here
+      clubName = '';
+    }
+
+    const docId = `${clubId}_${tournamentId}`;
+    const ref = doc(db, 'publicTournaments', docId);
+    await setDoc(
+      ref,
+      {
+        clubId,
+        tournamentId,
+        clubName,
+        name,
+        description,
+        status,
+        registeredTeams,
+        token,
+        enabled: true,
+        updatedAt: serverTimestamp(),
+        createdAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+    return true;
+  } catch (error) {
+    console.error('[upsertPublicTournamentIndex] Error:', error);
+    return false;
+  }
+}
+
+/**
+ * Disable or remove a tournament from the public index
+ */
+export async function disablePublicTournamentIndex(clubId, tournamentId) {
+  try {
+    const docId = `${clubId}_${tournamentId}`;
+    const ref = doc(db, 'publicTournaments', docId);
+    await setDoc(
+      ref,
+      {
+        enabled: false,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+    return true;
+  } catch (error) {
+    console.error('[disablePublicTournamentIndex] Error:', error);
+    return false;
   }
 }
 
@@ -909,4 +1026,6 @@ export default {
   cancelTournament,
   updateStatistics,
   getPublicTournaments,
+  upsertPublicTournamentIndex,
+  disablePublicTournamentIndex,
 };

@@ -290,10 +290,12 @@ export async function scheduleMatch(clubId, tournamentId, matchId, scheduledDate
       matchId
     );
 
-    await updateDoc(matchRef, {
-      scheduledDate: Timestamp.fromDate(new Date(scheduledDate)),
-      courtNumber,
-    });
+    const updateData = {
+      scheduledDate: scheduledDate ? Timestamp.fromDate(new Date(scheduledDate)) : null,
+      courtNumber: courtNumber || null,
+    };
+
+    await updateDoc(matchRef, updateData);
 
     return { success: true };
   } catch (error) {

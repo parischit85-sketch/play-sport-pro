@@ -179,7 +179,10 @@ export async function createBooking(bookingData, user, options = {}) {
   }
   if (bookingData.time) bookingData.time = normalizeTime(bookingData.time);
 
-  // 🏥 CHECK CERTIFICATO MEDICO - Verifica se l'utente ha un certificato valido
+  // 🏥 CHECK CERTIFICATO MEDICO - Verifica e salva stato (non blocca prenotazione)
+  let certificateStatus = null;
+  let certificateWarning = null;
+  
   if (user?.uid && clubId && clubId !== 'default-club') {
     try {
       // Cerca il giocatore nel club tramite linkedAccountId
@@ -192,31 +195,40 @@ export async function createBooking(bookingData, user, options = {}) {
         const player = playerDoc.data();
 
         // Controlla il certificato
-        const certStatus = calculateCertificateStatus(
-          player.medicalCertificates?.current?.expiryDate
-        );
-
-        if (certStatus.isExpired) {
-          const daysExpired = Math.abs(certStatus.daysUntilExpiry);
-          throw new Error(
-            `❌ Certificato medico scaduto da ${daysExpired} ${daysExpired === 1 ? 'giorno' : 'giorni'}. ` +
-              `Non puoi effettuare prenotazioni. Contatta il circolo per rinnovare il certificato.`
+        const hasCertificate = player.medicalCertificates?.current?.expiryDate;
+        
+        if (!hasCertificate) {
+          certificateStatus = 'missing';
+          certificateWarning = '⚠️ Certificato medico non presente. Contatta il circolo per caricarlo.';
+        } else {
+          const certStatus = calculateCertificateStatus(
+            player.medicalCertificates.current.expiryDate
           );
-        }
 
-        // Warning se in scadenza critica (< 7 giorni) ma permetti comunque
-        if (certStatus.isExpiring && certStatus.daysUntilExpiry <= 7) {
-          console.warn(
-            `⚠️ [Booking Warning] Certificato medico in scadenza tra ${certStatus.daysUntilExpiry} giorni per utente ${user.uid}`
-          );
+          if (certStatus.isExpired) {
+            const daysExpired = Math.abs(certStatus.daysUntilExpiry);
+            certificateStatus = 'expired';
+            certificateWarning = 
+              `❌ Certificato medico scaduto da ${daysExpired} ${daysExpired === 1 ? 'giorno' : 'giorni'}. ` +
+              `Contatta il circolo per rinnovare il certificato.`;
+          } else if (certStatus.isExpiring && certStatus.daysUntilExpiry <= 7) {
+            certificateStatus = certStatus.daysUntilExpiry <= 3 ? 'expiring_critical' : 'expiring_soon';
+            certificateWarning = 
+              `⚠️ Certificato medico in scadenza tra ${certStatus.daysUntilExpiry} ${certStatus.daysUntilExpiry === 1 ? 'giorno' : 'giorni'}. ` +
+              `Ricordati di rinnovarlo.`;
+          } else {
+            certificateStatus = 'valid';
+          }
         }
+      } else {
+        // Nessun player profile trovato
+        certificateStatus = 'no_profile';
+        certificateWarning = '⚠️ Profilo giocatore non trovato. Prenotazione effettuata come utente generico.';
       }
     } catch (error) {
-      // Se è l'errore del certificato scaduto, rilancialo
-      if (error.message.includes('Certificato medico scaduto')) {
-        throw error;
-      }
-      // Altri errori (es. permessi) li loggo ma non blocco la prenotazione
+      // Errore durante la verifica (es. permission denied)
+      certificateStatus = 'error';
+      certificateWarning = '⚠️ Impossibile verificare il certificato medico. Prenotazione effettuata comunque.';
       console.warn('[Certificate Check] Errore durante verifica certificato:', error);
     }
   }
@@ -306,6 +318,10 @@ export async function createBooking(bookingData, user, options = {}) {
     isProxyBooking: options.isProxyBooking || false,
     proxyBookedBy: options.proxyBookedBy || null,
     proxyRelation: options.proxyRelation || null,
+
+    // CRITICITÀ 4: Certificate validation metadata
+    certificateStatus: certificateStatus,
+    certificateWarning: certificateWarning,
   };
 
   console.log('🏢 [createBooking] CLUB ID CHECK:', {
@@ -336,7 +352,12 @@ export async function createBooking(bookingData, user, options = {}) {
 
   // Emit event for real-time updates
   emitBookingCreated(result);
-  return result;
+  
+  // Return booking with certificate warning if present
+  return {
+    ...result,
+    certificateWarning: certificateWarning, // Include warning for UI to display
+  };
 }
 
 /**

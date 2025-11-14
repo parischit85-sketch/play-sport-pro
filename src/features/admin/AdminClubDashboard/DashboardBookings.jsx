@@ -81,34 +81,63 @@ const DashboardBookings = ({
         </div>
       ) : (
         <div className="space-y-3 max-h-64 overflow-y-auto">
-          {upcomingBookings.map((booking, index) => (
-            <div
-              key={booking.id || index}
-              className={`flex items-center justify-between p-3 ${T.border} rounded-lg cursor-pointer ${T.hoverBg}`}
-              onClick={() => navigate(`/club/${clubId}/admin/bookings?edit=${booking.id}`)}
-              title="Clicca per modificare la prenotazione"
-            >
-              <div>
-                <div className={`font-medium ${T.text}`}>
-                  {booking.userName || booking.playerName || 'Cliente'}
-                </div>
-                <div className={`text-sm ${T.subtext}`}>
-                  {booking.time} - {booking.courtName || booking.court}
-                </div>
-              </div>
-              <div className={`text-sm font-medium text-blue-600 flex items-center gap-2`}>
-                €{booking.price || 0}
-                <svg
-                  className="w-4 h-4 opacity-50"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+          {upcomingBookings.map((booking, index) => {
+            // CRITICITÀ 4: Certificate status badge
+            const getCertificateBadge = () => {
+              if (!booking.certificateStatus) return null;
+              
+              const badges = {
+                valid: { color: 'bg-green-100 text-green-800', icon: '✓', text: 'Cert OK' },
+                expired: { color: 'bg-red-100 text-red-800', icon: '✕', text: 'Scaduto' },
+                expiring_critical: { color: 'bg-orange-100 text-orange-800', icon: '!', text: 'In scadenza' },
+                expiring_soon: { color: 'bg-yellow-100 text-yellow-800', icon: '⚠', text: '7gg' },
+                missing: { color: 'bg-gray-100 text-gray-800', icon: '?', text: 'Mancante' },
+                no_profile: { color: 'bg-gray-100 text-gray-500', icon: '-', text: 'No profilo' },
+                error: { color: 'bg-gray-100 text-gray-500', icon: '?', text: 'N/D' },
+              };
+              
+              const badge = badges[booking.certificateStatus] || badges.error;
+              
+              return (
+                <span 
+                  className={`text-xs px-2 py-0.5 rounded ${badge.color} whitespace-nowrap`}
+                  title={booking.certificateWarning || 'Certificato medico'}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                  {badge.icon} {badge.text}
+                </span>
+              );
+            };
+
+            return (
+              <div
+                key={booking.id || index}
+                className={`flex items-center justify-between p-3 ${T.border} rounded-lg cursor-pointer ${T.hoverBg}`}
+                onClick={() => navigate(`/club/${clubId}/admin/bookings?edit=${booking.id}`)}
+                title="Clicca per modificare la prenotazione"
+              >
+                <div className="flex-1">
+                  <div className={`font-medium ${T.text}`}>
+                    {booking.userName || booking.playerName || 'Cliente'}
+                  </div>
+                  <div className={`text-sm ${T.subtext} flex items-center gap-2`}>
+                    <span>{booking.time} - {booking.courtName || booking.court}</span>
+                    {getCertificateBadge()}
+                  </div>
+                </div>
+                <div className={`text-sm font-medium text-blue-600 flex items-center gap-2`}>
+                  €{booking.price || 0}
+                  <svg
+                    className="w-4 h-4 opacity-50"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

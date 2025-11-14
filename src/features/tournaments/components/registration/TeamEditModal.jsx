@@ -3,6 +3,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Users, Search, Save } from 'lucide-react';
 import { editTeamPlayers, getTeamsByTournament } from '../../services/teamsService';
 import { TEAM_STATUS } from '../../utils/tournamentConstants';
@@ -28,6 +29,21 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
     player2: null,
     player3: null,
     player4: null,
+  });
+
+  // Track which player slots are using manual input
+  const [manualInput, setManualInput] = useState({
+    player1: false,
+    player2: false,
+    player3: false,
+    player4: false,
+  });
+
+  const [manualNames, setManualNames] = useState({
+    player1: '',
+    player2: '',
+    player3: '',
+    player4: '',
   });
 
   // Pre-fill selected players from existing team
@@ -158,8 +174,22 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
   };
 
   const selectedPlayers = useMemo(() => {
-    return [formData.player1, formData.player2, formData.player3, formData.player4].filter(Boolean);
-  }, [formData]);
+    return [formData.player1, formData.player2, formData.player3, formData.player4]
+      .map((player, index) => {
+        const position = index + 1;
+        // If manual input is active for this position, create a custom player object
+        if (manualInput[`player${position}`] && manualNames[`player${position}`].trim()) {
+          return {
+            id: `manual-${position}-${Date.now()}`, // Temporary ID for manual players
+            name: manualNames[`player${position}`].trim(),
+            rating: 1500, // Default rating for manual players
+            isManualEntry: true,
+          };
+        }
+        return player;
+      })
+      .filter(Boolean);
+  }, [formData, manualInput, manualNames]);
 
   const canSubmit = () =>
     selectedPlayers.length > 0 && formData.teamName.trim().length > 0;
@@ -179,17 +209,20 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
       const payload = {
         teamName: formData.teamName,
         players: selectedPlayers.map((p) => ({
-          playerId: p.id || p.userId,
+          playerId: p.isManualEntry ? null : (p.id || p.userId), // null for manual entries
           playerName: p.name || p.userName || 'Unknown',
           ranking: p.rating ?? 1500,
-          avatarUrl: p.avatar || p.avatarUrl || null,
+          avatarUrl: p.isManualEntry ? null : (p.avatar || p.avatarUrl || null),
+          isManualEntry: p.isManualEntry || false, // Flag to indicate manual entry
         })),
       };
       const res = await editTeamPlayers(clubId, tournament.id, team.id, payload);
       if (res.success) {
         // Mostra warning se presente
         if (res.warning) {
-          alert(`⚠️ ATTENZIONE:\n\n${res.warning}\n\nLa squadra è stata comunque aggiornata con successo.`);
+          alert(
+            `⚠️ ATTENZIONE:\n\n${res.warning}\n\nLa squadra è stata comunque aggiornata con successo.`
+          );
         }
         onSuccess();
       } else {
@@ -203,22 +236,22 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+  const modalContent = (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4">
       <div
-        className={`${T.modalBackground} rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden`}
+        className={`${T.modalBackground} ${T.border} rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden`}
       >
-        <div className="flex items-center justify-between p-6 border-b border-gray-700">
+        <div className={`${T.headerBg} flex items-center justify-between p-6`}>
           <div className="flex items-center gap-3">
-            <Users className="w-6 h-6 text-primary-600" />
+            <Users className="w-6 h-6 text-blue-400" />
             <div>
-              <h2 className="text-xl font-bold text-gray-900 text-white">Modifica Squadra</h2>
+              <h2 className="text-xl font-bold text-white">Modifica Squadra</h2>
               <p className="text-sm text-gray-400">Aggiorna giocatori e nome squadra</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 hover:bg-gray-700 rounded-lg transition-colors"
+            className="inline-flex items-center justify-center ring-1 ring-gray-600/50 p-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -255,17 +288,67 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
 
             {[1, 2, 3, 4].slice(0, playersPerTeam).map((position) => (
               <div key={position} className="space-y-2">
-                <label className="block text-sm font-medium text-gray-400">
-                  Giocatore {position}
-                </label>
-                {formData[`player${position}`] ? (
-                  <div className="flex items-center justify-between p-3 bg-primary-900/20 border border-primary-800 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Giocatore {position}
+                    {position === 1 && <span className="text-red-400 ml-1">*</span>}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setManualInput((prev) => ({
+                        ...prev,
+                        [`player${position}`]: !prev[`player${position}`],
+                      }));
+                      // Clear both when switching mode
+                      if (!manualInput[`player${position}`]) {
+                        handlePlayerSelect(position, null);
+                      } else {
+                        setManualNames((prev) => ({ ...prev, [`player${position}`]: '' }));
+                      }
+                    }}
+                    className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                  >
+                    {manualInput[`player${position}`] ? '📋 Seleziona da lista' : '✏️ Inserisci manualmente'}
+                  </button>
+                </div>
+
+                {manualInput[`player${position}`] ? (
+                  // Manual input mode
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={manualNames[`player${position}`]}
+                      onChange={(e) =>
+                        setManualNames((prev) => ({
+                          ...prev,
+                          [`player${position}`]: e.target.value,
+                        }))
+                      }
+                      className={`${T.input} w-full text-sm`}
+                      placeholder="Inserisci nome giocatore..."
+                    />
+                    {manualNames[`player${position}`] && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setManualNames((prev) => ({ ...prev, [`player${position}`]: '' }))
+                        }
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-red-400 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ) : formData[`player${position}`] ? (
+                  // Selected player display
+                  <div className="flex items-center justify-between p-3 bg-blue-900/20 border border-blue-800 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary-800 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-bold text-primary-300">{position}</span>
+                      <div className="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center">
+                        <span className="text-sm font-bold text-blue-300">{position}</span>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900 text-white">
+                        <p className="font-medium text-white">
                           {formData[`player${position}`].name ||
                             formData[`player${position}`].userName}
                         </p>
@@ -277,7 +360,7 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
                     <button
                       type="button"
                       onClick={() => handlePlayerSelect(position, null)}
-                      className="p-2 text-red-600 hover:bg-red-50 hover:bg-red-900/20 rounded-lg transition-colors"
+                      className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -291,16 +374,16 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
                           type="text"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
-                          className="w-full pl-10 pr-4 py-2 bg-gray-50 bg-gray-700 border-0 rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
+                          className={`${T.input} w-full pl-10 text-sm`}
                           placeholder="Cerca giocatore..."
                         />
                       </div>
                     </div>
-                    <div className="max-h-48 overflow-y-auto">
+                    <div className="max-h-48 overflow-y-auto bg-gray-800">
                       {loading ? (
-                        <div className="p-4 text-center text-gray-500">Caricamento...</div>
+                        <div className="p-4 text-center text-gray-400">Caricamento...</div>
                       ) : filteredPlayers.length === 0 ? (
-                        <div className="p-4 text-center text-gray-500">
+                        <div className="p-4 text-center text-gray-400">
                           {searchTerm ? 'Nessun giocatore trovato' : 'Nessun giocatore disponibile'}
                         </div>
                       ) : (
@@ -309,10 +392,10 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
                             key={p.id}
                             type="button"
                             onClick={() => handlePlayerSelect(position, p)}
-                            className="w-full p-3 hover:bg-gray-50 hover:bg-gray-700 flex items-center justify-between transition-colors text-left"
+                            className="w-full p-3 hover:bg-gray-700 flex items-center justify-between transition-colors text-left"
                           >
                             <div>
-                              <p className="font-medium text-gray-900 text-white">
+                              <p className="font-medium text-white">
                                 {p.name || p.userName}
                               </p>
                               {p.email && <p className="text-xs text-gray-400">{p.email}</p>}
@@ -344,14 +427,14 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-gray-300 hover:bg-gray-100 hover:bg-gray-700 rounded-lg transition-colors"
+            className={`${T.btnGhost}`}
           >
             Annulla
           </button>
           <button
             onClick={handleSave}
             disabled={!canSubmit() || saving}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className={`${T.btnPrimary} disabled:opacity-50 disabled:cursor-not-allowed inline-flex gap-2`}
           >
             <Save className="w-4 h-4" />
             {saving ? 'Salvataggio...' : 'Salva Modifiche'}
@@ -360,4 +443,6 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import QRCodeReact from 'react-qr-code';
 
+
 function PublicViewSettings({ tournament, clubId, onUpdate }) {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState({ mobile: false, tv: false });
@@ -238,6 +239,26 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 
       // La sezione si aprirà automaticamente tramite useEffect quando isEnabled diventa true
 
+      // Aggiorna indice pubblico per lista Tornei Live (best effort)
+      try {
+        const { upsertPublicTournamentIndex, disablePublicTournamentIndex } = await import('@features/tournaments/services/tournamentService.js');
+        if (!isEnabled) {
+          await upsertPublicTournamentIndex({
+            clubId,
+            tournamentId: tournament.id,
+            name: tournament.name,
+            description: tournament.description || null,
+            status: tournament.status,
+            registeredTeams: tournament.registeredTeams || 0,
+            token: newToken,
+          });
+        } else {
+          await disablePublicTournamentIndex(clubId, tournament.id);
+        }
+      } catch (idxErr) {
+        console.warn('[PublicViewSettings] Public index update skipped:', idxErr?.message || idxErr);
+      }
+
       if (onUpdate) onUpdate();
     } catch (error) {
       console.error('Error toggling public view:', error);
@@ -260,6 +281,24 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
       await updateDoc(doc(db, 'clubs', clubId, 'tournaments', tournament.id), {
         'publicView.token': newToken,
       });
+
+      // Aggiorna indice pubblico con nuovo token se la vista è abilitata (best effort)
+      try {
+        if (isEnabled) {
+          const { upsertPublicTournamentIndex } = await import('@features/tournaments/services/tournamentService.js');
+          await upsertPublicTournamentIndex({
+            clubId,
+            tournamentId: tournament.id,
+            name: tournament.name,
+            description: tournament.description || null,
+            status: tournament.status,
+            registeredTeams: tournament.registeredTeams || 0,
+            token: newToken,
+          });
+        }
+      } catch (idxErr) {
+        console.warn('[PublicViewSettings] Public index token update skipped:', idxErr?.message || idxErr);
+      }
 
       if (onUpdate) onUpdate();
     } catch (error) {

@@ -396,11 +396,11 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
 
   const modalContent = (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-2 sm:p-4">
-      <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
+      <div className={`${T.modalBackground} ${T.border} rounded-lg shadow-xl w-full max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col`}>
         {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-700 flex-shrink-0">
+        <div className={`${T.headerBg} flex items-center justify-between p-4 sm:p-6 flex-shrink-0`}>
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary-600 flex-shrink-0" />
+            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400 flex-shrink-0" />
             <div className="min-w-0">
               <h2 className="text-lg sm:text-xl font-bold text-white truncate">Registra Squadra</h2>
               <p className="text-xs sm:text-sm text-gray-400">
@@ -410,7 +410,7 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-300 flex-shrink-0"
+            className="inline-flex items-center justify-center ring-1 ring-gray-600/50 p-2 rounded-lg text-gray-300 hover:bg-gray-700 hover:text-white transition-colors flex-shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -459,10 +459,10 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
 
                   {formData[`player${position}`] ? (
                     // Selected player card
-                    <div className="flex items-center justify-between p-2 sm:p-3 bg-primary-900/20 border border-primary-800 rounded-lg">
+                    <div className="flex items-center justify-between p-2 sm:p-3 bg-blue-900/20 border border-blue-800 rounded-lg">
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary-800 rounded-full flex items-center justify-center flex-shrink-0">
-                          <span className="text-xs sm:text-sm font-bold text-primary-300">{position}</span>
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-800 rounded-full flex items-center justify-center flex-shrink-0">
+                          <span className="text-xs sm:text-sm font-bold text-blue-300">{position}</span>
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-sm sm:text-base font-medium text-white truncate">
@@ -493,7 +493,7 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                             type="text"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-1.5 sm:py-2 bg-gray-700 border-0 rounded-lg text-xs sm:text-sm text-white focus:ring-2 focus:ring-primary-500"
+                            className={`${T.input} w-full pl-8 sm:pl-10 text-xs sm:text-sm`}
                             placeholder="Cerca..."
                           />
                         </div>
@@ -502,7 +502,7 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                       {/* Players list */}
                       <div className="max-h-40 sm:max-h-48 overflow-y-auto">
                         {loading ? (
-                          <div className="p-3 sm:p-4 text-center text-sm text-gray-500">Caricamento...</div>
+                          <div className="p-3 sm:p-4 text-center text-sm text-gray-400">Caricamento...</div>
                         ) : (
                           <>
                             {/* Bottone per aggiungere nuovo giocatore */}
@@ -514,7 +514,7 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                                     placeholder="Nome giocatore"
                                     value={newPlayerData.name}
                                     onChange={(e) => setNewPlayerData((prev) => ({ ...prev, name: e.target.value }))}
-                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500"
+                                    className={`${T.input} w-full text-sm`}
                                     autoFocus
                                   />
                                   <input
@@ -522,13 +522,13 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                                     placeholder="Ranking (default: 1500)"
                                     value={newPlayerData.rating}
                                     onChange={(e) => setNewPlayerData((prev) => ({ ...prev, rating: e.target.value }))}
-                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500"
+                                    className={`${T.input} w-full text-sm`}
                                   />
                                   <div className="flex gap-2">
                                     <button
                                       type="button"
                                       onClick={() => handleAddCustomPlayer(position)}
-                                      className="flex-1 px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 text-sm font-medium"
+                                      className={`${T.btnPrimary} flex-1 text-sm font-medium`}
                                     >
                                       Aggiungi
                                     </button>
@@ -538,7 +538,7 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                                         setShowAddPlayerForm(null);
                                         setNewPlayerData({ name: '', rating: 1500 });
                                       }}
-                                      className="px-3 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm"
+                                      className={`${T.btnGhost} text-sm`}
                                     >
                                       Annulla
                                     </button>
@@ -549,7 +549,7 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                               <button
                                 type="button"
                                 onClick={() => setShowAddPlayerForm(position)}
-                                className="w-full p-2 sm:p-3 bg-primary-900/20 hover:bg-primary-900/30 border-b border-gray-700 flex items-center justify-center gap-2 transition-colors text-primary-400 hover:text-primary-300"
+                                className="w-full p-2 sm:p-3 bg-blue-900/20 hover:bg-blue-900/30 border-b border-gray-700 flex items-center justify-center gap-2 transition-colors text-blue-400 hover:text-blue-300"
                               >
                                 <Plus className="w-4 h-4" />
                                 <span className="text-sm font-medium">Aggiungi Nuovo Giocatore</span>
@@ -558,7 +558,7 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
 
                             {/* Lista giocatori esistenti */}
                             {filteredPlayers.length === 0 && !showAddPlayerForm ? (
-                              <div className="p-3 sm:p-4 text-center text-xs sm:text-sm text-gray-500">
+                              <div className="p-3 sm:p-4 text-center text-xs sm:text-sm text-gray-400">
                                 {searchTerm ? 'Nessun giocatore trovato' : 'Nessun giocatore disponibile'}
                               </div>
                             ) : (
@@ -570,7 +570,7 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                                   className="w-full p-2 sm:p-3 hover:bg-gray-700 flex items-center justify-between transition-colors text-left group"
                                 >
                                   <div className="min-w-0 flex-1 mr-2">
-                                    <p className="text-sm sm:text-base font-medium text-white truncate group-hover:text-primary-400 transition-colors flex items-center gap-2">
+                                    <p className="text-sm sm:text-base font-medium text-white truncate group-hover:text-blue-400 transition-colors flex items-center gap-2">
                                       {player.name || player.userName}
                                       {player.isCustom && (
                                         <span className="text-xs px-1.5 py-0.5 bg-blue-600/20 text-blue-400 rounded">
@@ -614,14 +614,14 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
           <button
             type="button"
             onClick={onClose}
-            className="px-3 sm:px-4 py-2 text-sm sm:text-base text-gray-300 hover:bg-gray-700 rounded-lg transition-colors"
+            className={`${T.btnGhost} text-sm sm:text-base`}
           >
             Annulla
           </button>
           <button
             onClick={handleSubmit}
             disabled={!canSubmit() || submitting}
-            className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className={`${T.btnPrimary} disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2 text-sm sm:text-base`}
           >
             <UserPlus className="w-4 h-4" />
             <span className="hidden sm:inline">{submitting ? 'Registrazione...' : 'Registra Squadra'}</span>

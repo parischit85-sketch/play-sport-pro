@@ -736,6 +736,16 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
 
         const created = await createUnifiedBooking(bookingData);
 
+        // CRITICITÀ 4: Show certificate warning if present
+        if (created.certificateWarning) {
+          const warningColor = 
+            created.certificateStatus === 'expired' ? 'error' :
+            created.certificateStatus === 'expiring_critical' ? 'warning' :
+            'info';
+          
+          showError(created.certificateWarning, warningColor);
+        }
+
         // If admin specified a different name, update the bookedBy field
         if (bookedByName) {
           await updateUnifiedBooking(created.id, { bookedBy: bookedByName });
