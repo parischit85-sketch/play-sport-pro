@@ -25,14 +25,16 @@ import QRCodeReact from 'react-qr-code';
 
 function PublicViewSettings({ tournament, clubId, onUpdate }) {
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState({ mobile: false, tv: false });
+  const [copied, setCopied] = useState({ mobile: false, tv: false, liveScoring: false });
   const [showQR, setShowQR] = useState(false);
+  const [showLiveScoringQR, setShowLiveScoringQR] = useState(false);
   const [groups, setGroups] = useState([]);
   const [matchesPages, setMatchesPages] = useState([]);
   const [tournamentName, setTournamentName] = useState(tournament?.name || '');
   const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const isEnabled = tournament?.publicView?.enabled || false;
+  const isLiveScoringEnabled = tournament?.publicView?.liveScoringEnabled || false;
 
   // Genera chiavi uniche per il localStorage basate su clubId e tournamentId
   const storageKey = `publicViewExpanded_${clubId}_${tournament?.id}`;
@@ -211,10 +213,50 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
   const mobileUrl = token ? `${baseUrl}/public/tournament/${clubId}/${tournament.id}/${token}` : '';
   const tvUrl = token ? `${baseUrl}/public/tournament-tv/${clubId}/${tournament.id}/${token}` : '';
 
+  const liveScoringToken = tournament?.publicView?.liveScoringToken || '';
+  const liveScoringUrl = liveScoringToken
+    ? `${baseUrl}/public/tournament/${clubId}/${tournament.id}/live-scoring/${liveScoringToken}`
+    : '';
+
   const generateToken = () => {
     return (
       Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
     );
+  };
+
+  const handleToggleLiveScoring = async () => {
+    setLoading(true);
+    try {
+      const newLiveScoringToken = isLiveScoringEnabled ? liveScoringToken : generateToken();
+      await updateDoc(doc(db, 'clubs', clubId, 'tournaments', tournament.id), {
+        'publicView.liveScoringEnabled': !isLiveScoringEnabled,
+        'publicView.liveScoringToken': newLiveScoringToken,
+      });
+
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      console.error('Error toggling live scoring:', error);
+      alert("Errore durante l'attivazione del live scoring");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegenerateLiveScoringToken = async () => {
+    setLoading(true);
+    try {
+      const newLiveScoringToken = generateToken();
+      await updateDoc(doc(db, 'clubs', clubId, 'tournaments', tournament.id), {
+        'publicView.liveScoringToken': newLiveScoringToken,
+      });
+
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      console.error('Error regenerating live scoring token:', error);
+      alert('Errore durante la rigenerazione del token');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleTogglePublicView = async (e) => {
@@ -762,6 +804,95 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                         <Eye className="w-5 h-5" />
                       </a>
                     </div>
+                  </div>
+
+                  {/* Live Scoring Link - NEW */}
+                  <div className="bg-gradient-to-br from-orange-900/30 to-red-900/30 border border-orange-700/50 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <svg
+                          className="w-5 h-5 text-orange-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                          />
+                        </svg>
+                        <h4 className="font-semibold text-white">Live Scoring Pubblico</h4>
+                      </div>
+                      <button
+                        onClick={handleToggleLiveScoring}
+                        disabled={loading}
+                        className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                          isLiveScoringEnabled
+                            ? 'bg-orange-600 text-white hover:bg-orange-700'
+                            : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                        }`}
+                      >
+                        {isLiveScoringEnabled ? 'Attivo' : 'Disattivo'}
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-300 mb-3">
+                      Permette a chiunque abbia il link di inserire risultati provvisori delle
+                      partite. Solo tu puoi confermarli o rifiutarli.
+                    </p>
+
+                    {isLiveScoringEnabled && (
+                      <>
+                        <div className="flex flex-col sm:flex-row gap-2 sm:items-center mb-3">
+                          <input
+                            type="text"
+                            value={liveScoringUrl}
+                            readOnly
+                            className="flex-1 px-3 py-2 bg-gray-800/50 border border-orange-700/50 rounded-lg text-sm text-white font-mono"
+                          />
+                          <button
+                            onClick={() => copyToClipboard(liveScoringUrl, 'liveScoring')}
+                            className="p-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors w-full sm:w-auto"
+                            title="Copia link"
+                          >
+                            {copied.liveScoring ? (
+                              <Check className="w-5 h-5" />
+                            ) : (
+                              <Copy className="w-5 h-5" />
+                            )}
+                          </button>
+                          <button
+                            onClick={handleRegenerateLiveScoringToken}
+                            disabled={loading}
+                            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors w-full sm:w-auto"
+                            title="Rigenera token (invalida il link precedente)"
+                          >
+                            <RefreshCw className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => setShowLiveScoringQR(!showLiveScoringQR)}
+                            className="p-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors w-full sm:w-auto"
+                            title="Mostra QR Code"
+                          >
+                            <QrCode className="w-5 h-5" />
+                          </button>
+                        </div>
+
+                        {showLiveScoringQR && (
+                          <div className="bg-white p-4 rounded-lg flex justify-center">
+                            <QRCodeReact value={liveScoringUrl} size={200} />
+                          </div>
+                        )}
+
+                        <div className="mt-3 p-3 bg-yellow-900/20 border border-yellow-700/30 rounded text-xs text-yellow-200">
+                          <strong>⚠️ Importante:</strong> I risultati inseriti tramite questo link
+                          sono provvisori e appariranno nella tab &quot;Partite&quot; con un
+                          indicatore &quot;In attesa di conferma&quot;. Solo tu puoi renderli
+                          definitivi.
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 

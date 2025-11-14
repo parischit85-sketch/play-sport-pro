@@ -3,6 +3,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../../../../services/firebase';
 import {
   Trophy,
   Calendar,
@@ -14,6 +16,9 @@ import {
   Info,
   Trash2,
   Pencil,
+  AlertTriangle,
+  Check,
+  X,
 } from 'lucide-react';
 import { useAuth, USER_ROLES } from '../../../../contexts/AuthContext';
 import {
@@ -22,12 +27,15 @@ import {
   updateMatchStatus,
   clearMatchResult,
   deleteMatch,
+  confirmProvisionalResult,
+  rejectProvisionalResult,
 } from '../../services/matchService';
 import { getTeamsByTournament } from '../../services/teamsService';
 import { MATCH_STATUS, KNOCKOUT_ROUND_NAMES } from '../../utils/tournamentConstants';
 import { computeFromSets, calcParisDelta } from '../../../../lib/rpa.js';
 import { themeTokens } from '../../../../lib/theme.js';
 import MatchResultModal from './MatchResultModal';
+import LiveScoreModal from './LiveScoreModal';
 import FormulaModal from '../../../../components/modals/FormulaModal.jsx';
 import MatchCreationModal from './MatchCreationModal';
 import MatchEditModal from './MatchEditModal';
@@ -45,6 +53,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
   const [teams, setTeams] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState(null);
+  const [selectedMatchForLiveScore, setSelectedMatchForLiveScore] = useState(null);
   const [expandedGroups, setExpandedGroups] = useState({});
   const [filter, setFilter] = useState('all');
   const [formulaModalOpen, setFormulaModalOpen] = useState(false);
@@ -225,6 +234,97 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
       // Ricarica i dati per ripristinare lo stato corretto
       await loadData();
       alert("Errore nell'aggiornamento dello stato");
+    }
+  };
+
+  const handleConfirmProvisionalResult = async (matchId) => {
+    if (!window.confirm('Confermare questo risultato provvisorio e renderlo definitivo?')) {
+      return;
+    }
+
+    try {
+      const result = await confirmProvisionalResult(clubId, tournament.id, matchId);
+
+      if (result.success) {
+        alert('Risultato confermato con successo!');
+        await loadData(); // Ricarica per aggiornare standings e match status
+      } else {
+        alert(result.error || 'Errore nella conferma del risultato');
+      }
+    } catch (error) {
+      console.error('Error confirming provisional result:', error);
+      alert('Errore nella conferma del risultato');
+    }
+  };
+
+  const handleRejectProvisionalResult = async (matchId) => {
+    if (!window.confirm('Rifiutare questo risultato provvisorio? Verrà eliminato.')) {
+      return;
+    }
+
+    try {
+      const result = await rejectProvisionalResult(clubId, tournament.id, matchId);
+
+      if (result.success) {
+        alert('Risultato provvisorio rifiutato');
+        await loadData(); // Ricarica per aggiornare lo stato
+      } else {
+        alert(result.error || 'Errore nel rifiuto del risultato');
+      }
+    } catch (error) {
+      console.error('Error rejecting provisional result:', error);
+      alert('Errore nel rifiuto del risultato');
+    }
+  };
+
+  const handleSubmitLiveScore = async (liveScoreData) => {
+    try {
+      const matchId = selectedMatchForLiveScore.id;
+
+      // Update match with live score (provisional, no validation)
+      const matchRef = doc(db, 'clubs', clubId, 'tournaments', tournament.id, 'matches', matchId);
+
+      await updateDoc(matchRef, {
+        liveScore: liveScoreData,
+        liveScoreUpdatedAt: new Date(),
+      });
+
+      setSelectedMatchForLiveScore(null);
+      await loadData();
+    } catch (error) {
+      console.error('Error submitting live score:', error);
+      alert("Errore durante l'aggiornamento del risultato live");
+    }
+  };
+
+  const handleSubmitFinalFromLive = async (finalResultData) => {
+    try {
+      const matchId = selectedMatchForLiveScore.id;
+
+      // Prepare data in the format expected by recordMatchResult
+      const resultData = {
+        matchId: matchId,
+        score: finalResultData.score,
+        bestOf: selectedMatchForLiveScore.bestOf || 3, // Use match's bestOf or default to 3
+        sets: finalResultData.sets,
+        completedAt: new Date(),
+      };
+
+      // Submit as final result using the existing recordMatchResult function
+      const result = await recordMatchResult(clubId, tournament.id, resultData);
+
+      if (result.success) {
+        // ✅ Force status to COMPLETED (transaction preserves in_progress status)
+        await updateMatchStatus(clubId, tournament.id, matchId, MATCH_STATUS.COMPLETED);
+
+        setSelectedMatchForLiveScore(null);
+        await loadData();
+      } else {
+        alert(result.error || 'Errore durante la conferma del risultato finale');
+      }
+    } catch (error) {
+      console.error('Error submitting final result:', error);
+      alert('Errore durante la conferma del risultato finale');
     }
   };
 
@@ -494,13 +594,17 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
     const team1Avg = getAvgRanking(team1);
     const team2Avg = getAvgRanking(team2);
 
-    const hasSets = Array.isArray(match.sets) && match.sets.length > 0;
+    // Check for live score (in progress matches)
+    const isInProgress = match.status === MATCH_STATUS.IN_PROGRESS;
+    const isLive = isInProgress && match.liveScore;
+    const setsToShow = isLive ? match.liveScore.sets : match.sets;
+    const hasSets = Array.isArray(setsToShow) && setsToShow.length > 0;
 
     const renderSetPills = (teamIndex) => {
       if (!hasSets) return null;
       return (
         <div className="flex items-center gap-1">
-          {match.sets.map((s, i) => {
+          {setsToShow.map((s, i) => {
             const a = Number(s?.team1 ?? 0);
             const b = Number(s?.team2 ?? 0);
             const val = teamIndex === 1 ? a : b;
@@ -510,8 +614,20 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                 key={`tpill-${match.id}-${teamIndex}-${i}`}
                 className={`${
                   isPublicView
-                    ? `text-5xl sm:text-6xl font-bold ${win ? 'text-green-400' : 'text-gray-400'}`
-                    : `rounded px-2 py-1 text-lg sm:text-xl font-bold ${win ? 'bg-emerald-900/30 text-emerald-300' : 'bg-gray-700 text-gray-300'}`
+                    ? `text-5xl sm:text-6xl font-bold ${
+                        isLive
+                          ? 'text-orange-400 animate-pulse'
+                          : win
+                            ? 'text-green-400'
+                            : 'text-gray-400'
+                      }`
+                    : `rounded px-2 py-1 text-lg sm:text-xl font-bold ${
+                        isLive
+                          ? 'bg-orange-900/40 text-orange-300 animate-pulse border border-orange-600/50'
+                          : win
+                            ? 'bg-emerald-900/30 text-emerald-300'
+                            : 'bg-gray-700 text-gray-300'
+                      }`
                 }`}
                 title={`Set ${i + 1}`}
               >
@@ -555,7 +671,7 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
         )}
 
         {/* Match header - Mobile optimized */}
-  <div className="flex items-center justify-between mb-2 sm:mb-3 flex-wrap gap-2">
+        <div className="flex items-center justify-between mb-2 sm:mb-3 flex-wrap gap-2">
           <div className="flex items-center gap-2">
             {getStatusIcon(match.status)}
             {/* Show status text only if not IN_PROGRESS in public view */}
@@ -634,15 +750,21 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                 </>
               )}
             </div>
-            {isCompleted && (
+            {(isCompleted || isLive) && (
               <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                 {hasSets
                   ? renderSetPills(1)
-                  : match.score && (
+                  : (isLive ? match.liveScore : match.score) && (
                       <span
-                        className={`${isPublicView ? 'text-5xl sm:text-6xl' : 'text-4xl sm:text-5xl'} font-bold ${match.winnerId === team1.id ? 'text-green-400' : 'text-gray-400'}`}
+                        className={`${isPublicView ? 'text-5xl sm:text-6xl' : 'text-4xl sm:text-5xl'} font-bold ${
+                          isLive
+                            ? 'text-orange-400 animate-pulse'
+                            : match.winnerId === team1.id
+                              ? 'text-green-400'
+                              : 'text-gray-400'
+                        }`}
                       >
-                        {match.score.team1}
+                        {isLive ? match.liveScore.team1 : match.score.team1}
                       </span>
                     )}
               </div>
@@ -698,15 +820,21 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                 </>
               )}
             </div>
-            {isCompleted && (
+            {(isCompleted || isLive) && (
               <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                 {hasSets
                   ? renderSetPills(2)
-                  : match.score && (
+                  : (isLive ? match.liveScore : match.score) && (
                       <span
-                        className={`${isPublicView ? 'text-5xl sm:text-6xl' : 'text-4xl sm:text-5xl'} font-bold ${match.winnerId === team2.id ? 'text-green-400' : 'text-gray-400'}`}
+                        className={`${isPublicView ? 'text-5xl sm:text-6xl' : 'text-4xl sm:text-5xl'} font-bold ${
+                          isLive
+                            ? 'text-orange-400 animate-pulse'
+                            : match.winnerId === team2.id
+                              ? 'text-green-400'
+                              : 'text-gray-400'
+                        }`}
                       >
-                        {match.score.team2}
+                        {isLive ? match.liveScore.team2 : match.score.team2}
                       </span>
                     )}
               </div>
@@ -739,14 +867,64 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
             )}
 
             {match.status === MATCH_STATUS.IN_PROGRESS && (
-              <button
-                onClick={() => canEditResults && handleMarkAsScheduled(match.id)}
-                disabled={!canEditResults}
-                className="w-full mt-3 px-3 sm:px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center justify-center gap-2"
-              >
-                <Clock className="w-4 h-4" />
-                Riporta a Programmato
-              </button>
+              <>
+                <button
+                  onClick={() => canEditResults && handleMarkAsScheduled(match.id)}
+                  disabled={!canEditResults}
+                  className="w-full mt-3 px-3 sm:px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                >
+                  <Clock className="w-4 h-4" />
+                  Riporta a Programmato
+                </button>
+
+                <button
+                  onClick={() => setSelectedMatchForLiveScore(match)}
+                  disabled={!canEditResults}
+                  className="w-full mt-2 px-3 sm:px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                >
+                  <PlayCircle className="w-4 h-4" />
+                  Risultato Live
+                </button>
+              </>
+            )}
+
+            {/* Provisional Result Alert & Actions */}
+            {match.provisionalStatus === 'pending' && match.provisionalScore && (
+              <div className="mt-3 bg-yellow-900/20 border border-yellow-700/50 rounded-lg p-3">
+                <div className="flex items-start gap-2 mb-2">
+                  <AlertTriangle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-yellow-300 mb-1">
+                      Risultato Provvisorio in Attesa
+                    </p>
+                    <p className="text-xs text-yellow-200/80">
+                      {team1Name}: {match.provisionalScore.team1} - {team2Name}:{' '}
+                      {match.provisionalScore.team2}
+                    </p>
+                    {match.provisionalSubmittedBy && (
+                      <p className="text-xs text-yellow-200/60 mt-1">
+                        Inviato da: {match.provisionalSubmittedBy}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleConfirmProvisionalResult(match.id)}
+                    className="flex-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center justify-center gap-1.5"
+                  >
+                    <Check className="w-4 h-4" />
+                    Conferma
+                  </button>
+                  <button
+                    onClick={() => handleRejectProvisionalResult(match.id)}
+                    className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium flex items-center justify-center gap-1.5"
+                  >
+                    <X className="w-4 h-4" />
+                    Rifiuta
+                  </button>
+                </div>
+              </div>
             )}
 
             {/* Pulsante Inserisci/Modifica Risultato - sempre visibile */}
@@ -997,6 +1175,18 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
             );
           })}
         </div>
+      )}
+
+      {/* Live Score Modal - for in-progress matches */}
+      {selectedMatchForLiveScore && (
+        <LiveScoreModal
+          match={selectedMatchForLiveScore}
+          team1={teams[selectedMatchForLiveScore.team1Id]}
+          team2={teams[selectedMatchForLiveScore.team2Id]}
+          onClose={() => setSelectedMatchForLiveScore(null)}
+          onSubmit={handleSubmitLiveScore}
+          onSubmitFinal={handleSubmitFinalFromLive}
+        />
       )}
 
       {selectedMatch && (

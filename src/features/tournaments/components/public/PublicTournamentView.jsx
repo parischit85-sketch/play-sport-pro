@@ -4,9 +4,9 @@
  * Access: /public/tournament/:clubId/:tournamentId/:token
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query } from 'firebase/firestore';
 import { ref, onDisconnect, set, remove } from 'firebase/database';
 import { db, rtdb } from '@services/firebase.js';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,7 +15,6 @@ import TournamentStandings from '../standings/TournamentStandings.jsx';
 import TournamentMatches from '../matches/TournamentMatches.jsx';
 import TournamentBracket from '../knockout/TournamentBracket.jsx';
 import PublicMatchCard from './PublicMatchCard.jsx';
-import { getMatches } from '../../services/matchService.js';
 import { getTeamsByTournament } from '../../services/teamsService.js';
 import { calculateGroupStandings } from '../../services/standingsService.js';
 import QRCode from 'react-qr-code';
@@ -187,66 +186,82 @@ function PublicTournamentView() {
     };
   }, [tournamentId]);
 
-  // Load groups and data when tournament changes
-  const loadGroupsAndData = useCallback(async () => {
-    if (!tournament) return;
+  // Load groups and data when tournament changes - WITH REAL-TIME UPDATES
+  useEffect(() => {
+    if (!tournament || !clubId || !tournamentId) return;
 
-    try {
-      const [matches, teams] = await Promise.all([
-        getMatches(clubId, tournamentId),
-        getTeamsByTournament(clubId, tournamentId),
-      ]);
+    console.log('[MOBILE DEBUG] Setting up real-time listeners for matches');
 
-      // Save all matches and teams for matches-only view
-      setAllMatches(matches);
-      setAllTeams(teams);
+    // Real-time listener for matches
+    const matchesRef = collection(db, 'clubs', clubId, 'tournaments', tournamentId, 'matches');
+    const matchesQuery = query(matchesRef);
 
-      // Combine groupIds from matches (type === 'group') and teams
-      const groupIdsFromMatches = matches
-        .filter((m) => m.type === 'group' && m.groupId)
-        .map((m) => m.groupId);
-      const groupIdsFromTeams = teams.filter((t) => t.groupId).map((t) => t.groupId);
+    const unsubscribeMatches = onSnapshot(
+      matchesQuery,
+      async (snapshot) => {
+        console.log('[MOBILE DEBUG] Matches updated:', snapshot.docs.length);
 
-      const uniqueGroups = [...new Set([...groupIdsFromMatches, ...groupIdsFromTeams])].sort(
-        (a, b) => a.localeCompare(b)
-      );
+        const matches = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-      setGroups(uniqueGroups);
+        // Load teams (one-time, they don't change often)
+        const teams = await getTeamsByTournament(clubId, tournamentId);
 
-      // Load standings and matches for each group
-      const data = {};
-      for (const groupId of uniqueGroups) {
-        const standings = await calculateGroupStandings(
-          clubId,
-          tournamentId,
-          groupId,
-          tournament.pointsSystem || { win: 3, draw: 1, loss: 0 }
+        // Save all matches and teams for matches-only view
+        setAllMatches(matches);
+        setAllTeams(teams);
+
+        // Combine groupIds from matches (type === 'group') and teams
+        const groupIdsFromMatches = matches
+          .filter((m) => m.type === 'group' && m.groupId)
+          .map((m) => m.groupId);
+        const groupIdsFromTeams = teams.filter((t) => t.groupId).map((t) => t.groupId);
+
+        const uniqueGroups = [...new Set([...groupIdsFromMatches, ...groupIdsFromTeams])].sort(
+          (a, b) => a.localeCompare(b)
         );
 
-        const groupMatches = matches.filter((m) => m.type === 'group' && m.groupId === groupId);
+        setGroups(uniqueGroups);
 
-        // Map team data
-        const teamsMap = {};
-        teams.forEach((t) => {
-          teamsMap[t.id] = t;
-        });
+        // Load standings and matches for each group
+        const data = {};
+        for (const groupId of uniqueGroups) {
+          const standings = await calculateGroupStandings(
+            clubId,
+            tournamentId,
+            groupId,
+            tournament.pointsSystem || { win: 3, draw: 1, loss: 0 }
+          );
 
-        data[groupId] = {
-          standings,
-          matches: groupMatches,
-          teams: teamsMap,
-        };
+          const groupMatches = matches.filter((m) => m.type === 'group' && m.groupId === groupId);
+
+          // Map team data
+          const teamsMap = {};
+          teams.forEach((t) => {
+            teamsMap[t.id] = t;
+          });
+
+          data[groupId] = {
+            standings,
+            matches: groupMatches,
+            teams: teamsMap,
+          };
+        }
+
+        setGroupData(data);
+      },
+      (error) => {
+        console.error('[MOBILE DEBUG] Error listening to matches:', error);
       }
+    );
 
-      setGroupData(data);
-    } catch (err) {
-      console.error('Error loading groups:', err);
-    }
+    return () => {
+      console.log('[MOBILE DEBUG] Cleaning up matches listener');
+      unsubscribeMatches();
+    };
   }, [tournament, clubId, tournamentId]);
-
-  useEffect(() => {
-    loadGroupsAndData();
-  }, [loadGroupsAndData]);
 
   // Create pages based on display settings
   const pages = [];
@@ -303,7 +318,7 @@ function PublicTournamentView() {
     const swipeDistanceX = touchStartX.current - touchEndX.current;
     const swipeDistanceY = touchStartY.current - touchEndY.current;
     const minSwipeDistance = 50; // Minimum distance for a swipe
-    
+
     // Calculate if swipe is predominantly horizontal
     const absX = Math.abs(swipeDistanceX);
     const absY = Math.abs(swipeDistanceY);
@@ -452,7 +467,12 @@ function PublicTournamentView() {
   };
 
   const renderMatchesOnlyPage = () => {
-    console.log('Rendering matches-only page. Matches:', allMatches?.length, 'Teams:', allTeams?.length);
+    console.log(
+      'Rendering matches-only page. Matches:',
+      allMatches?.length,
+      'Teams:',
+      allTeams?.length
+    );
     return (
       <div className="space-y-6">
         <div className="text-center mb-6">
@@ -625,10 +645,10 @@ function PublicTournamentView() {
             {/* Tournament Logo and Name - centered */}
             <div className="flex-1 flex flex-col items-center gap-2">
               {tournament.logoUrl && (
-                <img 
-                  src={tournament.logoUrl} 
-                  alt="Tournament Logo" 
-                  className="h-12 w-auto object-contain" 
+                <img
+                  src={tournament.logoUrl}
+                  alt="Tournament Logo"
+                  className="h-12 w-auto object-contain"
                 />
               )}
               <h1 className="text-lg font-bold text-white leading-tight text-center">

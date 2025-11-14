@@ -4,12 +4,16 @@
 
 // Scheduled Functions
 export { dailyCertificateCheck } from './scheduledCertificateReminders.js';
-export { cleanupExpiredSubscriptions, cleanupInactiveSubscriptions } from './cleanupExpiredSubscriptions.js';
+export {
+  cleanupExpiredSubscriptions,
+  cleanupInactiveSubscriptions,
+} from './cleanupExpiredSubscriptions.js';
 export { scheduledNotificationCleanup, getCleanupStatus } from './scheduledNotificationCleanup.js';
 
 // Callable Functions
 export { sendBulkCertificateNotifications } from './sendBulkNotifications.clean.js';
 export { sendClubEmail } from './sendClubEmail.js';
+export { submitProvisionalMatchResult } from './submitProvisionalMatchResult.js';
 
 // Email Notification Triggers (CHK-401)
 export { onBookingCreated, onBookingDeleted } from './sendBookingEmail.js';
@@ -27,4 +31,3 @@ export {
 
 // Unknown Users Cleanup (✅ New - Sprint 1)
 export { cleanupUnknownUsers } from './cleanupUnknownUsers.js';
-

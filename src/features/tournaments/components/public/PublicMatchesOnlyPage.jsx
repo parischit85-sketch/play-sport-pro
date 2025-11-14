@@ -9,7 +9,7 @@ import PublicMatchCard from './PublicMatchCard';
  * Layout ottimizzato per tornei in modalità "solo partite"
  */
 function PublicMatchesOnlyPage() {
-  const { clubId, tournamentId, token } = useParams();
+  const { clubId, tournamentId } = useParams();
   const navigate = useNavigate();
 
   const [tournament, setTournament] = useState(null);
@@ -19,41 +19,67 @@ function PublicMatchesOnlyPage() {
   const [error, setError] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
 
-  // Carica dati torneo
+  // Carica dati torneo con listener real-time per le partite
   useEffect(() => {
-    loadTournamentData();
-  }, [clubId, tournamentId]);
+    let unsubscribe = null;
 
-  const loadTournamentData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+    const loadTournamentData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      const { getTournament } = await import('../../services/tournamentService');
-      const { getTeamsByTournament } = await import('../../services/teamsService');
-      const { getMatches } = await import('../../services/matchService');
+        const { getTournament } = await import('../../services/tournamentService');
+        const { getTeamsByTournament } = await import('../../services/teamsService');
+        const { db } = await import('../../../../services/firebase');
+        const { collection, query, onSnapshot } = await import('firebase/firestore');
 
-      // Carica torneo
-      const tournamentData = await getTournament(clubId, tournamentId);
-      if (!tournamentData) {
-        throw new Error('Torneo non trovato');
+        // Carica torneo
+        const tournamentData = await getTournament(clubId, tournamentId);
+        if (!tournamentData) {
+          throw new Error('Torneo non trovato');
+        }
+        setTournament(tournamentData);
+
+        // Carica squadre
+        const teamsData = await getTeamsByTournament(clubId, tournamentId);
+        setTeams(teamsData || []);
+
+        // Real-time listener per le partite (per aggiornamenti live score)
+        const matchesRef = collection(db, 'clubs', clubId, 'tournaments', tournamentId, 'matches');
+        const matchesQuery = query(matchesRef);
+
+        unsubscribe = onSnapshot(
+          matchesQuery,
+          (snapshot) => {
+            const matchesData = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            setMatches(matchesData);
+            setLoading(false);
+          },
+          (error) => {
+            console.error('Error in matches listener:', error);
+            setError(error.message || 'Errore nel caricamento delle partite');
+            setLoading(false);
+          }
+        );
+      } catch (err) {
+        console.error('Error loading tournament data:', err);
+        setError(err.message || 'Errore nel caricamento dei dati');
+        setLoading(false);
       }
-      setTournament(tournamentData);
+    };
 
-      // Carica squadre
-      const teamsData = await getTeamsByTournament(clubId, tournamentId);
-      setTeams(teamsData || []);
+    loadTournamentData();
 
-      // Carica partite
-      const matchesData = await getMatches(clubId, tournamentId);
-      setMatches(matchesData || []);
-    } catch (err) {
-      console.error('Error loading tournament data:', err);
-      setError(err.message || 'Errore nel caricamento dei dati');
-    } finally {
-      setLoading(false);
-    }
-  };
+    // Cleanup del listener
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [clubId, tournamentId]);
 
   // Filtra partite per stato
   const getFilteredMatches = () => {

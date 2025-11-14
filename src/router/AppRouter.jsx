@@ -39,7 +39,6 @@ const AdminBookingsPage = React.lazy(() => import('@pages/AdminBookingsPage.jsx'
 const DarkModeTestPage = React.lazy(() => import('@pages/DarkModeTestPage.jsx'));
 const PushNotificationsTestPage = React.lazy(() => import('@pages/PushNotificationsTestPage.jsx'));
 
-
 // Bootstrap page
 const Bootstrap = React.lazy(() => import('@pages/Bootstrap.jsx'));
 
@@ -77,6 +76,9 @@ const PublicTournamentViewTV = React.lazy(
 );
 const PublicMatchesOnlyPage = React.lazy(
   () => import('@features/tournaments/components/public/PublicMatchesOnlyPage.jsx')
+);
+const PublicLiveScoring = React.lazy(
+  () => import('@features/tournaments/components/public/PublicLiveScoring.jsx')
 );
 
 // Analytics page tracking component
@@ -127,14 +129,8 @@ export default function AppRouter() {
                     </PublicRoute>
                   }
                 />
-                <Route
-                  path="/terms-and-conditions"
-                  element={<TermsAndConditionsPage />}
-                />
-                <Route
-                  path="/privacy-policy"
-                  element={<PrivacyPolicyPage />}
-                />
+                <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                 {/* Public Tournament Views - No authentication required */}
                 {/* Public tournament views */}
                 <Route
@@ -148,6 +144,10 @@ export default function AppRouter() {
                 <Route
                   path="/public/matches-only/:clubId/:tournamentId/:token"
                   element={<PublicMatchesOnlyPage />}
+                />
+                <Route
+                  path="/public/tournament/:clubId/:tournamentId/live-scoring/:liveScoringToken"
+                  element={<PublicLiveScoring />}
                 />
                 {/* Main App Routes - Landing page for unauthenticated, protected routes for authenticated */}
                 <Route

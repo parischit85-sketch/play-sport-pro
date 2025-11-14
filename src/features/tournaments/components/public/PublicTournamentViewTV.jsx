@@ -707,13 +707,16 @@ function PublicTournamentViewTV() {
               const team1Players = team1Name.split('/').map((p) => p.trim());
               const team2Players = team2Name.split('/').map((p) => p.trim());
 
-              const hasSets = Array.isArray(match.sets) && match.sets.length > 0;
+              // ✅ SUPPORTO RISULTATI LIVE: Usa liveScore se disponibile, altrimenti sets confermati
+              const isLive = isInProgress && match.liveScore;
+              const setsToShow = isLive ? match.liveScore.sets : match.sets;
+              const hasSets = Array.isArray(setsToShow) && setsToShow.length > 0;
 
               const renderSetPills = (teamIndex) => {
                 if (!hasSets) return null;
                 return (
                   <div className="flex items-center gap-1 mt-0.5">
-                    {match.sets.map((s, i) => {
+                    {setsToShow.map((s, i) => {
                       const a = Number(s?.team1 ?? 0);
                       const b = Number(s?.team2 ?? 0);
                       const val = teamIndex === 1 ? a : b;
@@ -722,7 +725,13 @@ function PublicTournamentViewTV() {
                         <span
                           key={`set-${match.id}-${teamIndex}-${i}`}
                           className={`text-3xl font-bold ${
-                            win ? 'text-emerald-400' : 'text-red-400'
+                            isLive
+                              ? win
+                                ? 'text-orange-400 animate-pulse'
+                                : 'text-white'
+                              : win
+                                ? 'text-emerald-400'
+                                : 'text-red-400'
                           }`}
                           title={`Set ${i + 1}`}
                         >
@@ -769,15 +778,21 @@ function PublicTournamentViewTV() {
                       ))}
                     </div>
                     <div className="flex flex-col items-end ml-3">
-                      {isCompleted && (
+                      {(isCompleted || isLive) && (
                         <>
                           {hasSets
                             ? renderSetPills(1)
-                            : match.score && (
+                            : (match.liveScore || match.score) && (
                                 <span
-                                  className={`text-4xl font-bold ${match.winnerId === team1.id ? 'text-emerald-400' : 'text-red-400'}`}
+                                  className={`text-4xl font-bold ${
+                                    isLive
+                                      ? 'text-orange-400 animate-pulse'
+                                      : match.winnerId === team1.id
+                                        ? 'text-emerald-400'
+                                        : 'text-red-400'
+                                  }`}
                                 >
-                                  {match.score.team1}
+                                  {isLive ? match.liveScore.team1 : match.score?.team1}
                                 </span>
                               )}
                         </>
@@ -813,15 +828,21 @@ function PublicTournamentViewTV() {
                       ))}
                     </div>
                     <div className="flex flex-col items-end ml-3">
-                      {isCompleted && (
+                      {(isCompleted || isLive) && (
                         <>
                           {hasSets
                             ? renderSetPills(2)
-                            : match.score && (
+                            : (match.liveScore || match.score) && (
                                 <span
-                                  className={`text-4xl font-bold ${match.winnerId === team2.id ? 'text-emerald-400' : 'text-red-400'}`}
+                                  className={`text-4xl font-bold ${
+                                    isLive
+                                      ? 'text-orange-400 animate-pulse'
+                                      : match.winnerId === team2.id
+                                        ? 'text-emerald-400'
+                                        : 'text-red-400'
+                                  }`}
                                 >
-                                  {match.score.team2}
+                                  {isLive ? match.liveScore.team2 : match.score?.team2}
                                 </span>
                               )}
                         </>
@@ -857,13 +878,16 @@ function PublicTournamentViewTV() {
                 const team1Players = team1Name.split('/').map((p) => p.trim());
                 const team2Players = team2Name.split('/').map((p) => p.trim());
 
-                const hasSets = Array.isArray(match.sets) && match.sets.length > 0;
+                // ✅ SUPPORTO RISULTATI LIVE: Usa liveScore se disponibile, altrimenti sets confermati
+                const isLive = isInProgress && match.liveScore;
+                const setsToShow = isLive ? match.liveScore.sets : match.sets;
+                const hasSets = Array.isArray(setsToShow) && setsToShow.length > 0;
 
                 const renderSetPills = (teamIndex) => {
                   if (!hasSets) return null;
                   return (
                     <div className="flex items-center gap-1 mt-0.5">
-                      {match.sets.map((s, i) => {
+                      {setsToShow.map((s, i) => {
                         const a = Number(s?.team1 ?? 0);
                         const b = Number(s?.team2 ?? 0);
                         const val = teamIndex === 1 ? a : b;
@@ -872,7 +896,13 @@ function PublicTournamentViewTV() {
                           <span
                             key={`set-clone-${match.id}-${teamIndex}-${i}`}
                             className={`text-3xl font-bold ${
-                              win ? 'text-emerald-400' : 'text-red-400'
+                              isLive
+                                ? win
+                                  ? 'text-orange-400 animate-pulse'
+                                  : 'text-white'
+                                : win
+                                  ? 'text-emerald-400'
+                                  : 'text-red-400'
                             }`}
                             title={`Set ${i + 1}`}
                           >
@@ -918,15 +948,21 @@ function PublicTournamentViewTV() {
                         ))}
                       </div>
                       <div className="flex flex-col items-end ml-3">
-                        {isCompleted && (
+                        {(isCompleted || isLive) && (
                           <>
                             {hasSets
                               ? renderSetPills(1)
-                              : match.score && (
+                              : (match.liveScore || match.score) && (
                                   <span
-                                    className={`text-4xl font-bold ${match.winnerId === team1.id ? 'text-emerald-400' : 'text-red-400'}`}
+                                    className={`text-4xl font-bold ${
+                                      isLive
+                                        ? 'text-orange-400 animate-pulse'
+                                        : match.winnerId === team1.id
+                                          ? 'text-emerald-400'
+                                          : 'text-red-400'
+                                    }`}
                                   >
-                                    {match.score.team1}
+                                    {isLive ? match.liveScore.team1 : match.score?.team1}
                                   </span>
                                 )}
                           </>
@@ -962,15 +998,21 @@ function PublicTournamentViewTV() {
                         ))}
                       </div>
                       <div className="flex flex-col items-end ml-3">
-                        {isCompleted && (
+                        {(isCompleted || isLive) && (
                           <>
                             {hasSets
                               ? renderSetPills(2)
-                              : match.score && (
+                              : (match.liveScore || match.score) && (
                                   <span
-                                    className={`text-4xl font-bold ${match.winnerId === team2.id ? 'text-emerald-400' : 'text-red-400'}`}
+                                    className={`text-4xl font-bold ${
+                                      isLive
+                                        ? 'text-orange-400 animate-pulse'
+                                        : match.winnerId === team2.id
+                                          ? 'text-emerald-400'
+                                          : 'text-red-400'
+                                    }`}
                                   >
-                                    {match.score.team2}
+                                    {isLive ? match.liveScore.team2 : match.score?.team2}
                                   </span>
                                 )}
                           </>

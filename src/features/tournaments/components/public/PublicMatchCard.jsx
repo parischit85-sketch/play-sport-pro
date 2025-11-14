@@ -13,6 +13,17 @@ function PublicMatchCard({ match, teams }) {
 
   // Calcola i punteggi dai set se non sono presenti team1Score/team2Score
   const calculateScoresFromSets = () => {
+    // ✅ PRIORITÀ 1: Se c'è un risultato LIVE (match.liveScore), usalo
+    if (match.liveScore) {
+      return {
+        team1Score: match.liveScore.team1 || 0,
+        team2Score: match.liveScore.team2 || 0,
+        sets: match.liveScore.sets || [],
+        isLive: true,
+      };
+    }
+
+    // ✅ PRIORITÀ 2: Se la partita è completata, usa i set confermati
     if (!match.sets || match.sets.length === 0) {
       // Debug: verifica perché non ci sono set
       if (match.status === 'completed') {
@@ -27,6 +38,8 @@ function PublicMatchCard({ match, teams }) {
       return {
         team1Score: match.team1Score || 0,
         team2Score: match.team2Score || 0,
+        sets: [],
+        isLive: false,
       };
     }
 
@@ -35,6 +48,8 @@ function PublicMatchCard({ match, teams }) {
       return {
         team1Score: match.team1Score,
         team2Score: match.team2Score,
+        sets: match.sets,
+        isLive: false,
       };
     }
 
@@ -46,7 +61,7 @@ function PublicMatchCard({ match, teams }) {
       // I set possono avere nomi diversi: team1/team2 oppure team1Score/team2Score
       const score1 = Number(set.team1Score || set.team1) || 0;
       const score2 = Number(set.team2Score || set.team2) || 0;
-      
+
       if (score1 > score2) {
         team1Sets++;
       } else if (score2 > score1) {
@@ -57,6 +72,8 @@ function PublicMatchCard({ match, teams }) {
     return {
       team1Score: team1Sets,
       team2Score: team2Sets,
+      sets: match.sets,
+      isLive: false,
     };
   };
 
@@ -106,7 +123,7 @@ function PublicMatchCard({ match, teams }) {
   // Formatta data/ora - gestisce sia stringhe che Timestamp di Firestore
   const formatDateTime = (dateValue) => {
     if (!dateValue) return null;
-    
+
     let date;
     // Se è un Timestamp di Firestore (ha il metodo toDate o la proprietà seconds)
     if (dateValue.toDate && typeof dateValue.toDate === 'function') {
@@ -117,10 +134,10 @@ function PublicMatchCard({ match, teams }) {
       // Altrimenti tratta come stringa/numero
       date = new Date(dateValue);
     }
-    
+
     // Verifica che la data sia valida
     if (isNaN(date.getTime())) return null;
-    
+
     return {
       date: date.toLocaleDateString('it-IT', { day: '2-digit', month: 'short' }),
       time: date.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }),
@@ -145,11 +162,11 @@ function PublicMatchCard({ match, teams }) {
         md:flex-col
         ${match.status === 'in_progress' ? 'bg-gray-900' : statusConfig.bgColor}
         ${
-          match.status === 'in_progress' 
-            ? 'shadow-[0_0_15px_rgba(239,68,68,0.6)]' 
+          match.status === 'in_progress'
+            ? 'shadow-[0_0_15px_rgba(239,68,68,0.6)]'
             : match.status === 'completed'
-            ? 'border-4 border-emerald-500'
-            : 'border-4 border-gray-400'
+              ? 'border-4 border-emerald-500'
+              : 'border-4 border-gray-400'
         }
         rounded-xl 
         overflow-hidden
@@ -167,14 +184,12 @@ function PublicMatchCard({ match, teams }) {
         className={`px-6 py-3 border-b ${statusConfig.borderColor} ${match.status === 'in_progress' ? 'bg-red-900/60 [animation:pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]' : 'bg-gray-900/50'} flex items-center justify-between`}
       >
         <div className="flex items-center gap-2">
-          <StatusIcon
-            className={`w-5 h-5 ${statusConfig.accentColor}`}
-          />
-          <span className={`text-sm font-bold tracking-wider ${match.status === 'scheduled' && dateTime?.time ? 'text-blue-400' : statusConfig.accentColor}`}>
+          <StatusIcon className={`w-5 h-5 ${statusConfig.accentColor}`} />
+          <span
+            className={`text-sm font-bold tracking-wider ${match.status === 'scheduled' && dateTime?.time ? 'text-blue-400' : statusConfig.accentColor}`}
+          >
             {/* Mostra orario invece di "PROGRAMMATA" se disponibile */}
-            {match.status === 'scheduled' && dateTime?.time
-              ? dateTime.time
-              : statusConfig.label}
+            {match.status === 'scheduled' && dateTime?.time ? dateTime.time : statusConfig.label}
           </span>
         </div>
         {/* Info campo in alto a destra */}
@@ -193,7 +208,9 @@ function PublicMatchCard({ match, teams }) {
           className={`flex items-center md:justify-end justify-between ${getWinnerStyle(match.team1Id)} rounded-lg p-3 ${DS_ANIMATIONS.fast}`}
         >
           <div className="md:text-right text-left flex-1">
-            <h3 className="text-base md:text-lg font-bold text-blue-400 mb-1">{team1?.teamName || 'Squadra 1'}</h3>
+            <h3 className="text-base md:text-lg font-bold text-blue-400 mb-1">
+              {team1?.teamName || 'Squadra 1'}
+            </h3>
             {team1?.players && team1.players.length > 0 && (
               <div className="text-sm md:text-base text-gray-300 leading-snug">
                 {team1.players
@@ -205,8 +222,8 @@ function PublicMatchCard({ match, teams }) {
               </div>
             )}
           </div>
-          {/* Score su mobile - solo per squadra 1 */}
-          {(match.status === 'completed' || match.status === 'in_progress') && (
+          {/* Score su mobile - solo per squadra 1 - NASCOSTO SE LIVE */}
+          {!scores.isLive && (match.status === 'completed' || match.status === 'in_progress') && (
             <div className="md:hidden ml-4">
               <div
                 className={`text-3xl font-black ${match.winnerId === match.team1Id ? 'text-emerald-400' : 'text-white'}`}
@@ -221,41 +238,51 @@ function PublicMatchCard({ match, teams }) {
         <div className="hidden md:flex flex-col items-center gap-2 min-w-[140px]">
           {match.status === 'completed' || match.status === 'in_progress' ? (
             <>
-              {/* Score Principale */}
-              <div className="flex items-center gap-4">
-                <div className="text-center">
-                  <div
-                    className={`text-4xl font-black ${match.winnerId === match.team1Id ? 'text-emerald-400' : 'text-white'}`}
-                  >
-                    {scores.team1Score}
+              {/* Score Principale - NASCOSTO SE LIVE */}
+              {!scores.isLive && (
+                <div className="flex items-center gap-4">
+                  <div className="text-center">
+                    <div
+                      className={`text-4xl font-black ${match.winnerId === match.team1Id ? 'text-emerald-400' : 'text-white'}`}
+                    >
+                      {scores.team1Score}
+                    </div>
+                  </div>
+                  <div className="text-2xl font-light text-gray-600">-</div>
+                  <div className="text-center">
+                    <div
+                      className={`text-4xl font-black ${match.winnerId === match.team2Id ? 'text-emerald-400' : 'text-white'}`}
+                    >
+                      {scores.team2Score}
+                    </div>
                   </div>
                 </div>
-                <div className="text-2xl font-light text-gray-600">-</div>
-                <div className="text-center">
-                  <div
-                    className={`text-4xl font-black ${match.winnerId === match.team2Id ? 'text-emerald-400' : 'text-white'}`}
-                  >
-                    {scores.team2Score}
-                  </div>
-                </div>
-              </div>
+              )}
 
               {/* Score Set (se disponibile) */}
-              {match.sets && match.sets.length > 0 && (
+              {scores.sets && scores.sets.length > 0 && (
                 <div className="flex flex-col gap-1">
-                  {match.sets.map((set, idx) => {
+                  {scores.sets.map((set, idx) => {
                     // I set possono avere nomi diversi
                     const score1 = set.team1Score || set.team1 || 0;
                     const score2 = set.team2Score || set.team2 || 0;
-                    
+
                     // Determina chi ha vinto il set
                     const team1WonSet = score1 > score2;
                     const team2WonSet = score2 > score1;
-                    
+
                     // Colora il bordo in base a chi ha vinto il set e la partita
                     let borderColor = 'border-gray-600';
                     let shadowColor = '';
-                    if (match.winnerId) {
+
+                    // Se è LIVE, usa arancione per i set vinti
+                    if (scores.isLive) {
+                      if (team1WonSet || team2WonSet) {
+                        borderColor = 'border-orange-500 animate-pulse';
+                        shadowColor = 'shadow-[0_0_12px_rgba(249,115,22,0.6)]'; // Glow arancione
+                      }
+                    } else if (match.winnerId) {
+                      // Partita completata - usa verde/rosso
                       if (team1WonSet && match.winnerId === match.team1Id) {
                         borderColor = 'border-emerald-500';
                         shadowColor = 'shadow-[0_0_12px_rgba(16,185,129,0.6)]'; // Glow verde
@@ -304,7 +331,9 @@ function PublicMatchCard({ match, teams }) {
           className={`flex items-center md:justify-start justify-between ${getWinnerStyle(match.team2Id)} rounded-lg p-3 ${DS_ANIMATIONS.fast}`}
         >
           <div className="md:text-left text-left flex-1">
-            <h3 className="text-base md:text-lg font-bold text-blue-400 mb-1">{team2?.teamName || 'Squadra 2'}</h3>
+            <h3 className="text-base md:text-lg font-bold text-blue-400 mb-1">
+              {team2?.teamName || 'Squadra 2'}
+            </h3>
             {team2?.players && team2.players.length > 0 && (
               <div className="text-sm md:text-base text-gray-300 leading-snug">
                 {team2.players
@@ -316,8 +345,8 @@ function PublicMatchCard({ match, teams }) {
               </div>
             )}
           </div>
-          {/* Score su mobile - solo per squadra 2 */}
-          {(match.status === 'completed' || match.status === 'in_progress') && (
+          {/* Score su mobile - solo per squadra 2 - NASCOSTO SE LIVE */}
+          {!scores.isLive && (match.status === 'completed' || match.status === 'in_progress') && (
             <div className="md:hidden ml-4">
               <div
                 className={`text-3xl font-black ${match.winnerId === match.team2Id ? 'text-emerald-400' : 'text-white'}`}
@@ -338,10 +367,10 @@ function PublicMatchCard({ match, teams }) {
 
         {/* Set Details su mobile */}
         {(match.status === 'completed' || match.status === 'in_progress') &&
-          match.sets &&
-          match.sets.length > 0 && (
+          scores.sets &&
+          scores.sets.length > 0 && (
             <div className="md:hidden flex flex-wrap gap-2 justify-center">
-              {match.sets.map((set, idx) => {
+              {scores.sets.map((set, idx) => {
                 const score1 = set.team1Score || set.team1 || 0;
                 const score2 = set.team2Score || set.team2 || 0;
 
@@ -352,7 +381,15 @@ function PublicMatchCard({ match, teams }) {
                 // Colora il bordo in base a chi ha vinto il set e la partita
                 let borderColor = 'border-gray-600';
                 let shadowColor = '';
-                if (match.winnerId) {
+
+                // Se è LIVE, usa arancione per i set vinti
+                if (scores.isLive) {
+                  if (team1WonSet || team2WonSet) {
+                    borderColor = 'border-orange-500 animate-pulse';
+                    shadowColor = 'shadow-[0_0_12px_rgba(249,115,22,0.6)]'; // Glow arancione
+                  }
+                } else if (match.winnerId) {
+                  // Partita completata - usa verde/rosso
                   if (team1WonSet && match.winnerId === match.team1Id) {
                     borderColor = 'border-emerald-500';
                     shadowColor = 'shadow-[0_0_12px_rgba(16,185,129,0.6)]'; // Glow verde

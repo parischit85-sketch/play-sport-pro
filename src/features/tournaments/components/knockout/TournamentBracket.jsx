@@ -2,11 +2,12 @@
  * Tournament Bracket - Display knockout bracket tree
  */
 
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Trophy, Crown, Medal, ChevronRight, ChevronDown } from 'lucide-react';
 import { useAuth, USER_ROLES } from '../../../../contexts/AuthContext';
 import { themeTokens } from '../../../../lib/theme';
-import { getMatches } from '../../services/matchService';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from '../../../../services/firebase';
 import { getTeamsByTournament } from '../../services/teamsService';
 import MatchResultModal from '../matches/MatchResultModal';
 import { recordMatchResult } from '../../services/matchService';
@@ -37,31 +38,49 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
   const isClubAdmin = userRole === USER_ROLES.SUPER_ADMIN || isAdminClubRole;
   const canEditResults = isClubAdmin;
 
-  const loadBracket = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [matchesData, teamsData] = await Promise.all([
-        getMatches(clubId, tournament.id, { type: 'knockout' }),
-        getTeamsByTournament(clubId, tournament.id),
-      ]);
-
-      const teamsMap = {};
-      teamsData.forEach((team) => {
-        teamsMap[team.id] = team;
-      });
-
-      setMatches(matchesData);
-      setTeams(teamsMap);
-    } catch (error) {
-      console.error('Error loading bracket:', error);
-    } finally {
-      setLoading(false);
-    }
+  // Load teams once
+  useEffect(() => {
+    const loadTeams = async () => {
+      try {
+        const teamsData = await getTeamsByTournament(clubId, tournament.id);
+        const teamsMap = {};
+        teamsData.forEach((team) => {
+          teamsMap[team.id] = team;
+        });
+        setTeams(teamsMap);
+      } catch (error) {
+        console.error('Error loading teams:', error);
+      }
+    };
+    loadTeams();
   }, [clubId, tournament.id]);
 
+  // Real-time listener for matches
   useEffect(() => {
-    loadBracket();
-  }, [loadBracket]);
+    setLoading(true);
+    const matchesQuery = query(
+      collection(db, `clubs/${clubId}/tournaments/${tournament.id}/matches`),
+      where('type', '==', 'knockout')
+    );
+
+    const unsubscribe = onSnapshot(
+      matchesQuery,
+      (snapshot) => {
+        const matchesData = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setMatches(matchesData);
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Error loading matches:', error);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [clubId, tournament.id]);
 
   // NOTE: Round grouping and ordering must be defined before any effect uses them to avoid TDZ errors
 
@@ -90,7 +109,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
 
       if (result.success) {
         setSelectedMatch(null);
-        loadBracket();
+        // Real-time listener will update automatically
       } else {
         alert(result.error || 'Errore nel salvataggio del risultato');
       }
@@ -268,7 +287,11 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
     const team1Name = team1?.teamName || match.team1Name || 'TBD';
     const team2Name = team2?.teamName || match.team2Name || 'TBD';
 
-    const hasSets = Array.isArray(match.sets) && match.sets.length > 0;
+    // Check for live score (in progress matches)
+    const isInProgress = match.status === MATCH_STATUS.IN_PROGRESS;
+    const isLive = isInProgress && match.liveScore;
+    const setsToShow = isLive ? match.liveScore.sets : match.sets;
+    const hasSets = Array.isArray(setsToShow) && setsToShow.length > 0;
 
     // Check if this match has a BYE
     const hasBye = team1Name === 'BYE' || team2Name === 'BYE';
@@ -320,7 +343,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
 
         return (
           <div className="flex items-center gap-1 ml-2">
-            {match.sets.map((s, i) => {
+            {setsToShow.map((s, i) => {
               const a = Number(s?.team1 ?? 0);
               const b = Number(s?.team2 ?? 0);
               const val = teamIndex === 1 ? a : b;
@@ -329,13 +352,15 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
                 <span
                   key={`tv-pill-${match.id}-${teamIndex}-${i}`}
                   className={`${pillPadding} rounded-md ${pillTextSize} leading-3 font-bold border transition-all ${
-                    win
-                      ? isWinner
-                        ? 'bg-emerald-900/40 text-emerald-200 border-emerald-600/50 shadow-sm shadow-emerald-500/20'
-                        : 'bg-red-900/40 text-red-300 border-red-600/50 shadow-sm shadow-red-500/20'
-                      : isWinner
-                        ? 'bg-gray-700/60 text-emerald-300 border-gray-600/50'
-                        : 'bg-gray-700/60 text-red-400 border-gray-600/50'
+                    isLive
+                      ? 'bg-orange-900/40 text-orange-300 border-orange-600/50 animate-pulse shadow-sm shadow-orange-500/20'
+                      : win
+                        ? isWinner
+                          ? 'bg-emerald-900/40 text-emerald-200 border-emerald-600/50 shadow-sm shadow-emerald-500/20'
+                          : 'bg-red-900/40 text-red-300 border-red-600/50 shadow-sm shadow-red-500/20'
+                        : isWinner
+                          ? 'bg-gray-700/60 text-emerald-300 border-gray-600/50'
+                          : 'bg-gray-700/60 text-red-400 border-gray-600/50'
                   }`}
                 >
                   {val}
@@ -445,18 +470,20 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
                 <Crown className="inline-block w-5 h-5 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)] animate-bounce" />
               )}
             </span>
-            {isCompleted &&
+            {(isCompleted || isLive) &&
               (hasSets
                 ? renderTVSetPills(1)
-                : match.score && (
+                : (isLive ? match.liveScore : match.score) && (
                     <span
                       className={`${pillTextSize} font-bold ml-1 px-2 py-0.5 rounded ${
-                        match.winnerId === team1?.id
-                          ? 'text-emerald-200 bg-emerald-900/30'
-                          : 'text-red-300 bg-red-900/20'
+                        isLive
+                          ? 'text-orange-300 bg-orange-900/30 animate-pulse'
+                          : match.winnerId === team1?.id
+                            ? 'text-emerald-200 bg-emerald-900/30'
+                            : 'text-red-300 bg-red-900/20'
                       }`}
                     >
-                      {match.score.team1}
+                      {isLive ? match.liveScore.team1 : match.score.team1}
                     </span>
                   ))}
           </div>
@@ -500,18 +527,20 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
                 <Crown className="inline-block w-5 h-5 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.8)] animate-bounce" />
               )}
             </span>
-            {isCompleted &&
+            {(isCompleted || isLive) &&
               (hasSets
                 ? renderTVSetPills(2)
-                : match.score && (
+                : (isLive ? match.liveScore : match.score) && (
                     <span
                       className={`${pillTextSize} font-bold ml-1 px-2 py-0.5 rounded ${
-                        match.winnerId === team2?.id
-                          ? 'text-emerald-200 bg-emerald-900/30'
-                          : 'text-red-300 bg-red-900/20'
+                        isLive
+                          ? 'text-orange-300 bg-orange-900/30 animate-pulse'
+                          : match.winnerId === team2?.id
+                            ? 'text-emerald-200 bg-emerald-900/30'
+                            : 'text-red-300 bg-red-900/20'
                       }`}
                     >
-                      {match.score.team2}
+                      {isLive ? match.liveScore.team2 : match.score.team2}
                     </span>
                   ))}
           </div>
@@ -528,7 +557,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
 
       return (
         <div className="flex items-center gap-1 ml-2">
-          {match.sets.map((s, i) => {
+          {setsToShow.map((s, i) => {
             const a = Number(s?.team1 ?? 0);
             const b = Number(s?.team2 ?? 0);
             const val = teamIndex === 1 ? a : b;
@@ -537,13 +566,15 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
               <span
                 key={`tb-pill-${match.id}-${teamIndex}-${i}`}
                 className={`px-1.5 py-0.5 rounded-md text-[10px] leading-4 font-semibold border transition-all ${
-                  win
-                    ? isFinale && isWinner
-                      ? 'bg-amber-900/40 text-amber-200 border-amber-600/50 shadow-sm shadow-amber-500/20'
-                      : isWinner
-                        ? 'bg-emerald-900/40 text-emerald-200 border-emerald-600/50 shadow-sm shadow-emerald-500/20'
-                        : 'bg-red-900/40 text-red-300 border-red-600/50'
-                    : 'bg-gray-700/60 text-gray-300 border-gray-600/50'
+                  isLive
+                    ? 'bg-orange-900/40 text-orange-300 border-orange-600/50 animate-pulse shadow-sm shadow-orange-500/20'
+                    : win
+                      ? isFinale && isWinner
+                        ? 'bg-amber-900/40 text-amber-200 border-amber-600/50 shadow-sm shadow-amber-500/20'
+                        : isWinner
+                          ? 'bg-emerald-900/40 text-emerald-200 border-emerald-600/50 shadow-sm shadow-emerald-500/20'
+                          : 'bg-red-900/40 text-red-300 border-red-600/50'
+                      : 'bg-gray-700/60 text-gray-300 border-gray-600/50'
                 }`}
                 title={`Set ${i + 1}`}
               >
@@ -613,20 +644,22 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
               )}
             </span>
           </div>
-          {isCompleted &&
+          {(isCompleted || isLive) &&
             (hasSets
               ? renderSetPills(1)
-              : match.score && (
+              : (isLive ? match.liveScore : match.score) && (
                   <span
                     className={`${isPublicView ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'} font-bold ml-2 flex-shrink-0 px-2 py-0.5 rounded ${
-                      match.winnerId === team1?.id
-                        ? isFinale
-                          ? 'text-amber-200 bg-amber-900/30'
-                          : 'text-emerald-200 bg-emerald-900/30'
-                        : 'text-gray-400 bg-gray-800/30'
+                      isLive
+                        ? 'text-orange-300 bg-orange-900/30 animate-pulse'
+                        : match.winnerId === team1?.id
+                          ? isFinale
+                            ? 'text-amber-200 bg-amber-900/30'
+                            : 'text-emerald-200 bg-emerald-900/30'
+                          : 'text-gray-400 bg-gray-800/30'
                     }`}
                   >
-                    {match.score.team1}
+                    {isLive ? match.liveScore.team1 : match.score.team1}
                   </span>
                 ))}
         </div>
@@ -675,20 +708,22 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
               )}
             </span>
           </div>
-          {isCompleted &&
+          {(isCompleted || isLive) &&
             (hasSets
               ? renderSetPills(2)
-              : match.score && (
+              : (isLive ? match.liveScore : match.score) && (
                   <span
                     className={`${isPublicView ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'} font-bold ml-2 flex-shrink-0 px-2 py-0.5 rounded ${
-                      match.winnerId === team2?.id
-                        ? isFinale
-                          ? 'text-amber-200 bg-amber-900/30'
-                          : 'text-emerald-200 bg-emerald-900/30'
-                        : 'text-gray-400 bg-gray-800/30'
+                      isLive
+                        ? 'text-orange-300 bg-orange-900/30 animate-pulse'
+                        : match.winnerId === team2?.id
+                          ? isFinale
+                            ? 'text-amber-200 bg-amber-900/30'
+                            : 'text-emerald-200 bg-emerald-900/30'
+                          : 'text-gray-400 bg-gray-800/30'
                     }`}
                   >
-                    {match.score.team2}
+                    {isLive ? match.liveScore.team2 : match.score.team2}
                   </span>
                 ))}
         </div>

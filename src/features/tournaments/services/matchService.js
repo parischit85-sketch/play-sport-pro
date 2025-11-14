@@ -491,6 +491,134 @@ export async function clearMatchResult(clubId, tournamentId, matchId) {
 }
 
 /**
+ * Submit provisional match result (live scoring - public)
+ * @param {string} clubId
+ * @param {string} tournamentId
+ * @param {string} matchId
+ * @param {Object} provisionalData - { score, sets, submittedBy, submittedAt }
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export async function submitProvisionalResult(
+  clubId,
+  tournamentId,
+  matchId,
+  provisionalData,
+  liveScoringToken
+) {
+  try {
+    // Use Cloud Function to submit with token verification
+    const { httpsCallable } = await import('firebase/functions');
+    const { functions } = await import('@services/firebase.js');
+
+    const submitProvisional = httpsCallable(functions, 'submitProvisionalMatchResult');
+
+    const result = await submitProvisional({
+      clubId,
+      tournamentId,
+      matchId,
+      provisionalData,
+      liveScoringToken,
+    });
+
+    if (result.data.success) {
+      console.log('✅ Provisional result submitted successfully');
+      return { success: true };
+    } else {
+      console.error('❌ Error from Cloud Function:', result.data.error);
+      return { success: false, error: result.data.error };
+    }
+  } catch (error) {
+    console.error('❌ Error submitting provisional result:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Confirm provisional result (admin only)
+ * @param {string} clubId
+ * @param {string} tournamentId
+ * @param {string} matchId
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export async function confirmProvisionalResult(clubId, tournamentId, matchId) {
+  try {
+    const match = await getMatch(clubId, tournamentId, matchId);
+
+    if (!match || !match.provisionalScore) {
+      return { success: false, error: 'No provisional result to confirm' };
+    }
+
+    // Use the existing recordMatchResult with provisional data
+    const result = await recordMatchResult(clubId, tournamentId, {
+      matchId,
+      score: match.provisionalScore,
+      sets: match.provisionalSets || [],
+      bestOf: match.provisionalSets?.length || 1,
+      completedAt: new Date(),
+    });
+
+    if (result.success) {
+      // Clear provisional data
+      const matchRef = doc(
+        db,
+        'clubs',
+        clubId,
+        COLLECTIONS.TOURNAMENTS,
+        tournamentId,
+        COLLECTIONS.MATCHES,
+        matchId
+      );
+
+      await updateDoc(matchRef, {
+        provisionalStatus: 'confirmed',
+        confirmedAt: Timestamp.now(),
+      });
+    }
+
+    return result;
+  } catch (error) {
+    console.error('❌ Error confirming provisional result:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Reject provisional result (admin only)
+ * @param {string} clubId
+ * @param {string} tournamentId
+ * @param {string} matchId
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export async function rejectProvisionalResult(clubId, tournamentId, matchId) {
+  try {
+    const matchRef = doc(
+      db,
+      'clubs',
+      clubId,
+      COLLECTIONS.TOURNAMENTS,
+      tournamentId,
+      COLLECTIONS.MATCHES,
+      matchId
+    );
+
+    await updateDoc(matchRef, {
+      provisionalScore: null,
+      provisionalSets: null,
+      provisionalSubmittedBy: null,
+      provisionalSubmittedAt: null,
+      provisionalStatus: 'rejected',
+      rejectedAt: Timestamp.now(),
+    });
+
+    console.log('✅ Provisional result rejected successfully');
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error rejecting provisional result:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+/**
  * Delete a single match
  * @param {string} clubId
  * @param {string} tournamentId
@@ -535,4 +663,7 @@ export default {
   getHeadToHeadMatches,
   updateMatchTeams,
   deleteKnockoutMatches,
+  submitProvisionalResult,
+  confirmProvisionalResult,
+  rejectProvisionalResult,
 };
