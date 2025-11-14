@@ -102,6 +102,8 @@ firebase-debug.log
 serviceAccountKey.json
 scripts/serviceAccount.json
 **/serviceAccount.json
+emulator-data/
+localhost-*.log
 
 # Backup and migration files
 backup-*

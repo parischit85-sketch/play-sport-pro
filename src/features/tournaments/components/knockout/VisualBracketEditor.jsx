@@ -94,7 +94,6 @@ function VisualBracketEditor({
   );
 
   const renderPlaceholderRound = (roundIndex) => {
-    const prevCount = roundIndex === 0 ? firstRoundPairs.length : rounds[roundIndex - 1].matches;
     const currCount = rounds[roundIndex].matches;
     return (
       <div className="flex flex-col gap-6 min-w-[220px]">
@@ -210,7 +209,6 @@ export default VisualBracketEditor;
 
 function TeamPickerHost({ open, slotIndex, standings, slots, onPick, onClose, teamsPerGroup }) {
   if (!open) return null;
-  const currentValue = slots[slotIndex];
   // Exclude current slot's team from the disabled set so it can be re-selected
   const ids = new Set(slots.filter((s, i) => i !== slotIndex && s && s !== 'BYE'));
   return (

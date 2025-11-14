@@ -41,7 +41,9 @@ function CustomSelect({ value, onChange, options, placeholder, disabled }) {
         className={`w-full px-4 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white flex items-center justify-between ${DS_ANIMATIONS.fast} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-600'}`}
       >
         <span className={`${value ? 'text-white' : 'text-gray-400'}`}>{selectedLabel}</span>
-        <ChevronDown className={`w-4 h-4 text-gray-400 ${DS_ANIMATIONS.fast} ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown
+          className={`w-4 h-4 text-gray-400 ${DS_ANIMATIONS.fast} ${isOpen ? 'rotate-180' : ''}`}
+        />
       </button>
       {isOpen && (
         <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg z-50">
@@ -166,15 +168,7 @@ function MatchEditModal({ match, clubId, tournamentId, teams, onClose, onSuccess
       if (formData.notes !== (match.notes || '')) {
         const { doc, updateDoc } = await import('firebase/firestore');
         const { db } = await import('../../../../services/firebase.js');
-        const matchRef = doc(
-          db,
-          'clubs',
-          clubId,
-          'tournaments',
-          tournamentId,
-          'matches',
-          match.id
-        );
+        const matchRef = doc(db, 'clubs', clubId, 'tournaments', tournamentId, 'matches', match.id);
         await updateDoc(matchRef, { notes: formData.notes });
       }
 
@@ -223,11 +217,15 @@ function MatchEditModal({ match, clubId, tournamentId, teams, onClose, onSuccess
           {/* Teams Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+              <label
+                htmlFor="match-edit-team1"
+                className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2"
+              >
                 <Users className="w-4 h-4 text-blue-400" />
                 Squadra 1
               </label>
               <CustomSelect
+                id="match-edit-team1"
                 value={formData.team1Id}
                 onChange={(val) => handleChange('team1Id', val)}
                 options={teams}
@@ -237,11 +235,15 @@ function MatchEditModal({ match, clubId, tournamentId, teams, onClose, onSuccess
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+              <label
+                htmlFor="match-edit-team2"
+                className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2"
+              >
                 <Users className="w-4 h-4 text-blue-400" />
                 Squadra 2
               </label>
               <CustomSelect
+                id="match-edit-team2"
                 value={formData.team2Id}
                 onChange={(val) => handleChange('team2Id', val)}
                 options={teams.filter((team) => team.id !== formData.team1Id)}
@@ -254,11 +256,15 @@ function MatchEditModal({ match, clubId, tournamentId, teams, onClose, onSuccess
           {/* Schedule Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+              <label
+                htmlFor="match-edit-schedule"
+                className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2"
+              >
                 <Calendar className="w-4 h-4 text-blue-400" />
                 Data e Ora
               </label>
               <input
+                id="match-edit-schedule"
                 type="datetime-local"
                 value={formData.scheduledDate}
                 onChange={(e) => handleChange('scheduledDate', e.target.value)}
@@ -269,11 +275,15 @@ function MatchEditModal({ match, clubId, tournamentId, teams, onClose, onSuccess
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+              <label
+                htmlFor="match-edit-court"
+                className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2"
+              >
                 <MapPin className="w-4 h-4 text-blue-400" />
                 Campo
               </label>
               <input
+                id="match-edit-court"
                 type="text"
                 value={formData.courtNumber}
                 onChange={(e) => handleChange('courtNumber', e.target.value)}
@@ -286,11 +296,15 @@ function MatchEditModal({ match, clubId, tournamentId, teams, onClose, onSuccess
 
           {/* Notes Section */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+            <label
+              htmlFor="match-edit-notes"
+              className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2"
+            >
               <FileText className="w-4 h-4 text-blue-400" />
               Note
             </label>
             <textarea
+              id="match-edit-notes"
               value={formData.notes}
               onChange={(e) => handleChange('notes', e.target.value)}
               placeholder="Aggiungi note sulla partita..."
@@ -309,8 +323,8 @@ function MatchEditModal({ match, clubId, tournamentId, teams, onClose, onSuccess
             <div className="p-4 bg-blue-900/10 border border-blue-800/30 rounded-lg">
               <p className="text-sm text-gray-400">
                 I giocatori vengono gestiti automaticamente in base alle squadre selezionate. Per
-                modificare la composizione delle squadre, usa il pulsante "Modifica" nella lista
-                squadre.
+                modificare la composizione delle squadre, usa il pulsante &quot;Modifica&quot; nella
+                lista squadre.
               </p>
             </div>
           </div>

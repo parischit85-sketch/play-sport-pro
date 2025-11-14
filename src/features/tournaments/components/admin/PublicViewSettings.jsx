@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import QRCodeReact from 'react-qr-code';
 
-
 function PublicViewSettings({ tournament, clubId, onUpdate }) {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState({ mobile: false, tv: false });
@@ -164,14 +163,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
       }
 
       try {
-        const matchesRef = collection(
-          db,
-          'clubs',
-          clubId,
-          'tournaments',
-          tournament.id,
-          'matches'
-        );
+        const matchesRef = collection(db, 'clubs', clubId, 'tournaments', tournament.id, 'matches');
         const matchesSnap = await getDocs(matchesRef);
         const allMatches = matchesSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
@@ -241,7 +233,9 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 
       // Aggiorna indice pubblico per lista Tornei Live (best effort)
       try {
-        const { upsertPublicTournamentIndex, disablePublicTournamentIndex } = await import('@features/tournaments/services/tournamentService.js');
+        const { upsertPublicTournamentIndex, disablePublicTournamentIndex } = await import(
+          '@features/tournaments/services/tournamentService.js'
+        );
         if (!isEnabled) {
           await upsertPublicTournamentIndex({
             clubId,
@@ -256,7 +250,10 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
           await disablePublicTournamentIndex(clubId, tournament.id);
         }
       } catch (idxErr) {
-        console.warn('[PublicViewSettings] Public index update skipped:', idxErr?.message || idxErr);
+        console.warn(
+          '[PublicViewSettings] Public index update skipped:',
+          idxErr?.message || idxErr
+        );
       }
 
       if (onUpdate) onUpdate();
@@ -285,7 +282,9 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
       // Aggiorna indice pubblico con nuovo token se la vista è abilitata (best effort)
       try {
         if (isEnabled) {
-          const { upsertPublicTournamentIndex } = await import('@features/tournaments/services/tournamentService.js');
+          const { upsertPublicTournamentIndex } = await import(
+            '@features/tournaments/services/tournamentService.js'
+          );
           await upsertPublicTournamentIndex({
             clubId,
             tournamentId: tournament.id,
@@ -297,7 +296,10 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
           });
         }
       } catch (idxErr) {
-        console.warn('[PublicViewSettings] Public index token update skipped:', idxErr?.message || idxErr);
+        console.warn(
+          '[PublicViewSettings] Public index token update skipped:',
+          idxErr?.message || idxErr
+        );
       }
 
       if (onUpdate) onUpdate();
@@ -468,7 +470,9 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 
     // Validate size (max 500KB for Base64 to avoid Firestore 1MB limit)
     if (file.size > 500 * 1024) {
-      alert('Il file è troppo grande. Dimensione massima: 500KB\n\nSuggerimento: comprimi l\'immagine prima di caricarla.');
+      alert(
+        "Il file è troppo grande. Dimensione massima: 500KB\n\nSuggerimento: comprimi l'immagine prima di caricarla."
+      );
       return;
     }
 
@@ -598,7 +602,10 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 
                   {/* Tournament Name */}
                   <div>
-                    <label htmlFor="tournament-name" className="block text-sm font-medium text-gray-300 mb-2">
+                    <label
+                      htmlFor="tournament-name"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
                       Nome Torneo
                     </label>
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -622,10 +629,13 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 
                   {/* Tournament Logo */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label
+                      htmlFor="tournament-logo-upload"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
                       Logo Torneo
                     </label>
-                    
+
                     {tournament?.logoUrl ? (
                       <div className="space-y-3">
                         {/* Logo Preview */}
@@ -637,7 +647,9 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                           />
                           <div className="flex-1">
                             <p className="text-sm text-gray-300">Logo caricato</p>
-                            <p className="text-xs text-gray-400">Verrà visualizzato a sinistra del nome torneo</p>
+                            <p className="text-xs text-gray-400">
+                              Verrà visualizzato a sinistra del nome torneo
+                            </p>
                           </div>
                           <button
                             onClick={handleRemoveLogo}
@@ -655,7 +667,9 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                           <div className="border-2 border-dashed border-gray-500 rounded-lg p-4 text-center hover:border-primary-500 transition-colors cursor-pointer">
                             <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                             <p className="text-sm text-gray-300 mb-1">
-                              {uploadingLogo ? 'Caricamento in corso...' : 'Clicca per caricare un logo'}
+                              {uploadingLogo
+                                ? 'Caricamento in corso...'
+                                : 'Clicca per caricare un logo'}
                             </p>
                             <p className="text-xs text-gray-400">
                               Formato: Immagine (JPG, PNG, ecc.) - Max 500KB
@@ -844,7 +858,10 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                                       key={groupId}
                                       className="flex items-center gap-3 bg-gray-600 p-2 rounded"
                                     >
-                                      <label className="flex items-center gap-2 cursor-pointer flex-1" htmlFor={`group-enabled-${groupId}`}>
+                                      <label
+                                        className="flex items-center gap-2 cursor-pointer flex-1"
+                                        htmlFor={`group-enabled-${groupId}`}
+                                      >
                                         <input
                                           id={`group-enabled-${groupId}`}
                                           type="checkbox"
@@ -939,12 +956,15 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                               ) : (
                                 <>
                                   <p className="text-xs text-gray-400 mb-2">
-                                    {matchesPages.length} {matchesPages.length === 1 ? 'pagina' : 'pagine'} generate (max 4 partite per pagina)
+                                    {matchesPages.length}{' '}
+                                    {matchesPages.length === 1 ? 'pagina' : 'pagine'} generate (max
+                                    4 partite per pagina)
                                   </p>
                                   {matchesPages.map((page) => {
                                     const pageSettings =
-                                      tournament?.publicView?.settings?.matchesPageSettings?.[page.pageIndex] ||
-                                      {};
+                                      tournament?.publicView?.settings?.matchesPageSettings?.[
+                                        page.pageIndex
+                                      ] || {};
                                     const isPageEnabled = pageSettings.enabled !== false;
                                     const pageInterval = pageSettings.interval || 15;
 
@@ -953,7 +973,10 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                                         key={page.pageIndex}
                                         className="flex items-center gap-3 bg-gray-600 p-2 rounded"
                                       >
-                                        <label className="flex items-center gap-2 cursor-pointer flex-1" htmlFor={`matches-page-enabled-${page.pageIndex}`}>
+                                        <label
+                                          className="flex items-center gap-2 cursor-pointer flex-1"
+                                          htmlFor={`matches-page-enabled-${page.pageIndex}`}
+                                        >
                                           <input
                                             id={`matches-page-enabled-${page.pageIndex}`}
                                             type="checkbox"
@@ -1009,7 +1032,10 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                       {/* Tabellone - Solo se NON è matches_only */}
                       {tournament?.participantType !== 'matches_only' && (
                         <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">
-                          <label className="flex items-center gap-2 cursor-pointer flex-1" htmlFor="display-standings">
+                          <label
+                            className="flex items-center gap-2 cursor-pointer flex-1"
+                            htmlFor="display-standings"
+                          >
                             <input
                               id="display-standings"
                               type="checkbox"
@@ -1046,7 +1072,10 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 
                       {/* Punti */}
                       <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">
-                        <label className="flex items-center gap-2 cursor-pointer flex-1" htmlFor="display-points">
+                        <label
+                          className="flex items-center gap-2 cursor-pointer flex-1"
+                          htmlFor="display-points"
+                        >
                           <input
                             id="display-points"
                             type="checkbox"
