@@ -633,27 +633,30 @@ function PublicTournamentView() {
       <div className="sticky top-0 z-50 bg-gray-800 border-b border-gray-700">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-start justify-between gap-4">
-            {/* Logo Play Sport Pro */}
-            <div className="flex items-center">
-              <img
-                src="/play-sport-pro_horizontal.svg"
-                alt="Play Sport Pro"
-                className="h-8 w-auto"
-              />
-            </div>
-
-            {/* Tournament Logo and Name - centered */}
-            <div className="flex-1 flex flex-col items-center gap-2">
-              {tournament.logoUrl && (
+            {/* Left side - Logos and Tournament Name */}
+            <div className="flex-1 flex flex-col gap-3">
+              {/* Logo Play Sport Pro */}
+              <div className="flex items-center">
                 <img
-                  src={tournament.logoUrl}
-                  alt="Tournament Logo"
-                  className="h-12 w-auto object-contain"
+                  src="/play-sport-pro_horizontal.svg"
+                  alt="Play Sport Pro"
+                  className="h-8 w-auto"
                 />
-              )}
-              <h1 className="text-lg font-bold text-white leading-tight text-center">
-                {tournament.name}
-              </h1>
+              </div>
+
+              {/* Tournament Logo and Name */}
+              <div
+                className={`flex items-center gap-3 ${!tournament.logoUrl ? 'justify-center' : ''}`}
+              >
+                {tournament.logoUrl && (
+                  <img
+                    src={tournament.logoUrl}
+                    alt="Tournament Logo"
+                    className="h-12 w-auto object-contain flex-shrink-0"
+                  />
+                )}
+                <h1 className="text-lg font-bold text-white leading-tight">{tournament.name}</h1>
+              </div>
             </div>
 
             {/* LIVE Badge */}

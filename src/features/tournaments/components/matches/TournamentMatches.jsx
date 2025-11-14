@@ -40,7 +40,13 @@ import FormulaModal from '../../../../components/modals/FormulaModal.jsx';
 import MatchCreationModal from './MatchCreationModal';
 import MatchEditModal from './MatchEditModal';
 
-function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicView = false }) {
+function TournamentMatches({
+  tournament,
+  clubId,
+  groupFilter = null,
+  isPublicView = false,
+  onMatchClick,
+}) {
   console.log('🎯 [TournamentMatches] Component mounted/rendered', {
     tournamentId: tournament?.id,
     participantType: tournament?.participantType,
@@ -644,9 +650,26 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
         key={match.id}
         className={`${
           isPublicView
-            ? 'relative bg-gradient-to-br from-gray-800/90 via-gray-700/90 to-gray-800/90 backdrop-blur-sm rounded-xl border-2 shadow-lg cursor-default border-gray-600/50'
+            ? 'relative bg-gradient-to-br from-gray-800/90 via-gray-700/90 to-gray-800/90 backdrop-blur-sm rounded-xl border-2 shadow-lg border-gray-600/50'
             : 'bg-gray-800 border border-gray-700 hover:border-primary-300'
-        } rounded-lg p-3 sm:p-4 transition-all ${!isPublicView && canEditResults ? 'pb-10' : ''}`}
+        } rounded-lg p-3 sm:p-4 transition-all ${!isPublicView && canEditResults ? 'pb-10' : ''} ${
+          isPublicView && onMatchClick
+            ? 'cursor-pointer hover:shadow-2xl hover:scale-[1.02]'
+            : 'cursor-default'
+        }`}
+        onClick={isPublicView && onMatchClick ? () => onMatchClick(match) : undefined}
+        onKeyDown={
+          isPublicView && onMatchClick
+            ? (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onMatchClick(match);
+                }
+              }
+            : undefined
+        }
+        role={isPublicView && onMatchClick ? 'button' : undefined}
+        tabIndex={isPublicView && onMatchClick ? 0 : undefined}
       >
         {/* Icona elimina partita - in alto a destra */}
         {!isPublicView && canEditResults && (

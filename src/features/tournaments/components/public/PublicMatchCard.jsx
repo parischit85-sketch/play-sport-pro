@@ -6,7 +6,7 @@ import { DS_ANIMATIONS } from '@lib/design-system.js';
  * PublicMatchCard - Card ampia per visualizzazione pubblica partite
  * Layout orizzontale ottimizzato per modalità "solo partite"
  */
-function PublicMatchCard({ match, teams }) {
+function PublicMatchCard({ match, teams, onTap }) {
   // Trova le squadre
   const team1 = teams?.find((t) => t.id === match.team1Id);
   const team2 = teams?.find((t) => t.id === match.team2Id);
@@ -172,8 +172,18 @@ function PublicMatchCard({ match, teams }) {
         overflow-hidden
         hover:shadow-2xl hover:scale-[1.02]
         ${DS_ANIMATIONS.base}
+        ${onTap ? 'cursor-pointer' : ''}
       `}
       data-match-live={match.status === 'in_progress' ? 'true' : 'false'}
+      onClick={onTap}
+      onKeyDown={(e) => {
+        if (onTap && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onTap();
+        }
+      }}
+      role={onTap ? 'button' : undefined}
+      tabIndex={onTap ? 0 : undefined}
     >
       {/* Border glow animation per partite in corso */}
       {match.status === 'in_progress' && (
@@ -192,6 +202,7 @@ function PublicMatchCard({ match, teams }) {
             {match.status === 'scheduled' && dateTime?.time ? dateTime.time : statusConfig.label}
           </span>
         </div>
+
         {/* Info campo in alto a destra */}
         {match.courtNumber && (
           <div className="flex items-center gap-2 text-blue-400 text-sm font-medium">

@@ -17,7 +17,13 @@ import {
   KNOCKOUT_ROUND_NAMES,
 } from '../../utils/tournamentConstants';
 
-function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView = false }) {
+function TournamentBracket({
+  tournament,
+  clubId,
+  isPublicView = false,
+  isTVView = false,
+  onMatchClick,
+}) {
   const { userRole, userClubRoles } = useAuth();
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState({});
@@ -598,17 +604,23 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
       <button
         type="button"
         key={match.id}
-        disabled={!canRecordResult || isPublicView}
+        disabled={!canRecordResult || (isPublicView && !onMatchClick)}
         className={`relative bg-gradient-to-br from-gray-800/90 via-gray-700/90 to-gray-800/90 backdrop-blur-sm rounded-xl border-2 shadow-lg p-2 sm:p-3 transition-all w-full lg:min-w-[200px] lg:w-[200px] text-left ${
-          isPublicView
+          isPublicView && !onMatchClick
             ? 'cursor-default border-gray-600/50'
             : 'hover:border-primary-500 hover:shadow-primary-500/20 cursor-pointer active:scale-[0.98] border-gray-700'
-        } ${!canRecordResult && !hasBye && !isPublicView ? 'opacity-60 cursor-not-allowed' : ''} ${
+        } ${!canRecordResult && !hasBye && !isPublicView && !onMatchClick ? 'opacity-60 cursor-not-allowed' : ''} ${
           isFinale && isCompleted && isPublicView
             ? 'border-amber-500/70 shadow-2xl shadow-amber-500/30'
             : ''
         }`}
-        onClick={() => !isPublicView && canRecordResult && setSelectedMatch(match)}
+        onClick={() => {
+          if (isPublicView && onMatchClick) {
+            onMatchClick(match);
+          } else if (!isPublicView && canRecordResult) {
+            setSelectedMatch(match);
+          }
+        }}
       >
         {/* Match Number - only show in admin view */}
         {!isPublicView && (

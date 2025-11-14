@@ -1,379 +1,793 @@
 /**
- * Public Live Scoring Component
- * Allows anyone with the link to submit provisional match results
+ * Public Live Scoring - Smartphone/Mobile Display
+ * Shows tournament standings and matches grouped by groups with auto-scroll pagination
+ * Access: /public/live-scoring/:clubId/:tournamentId/:liveScoringToken
  */
 
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { doc, getDoc, collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '@services/firebase.js';
-import { submitProvisionalResult } from '../../services/matchService.js';
-import { Check, AlertCircle, Trophy, Users, Calendar, MapPin } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { doc, onSnapshot, collection, query } from 'firebase/firestore';
+import { ref, onDisconnect, set, remove } from 'firebase/database';
+import { db, rtdb } from '@services/firebase.js';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Trophy, AlertCircle, ChevronLeft, ChevronRight, Medal } from 'lucide-react';
+import TournamentStandings from '../standings/TournamentStandings.jsx';
+import TournamentMatches from '../matches/TournamentMatches.jsx';
+import TournamentBracket from '../knockout/TournamentBracket.jsx';
+import PublicMatchCard from './PublicMatchCard.jsx';
+import PublicLiveScoringModal from './PublicLiveScoringModal.jsx';
+import { getTeamsByTournament } from '../../services/teamsService.js';
+import { calculateGroupStandings } from '../../services/standingsService.js';
+import QRCode from 'react-qr-code';
 
 function PublicLiveScoring() {
   const { clubId, tournamentId, liveScoringToken } = useParams();
+  const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
+  console.log('[MOBILE DEBUG] PublicLiveScoring mounted with params:', {
+    clubId,
+    tournamentId,
+    liveScoringToken,
+  });
+
   const [tournament, setTournament] = useState(null);
-  const [matches, setMatches] = useState([]);
-  const [teams, setTeams] = useState([]);
-  const [submitting, setSubmitting] = useState(false);
-  const [selectedMatch, setSelectedMatch] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
 
-  // Form state
-  const [team1Score, setTeam1Score] = useState('');
-  const [team2Score, setTeam2Score] = useState('');
-  const [submitterName, setSubmitterName] = useState('');
-
+  // Auto-redirect TV devices to TV view
   useEffect(() => {
-    const loadTournamentData = async () => {
-      setLoading(true);
-      setError(null);
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isTVDevice =
+      userAgent.includes('tv') ||
+      userAgent.includes('googletv') ||
+      userAgent.includes('androidtv') ||
+      userAgent.includes('smarttv') ||
+      userAgent.includes('appletv') ||
+      userAgent.includes('hbbtv') ||
+      userAgent.includes('roku') ||
+      userAgent.includes('viera') ||
+      userAgent.includes('opera tv') ||
+      userAgent.includes('netcast') ||
+      userAgent.includes('philips') ||
+      userAgent.includes('web0s');
 
-      try {
-        // Load tournament
-        const tournamentRef = doc(db, 'clubs', clubId, 'tournaments', tournamentId);
-        const tournamentSnap = await getDoc(tournamentRef);
+    if (isTVDevice) {
+      console.log('🖥️ TV device detected, redirecting to TV view...');
+      navigate(`/public/tournament-tv/${clubId}/${tournamentId}/${liveScoringToken}`, {
+        replace: true,
+      });
+    }
+  }, [clubId, tournamentId, liveScoringToken, navigate]);
+  const [groups, setGroups] = useState([]);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [showSwipeHint, setShowSwipeHint] = useState(true);
+  const [groupData, setGroupData] = useState({});
+  const [progress, setProgress] = useState(0);
+  const [allMatches, setAllMatches] = useState([]);
+  const [allTeams, setAllTeams] = useState([]);
+  const [selectedMatch, setSelectedMatch] = useState(null);
+  const [selectedMatchTeams, setSelectedMatchTeams] = useState(null);
 
-        if (!tournamentSnap.exists()) {
+  // const intervalRef = useRef(null);
+  // const progressIntervalRef = useRef(null);
+
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
+  // Funzione per ottenere il nome personalizzato del girone
+  const getGroupDisplayName = (groupId) => {
+    return tournament?.groupNames?.[groupId] || `Girone ${groupId.toUpperCase()}`;
+  };
+
+  // Handle match tap to open modal
+  const handleMatchTap = (match) => {
+    console.log('PublicLiveScoring - Match tapped:', match);
+
+    // Find team names
+    const team1 = allTeams.find((t) => t.id === match.team1Id);
+    const team2 = allTeams.find((t) => t.id === match.team2Id);
+
+    if (!team1 || !team2) {
+      console.error('PublicLiveScoring - Teams not found for match:', match);
+      return;
+    }
+
+    setSelectedMatch(match);
+    setSelectedMatchTeams({ team1, team2 });
+  };
+
+  // Validate token and load tournament
+  useEffect(() => {
+    console.log('[MOBILE DEBUG] Loading tournament from Firestore:', {
+      path: `clubs/${clubId}/tournaments/${tournamentId}`,
+    });
+
+    const unsubscribe = onSnapshot(
+      doc(db, 'clubs', clubId, 'tournaments', tournamentId),
+      (docSnapshot) => {
+        console.log('[MOBILE DEBUG] Tournament snapshot received:', {
+          exists: docSnapshot.exists(),
+          id: docSnapshot.id,
+        });
+
+        if (!docSnapshot.exists()) {
+          console.error('[MOBILE DEBUG] Tournament not found');
           setError('Torneo non trovato');
           setLoading(false);
           return;
         }
 
-        const tournamentData = { id: tournamentSnap.id, ...tournamentSnap.data() };
+        const data = { id: docSnapshot.id, ...docSnapshot.data() };
 
-        // Validate live scoring token
-        if (
-          !tournamentData.publicView?.liveScoringEnabled ||
-          tournamentData.publicView?.liveScoringToken !== liveScoringToken
-        ) {
-          setError("Link non valido o scaduto. Contatta l'organizzatore del torneo.");
+        console.log('[MOBILE DEBUG] Tournament data:', {
+          id: data.id,
+          name: data.name,
+          liveScoringEnabled: data.publicView?.liveScoringEnabled,
+          tokenMatch: data.publicView?.liveScoringToken === liveScoringToken,
+        });
+
+        // Validate live scoring settings
+        if (!data.publicView?.liveScoringEnabled) {
+          console.error('[MOBILE DEBUG] Live scoring not enabled');
+          setError('Live scoring non abilitato per questo torneo');
           setLoading(false);
           return;
         }
 
-        setTournament(tournamentData);
+        if (data.publicView?.liveScoringToken !== liveScoringToken) {
+          console.error('[MOBILE DEBUG] Token mismatch:', {
+            expected: data.publicView?.liveScoringToken,
+            received: liveScoringToken,
+          });
+          setError('Token non valido');
+          setLoading(false);
+          return;
+        }
 
-        // Load teams
-        const teamsRef = collection(db, 'clubs', clubId, 'tournaments', tournamentId, 'teams');
-        const teamsSnap = await getDocs(teamsRef);
-        const teamsData = teamsSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setTeams(teamsData);
-
-        // Load matches (only scheduled and in-progress)
-        const matchesRef = collection(db, 'clubs', clubId, 'tournaments', tournamentId, 'matches');
-        const matchesQuery = query(matchesRef, orderBy('scheduledDate', 'asc'));
-        const matchesSnap = await getDocs(matchesQuery);
-        const matchesData = matchesSnap.docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
-          .filter(
-            (match) =>
-              match.status === 'scheduled' ||
-              match.status === 'in_progress' ||
-              (match.status === 'completed' && match.provisionalStatus === 'pending')
-          );
-
-        setMatches(matchesData);
-      } catch (err) {
-        console.error('Error loading tournament data:', err);
-        setError('Errore durante il caricamento dei dati');
-      } finally {
+        console.log('[MOBILE DEBUG] Tournament loaded successfully');
+        setTournament(data);
+        setLoading(false);
+      },
+      (err) => {
+        console.error('Error loading tournament:', err);
+        setError('Errore nel caricamento del torneo');
         setLoading(false);
       }
-    };
+    );
 
-    loadTournamentData();
+    return () => unsubscribe();
   }, [clubId, tournamentId, liveScoringToken]);
 
-  const handleSubmitResult = async (e) => {
-    e.preventDefault();
+  // Real-time presence tracking (Mobile)
+  useEffect(() => {
+    console.log(
+      '[MOBILE DEBUG] Presence tracking effect - tournamentId:',
+      tournamentId,
+      'rtdb:',
+      rtdb
+    );
 
-    if (!selectedMatch) {
-      setError('Seleziona una partita');
+    if (!tournamentId) {
+      console.log('[MOBILE DEBUG] No tournamentId, skipping presence tracking');
       return;
     }
 
-    const score1 = parseInt(team1Score);
-    const score2 = parseInt(team2Score);
-
-    if (isNaN(score1) || isNaN(score2) || score1 < 0 || score2 < 0) {
-      setError('Inserisci punteggi validi (numeri maggiori o uguali a 0)');
+    if (!rtdb || typeof rtdb !== 'object' || Object.keys(rtdb).length === 0) {
+      console.error('[MOBILE DEBUG] Realtime Database not initialized properly:', rtdb);
       return;
     }
 
-    if (score1 === score2) {
-      setError('I punteggi non possono essere uguali (inserisci il risultato definitivo)');
-      return;
-    }
+    // Generate unique device ID for this session
+    const deviceId = `mobile_${Math.random().toString(36).substr(2, 9)}`;
+    const presenceRef = ref(rtdb, `tournaments/${tournamentId}/viewers/${deviceId}`);
 
-    setSubmitting(true);
-    setError(null);
+    console.log('[MOBILE DEBUG] Setting up presence tracking for device:', deviceId);
+    console.log('[MOBILE DEBUG] Presence path:', `tournaments/${tournamentId}/viewers/${deviceId}`);
 
-    try {
-      const result = await submitProvisionalResult(
-        clubId,
-        tournamentId,
-        selectedMatch.id,
-        {
-          score: { team1: score1, team2: score2 },
-          submittedBy: submitterName.trim() || 'Anonimo',
-        },
-        liveScoringToken
+    // Mark this device as online
+    set(presenceRef, {
+      online: true,
+      connectedAt: Date.now(),
+      deviceType: 'mobile',
+    })
+      .then(() => console.log('[MOBILE DEBUG] Device registered successfully'))
+      .catch((err) => console.error('[MOBILE DEBUG] Error registering device:', err));
+
+    // When disconnected, remove this device automatically
+    onDisconnect(presenceRef)
+      .remove()
+      .then(() => console.log('[MOBILE DEBUG] onDisconnect handler set'))
+      .catch((err) => console.error('[MOBILE DEBUG] Error setting onDisconnect:', err));
+
+    // Cleanup on unmount
+    return () => {
+      console.log('[MOBILE DEBUG] Component unmounting, removing presence');
+      remove(presenceRef).catch((err) =>
+        console.error('[MOBILE DEBUG] Error removing presence on unmount:', err)
       );
+    };
+  }, [tournamentId]);
 
-      if (result.success) {
-        setSuccess(true);
-        setTeam1Score('');
-        setTeam2Score('');
-        setSubmitterName('');
-        setSelectedMatch(null);
+  // Load groups and data when tournament changes - WITH REAL-TIME UPDATES
+  useEffect(() => {
+    if (!tournament || !clubId || !tournamentId) return;
 
-        // Reload page after success to update matches
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-      } else {
-        setError(result.error || "Errore durante l'invio del risultato");
+    console.log('[MOBILE DEBUG] Setting up real-time listeners for matches');
+
+    // Real-time listener for matches
+    const matchesRef = collection(db, 'clubs', clubId, 'tournaments', tournamentId, 'matches');
+    const matchesQuery = query(matchesRef);
+
+    const unsubscribeMatches = onSnapshot(
+      matchesQuery,
+      async (snapshot) => {
+        console.log('[MOBILE DEBUG] Matches updated:', snapshot.docs.length);
+
+        const matches = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        // Load teams (one-time, they don't change often)
+        const teams = await getTeamsByTournament(clubId, tournamentId);
+
+        // Save all matches and teams for matches-only view
+        setAllMatches(matches);
+        setAllTeams(teams);
+
+        // Combine groupIds from matches (type === 'group') and teams
+        const groupIdsFromMatches = matches
+          .filter((m) => m.type === 'group' && m.groupId)
+          .map((m) => m.groupId);
+        const groupIdsFromTeams = teams.filter((t) => t.groupId).map((t) => t.groupId);
+
+        const uniqueGroups = [...new Set([...groupIdsFromMatches, ...groupIdsFromTeams])].sort(
+          (a, b) => a.localeCompare(b)
+        );
+
+        setGroups(uniqueGroups);
+
+        // Load standings and matches for each group
+        const data = {};
+        for (const groupId of uniqueGroups) {
+          const standings = await calculateGroupStandings(
+            clubId,
+            tournamentId,
+            groupId,
+            tournament.pointsSystem || { win: 3, draw: 1, loss: 0 }
+          );
+
+          const groupMatches = matches.filter((m) => m.type === 'group' && m.groupId === groupId);
+
+          // Map team data
+          const teamsMap = {};
+          teams.forEach((t) => {
+            teamsMap[t.id] = t;
+          });
+
+          data[groupId] = {
+            standings,
+            matches: groupMatches,
+            teams: teamsMap,
+          };
+        }
+
+        setGroupData(data);
+      },
+      (error) => {
+        console.error('[MOBILE DEBUG] Error listening to matches:', error);
       }
-    } catch (err) {
-      console.error('Error submitting result:', err);
-      setError("Errore durante l'invio del risultato");
-    } finally {
-      setSubmitting(false);
+    );
+
+    return () => {
+      console.log('[MOBILE DEBUG] Cleaning up matches listener');
+      unsubscribeMatches();
+    };
+  }, [tournament, clubId, tournamentId]);
+
+  // Create pages based on display settings
+  const pages = [];
+
+  // Add group pages if enabled in settings (only for non-matches_only tournaments)
+  const displaySettings = tournament?.publicView?.settings?.displaySettings || {};
+  if (displaySettings.groupsMatches !== false && tournament?.participantType !== 'matches_only') {
+    // Default to true if not set
+    pages.push(...groups.map((g) => ({ type: 'group', groupId: g })));
+  }
+
+  // Add matches-only page if enabled (for tournaments with participantType: matches_only)
+  if (displaySettings.matchesOnly === true && tournament?.participantType === 'matches_only') {
+    pages.push({ type: 'matches-only' });
+  }
+
+  // Add overall standings page if enabled (only for non-matches_only tournaments)
+  if (displaySettings.standings === true && tournament?.participantType !== 'matches_only') {
+    pages.push({ type: 'overall-standings' });
+  }
+
+  // Add points page if enabled (only for non-matches_only tournaments)
+  if (displaySettings.points === true && tournament?.participantType !== 'matches_only') {
+    pages.push({ type: 'points' });
+  }
+
+  // Always add QR page at the end
+  pages.push({ type: 'qr' });
+
+  // Debug: log pages array
+  console.log('PublicLiveScoring - Pages array:', pages);
+  console.log('PublicLiveScoring - Tournament participantType:', tournament?.participantType);
+  console.log('PublicLiveScoring - Display settings:', displaySettings);
+  console.log('PublicLiveScoring - All matches count:', allMatches?.length);
+
+  // Handle swipe gestures
+  const touchStartY = useRef(0);
+  const touchEndY = useRef(0);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    setShowSwipeHint(false); // Hide hint after first interaction
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+    touchEndY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+
+    const swipeDistanceX = touchStartX.current - touchEndX.current;
+    const swipeDistanceY = touchStartY.current - touchEndY.current;
+    const minSwipeDistance = 50; // Minimum distance for a swipe
+
+    // Calculate if swipe is predominantly horizontal
+    const absX = Math.abs(swipeDistanceX);
+    const absY = Math.abs(swipeDistanceY);
+    const isHorizontalSwipe = absX > absY * 1.5; // Horizontal must be 1.5x greater than vertical
+
+    if (absX > minSwipeDistance && isHorizontalSwipe) {
+      if (swipeDistanceX > 0) {
+        // Swipe left - next page
+        setCurrentPageIndex((prev) => (prev + 1) % pages.length);
+        setProgress(0);
+      } else {
+        // Swipe right - previous page
+        setCurrentPageIndex((prev) => (prev - 1 + pages.length) % pages.length);
+        setProgress(0);
+      }
     }
+
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+    touchStartY.current = 0;
+    touchEndY.current = 0;
   };
 
-  const getTeamName = (teamId) => {
-    const team = teams.find((t) => t.id === teamId);
-    return team?.name || 'Squadra sconosciuta';
-  };
+  // Auto-hide swipe hint after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSwipeHint(false);
+    }, 5000);
 
-  const formatDate = (timestamp) => {
-    if (!timestamp) return '';
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-    return new Intl.DateTimeFormat('it-IT', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
-  };
+    return () => clearTimeout(timer);
+  }, []);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
-        <div className="text-white text-xl">Caricamento...</div>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-emerald-500 mx-auto mb-4"></div>
+          <p className="text-white text-xl font-semibold">Caricamento torneo...</p>
+        </div>
       </div>
     );
   }
 
-  if (error && !tournament) {
+  if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
-        <div className="bg-red-900/20 border border-red-800 rounded-lg p-6 max-w-md text-center">
-          <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">Accesso Negato</h2>
-          <p className="text-gray-300">{error}</p>
+      <div className="min-h-screen bg-gradient-to-br from-red-900 via-red-800 to-red-900 flex items-center justify-center p-6">
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 max-w-md w-full text-center">
+          <AlertCircle className="w-16 h-16 text-white mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Accesso Negato</h2>
+          <p className="text-white/80 mb-6">{error}</p>
+          <button
+            onClick={() => navigate('/')}
+            className="px-6 py-3 bg-white text-red-900 rounded-lg font-semibold hover:bg-white/90 transition-colors"
+          >
+            Torna alla Home
+          </button>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 md:p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-lg p-6 mb-6 shadow-xl">
-          <div className="flex items-center gap-3 mb-2">
-            <Trophy className="w-8 h-8 text-white" />
-            <h1 className="text-2xl md:text-3xl font-bold text-white">{tournament?.name}</h1>
-          </div>
-          <p className="text-white/90 text-sm md:text-base">
-            Live Scoring - Inserimento Risultati Provvisori
-          </p>
+  const currentPage = pages[currentPageIndex];
+  const publicUrlMobile = `${window.location.origin}/public/live-scoring/${clubId}/${tournamentId}/${liveScoringToken}`;
+
+  const getRankIcon = (rank) => {
+    switch (rank) {
+      case 1:
+        return <Medal className="w-6 h-6 text-yellow-500" />;
+      case 2:
+        return <Medal className="w-6 h-6 text-gray-400" />;
+      case 3:
+        return <Medal className="w-6 h-6 text-orange-600" />;
+      default:
+        return <span className="text-lg text-gray-400">#{rank}</span>;
+    }
+  };
+
+  const renderGroupPage = (groupId) => {
+    const data = groupData[groupId];
+    if (!data) return null;
+
+    return (
+      <div className="space-y-6">
+        {/* Title */}
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white">{getGroupDisplayName(groupId)}</h2>
         </div>
 
-        {/* Success Message */}
-        {success && (
-          <div className="bg-green-900/20 border border-green-800 rounded-lg p-4 mb-6 flex items-center gap-3">
-            <Check className="w-6 h-6 text-green-400" />
-            <p className="text-green-300 font-medium">
-              Risultato inviato con successo! In attesa di conferma da parte dell&apos;admin.
-            </p>
-          </div>
-        )}
-
-        {/* Error Message */}
-        {error && tournament && (
-          <div className="bg-red-900/20 border border-red-800 rounded-lg p-4 mb-6 flex items-center gap-3">
-            <AlertCircle className="w-6 h-6 text-red-400" />
-            <p className="text-red-300">{error}</p>
-          </div>
-        )}
-
-        {/* Info Box */}
-        <div className="bg-blue-900/20 border border-blue-800 rounded-lg p-4 mb-6">
-          <p className="text-blue-300 text-sm">
-            <strong>ℹ️ Informazioni:</strong> I risultati che inserisci qui sono provvisori.
-            L&apos;amministratore del torneo dovrà confermarli prima che diventino ufficiali.
-          </p>
+        {/* Standings */}
+        <div>
+          <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
+            <Trophy className="w-5 h-5 text-emerald-500" />
+            Classifica
+          </h3>
+          <TournamentStandings
+            tournament={tournament}
+            clubId={clubId}
+            groupFilter={groupId}
+            isPublicView={true}
+          />
         </div>
 
-        {/* Match Selection & Form */}
-        <div className="bg-gray-800 rounded-lg p-6 shadow-xl">
-          <h2 className="text-xl font-bold text-white mb-4">
-            Seleziona Partita e Inserisci Risultato
-          </h2>
+        {/* Matches */}
+        <div>
+          <h3 className="text-xl font-bold text-white mb-3">Partite</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <TournamentMatches
+              tournament={tournament}
+              clubId={clubId}
+              groupFilter={groupId}
+              isPublicView={true}
+              onMatchClick={handleMatchTap}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
 
-          {matches.length === 0 ? (
-            <p className="text-gray-400 text-center py-8">
-              Nessuna partita disponibile per l&apos;inserimento risultati.
-            </p>
+  const renderMatchesOnlyPage = () => {
+    console.log(
+      'Rendering matches-only page. Matches:',
+      allMatches?.length,
+      'Teams:',
+      allTeams?.length
+    );
+    return (
+      <div className="space-y-6">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-white">Partite</h2>
+        </div>
+        <div className="space-y-4">
+          {allMatches && allMatches.length > 0 ? (
+            allMatches.map((match) => (
+              <PublicMatchCard
+                key={match.id}
+                match={match}
+                teams={allTeams}
+                onTap={() => handleMatchTap(match)}
+              />
+            ))
           ) : (
-            <form onSubmit={handleSubmitResult} className="space-y-6">
-              {/* Match Selection */}
-              <div>
-                <label
-                  htmlFor="match-select"
-                  className="block text-sm font-medium text-gray-300 mb-2"
-                >
-                  Seleziona Partita *
-                </label>
-                <select
-                  id="match-select"
-                  value={selectedMatch?.id || ''}
-                  onChange={(e) => {
-                    const match = matches.find((m) => m.id === e.target.value);
-                    setSelectedMatch(match);
-                    setTeam1Score('');
-                    setTeam2Score('');
-                  }}
-                  required
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                >
-                  <option value="">-- Seleziona una partita --</option>
-                  {matches.map((match) => (
-                    <option key={match.id} value={match.id}>
-                      {getTeamName(match.team1Id)} vs {getTeamName(match.team2Id)}
-                      {match.scheduledDate && ` - ${formatDate(match.scheduledDate)}`}
-                      {match.courtNumber && ` - Campo ${match.courtNumber}`}
-                      {match.provisionalStatus === 'pending' &&
-                        ' (Risultato provvisorio in attesa)'}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Selected Match Info */}
-              {selectedMatch && (
-                <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-4 space-y-2">
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <Users className="w-4 h-4" />
-                    <span className="font-medium">
-                      {getTeamName(selectedMatch.team1Id)} vs {getTeamName(selectedMatch.team2Id)}
-                    </span>
-                  </div>
-                  {selectedMatch.scheduledDate && (
-                    <div className="flex items-center gap-2 text-gray-400 text-sm">
-                      <Calendar className="w-4 h-4" />
-                      <span>{formatDate(selectedMatch.scheduledDate)}</span>
-                    </div>
-                  )}
-                  {selectedMatch.courtNumber && (
-                    <div className="flex items-center gap-2 text-gray-400 text-sm">
-                      <MapPin className="w-4 h-4" />
-                      <span>Campo {selectedMatch.courtNumber}</span>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Score Inputs */}
-              {selectedMatch && (
-                <>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label
-                        htmlFor="team1-score"
-                        className="block text-sm font-medium text-gray-300 mb-2"
-                      >
-                        Punteggio {getTeamName(selectedMatch.team1Id)} *
-                      </label>
-                      <input
-                        id="team1-score"
-                        type="number"
-                        min="0"
-                        value={team1Score}
-                        onChange={(e) => setTeam1Score(e.target.value)}
-                        required
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white text-center text-2xl font-bold focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        placeholder="0"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="team2-score"
-                        className="block text-sm font-medium text-gray-300 mb-2"
-                      >
-                        Punteggio {getTeamName(selectedMatch.team2Id)} *
-                      </label>
-                      <input
-                        id="team2-score"
-                        type="number"
-                        min="0"
-                        value={team2Score}
-                        onChange={(e) => setTeam2Score(e.target.value)}
-                        required
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white text-center text-2xl font-bold focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                        placeholder="0"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Submitter Name */}
-                  <div>
-                    <label
-                      htmlFor="submitter-name"
-                      className="block text-sm font-medium text-gray-300 mb-2"
-                    >
-                      Il tuo nome (opzionale)
-                    </label>
-                    <input
-                      id="submitter-name"
-                      type="text"
-                      value={submitterName}
-                      onChange={(e) => setSubmitterName(e.target.value)}
-                      placeholder="Es. Mario Rossi"
-                      className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-4 rounded-lg font-bold text-lg hover:from-orange-700 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-                  >
-                    {submitting ? 'Invio in corso...' : 'Invia Risultato Provvisorio'}
-                  </button>
-                </>
-              )}
-            </form>
+            <div className="text-center py-12">
+              <p className="text-gray-400">Nessuna partita disponibile</p>
+            </div>
           )}
         </div>
+      </div>
+    );
+  };
 
-        {/* Footer */}
-        <div className="mt-6 text-center text-gray-400 text-sm">
-          <p>
-            Questo link è protetto. Non condividerlo con persone non autorizzate. Per maggiori
-            informazioni, contatta l&apos;organizzatore del torneo.
-          </p>
+  const renderBracketPage = () => {
+    return (
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white">Tabellone Finale</h2>
+        </div>
+        <TournamentBracket
+          tournament={tournament}
+          clubId={clubId}
+          isPublicView={true}
+          isTVView={false}
+          onMatchClick={handleMatchTap}
+        />
+      </div>
+    );
+  };
+
+  const renderPointsPage = () => {
+    // Create points ranking based on overall performance
+    const pointsRanking = [];
+    const teamsMap = {};
+
+    // Collect all teams and their data
+    Object.values(groupData).forEach((group) => {
+      if (group.teams) {
+        Object.assign(teamsMap, group.teams);
+      }
+    });
+
+    // Calculate points for each team across all groups
+    Object.values(groupData).forEach((group) => {
+      if (group.standings) {
+        group.standings.forEach((standing) => {
+          const existingTeam = pointsRanking.find((p) => p.teamId === standing.teamId);
+          if (existingTeam) {
+            existingTeam.totalPoints += standing.points || 0;
+            existingTeam.totalRPA = Math.max(existingTeam.totalRPA, standing.rpaPoints || 0);
+            existingTeam.groups.push({
+              groupId: Object.keys(groupData).find((key) => groupData[key] === group),
+              points: standing.points || 0,
+              rpa: standing.rpaPoints || 0,
+            });
+          } else {
+            pointsRanking.push({
+              teamId: standing.teamId,
+              teamName: standing.teamName,
+              totalPoints: standing.points || 0,
+              totalRPA: standing.rpaPoints || 0,
+              groups: [
+                {
+                  groupId: Object.keys(groupData).find((key) => groupData[key] === group),
+                  points: standing.points || 0,
+                  rpa: standing.rpaPoints || 0,
+                },
+              ],
+            });
+          }
+        });
+      }
+    });
+
+    return (
+      <div className="space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white">Classifica Punti - {tournament.name}</h2>
+        </div>
+
+        {/* Points Ranking */}
+        <div>
+          <div className="bg-gray-800 rounded-xl overflow-hidden shadow-lg border border-gray-700">
+            <table className="w-full">
+              <thead className="bg-gray-900">
+                <tr>
+                  <th className="text-center py-2 px-2 text-white font-bold text-sm">#</th>
+                  <th className="text-left py-2 px-2 text-white font-bold text-sm">Squadra</th>
+                  <th className="text-center py-2 px-2 text-white font-bold text-sm">Punti</th>
+                  <th className="text-center py-2 px-2 text-white font-bold text-sm">RPA</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pointsRanking
+                  .sort((a, b) => {
+                    if (a.totalPoints !== b.totalPoints) return b.totalPoints - a.totalPoints;
+                    return b.totalRPA - a.totalRPA;
+                  })
+                  .map((team, index) => {
+                    const rank = index + 1;
+
+                    return (
+                      <tr key={team.teamId} className="border-b border-gray-700 bg-gray-800">
+                        <td className="py-2 px-2">
+                          <div className="flex items-center justify-center">
+                            {getRankIcon(rank)}
+                          </div>
+                        </td>
+                        <td className="py-2 px-2 text-lg font-semibold text-white">
+                          {team.teamName}
+                        </td>
+                        <td className="py-2 px-2 text-center text-lg font-bold text-emerald-400">
+                          {team.totalPoints}
+                        </td>
+                        <td className="py-2 px-2 text-center text-sm font-bold text-blue-400">
+                          {Math.round(team.totalRPA * 10) / 10}
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+    );
+  };
+
+  const renderQRPage = () => {
+    return (
+      <div className="flex flex-col items-center justify-center h-full py-8 space-y-6">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white mb-2">{tournament.name}</h2>
+          <p className="text-emerald-400 font-semibold">Segui il torneo in tempo reale</p>
+          <p className="text-gray-300 text-sm">Scansiona il QR Code</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-4 shadow-lg">
+          <QRCode value={publicUrlMobile} size={200} />
+        </div>
+
+        <div className="text-center">
+          <p className="text-gray-400 text-xs">Powered by Play Sport Pro</p>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-900">
+      {/* Header */}
+      <div className="sticky top-0 z-50 bg-gray-800 border-b border-gray-700">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-start justify-between gap-4">
+            {/* Left side - Logos and Tournament Name */}
+            <div className="flex-1 flex flex-col gap-3">
+              {/* Logo Play Sport Pro */}
+              <div className="flex items-center">
+                <img
+                  src="/play-sport-pro_horizontal.svg"
+                  alt="Play Sport Pro"
+                  className="h-8 w-auto"
+                />
+              </div>
+
+              {/* Tournament Logo and Name */}
+              <div
+                className={`flex items-center gap-3 ${!tournament.logoUrl ? 'justify-center' : ''}`}
+              >
+                {tournament.logoUrl && (
+                  <img
+                    src={tournament.logoUrl}
+                    alt="Tournament Logo"
+                    className="h-12 w-auto object-contain flex-shrink-0"
+                  />
+                )}
+                <h1 className="text-lg font-bold text-white leading-tight">{tournament.name}</h1>
+              </div>
+            </div>
+
+            {/* LIVE Badge */}
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500 rounded-full flex-shrink-0">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              <span className="text-white font-bold text-xs">LIVE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="h-1 bg-gray-800">
+        <div
+          className="h-full bg-emerald-500 transition-all duration-100 ease-linear"
+          style={{ width: `${progress}%` }}
+        ></div>
+      </div>
+
+      {/* Main content */}
+      <div
+        className="container mx-auto px-4 py-8"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {pages.length === 0 ? (
+          <div className="text-center py-20">
+            <Trophy className="w-16 h-16 text-white/50 mx-auto mb-4" />
+            <p className="text-white/80 text-xl">Nessun contenuto disponibile</p>
+          </div>
+        ) : (
+          <>
+            {/* Page indicators */}
+            <div className="flex justify-center gap-2 mb-6">
+              {pages.map((page, index) => (
+                <div
+                  key={index}
+                  className={`h-3 rounded-full transition-all ${
+                    index === currentPageIndex ? 'bg-emerald-500 w-8' : 'bg-white/30 w-3'
+                  }`}
+                ></div>
+              ))}
+            </div>
+
+            {/* Swipe hint animation */}
+            {showSwipeHint && pages.length > 1 && (
+              <motion.div
+                className="fixed inset-0 pointer-events-none flex items-center justify-between px-8 z-40"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                {/* Left chevron */}
+                <motion.div
+                  animate={{
+                    x: [0, -10, 0],
+                    opacity: [0.5, 1, 0.5],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                >
+                  <ChevronLeft className="w-12 h-12 text-white/60" strokeWidth={3} />
+                </motion.div>
+
+                {/* Right chevron */}
+                <motion.div
+                  animate={{
+                    x: [0, 10, 0],
+                    opacity: [0.5, 1, 0.5],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                >
+                  <ChevronRight className="w-12 h-12 text-white/60" strokeWidth={3} />
+                </motion.div>
+              </motion.div>
+            )}
+
+            {/* Animated page content */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPageIndex}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+              >
+                {currentPage?.type === 'group'
+                  ? renderGroupPage(currentPage.groupId)
+                  : currentPage?.type === 'matches-only'
+                    ? renderMatchesOnlyPage()
+                    : currentPage?.type === 'overall-standings'
+                      ? renderBracketPage()
+                      : currentPage?.type === 'points'
+                        ? renderPointsPage()
+                        : renderQRPage()}
+              </motion.div>
+            </AnimatePresence>
+          </>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="py-6 bg-gray-800 border-t border-gray-700">
+        <div className="flex items-center justify-center gap-3">
+          <p className="text-gray-400 text-sm">Powered by</p>
+          <img src="/play-sport-pro_horizontal.svg" alt="Play Sport Pro" className="h-6 w-auto" />
+        </div>
+      </div>
+
+      {/* Modal for live scoring */}
+      {selectedMatch && selectedMatchTeams && (
+        <PublicLiveScoringModal
+          match={selectedMatch}
+          team1={selectedMatchTeams.team1}
+          team2={selectedMatchTeams.team2}
+          clubId={clubId}
+          tournamentId={tournamentId}
+          onClose={() => {
+            setSelectedMatch(null);
+            setSelectedMatchTeams(null);
+          }}
+        />
+      )}
     </div>
   );
 }
