@@ -89,13 +89,14 @@ function TeamPickerModal({
         </div>
 
         <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <div className="relative flex-1">
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Cerca squadra…"
+                aria-label="Cerca squadra"
                 className={`${theme.input} w-full pl-9 pr-3 py-2`}
               />
               <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -107,7 +108,7 @@ function TeamPickerModal({
                   onSelect('BYE');
                   onClose?.();
                 }}
-                className="px-3 py-2 rounded-lg border border-amber-700 bg-amber-900/30 hover:bg-amber-900/40 text-amber-200 text-sm"
+                className="px-3 py-2 rounded-lg border border-amber-700 bg-amber-900/30 hover:bg-amber-900/40 text-amber-200 text-sm w-full sm:w-auto"
                 title="Imposta uno slot libero (BYE)"
               >
                 Scegli BYE
@@ -119,7 +120,7 @@ function TeamPickerModal({
                 onSelect('');
                 onClose?.();
               }}
-              className="px-3 py-2 rounded-lg border border-gray-300 border-gray-700 bg-gray-50 bg-gray-800 hover:bg-gray-100 hover:bg-gray-700 text-gray-700 text-gray-200 text-sm"
+              className="px-3 py-2 rounded-lg border border-gray-300 border-gray-700 bg-gray-50 bg-gray-800 hover:bg-gray-100 hover:bg-gray-700 text-gray-700 text-gray-200 text-sm w-full sm:w-auto"
               title="Svuota slot"
             >
               Svuota

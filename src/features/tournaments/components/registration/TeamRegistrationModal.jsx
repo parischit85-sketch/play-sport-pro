@@ -426,10 +426,11 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
 
           {/* Team Name */}
           <div className="mb-4 sm:mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="team-name" className="block text-sm font-medium text-gray-300 mb-2">
               Nome {isCouples ? 'Coppia' : 'Squadra'} *
             </label>
             <input
+              id="team-name"
               type="text"
               value={formData.teamName}
               onChange={(e) => setFormData((prev) => ({ ...prev, teamName: e.target.value }))}
@@ -494,6 +495,7 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className={`${T.input} w-full pl-8 sm:pl-10 text-xs sm:text-sm`}
+                            aria-label="Cerca giocatore"
                             placeholder="Cerca..."
                           />
                         </div>
@@ -515,7 +517,6 @@ function TeamRegistrationModal({ tournament, clubId, onClose, onSuccess }) {
                                     value={newPlayerData.name}
                                     onChange={(e) => setNewPlayerData((prev) => ({ ...prev, name: e.target.value }))}
                                     className={`${T.input} w-full text-sm`}
-                                    autoFocus
                                   />
                                   <input
                                     type="number"

@@ -598,11 +598,12 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 
                   {/* Tournament Name */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label htmlFor="tournament-name" className="block text-sm font-medium text-gray-300 mb-2">
                       Nome Torneo
                     </label>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                       <input
+                        id="tournament-name"
                         type="text"
                         value={tournamentName}
                         onChange={(e) => setTournamentName(e.target.value)}
@@ -612,7 +613,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                       <button
                         onClick={handleUpdateTournamentName}
                         disabled={loading || tournamentName.trim() === tournament?.name}
-                        className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                       >
                         Salva Nome
                       </button>
@@ -684,7 +685,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                     <p className="text-sm text-gray-400 mb-3">
                       Ottimizzata per dispositivi mobili con navigazione touch
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
                       <input
                         type="text"
                         value={mobileUrl}
@@ -693,7 +694,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                       />
                       <button
                         onClick={() => copyToClipboard(mobileUrl, 'mobile')}
-                        className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                        className="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors w-full sm:w-auto"
                         title="Copia link"
                       >
                         {copied.mobile ? (
@@ -706,7 +707,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                         href={mobileUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto text-center"
                         title="Apri in nuova finestra"
                       >
                         <Eye className="w-5 h-5" />
@@ -723,7 +724,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                     <p className="text-sm text-gray-400 mb-3">
                       Ottimizzata per schermi grandi con grafica bold e QR code dedicato
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
                       <input
                         type="text"
                         value={tvUrl}
@@ -732,7 +733,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                       />
                       <button
                         onClick={() => copyToClipboard(tvUrl, 'tv')}
-                        className="p-2 bg-fuchsia-600 text-white rounded-lg hover:bg-fuchsia-700 transition-colors"
+                        className="p-2 bg-fuchsia-600 text-white rounded-lg hover:bg-fuchsia-700 transition-colors w-full sm:w-auto"
                         title="Copia link"
                       >
                         {copied.tv ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
@@ -741,7 +742,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                         href={tvUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto text-center"
                         title="Apri in nuova finestra"
                       >
                         <Eye className="w-5 h-5" />
@@ -843,8 +844,9 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                                       key={groupId}
                                       className="flex items-center gap-3 bg-gray-600 p-2 rounded"
                                     >
-                                      <label className="flex items-center gap-2 cursor-pointer flex-1">
+                                      <label className="flex items-center gap-2 cursor-pointer flex-1" htmlFor={`group-enabled-${groupId}`}>
                                         <input
+                                          id={`group-enabled-${groupId}`}
                                           type="checkbox"
                                           checked={isGroupEnabled}
                                           onChange={(e) => {
@@ -863,6 +865,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                                         </span>
                                       </label>
                                       <select
+                                        aria-label={`Intervallo per girone ${groupId.toUpperCase()}`}
                                         value={groupInterval}
                                         onChange={(e) => {
                                           e.stopPropagation();
@@ -950,8 +953,9 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                                         key={page.pageIndex}
                                         className="flex items-center gap-3 bg-gray-600 p-2 rounded"
                                       >
-                                        <label className="flex items-center gap-2 cursor-pointer flex-1">
+                                        <label className="flex items-center gap-2 cursor-pointer flex-1" htmlFor={`matches-page-enabled-${page.pageIndex}`}>
                                           <input
+                                            id={`matches-page-enabled-${page.pageIndex}`}
                                             type="checkbox"
                                             checked={isPageEnabled}
                                             onChange={(e) => {
@@ -970,6 +974,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                                           </span>
                                         </label>
                                         <select
+                                          aria-label={`Intervallo per pagina ${page.pageNumber}`}
                                           value={pageInterval}
                                           onChange={(e) => {
                                             e.stopPropagation();
@@ -1004,8 +1009,9 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                       {/* Tabellone - Solo se NON è matches_only */}
                       {tournament?.participantType !== 'matches_only' && (
                         <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">
-                          <label className="flex items-center gap-2 cursor-pointer flex-1">
+                          <label className="flex items-center gap-2 cursor-pointer flex-1" htmlFor="display-standings">
                             <input
+                              id="display-standings"
                               type="checkbox"
                               checked={displaySettings.standings || false}
                               onChange={(e) =>
@@ -1020,6 +1026,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                             <span className="text-sm text-gray-300 font-medium">Tabellone</span>
                           </label>
                           <select
+                            aria-label="Intervallo per tabellone"
                             value={pageIntervals.standings}
                             onChange={(e) => handleUpdatePageInterval('standings', e.target.value)}
                             disabled={loading || !displaySettings.standings}
@@ -1039,8 +1046,9 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
 
                       {/* Punti */}
                       <div className="flex items-center gap-3 bg-gray-700 p-3 rounded-lg">
-                        <label className="flex items-center gap-2 cursor-pointer flex-1">
+                        <label className="flex items-center gap-2 cursor-pointer flex-1" htmlFor="display-points">
                           <input
+                            id="display-points"
                             type="checkbox"
                             checked={displaySettings.points || false}
                             onChange={(e) =>
@@ -1055,6 +1063,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                           <span className="text-sm text-gray-300 font-medium">Punti</span>
                         </label>
                         <select
+                          aria-label="Intervallo per punti"
                           value={pageIntervals.points}
                           onChange={(e) => handleUpdatePageInterval('points', e.target.value)}
                           disabled={loading || !displaySettings.points}
@@ -1078,6 +1087,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                           <span className="text-xs text-gray-500">(sempre visibile)</span>
                         </div>
                         <select
+                          aria-label="Intervallo per pagina QR code"
                           value={pageIntervals.qr}
                           onChange={(e) => handleUpdatePageInterval('qr', e.target.value)}
                           disabled={loading}
@@ -1101,6 +1111,7 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                           <span className="text-xs text-gray-500">(solo dopo finale)</span>
                         </div>
                         <select
+                          aria-label="Intervallo per pagina vincitori"
                           value={pageIntervals.winners || 20}
                           onChange={(e) => handleUpdatePageInterval('winners', e.target.value)}
                           disabled={loading}

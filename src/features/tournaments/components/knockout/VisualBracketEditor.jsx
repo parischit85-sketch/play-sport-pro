@@ -113,7 +113,7 @@ function VisualBracketEditor({
 
   return (
     <>
-      <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-x-auto scroll-smooth snap-x snap-mandatory">
         <div className="inline-flex gap-4 md:gap-8 p-2 md:p-3">
           {renderFirstRound()}
           {rounds.slice(1).map((_, i) => (
@@ -143,7 +143,7 @@ function VisualBracketEditor({
 
 function RoundHeader({ title, count }) {
   return (
-    <div className="sticky top-0 z-10 bg-gradient-to-r from-primary-900/40 to-blue-900/40 rounded-lg px-4 py-2 border border-primary-800">
+    <div className="sticky top-0 z-10 bg-gradient-to-r from-primary-900/40 to-blue-900/40 rounded-lg px-4 py-2 border border-primary-800 snap-start">
       <div className="flex items-center gap-2 justify-center">
         <Crown className="w-4 h-4 text-primary-600" />
         <h4 className="text-sm font-semibold text-white">{title}</h4>

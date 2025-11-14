@@ -265,8 +265,9 @@ export default function TeamEditModal({ tournament, clubId, team, onClose, onSuc
           )}
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-2">Nome Squadra *</label>
+            <label htmlFor="edit-team-name" className="block text-sm font-medium text-gray-300 mb-2">Nome Squadra *</label>
             <input
+              id="edit-team-name"
               type="text"
               value={formData.teamName}
               onChange={(e) => setFormData((prev) => ({ ...prev, teamName: e.target.value }))}

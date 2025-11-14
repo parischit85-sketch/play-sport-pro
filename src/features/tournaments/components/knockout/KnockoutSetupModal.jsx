@@ -124,9 +124,9 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4">
       <div className="w-full max-w-7xl bg-gray-900 rounded-xl shadow-xl border border-gray-700">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-700">
           <div className="flex items-center gap-2">
             <Settings className="w-5 h-5 text-primary-600" />
             <h3 className="text-lg font-semibold text-white">Configura Tabellone Manuale</h3>
@@ -136,14 +136,14 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
           </button>
         </div>
 
-        <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+  <div className="p-4 sm:p-6 space-y-6 max-h-[75vh] overflow-y-auto">
           {error && (
             <div className="bg-red-900/20 border border-red-800 text-red-200 px-4 py-2 rounded">
               {error}
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
             <div>
               <label htmlFor="roundSelect" className="text-sm font-medium text-gray-300">
                 Round iniziale
@@ -152,6 +152,7 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
                 id="roundSelect"
                 value={startingRound}
                 onChange={(e) => setStartingRound(e.target.value)}
+                aria-label="Round iniziale"
                 className="mt-1 w-full rounded-lg border border-gray-700 bg-gray-800 text-white"
               >
                 {roundOptions.map((opt) => (
@@ -163,7 +164,7 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
             </div>
             <div className="col-span-2">
               <div className="text-sm font-medium text-gray-300">Opzioni</div>
-              <div className="mt-2 flex items-center gap-4">
+              <div className="mt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
                 <label className="inline-flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -179,7 +180,7 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
                 <button
                   type="button"
                   onClick={handleAutoSeed}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-900/30 text-amber-200 rounded border border-amber-800"
+                  className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-amber-900/30 text-amber-200 rounded border border-amber-800 w-full sm:w-auto"
                   title="Riempie gli slot con le prime squadre in classifica"
                 >
                   <Sparkles className="w-4 h-4" /> Auto-seeding rapido
@@ -206,7 +207,7 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
           </div>
         </div>
 
-        <div className="px-6 py-4 border-t border-gray-700 flex items-center justify-end gap-3">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-700 flex items-center justify-end gap-2 sm:gap-3">
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700"
