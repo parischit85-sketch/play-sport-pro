@@ -614,13 +614,13 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                 key={`tpill-${match.id}-${teamIndex}-${i}`}
                 className={`${
                   isPublicView
-                    ? `text-5xl sm:text-6xl font-bold ${
+                    ? `px-2 py-1 rounded-md ${
                         isLive
-                          ? 'text-orange-400 animate-pulse'
+                          ? 'text-base sm:text-lg bg-orange-900/40 text-orange-300 border border-orange-600/50 animate-pulse shadow-sm shadow-orange-500/20'
                           : win
-                            ? 'text-green-400'
-                            : 'text-gray-400'
-                      }`
+                            ? 'text-base sm:text-lg bg-emerald-900/40 text-emerald-200 border border-emerald-600/50 shadow-sm shadow-emerald-500/20'
+                            : 'text-base sm:text-lg bg-gray-700/60 text-gray-300 border border-gray-600/50'
+                      } font-bold leading-3`
                     : `rounded px-2 py-1 text-lg sm:text-xl font-bold ${
                         isLive
                           ? 'bg-orange-900/40 text-orange-300 animate-pulse border border-orange-600/50'
@@ -642,11 +642,11 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
     return (
       <div
         key={match.id}
-        className={`${isPublicView ? 'bg-gray-800' : 'bg-gray-800'} rounded-lg p-3 sm:p-4 transition-colors ${
+        className={`${
           isPublicView
-            ? `border-[2.5px] ${isCompleted ? 'border-fuchsia-500' : 'border-fuchsia-700/60'}`
-            : 'border border-gray-700 hover:border-primary-300'
-        } relative ${!isPublicView && canEditResults ? 'pb-10' : ''}`}
+            ? 'relative bg-gradient-to-br from-gray-800/90 via-gray-700/90 to-gray-800/90 backdrop-blur-sm rounded-xl border-2 shadow-lg cursor-default border-gray-600/50'
+            : 'bg-gray-800 border border-gray-700 hover:border-primary-300'
+        } rounded-lg p-3 sm:p-4 transition-all ${!isPublicView && canEditResults ? 'pb-10' : ''}`}
       >
         {/* Icona elimina partita - in alto a destra */}
         {!isPublicView && canEditResults && (
@@ -690,12 +690,6 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                 {getStatusText(match.status)}
               </span>
             )}
-            {/* Show IN CORSO badge for public view when in progress */}
-            {isPublicView && match.status === MATCH_STATUS.IN_PROGRESS && (
-              <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
-                IN CORSO
-              </span>
-            )}
           </div>
           <div className="flex items-center gap-2">
             {/* Match format badge if available */}
@@ -717,19 +711,45 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
         {/* Teams - Mobile optimized */}
         <div className="space-y-2">
           {/* Team 1 */}
-          <div className="flex items-center justify-between gap-2">
+          <div
+            className={`${
+              isPublicView
+                ? `flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-all ${
+                    isCompleted && match.winnerId === team1?.id
+                      ? 'bg-gradient-to-r from-emerald-900/40 via-emerald-800/30 to-emerald-900/40 border-2 border-emerald-500/50 shadow-inner shadow-emerald-500/20'
+                      : 'bg-gradient-to-r from-gray-800/70 via-gray-700/70 to-gray-800/70 border border-gray-600/30'
+                  }`
+                : 'flex items-center justify-between gap-2'
+            }`}
+          >
             <div className="flex items-center gap-2 flex-1 min-w-0">
               {isPublicView ? (
-                // Public view: Names on 2 lines
-                <div className="flex-1 min-w-0">
-                  {team1Name.split('/').map((playerName, idx) => (
+                // Public view: Player names on separate lines like bracket
+                <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                  {team1?.players && team1.players.length > 0 ? (
+                    team1.players.map((p, idx) => (
+                      <div
+                        key={idx}
+                        className={`text-base sm:text-lg font-bold leading-tight truncate ${
+                          isCompleted && match.winnerId === team1?.id
+                            ? 'text-emerald-100 drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'
+                            : 'text-gray-100'
+                        }`}
+                      >
+                        {p.playerName || p.name || p.displayName || ''}
+                      </div>
+                    ))
+                  ) : (
                     <div
-                      key={idx}
-                      className={`text-xl sm:text-2xl font-semibold truncate ${isCompleted && match.winnerId === team1.id ? 'text-green-400' : 'text-white'}`}
+                      className={`text-base sm:text-lg font-bold leading-tight truncate ${
+                        isCompleted && match.winnerId === team1?.id
+                          ? 'text-emerald-100 drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'
+                          : 'text-gray-100'
+                      }`}
                     >
-                      {playerName.trim()}
+                      {team1Name}
                     </div>
-                  ))}
+                  )}
                 </div>
               ) : (
                 // Admin view: Names on single line
@@ -756,12 +776,20 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                   ? renderSetPills(1)
                   : (isLive ? match.liveScore : match.score) && (
                       <span
-                        className={`${isPublicView ? 'text-5xl sm:text-6xl' : 'text-4xl sm:text-5xl'} font-bold ${
-                          isLive
-                            ? 'text-orange-400 animate-pulse'
-                            : match.winnerId === team1.id
-                              ? 'text-green-400'
-                              : 'text-gray-400'
+                        className={`${isPublicView ? 'text-3xl sm:text-4xl' : 'text-4xl sm:text-5xl'} font-bold ${
+                          isPublicView
+                            ? `ml-2 flex-shrink-0 px-2 py-0.5 rounded ${
+                                isLive
+                                  ? 'text-orange-300 bg-orange-900/30 animate-pulse'
+                                  : match.winnerId === team1?.id
+                                    ? 'text-emerald-200 bg-emerald-900/30'
+                                    : 'text-gray-400 bg-gray-800/30'
+                              }`
+                            : isLive
+                              ? 'text-orange-400 animate-pulse'
+                              : match.winnerId === team1.id
+                                ? 'text-green-400'
+                                : 'text-gray-400'
                         }`}
                       >
                         {isLive ? match.liveScore.team1 : match.score.team1}
@@ -772,34 +800,65 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
           </div>
 
           {/* VS divider */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-center py-1 sm:py-1.5 gap-2">
             <div
-              className={`flex-1 h-px ${isPublicView ? (isCompleted ? 'bg-fuchsia-500' : 'bg-fuchsia-700/60') : 'bg-gray-200'}`}
+              className={`h-px flex-1 ${isPublicView ? 'bg-gradient-to-r from-transparent via-fuchsia-500/50 to-transparent' : 'bg-gray-200'}`}
             ></div>
             <span
-              className={`text-xs font-medium ${isPublicView ? (isCompleted ? 'text-fuchsia-500' : 'text-fuchsia-700/60') : 'text-gray-600'}`}
+              className={`${isPublicView ? 'px-2 sm:px-2.5 text-sm sm:text-base text-fuchsia-400 font-bold tracking-wider' : 'text-xs font-medium text-gray-600'}`}
             >
               VS
             </span>
+            {isPublicView && isLive && (
+              <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded-full animate-pulse shadow-lg shadow-red-500/50">
+                LIVE
+              </span>
+            )}
             <div
-              className={`flex-1 h-px ${isPublicView ? (isCompleted ? 'bg-fuchsia-500' : 'bg-fuchsia-700/60') : 'bg-gray-200'}`}
+              className={`h-px flex-1 ${isPublicView ? 'bg-gradient-to-r from-transparent via-fuchsia-500/50 to-transparent' : 'bg-gray-200'}`}
             ></div>
           </div>
 
           {/* Team 2 */}
-          <div className="flex items-center justify-between gap-2">
+          <div
+            className={`${
+              isPublicView
+                ? `flex items-center justify-between p-2 sm:p-2.5 rounded-lg transition-all ${
+                    isCompleted && match.winnerId === team2?.id
+                      ? 'bg-gradient-to-r from-emerald-900/40 via-emerald-800/30 to-emerald-900/40 border-2 border-emerald-500/50 shadow-inner shadow-emerald-500/20'
+                      : 'bg-gradient-to-r from-gray-800/70 via-gray-700/70 to-gray-800/70 border border-gray-600/30'
+                  }`
+                : 'flex items-center justify-between gap-2'
+            }`}
+          >
             <div className="flex items-center gap-2 flex-1 min-w-0">
               {isPublicView ? (
-                // Public view: Names on 2 lines
-                <div className="flex-1 min-w-0">
-                  {team2Name.split('/').map((playerName, idx) => (
+                // Public view: Player names on separate lines like bracket
+                <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                  {team2?.players && team2.players.length > 0 ? (
+                    team2.players.map((p, idx) => (
+                      <div
+                        key={idx}
+                        className={`text-base sm:text-lg font-bold leading-tight truncate ${
+                          isCompleted && match.winnerId === team2?.id
+                            ? 'text-emerald-100 drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'
+                            : 'text-gray-100'
+                        }`}
+                      >
+                        {p.playerName || p.name || p.displayName || ''}
+                      </div>
+                    ))
+                  ) : (
                     <div
-                      key={idx}
-                      className={`text-xl sm:text-2xl font-semibold truncate ${isCompleted && match.winnerId === team2.id ? 'text-green-400' : 'text-white'}`}
+                      className={`text-base sm:text-lg font-bold leading-tight truncate ${
+                        isCompleted && match.winnerId === team2?.id
+                          ? 'text-emerald-100 drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'
+                          : 'text-gray-100'
+                      }`}
                     >
-                      {playerName.trim()}
+                      {team2Name}
                     </div>
-                  ))}
+                  )}
                 </div>
               ) : (
                 // Admin view: Names on single line
@@ -826,12 +885,20 @@ function TournamentMatches({ tournament, clubId, groupFilter = null, isPublicVie
                   ? renderSetPills(2)
                   : (isLive ? match.liveScore : match.score) && (
                       <span
-                        className={`${isPublicView ? 'text-5xl sm:text-6xl' : 'text-4xl sm:text-5xl'} font-bold ${
-                          isLive
-                            ? 'text-orange-400 animate-pulse'
-                            : match.winnerId === team2.id
-                              ? 'text-green-400'
-                              : 'text-gray-400'
+                        className={`${isPublicView ? 'text-3xl sm:text-4xl' : 'text-4xl sm:text-5xl'} font-bold ${
+                          isPublicView
+                            ? `ml-2 flex-shrink-0 px-2 py-0.5 rounded ${
+                                isLive
+                                  ? 'text-orange-300 bg-orange-900/30 animate-pulse'
+                                  : match.winnerId === team2?.id
+                                    ? 'text-emerald-200 bg-emerald-900/30'
+                                    : 'text-gray-400 bg-gray-800/30'
+                              }`
+                            : isLive
+                              ? 'text-orange-400 animate-pulse'
+                              : match.winnerId === team2.id
+                                ? 'text-green-400'
+                                : 'text-gray-400'
                         }`}
                       >
                         {isLive ? match.liveScore.team2 : match.score.team2}

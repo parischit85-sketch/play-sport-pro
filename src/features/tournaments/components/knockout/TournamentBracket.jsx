@@ -385,6 +385,14 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
             overflow: 'visible',
           }}
         >
+          {/* LIVE Badge for TV View */}
+          {isLive && (
+            <div className="absolute top-1/2 -translate-y-1/2 right-16 z-20">
+              <span className="px-2 py-1 bg-red-600 text-white text-xs font-bold rounded-full animate-pulse shadow-lg shadow-red-500/50">
+                LIVE
+              </span>
+            </div>
+          )}
           {/* Keyframes CSS injection for zoom animation */}
           {isFinale && isCompleted && (
             <style>
@@ -565,7 +573,7 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
             return (
               <span
                 key={`tb-pill-${match.id}-${teamIndex}-${i}`}
-                className={`px-1.5 py-0.5 rounded-md text-[10px] leading-4 font-semibold border transition-all ${
+                className={`${isPublicView ? 'px-2 py-1 text-base sm:text-lg' : 'px-1.5 py-0.5 text-[10px]'} rounded-md leading-4 font-semibold border transition-all ${
                   isLive
                     ? 'bg-orange-900/40 text-orange-300 border-orange-600/50 animate-pulse shadow-sm shadow-orange-500/20'
                     : win
@@ -621,35 +629,53 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
         >
           <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
             {team1?.seed && (
-              <span className="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 bg-gray-700/60 text-gray-300 rounded">
+              <span className="text-xs sm:text-sm font-bold px-1.5 py-0.5 bg-gray-700/60 text-gray-300 rounded flex-shrink-0">
                 #{team1.seed}
               </span>
             )}
-            <span
-              className={`text-sm sm:text-base font-semibold truncate ${
-                team1Name === 'BYE'
-                  ? 'text-orange-400 font-bold'
-                  : isCompleted && match.winnerId === team1?.id
-                    ? isFinale
-                      ? 'text-amber-100 font-bold drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]'
-                      : 'text-emerald-100 font-bold drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'
-                    : team1
-                      ? 'text-gray-100'
-                      : 'text-gray-500 italic'
-              }`}
-            >
-              {team1Name}
-              {isFinale && isCompleted && match.winnerId === team1?.id && (
-                <Crown className="inline-block ml-1 w-4 h-4 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
+            <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+              {/* Player names in bold and larger - hide team name */}
+              {team1?.players && team1.players.length > 0 ? (
+                <div className="flex flex-col gap-0.5">
+                  {team1.players.map((p, idx) => (
+                    <div
+                      key={idx}
+                      className={`text-base sm:text-lg font-bold leading-tight truncate ${
+                        isCompleted && match.winnerId === team1?.id
+                          ? isFinale
+                            ? 'text-amber-100 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]'
+                            : 'text-emerald-100 drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'
+                          : 'text-gray-100'
+                      }`}
+                    >
+                      {p.playerName || p.name || p.displayName || ''}
+                    </div>
+                  ))}
+                  {isFinale && isCompleted && match.winnerId === team1?.id && (
+                    <Crown className="inline-block w-5 h-5 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)] mt-0.5" />
+                  )}
+                </div>
+              ) : (
+                <span
+                  className={`text-base sm:text-lg font-bold leading-tight ${
+                    team1Name === 'BYE'
+                      ? 'text-orange-400'
+                      : team1
+                        ? 'text-gray-100'
+                        : 'text-gray-500 italic'
+                  }`}
+                >
+                  {team1Name}
+                </span>
               )}
-            </span>
+            </div>
           </div>
           {(isCompleted || isLive) &&
             (hasSets
               ? renderSetPills(1)
               : (isLive ? match.liveScore : match.score) && (
                   <span
-                    className={`${isPublicView ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'} font-bold ml-2 flex-shrink-0 px-2 py-0.5 rounded ${
+                    className={`${isPublicView ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-3xl'} font-bold ml-2 flex-shrink-0 px-2 py-0.5 rounded ${
                       isLive
                         ? 'text-orange-300 bg-orange-900/30 animate-pulse'
                         : match.winnerId === team1?.id
@@ -665,12 +691,17 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
         </div>
 
         {/* VS Divider */}
-        <div className="flex items-center justify-center py-1 sm:py-1.5">
-          <div className="h-px bg-gradient-to-r from-transparent via-primary-500/50 to-transparent flex-1"></div>
-          <span className="px-2 sm:px-2.5 text-[10px] sm:text-xs text-primary-400 font-bold tracking-wider">
+        <div className="flex items-center justify-center py-1 sm:py-1.5 gap-2">
+          <div className="h-px bg-gradient-to-r from-transparent via-fuchsia-500/50 to-transparent flex-1"></div>
+          <span className="px-2 sm:px-2.5 text-sm sm:text-base text-fuchsia-400 font-bold tracking-wider">
             VS
           </span>
-          <div className="h-px bg-gradient-to-r from-transparent via-primary-500/50 to-transparent flex-1"></div>
+          {isLive && (
+            <span className="px-2 py-0.5 bg-red-600 text-white text-xs font-bold rounded-full animate-pulse shadow-lg shadow-red-500/50">
+              LIVE
+            </span>
+          )}
+          <div className="h-px bg-gradient-to-r from-transparent via-fuchsia-500/50 to-transparent flex-1"></div>
         </div>
 
         {/* Team 2 */}
@@ -685,35 +716,53 @@ function TournamentBracket({ tournament, clubId, isPublicView = false, isTVView 
         >
           <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0">
             {team2?.seed && (
-              <span className="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 bg-gray-700/60 text-gray-300 rounded">
+              <span className="text-xs sm:text-sm font-bold px-1.5 py-0.5 bg-gray-700/60 text-gray-300 rounded flex-shrink-0">
                 #{team2.seed}
               </span>
             )}
-            <span
-              className={`text-sm sm:text-base font-semibold truncate ${
-                team2Name === 'BYE'
-                  ? 'text-orange-400 font-bold'
-                  : isCompleted && match.winnerId === team2?.id
-                    ? isFinale
-                      ? 'text-amber-100 font-bold drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]'
-                      : 'text-emerald-100 font-bold drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'
-                    : team2
-                      ? 'text-gray-100'
-                      : 'text-gray-500 italic'
-              }`}
-            >
-              {team2Name}
-              {isFinale && isCompleted && match.winnerId === team2?.id && (
-                <Crown className="inline-block ml-1 w-4 h-4 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
+            <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+              {/* Player names in bold and larger - hide team name */}
+              {team2?.players && team2.players.length > 0 ? (
+                <div className="flex flex-col gap-0.5">
+                  {team2.players.map((p, idx) => (
+                    <div
+                      key={idx}
+                      className={`text-base sm:text-lg font-bold leading-tight truncate ${
+                        isCompleted && match.winnerId === team2?.id
+                          ? isFinale
+                            ? 'text-amber-100 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]'
+                            : 'text-emerald-100 drop-shadow-[0_0_6px_rgba(16,185,129,0.4)]'
+                          : 'text-gray-100'
+                      }`}
+                    >
+                      {p.playerName || p.name || p.displayName || ''}
+                    </div>
+                  ))}
+                  {isFinale && isCompleted && match.winnerId === team2?.id && (
+                    <Crown className="inline-block w-5 h-5 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)] mt-0.5" />
+                  )}
+                </div>
+              ) : (
+                <span
+                  className={`text-base sm:text-lg font-bold leading-tight ${
+                    team2Name === 'BYE'
+                      ? 'text-orange-400'
+                      : team2
+                        ? 'text-gray-100'
+                        : 'text-gray-500 italic'
+                  }`}
+                >
+                  {team2Name}
+                </span>
               )}
-            </span>
+            </div>
           </div>
           {(isCompleted || isLive) &&
             (hasSets
               ? renderSetPills(2)
               : (isLive ? match.liveScore : match.score) && (
                   <span
-                    className={`${isPublicView ? 'text-2xl sm:text-3xl' : 'text-xl sm:text-2xl'} font-bold ml-2 flex-shrink-0 px-2 py-0.5 rounded ${
+                    className={`${isPublicView ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-3xl'} font-bold ml-2 flex-shrink-0 px-2 py-0.5 rounded ${
                       isLive
                         ? 'text-orange-300 bg-orange-900/30 animate-pulse'
                         : match.winnerId === team2?.id
