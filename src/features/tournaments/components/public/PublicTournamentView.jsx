@@ -273,8 +273,8 @@ function PublicTournamentView() {
     pages.push(...groups.map((g) => ({ type: 'group', groupId: g })));
   }
 
-  // Add matches-only page if enabled (for tournaments with participantType: matches_only)
-  if (displaySettings.matchesOnly === true && tournament?.participantType === 'matches_only') {
+  // Add matches-only page by default for matches_only tournaments (unless explicitly disabled)
+  if (tournament?.participantType === 'matches_only' && displaySettings.matchesOnly !== false) {
     pages.push({ type: 'matches-only' });
   }
 

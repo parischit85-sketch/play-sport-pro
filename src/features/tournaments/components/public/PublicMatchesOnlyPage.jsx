@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Filter, Calendar, Trophy, Flame, Clock, ArrowLeft, Loader } from 'lucide-react';
 import { DS_ANIMATIONS } from '../../../../lib/design-system';
@@ -11,6 +11,7 @@ import PublicMatchCard from './PublicMatchCard';
 function PublicMatchesOnlyPage() {
   const { clubId, tournamentId } = useParams();
   const navigate = useNavigate();
+  const contentRef = useRef(null);
 
   const [tournament, setTournament] = useState(null);
   const [teams, setTeams] = useState([]);
@@ -80,6 +81,24 @@ function PublicMatchesOnlyPage() {
       }
     };
   }, [clubId, tournamentId]);
+
+  // Scroll automatico al contenuto su mobile appena le partite sono disponibili
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const isMobile = window.innerWidth < 640; // sm breakpoint
+    if (!loading && matches.length > 0 && isMobile) {
+      // Piccolo timeout per attendere il layout
+      setTimeout(() => {
+        try {
+          contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Compensa l'altezza dell'header sticky
+          window.scrollBy({ top: -64, left: 0, behavior: 'instant' });
+        } catch {
+          // no-op
+        }
+      }, 50);
+    }
+  }, [loading, matches.length]);
 
   // Filtra partite per stato
   const getFilteredMatches = () => {
@@ -164,7 +183,7 @@ function PublicMatchesOnlyPage() {
     <div className="min-h-screen bg-gray-950">
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-800 sticky top-0 z-40 shadow-xl">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6">
           {/* Back Button & Title */}
           <div className="flex items-center gap-4 mb-6">
             <button
@@ -174,7 +193,7 @@ function PublicMatchesOnlyPage() {
               <ArrowLeft className="w-6 h-6 text-gray-400" />
             </button>
             <div className="flex-1">
-              <h1 className="text-3xl font-black text-white mb-1">
+              <h1 className="text-2xl sm:text-3xl font-black text-white mb-1">
                 {tournament?.name || 'Torneo'}
               </h1>
               <p className="text-gray-400">Modalità Solo Partite - Vista Pubblica</p>
@@ -222,7 +241,7 @@ function PublicMatchesOnlyPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div ref={contentRef} className="max-w-7xl mx-auto px-4 py-6 sm:py-8 scroll-mt-16">
         {filteredMatches.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-6xl mb-4">🎾</div>
