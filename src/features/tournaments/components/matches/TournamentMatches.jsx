@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../../../services/firebase';
 import {
   Trophy,
@@ -103,6 +103,48 @@ function TournamentMatches({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tournament?.id, clubId]);
+
+  // Public view: subscribe to live updates of matches so status and scores update without refresh
+  useEffect(() => {
+    if (!isPublicView || !tournament?.id || !clubId) return;
+
+    // Ensure teams are available (load once if empty)
+    (async () => {
+      try {
+        if (!teams || Object.keys(teams).length === 0) {
+          const teamsData = await getTeamsByTournament(clubId, tournament.id);
+          const teamsMap = {};
+          teamsData.forEach((team) => {
+            teamsMap[team.id] = team;
+          });
+          setTeams(teamsMap);
+        }
+      } catch (e) {
+        console.error('Error loading teams (public view):', e);
+      }
+    })();
+
+    const matchesRef = collection(db, 'clubs', clubId, 'tournaments', tournament.id, 'matches');
+    let qRef = query(matchesRef);
+    if (groupFilter) {
+      qRef = query(qRef, where('groupId', '==', groupFilter));
+    }
+
+    const unsubscribe = onSnapshot(
+      qRef,
+      (snapshot) => {
+        const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+        setMatches(data);
+        setLoading(false);
+      },
+      (error) => {
+        console.error('onSnapshot matches error:', error);
+      }
+    );
+
+    return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPublicView, tournament?.id, clubId, groupFilter]);
 
   const handleRecordResult = async (matchId, score, bestOf, sets) => {
     try {

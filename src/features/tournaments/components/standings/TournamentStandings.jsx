@@ -3,6 +3,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { db } from '../../../../services/firebase';
 import { Trophy, TrendingUp, Medal, Edit2, Check, X } from 'lucide-react';
 import { calculateGroupStandings } from '../../services/standingsService';
 import { getTeamsByTournament } from '../../services/teamsService';
@@ -132,6 +134,44 @@ function TournamentStandings({
   useEffect(() => {
     loadStandings();
   }, [loadStandings]);
+
+  // Public view: subscribe to saved standings changes in Firestore for live updates
+  useEffect(() => {
+    if (!isPublicView || !clubId || !tournament?.id) return;
+
+    const standingsRef = collection(db, 'clubs', clubId, 'tournaments', tournament.id, 'standings');
+    let qRef = query(standingsRef);
+    if (groupFilter) {
+      qRef = query(qRef, where('groupId', '==', groupFilter));
+    }
+
+    const unsubscribe = onSnapshot(
+      qRef,
+      (snapshot) => {
+        // Group standings by groupId into the component's expected shape
+        const grouped = {};
+        snapshot.docs.forEach((docSnap) => {
+          const data = { id: docSnap.id, ...docSnap.data() };
+          const gId = data.groupId || 'ungrouped';
+          if (!grouped[gId]) grouped[gId] = [];
+          grouped[gId].push(data);
+        });
+
+        // Sort each group's standings by position
+        Object.keys(grouped).forEach((gId) => {
+          grouped[gId].sort((a, b) => (a.position || 999) - (b.position || 999));
+        });
+
+        setStandings(grouped);
+        setLoading(false);
+      },
+      (error) => {
+        console.error('[TournamentStandings] onSnapshot standings error:', error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [isPublicView, clubId, tournament?.id, groupFilter]);
 
   const getRankIcon = (rank) => {
     switch (rank) {
