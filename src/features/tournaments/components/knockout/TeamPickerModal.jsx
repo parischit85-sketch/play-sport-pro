@@ -1,14 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import {
-  X,
-  Trophy,
-  ChevronDown,
-  ChevronUp,
-  Medal,
-  TrendingUp,
-  Search,
-  CheckCircle2,
-} from 'lucide-react';
+import { X, Trophy, ChevronDown, ChevronUp, TrendingUp, Search } from 'lucide-react';
 
 function TeamPickerModal({
   title = 'Seleziona squadra dalle classifiche',
@@ -58,37 +49,42 @@ function TeamPickerModal({
     setExpandedGroups((prev) => ({ ...prev, [groupId]: !prev[groupId] }));
   };
 
-  const getRankIcon = (rank) => {
-    switch (rank) {
-      case 1:
-        return <Medal className="w-5 h-5 text-yellow-500" />;
-      case 2:
-        return <Medal className="w-5 h-5 text-gray-400" />;
-      case 3:
-        return <Medal className="w-5 h-5 text-orange-600" />;
-      default:
-        return <span className="text-sm text-gray-400">#{rank}</span>;
-    }
-  };
+  // Removed medal icon for position per request; show plain rank number
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div
+      className="fixed inset-0 z-50 bg-black/60 flex flex-col sm:flex sm:items-center sm:justify-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="team-picker-title"
+    >
       <div
-        className={`w-full max-w-4xl ${theme.modalBackground} rounded-xl shadow-xl ${theme.modalBorder}`}
+        className={`w-full h-full sm:h-auto sm:max-w-4xl ${theme.modalBackground} sm:rounded-xl shadow-xl ${theme.modalBorder} flex flex-col`}
+        style={{
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+        }}
       >
-        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 border-gray-700">
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-700 sticky top-0 bg-gray-800/95 backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <Trophy className="w-5 h-5 text-primary-400" />
-            <h3 className="text-base font-semibold text-gray-900 text-white">{title}</h3>
+            <h3 id="team-picker-title" className="text-base font-semibold text-white">
+              {title}
+            </h3>
           </div>
-          <button onClick={onClose} className="p-2 rounded hover:bg-gray-100 hover:bg-gray-800">
+          <button
+            onClick={onClose}
+            className="p-2 rounded hover:bg-gray-700"
+            aria-label="Chiudi selezione squadre"
+          >
             <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
-
-        <div className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
+        {/* Scrollable content */}
+        <div className="p-5 space-y-4 overflow-y-auto flex-1">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <div className="relative flex-1">
               <input
@@ -120,7 +116,7 @@ function TeamPickerModal({
                 onSelect('');
                 onClose?.();
               }}
-              className="px-3 py-2 rounded-lg border border-gray-300 border-gray-700 bg-gray-50 bg-gray-800 hover:bg-gray-100 hover:bg-gray-700 text-gray-700 text-gray-200 text-sm w-full sm:w-auto"
+              className="px-3 py-2 rounded-lg border border-gray-700 bg-gray-800 hover:bg-gray-700 text-gray-200 text-sm w-full sm:w-auto"
               title="Svuota slot"
             >
               Svuota
@@ -134,23 +130,19 @@ function TeamPickerModal({
               {filtered.map(([groupId, groupStandings]) => {
                 const isExpanded = expandedGroups[groupId] !== false;
                 return (
-                  <div
-                    key={groupId}
-                    className="border border-gray-200 border-gray-700 rounded-lg overflow-hidden"
-                  >
+                  <div key={groupId} className="border border-gray-700 rounded-lg overflow-hidden">
                     <button
                       onClick={() => toggleGroup(groupId)}
-                      className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-primary-50 to-blue-50 from-primary-900/20 to-blue-900/20 hover:from-primary-100 hover:to-blue-100 hover:from-primary-900/30 hover:to-blue-900/30 transition-colors"
+                      aria-expanded={isExpanded}
+                      className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-primary-900/20 to-blue-900/20 hover:from-primary-900/30 hover:to-blue-900/30 transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <Trophy className="w-6 h-6 text-primary-400" />
                         <div className="text-left">
-                          <h3 className="text-lg font-bold text-gray-900 text-white">
+                          <h3 className="text-lg font-bold text-white">
                             Girone {String(groupId).toUpperCase()}
                           </h3>
-                          <p className="text-sm text-gray-600 text-gray-400">
-                            {groupStandings.length} squadre
-                          </p>
+                          <p className="text-sm text-gray-400">{groupStandings.length} squadre</p>
                         </div>
                       </div>
                       {isExpanded ? (
@@ -162,32 +154,32 @@ function TeamPickerModal({
 
                     {isExpanded && (
                       <div className={`p-4 ${theme.cardBackground} overflow-x-auto`}>
-                        <table className="w-full">
-                          <thead className="bg-gray-50 bg-gray-900">
-                            <tr className="border-b border-gray-200 border-gray-700">
-                              <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">
-                                #
-                              </th>
+                        <table className="w-full text-sm">
+                          <thead className="bg-gray-900">
+                            <tr className="border-b border-gray-700">
                               <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">
                                 Squadra
                               </th>
-                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300">
+                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300 hidden md:table-cell">
                                 G
                               </th>
-                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300">
+                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300 hidden md:table-cell">
                                 V
                               </th>
-                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300">
+                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300 hidden md:table-cell">
                                 P
                               </th>
-                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300">
+                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300 hidden lg:table-cell">
                                 SW
                               </th>
-                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300">
+                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300 hidden lg:table-cell">
                                 SL
                               </th>
-                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300">
+                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300 hidden md:table-cell">
                                 +/-
+                              </th>
+                              <th className="text-center py-3 px-2 text-sm font-semibold text-gray-300">
+                                DG
                               </th>
                               <th className="text-center py-3 px-4 text-sm font-semibold text-gray-300">
                                 Pts
@@ -196,34 +188,23 @@ function TeamPickerModal({
                           </thead>
                           <tbody>
                             {groupStandings.map((standing, index) => {
-                              const rank = index + 1;
-                              const isQualified = rank <= (teamsPerGroup || 2);
+                              const isQualified = index + 1 <= (teamsPerGroup || 2);
                               const used = selectedTeamIds.has(standing.teamId);
                               return (
                                 <tr
                                   key={standing.teamId}
-                                  className={`border-b border-gray-100 border-gray-800 hover:bg-gray-50 hover:bg-gray-700 transition-colors ${
-                                    isQualified ? 'bg-green-50 bg-green-900/10' : ''
+                                  className={`border-b border-gray-800 hover:bg-gray-700/50 transition-colors ${
+                                    isQualified ? 'bg-green-900/10' : ''
                                   }`}
                                 >
                                   <td className="py-3 px-4">
-                                    <div className="flex items-center justify-center">
-                                      {getRankIcon(rank)}
-                                    </div>
-                                  </td>
-                                  <td className="py-3 px-4">
                                     <div className="flex items-center justify-between gap-2">
                                       <div className="flex items-center gap-2 min-w-0">
-                                        <span className="font-medium text-gray-900 text-white truncate">
+                                        <span className="font-medium text-white whitespace-normal break-words line-clamp-2 leading-snug">
                                           {standing.teamName}
                                         </span>
                                         {isQualified && (
                                           <TrendingUp className="w-4 h-4 text-green-500" />
-                                        )}
-                                        {used && (
-                                          <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 bg-emerald-900/30 text-emerald-700 text-emerald-200 border border-emerald-200 border-emerald-800">
-                                            <CheckCircle2 className="w-3 h-3" /> In tabellone
-                                          </span>
                                         )}
                                       </div>
                                       <div className="shrink-0">
@@ -234,10 +215,10 @@ function TeamPickerModal({
                                             onSelect(standing.teamId);
                                             onClose?.();
                                           }}
-                                          className={`px-3 py-1.5 rounded-md text-xs border ${
+                                          className={`px-2 py-1 rounded-md text-[11px] font-medium border focus:outline-none focus:ring-2 focus:ring-primary-500/60 focus:ring-offset-0 ${
                                             used
-                                              ? 'opacity-50 cursor-not-allowed border-gray-200 border-gray-700 text-gray-400'
-                                              : 'border-primary-300 border-primary-700 text-primary-700 text-primary-300 hover:bg-primary-50 hover:bg-primary-900/20'
+                                              ? 'opacity-50 cursor-not-allowed border-gray-700 text-gray-400'
+                                              : 'border-primary-700 text-primary-300 hover:bg-primary-900/30'
                                           }`}
                                         >
                                           Seleziona
@@ -245,33 +226,47 @@ function TeamPickerModal({
                                       </div>
                                     </div>
                                   </td>
-                                  <td className="py-3 px-2 text-center text-sm text-gray-400">
+                                  <td className="py-3 px-2 text-center text-sm text-gray-400 hidden md:table-cell">
                                     {standing.matchesPlayed}
                                   </td>
-                                  <td className="py-3 px-2 text-center text-sm font-medium text-green-600 text-green-400">
+                                  <td className="py-3 px-2 text-center text-sm font-medium text-green-400 hidden md:table-cell">
                                     {standing.matchesWon}
                                   </td>
-                                  <td className="py-3 px-2 text-center text-sm font-medium text-red-600 text-red-400">
+                                  <td className="py-3 px-2 text-center text-sm font-medium text-red-400 hidden md:table-cell">
                                     {standing.matchesLost}
                                   </td>
-                                  <td className="py-3 px-2 text-center text-sm text-gray-400">
+                                  <td className="py-3 px-2 text-center text-sm text-gray-400 hidden lg:table-cell">
                                     {standing.setsWon}
                                   </td>
-                                  <td className="py-3 px-2 text-center text-sm text-gray-400">
+                                  <td className="py-3 px-2 text-center text-sm text-gray-400 hidden lg:table-cell">
                                     {standing.setsLost}
                                   </td>
-                                  <td className="py-3 px-2 text-center text-sm">
+                                  <td className="py-3 px-2 text-center text-sm hidden md:table-cell">
                                     <span
                                       className={`font-medium ${
                                         (standing.setsDifference || 0) > 0
-                                          ? 'text-green-600 text-green-400'
+                                          ? 'text-green-400'
                                           : (standing.setsDifference || 0) < 0
-                                            ? 'text-red-600 text-red-400'
+                                            ? 'text-red-400'
                                             : 'text-gray-400'
                                       }`}
                                     >
                                       {(standing.setsDifference || 0) > 0 ? '+' : ''}
                                       {standing.setsDifference || 0}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-2 text-center text-sm">
+                                    <span
+                                      className={`font-medium ${
+                                        (standing.gamesDifference || 0) > 0
+                                          ? 'text-green-400'
+                                          : (standing.gamesDifference || 0) < 0
+                                            ? 'text-red-400'
+                                            : 'text-gray-400'
+                                      }`}
+                                    >
+                                      {(standing.gamesDifference || 0) > 0 ? '+' : ''}
+                                      {standing.gamesDifference || 0}
                                     </span>
                                   </td>
                                   <td className="py-3 px-4 text-center">
@@ -284,7 +279,7 @@ function TeamPickerModal({
                             })}
                           </tbody>
                         </table>
-                        <div className="mt-3 p-2 bg-gray-50 bg-gray-800 rounded">
+                        <div className="mt-3 p-2 bg-gray-800 rounded">
                           <div className="flex flex-wrap gap-3 text-[11px] text-gray-400">
                             <div>
                               <strong>G</strong> = Giocate
@@ -318,7 +313,8 @@ function TeamPickerModal({
           )}
         </div>
 
-        <div className="px-5 py-3 border-t border-gray-200 border-gray-700 flex items-center justify-end">
+        {/* Footer */}
+        <div className="px-5 py-3 border-t border-gray-700 flex items-center justify-end sticky bottom-0 bg-gray-800/95 backdrop-blur-sm">
           <button onClick={onClose} className="px-4 py-2 rounded-lg bg-gray-800 text-gray-300">
             Chiudi
           </button>

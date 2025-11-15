@@ -20,6 +20,14 @@ export function calculateMatchPoints(pointsSystem, team1, team2, score, winnerId
     return calculateStandardPoints(pointsSystem, team1.id, team2.id, score, winnerId);
   } else if (pointsSystem.type === POINTS_SYSTEM_TYPE.RANKING_BASED) {
     return calculateRankingBasedPoints(pointsSystem, team1, team2, score, winnerId);
+  } else if (pointsSystem.type === POINTS_SYSTEM_TYPE.TIE_BREAK) {
+    return calculateTieBreakPoints(
+      pointsSystem,
+      team1.id,
+      team2.id,
+      { score, sets: score && score.sets ? score.sets : undefined },
+      winnerId
+    );
   }
 
   // Fallback to standard
@@ -96,17 +104,12 @@ function calculateRankingBasedPoints(pointsSystem, team1, team2, score, winnerId
 
   // Determine if upset occurred (lower ranked team won)
   let isUpset = false;
-  let winnerRanking, loserRanking;
 
   if (winnerId === team1.id) {
-    winnerRanking = team1.averageRanking;
-    loserRanking = team2.averageRanking;
     // In tennis/padel, LOWER ranking number = BETTER player
     // So if team1 won and has HIGHER ranking number, it's an upset
     isUpset = team1.averageRanking > team2.averageRanking;
   } else {
-    winnerRanking = team2.averageRanking;
-    loserRanking = team1.averageRanking;
     isUpset = team2.averageRanking > team1.averageRanking;
   }
 
@@ -135,6 +138,64 @@ function calculateRankingBasedPoints(pointsSystem, team1, team2, score, winnerId
 }
 
 /**
+ * Detect if match is a "tie break" under business rule: total game difference is exactly 1.
+ * Somma tutti i giochi nei set e controlla se la differenza assoluta è 1.
+ * @param {Array<{team1:number, team2:number}>} sets
+ * @param {Object} score - fallback if sets non disponibili
+ * @returns {boolean}
+ */
+function isCloseGameTieBreak(sets, score) {
+  if (Array.isArray(sets) && sets.length > 0) {
+    let g1 = 0;
+    let g2 = 0;
+    for (const s of sets) {
+      g1 += Number(s?.team1 || 0);
+      g2 += Number(s?.team2 || 0);
+    }
+    return Math.abs(g1 - g2) === 1;
+  }
+  // Fallback: if no per-set detail, use score object (could represent total games)
+  if (score && typeof score.team1 === 'number' && typeof score.team2 === 'number') {
+    return Math.abs(score.team1 - score.team2) === 1;
+  }
+  return false;
+}
+
+/**
+ * Calculate tie-break system points: normal win/loss, but if decided by super tie-break
+ * then use tieBreakWin/tieBreakLoss (winner gets 2, loser gets 1 by default)
+ * @param {Object} pointsSystem
+ * @param {string} team1Id
+ * @param {string} team2Id
+ * @param {{score:{team1:number, team2:number}, sets?:Array}} matchLike
+ * @param {string} winnerId
+ * @returns {{team1Points:number, team2Points:number}}
+ */
+function calculateTieBreakPoints(pointsSystem, team1Id, team2Id, matchLike, winnerId) {
+  const { win, draw, loss, tieBreakWin, tieBreakLoss } = pointsSystem;
+  const score = matchLike?.score || { team1: 0, team2: 0 };
+  const sets = matchLike?.sets || [];
+
+  // Gestione pareggio (se ammesso)
+  if (score.team1 === score.team2) {
+    return { team1Points: draw, team2Points: draw };
+  }
+
+  const decidedByTB = isCloseGameTieBreak(sets, score);
+
+  if (winnerId === team1Id) {
+    return {
+      team1Points: decidedByTB ? tieBreakWin : win,
+      team2Points: decidedByTB ? tieBreakLoss : loss,
+    };
+  }
+  return {
+    team1Points: decidedByTB ? tieBreakLoss : loss,
+    team2Points: decidedByTB ? tieBreakWin : win,
+  };
+}
+
+/**
  * Calculate total points for a team based on all their matches
  * @param {Array} matches - All matches involving the team
  * @param {string} teamId - Team ID
@@ -154,7 +215,11 @@ export function calculateTeamTotalPoints(matches, teamId, pointsSystem, teamsMap
 
     if (!team1 || !team2) return;
 
-    const points = calculateMatchPoints(pointsSystem, team1, team2, match.score, match.winnerId);
+    const enrichedScore = {
+      ...match.score,
+      sets: Array.isArray(match.sets) ? match.sets : undefined,
+    };
+    const points = calculateMatchPoints(pointsSystem, team1, team2, enrichedScore, match.winnerId);
 
     totalPoints += isTeam1 ? points.team1Points : points.team2Points;
   });
@@ -221,7 +286,7 @@ export function getPointsBreakdown(pointsSystem, team1, team2, score, winnerId) 
         },
       },
     };
-  } else {
+  } else if (pointsSystem.type === POINTS_SYSTEM_TYPE.RANKING_BASED) {
     // Ranking-based breakdown
     const isTeam1Winner = winnerId === team1.id;
     const rankingDiff =
@@ -255,6 +320,28 @@ export function getPointsBreakdown(pointsSystem, team1, team2, score, winnerId) 
             : pointsSystem.multipliers.expectedWin,
           isUpset: team2IsUpset,
           rankingDifference: rankingDiff,
+        },
+      },
+    };
+  } else {
+    // Tie-break breakdown: indicate whether decided by super tie-break
+    const decidedByTB = isCloseGameTieBreak(score?.sets, score);
+    const isTeam1Winner = winnerId === team1.id;
+    return {
+      team1: {
+        points: points.team1Points,
+        breakdown: {
+          result: isTeam1Winner ? 'Vittoria' : 'Sconfitta',
+          decidedByTieBreak: decidedByTB,
+          rule: decidedByTB ? 'Tie Break differenza 1 (2/1)' : 'Standard (3/0)',
+        },
+      },
+      team2: {
+        points: points.team2Points,
+        breakdown: {
+          result: !isTeam1Winner ? 'Vittoria' : 'Sconfitta',
+          decidedByTieBreak: decidedByTB,
+          rule: decidedByTB ? 'Tie Break differenza 1 (2/1)' : 'Standard (3/0)',
         },
       },
     };

@@ -124,9 +124,21 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4">
-      <div className="w-full max-w-7xl bg-gray-900 rounded-xl shadow-xl border border-gray-700">
-        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-700">
+    // Modal full-screen on mobile, centered panel on larger screens
+    <div
+      className="fixed inset-0 z-50 bg-black/60 flex flex-col sm:flex sm:items-center sm:justify-center"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="w-full h-full sm:h-auto sm:max-w-7xl bg-gray-900 sm:rounded-xl shadow-xl border border-gray-700 flex flex-col"
+        style={{
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-700 sticky top-0 bg-gray-900/95 backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <Settings className="w-5 h-5 text-primary-600" />
             <h3 className="text-lg font-semibold text-white">Configura Tabellone Manuale</h3>
@@ -135,8 +147,8 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
             <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
-
-  <div className="p-4 sm:p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+        {/* Scrollable content area */}
+        <div className="p-4 sm:p-6 space-y-6 overflow-y-auto flex-1">
           {error && (
             <div className="bg-red-900/20 border border-red-800 text-red-200 px-4 py-2 rounded">
               {error}
@@ -162,7 +174,7 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
                 ))}
               </select>
             </div>
-            <div className="col-span-2">
+            <div className="md:col-span-2">
               <div className="text-sm font-medium text-gray-300">Opzioni</div>
               <div className="mt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
                 <label className="inline-flex items-center gap-2">
@@ -206,8 +218,8 @@ function KnockoutSetupModal({ clubId, tournament, onClose, onComplete }) {
             )}
           </div>
         </div>
-
-        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-700 flex items-center justify-end gap-2 sm:gap-3">
+        {/* Footer actions */}
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-700 flex items-center justify-end gap-2 sm:gap-3 sticky bottom-0 bg-gray-900/95 backdrop-blur-sm">
           <button
             onClick={onClose}
             className="px-4 py-2 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700"

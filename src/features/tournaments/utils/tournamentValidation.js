@@ -174,6 +174,17 @@ export function validatePointsSystem(pointsSystem) {
     ) {
       return { valid: false, error: 'Configurazione punti ranking-based non valida' };
     }
+  } else if (pointsSystem.type === POINTS_SYSTEM_TYPE.TIE_BREAK) {
+    // Tie-break system must include standard win/draw/loss plus tie-break specific values
+    if (
+      typeof pointsSystem.win !== 'number' ||
+      typeof pointsSystem.draw !== 'number' ||
+      typeof pointsSystem.loss !== 'number' ||
+      typeof pointsSystem.tieBreakWin !== 'number' ||
+      typeof pointsSystem.tieBreakLoss !== 'number'
+    ) {
+      return { valid: false, error: 'Configurazione punti tie-break non valida' };
+    }
   } else {
     return { valid: false, error: 'Tipo sistema punti non riconosciuto' };
   }
@@ -277,14 +288,7 @@ export function canStartKnockoutPhase(tournament, completedGroupMatches, totalGr
   return { valid: true, error: null };
 }
 
-/**
- * Utility: Check if number is power of 2
- * @param {number} n
- * @returns {boolean}
- */
-function isPowerOfTwo(n) {
-  return n > 0 && (n & (n - 1)) === 0;
-}
+// Note: utility isPowerOfTwo was removed here because it's unused in this module.
 
 /**
  * Sanitize tournament name

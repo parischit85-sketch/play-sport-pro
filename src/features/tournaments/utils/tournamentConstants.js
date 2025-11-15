@@ -34,6 +34,7 @@ export const PARTICIPANT_TYPE = {
 export const POINTS_SYSTEM_TYPE = {
   STANDARD: 'standard',
   RANKING_BASED: 'ranking_based',
+  TIE_BREAK: 'tie_break',
 };
 
 // Knockout Rounds
@@ -77,6 +78,15 @@ export const DEFAULT_RANKING_BASED_POINTS = {
     expectedWin: 1.0,
     rankingDifferenceThreshold: 10,
   },
+};
+
+export const DEFAULT_TIE_BREAK_POINTS = {
+  type: POINTS_SYSTEM_TYPE.TIE_BREAK,
+  win: 3,
+  draw: 1,
+  loss: 0,
+  tieBreakWin: 2,
+  tieBreakLoss: 1,
 };
 
 // Tournament Configuration Limits
@@ -219,6 +229,7 @@ export default {
   TEAM_STATUS,
   DEFAULT_STANDARD_POINTS,
   DEFAULT_RANKING_BASED_POINTS,
+  DEFAULT_TIE_BREAK_POINTS,
   TOURNAMENT_LIMITS,
   GROUP_NAMES,
   KNOCKOUT_ROUND_NAMES,

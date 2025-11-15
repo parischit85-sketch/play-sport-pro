@@ -6,17 +6,22 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { X, Save, AlertTriangle } from 'lucide-react';
 import { updateTournament } from '../../services/tournamentService';
+import {
+  POINTS_SYSTEM_TYPE,
+  DEFAULT_STANDARD_POINTS,
+  DEFAULT_TIE_BREAK_POINTS,
+} from '../../utils/tournamentConstants';
+import { validatePointsSystem } from '../../utils/tournamentValidation';
+import { updateStandingsAfterMatch } from '../../services/standingsService';
 import { getChampionshipApplyStatus } from '../../services/championshipApplyService';
 
 export default function TournamentEditModal({ clubId, tournament, onClose, onSaved }) {
   const [isApplied, setIsApplied] = useState(false);
-  const [checkingApplied, setCheckingApplied] = useState(true);
 
   useEffect(() => {
     async function checkApplied() {
       const status = await getChampionshipApplyStatus(clubId, tournament.id);
       setIsApplied(status.applied);
-      setCheckingApplied(false);
     }
     checkApplied();
   }, [clubId, tournament.id]);
@@ -57,6 +62,13 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
             15,
         },
       },
+      // Sistema punti (solo Standard o Tie Break)
+      pointsSystem:
+        typeof tournament?.pointsSystem === 'object'
+          ? tournament.pointsSystem
+          : tournament?.pointsSystem === 'standard'
+            ? { ...DEFAULT_STANDARD_POINTS }
+            : { ...DEFAULT_STANDARD_POINTS },
     }),
     [tournament]
   );
@@ -84,6 +96,14 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
         return;
       }
 
+      // Valida sistema punti
+      const psValidation = validatePointsSystem(form.pointsSystem);
+      if (!psValidation.valid) {
+        setError(psValidation.error || 'Configurazione sistema punti non valida');
+        setSaving(false);
+        return;
+      }
+
       const updates = {
         name: form.name.trim(),
         description: form.description?.trim() || null,
@@ -95,6 +115,8 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
           Number(form.defaultRankingForNonParticipants) || 1500,
         // Calcola maxTeams basato sulla nuova configurazione
         maxTeams: Number(form.numberOfGroups) * Number(form.teamsPerGroup),
+        // Sistema punti
+        pointsSystem: form.pointsSystem,
         // Championship points config
         'configuration.championshipPoints.rpaMultiplier': Number(
           form.championshipPoints?.rpaMultiplier ?? 1
@@ -135,6 +157,19 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
         return;
       }
 
+      // Se è cambiato il sistema punti, ricalcola le classifiche dei gironi
+      try {
+        const prevPs = tournament?.pointsSystem;
+        const prevType = typeof prevPs === 'object' ? prevPs.type : prevPs;
+        const newType = form.pointsSystem?.type;
+        const changed = prevType !== newType;
+        if (changed) {
+          await updateStandingsAfterMatch(clubId, tournament.id, form.pointsSystem);
+        }
+      } catch (recalcErr) {
+        console.warn('⚠️ Impossibile ricalcolare la classifica:', recalcErr);
+      }
+
       onSaved?.();
     } catch (e) {
       console.error(e);
@@ -167,8 +202,14 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
             )}
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Nome</label>
+                <label
+                  htmlFor="tournamentName"
+                  className="block text-sm font-medium text-gray-300 mb-1"
+                >
+                  Nome
+                </label>
                 <input
+                  id="tournamentName"
                   type="text"
                   value={form.name}
                   onChange={(e) => setField('name', e.target.value)}
@@ -177,10 +218,14 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label
+                  htmlFor="defaultRanking"
+                  className="block text-sm font-medium text-gray-300 mb-1"
+                >
                   Ranking default per non partecipanti
                 </label>
                 <input
+                  id="defaultRanking"
                   type="number"
                   min={500}
                   max={3000}
@@ -198,8 +243,14 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Descrizione</label>
+              <label
+                htmlFor="tournamentDesc"
+                className="block text-sm font-medium text-gray-300 mb-1"
+              >
+                Descrizione
+              </label>
               <textarea
+                id="tournamentDesc"
                 rows={3}
                 value={form.description}
                 onChange={(e) => setField('description', e.target.value)}
@@ -214,8 +265,11 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
             <div className="font-semibold text-gray-100 mb-3">Configurazione Gironi</div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Gironi</label>
+                <label htmlFor="numGroups" className="block text-sm font-medium text-gray-300 mb-1">
+                  Gironi
+                </label>
                 <input
+                  id="numGroups"
                   type="number"
                   min={1}
                   max={16}
@@ -225,10 +279,14 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label
+                  htmlFor="teamsPerGroup"
+                  className="block text-sm font-medium text-gray-300 mb-1"
+                >
                   Squadre/Girone
                 </label>
                 <input
+                  id="teamsPerGroup"
                   type="number"
                   min={2}
                   max={12}
@@ -238,10 +296,14 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label
+                  htmlFor="qualifiedPerGroup"
+                  className="block text-sm font-medium text-gray-300 mb-1"
+                >
                   Qualificati/Girone
                 </label>
                 <input
+                  id="qualifiedPerGroup"
                   type="number"
                   min={1}
                   max={8}
@@ -265,6 +327,48 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
             </div>
           </div>
 
+          {/* Sezione: Sistema Punti */}
+          <div className="rounded-lg border border-gray-700 p-4">
+            <div className="font-semibold text-gray-100 mb-3">Sistema Punti</div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {/* Standard */}
+              <button
+                type="button"
+                onClick={() => setField('pointsSystem', { ...DEFAULT_STANDARD_POINTS })}
+                className={`text-left p-3 rounded-lg border transition-all ${
+                  form.pointsSystem?.type === POINTS_SYSTEM_TYPE.STANDARD
+                    ? 'border-primary-500 bg-primary-500/10'
+                    : 'border-gray-600 hover:border-gray-500'
+                }`}
+              >
+                <div className="font-semibold text-white">Standard</div>
+                <div className="text-xs text-gray-300 mt-1">
+                  Vittoria: 3 • Pareggio: 1 • Sconfitta: 0
+                </div>
+              </button>
+
+              {/* Tie Break */}
+              <button
+                type="button"
+                onClick={() => setField('pointsSystem', { ...DEFAULT_TIE_BREAK_POINTS })}
+                className={`text-left p-3 rounded-lg border transition-all ${
+                  form.pointsSystem?.type === POINTS_SYSTEM_TYPE.TIE_BREAK
+                    ? 'border-primary-500 bg-primary-500/10'
+                    : 'border-gray-600 hover:border-gray-500'
+                }`}
+              >
+                <div className="font-semibold text-white">Tie Break</div>
+                <div className="text-xs text-gray-300 mt-1">
+                  Vittoria: 3 • Pareggio: 1 • Sconfitta: 0
+                </div>
+                <div className="text-xs text-primary-300 mt-1">
+                  Se deciso da tie-break (differenza giochi totale = 1): 2 al vincitore, 1 allo
+                  sconfitto
+                </div>
+              </button>
+            </div>
+          </div>
+
           {/* Sezione: Punti Campionato */}
           <div className="rounded-lg border border-gray-700 p-4">
             <div className="font-semibold text-gray-100 mb-3">Punti Campionato (bozza)</div>
@@ -280,8 +384,8 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
                   <p className="text-xs">
                     I campi sono <strong>disabilitati</strong> perché i punti campionato sono stati
                     già applicati. Per modificare la configurazione, devi prima{' '}
-                    <strong>annullare l'applicazione</strong> dei punti, poi modificare i valori, e
-                    infine <strong>riapplicare</strong> i punti campionato.
+                    <strong>annullare l&apos;applicazione</strong> dei punti, poi modificare i
+                    valori, e infine <strong>riapplicare</strong> i punti campionato.
                   </p>
                 </div>
               </div>
@@ -289,10 +393,14 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <label
+                  htmlFor="rpaMultiplier"
+                  className="block text-sm font-medium text-gray-300 mb-1"
+                >
                   Moltiplicatore RPA
                 </label>
                 <input
+                  id="rpaMultiplier"
                   type="number"
                   min={0}
                   step={0.1}
@@ -311,9 +419,9 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
+                <div className="block text-sm font-medium text-gray-300 mb-1">
                   Piazzamento Girone
-                </label>
+                </div>
                 <div className="grid grid-cols-4 gap-2">
                   {[1, 2, 3, 4].map((pos) => (
                     <div key={pos} className="flex flex-col">
@@ -340,9 +448,9 @@ export default function TournamentEditModal({ clubId, tournament, onClose, onSav
               </div>
             </div>
             <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <div className="block text-sm font-medium text-gray-300 mb-1">
                 Eliminazione Diretta (per vittoria)
-              </label>
+              </div>
               <div className="grid md:grid-cols-5 gap-2">
                 {[
                   { key: 'round_of_16', label: 'Ottavi' },

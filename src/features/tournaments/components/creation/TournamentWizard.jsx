@@ -10,7 +10,7 @@ import {
   PARTICIPANT_TYPE,
   TOURNAMENT_FORMAT,
   DEFAULT_STANDARD_POINTS,
-  DEFAULT_RANKING_BASED_POINTS,
+  DEFAULT_TIE_BREAK_POINTS,
   POINTS_SYSTEM_TYPE,
 } from '../../utils/tournamentConstants';
 import { validateTournamentName, validateGroupsConfig } from '../../utils/tournamentValidation';
@@ -18,7 +18,7 @@ import { validateTournamentName, validateGroupsConfig } from '../../utils/tourna
 const STEPS = [
   { id: 1, name: 'Informazioni Base', description: 'Nome e descrizione' },
   { id: 2, name: 'Configurazione', description: 'Gironi e qualificati' },
-  { id: 3, name: 'Sistema Punti', description: 'Standard o ranking-based' },
+  { id: 3, name: 'Sistema Punti', description: 'Standard o tie-break' },
   { id: 4, name: 'Iscrizioni', description: 'Date e limiti' },
   { id: 5, name: 'Riepilogo', description: 'Conferma e crea' },
 ];
@@ -627,20 +627,21 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
 
           <button
             type="button"
-            onClick={() => handleInputChange('pointsSystem', { ...DEFAULT_RANKING_BASED_POINTS })}
+            onClick={() => handleInputChange('pointsSystem', { ...DEFAULT_TIE_BREAK_POINTS })}
             className={`p-6 rounded-lg border-2 text-left transition-colors ${
-              formData.pointsSystem.type === POINTS_SYSTEM_TYPE.RANKING_BASED
+              formData.pointsSystem.type === POINTS_SYSTEM_TYPE.TIE_BREAK
                 ? 'border-primary-500 bg-primary-900/30 text-gray-100'
                 : 'border-gray-600 bg-gray-700 text-gray-100 hover:border-gray-500'
             }`}
           >
-            <div className="font-semibold text-lg mb-2">Sistema Ranking-Based</div>
+            <div className="font-semibold text-lg mb-2">Sistema Tie Break</div>
             <div className="text-sm text-gray-400 mb-3">
-              Punti variabili in base al ranking delle squadre
+              Punti differenziati per vittoria al tie-break
             </div>
             <div className="text-sm space-y-1">
-              <div>• Vittoria attesa: 3 punti</div>
-              <div>• Vittoria sorprendente: 4.5 punti (bonus 1.5x)</div>
+              <div>• Vittoria: 3 punti</div>
+              <div>• Vittoria al Tie Break: 2 punti</div>
+              <div>• Sconfitta al Tie Break: 1 punto</div>
               <div>• Sconfitta: 0 punti</div>
             </div>
           </button>
@@ -727,7 +728,9 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
             <span className="font-medium text-white">
               {formData.pointsSystem.type === POINTS_SYSTEM_TYPE.STANDARD
                 ? 'Standard'
-                : 'Ranking-Based'}
+                : formData.pointsSystem.type === POINTS_SYSTEM_TYPE.TIE_BREAK
+                  ? 'Tie Break'
+                  : 'Ranking-Based'}
             </span>
           </div>
 

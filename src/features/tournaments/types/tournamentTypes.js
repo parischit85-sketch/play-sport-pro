@@ -18,7 +18,7 @@
  */
 
 /**
- * @typedef {'standard' | 'ranking_based'} PointsSystemType
+ * @typedef {'standard' | 'ranking_based' | 'tie_break'} PointsSystemType
  */
 
 /**
@@ -50,7 +50,17 @@
  */
 
 /**
- * @typedef {StandardPointsConfig | RankingBasedPointsConfig} PointsSystemConfig
+ * @typedef {Object} TieBreakPointsConfig
+ * @property {'tie_break'} type
+ * @property {number} win - Points for standard win (default: 3)
+ * @property {number} draw - Points for draw (default: 1)
+ * @property {number} loss - Points for standard loss (default: 0)
+ * @property {number} tieBreakWin - Points for win decided by super tie-break (default: 2)
+ * @property {number} tieBreakLoss - Points for loss decided by super tie-break (default: 1)
+ */
+
+/**
+ * @typedef {StandardPointsConfig | RankingBasedPointsConfig | TieBreakPointsConfig} PointsSystemConfig
  */
 
 /**
