@@ -648,9 +648,9 @@ function TournamentMatches({
     return (
       <div
         key={match.id}
-        className={`${
+        className={`relative ${
           isPublicView
-            ? 'relative bg-gradient-to-br from-gray-800/90 via-gray-700/90 to-gray-800/90 backdrop-blur-sm rounded-xl border-2 shadow-lg border-gray-600/50'
+            ? 'bg-gradient-to-br from-gray-800/90 via-gray-700/90 to-gray-800/90 backdrop-blur-sm rounded-xl border-2 shadow-lg border-gray-600/50'
             : 'bg-gray-800 border border-gray-700 hover:border-primary-300'
         } rounded-lg p-3 sm:p-4 transition-all ${!isPublicView && canEditResults ? 'pb-10' : ''} ${
           isPublicView && onMatchClick
@@ -671,7 +671,7 @@ function TournamentMatches({
         role={isPublicView && onMatchClick ? 'button' : undefined}
         tabIndex={isPublicView && onMatchClick ? 0 : undefined}
       >
-        {/* Icona elimina partita - in alto a destra */}
+        {/* Pulsanti modifica ed elimina - angolo in basso a destra */}
         {!isPublicView && canEditResults && (
           <>
             <button

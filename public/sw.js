@@ -1,5 +1,5 @@
 // Service Worker per PlaySport Pro - Enhanced Performance Optimization
-const CACHE_VERSION = 'v20251115104658';
+const CACHE_VERSION = 'v20251115112105';
 const STATIC_CACHE = `playsport-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `playsport-dynamic-${CACHE_VERSION}`;
 const API_CACHE = `playsport-api-${CACHE_VERSION}`;

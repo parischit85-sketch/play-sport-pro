@@ -707,8 +707,8 @@ function PublicTournamentViewTV() {
               const team1Players = team1Name.split('/').map((p) => p.trim());
               const team2Players = team2Name.split('/').map((p) => p.trim());
 
-              // ✅ SUPPORTO RISULTATI LIVE: Usa liveScore se disponibile, altrimenti sets confermati
-              const isLive = isInProgress && match.liveScore;
+              // ✅ SUPPORTO RISULTATI LIVE: mostra se presente anche se lo stato non è ancora "in_progress"
+              const isLive = !!match.liveScore;
               const setsToShow = isLive ? match.liveScore.sets : match.sets;
               const hasSets = Array.isArray(setsToShow) && setsToShow.length > 0;
 
@@ -878,8 +878,8 @@ function PublicTournamentViewTV() {
                 const team1Players = team1Name.split('/').map((p) => p.trim());
                 const team2Players = team2Name.split('/').map((p) => p.trim());
 
-                // ✅ SUPPORTO RISULTATI LIVE: Usa liveScore se disponibile, altrimenti sets confermati
-                const isLive = isInProgress && match.liveScore;
+                // ✅ SUPPORTO RISULTATI LIVE: mostra se presente anche se lo stato non è ancora "in_progress"
+                const isLive = !!match.liveScore;
                 const setsToShow = isLive ? match.liveScore.sets : match.sets;
                 const hasSets = Array.isArray(setsToShow) && setsToShow.length > 0;
 
