@@ -3,7 +3,7 @@
  * Steps: 1) Basic Info, 2) Configuration, 3) Points System, 4) Registration, 5) Review
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { createTournament } from '../../services/tournamentService';
 import {
@@ -28,6 +28,27 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [creationProgress, setCreationProgress] = useState(null); // { current: 1, total: 8, message: 'Creazione torneo' }
+
+  // Block body scroll when modal is open
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalPaddingRight = document.body.style.paddingRight;
+
+    // Get scrollbar width
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+    // Add padding to prevent layout shift
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.paddingRight = originalPaddingRight;
+    };
+  }, []);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -744,9 +765,27 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
     </div>
   );
 
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onCancel();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto"
+      onClick={handleBackdropClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onCancel();
+      }}
+      role="presentation"
+      tabIndex={-1}
+    >
+      <div
+        className="bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] flex flex-col my-auto"
+        role="dialog"
+        aria-modal="true"
+      >
         {/* Header */}
         <div className="p-3 sm:p-6 border-b border-gray-700">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
