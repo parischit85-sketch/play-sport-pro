@@ -4,6 +4,7 @@
   "version": "1.0.5",
   "type": "module",
   "scripts": {
+    "prebuild": "node scripts/bump-sw-version.cjs",
     "dev": "vite",
     "dev:host": "vite --host",
     "dev:clean": "rm -rf node_modules/.vite && npm run dev",

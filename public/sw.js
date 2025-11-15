@@ -1,5 +1,5 @@
 // Service Worker per PlaySport Pro - Enhanced Performance Optimization
-const CACHE_VERSION = 'v1.14.0';
+const CACHE_VERSION = 'v20251115013531';
 const STATIC_CACHE = `playsport-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `playsport-dynamic-${CACHE_VERSION}`;
 const API_CACHE = `playsport-api-${CACHE_VERSION}`;
@@ -204,10 +204,13 @@ async function networkFirstStrategy(request) {
 
     performanceMetrics.offlineRequests++;
     const fallback = await getApiOfflineFallback(request);
-    return fallback || new Response(JSON.stringify({ error: 'Offline' }), { 
-      status: 503,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return (
+      fallback ||
+      new Response(JSON.stringify({ error: 'Offline' }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
   }
 }
 
@@ -405,7 +408,7 @@ self.addEventListener('beforeinstallprompt', (event) => {
     clients.forEach((client) => {
       client.postMessage({
         type: 'BEFORE_INSTALL_PROMPT',
-        promptEvent: event
+        promptEvent: event,
       });
     });
   });
