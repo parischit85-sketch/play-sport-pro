@@ -86,59 +86,58 @@ export const recordFinalResultPublic = onCall(async (request) => {
       liveScore: null,
     };
 
+    // Pre-fetch standings if needed (BEFORE transaction)
+    let standingsRef = null;
+    let standingsData = null;
+    if (matchData.type === 'group' && matchData.groupId) {
+      standingsRef = tournamentRef.collection('standings').doc(matchData.groupId);
+      const standingsSnap = await standingsRef.get();
+      if (standingsSnap.exists) {
+        standingsData = standingsSnap.data();
+      }
+    }
+
     // Update match with final result using transaction
     await db.runTransaction(async (transaction) => {
-      // Re-read match in transaction
-      const matchSnapshot = await transaction.get(matchRef);
-      if (!matchSnapshot.exists) {
-        throw new Error('Match not found in transaction');
-      }
-
       // Update match
       transaction.update(matchRef, resultData);
 
       // Update standings if it's a group match
-      if (matchData.type === 'group' && matchData.groupId) {
-        const standingsRef = tournamentRef.collection('standings').doc(matchData.groupId);
-        const standingsSnap = await transaction.get(standingsRef);
+      if (standingsRef && standingsData) {
+        const teams = standingsData.teams || [];
 
-        if (standingsSnap.exists) {
-          const standingsData = standingsSnap.data();
-          const teams = standingsData.teams || [];
-
-          // Update team stats
-          teams.forEach((team) => {
-            if (team.teamId === matchData.team1Id) {
-              team.matchesPlayed = (team.matchesPlayed || 0) + 1;
-              if (winnerId === matchData.team1Id) {
-                team.matchesWon = (team.matchesWon || 0) + 1;
-                team.points = (team.points || 0) + 3;
-              } else if (winnerId === matchData.team2Id) {
-                team.matchesLost = (team.matchesLost || 0) + 1;
-              } else {
-                team.matchesDrawn = (team.matchesDrawn || 0) + 1;
-                team.points = (team.points || 0) + 1;
-              }
-              team.setsWon = (team.setsWon || 0) + (score.team1 || 0);
-              team.setsLost = (team.setsLost || 0) + (score.team2 || 0);
-            } else if (team.teamId === matchData.team2Id) {
-              team.matchesPlayed = (team.matchesPlayed || 0) + 1;
-              if (winnerId === matchData.team2Id) {
-                team.matchesWon = (team.matchesWon || 0) + 1;
-                team.points = (team.points || 0) + 3;
-              } else if (winnerId === matchData.team1Id) {
-                team.matchesLost = (team.matchesLost || 0) + 1;
-              } else {
-                team.matchesDrawn = (team.matchesDrawn || 0) + 1;
-                team.points = (team.points || 0) + 1;
-              }
-              team.setsWon = (team.setsWon || 0) + (score.team2 || 0);
-              team.setsLost = (team.setsLost || 0) + (score.team1 || 0);
+        // Update team stats
+        teams.forEach((team) => {
+          if (team.teamId === matchData.team1Id) {
+            team.matchesPlayed = (team.matchesPlayed || 0) + 1;
+            if (winnerId === matchData.team1Id) {
+              team.matchesWon = (team.matchesWon || 0) + 1;
+              team.points = (team.points || 0) + 3;
+            } else if (winnerId === matchData.team2Id) {
+              team.matchesLost = (team.matchesLost || 0) + 1;
+            } else {
+              team.matchesDrawn = (team.matchesDrawn || 0) + 1;
+              team.points = (team.points || 0) + 1;
             }
-          });
+            team.setsWon = (team.setsWon || 0) + (score.team1 || 0);
+            team.setsLost = (team.setsLost || 0) + (score.team2 || 0);
+          } else if (team.teamId === matchData.team2Id) {
+            team.matchesPlayed = (team.matchesPlayed || 0) + 1;
+            if (winnerId === matchData.team2Id) {
+              team.matchesWon = (team.matchesWon || 0) + 1;
+              team.points = (team.points || 0) + 3;
+            } else if (winnerId === matchData.team1Id) {
+              team.matchesLost = (team.matchesLost || 0) + 1;
+            } else {
+              team.matchesDrawn = (team.matchesDrawn || 0) + 1;
+              team.points = (team.points || 0) + 1;
+            }
+            team.setsWon = (team.setsWon || 0) + (score.team2 || 0);
+            team.setsLost = (team.setsLost || 0) + (score.team1 || 0);
+          }
+        });
 
-          transaction.update(standingsRef, { teams, updatedAt: Timestamp.now() });
-        }
+        transaction.update(standingsRef, { teams, updatedAt: Timestamp.now() });
       }
     });
 
