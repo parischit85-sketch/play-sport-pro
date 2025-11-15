@@ -863,6 +863,13 @@ function PublicViewSettings({ tournament, clubId, onUpdate }) {
                             )}
                           </button>
                           <button
+                            onClick={() => window.open(liveScoringUrl, '_blank')}
+                            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto"
+                            title="Apri link"
+                          >
+                            <Eye className="w-5 h-5" />
+                          </button>
+                          <button
                             onClick={handleRegenerateLiveScoringToken}
                             disabled={loading}
                             className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors w-full sm:w-auto"

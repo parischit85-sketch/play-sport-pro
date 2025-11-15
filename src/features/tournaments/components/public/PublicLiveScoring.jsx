@@ -782,6 +782,7 @@ function PublicLiveScoring() {
           team2={selectedMatchTeams.team2}
           clubId={clubId}
           tournamentId={tournamentId}
+          liveScoringToken={liveScoringToken}
           onClose={() => {
             setSelectedMatch(null);
             setSelectedMatchTeams(null);

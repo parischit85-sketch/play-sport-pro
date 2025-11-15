@@ -14,6 +14,8 @@ export { scheduledNotificationCleanup, getCleanupStatus } from './scheduledNotif
 export { sendBulkCertificateNotifications } from './sendBulkNotifications.clean.js';
 export { sendClubEmail } from './sendClubEmail.js';
 export { submitProvisionalMatchResult } from './submitProvisionalMatchResult.js';
+export { updateLiveScorePublic } from './updateLiveScorePublic.js';
+export { recordFinalResultPublic } from './recordFinalResultPublic.js';
 
 // Email Notification Triggers (CHK-401)
 export { onBookingCreated, onBookingDeleted } from './sendBookingEmail.js';

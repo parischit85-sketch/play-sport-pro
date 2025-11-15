@@ -6,6 +6,7 @@ import { getFirestore, initializeFirestore, connectFirestoreEmulator } from 'fir
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
+import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 
 const isTest =
   (typeof globalThis !== 'undefined' &&
@@ -44,7 +45,7 @@ let db;
 try {
   // Use specific Firestore database if specified in env (e.g., for restored backups)
   const databaseId = env.VITE_FIRESTORE_DATABASE_ID;
-  
+
   if (databaseId && databaseId !== '(default)') {
     // Initialize with specific database ID for restored backups
     db = initializeFirestore(app, { databaseId });
@@ -52,7 +53,7 @@ try {
     // Use default database
     db = getFirestore(app);
   }
-} catch (error) {
+} catch {
   // If already initialized or in test mode, try to get existing instance
   try {
     db = getFirestore(app);
@@ -63,6 +64,7 @@ try {
 }
 const auth = getAuth(app);
 const storage = getStorage(app);
+const functions = getFunctions(app);
 
 // Initialize Realtime Database
 let rtdb;
@@ -90,6 +92,7 @@ if (isDev && useEmu) {
     connectFirestoreEmulator(db, '127.0.0.1', 8080);
     connectStorageEmulator(storage, '127.0.0.1', 9199);
     connectDatabaseEmulator(rtdb, '127.0.0.1', 9000);
+    connectFunctionsEmulator(functions, '127.0.0.1', 5001);
   } catch {
     // Firebase emulators already connected or not available
   }
@@ -117,4 +120,4 @@ try {
   /* no-op */
 }
 
-export { app, db, auth, storage, rtdb };
+export { app, db, auth, storage, rtdb, functions };

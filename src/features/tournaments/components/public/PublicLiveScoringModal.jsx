@@ -6,12 +6,18 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Save, CheckCircle, Clock, Calendar, Plus, Trash2 } from 'lucide-react';
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@services/firebase.js';
-import { recordMatchResult, updateMatchStatus } from '../../services/matchService.js';
-import { MATCH_STATUS } from '../../utils/tournamentConstants.js';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '@services/firebase.js';
 
-function PublicLiveScoringModal({ match, team1, team2, clubId, tournamentId, onClose }) {
+function PublicLiveScoringModal({
+  match,
+  team1,
+  team2,
+  clubId,
+  tournamentId,
+  liveScoringToken,
+  onClose,
+}) {
   const [status, setStatus] = useState(match?.status || 'scheduled');
   const [sets, setSets] = useState(
     match?.liveScore?.sets || match?.score?.sets || [{ team1: '', team2: '' }]
@@ -81,15 +87,17 @@ function PublicLiveScoringModal({ match, team1, team2, clubId, tournamentId, onC
         team1: team1Total,
         team2: team2Total,
         sets: validSets.length > 0 ? validSets : null,
-        lastUpdated: serverTimestamp(),
       };
 
-      const matchRef = doc(db, 'clubs', clubId, 'tournaments', tournamentId, 'matches', match.id);
-
-      await updateDoc(matchRef, {
-        status: status,
+      // Call Cloud Function instead of direct updateDoc
+      const updateLiveScore = httpsCallable(functions, 'updateLiveScorePublic');
+      await updateLiveScore({
+        clubId,
+        tournamentId,
+        matchId: match.id,
+        status,
         liveScore: liveScoreData,
-        updatedAt: serverTimestamp(),
+        liveScoringToken,
       });
 
       setSuccess(true);
@@ -98,7 +106,7 @@ function PublicLiveScoringModal({ match, team1, team2, clubId, tournamentId, onC
       }, 1500);
     } catch (err) {
       console.error('Error saving live score:', err);
-      setError('Errore durante il salvataggio del risultato live');
+      setError(err.message || 'Errore durante il salvataggio del risultato live');
     } finally {
       setSubmitting(false);
     }
@@ -138,33 +146,24 @@ function PublicLiveScoringModal({ match, team1, team2, clubId, tournamentId, onC
         return;
       }
 
-      // Prepare data in the same format as MatchResultModal -> recordMatchResult
-      const finalResultData = {
+      // Call Cloud Function to record final result
+      const recordFinalResult = httpsCallable(functions, 'recordFinalResultPublic');
+      await recordFinalResult({
+        clubId,
+        tournamentId,
         matchId: match.id,
         score: { team1: team1Total, team2: team2Total },
-        bestOf: match.bestOf || 3,
         sets: validSets,
-        completedAt: new Date(),
-      };
+        liveScoringToken,
+      });
 
-      // Use recordMatchResult like TournamentMatches does
-      const result = await recordMatchResult(clubId, tournamentId, finalResultData);
-
-      if (result.success) {
-        // Force status to COMPLETED
-        await updateMatchStatus(clubId, tournamentId, match.id, MATCH_STATUS.COMPLETED);
-
-        setSuccess(true);
-        setTimeout(() => {
-          onClose();
-        }, 1500);
-      } else {
-        setError(result.error || 'Errore durante la conferma del risultato finale');
-        setSubmitting(false);
-      }
+      setSuccess(true);
+      setTimeout(() => {
+        onClose();
+      }, 1500);
     } catch (err) {
       console.error('Error confirming final score:', err);
-      setError('Errore durante la conferma del risultato finale');
+      setError(err.message || 'Errore durante la conferma del risultato finale');
       setSubmitting(false);
     }
   };
