@@ -219,7 +219,8 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
         />
       </div>
 
-      <div>
+      {/* Descrizione rimossa su mobile per recuperare spazio; visibile solo da sm in su */}
+      <div className="hidden sm:block">
         <div className="block text-sm font-medium text-gray-300 mb-2">Descrizione</div>
         <textarea
           value={formData.description}
@@ -773,7 +774,7 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[1000] flex items-end sm:items-center justify-center"
       onClick={handleBackdropClick}
       onKeyDown={(e) => {
         if (e.key === 'Escape') onCancel();
@@ -782,130 +783,157 @@ function TournamentWizard({ clubId, onComplete, onCancel }) {
       tabIndex={-1}
     >
       <div
-        className="bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] flex flex-col my-auto"
+        className="relative bg-gradient-to-b from-gray-900 to-gray-800 w-full h-[100dvh] sm:h-auto sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden"
         role="dialog"
         aria-modal="true"
       >
-        {/* Header */}
-        <div className="p-3 sm:p-6 border-b border-gray-700">
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-lg sm:text-2xl font-bold text-white">Crea Nuovo Torneo</h2>
+        {/* Compact Mobile Header */}
+        <div className="sticky top-0 z-30 bg-gradient-to-b from-gray-900 via-gray-900 to-transparent border-b border-gray-700/50 backdrop-blur-md">
+          {/* Top Bar */}
+          <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary-600/20 text-primary-400 font-bold text-sm sm:text-base">
+                {currentStep}
+              </div>
+              <div>
+                <h2 className="text-base sm:text-xl font-bold text-white leading-tight">
+                  {STEPS[currentStep - 1].name}
+                </h2>
+                <p className="text-xs sm:text-sm text-gray-400 hidden sm:block">
+                  {STEPS[currentStep - 1].description}
+                </p>
+              </div>
+            </div>
             <button
               onClick={onCancel}
-              className="text-gray-500 hover:text-gray-300 transition-colors"
+              className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full hover:bg-gray-700/50 text-gray-400 hover:text-white transition-all"
+              aria-label="Chiudi"
             >
-              <X className="w-5 h-5 sm:w-6 sm:h-6" />
+              <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Progress Steps */}
-          <div className="flex items-center justify-between">
-            {STEPS.map((step, index) => (
-              <React.Fragment key={step.id}>
-                <div className="flex flex-col items-center">
+          {/* Progress Bar */}
+          <div className="px-4 pb-3 sm:px-6">
+            <div className="flex gap-1 sm:gap-2">
+              {STEPS.map((step) => (
+                <div
+                  key={step.id}
+                  className="flex-1 h-1 sm:h-1.5 rounded-full overflow-hidden bg-gray-700/50"
+                >
                   <div
-                    className={`w-7 h-7 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium transition-colors ${
+                    className={`h-full transition-all duration-500 ease-out ${
                       step.id < currentStep
-                        ? 'bg-green-500 text-white'
+                        ? 'bg-green-500 w-full'
                         : step.id === currentStep
-                          ? 'bg-primary-600 text-white ring-2 sm:ring-4 ring-primary-900'
-                          : 'bg-gray-700 text-gray-400'
-                    }`}
-                  >
-                    {step.id < currentStep ? <Check className="w-3 h-3 sm:w-5 sm:h-5" /> : step.id}
-                  </div>
-                  <div className="text-[10px] sm:text-xs text-center mt-1 sm:mt-2 max-w-[50px] sm:max-w-[80px] hidden sm:block">
-                    <div
-                      className={`font-medium ${
-                        step.id === currentStep ? 'text-primary-400' : 'text-gray-400'
-                      }`}
-                    >
-                      {step.name}
-                    </div>
-                  </div>
-                </div>
-                {index < STEPS.length - 1 && (
-                  <div
-                    className={`flex-1 h-0.5 mx-1 sm:mx-2 mb-0 sm:mb-6 ${
-                      step.id < currentStep ? 'bg-green-500' : 'bg-gray-700'
+                          ? 'bg-primary-500 w-full'
+                          : 'w-0'
                     }`}
                   />
-                )}
-              </React.Fragment>
-            ))}
+                </div>
+              ))}
+            </div>
+            <div className="flex justify-between mt-1.5 px-1">
+              {STEPS.map((step) => (
+                <span
+                  key={step.id}
+                  className={`text-[10px] sm:text-xs font-medium transition-colors ${
+                    step.id <= currentStep ? 'text-primary-400' : 'text-gray-600'
+                  }`}
+                >
+                  {step.id}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-6 bg-gray-900">
+        {/* Scrollable Content Area with integrated buttons */}
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-6 pb-[calc(env(safe-area-inset-bottom)+120px)]">
           {error && (
-            <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-red-900/20 border border-red-800 rounded-lg text-red-300 text-xs sm:text-sm">
-              {error}
+            <div className="mb-4 p-3 sm:p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-300 text-sm backdrop-blur-sm">
+              <div className="flex items-start gap-2">
+                <span className="text-lg">⚠️</span>
+                <span>{error}</span>
+              </div>
             </div>
           )}
 
           {creationProgress && (
-            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-blue-900/20 border border-blue-800 rounded-lg">
-              <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+            <div className="mb-6 p-4 sm:p-5 bg-blue-500/10 border border-blue-500/30 rounded-xl backdrop-blur-sm">
+              <div className="flex items-center gap-3 mb-3">
                 <div className="flex-1">
-                  <div className="text-xs sm:text-sm font-semibold text-blue-100">
-                    {creationProgress.current} / {creationProgress.total} {creationProgress.message}
+                  <div className="text-sm sm:text-base font-semibold text-blue-100 mb-1">
+                    {creationProgress.message}
                   </div>
-                  <div className="mt-1 sm:mt-2 w-full bg-blue-900 rounded-full h-1.5 sm:h-2 overflow-hidden">
-                    <div
-                      className="bg-gradient-to-r from-blue-500 to-blue-600 h-full transition-all duration-300"
-                      style={{
-                        width: `${(creationProgress.current / creationProgress.total) * 100}%`,
-                      }}
-                    />
+                  <div className="text-xs text-blue-300">
+                    Step {creationProgress.current} di {creationProgress.total}
                   </div>
                 </div>
-                <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-blue-500 border-t-transparent" />
+                <div className="animate-spin rounded-full h-8 w-8 border-3 border-blue-400 border-t-transparent" />
+              </div>
+              <div className="w-full bg-blue-900/50 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-blue-500 to-blue-400 h-full transition-all duration-300 ease-out"
+                  style={{
+                    width: `${(creationProgress.current / creationProgress.total) * 100}%`,
+                  }}
+                />
               </div>
             </div>
           )}
 
           {!creationProgress && renderStep()}
-        </div>
 
-        {/* Footer */}
-        <div className="p-3 sm:p-6 border-t border-gray-700 flex justify-between bg-gray-800 gap-2">
-          <button
-            onClick={handleBack}
-            disabled={currentStep === 1 || creationProgress}
-            className="flex items-center gap-1 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base font-medium text-gray-200 bg-gray-700 rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
-          >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="hidden sm:inline">Indietro</span>
-          </button>
-
-          <div className="flex gap-2 sm:gap-3">
-            <button
-              onClick={onCancel}
-              disabled={creationProgress}
-              className="px-3 sm:px-5 py-2 sm:py-2.5 text-sm sm:text-base font-medium text-gray-200 bg-gray-700 border-2 border-gray-600 rounded-lg hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
-            >
-              Annulla
-            </button>
-
-            {currentStep < STEPS.length ? (
+          {/* Integrated Action Buttons - now part of scrollable content */}
+          <div className="mt-8 pt-6 border-t border-gray-700/50">
+            <div className="flex items-center justify-between gap-3">
               <button
-                onClick={handleNext}
+                onClick={handleBack}
+                disabled={currentStep === 1 || creationProgress}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm bg-gray-700/50 text-gray-300 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl disabled:hover:shadow-lg"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Indietro</span>
+              </button>
+
+              <button
+                onClick={onCancel}
                 disabled={creationProgress}
-                className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-semibold bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:from-primary-700 hover:to-primary-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg transform hover:scale-105 disabled:transform-none"
+                className="px-4 py-2.5 rounded-xl font-medium text-sm bg-gray-700/50 text-gray-300 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
               >
-                Avanti
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                Annulla
               </button>
-            ) : (
-              <button
-                onClick={handleSubmit}
-                disabled={loading || creationProgress}
-                className="flex items-center gap-1 sm:gap-2 px-4 sm:px-6 py-2 sm:py-2.5 text-sm sm:text-base font-semibold bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all shadow-md hover:shadow-lg transform hover:scale-105"
-              >
-                {loading || creationProgress ? 'Creazione...' : 'Crea Torneo'}
-              </button>
-            )}
+
+              {currentStep < STEPS.length ? (
+                <button
+                  onClick={handleNext}
+                  disabled={creationProgress}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-primary-600 to-primary-500 text-white hover:from-primary-700 hover:to-primary-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-100"
+                >
+                  <span>Avanti</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              ) : (
+                <button
+                  onClick={handleSubmit}
+                  disabled={loading || creationProgress}
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm bg-gradient-to-r from-green-600 to-green-500 text-white hover:from-green-700 hover:to-green-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-100"
+                >
+                  {loading || creationProgress ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                      <span>Creazione...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      <span>Crea Torneo</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
