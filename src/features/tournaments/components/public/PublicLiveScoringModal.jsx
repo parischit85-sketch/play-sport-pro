@@ -7,7 +7,8 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Save, CheckCircle, Clock, Calendar, Plus, Trash2 } from 'lucide-react';
 import { httpsCallable } from 'firebase/functions';
-import { functions } from '@services/firebase.js';
+import { functions, db } from '@services/firebase.js';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 function PublicLiveScoringModal({
   match,
@@ -25,6 +26,7 @@ function PublicLiveScoringModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [waitingForUpdate, setWaitingForUpdate] = useState(false);
 
   const team1Name = team1?.teamName || team1?.name || team1?.displayName || 'Team 1';
   const team2Name = team2?.teamName || team2?.name || team2?.displayName || 'Team 2';
@@ -44,6 +46,36 @@ function PublicLiveScoringModal({
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [onClose]);
+
+  // Real-time listener to detect when match is updated in Firestore
+  useEffect(() => {
+    if (!waitingForUpdate || !clubId || !tournamentId || !match?.id) return;
+
+    console.log('🔄 Waiting for match update in Firestore...');
+    const matchRef = doc(db, 'clubs', clubId, 'tournaments', tournamentId, 'matches', match.id);
+
+    const unsubscribe = onSnapshot(matchRef, (snapshot) => {
+      if (!snapshot.exists()) return;
+
+      console.log('✅ Match updated detected, closing modal');
+
+      // Close modal immediately when update is detected
+      setWaitingForUpdate(false);
+      onClose();
+    });
+
+    // Fallback: close after 3 seconds even if no update detected
+    const fallbackTimer = setTimeout(() => {
+      console.log('⏱️ Fallback timeout reached, closing modal');
+      setWaitingForUpdate(false);
+      onClose();
+    }, 3000);
+
+    return () => {
+      unsubscribe();
+      clearTimeout(fallbackTimer);
+    };
+  }, [waitingForUpdate, clubId, tournamentId, match?.id, onClose]);
 
   const handleAddSet = () => {
     setSets([...sets, { team1: '', team2: '' }]);
@@ -101,9 +133,7 @@ function PublicLiveScoringModal({
       });
 
       setSuccess(true);
-      setTimeout(() => {
-        onClose();
-      }, 1500);
+      setWaitingForUpdate(true);
     } catch (err) {
       console.error('Error saving live score:', err);
       setError(err.message || 'Errore durante il salvataggio del risultato live');
@@ -158,9 +188,7 @@ function PublicLiveScoringModal({
       });
 
       setSuccess(true);
-      setTimeout(() => {
-        onClose();
-      }, 1500);
+      setWaitingForUpdate(true);
     } catch (err) {
       console.error('Error confirming final score:', err);
       setError(err.message || 'Errore durante la conferma del risultato finale');
