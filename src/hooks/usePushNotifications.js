@@ -222,9 +222,15 @@ async function sendSubscriptionToServer(subscription) {
   }
 
   try {
+    // IMPORTANT: Il backend (sendBulkNotifications.clean.js) usa SEMPRE il campo `firebaseUid`
+    // per recuperare le sottoscrizioni: .where('firebaseUid','==', firebaseUid)
+    // La vecchia implementazione salvava solo `userId`, causando mancato match e mancato invio.
+    // Aggiungiamo quindi il campo `firebaseUid` (alias di userId) mantenendo anche `userId`
+    // per retro‑compatibilità con eventuali funzioni Netlify più vecchie.
     const subscriptionData = {
-      userId: user.uid,
-      type: 'web', // Importante: identifica come web push (non native mobile)
+      userId: user.uid, // legacy field
+      firebaseUid: user.uid, // nuovo field richiesto dal backend push
+      type: 'web', // Identifica come web push (non native mobile)
       endpoint: subscription.endpoint,
       keys: {
         p256dh: arrayBufferToBase64(subscription.getKey('p256dh')),
@@ -233,9 +239,13 @@ async function sendSubscriptionToServer(subscription) {
       userAgent: navigator.userAgent,
       deviceId: generateDeviceId(),
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(), // Track last update per cleanup duplicates
       expirationTime: subscription.expirationTime,
+      // Uniformiamo lo schema ai documenti letti dal backend che considerano `active` o `isActive`
+      active: true,
       isActive: true,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 giorni
+      expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 giorni (era 7)
+      lastUsedAt: null,
     };
 
     // console.log('📤 Sending subscription to server...', {
@@ -250,34 +260,42 @@ async function sendSubscriptionToServer(subscription) {
 
     if (isDevelopment) {
       // console.log('🔧 [DEV MODE] Saving directly to Firestore...');
-      const { getFirestore, collection, doc, setDoc, query, where, getDocs } = await import(
-        'firebase/firestore'
-      );
+      const { getFirestore, doc, setDoc } = await import('firebase/firestore');
       const db = getFirestore();
 
-      // Verifica se esiste già una subscription per questo userId + deviceId
-      const q = query(
-        collection(db, 'pushSubscriptions'),
-        where('userId', '==', user.uid),
-        where('deviceId', '==', subscriptionData.deviceId)
+      // Verifica se esiste già una subscription per questo endpoint
+      // IMPORTANTE: Usiamo endpoint come chiave unica (SHA-256 hash per ID documento)
+      const endpointHash = await crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode(subscription.endpoint)
       );
+      const docId = Array.from(new Uint8Array(endpointHash))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
 
-      const existingDocs = await getDocs(q);
-
-      if (!existingDocs.empty) {
-        // Aggiorna esistente
-        const docId = existingDocs.docs[0].id;
-        await setDoc(doc(db, 'pushSubscriptions', docId), {
+      // Salva/aggiorna con docId deterministico basato su endpoint
+      const docRef = doc(db, 'pushSubscriptions', docId);
+      await setDoc(
+        docRef,
+        {
           ...subscriptionData,
+          subscription: {
+            endpoint: subscription.endpoint,
+            keys: subscription.toJSON()?.keys || {
+              p256dh: subscriptionData.keys.p256dh,
+              auth: subscriptionData.keys.auth,
+            },
+          },
           updatedAt: new Date().toISOString(),
-        });
-        return true;
-      } else {
-        // Crea nuova
-        const docRef = doc(collection(db, 'pushSubscriptions'));
-        await setDoc(docRef, subscriptionData);
-        return true;
-      }
+          schemaVersion: 2,
+        },
+        { merge: true }
+      ); // 🔧 MERGE: aggiorna campi esistenti senza sovrascrivere tutto
+      console.log(
+        '✅ [DEV] Push subscription saved/updated with ID:',
+        docId.substring(0, 16) + '...'
+      );
+      return true;
     } else {
       // Produzione: usa Netlify Function
       // console.log('🔗 Calling Netlify Function: /.netlify/functions/save-push-subscription');
@@ -286,7 +304,12 @@ async function sendSubscriptionToServer(subscription) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(subscriptionData),
+        body: JSON.stringify({
+          ...subscriptionData,
+          // Include anche la subscription completa per compatibilità Netlify function
+          subscription: subscription.toJSON(),
+          schemaVersion: 2,
+        }),
       });
 
       // console.log('📡 Response status:', response.status, response.statusText);

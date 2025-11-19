@@ -23,6 +23,24 @@ export function AutoPushSubscription() {
     };
   }, []);
 
+  // 🔄 AUTO-REFRESH: Ri-subscribe ogni 7 giorni per mantenere subscription aggiornata
+  useEffect(() => {
+    if (!user || !subscription || !isSupported) return;
+
+    const REFRESH_INTERVAL = 7 * 24 * 60 * 60 * 1000; // 7 giorni
+    const refreshTimer = setInterval(async () => {
+      console.log('🔄 [AutoPush] Refreshing subscription (7-day auto-renewal)...');
+      try {
+        await subscribeToPush();
+        console.log('✅ [AutoPush] Subscription refreshed successfully');
+      } catch (error) {
+        console.error('❌ [AutoPush] Failed to refresh subscription:', error);
+      }
+    }, REFRESH_INTERVAL);
+
+    return () => clearInterval(refreshTimer);
+  }, [user, subscription, isSupported, subscribeToPush]);
+
   useEffect(() => {
     // Non fare nulla se:
     // - Non è supportato
