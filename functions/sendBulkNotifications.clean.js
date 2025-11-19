@@ -1501,6 +1501,11 @@ export const sendBulkCertificateNotifications = onCall(
 
             // ✅ Salva notifica in-app per l'utente (non bloccante)
             try {
+              const isExpired = status.daysUntilExpiry !== null && status.daysUntilExpiry < 0;
+              const isExpiring =
+                status.daysUntilExpiry !== null &&
+                status.daysUntilExpiry >= 0 &&
+                status.daysUntilExpiry <= 30;
               await saveUserNotification({
                 userId: playerId,
                 title: pushNotification.title,
@@ -1508,7 +1513,12 @@ export const sendBulkCertificateNotifications = onCall(
                 type: 'certificate',
                 icon: pushNotification.icon,
                 actionUrl: '/profile',
-                priority: status.isExpired ? 'urgent' : status.isExpiring ? 'high' : 'normal',
+                priority:
+                  status.type === 'missing' || isExpired
+                    ? 'urgent'
+                    : isExpiring
+                      ? 'high'
+                      : 'normal',
                 metadata: {
                   clubId,
                   certificateStatus: status.type || 'active',
@@ -1517,6 +1527,7 @@ export const sendBulkCertificateNotifications = onCall(
                   sentVia: 'push',
                 },
               });
+              console.log('✅ [Push] In-app notification saved for user:', playerId);
             } catch (notifErr) {
               console.warn('⚠️ [Push] Could not save in-app notification:', notifErr.message);
             }
