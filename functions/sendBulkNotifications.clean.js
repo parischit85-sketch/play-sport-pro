@@ -1325,30 +1325,51 @@ export const sendBulkCertificateNotifications = onCall(
             });
 
             // ✅ Salva notifica in-app per l'utente (non bloccante)
+            // IMPORTANTE: usa firebaseUid (non playerId) per compatibilità con NotificationCenter
             try {
-              await saveUserNotification({
-                userId: playerId,
-                title: 'Certificato medico',
-                body: expiryDate
-                  ? `Il tuo certificato scade il ${status.expiryDate}`
-                  : 'Certificato mancante. Aggiorna i tuoi documenti.',
-                type: 'certificate',
-                icon: '/icons/icon-192x192.png',
-                actionUrl: '/profile',
-                priority:
-                  status.type === 'missing' || status.daysUntilExpiry < 0
-                    ? 'urgent'
-                    : status.daysUntilExpiry <= 30
-                      ? 'high'
-                      : 'normal',
-                metadata: {
-                  clubId,
-                  certificateStatus: status.type || 'active',
-                  expiryDate: status.expiryDate,
-                  daysUntilExpiry: status.daysUntilExpiry,
-                  sentVia: 'email',
-                },
-              });
+              const userFirebaseUid =
+                clubUser?.firebaseUid ||
+                clubUser?.linkedFirebaseUid ||
+                profile?.firebaseUid ||
+                profile?.linkedFirebaseUid ||
+                globalUser?.firebaseUid ||
+                globalUser?.linkedFirebaseUid;
+
+              if (!userFirebaseUid) {
+                console.warn(
+                  '⚠️ [Email] Cannot save in-app notification: no firebaseUid found for player',
+                  playerId
+                );
+              } else {
+                await saveUserNotification({
+                  userId: userFirebaseUid, // ✅ Usa firebaseUid invece di playerId
+                  title: 'Certificato medico',
+                  body: expiryDate
+                    ? `Il tuo certificato scade il ${status.expiryDate}`
+                    : 'Certificato mancante. Aggiorna i tuoi documenti.',
+                  type: 'certificate',
+                  icon: '/icons/icon-192x192.png',
+                  actionUrl: '/profile',
+                  priority:
+                    status.type === 'missing' || status.daysUntilExpiry < 0
+                      ? 'urgent'
+                      : status.daysUntilExpiry <= 30
+                        ? 'high'
+                        : 'normal',
+                  metadata: {
+                    clubId,
+                    playerId, // Salva playerId nei metadata per riferimento
+                    certificateStatus: status.type || 'active',
+                    expiryDate: status.expiryDate,
+                    daysUntilExpiry: status.daysUntilExpiry,
+                    sentVia: 'email',
+                  },
+                });
+                console.log(
+                  '✅ [Email] In-app notification saved for firebaseUid:',
+                  userFirebaseUid
+                );
+              }
             } catch (notifErr) {
               console.warn('⚠️ [Email] Could not save in-app notification:', notifErr.message);
             }
@@ -1474,34 +1495,54 @@ export const sendBulkCertificateNotifications = onCall(
             });
 
             // ✅ Salva notifica in-app per l'utente (non bloccante)
+            // IMPORTANTE: usa firebaseUid (non playerId) per compatibilità con NotificationCenter
             try {
-              const isExpired = status.daysUntilExpiry !== null && status.daysUntilExpiry < 0;
-              const isExpiring =
-                status.daysUntilExpiry !== null &&
-                status.daysUntilExpiry >= 0 &&
-                status.daysUntilExpiry <= 30;
-              await saveUserNotification({
-                userId: playerId,
-                title: pushNotification.title,
-                body: pushNotification.body,
-                type: 'certificate',
-                icon: pushNotification.icon,
-                actionUrl: '/profile',
-                priority:
-                  status.type === 'missing' || isExpired
-                    ? 'urgent'
-                    : isExpiring
-                      ? 'high'
-                      : 'normal',
-                metadata: {
-                  clubId,
-                  certificateStatus: status.type || 'active',
-                  expiryDate: status.expiryDate,
-                  daysUntilExpiry: status.daysUntilExpiry,
-                  sentVia: 'push',
-                },
-              });
-              console.log('✅ [Push] In-app notification saved for user:', playerId);
+              const userFirebaseUid =
+                clubUser?.firebaseUid ||
+                clubUser?.linkedFirebaseUid ||
+                profile?.firebaseUid ||
+                profile?.linkedFirebaseUid ||
+                globalUser?.firebaseUid ||
+                globalUser?.linkedFirebaseUid;
+
+              if (!userFirebaseUid) {
+                console.warn(
+                  '⚠️ [Push] Cannot save in-app notification: no firebaseUid found for player',
+                  playerId
+                );
+              } else {
+                const isExpired = status.daysUntilExpiry !== null && status.daysUntilExpiry < 0;
+                const isExpiring =
+                  status.daysUntilExpiry !== null &&
+                  status.daysUntilExpiry >= 0 &&
+                  status.daysUntilExpiry <= 30;
+                await saveUserNotification({
+                  userId: userFirebaseUid, // ✅ Usa firebaseUid invece di playerId
+                  title: pushNotification.title,
+                  body: pushNotification.body,
+                  type: 'certificate',
+                  icon: pushNotification.icon,
+                  actionUrl: '/profile',
+                  priority:
+                    status.type === 'missing' || isExpired
+                      ? 'urgent'
+                      : isExpiring
+                        ? 'high'
+                        : 'normal',
+                  metadata: {
+                    clubId,
+                    playerId, // Salva playerId nei metadata per riferimento
+                    certificateStatus: status.type || 'active',
+                    expiryDate: status.expiryDate,
+                    daysUntilExpiry: status.daysUntilExpiry,
+                    sentVia: 'push',
+                  },
+                });
+                console.log(
+                  '✅ [Push] In-app notification saved for firebaseUid:',
+                  userFirebaseUid
+                );
+              }
             } catch (notifErr) {
               console.warn('⚠️ [Push] Could not save in-app notification:', notifErr.message);
             }
@@ -1568,31 +1609,52 @@ export const sendBulkCertificateNotifications = onCall(
                 });
 
                 // ✅ Salva notifica in-app per fallback email (non bloccante)
+                // IMPORTANTE: usa firebaseUid (non playerId) per compatibilità con NotificationCenter
                 try {
-                  await saveUserNotification({
-                    userId: playerId,
-                    title: 'Certificato medico',
-                    body: expiryDate
-                      ? `Il tuo certificato scade il ${status.expiryDate}`
-                      : 'Certificato mancante. Aggiorna i tuoi documenti.',
-                    type: 'certificate',
-                    icon: '/icons/icon-192x192.png',
-                    actionUrl: '/profile',
-                    priority:
-                      status.type === 'missing' || status.daysUntilExpiry < 0
-                        ? 'urgent'
-                        : status.daysUntilExpiry <= 30
-                          ? 'high'
-                          : 'normal',
-                    metadata: {
-                      clubId,
-                      certificateStatus: status.type || 'active',
-                      expiryDate: status.expiryDate,
-                      daysUntilExpiry: status.daysUntilExpiry,
-                      sentVia: 'email-fallback',
-                      fallbackReason: 'push-no-subscription',
-                    },
-                  });
+                  const userFirebaseUid =
+                    clubUser?.firebaseUid ||
+                    clubUser?.linkedFirebaseUid ||
+                    profile?.firebaseUid ||
+                    profile?.linkedFirebaseUid ||
+                    globalUser?.firebaseUid ||
+                    globalUser?.linkedFirebaseUid;
+
+                  if (!userFirebaseUid) {
+                    console.warn(
+                      '⚠️ [Email Fallback] Cannot save in-app notification: no firebaseUid found for player',
+                      playerId
+                    );
+                  } else {
+                    await saveUserNotification({
+                      userId: userFirebaseUid, // ✅ Usa firebaseUid invece di playerId
+                      title: 'Certificato medico',
+                      body: expiryDate
+                        ? `Il tuo certificato scade il ${status.expiryDate}`
+                        : 'Certificato mancante. Aggiorna i tuoi documenti.',
+                      type: 'certificate',
+                      icon: '/icons/icon-192x192.png',
+                      actionUrl: '/profile',
+                      priority:
+                        status.type === 'missing' || status.daysUntilExpiry < 0
+                          ? 'urgent'
+                          : status.daysUntilExpiry <= 30
+                            ? 'high'
+                            : 'normal',
+                      metadata: {
+                        clubId,
+                        playerId, // Salva playerId nei metadata per riferimento
+                        certificateStatus: status.type || 'active',
+                        expiryDate: status.expiryDate,
+                        daysUntilExpiry: status.daysUntilExpiry,
+                        sentVia: 'email-fallback',
+                        fallbackReason: 'push-no-subscription',
+                      },
+                    });
+                    console.log(
+                      '✅ [Email Fallback] In-app notification saved for firebaseUid:',
+                      userFirebaseUid
+                    );
+                  }
                 } catch (notifErr) {
                   console.warn(
                     '⚠️ [Email Fallback] Could not save in-app notification:',
