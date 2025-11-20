@@ -542,39 +542,13 @@ async function sendPushNotificationToUser(userId, notification, playerData = nul
     firebaseUidQueried: firebaseUid,
   });
 
-  // 🧹 AUTO-CLEANUP: Se ci sono subscriptions duplicate, tieni solo la più recente
+  // 🔧 MULTI-DEVICE: NON eliminiamo subscription duplicate dello stesso utente!
+  // Un utente può avere più dispositivi (PC, telefono, tablet) attivi contemporaneamente.
+  // Invieremo la notifica a TUTTI i dispositivi e elimineremo solo quelli con errori (404/410).
   if (subsSnap.size > 1) {
     console.log(
-      `🧹 [Push] Found ${subsSnap.size} subscriptions for ${firebaseUid}, cleaning duplicates...`
+      `📱 [Push] Found ${subsSnap.size} active devices for user ${firebaseUid} - will send to all`
     );
-
-    // Ordina per data creazione/aggiornamento (più recente prima)
-    const sortedDocs = subsSnap.docs
-      .map((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-        ref: doc.ref,
-        timestamp: new Date(doc.data().updatedAt || doc.data().createdAt || 0).getTime(),
-      }))
-      .sort((a, b) => b.timestamp - a.timestamp);
-
-    // Mantieni solo la prima (più recente), elimina le altre
-    const toDelete = sortedDocs.slice(1);
-    const deletePromises = toDelete.map((sub) => {
-      console.log(
-        `🗑️ [Push] Deleting old subscription: ${sub.id} (created: ${sub.data.createdAt})`
-      );
-      return sub.ref.delete();
-    });
-
-    await Promise.all(deletePromises);
-    console.log(
-      `✅ [Push] Kept newest subscription: ${sortedDocs[0].id}, deleted ${toDelete.length} old ones`
-    );
-
-    // Aggiorna subsSnap per usare solo la subscription più recente
-    subsSnap.docs = [subsSnap.docs.find((d) => d.id === sortedDocs[0].id)];
-    subsSnap.size = 1;
   }
 
   if (subsSnap.size === 0) {
