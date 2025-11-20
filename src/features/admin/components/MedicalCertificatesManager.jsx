@@ -3,13 +3,13 @@
 // Gestione completa certificati medici con filtri e notifiche
 // =============================================
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { calculateCertificateStatus } from '@services/medicalCertificates.js';
 import { getLastEmailSent, formatLastEmailDate } from '@services/emailTracking.js';
 import SendEmailModal from './SendEmailModal.jsx';
 import SendCertificateEmailModal from './SendCertificateEmailModal.jsx';
-import EmailTemplateManager from './EmailTemplateManager.jsx';
+import NotificationTemplateManager from './NotificationTemplateManager.jsx';
 
 const FILTER_OPTIONS = {
   ALL: 'all',
@@ -38,6 +38,8 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, o
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showCertificateEmailModal, setShowCertificateEmailModal] = useState(false);
   const [showTemplateManager, setShowTemplateManager] = useState(false);
+  const [pushStatuses, setPushStatuses] = useState({}); // { [playerId]: {hasWeb, hasNative, ...} }
+  const [testingPush, setTestingPush] = useState(null); // playerId in test
   const DEFAULT_COUNTRY_CODE = '+39'; // Assunzione: Italia; valuta di leggere da impostazioni club in futuro
 
   // Calcola lo status del certificato per ogni giocatore
@@ -110,6 +112,68 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, o
 
     return filtered;
   }, [playersWithStatus, activeFilter, searchTerm]);
+
+  // Carica lo stato push per i giocatori filtrati (batch)
+  useEffect(() => {
+    let cancelled = false;
+    async function loadPushStatuses() {
+      try {
+        const ids = filteredPlayers.map(p => p.id);
+        if (ids.length === 0) {
+          setPushStatuses({});
+          return;
+        }
+        const { getFunctions, httpsCallable } = await import('firebase/functions');
+        const functions = getFunctions(undefined, 'us-central1');
+        const getStatus = httpsCallable(functions, 'getPushStatusForPlayers', { timeout: 30000 });
+        const res = await getStatus({ clubId, playerIds: ids });
+        if (!cancelled && res?.data?.statuses) {
+          setPushStatuses(res.data.statuses || {});
+        }
+      } catch (e) {
+        console.warn('[PushStatus] load error:', e?.message || e);
+      }
+    }
+    loadPushStatuses();
+    return () => { cancelled = true; };
+  }, [clubId, filteredPlayers]);
+
+  const renderPushBadge = (playerId) => {
+    const st = pushStatuses[playerId];
+    if (!st) return (
+      <span className="px-2 py-0.5 rounded bg-gray-800 text-gray-400 text-xs">Push: …</span>
+    );
+    if (st.error) return (
+      <span className="px-2 py-0.5 rounded bg-red-900/30 text-red-300 text-xs" title={st.error}>Push: errore</span>
+    );
+    if (st.hasNative && st.hasWeb) return (
+      <span className="px-2 py-0.5 rounded bg-green-900/30 text-green-300 text-xs">Push: native+web</span>
+    );
+    if (st.hasNative) return (
+      <span className="px-2 py-0.5 rounded bg-green-900/30 text-green-300 text-xs">Push: native</span>
+    );
+    if (st.hasWeb) return (
+      <span className="px-2 py-0.5 rounded bg-yellow-900/30 text-yellow-300 text-xs">Push: web</span>
+    );
+    return (
+      <span className="px-2 py-0.5 rounded bg-gray-800 text-gray-400 text-xs">Push: nessuna</span>
+    );
+  };
+
+  const handleSendTestPush = async (playerId, playerName) => {
+    try {
+      setTestingPush(playerId);
+      const { getFunctions, httpsCallable } = await import('firebase/functions');
+      const functions = getFunctions(undefined, 'us-central1');
+      const sendTest = httpsCallable(functions, 'sendTestPush', { timeout: 20000 });
+      const res = await sendTest({ clubId, playerId });
+      alert(`✅ Test push inviata a ${playerName}\nMetodo: ${res?.data?.method || 'n/d'}`);
+    } catch (e) {
+      alert(`❌ Test push fallita: ${e?.message || e}`);
+    } finally {
+      setTestingPush(null);
+    }
+  };
 
   // Statistiche per i badge dei filtri
   const stats = useMemo(() => {
@@ -642,6 +706,8 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, o
                         <div className="flex flex-wrap gap-2 text-sm">
                           {player.email && <span className={T.subtext}>📧 {player.email}</span>}
                           {player.phone && <span className={T.subtext}>📱 {player.phone}</span>}
+                          {/* Stato push */}
+                          {renderPushBadge(player.id)}
                         </div>
                       </div>
 
@@ -755,12 +821,22 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, o
                       })()}
 
                       {/* Azioni */}
+                      <div className="flex items-center gap-2">
                       <button
                         onClick={() => openPlayerDetail(player.id)}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shrink-0"
                       >
                         Apri Scheda
                       </button>
+                      <button
+                        onClick={() => handleSendTestPush(player.id, player.name)}
+                        disabled={testingPush === player.id}
+                        className="px-3 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors text-xs font-medium shrink-0"
+                        title="Invia una push di test al giocatore"
+                      >
+                        {testingPush === player.id ? '⏳ Test...' : '🧪 Test Push'}
+                      </button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -835,9 +911,9 @@ export default function MedicalCertificatesManager({ clubId, players, onClose, o
         />
       )}
 
-      {/* Modal per gestione template email */}
+      {/* Modal per gestione template notifiche multicanale */}
       {showTemplateManager && (
-        <EmailTemplateManager
+        <NotificationTemplateManager
           clubId={clubId}
           onClose={() => setShowTemplateManager(false)}
         />

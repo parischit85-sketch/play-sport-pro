@@ -13,6 +13,12 @@ import webpush from 'web-push';
 import sgMail from '@sendgrid/mail';
 import nodemailer from 'nodemailer';
 import { saveUserNotification } from './userNotifications.js';
+import {
+  loadNotificationTemplates,
+  getTemplateType,
+  generateEmailMessage,
+  generatePushNotification,
+} from './services/notificationTemplates.js';
 
 // Inizializza Admin SDK una sola volta
 if (getApps().length === 0) {
@@ -385,7 +391,7 @@ async function trackNotificationEvent(eventData) {
 // =============================================
 // HELPER: invio email
 // =============================================
-async function sendEmailNotification(player, club, status) {
+async function sendEmailNotification(player, club, status, templates) {
   const { email, name } = player;
   if (!email || !email.includes('@')) {
     throw new Error('Email non valida');
@@ -400,35 +406,24 @@ async function sendEmailNotification(player, club, status) {
   const isMissing = status?.type === 'missing' || expiryDate == null;
   const isExpired = !isMissing && typeof daysUntilExpiry === 'number' && daysUntilExpiry < 0;
 
-  let subject;
-  let html;
-  if (isMissing) {
-    subject = `⚠️ Certificato medico mancante - ${club.name}`;
-    html = `
-      <html>
-        <body style="font-family: Arial, sans-serif;">
-          <h2>${club.name}</h2>
-          <p>Ciao ${name},</p>
-          <p>Non risulta alcun certificato medico caricato a sistema.</p>
-          <p>Per poter partecipare alle attività è necessario caricare un certificato medico valido.</p>
-          <p>Accedi all'area personale dell'app/portale per caricarlo oppure consegnalo in segreteria.</p>
-        </body>
-      </html>
-    `;
-  } else {
-    const urgencyEmoji = isExpired ? '🚨' : daysUntilExpiry <= 7 ? '⚠️' : '⏰';
-    subject = `${urgencyEmoji} Certificato medico - ${club.name}`;
-    html = `
-      <html>
-        <body style="font-family: Arial, sans-serif;">
-          <h2>${club.name}</h2>
-          <p>Ciao ${name},</p>
-          <p>Il tuo certificato ${isExpired ? 'è scaduto' : `scade tra ${daysUntilExpiry} giorni`}.</p>
-          <p><strong>Scadenza:</strong> ${expiryDate}</p>
-        </body>
-      </html>
-    `;
+  // Determina tipo template in base a status
+  let templateType = 'missing';
+  if (!isMissing) {
+    templateType = isExpired ? 'expired' : 'expiring';
   }
+
+  // Prepara dati per sostituzione variabili
+  const playerData = {
+    playerName: name,
+    expiryDate: expiryDate || 'N/A',
+    daysUntilExpiry: daysUntilExpiry || 0,
+    clubName: club.name || 'Il Club',
+  };
+
+  // Genera email da template
+  const emailContent = generateEmailMessage(templates, templateType, playerData);
+  const subject = emailContent.subject;
+  const html = emailContent.body.replace(/\n/g, '<br>');
 
   // Always send From the authenticated account (config.fromEmail) to avoid DMARC/SPF issues,
   // and set Reply-To to the club address if available.
@@ -1056,6 +1051,11 @@ export const sendBulkCertificateNotifications = onCall(
       };
     }
 
+    // ✨ NUOVO: Carica template personalizzati multicanale
+    console.log('📝 [Templates] Loading notification templates for club', clubId);
+    const templates = await loadNotificationTemplates(clubId);
+    console.log('✅ [Templates] Templates loaded successfully');
+
     // Elaborazione
     const computedReplyTo =
       club?.email ||
@@ -1304,7 +1304,7 @@ export const sendBulkCertificateNotifications = onCall(
               status = { expiryDate: expiry.toLocaleDateString('it-IT'), daysUntilExpiry };
             }
 
-            await sendEmailNotification(player, club, status);
+            await sendEmailNotification(player, club, status, templates);
 
             // Track analytics event
             await trackNotificationEvent({
@@ -1441,15 +1441,33 @@ export const sendBulkCertificateNotifications = onCall(
             } else {
               const expiry = expiryDate?.toDate ? expiryDate.toDate() : new Date(expiryDate);
               const daysUntilExpiry = Math.ceil((expiry.getTime() - Date.now()) / 86400000);
-              status = { expiryDate: expiry.toLocaleDateString('it-IT'), daysUntilExpiry };
+              status = {
+                type: daysUntilExpiry < 0 ? 'expired' : 'expiring',
+                expiryDate: expiry.toLocaleDateString('it-IT'),
+                daysUntilExpiry,
+              };
             }
+
+            // ✨ NUOVO: Genera push notification da template
+            const templateType = getTemplateType(status.type);
+            const playerData = {
+              playerName: player.name,
+              expiryDate: status.expiryDate || 'N/A',
+              daysUntilExpiry: status.daysUntilExpiry || 0,
+              clubName: club.name || 'Il Club',
+            };
+            const pushContent = generatePushNotification(templates, templateType, playerData);
+
+            console.log('🔔 [Push Template] Generated:', {
+              templateType,
+              title: pushContent.title,
+              body: pushContent.body,
+            });
 
             // Costruisce una notifica generica certificato per push
             const pushNotification = {
-              title: 'Certificato medico',
-              body: expiryDate
-                ? `Il tuo certificato scade il ${status.expiryDate}`
-                : 'Certificato mancante. Aggiorna i tuoi documenti.',
+              title: pushContent.title,
+              body: pushContent.body,
               icon: '/icons/icon-192x192.png',
               badge: '/icons/icon-192x192.png',
               tag: `certificate-${playerId}`,
@@ -1586,7 +1604,7 @@ export const sendBulkCertificateNotifications = onCall(
                   const daysUntilExpiry = Math.ceil((expiry.getTime() - Date.now()) / 86400000);
                   status = { expiryDate: expiry.toLocaleDateString('it-IT'), daysUntilExpiry };
                 }
-                await sendEmailNotification(player, club, status);
+                await sendEmailNotification(player, club, status, templates);
 
                 // Track successful fallback event
                 await trackNotificationEvent({
@@ -1625,12 +1643,22 @@ export const sendBulkCertificateNotifications = onCall(
                       playerId
                     );
                   } else {
+                    // ✨ NUOVO: Genera contenuto da template per in-app notification
+                    const templateType = getTemplateType(
+                      status.type || (expiryDate ? 'expiring' : 'missing')
+                    );
+                    const playerData = {
+                      playerName: player.name,
+                      expiryDate: status.expiryDate || 'N/A',
+                      daysUntilExpiry: status.daysUntilExpiry || 0,
+                      clubName: club.name || 'Il Club',
+                    };
+                    const emailContent = generateEmailMessage(templates, templateType, playerData);
+
                     await saveUserNotification({
                       userId: userFirebaseUid, // ✅ Usa firebaseUid invece di playerId
-                      title: 'Certificato medico',
-                      body: expiryDate
-                        ? `Il tuo certificato scade il ${status.expiryDate}`
-                        : 'Certificato mancante. Aggiorna i tuoi documenti.',
+                      title: emailContent.subject,
+                      body: emailContent.body.substring(0, 200), // Tronca per in-app
                       type: 'certificate',
                       icon: '/icons/icon-192x192.png',
                       actionUrl: '/profile',
