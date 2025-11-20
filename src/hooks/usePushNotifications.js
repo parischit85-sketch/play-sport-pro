@@ -81,9 +81,15 @@ export function usePushNotifications() {
         // console.log('✅ [subscribeToPush] Push subscription created');
       }
 
-      setSubscription(sub);
+      // 🔧 FIX: Aggiorna stato solo se subscription è cambiata (evita loop)
+      setSubscription((prev) => {
+        if (!prev || prev.endpoint !== sub.endpoint) {
+          return sub;
+        }
+        return prev; // Mantieni riferimento precedente per evitare re-render
+      });
 
-      // Invia subscription al server
+      // Invia subscription al server (con debounce: salva solo se necessario)
       await sendSubscriptionToServer(sub);
 
       return sub;
@@ -221,6 +227,16 @@ async function sendSubscriptionToServer(subscription) {
     return false;
   }
 
+  // 🔧 FIX: Debounce - non salvare se già fatto di recente (< 5 secondi fa)
+  const cacheKey = `psp:push-sub-saved:${user.uid}:${subscription.endpoint.slice(-20)}`;
+  const lastSaved = localStorage.getItem(cacheKey);
+  const now = Date.now();
+
+  if (lastSaved && now - parseInt(lastSaved, 10) < 5000) {
+    // console.log('⏭️ [sendSubscriptionToServer] Skipping - already saved recently');
+    return true; // Skip - già salvato di recente
+  }
+
   try {
     // IMPORTANT: Il backend (sendBulkNotifications.clean.js) usa SEMPRE il campo `firebaseUid`
     // per recuperare le sottoscrizioni: .where('firebaseUid','==', firebaseUid)
@@ -295,6 +311,10 @@ async function sendSubscriptionToServer(subscription) {
         '✅ [DEV] Push subscription saved/updated with ID:',
         docId.substring(0, 16) + '...'
       );
+
+      // Salva timestamp per debounce
+      localStorage.setItem(cacheKey, now.toString());
+
       return true;
     } else {
       // Produzione: usa Netlify Function
@@ -323,6 +343,9 @@ async function sendSubscriptionToServer(subscription) {
       await response.json();
       // console.log('✅ Subscription saved successfully:', result);
       // console.log('🔍 Check Firestore → pushSubscriptions collection for userId:', user.uid);
+
+      // Salva timestamp per debounce
+      localStorage.setItem(cacheKey, now.toString());
     }
 
     return true;
