@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Play Sport Pro</string>
+    <string name="title_activity_main">Play Sport Pro</string>
+    <string name="package_name">com.playsportpro.app</string>
+    <string name="custom_url_scheme">com.playsportpro.app</string>
+</resources>

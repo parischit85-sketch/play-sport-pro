@@ -121,7 +121,7 @@ export default function PlayersPage() {
     <PlayersCRM
       key={playersWithRatings.length}
       T={T}
-      state={{ players: playersWithRatings }}
+      state={{ players: playersWithRatings, clubId }}
       setState={() => {
         /* Legacy prop - now using direct Firebase functions */
       }}

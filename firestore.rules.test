@@ -1,0 +1,19 @@
+// =====================================================
+// FIRESTORE SECURITY RULES - TEST MODE
+// ⚠️ TEMPORARY - ONLY FOR MIGRATION/ANALYSIS
+// =====================================================
+// ATTENZIONE: Queste regole permettono accesso completo
+// Solo per uso temporaneo durante migrazione push notifications
+// Ricorda di ripristinare le regole originali con:
+// firebase deploy --only firestore:rules
+// =====================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ⚠️ TEST MODE: Accesso completo (solo per migrazione)
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

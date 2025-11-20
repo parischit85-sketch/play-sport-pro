@@ -89,6 +89,9 @@ initWebVitals();
 if (import.meta.env.DEV) {
   import('./utils/health-check.js');
   import('./utils/debugClubAdmin.js'); // Debug utilities
+  import('./utils/bootstrapAdmin.js').then(({ installBootstrapAdminHelper }) => {
+    installBootstrapAdminHelper();
+  }).catch(() => {/* no-op */});
   // DISABLED FOR PUSH NOTIFICATIONS TESTING - SW must stay active
   // import('./utils/unregister-sw-dev.js');
 }

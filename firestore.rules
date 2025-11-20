@@ -110,8 +110,8 @@ service cloud.firestore {
       allow create: if isAdmin() && 
                        isWithinSizeLimit(50000);
       
-      // Update: Club owner or admin
-      allow update: if (isClubOwner(clubId) || isAdmin()) &&
+      // Update: Club admin of THIS club, club owner, or super admin
+      allow update: if (isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin()) &&
                        isWithinSizeLimit(50000);
       
       // Delete: Only admins
@@ -234,7 +234,7 @@ service cloud.firestore {
     }
     
     // ==========================================
-    // NOTIFICATIONS COLLECTION
+    // NOTIFICATIONS COLLECTION (Legacy)
     // ==========================================
     match /notifications/{notificationId} {
       // Read: User can read own notifications
@@ -249,6 +249,26 @@ service cloud.firestore {
       
       // Delete: User can delete own notifications, admin can delete any (FIXED: was missing admin permission)
       allow delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+
+    // ==========================================
+    // USER NOTIFICATIONS COLLECTION (NEW - In-App Notifications)
+    // ==========================================
+    match /userNotifications/{notificationId} {
+      // Read: User can read own notifications
+      allow read: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Create: Cloud Functions only
+      allow create: if false;
+      
+      // Update: User can mark as read or archive own notifications
+      allow update: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+      
+      // Delete: User can delete own notifications
+      allow delete: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
     }
     
     // ==========================================

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../../services/firebase.js';
+import { logAdminAction } from '../../services/auditService.js';
 import {
   collection,
   getDocs,
@@ -102,6 +103,14 @@ const ClubsManagement = () => {
     try {
       await deleteDoc(doc(db, 'clubs', clubId));
       setClubs(clubs.filter((club) => club.id !== clubId));
+      // Audit log (fire-and-forget)
+      logAdminAction({
+        action: 'delete',
+        targetType: 'club',
+        targetId: clubId,
+        reason: 'Manual delete from Super Admin panel',
+        metadata: { clubName },
+      });
       alert('Circolo eliminato con successo');
     } catch (error) {
       console.error("Errore nell'eliminare il circolo:", error);
@@ -144,6 +153,14 @@ const ClubsManagement = () => {
       setClubs([...clubs, newClub]);
       setShowCreateModal(false);
       resetForm();
+      // Audit log (fire-and-forget)
+      logAdminAction({
+        action: 'create',
+        targetType: 'club',
+        targetId: docRef.id,
+        reason: 'Club created from Super Admin panel',
+        metadata: { clubName: formData.name?.trim() || '' },
+      });
       alert('Circolo creato con successo!');
     } catch (error) {
       console.error('Errore nella creazione del circolo:', error);
@@ -231,6 +248,17 @@ const ClubsManagement = () => {
         isActive: newStatus,
         status: newStatus ? 'approved' : 'pending',
         updatedAt: serverTimestamp(),
+      });
+
+      // Fire-and-forget audit log via callable (do not block UI on failure)
+      // Note: Cloud Function enforces admin role via server-side check
+      logAdminAction({
+        action: newStatus ? 'activate' : 'deactivate',
+        targetType: 'club',
+        targetId: clubId,
+        clubId,
+        reason: `Manual ${newStatus ? 'activation' : 'deactivation'} from Super Admin panel`,
+        metadata: { clubName },
       });
 
       // Ricarica i circoli per aggiornare la lista

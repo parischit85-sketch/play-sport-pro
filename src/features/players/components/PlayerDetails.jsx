@@ -91,6 +91,23 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
     return player;
   }, [player, players, matches, clubId, leaderboard]);
 
+  // 🔍 DEBUG: Log player data quando si apre la scheda
+  useEffect(() => {
+    console.log('🎯 [PlayerDetails] Scheda giocatore aperta', {
+      playerId: player?.id,
+      userId: player?.userId,
+      linkedFirebaseUid: player?.linkedFirebaseUid,
+      firebaseUid: player?.firebaseUid,
+      isLinked: player?.isLinked,
+      name: player?.name || player?.userName,
+      email: player?.email || player?.userEmail,
+      hasFirebaseUidField: 'firebaseUid' in (player || {}),
+      hasLinkedFirebaseUidField: 'linkedFirebaseUid' in (player || {}),
+      allPlayerFields: Object.keys(player || {}),
+      timestamp: new Date().toISOString()
+    });
+  }, [player?.id]); // Solo quando cambia il player
+
   // 🔧 URL tab parameter handling
   useEffect(() => {
     const tabParam = searchParams.get('tab');

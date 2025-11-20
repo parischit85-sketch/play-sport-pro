@@ -48,6 +48,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
     description: clubData?.description || '',
     address: clubData?.address || '',
     phone: clubData?.phone || '',
+    whatsappNumber: clubData?.whatsappNumber || '',
     email: clubData?.email || '',
     website: clubData?.website || '',
     googleMapsUrl: clubData?.location?.googleMapsUrl || clubData?.googleMapsUrl || '',
@@ -87,6 +88,7 @@ export default function ClubAdminProfile({ T, club, clubId }) {
               ? `${club.address.street || ''}, ${club.address.city || ''}, ${club.address.province || ''} ${club.address.postalCode || ''}`.trim()
               : club.address || '',
           phone: club.contact?.phone || club.phone || '',
+          whatsappNumber: club.whatsappNumber || '',
           email: club.contact?.email || club.email || '',
           website: club.contact?.website || club.website || '',
           googleMapsUrl: club.googleMapsLink || '',
@@ -301,13 +303,11 @@ export default function ClubAdminProfile({ T, club, clubId }) {
     setClubSettings((prev) => ({ ...prev, loading: true }));
 
     try {
-      // Import updateClub service dynamically
-      const { updateClub } = await import('@services/clubs.js');
-
       // Prepara i dati da salvare
       const updateData = {
         name: clubSettings.name,
         phone: clubSettings.phone,
+        whatsappNumber: clubSettings.whatsappNumber,
         email: clubSettings.email,
         website: clubSettings.website,
         address: clubSettings.address,
@@ -316,9 +316,12 @@ export default function ClubAdminProfile({ T, club, clubId }) {
           ...(clubData?.location || {}),
           googleMapsUrl: clubSettings.googleMapsUrl,
         },
+        updatedAt: new Date(),
       };
 
-      await updateClub(clubId, updateData);
+      // Usa updateDoc direttamente invece del servizio
+      const clubRef = doc(db, 'clubs', clubId);
+      await updateDoc(clubRef, updateData);
 
       showSuccess('✅ Impostazioni salvate con successo!');
 
@@ -553,6 +556,19 @@ export default function ClubAdminProfile({ T, club, clubId }) {
                   onChange={(e) => setClubSettings((prev) => ({ ...prev, phone: e.target.value }))}
                   placeholder="+39 123 456 7890"
                 />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-300">📱 Numero WhatsApp</label>
+                <input
+                  type="tel"
+                  className="w-full px-4 py-3 bg-gray-700/60 backdrop-blur-xl border border-gray-600/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                  value={clubSettings.whatsappNumber}
+                  onChange={(e) => setClubSettings((prev) => ({ ...prev, whatsappNumber: e.target.value }))}
+                  placeholder="+39 345 1234567"
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  Numero per essere contattati via WhatsApp (es. +39 345 1234567)
+                </p>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-gray-300">Email</label>

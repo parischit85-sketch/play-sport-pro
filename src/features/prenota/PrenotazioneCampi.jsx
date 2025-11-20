@@ -1411,29 +1411,12 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     const maxPlayers = selectedCourt?.maxPlayers || 4; // Default 4 se non specificato
     return previewPrice / Math.max(1, maxPlayers);
   }, [previewPrice, form.bookingType, form.participants, form.courtId, courts]);
-
+  // REALTIME IMPROVEMENT: track last update instead of reloading the entire page
+  const [lastUpdated, setLastUpdated] = useState(new Date());
   useEffect(() => {
-    // Refresh dashboard every 2 minutes
-    const interval = setInterval(
-      () => {
-        window.location.reload();
-      },
-      2 * 60 * 1000
-    ); // 2 minutes in milliseconds
-
-    // Refresh dashboard when the tab becomes visible
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        window.location.reload();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, []);
+    // Whenever unified bookings change we record an update timestamp
+    setLastUpdated(new Date());
+  }, [allBookings]);
 
   return (
     <Section T={T}>
@@ -1509,7 +1492,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
               className={`flex-1 ${T.cardBg} ${T.border} ${isMobileView ? 'p-2' : 'p-3'} rounded-lg lg:rounded-xl shadow-lg`}
             >
               {/* Navigazione date centrata con frecce grandi */}
-              <div className="flex items-center justify-center gap-4 lg:gap-6">
+              <div className="flex items-center justify-center gap-4 lg:gap-6 flex-wrap">
                 <button
                   type="button"
                   className={`${isMobileView ? 'w-10 h-10 text-xl' : 'w-12 h-12 text-2xl'} rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-lg hover:scale-110 transition-all duration-200 flex items-center justify-center`}
@@ -1539,6 +1522,22 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
                 >
                   →
                 </button>
+                {/* Manual refresh replaces legacy full-page reload */}
+                <button
+                  type="button"
+                  disabled={bookingsLoading}
+                  onClick={() => refreshBookings(true)}
+                  className={`${isMobileView ? 'px-3 py-2 text-sm' : 'px-4 py-3 text-sm'} rounded-full font-semibold bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white shadow-lg transition-all duration-200 flex items-center gap-2`}
+                  title="Aggiorna le prenotazioni (realtime attivo automatico)"
+                >
+                  {bookingsLoading ? '⏳' : '🔄 Aggiorna'}
+                </button>
+                <div className="text-[11px] opacity-70 flex items-center gap-1 mt-2 lg:mt-0">
+                  <span className="hidden sm:inline">Ultimo aggiornamento:</span>
+                  <span className="font-medium">
+                    {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

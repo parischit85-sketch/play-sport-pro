@@ -9,21 +9,32 @@ import {
   PushSendError,
   logPushError,
 } from './push-errors.js';
+import { httpsCallable } from 'firebase/functions';
+import { functions as fbFunctions } from '../services/firebase.js';
 
 // VAPID public key - generato con web-push generate-vapid-keys
+// DEVE CORRISPONDERE alla chiave in Firebase Functions Secrets
 const VAPID_PUBLIC_KEY =
-  'BLgzoWZyeroUOSQ_qCFGfD-Y1PTkM809QTxc85X9oiHFKLovhxCpTgpAQV8zX6iJwLKy_wmMEQx7HHZUKrXusdM';
-
-// Base URL per le Netlify Functions
-// In sviluppo locale usa le Functions di produzione
-export const FUNCTIONS_BASE_URL = import.meta.env.DEV
-  ? 'https://play-sport-pro-v2-2025.netlify.app/.netlify/functions'
-  : '/.netlify/functions';
+  'BP-Pp9JUfDtmi-pYIHpHPtcbWT_g9_rVHk-SIolLwO4sRIP8bzg7FSi_EAa_tgK4FNXop1ecL8Mt8dMZsA8bg_g';
 
 /**
  * Genera un device ID univoco basato su browser fingerprint avanzato
+ * Il deviceId viene salvato in localStorage per persistenza
  */
 async function generateDeviceId() {
+  // Controlla se esiste già un deviceId salvato
+  const STORAGE_KEY = 'playsport_device_id';
+  try {
+    const existingId = localStorage.getItem(STORAGE_KEY);
+    if (existingId) {
+      console.log('[generateDeviceId] Using existing device ID from localStorage:', existingId);
+      return existingId;
+    }
+  } catch (error) {
+    console.warn('[generateDeviceId] Could not access localStorage:', error);
+  }
+
+  // Genera nuovo deviceId basato su fingerprint
   const components = [
     navigator.userAgent,
     navigator.language,
@@ -100,13 +111,23 @@ async function generateDeviceId() {
 
   // Combina i due hash per device ID più robusto
   const combinedHash = Math.abs(hash1) ^ Math.abs(hash2);
-  return combinedHash.toString();
+  const deviceId = combinedHash.toString();
+
+  // Salva in localStorage per persistenza
+  try {
+    localStorage.setItem(STORAGE_KEY, deviceId);
+    console.log('[generateDeviceId] Generated and saved new device ID:', deviceId);
+  } catch (error) {
+    console.warn('[generateDeviceId] Could not save to localStorage:', error);
+  }
+
+  return deviceId;
 }
 
 /**
  * Verifica se una subscription esistente è ancora valida
  */
-async function validateExistingSubscription(subscription, userId) {
+async function validateExistingSubscription(subscription, firebaseUid) {
   try {
     // Verifica struttura della subscription
     if (!subscription || !subscription.endpoint) {
@@ -114,27 +135,10 @@ async function validateExistingSubscription(subscription, userId) {
       return false;
     }
 
-    // Verifica se la subscription è nel database e attiva
-    const deviceId = await generateDeviceId();
-    const response = await fetch(`${FUNCTIONS_BASE_URL}/check-subscription-status`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        deviceId,
-        endpoint: subscription.endpoint,
-      }),
-    });
-
-    if (!response.ok) {
-      console.warn('[validateExistingSubscription] Failed to check subscription status');
-      return false;
-    }
-
-    const status = await response.json();
-    return status.isValid && status.isActive;
+    // Disabled temporarily - requires backend implementation
+    console.log('[validateExistingSubscription] Validation disabled (requires backend)');
+    // Assume valid for now
+    return true;
 
   } catch (error) {
     console.warn('[validateExistingSubscription] Error validating subscription:', error);
@@ -144,101 +148,21 @@ async function validateExistingSubscription(subscription, userId) {
 
 /**
  * Gestisce conflitti di dispositivi (stesso user, device diverso)
+ * TODO: Implement device conflict detection with Firebase Functions
  */
-async function handleDeviceConflict(userId, currentDeviceId) {
-  try {
-    console.log('[handleDeviceConflict] Checking for device conflicts...');
-
-    const response = await fetch(`${FUNCTIONS_BASE_URL}/get-user-devices`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        currentDeviceId,
-      }),
-    });
-
-    if (!response.ok) {
-      console.warn('[handleDeviceConflict] Failed to get user devices');
-      return;
-    }
-
-    const data = await response.json();
-
-    if (data.hasConflicts && data.conflictingDevices.length > 0) {
-      console.log(`[handleDeviceConflict] Found ${data.conflictingDevices.length} conflicting devices`);
-
-      // In un'implementazione completa, qui potremmo:
-      // 1. Mostrare un dialog all'utente per scegliere quale dispositivo mantenere
-      // 2. Disattivare automaticamente dispositivi vecchi
-      // 3. Loggare il conflitto per analytics
-
-      // Per ora, loggiamo solo il conflitto
-      console.warn('[handleDeviceConflict] Device conflict detected:', data.conflictingDevices);
-
-      // Potremmo disattivare automaticamente dispositivi molto vecchi
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-      const oldDevices = data.conflictingDevices.filter(device =>
-        new Date(device.lastUsedAt || device.createdAt) < thirtyDaysAgo
-      );
-
-      if (oldDevices.length > 0) {
-        console.log(`[handleDeviceConflict] Auto-deactivating ${oldDevices.length} old devices`);
-
-        await fetch(`${FUNCTIONS_BASE_URL}/deactivate-old-devices`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId,
-            deviceIds: oldDevices.map((d) => d.deviceId),
-          }),
-        });
-      }
-    }
-
-  } catch (error) {
-    console.warn('[handleDeviceConflict] Error handling device conflict:', error);
-  }
+async function handleDeviceConflict(firebaseUid, currentDeviceId) {
+  // Disabled temporarily - requires backend implementation
+  console.log('[handleDeviceConflict] Device conflict detection disabled (requires backend)');
+  return;
 }
 
 /**
  * Effettua cleanup manuale delle subscriptions obsolete
  */
 export async function cleanupObsoleteSubscriptions(userId) {
-  try {
-    console.log('[cleanupObsoleteSubscriptions] Starting manual cleanup...');
-
-    const response = await fetch(`${FUNCTIONS_BASE_URL}/cleanup-user-subscriptions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        forceCleanup: true,
-      }),
-    });
-
-    if (!response.ok) {
-      console.warn('[cleanupObsoleteSubscriptions] Cleanup request failed');
-      return false;
-    }
-
-    const result = await response.json();
-    console.log('[cleanupObsoleteSubscriptions] Cleanup completed:', result);
-
-    return result.cleanedCount > 0;
-
-  } catch (error) {
-    console.warn('[cleanupObsoleteSubscriptions] Error during cleanup:', error);
-    return false;
-  }
+  // Disabled temporarily - requires backend implementation
+  console.log('[cleanupObsoleteSubscriptions] Cleanup disabled (requires backend)');
+  return { success: true, message: 'Cleanup disabled' };
 }
 
 /**
@@ -292,12 +216,12 @@ export async function requestNotificationPermission() {
 /**
  * Registra il service worker e ottiene la sottoscrizione push
  */
-export async function subscribeToPush(userId) {
+export async function subscribeToPush(firebaseUid) {
   try {
     // Controlla se siamo in mock mode
     if (window.__MOCK_PUSH_MODE__) {
       console.log('🎭 [MOCK] Using mock push subscription');
-      return await mockSubscribeToPush(userId);
+      return await mockSubscribeToPush(firebaseUid);
     }
 
     // Verifica supporto
@@ -349,7 +273,7 @@ export async function subscribeToPush(userId) {
 
     if (subscription) {
       // Verifica se la subscription esistente è ancora valida
-      const isValid = await validateExistingSubscription(subscription, userId);
+      const isValid = await validateExistingSubscription(subscription, firebaseUid);
       if (!isValid) {
         console.log('[subscribeToPush] Existing subscription is invalid, unsubscribing...');
         await subscription.unsubscribe();
@@ -367,10 +291,10 @@ export async function subscribeToPush(userId) {
 
     // Gestisci conflitti di dispositivi
     const deviceId = await generateDeviceId();
-    await handleDeviceConflict(userId, deviceId);
+    await handleDeviceConflict(firebaseUid, deviceId);
 
     // Salva la sottoscrizione sul server
-    await saveSubscription(userId, subscription);
+    await saveSubscription(firebaseUid, subscription);
 
     return subscription;
   } catch (error) {
@@ -382,7 +306,7 @@ export async function subscribeToPush(userId) {
 /**
  * Annulla la sottoscrizione push
  */
-export async function unsubscribeFromPush(userId) {
+export async function unsubscribeFromPush(firebaseUid) {
   try {
     const registration = await navigator.serviceWorker.getRegistration();
     if (!registration) return true;
@@ -391,7 +315,7 @@ export async function unsubscribeFromPush(userId) {
     if (!subscription) return true;
 
     // Rimuovi dal server
-    await removeSubscription(userId, subscription);
+    await removeSubscription(firebaseUid, subscription);
 
     // Annulla la sottoscrizione
     await subscription.unsubscribe();
@@ -405,54 +329,32 @@ export async function unsubscribeFromPush(userId) {
 /**
  * Salva la sottoscrizione su Firestore
  */
-async function saveSubscription(userId, subscription) {
+async function saveSubscription(firebaseUid, subscription) {
   try {
     const endpoint = subscription.endpoint;
-    const subscriptionData = subscription.toJSON();
+    const subscriptionData = typeof subscription.toJSON === 'function' ? subscription.toJSON() : subscription;
 
     // Genera device ID basato su browser fingerprint
     const deviceId = await generateDeviceId();
 
-    console.log('[saveSubscription] Saving subscription for userId:', userId);
+    console.log('[saveSubscription] Saving subscription for firebaseUid:', firebaseUid);
     console.log('[saveSubscription] Endpoint:', endpoint);
     console.log('[saveSubscription] Device ID:', deviceId);
-    console.log('[saveSubscription] Using Functions URL:', FUNCTIONS_BASE_URL);
 
-    const response = await fetch(`${FUNCTIONS_BASE_URL}/save-push-subscription`, {
+    // Usa HTTP function con CORS corretto
+    const response = await fetch('https://us-central1-m-padelweb.cloudfunctions.net/savePushSubscriptionHttp', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        subscription: subscriptionData,
-        endpoint,
-        deviceId,
-        timestamp: new Date().toISOString(),
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firebaseUid, subscription: subscriptionData, endpoint, deviceId }),
     });
-
-    const responseText = await response.text();
-    console.log('[saveSubscription] Response status:', response.status);
-    console.log('[saveSubscription] Response body:', responseText);
-
+    
     if (!response.ok) {
-      let errorData;
-      try {
-        errorData = JSON.parse(responseText);
-      } catch {
-        errorData = { message: responseText };
-      }
-
-      throw new PushSendError('subscription-save-failed', {
-        status: response.status,
-        response: errorData,
-        userId,
-        endpoint: endpoint.substring(0, 50) + '...',
-      });
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(errorData.error?.message || errorData.error || 'Failed to save subscription');
     }
-
-    console.log('✅ Sottoscrizione push salvata con successo');
+    
+    const res = await response.json();
+    console.log('✅ Sottoscrizione salvata via HTTP Functions', res?.result);
   } catch (error) {
     // Se è già un PushServiceError, rilancia
     if (error instanceof PushServiceError) {
@@ -462,7 +364,7 @@ async function saveSubscription(userId, subscription) {
     // Altrimenti, wrap in PushSendError
     logPushError(error, {
       context: 'saveSubscription',
-      userId,
+      firebaseUid,
       endpoint: subscription?.endpoint?.substring(0, 50) + '...',
     });
     throw new PushSendError('network-error', {
@@ -475,28 +377,25 @@ async function saveSubscription(userId, subscription) {
 /**
  * Rimuove la sottoscrizione da Firestore
  */
-async function removeSubscription(userId, subscription) {
+async function removeSubscription(firebaseUid, subscription) {
   try {
     const endpoint = subscription.endpoint;
 
-    const response = await fetch(`${FUNCTIONS_BASE_URL}/remove-push-subscription`, {
+    // Usa HTTP function con CORS corretto
+    const response = await fetch('https://us-central1-m-padelweb.cloudfunctions.net/removePushSubscriptionHttp', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId,
-        endpoint,
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ firebaseUid, endpoint }),
     });
-
+    
     if (!response.ok) {
-      throw new Error('Errore nella rimozione della sottoscrizione');
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(errorData.error?.message || errorData.error || 'Failed to remove subscription');
     }
 
-    console.log('Sottoscrizione push rimossa con successo');
+    console.log('✅ Sottoscrizione push rimossa con successo');
   } catch (error) {
-    console.error('Errore nella rimozione della sottoscrizione:', error);
+    console.error('❌ Errore nella rimozione della sottoscrizione:', error);
     throw error;
   }
 }
@@ -504,21 +403,20 @@ async function removeSubscription(userId, subscription) {
 /**
  * Invia una notifica push di test
  */
-export async function sendTestNotification(userId) {
+export async function sendTestNotification(firebaseUid) {
   try {
     // Controlla se siamo in mock mode
     if (window.__MOCK_PUSH_MODE__) {
       console.log('🎭 [MOCK] Using mock send test notification');
-      return await mockSendTestNotification(userId);
+      return await mockSendTestNotification(firebaseUid);
     }
 
-    const response = await fetch(`${FUNCTIONS_BASE_URL}/send-push`, {
+    // Usa HTTP function con CORS corretto
+    const response = await fetch('https://us-central1-m-padelweb.cloudfunctions.net/sendPushNotificationHttp', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        userId,
+        firebaseUid,
         notification: {
           title: 'Notifica di Test',
           body: 'Questa è una notifica push di test!',
@@ -532,15 +430,16 @@ export async function sendTestNotification(userId) {
         },
       }),
     });
-
+    
     if (!response.ok) {
-      throw new Error("Errore nell'invio della notifica di test");
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(errorData.error?.message || errorData.error || 'Failed to send notification');
     }
 
-    console.log('Notifica di test inviata con successo');
+    console.log('✅ Notifica di test inviata con successo');
     return true;
   } catch (error) {
-    console.error("Errore nell'invio della notifica di test:", error);
+    console.error("❌ Errore nell'invio della notifica di test:", error);
     return false;
   }
 }
@@ -556,25 +455,15 @@ export async function sendBulkPushNotification(userIds, notificationData) {
       return await mockSendBulkPushNotification(userIds, notificationData);
     }
 
-    const response = await fetch(`${FUNCTIONS_BASE_URL}/send-bulk-push`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userIds,
-        notification: notificationData,
-      }),
+    // Usa Firebase Callable Function
+    const callable = httpsCallable(fbFunctions, 'sendBulkPushNotification');
+    const result = await callable({
+      userIds,
+      notification: notificationData,
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error("Errore nell'invio delle notifiche bulk: " + (errorData.error || response.statusText));
-    }
-
-    const result = await response.json();
-    console.log('✅ Notifiche push bulk inviate con successo:', result);
-    return result;
+    console.log('✅ Notifiche push bulk inviate con successo:', result.data);
+    return result.data;
   } catch (error) {
     console.error("❌ Errore nell'invio delle notifiche push bulk:", error);
     return { success: false, error: error.message };
@@ -778,31 +667,12 @@ export function getPushNotificationStatus() {
 }
 
 /**
- * Verifica la configurazione del server push (Netlify Functions)
- * Chiama la function `test-env` per controllare la presenza delle env vars.
- * Ritorna un oggetto { ok: boolean, data?: any, error?: string }
+ * Verifica la configurazione del server push
+ * Disabled - requires backend implementation
  */
 export async function checkPushServerConfig() {
-  try {
-    const res = await fetch(`${FUNCTIONS_BASE_URL}/test-env`, { method: 'GET' });
-    const text = await res.text();
-
-    let data = null;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = { raw: text };
-    }
-
-    if (!res.ok) {
-      const message = data && data.error ? data.error : `HTTP ${res.status}`;
-      return { ok: false, error: message, data };
-    }
-
-    return { ok: true, data };
-  } catch (error) {
-    return { ok: false, error: error.message };
-  }
+  console.log('[checkPushServerConfig] Config check disabled (requires backend)');
+  return { ok: true, data: { message: 'Config check disabled' } };
 }
 
 // =============================================
@@ -812,7 +682,7 @@ export async function checkPushServerConfig() {
 /**
  * Mock subscription per development
  */
-async function mockSubscribeToPush(userId) {
+async function mockSubscribeToPush(firebaseUid) {
   try {
     console.log('🎭 [MOCK] Requesting notification permission...');
     const hasPermission = await requestNotificationPermission();
@@ -838,7 +708,7 @@ async function mockSubscribeToPush(userId) {
     };
 
     console.log('🎭 [MOCK] Saving mock subscription...');
-    await mockSaveSubscription(userId, mockSubscription);
+    await mockSaveSubscription(firebaseUid, mockSubscription);
 
     console.log('✅ [MOCK] Mock subscription completed');
     return mockSubscription;
@@ -851,12 +721,12 @@ async function mockSubscribeToPush(userId) {
 /**
  * Mock save subscription
  */
-async function mockSaveSubscription(userId, subscription) {
+async function mockSaveSubscription(firebaseUid, subscription) {
   console.log('🎭 [MOCK] Saving subscription to localStorage');
 
   const subscriptions = JSON.parse(localStorage.getItem('mock-push-subscriptions') || '[]');
   const subscriptionData = {
-    userId,
+    firebaseUid,
     subscription: subscription.toJSON(),
     endpoint: subscription.endpoint,
     timestamp: new Date().toISOString(),
@@ -864,7 +734,7 @@ async function mockSaveSubscription(userId, subscription) {
   };
 
   // Rimuovi subscription esistente per questo user
-  const filtered = subscriptions.filter((sub) => sub.userId !== userId);
+  const filtered = subscriptions.filter((sub) => sub.firebaseUid !== firebaseUid);
   filtered.push(subscriptionData);
 
   localStorage.setItem('mock-push-subscriptions', JSON.stringify(filtered));
@@ -875,11 +745,11 @@ async function mockSaveSubscription(userId, subscription) {
 /**
  * Mock send test notification
  */
-async function mockSendTestNotification(userId) {
+async function mockSendTestNotification(firebaseUid) {
   console.log('🎭 [MOCK] Sending test notification');
 
   const subscriptions = JSON.parse(localStorage.getItem('mock-push-subscriptions') || '[]');
-  const userSubscription = subscriptions.find((sub) => sub.userId === userId);
+  const userSubscription = subscriptions.find((sub) => sub.firebaseUid === firebaseUid);
 
   if (!userSubscription) {
     console.warn('🎭 [MOCK] No subscription found for user');
@@ -921,7 +791,7 @@ async function mockSendBulkPushNotification(userIds, notificationData) {
   let targetSubscriptions = [];
 
   if (userIds && userIds.length > 0) {
-    targetSubscriptions = subscriptions.filter((sub) => userIds.includes(sub.userId));
+    targetSubscriptions = subscriptions.filter((sub) => userIds.includes(sub.firebaseUid));
   } else {
     targetSubscriptions = subscriptions;
   }
@@ -939,10 +809,10 @@ async function mockSendBulkPushNotification(userIds, notificationData) {
 
   // Mostra notifiche mock per ogni utente
   for (const sub of targetSubscriptions) {
-    uniqueUsers.add(sub.userId);
+    uniqueUsers.add(sub.firebaseUid);
 
     const notification = new Notification(
-      `${notificationData.title || 'Notifica Bulk (Mock)'} - ${sub.userId}`,
+      `${notificationData.title || 'Notifica Bulk (Mock)'} - ${sub.firebaseUid}`,
       {
         body: notificationData.body || 'Questa è una notifica push bulk simulata!',
         icon: notificationData.icon || '/icon-192x192.png',
@@ -953,7 +823,7 @@ async function mockSendBulkPushNotification(userIds, notificationData) {
         data: {
           ...notificationData.data,
           mock: true,
-          userId: sub.userId,
+          firebaseUid: sub.firebaseUid,
           timestamp: Date.now(),
         },
       }

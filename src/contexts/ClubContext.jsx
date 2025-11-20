@@ -307,10 +307,27 @@ export function ClubProvider({ children }) {
         // Use merged data if available, otherwise fall back to individual fields
         const mergedData = clubUser.mergedData || {};
 
+        // 🔍 DEBUG: Log linkage fields
+        if (clubUser.linkedFirebaseUid || clubUser.firebaseUid) {
+          console.log('🔗 [ClubContext/loadPlayers] Player con linkage Firebase', {
+            userId: userId,
+            name: mergedData.name || clubUser.userName,
+            email: mergedData.email || clubUser.userEmail,
+            linkedFirebaseUid: clubUser.linkedFirebaseUid || null,
+            firebaseUid: clubUser.firebaseUid || null,
+            isLinked: clubUser.isLinked,
+            linkedAt: clubUser.linkedAt || null,
+            clubUserDocId: clubUser.id
+          });
+        }
+
         // Build player object from club user data
         const playerData = {
           // Base data from club-user
           id: userId,
+          userId: userId, // Preserva userId esplicitamente
+          linkedFirebaseUid: clubUser.linkedFirebaseUid || null, // Campo collegamento
+          firebaseUid: clubUser.firebaseUid || null, // Campo alternativo
           name: mergedData.name || clubUser.userName || 'Unknown User',
           displayName: mergedData.name || clubUser.userName || 'Unknown User',
           email: mergedData.email || clubUser.userEmail || '',
@@ -319,6 +336,7 @@ export function ClubProvider({ children }) {
           // rating: mergedData.rating || clubUser.originalProfileData?.rating || 1500,
           role: clubUser.role || 'player',
           isLinked: clubUser.isLinked || !!clubUser.linkedUserId,
+          linkedAt: clubUser.linkedAt || null, // Timestamp collegamento
           clubUserId: clubUser.id, // Keep reference to club user document
 
           // Additional data from original profile data (if available)

@@ -57,6 +57,10 @@ const ClubRegistrationRequests = React.lazy(
   () => import('@pages/admin/ClubRegistrationRequests.jsx')
 );
 const UsersManagement = React.lazy(() => import('@pages/admin/UsersManagement.jsx'));
+const AuditLogs = React.lazy(() => import('@pages/admin/AuditLogs.jsx'));
+const PushNotifications = React.lazy(() => import('@pages/admin/PushNotifications.jsx'));
+const RoleManagement = React.lazy(() => import('@pages/admin/RoleManagement.jsx'));
+const FeatureFlags = React.lazy(() => import('@pages/admin/FeatureFlags.jsx'));
 const AdminProtectedRoute = React.lazy(() => import('@components/admin/AdminProtectedRoute.jsx'));
 
 // Legacy admin pages (keep existing)
@@ -209,6 +213,10 @@ export default function AppRouter() {
                         <Route path="clubs/:clubId/settings" element={<ClubSettings />} />
                         <Route path="club-requests" element={<ClubRegistrationRequests />} />
                         <Route path="users" element={<UsersManagement />} />
+                        <Route path="audit-logs" element={<AuditLogs />} />
+                        <Route path="push-notifications" element={<PushNotifications />} />
+                        <Route path="roles" element={<RoleManagement />} />
+                        <Route path="feature-flags" element={<FeatureFlags />} />
                       </Routes>
                     </AdminProtectedRoute>
                   }

@@ -14,6 +14,7 @@ import NotificationSystem from '@components/NotificationSystem.jsx';
 import NavTabs from '@ui/NavTabs.jsx';
 import BottomNavigation from '@ui/BottomNavigation.jsx';
 import ProfileButton from '@ui/ProfileButton.jsx';
+import NotificationButton from '@ui/NotificationButton.jsx';
 import PWAInstallButton from '@components/PWAInstallButton.jsx';
 import PWAFloatingButton from '@components/PWAFloatingButton.jsx';
 import PWAInstallPrompt from '@ui/PWAInstallPrompt.jsx';
@@ -22,6 +23,7 @@ import AppDownloadModal from '@ui/AppDownloadModal.jsx';
 import CertificateExpiryAlert from '@features/players/components/CertificateExpiryAlert.jsx';
 import { logout } from '@services/auth.jsx';
 import { logger } from '@/utils/logger';
+import { useUnreadNotifications } from '@hooks/useUnreadNotifications';
 
 function AppLayoutInner() {
   const { user, userRole, isClubAdmin, getFirstAdminClub } = useAuth();
@@ -31,6 +33,9 @@ function AppLayoutInner() {
   const navigate = useNavigate();
 
   const T = React.useMemo(() => themeTokens(), []);
+
+  // Notifiche non lette
+  const { unreadCount } = useUnreadNotifications();
 
   // Booking modal state
   const [showBookingModal, setShowBookingModal] = React.useState(false);
@@ -440,6 +445,9 @@ function AppLayoutInner() {
           </div>
 
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            {/* Notification Button - Visible only for logged users */}
+            <NotificationButton />
+            
             {/* Profile Button - Always visible on the right */}
             <ProfileButton />
 
@@ -496,6 +504,7 @@ function AppLayoutInner() {
         isInitialDashboard={false}
         userRole={userRole}
         currentClub={club}
+        unreadNotifications={unreadCount}
       />
 
       {/* PWA Floating Button (Mobile Only) */}

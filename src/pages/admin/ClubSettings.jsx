@@ -57,6 +57,7 @@ const ClubSettings = () => {
     phone: '',
     email: '',
     website: '',
+    whatsappNumber: '',
     googleMapsUrl: '',
 
     // Configurazioni struttura
@@ -417,6 +418,21 @@ const ClubSettings = () => {
                         onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Numero WhatsApp
+                      </label>
+                      <input
+                        type="tel"
+                        value={settings.whatsappNumber || ''}
+                        onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
+                        placeholder="+39 123 456 7890"
+                        className="w-full px-3 py-2 border border-gray-600 rounded-lg bg-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <p className="text-xs text-gray-400 mt-1">
+                        Numero per essere contattati via WhatsApp (es. +39 123 456 7890)
+                      </p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>

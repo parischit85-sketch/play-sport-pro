@@ -84,83 +84,163 @@ export function addEventListener(event, callback) {
 // CONFIGURATION
 // =============================================
 export function initialize(options = {}) {
-  if (initialized) {
-    return;
+  // Allow multiple calls to add club-specific realtime subscriptions after first init
+  const firstInit = !initialized;
+
+  // Preserve previously set cloud mode unless explicitly enabled here
+  if (typeof options.cloudEnabled !== 'undefined') {
+    useCloudStorage = options.cloudEnabled;
   }
 
-  initialized = true; // Mark as initialized to prevent multiple calls
-  useCloudStorage = options.cloudEnabled || false;
+  if (firstInit) {
+    initialized = true; // Core init done once
 
-  // ClubId non persistito qui: passato per ogni operazione (scelta multi-club)
+    // ClubId non persistito qui: passato per ogni operazione (scelta multi-club)
+    if (useCloudStorage) {
+      // Default global subscription (public|all)
+      setupRealtimeSubscriptions();
 
-  if (useCloudStorage) {
-    setupRealtimeSubscriptions();
-    // One-time migration, then sync
-    if (!localStorage.getItem(MIGRATION_FLAG_KEY)) {
-      migrationInProgress = true;
-      migrateOldData()
-        .catch((e) => console.warn('Migration failed:', e))
-        .finally(() => {
-          localStorage.setItem(MIGRATION_FLAG_KEY, '1');
-          migrationInProgress = false;
-          scheduleSync(300);
-        });
-    } else {
-      scheduleSync(300);
+      // One-time migration, then sync
+      if (!localStorage.getItem(MIGRATION_FLAG_KEY)) {
+        migrationInProgress = true;
+        migrateOldData()
+          .catch((e) => console.warn('Migration failed:', e))
+          .finally(() => {
+            localStorage.setItem(MIGRATION_FLAG_KEY, '1');
+            migrationInProgress = false;
+            scheduleSync(300);
+          });
+      } else {
+        scheduleSync(300);
+      }
     }
   }
-  initialized = true;
+
+  // Even after initialization, ensure we subscribe to specific club stream when provided
+  if (useCloudStorage && options.clubId) {
+    setupRealtimeSubscriptions(options.clubId);
+  }
 }
 
 function setupRealtimeSubscriptions(clubId = null) {
   const subKey = `public|${clubId || 'all'}`;
-  if (subscriptions.has(subKey)) return; // Already subscribed
-
-  try {
-    // Optimized query: removed 'where' with '!=' operator (requires composite index)
-    // Instead, we filter cancelled bookings in client-side code below
-    // This improves performance and avoids composite index requirement
-    let qBase = query(
-      collection(db, COLLECTIONS.BOOKINGS),
-      orderBy('date', 'asc'),
-      orderBy('time', 'asc')
-    );
-
-    const unsubscribe = onSnapshot(qBase, (snapshot) => {
-      const bookings = snapshot.docs.map((d) => {
-        const raw = d.data() || {};
-        // Preserve legacy custom id (stored previously inside document data as 'id')
-        const legacyId = raw.id && raw.id !== d.id ? raw.id : undefined;
-        // Avoid overwriting Firestore doc.id with embedded raw.id
-        const { id: _discardId, ...rest } = raw; // eslint-disable-line no-unused-vars
-
-        const finalBooking = {
-          ...rest,
-          id: d.id, // Canonical identifier
-          legacyId, // Optional: useful for debugging / future migration
-          createdAt: raw.createdAt?.toDate?.()?.toISOString() || raw.createdAt,
-          updatedAt: raw.updatedAt?.toDate?.()?.toISOString() || raw.updatedAt,
-        };
-
-        return finalBooking;
-      });
-
-      // Filter out cancelled bookings on client side (better performance than Firestore != operator)
-      let filtered = bookings.filter((b) => b.status !== BOOKING_STATUS.CANCELLED);
-      
-      if (clubId) {
-        filtered = filtered.filter((b) => b.clubId === clubId || (!b.clubId && clubId === 'default-club'));
-      }
-      
-      bookingCache.set(subKey, filtered);
-
-      emit('bookingsUpdated', { type: subKey, bookings: filtered });
-    });
-
-    subscriptions.set(subKey, unsubscribe);
-  } catch {
-    // Ignore subscription errors
+  if (subscriptions.has(subKey)) {
+    console.log('⏭️ [setupRealtimeSubscriptions] Already subscribed to:', subKey);
+    return; // Already subscribed
   }
+
+  console.log('🔥 [setupRealtimeSubscriptions] Creating subscription for:', subKey);
+
+  const createSubscription = (useSimplifiedQuery = false) => {
+    try {
+      // CRITICAL FIX: Add clubId filter to query for security rules compliance
+      let qBase;
+      if (clubId) {
+        if (useSimplifiedQuery) {
+          // Fallback: simplified query without time ordering (if composite index not ready)
+          qBase = query(
+            collection(db, COLLECTIONS.BOOKINGS),
+            where('clubId', '==', clubId),
+            orderBy('date', 'asc')
+          );
+          console.log('⚠️ [setupRealtimeSubscriptions] Using simplified query (date only) for:', clubId);
+        } else {
+          // Full query with clubId + date + time (requires composite index)
+          qBase = query(
+            collection(db, COLLECTIONS.BOOKINGS),
+            where('clubId', '==', clubId),
+            orderBy('date', 'asc'),
+            orderBy('time', 'asc')
+          );
+          console.log('✅ [setupRealtimeSubscriptions] Query with clubId + date + time filter:', clubId);
+        }
+      } else {
+        // Global query (only for super admins)
+        qBase = query(
+          collection(db, COLLECTIONS.BOOKINGS),
+          orderBy('date', 'asc'),
+          orderBy('time', 'asc')
+        );
+        console.log('⚠️ [setupRealtimeSubscriptions] Query without clubId filter (super admin only)');
+      }
+
+      const unsubscribe = onSnapshot(
+        qBase,
+        (snapshot) => {
+          console.log('📸 [onSnapshot] Received update for', subKey, '- docs:', snapshot.docs.length);
+          
+          const bookings = snapshot.docs.map((d) => {
+            const raw = d.data() || {};
+            // Preserve legacy custom id (stored previously inside document data as 'id')
+            const legacyId = raw.id && raw.id !== d.id ? raw.id : undefined;
+            // Avoid overwriting Firestore doc.id with embedded raw.id
+            const { id: _discardId, ...rest } = raw; // eslint-disable-line no-unused-vars
+
+            const finalBooking = {
+              ...rest,
+              id: d.id, // Canonical identifier
+              legacyId, // Optional: useful for debugging / future migration
+              createdAt: raw.createdAt?.toDate?.()?.toISOString() || raw.createdAt,
+              updatedAt: raw.updatedAt?.toDate?.()?.toISOString() || raw.updatedAt,
+            };
+
+            return finalBooking;
+          });
+
+          // Filter out cancelled bookings on client side
+          let filtered = bookings.filter((b) => b.status !== BOOKING_STATUS.CANCELLED);
+          
+          // Additional client-side filter for legacy bookings without clubId
+          if (clubId) {
+            const beforeFilter = filtered.length;
+            filtered = filtered.filter((b) => b.clubId === clubId || (!b.clubId && clubId === 'default-club'));
+            console.log(`🔍 [onSnapshot] Client-side filter for legacy bookings:`, beforeFilter, '→', filtered.length);
+          }
+          
+          // Sort by time on client side if using simplified query
+          if (useSimplifiedQuery) {
+            filtered.sort((a, b) => {
+              const dateCompare = (a.date || '').localeCompare(b.date || '');
+              if (dateCompare !== 0) return dateCompare;
+              return (a.time || '').localeCompare(b.time || '');
+            });
+          }
+          
+          bookingCache.set(subKey, filtered);
+
+          console.log('📤 [onSnapshot] Emitting bookingsUpdated event:', {
+            type: subKey,
+            count: filtered.length,
+          });
+          emit('bookingsUpdated', { type: subKey, bookings: filtered });
+        },
+        (error) => {
+          console.error('❌ [onSnapshot] Subscription error for', subKey, ':', error);
+          
+          // If index not ready, retry with simplified query
+          if (error.code === 'failed-precondition' && !useSimplifiedQuery && clubId) {
+            console.warn('⚠️ [onSnapshot] Composite index not ready, retrying with simplified query...');
+            // Cleanup failed subscription
+            if (subscriptions.has(subKey)) {
+              const oldUnsub = subscriptions.get(subKey);
+              if (oldUnsub) oldUnsub();
+              subscriptions.delete(subKey);
+            }
+            // Retry with simplified query
+            setTimeout(() => createSubscription(true), 1000);
+          }
+        }
+      );
+
+      subscriptions.set(subKey, unsubscribe);
+      console.log('✅ [setupRealtimeSubscriptions] Subscription active for:', subKey);
+    } catch (error) {
+      console.error('❌ [setupRealtimeSubscriptions] Failed to setup subscription:', error);
+    }
+  };
+
+  // Start with full query (will fallback to simplified if needed)
+  createSubscription(false);
 }
 
 // =============================================

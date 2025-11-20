@@ -31,11 +31,12 @@ export function useUnifiedBookings(options = {}) {
     UnifiedBookingService.initialize({
       cloudEnabled: true,
       user: user,
+      clubId: clubId || null,
     });
 
     // Migrate old data on first load
     UnifiedBookingService.migrateOldData();
-  }, [user]);
+  }, [user, clubId]);
 
   // Load all bookings
   const loadBookings = useCallback(
@@ -82,15 +83,36 @@ export function useUnifiedBookings(options = {}) {
   useEffect(() => {
     if (!enableRealtime) return;
 
-    const subKeyPrefix = `public|${clubId || 'all'}`;
+    const subKey = `public|${clubId || 'all'}`;
+    console.log('🔥 [useUnifiedBookings] Setting up realtime listeners for:', subKey);
+
     const unsubscribeUpdated = UnifiedBookingService.addEventListener('bookingsUpdated', (data) => {
-      if (!data?.type || !data.type.startsWith(subKeyPrefix)) return; // ignora altri club
+      console.log('📡 [useUnifiedBookings] Received bookingsUpdated event:', {
+        dataType: data?.type,
+        expectedKey: subKey,
+        bookingsCount: data?.bookings?.length,
+        exactMatch: data?.type === subKey,
+        prefixMatch: data?.type?.startsWith('public|'),
+      });
+      
+      // Match esatto O match per 'all' quando clubId è null
+      const matches = data?.type === subKey || 
+                     (!clubId && data?.type === 'public|all') ||
+                     (clubId && data?.type === `public|${clubId}`);
+      
+      if (!data?.type || !matches) {
+        console.log('⏭️ [useUnifiedBookings] Skipping event - key mismatch');
+        return;
+      }
+      
+      console.log('✅ [useUnifiedBookings] Updating bookings state with', data.bookings.length, 'items');
       setBookings(data.bookings);
     });
 
     const unsubscribeCreated = UnifiedBookingService.addEventListener(
       'bookingCreated',
       (_booking) => {
+        console.log('➕ [useUnifiedBookings] Booking created, refreshing...');
         loadBookings(true); // Refresh all data
       }
     );
@@ -98,11 +120,13 @@ export function useUnifiedBookings(options = {}) {
     const unsubscribeDeleted = UnifiedBookingService.addEventListener(
       'bookingDeleted',
       (_bookingId) => {
+        console.log('🗑️ [useUnifiedBookings] Booking deleted, refreshing...');
         loadBookings(true); // Refresh all data
       }
     );
 
     return () => {
+      console.log('🔌 [useUnifiedBookings] Cleaning up realtime listeners for:', subKey);
       unsubscribeUpdated();
       unsubscribeCreated();
       unsubscribeDeleted();

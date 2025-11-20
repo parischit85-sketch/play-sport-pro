@@ -64,7 +64,7 @@ try {
 }
 const auth = getAuth(app);
 const storage = getStorage(app);
-const functions = getFunctions(app);
+const functions = getFunctions(app, 'us-central1'); // Explicitly set region for callable functions
 
 // Initialize Realtime Database
 let rtdb;

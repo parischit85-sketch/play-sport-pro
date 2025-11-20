@@ -403,15 +403,8 @@ export function AuthProvider({ children }) {
             await loadUserAffiliations(firebaseUser.uid);
           }
 
-          // Subscribe to push notifications if SW is enabled
-          if (import.meta.env.PROD || new URLSearchParams(window.location.search).has('enableSW')) {
-            try {
-              const { subscribeToPush } = await import('@utils/push.js');
-              await subscribeToPush(firebaseUser.uid);
-            } catch (error) {
-              console.warn('⚠️ Push subscription failed:', error.message);
-            }
-          }
+          // ⚠️ NOTE: Push subscription is handled by AutoPushSubscription component
+          // to avoid duplicate subscriptions on every auth state change
         } else {
           // Track logout in Google Analytics
           trackAuth.logout();

@@ -140,21 +140,27 @@ export function trackPerformanceIssue(metricName, value, threshold) {
 // Performance monitoring
 
 export function startNotificationTransaction(name) {
-  return Sentry.startTransaction({
-    name,
-    op: 'notification',
-  });
+  return Sentry.startSpan(
+    {
+      name,
+      op: 'notification',
+    },
+    (span) => span
+  );
 }
 
 export function measureNotificationSend(userId, notificationId) {
-  const transaction = Sentry.startTransaction({
-    name: 'notification.send',
-    op: 'notification',
-    data: {
-      user_id: userId,
-      notification_id: notificationId,
+  const transaction = Sentry.startSpan(
+    {
+      name: 'notification.send',
+      op: 'notification',
+      data: {
+        user_id: userId,
+        notification_id: notificationId,
+      },
     },
-  });
+    (span) => span
+  );
 
   return {
     finish: (result) => {
@@ -199,7 +205,7 @@ export function instrumentNotificationCascade(cascade) {
   const originalSend = cascade.send.bind(cascade);
 
   cascade.send = async function (userId, notification, options) {
-    const span = Sentry.getCurrentHub().getScope()?.getTransaction()?.startChild({
+    const span = Sentry.getActiveSpan()?.startChild({
       op: 'cascade',
       description: 'Notification Cascade',
     });

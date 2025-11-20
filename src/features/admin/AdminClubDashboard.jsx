@@ -18,6 +18,7 @@ import EmailVerificationFlow from '@components/registration/EmailVerificationFlo
 // Import dei servizi per ottenere i dati reali
 import { loadAdminDashboardData } from '@services/adminDashboard.js';
 import UnifiedBookingService from '@services/unified-booking-service.js';
+import useUnifiedBookings from '@hooks/useUnifiedBookings.js';
 import { logger } from '@/utils/logger';
 import {
   DashboardStats,
@@ -490,6 +491,13 @@ const AdminClubDashboard = () => {
     lastUpdate: null,
   });
 
+  // ✅ Realtime unified bookings & lessons (enableRealtime true)
+  const {
+    bookings: unifiedBookings,
+    lessonBookings: unifiedLessonBookings,
+    refreshUnified,
+  } = useUnifiedBookings({ clubId, enableRealtime: true });
+
   // Nuovi stati per la creazione della fascia oraria
   const [newSlotModalOpen, setNewSlotModalOpen] = useState(false);
   const [newSlotDate, setNewSlotDate] = useState('');
@@ -694,31 +702,60 @@ const AdminClubDashboard = () => {
     }
   }, [clubId, user, isClubAdmin, navigate]);
 
-  // Carica i dati della dashboard
+  // Carica i dati statici iniziali (stats non calcolabili localmente) una sola volta
   useEffect(() => {
     if (!clubId || !club) return;
-
     loadDashboardData();
-
-    // Imposta un refresh automatico ogni 2 minuti per mantenere i dati sincronizzati
-    const refreshInterval = setInterval(() => {
-      // Auto-refreshing dashboard data
-      loadDashboardData();
-    }, DASHBOARD_CONSTANTS.REFRESH_INTERVAL_MS); // Auto-refresh every 2 minutes
-
-    // Aggiorna la dashboard quando la tab diventa visibile
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        loadDashboardData();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      clearInterval(refreshInterval);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
   }, [clubId, club, loadDashboardData]);
+
+  // ✅ Realtime derivation of today's & tomorrow's bookings/lessons + live stats
+  useEffect(() => {
+    if (!clubId) return;
+
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+    // Filter & sort bookings
+    const todayBookings = (unifiedBookings || [])
+      .filter((b) => b?.clubId === clubId && b?.date === todayStr)
+      .sort((a, b) => (a?.time || '').localeCompare(b?.time || ''))
+      .slice(0, DASHBOARD_CONSTANTS.MAX_BOOKINGS_DISPLAY);
+
+    const tomorrowBookingsCount = (unifiedBookings || [])
+      .filter((b) => b?.clubId === clubId && b?.date === tomorrowStr).length;
+
+    // Lessons (may have same structure: date + time)
+    const todayLessons = (unifiedLessonBookings || [])
+      .filter((l) => l?.clubId === clubId && l?.date === todayStr)
+      .sort((a, b) => (a?.time || '').localeCompare(b?.time || ''))
+      .slice(0, DASHBOARD_CONSTANTS.MAX_LESSONS_DISPLAY);
+
+    const tomorrowLessonsCount = (unifiedLessonBookings || [])
+      .filter((l) => l?.clubId === clubId && l?.date === tomorrowStr).length;
+
+    // Simple derived court utilization estimate (ratio of active bookings to courts*slots hypothetical)
+    const courtUtilization = courts && courts.length > 0
+      ? Math.min(100, Math.round((todayBookings.length / (courts.length * 12)) * 100)) // assuming 12 potential slots per court/day
+      : 0;
+
+    setDashboardData((prev) => ({
+      ...prev,
+      todayBookings,
+      todayLessons,
+      stats: {
+        ...prev.stats,
+        todayBookingsCount: todayBookings.length,
+        tomorrowBookingsCount,
+        todayLessonsCount: todayLessons.length,
+        tomorrowLessonsCount,
+        courtUtilization,
+      },
+      lastUpdate: new Date().toLocaleTimeString('it-IT'),
+    }));
+  }, [clubId, unifiedBookings, unifiedLessonBookings, courts]);
 
   // ✅ FIX #1: Memoizzare handleVisibilityChange per evitare memory leak
 
@@ -901,6 +938,8 @@ const AdminClubDashboard = () => {
             {dashboardData.lastUpdate && (
               <span className="ml-2 sm:ml-3 text-xs opacity-75">{dashboardData.lastUpdate}</span>
             )}
+            {/* LIVE badge indicates realtime subscription active */}
+            <span className="ml-2 sm:ml-3 text-xs px-1.5 py-0.5 rounded bg-green-700/80 text-white font-semibold tracking-wide">LIVE</span>
           </p>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -936,7 +975,8 @@ const AdminClubDashboard = () => {
           <button
             onClick={() => {
               logger.debug('🔄 Manual refresh triggered');
-              loadDashboardData();
+              refreshUnified(true); // force refresh unified cache
+              loadDashboardData(); // refresh non-realtime ancillary data (stats, members)
             }}
             disabled={dashboardData.loading}
             className={`${T.btnSecondary} px-2 sm:px-4 py-1.5 sm:py-2 flex items-center gap-1 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm`}

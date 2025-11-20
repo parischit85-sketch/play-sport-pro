@@ -21,6 +21,7 @@ import {
   getChampionshipApplyStatus,
 } from '../../features/tournaments/services/championshipApplyService.js';
 import PushTestPanel from '../../components/PushTestPanel.jsx';
+import SystemHealthMonitor from '../../components/admin/SystemHealthMonitor.jsx';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -392,7 +393,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-lg p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Azioni Rapide</h3>
             <div className="space-y-3">
@@ -458,6 +459,40 @@ const AdminDashboard = () => {
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Sicurezza & Audit</h3>
+            <div className="space-y-3">
+              <button
+                onClick={() => navigate('/admin/audit-logs')}
+                className="w-full flex items-center space-x-3 p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <Shield className="w-5 h-5 text-blue-600" />
+                <span>Audit Logs</span>
+              </button>
+              <button
+                onClick={() => navigate('/admin/roles')}
+                className="w-full flex items-center space-x-3 p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <UserCog className="w-5 h-5 text-purple-600" />
+                <span>Gestione Ruoli</span>
+              </button>
+              <button
+                onClick={() => navigate('/admin/push-notifications')}
+                className="w-full flex items-center space-x-3 p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <Activity className="w-5 h-5 text-green-600" />
+                <span>Push Notifications</span>
+              </button>
+              <button
+                onClick={() => navigate('/admin/feature-flags')}
+                className="w-full flex items-center space-x-3 p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <Settings className="w-5 h-5 text-orange-600" />
+                <span>Feature Flags</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Sistema</h3>
             <div className="space-y-3">
               <div className="flex items-center space-x-3 p-3">
@@ -475,6 +510,8 @@ const AdminDashboard = () => {
             </div>
           </div>
 
+          <SystemHealthMonitor />
+
           {/* Admin tool: Revert Championship Points */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <AdminChampionshipRevertTool />
@@ -486,7 +523,7 @@ const AdminDashboard = () => {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Attività Recente</h3>
           {stats.recentActivity.length > 0 ? (
             <div className="space-y-4">
-              {stats.recentActivity.map((activity, index) => (
+              {stats.recentActivity.map((activity) => (
                 <div
                   key={activity.id}
                   className="flex items-center space-x-4 p-3 hover:bg-gray-50 rounded-lg"
