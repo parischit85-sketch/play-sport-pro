@@ -13,6 +13,7 @@ export { cleanOldPushSubscriptions } from './cleanOldPushSubscriptions.js';
 
 // Callable Functions
 export { sendBulkCertificateNotifications } from './sendBulkNotifications.clean.js';
+export { sendBulkPushNotification } from './sendBulkPushNotification.js';
 export { getPushStatusForPlayers, sendTestPush } from './sendBulkNotifications.clean.js';
 export {
   savePushSubscription,

@@ -1,9 +1,9 @@
 /**
- * Audit Logging Service
+ * Audit Logging Service (ESM)
  * Sistema centralizzato per logging azioni critiche e sicurezza
  */
 
-const { Firestore } = require('@google-cloud/firestore');
+import { Firestore } from '@google-cloud/firestore';
 const firestore = new Firestore();
 
 /**
@@ -13,7 +13,7 @@ const SEVERITY = {
   INFO: 'info',
   WARNING: 'warning',
   ERROR: 'error',
-  CRITICAL: 'critical'
+  CRITICAL: 'critical',
 };
 
 /**
@@ -27,64 +27,58 @@ const EVENT_TYPES = {
   AUTH_FAILED: 'auth.failed',
   AUTH_PASSWORD_RESET: 'auth.password_reset',
   AUTH_EMAIL_VERIFY: 'auth.email_verify',
-  
+
   // Bookings
   BOOKING_CREATE: 'booking.create',
   BOOKING_UPDATE: 'booking.update',
   BOOKING_CANCEL: 'booking.cancel',
   BOOKING_COMPLETE: 'booking.complete',
-  
+
   // Matches
   MATCH_CREATE: 'match.create',
   MATCH_UPDATE: 'match.update',
   MATCH_SCORE: 'match.score',
   MATCH_CANCEL: 'match.cancel',
-  
+
   // Payments
   PAYMENT_CREATE: 'payment.create',
   PAYMENT_COMPLETE: 'payment.complete',
   PAYMENT_FAIL: 'payment.fail',
   PAYMENT_REFUND: 'payment.refund',
-  
+
   // Club Management
   CLUB_CREATE: 'club.create',
   CLUB_UPDATE: 'club.update',
   CLUB_DELETE: 'club.delete',
   CLUB_ACTIVATE: 'club.activate',
   CLUB_DEACTIVATE: 'club.deactivate',
-  
+
   // User Management
   USER_UPDATE: 'user.update',
   USER_DELETE: 'user.delete',
   USER_ROLE_CHANGE: 'user.role_change',
   USER_BAN: 'user.ban',
   USER_UNBAN: 'user.unban',
-  
+
   // Security
   SECURITY_RATE_LIMIT: 'security.rate_limit',
   SECURITY_IP_BLOCK: 'security.ip_block',
   SECURITY_SUSPICIOUS: 'security.suspicious',
   SECURITY_UNAUTHORIZED: 'security.unauthorized',
   SECURITY_INVALID_TOKEN: 'security.invalid_token',
-  
+
   // System
   SYSTEM_ERROR: 'system.error',
   SYSTEM_CONFIG: 'system.config_change',
   SYSTEM_BACKUP: 'system.backup',
-  SYSTEM_RESTORE: 'system.restore'
+  SYSTEM_RESTORE: 'system.restore',
 };
 
-/**
- * Classe AuditLogger
- */
 class AuditLogger {
   constructor() {
     this.collection = firestore.collection('auditLogs');
   }
 
-  /**
-   * Log evento generico
-   */
   async log({
     eventType,
     severity = SEVERITY.INFO,
@@ -97,7 +91,7 @@ class AuditLogger {
     action = null,
     changes = null,
     metadata = null,
-    message = null
+    message = null,
   }) {
     try {
       const logEntry = {
@@ -114,11 +108,10 @@ class AuditLogger {
         metadata,
         message,
         timestamp: Date.now(),
-        date: new Date().toISOString()
+        date: new Date().toISOString(),
       };
 
-      // Rimuovi campi null/undefined
-      Object.keys(logEntry).forEach(key => {
+      Object.keys(logEntry).forEach((key) => {
         if (logEntry[key] === null || logEntry[key] === undefined) {
           delete logEntry[key];
         }
@@ -126,7 +119,6 @@ class AuditLogger {
 
       await this.collection.add(logEntry);
 
-      // Log su console per sviluppo
       if (process.env.NODE_ENV === 'development') {
         console.log(`[AUDIT] ${eventType}:`, logEntry);
       }
@@ -138,9 +130,6 @@ class AuditLogger {
     }
   }
 
-  /**
-   * Log login utente
-   */
   async logLogin(userId, ip, userAgent, success = true) {
     return this.log({
       eventType: success ? EVENT_TYPES.AUTH_LOGIN : EVENT_TYPES.AUTH_FAILED,
@@ -150,26 +139,20 @@ class AuditLogger {
       userAgent,
       action: 'login',
       message: success ? 'User logged in successfully' : 'Login attempt failed',
-      metadata: { success }
+      metadata: { success },
     });
   }
 
-  /**
-   * Log logout utente
-   */
   async logLogout(userId, ip) {
     return this.log({
       eventType: EVENT_TYPES.AUTH_LOGOUT,
       userId,
       ip,
       action: 'logout',
-      message: 'User logged out'
+      message: 'User logged out',
     });
   }
 
-  /**
-   * Log registrazione
-   */
   async logRegistration(userId, email, ip, userAgent) {
     return this.log({
       eventType: EVENT_TYPES.AUTH_REGISTER,
@@ -179,13 +162,10 @@ class AuditLogger {
       userAgent,
       action: 'register',
       message: 'New user registered',
-      metadata: { email }
+      metadata: { email },
     });
   }
 
-  /**
-   * Log creazione booking
-   */
   async logBookingCreate(bookingId, userId, clubId, courtId, date, ip) {
     return this.log({
       eventType: EVENT_TYPES.BOOKING_CREATE,
@@ -196,13 +176,10 @@ class AuditLogger {
       resourceId: bookingId,
       action: 'create',
       message: 'Booking created',
-      metadata: { courtId, date }
+      metadata: { courtId, date },
     });
   }
 
-  /**
-   * Log cancellazione booking
-   */
   async logBookingCancel(bookingId, userId, clubId, reason, ip) {
     return this.log({
       eventType: EVENT_TYPES.BOOKING_CANCEL,
@@ -214,21 +191,17 @@ class AuditLogger {
       resourceId: bookingId,
       action: 'cancel',
       message: 'Booking cancelled',
-      metadata: { reason }
+      metadata: { reason },
     });
   }
 
-  /**
-   * Log modifica dati critici
-   */
   async logDataChange(resource, resourceId, userId, oldData, newData, ip) {
-    // Calcola differenze
     const changes = {};
-    Object.keys(newData).forEach(key => {
+    Object.keys(newData).forEach((key) => {
       if (JSON.stringify(oldData[key]) !== JSON.stringify(newData[key])) {
         changes[key] = {
           old: oldData[key],
-          new: newData[key]
+          new: newData[key],
         };
       }
     });
@@ -241,19 +214,17 @@ class AuditLogger {
       resourceId,
       action: 'update',
       changes,
-      message: `${resource} updated`
+      message: `${resource} updated`,
     });
   }
 
-  /**
-   * Log pagamento
-   */
   async logPayment(paymentId, userId, clubId, amount, status, ip) {
-    const eventType = status === 'completed' 
-      ? EVENT_TYPES.PAYMENT_COMPLETE 
-      : status === 'failed'
-      ? EVENT_TYPES.PAYMENT_FAIL
-      : EVENT_TYPES.PAYMENT_CREATE;
+    const eventType =
+      status === 'completed'
+        ? EVENT_TYPES.PAYMENT_COMPLETE
+        : status === 'failed'
+          ? EVENT_TYPES.PAYMENT_FAIL
+          : EVENT_TYPES.PAYMENT_CREATE;
 
     const severity = status === 'failed' ? SEVERITY.ERROR : SEVERITY.INFO;
 
@@ -267,13 +238,10 @@ class AuditLogger {
       resourceId: paymentId,
       action: status,
       message: `Payment ${status}`,
-      metadata: { amount, currency: 'EUR' }
+      metadata: { amount, currency: 'EUR' },
     });
   }
 
-  /**
-   * Log evento sicurezza
-   */
   async logSecurityEvent(type, severity, ip, userId = null, details = {}) {
     return this.log({
       eventType: type,
@@ -283,44 +251,27 @@ class AuditLogger {
       resource: 'security',
       action: 'alert',
       message: details.message || 'Security event detected',
-      metadata: details
+      metadata: details,
     });
   }
 
-  /**
-   * Log rate limit violation
-   */
   async logRateLimit(ip, userId, endpoint, limit) {
-    return this.logSecurityEvent(
-      EVENT_TYPES.SECURITY_RATE_LIMIT,
-      SEVERITY.WARNING,
-      ip,
-      userId,
-      { endpoint, limit, message: 'Rate limit exceeded' }
-    );
+    return this.logSecurityEvent(EVENT_TYPES.SECURITY_RATE_LIMIT, SEVERITY.WARNING, ip, userId, {
+      endpoint,
+      limit,
+      message: 'Rate limit exceeded',
+    });
   }
 
-  /**
-   * Log accesso non autorizzato
-   */
   async logUnauthorized(ip, userId, resource, action, userAgent) {
-    return this.logSecurityEvent(
-      EVENT_TYPES.SECURITY_UNAUTHORIZED,
-      SEVERITY.WARNING,
-      ip,
-      userId,
-      { 
-        resource, 
-        action, 
-        userAgent,
-        message: 'Unauthorized access attempt' 
-      }
-    );
+    return this.logSecurityEvent(EVENT_TYPES.SECURITY_UNAUTHORIZED, SEVERITY.WARNING, ip, userId, {
+      resource,
+      action,
+      userAgent,
+      message: 'Unauthorized access attempt',
+    });
   }
 
-  /**
-   * Log errore di sistema
-   */
   async logSystemError(error, context = {}) {
     return this.log({
       eventType: EVENT_TYPES.SYSTEM_ERROR,
@@ -328,18 +279,14 @@ class AuditLogger {
       message: error.message,
       metadata: {
         stack: error.stack,
-        ...context
-      }
+        ...context,
+      },
     });
   }
 
-  /**
-   * Query logs per analisi
-   */
   async getLogs(filters = {}, limit = 100) {
     let query = this.collection.orderBy('timestamp', 'desc');
 
-    // Filtri
     if (filters.userId) {
       query = query.where('userId', '==', filters.userId);
     }
@@ -365,21 +312,14 @@ class AuditLogger {
     query = query.limit(limit);
 
     const snapshot = await query.get();
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   }
 
-  /**
-   * Statistiche audit log
-   */
   async getStats(clubId = null, days = 30) {
-    const startTime = Date.now() - (days * 24 * 60 * 60 * 1000);
-    
-    let query = this.collection
-      .where('timestamp', '>=', startTime);
-    
+    const startTime = Date.now() - days * 24 * 60 * 60 * 1000;
+
+    let query = this.collection.where('timestamp', '>=', startTime);
+
     if (clubId) {
       query = query.where('clubId', '==', clubId);
     }
@@ -392,29 +332,24 @@ class AuditLogger {
       byEventType: {},
       byUser: {},
       securityEvents: 0,
-      timeline: {}
+      timeline: {},
     };
 
-    snapshot.docs.forEach(doc => {
+    snapshot.docs.forEach((doc) => {
       const data = doc.data();
 
-      // Conta per severity
       stats.bySeverity[data.severity] = (stats.bySeverity[data.severity] || 0) + 1;
 
-      // Conta per event type
       stats.byEventType[data.eventType] = (stats.byEventType[data.eventType] || 0) + 1;
 
-      // Conta per user
       if (data.userId) {
         stats.byUser[data.userId] = (stats.byUser[data.userId] || 0) + 1;
       }
 
-      // Conta eventi sicurezza
       if (data.eventType.startsWith('security.')) {
         stats.securityEvents++;
       }
 
-      // Timeline (per giorno)
       const date = new Date(data.timestamp).toISOString().split('T')[0];
       stats.timeline[date] = (stats.timeline[date] || 0) + 1;
     });
@@ -422,21 +357,15 @@ class AuditLogger {
     return stats;
   }
 
-  /**
-   * Cleanup vecchi log
-   */
   async cleanup(daysToKeep = 90) {
-    const cutoff = Date.now() - (daysToKeep * 24 * 60 * 60 * 1000);
+    const cutoff = Date.now() - daysToKeep * 24 * 60 * 60 * 1000;
 
-    const snapshot = await this.collection
-      .where('timestamp', '<', cutoff)
-      .limit(500)
-      .get();
+    const snapshot = await this.collection.where('timestamp', '<', cutoff).limit(500).get();
 
     const batch = firestore.batch();
     let count = 0;
 
-    snapshot.docs.forEach(doc => {
+    snapshot.docs.forEach((doc) => {
       batch.delete(doc.ref);
       count++;
     });
@@ -449,9 +378,6 @@ class AuditLogger {
     return count;
   }
 
-  /**
-   * Export log in formato CSV
-   */
   async exportToCSV(filters = {}, limit = 1000) {
     const logs = await this.getLogs(filters, limit);
 
@@ -466,10 +392,10 @@ class AuditLogger {
       'Resource',
       'Resource ID',
       'Action',
-      'Message'
+      'Message',
     ];
 
-    const rows = logs.map(log => [
+    const rows = logs.map((log) => [
       log.timestamp,
       log.date,
       log.eventType,
@@ -480,24 +406,19 @@ class AuditLogger {
       log.resource || '',
       log.resourceId || '',
       log.action || '',
-      log.message || ''
+      log.message || '',
     ]);
 
     const csv = [
       headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
     ].join('\n');
 
     return csv;
   }
 }
 
-// Singleton instance
 const auditLogger = new AuditLogger();
 
-module.exports = {
-  auditLogger,
-  AuditLogger,
-  SEVERITY,
-  EVENT_TYPES
-};
+export { auditLogger, AuditLogger, SEVERITY, EVENT_TYPES };
+export default { auditLogger, AuditLogger, SEVERITY, EVENT_TYPES };
