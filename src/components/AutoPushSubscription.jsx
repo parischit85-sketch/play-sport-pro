@@ -14,6 +14,16 @@ export function AutoPushSubscription() {
   const subscriptionIdRef = useRef(null);
   const retryTimeoutRef = useRef(null);
 
+  // 🔧 FIX: Salviamo le funzioni in ref per evitare loop (non sono memoizzate)
+  const subscribeToPushRef = useRef(subscribeToPush);
+  const requestPermissionRef = useRef(requestPermission);
+
+  // Aggiorna i ref quando cambiano le funzioni
+  useEffect(() => {
+    subscribeToPushRef.current = subscribeToPush;
+    requestPermissionRef.current = requestPermission;
+  });
+
   // Cleanup di timeout quando il componente si smonta
   useEffect(() => {
     return () => {
@@ -31,7 +41,7 @@ export function AutoPushSubscription() {
     const refreshTimer = setInterval(async () => {
       console.log('🔄 [AutoPush] Refreshing subscription (7-day auto-renewal)...');
       try {
-        await subscribeToPush();
+        await subscribeToPushRef.current();
         console.log('✅ [AutoPush] Subscription refreshed successfully');
       } catch (error) {
         console.error('❌ [AutoPush] Failed to refresh subscription:', error);
@@ -39,7 +49,7 @@ export function AutoPushSubscription() {
     }, REFRESH_INTERVAL);
 
     return () => clearInterval(refreshTimer);
-  }, [user, subscription, isSupported, subscribeToPush]);
+  }, [user, subscription, isSupported]);
 
   useEffect(() => {
     // Non fare nulla se:
@@ -73,7 +83,7 @@ export function AutoPushSubscription() {
         // Se il permesso è già granted, sottoscrivi direttamente
         if (permission === 'granted') {
           try {
-            const result = await subscribeToPush();
+            const result = await subscribeToPushRef.current();
             hasAttemptedRef.current = true;
             if (result?.endpoint) {
               subscriptionIdRef.current = result.endpoint;
@@ -109,7 +119,7 @@ export function AutoPushSubscription() {
           retryTimeoutRef.current = setTimeout(async () => {
             try {
               // console.log(`🔔 [AutoPush] Attempt ${attempt}/${MAX_RETRIES} - Requesting permission...`);
-              const granted = await requestPermission();
+              const granted = await requestPermissionRef.current();
 
               if (granted) {
                 hasAttemptedRef.current = true;
@@ -146,7 +156,7 @@ export function AutoPushSubscription() {
 
     // Avvia il primo tentativo
     registerPushSubscription();
-  }, [user, permission, isSupported, requestPermission, subscribeToPush, subscription]);
+  }, [user, permission, isSupported, subscription]);
 
   // Questo componente non renderizza nulla
   return null;
