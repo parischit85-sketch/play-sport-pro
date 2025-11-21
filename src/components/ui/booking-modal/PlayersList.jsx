@@ -261,11 +261,9 @@ export default function PlayersList({
 
   const handleOpenAddPlayer = () => {
     setShowContactModal(true);
-    // Try to open picker immediately if on Native OR if Browser supports it
-    const isNative = Capacitor.isNativePlatform();
-    const isWebContactSupported = 'contacts' in navigator && 'ContactsManager' in window;
 
-    if (isNative || isWebContactSupported) {
+    // Auto-open picker ONLY on Native App (not PWA/Web)
+    if (Capacitor.isNativePlatform()) {
       handleNativeContactPick();
     }
   };
