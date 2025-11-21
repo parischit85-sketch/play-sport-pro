@@ -36,7 +36,6 @@ export default function BookingHeader({ booking, court, isLessonBooking, dateLab
           </div>
 
           <div className="flex items-center gap-2 text-gray-300">
-            <span className="text-base">{isLessonBooking ? '🎾' : '🏟️'}</span>
             <h2 className="font-medium text-sm truncate text-gray-200">{courtName}</h2>
             <span className="text-gray-600 text-xs">•</span>
             <span className="text-xs text-gray-400 font-medium">{booking.duration || 60} min</span>

@@ -12,6 +12,7 @@ export default function Modal({
   children,
   size = 'medium',
   closeOnOverlayClick = true,
+  align = 'center',
 }) {
   useEffect(() => {
     const handleEscape = (e) => {
@@ -41,11 +42,17 @@ export default function Modal({
     xxl: 'max-w-5xl',
     // ~30% più largo di 5xl (~64rem). 64rem * 1.3 ≈ 83.2rem → arrotondato a 84rem
     xxxl: 'max-w-[84rem]',
+    full: 'w-full h-full max-w-none rounded-none mx-0',
   };
 
+  const isFull = size === 'full';
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div
+      className={`fixed inset-0 z-50 flex ${align === 'top' && !isFull ? 'items-start pt-4 md:pt-10' : 'items-center'} justify-center`}
+    >
       {/* Overlay */}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <div
         className="absolute inset-0 bg-black bg-opacity-50"
         onClick={closeOnOverlayClick ? onClose : undefined}
@@ -53,7 +60,7 @@ export default function Modal({
 
       {/* Modal */}
       <div
-        className={`relative bg-gray-800 rounded-lg shadow-xl ${sizeClasses[size] || sizeClasses.medium} w-full mx-4 max-h-[90vh] overflow-hidden`}
+        className={`relative bg-gray-800 shadow-xl ${isFull ? 'w-full h-full rounded-none' : `rounded-lg mx-4 max-h-[90vh] ${sizeClasses[size] || sizeClasses.medium}`} overflow-hidden`}
       >
         {/* Header */}
         {title && (
@@ -76,7 +83,11 @@ export default function Modal({
         )}
 
         {/* Content */}
-        <div className="p-4 overflow-y-auto max-h-[calc(90vh-8rem)]">{children}</div>
+        <div
+          className={`p-4 overflow-y-auto ${isFull ? 'h-full pb-20' : 'max-h-[calc(90vh-8rem)]'}`}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

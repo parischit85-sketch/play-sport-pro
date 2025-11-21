@@ -108,8 +108,23 @@ export default function BookingDetailModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Dettaglio Prenotazione" T={T} size="md">
-      <div className="space-y-4">
+    <Modal isOpen={isOpen} onClose={onClose} title="" T={T} size="full">
+      {/* Close Button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 z-20 p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-full transition-all backdrop-blur-sm"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+
+      <div className="space-y-4 pt-8">
         {/* Club Info */}
         <ClubInfoCard clubInfo={clubInfo} />
 
