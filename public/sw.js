@@ -1,5 +1,5 @@
 // Service Worker per PlaySport Pro - Enhanced Performance Optimization
-const CACHE_VERSION = 'v20251121092523';
+const CACHE_VERSION = 'v20251121222251';
 const STATIC_CACHE = `playsport-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `playsport-dynamic-${CACHE_VERSION}`;
 const API_CACHE = `playsport-api-${CACHE_VERSION}`;
@@ -476,7 +476,7 @@ self.addEventListener('push', (event) => {
       client.postMessage({
         type: 'DEBUG_LOG',
         message: '[SW] Push received!',
-        data: event.data ? event.data.text() : 'no-data'
+        data: event.data ? event.data.text() : 'no-data',
       });
     });
   });

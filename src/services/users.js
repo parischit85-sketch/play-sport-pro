@@ -252,6 +252,56 @@ export async function createUserIfNeeded(firebaseUser) {
   return await createUser(firebaseUser.uid, userData);
 }
 
+/**
+ * Get user by phone number
+ * @param {string} phone - Phone number to search
+ * @returns {Promise<Object|null>} User data or null
+ */
+export async function getUserByPhone(phone) {
+  if (!phone) return null;
+
+  try {
+    // Normalize phone: remove spaces, dashes, parentheses
+    const cleanPhone = phone.replace(/[\s\-()]/g, '');
+
+    // Prepare variations to search
+    // 1. Exact match of cleaned phone
+    // 2. With +39 prefix if missing
+    // 3. Without +39 prefix if present
+    const variations = [cleanPhone];
+
+    if (cleanPhone.startsWith('+39')) {
+      variations.push(cleanPhone.substring(3)); // Remove +39
+    } else if (cleanPhone.startsWith('0039')) {
+      variations.push(cleanPhone.substring(4)); // Remove 0039
+    } else {
+      variations.push('+39' + cleanPhone); // Add +39
+    }
+
+    const usersRef = collection(db, 'users');
+
+    // Execute queries in parallel for all variations
+    const queries = variations.map((p) =>
+      getDocs(query(usersRef, where('phone', '==', p), limit(1)))
+    );
+
+    const snapshots = await Promise.all(queries);
+
+    // Find first non-empty snapshot
+    const foundSnap = snapshots.find((snap) => !snap.empty);
+
+    if (foundSnap) {
+      const doc = foundSnap.docs[0];
+      return { uid: doc.id, ...doc.data() };
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error getting user by phone:', error);
+    return null;
+  }
+}
+
 // =============================================
 // SEARCH & LIST
 // =============================================
