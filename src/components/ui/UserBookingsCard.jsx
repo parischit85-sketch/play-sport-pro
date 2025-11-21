@@ -400,6 +400,11 @@ export default function UserBookingsCard({ user, state, T, compact: _compact, on
   // Combina le prenotazioni dei campi e delle lezioni - rimuovi duplicati
   const allBookings = useMemo(() => {
     const combined = [...(courtBookings || []), ...(lessonBookings || [])];
+    console.log('📊 [UserBookingsCard] Merging bookings:', {
+      court: courtBookings?.length || 0,
+      lesson: lessonBookings?.length || 0,
+      total: combined.length
+    });
 
     // Remove duplicates based on ID, preferring the most recently updated booking
     const uniqueBookings = new Map();
@@ -433,6 +438,7 @@ export default function UserBookingsCard({ user, state, T, compact: _compact, on
     });
 
     const result = Array.from(uniqueBookings.values());
+    console.log('📊 [UserBookingsCard] Unique bookings after merge:', result.length);
 
     // Ordina per data e ora
     return result.sort((a, b) => {
@@ -452,6 +458,12 @@ export default function UserBookingsCard({ user, state, T, compact: _compact, on
     const day = String(now.getDate()).padStart(2, '0');
     const todayStr = `${year}-${month}-${day}`;
     const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+
+    console.log('🔍 [UserBookingsCard] Filtering bookings:', {
+      total: allBookings.length,
+      todayStr,
+      currentTimeMinutes
+    });
 
     const filtered = allBookings.filter((booking) => {
       // Se la data è futura, mostrala
@@ -474,6 +486,7 @@ export default function UserBookingsCard({ user, state, T, compact: _compact, on
       return false;
     });
 
+    console.log('✅ [UserBookingsCard] Filtered bookings to display:', filtered.length);
     return filtered;
   }, [allBookings]);
 

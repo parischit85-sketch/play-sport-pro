@@ -48,6 +48,9 @@ export default function NotificationButton() {
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 animate-fade-in"
           onClick={() => setShowPanel(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setShowPanel(false)}
+          role="button"
+          tabIndex={0}
           aria-label="Chiudi pannello notifiche"
         />
       )}

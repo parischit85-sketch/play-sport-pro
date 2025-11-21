@@ -1,0 +1,1705 @@
+[
+  {
+    "insertId": "691f246200087eed6eb12901",
+    "httpRequest": {
+      "requestMethod": "OPTIONS",
+      "requestUrl": "https://us-central1-m-padelweb.cloudfunctions.net/sendPushNotificationHttp",
+      "requestSize": "730",
+      "status": 204,
+      "responseSize": "306",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+      "remoteIp": "2001:b07:a3e:3b0:f976:b094:a4c:489f",
+      "referer": "http://localhost:5173/",
+      "serverIp": "2001:4860:4802:36::36",
+      "latency": "3.021777187s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:27.136300Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/ed6e0f792a8b9ddee1d8b64368447a77",
+    "receiveTimestamp": "2025-11-20T14:23:30.561029516Z",
+    "spanId": "6c411bf6ee8d4266",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "Starting new instance. Reason: AUTOSCALING - Instance started due to configured scaling factors (e.g. CPU utilization, request throughput, etc.) or no existing capacity for current traffic.",
+    "insertId": "691f245f0003b8dc423b52ed",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:27.243932Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "scaling_reason": "AUTOSCALING",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-11-20T14:23:27.249441413Z"
+  },
+  {
+    "textPayload": "🔧 [Web Push Config] {",
+    "insertId": "691f24620006f50042501951",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.455936Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "  publicKeyPresent: true,",
+    "insertId": "691f24620006f52d961e6f57",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.455981Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "  privateKeyPresent: true,",
+    "insertId": "691f24620006f534504391fe",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.455988Z",
+    "labels": {
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "  enabled: true,",
+    "insertId": "691f24620006f53b135d21dd",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.455995Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "  publicKeyPreview: 'BP-Pp9JUfDtmi-pYIHpH...',",
+    "insertId": "691f24620006f5421d2aba1d",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.456002Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "  diagnostics: {",
+    "insertId": "691f24620006f549ea7cc820",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.456009Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "    rawPublicLen: 87,",
+    "insertId": "691f24620006f54ff70e55d7",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.456015Z",
+    "labels": {
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "    rawPrivateLen: 43,",
+    "insertId": "691f24620006f55589922414",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.456021Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "    hasEqPublic: false,",
+    "insertId": "691f24620006f55cd785d4fc",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.456028Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "    hasEqPrivate: false",
+    "insertId": "691f24620006f564e8c9c31a",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.456036Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "  }",
+    "insertId": "691f24620006f56995dcb031",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.456041Z",
+    "labels": {
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "}",
+    "insertId": "691f24620006f5718f7656cb",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.456049Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.460192092Z"
+  },
+  {
+    "textPayload": "✅ Web Push VAPID configured successfully",
+    "insertId": "691f24620006f8bf646c13b3",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.456895Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com",
+    "insertId": "691f246200072959aa509da3",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.469337Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "🔧 [EmailService Init] Environment variables check: {",
+    "insertId": "691f246200072b877c808cff",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.469895Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "  SENDGRID_API_KEY_present: true,",
+    "insertId": "691f246200072b8e2edc7b3d",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.469902Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "  SENDGRID_API_KEY_length: 69,",
+    "insertId": "691f246200072b93d6250be1",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.469907Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "  EMAIL_USER_present: false,",
+    "insertId": "691f246200072b989dba8f53",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.469912Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "  EMAIL_PASSWORD_present: false,",
+    "insertId": "691f246200072b9e65999a50",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.469918Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "  FROM_EMAIL: 'noreply@play-sport.pro'",
+    "insertId": "691f246200072ba3843872f1",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.469923Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "}",
+    "insertId": "691f246200072ba86aceb63e",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.469928Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "✅ [EmailService] SendGrid ENABLED - Setting API key",
+    "insertId": "691f246200072c539747cac3",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.470099Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }",
+    "insertId": "691f246200072dba2493dd37",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.470458Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }",
+    "insertId": "691f246200073b7def348aba",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.473981Z",
+    "labels": {
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:30.794501093Z"
+  },
+  {
+    "textPayload": "Default STARTUP TCP probe succeeded after 1 attempt for container \"worker\" on port 8080.",
+    "insertId": "691f2462000775112a300ab2",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.488721Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-11-20T14:23:30.578946761Z"
+  },
+  {
+    "insertId": "691f2462000d211c41411ffb",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://us-central1-m-padelweb.cloudfunctions.net/sendPushNotificationHttp",
+      "requestSize": "1052",
+      "status": 200,
+      "responseSize": "326",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+      "remoteIp": "2001:b07:a3e:3b0:f976:b094:a4c:489f",
+      "referer": "http://localhost:5173/",
+      "serverIp": "2001:4860:4802:36::36",
+      "latency": "0.027834438s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.827144Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/2381c460e5ee2c3fe1d8b64368447111",
+    "receiveTimestamp": "2025-11-20T14:23:30.893714834Z",
+    "spanId": "4f203f9f55107466"
+  },
+  {
+    "textPayload": "[sendPushNotificationHttp] Sending test notification... { firebaseUid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1' }\n",
+    "insertId": "691f2462000d124d983f6663",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.856653Z",
+    "labels": {
+      "execution_id": "7iuhiefaxgds",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:31.125578936Z",
+    "spanId": "5701627081810539622"
+  },
+  {
+    "textPayload": "[sendPushNotificationHttp] Test notification endpoint called {\n  firebaseUid: 'FoqdMJ6vCFfshRPlz4CYrCl0fpu1',\n  notificationTitle: 'Notifica di Test'\n}\n",
+    "insertId": "691f2462000d14bce0f0afcd",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "location": "us-central1",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-11-20T14:23:30.857276Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "instanceId": "00147782962d032efd23412638264816415db7f095f6e08b282946845c64a2f780395439130f1674147dc30e12065c06644f277427b1b1d34a52fdca8398a4e97de0df06dcfdacd92d2ad5fa422e27",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "7iuhiefaxgds",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T14:23:31.125578936Z",
+    "spanId": "5701627081810539622"
+  },
+  {
+    "insertId": "691f2d7e00089ed3eabeba37",
+    "httpRequest": {
+      "requestMethod": "OPTIONS",
+      "requestUrl": "https://us-central1-m-padelweb.cloudfunctions.net/sendPushNotificationHttp",
+      "requestSize": "694",
+      "status": 204,
+      "responseSize": "306",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+      "remoteIp": "2001:b07:5d37:5daf:9104:6c70:591d:fb24",
+      "referer": "http://localhost:5173/",
+      "serverIp": "2001:4860:4802:36::36",
+      "latency": "2.254972618s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:20.034087Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/e5a304fa6d29a45f5c566dae2bee4258",
+    "receiveTimestamp": "2025-11-20T15:02:22.569822895Z",
+    "spanId": "ff6baeada2075ac7",
+    "traceSampled": true
+  },
+  {
+    "textPayload": "Starting new instance. Reason: AUTOSCALING - Instance started due to configured scaling factors (e.g. CPU utilization, request throughput, etc.) or no existing capacity for current traffic.",
+    "insertId": "691f2d7c00014e0c0aaeb05c",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:20.085516Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "scaling_reason": "AUTOSCALING",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-11-20T15:02:20.090024350Z"
+  },
+  {
+    "textPayload": "🔧 [Web Push Config] {",
+    "insertId": "691f2d7e00078d4012a9dd35",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.494912Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "  publicKeyPresent: true,",
+    "insertId": "691f2d7e00078d5e4dd20d42",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "location": "us-central1",
+        "configuration_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.494942Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "  privateKeyPresent: true,",
+    "insertId": "691f2d7e00078d66380022ed",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.494950Z",
+    "labels": {
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "  enabled: true,",
+    "insertId": "691f2d7e00078d6bc9c3d1ae",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.494955Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "  publicKeyPreview: 'BP-Pp9JUfDtmi-pYIHpH...',",
+    "insertId": "691f2d7e00078d724af52d63",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.494962Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "  diagnostics: {",
+    "insertId": "691f2d7e00078d783f26c843",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.494968Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "    rawPublicLen: 87,",
+    "insertId": "691f2d7e00078d7e976f1f1e",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.494974Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "    rawPrivateLen: 43,",
+    "insertId": "691f2d7e00078d84846af15d",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.494980Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "    hasEqPublic: false,",
+    "insertId": "691f2d7e00078d8a2b540d96",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.494986Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "    hasEqPrivate: false",
+    "insertId": "691f2d7e00078d94136edffe",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp",
+        "configuration_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.494996Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "  }",
+    "insertId": "691f2d7e00078d9b28d7cfda",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.495003Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "}",
+    "insertId": "691f2d7e00078da11b9bca05",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "configuration_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.495009Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.500280617Z"
+  },
+  {
+    "textPayload": "✅ Web Push VAPID configured successfully",
+    "insertId": "691f2d7e00079059d1061176",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.495705Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "[dotenv@17.2.3] injecting env (0) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops",
+    "insertId": "691f2d7e0007b96475c85e60",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.506212Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "🔧 [EmailService Init] Environment variables check: {",
+    "insertId": "691f2d7e0007bd181896d9c6",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.507160Z",
+    "labels": {
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "  SENDGRID_API_KEY_present: true,",
+    "insertId": "691f2d7e0007bd27d5fb1763",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.507175Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-managed-by": "cloudfunctions",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "  SENDGRID_API_KEY_length: 69,",
+    "insertId": "691f2d7e0007bd2eda9db5fb",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.507182Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "  EMAIL_USER_present: false,",
+    "insertId": "691f2d7e0007bd3483dd16c9",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.507188Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "  EMAIL_PASSWORD_present: false,",
+    "insertId": "691f2d7e0007bd3ab055746f",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.507194Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "  FROM_EMAIL: 'noreply@play-sport.pro'",
+    "insertId": "691f2d7e0007bd401f155b6f",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.507200Z",
+    "labels": {
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "}",
+    "insertId": "691f2d7e0007bd47edd41fb7",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "location": "us-central1",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.507207Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "✅ [EmailService] SendGrid ENABLED - Setting API key",
+    "insertId": "691f2d7e0007bde1699a712d",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.507361Z",
+    "labels": {
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com",
+    "insertId": "691f2d7e0007c02f26b4e4ed",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.507951Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-managed-by": "cloudfunctions",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "[dotenv@17.2.3] injecting env (0) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }",
+    "insertId": "691f2d7e0007d41a069747fa",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.513050Z",
+    "labels": {
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:22.832200787Z"
+  },
+  {
+    "textPayload": "Default STARTUP TCP probe succeeded after 1 attempt for container \"worker\" on port 8080.",
+    "insertId": "691f2d7e000816d6673e9533",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.530134Z",
+    "severity": "INFO",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-11-20T15:02:22.755121732Z"
+  },
+  {
+    "insertId": "691f2d7e000ce6c73fe82ae0",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://us-central1-m-padelweb.cloudfunctions.net/sendPushNotificationHttp",
+      "requestSize": "1530",
+      "status": 200,
+      "responseSize": "326",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+      "remoteIp": "2001:b07:5d37:5daf:9104:6c70:591d:fb24",
+      "referer": "http://localhost:5173/",
+      "serverIp": "2001:4860:4802:36::36",
+      "latency": "0.027210217s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "project_id": "m-padelweb",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.815350Z",
+    "severity": "INFO",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/a0c350366798d5095c566dae2bee44be",
+    "receiveTimestamp": "2025-11-20T15:02:22.901562263Z",
+    "spanId": "6a36b147e29cb862"
+  },
+  {
+    "textPayload": "[sendPushNotificationHttp] Sending test notification... { firebaseUid: 'T64pDpqP9nUsDOk5SDQauIq1p6x2' }\n",
+    "insertId": "691f2d7e000cd63d1bd7e6c7",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.841277Z",
+    "labels": {
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "execution_id": "7k8gvszwvpyq",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:23.165824277Z",
+    "spanId": "7653499539065452642"
+  },
+  {
+    "textPayload": "[sendPushNotificationHttp] Test notification endpoint called {\n  firebaseUid: 'T64pDpqP9nUsDOk5SDQauIq1p6x2',\n  notificationTitle: '🎾 Nuova Prenotazione'\n}\n",
+    "insertId": "691f2d7e000cd9e7f261c51f",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "location": "us-central1"
+      }
+    },
+    "timestamp": "2025-11-20T15:02:22.842215Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "execution_id": "7k8gvszwvpyq",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:02:23.165824277Z",
+    "spanId": "7653499539065452642"
+  },
+  {
+    "insertId": "691f2de800069c37cd57bffa",
+    "httpRequest": {
+      "requestMethod": "OPTIONS",
+      "requestUrl": "https://us-central1-m-padelweb.cloudfunctions.net/sendPushNotificationHttp",
+      "requestSize": "694",
+      "status": 204,
+      "responseSize": "306",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+      "remoteIp": "2001:b07:5d37:5daf:9104:6c70:591d:fb24",
+      "referer": "http://localhost:5173/",
+      "serverIp": "2001:4860:4802:36::36",
+      "latency": "0.004955286s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T15:04:08.421150Z",
+    "severity": "INFO",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-managed-by": "cloudfunctions"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/7ea08f7706d48f5222c4ad13c5320b36",
+    "receiveTimestamp": "2025-11-20T15:04:08.439352844Z",
+    "spanId": "733dc10d34b41cf2",
+    "traceSampled": true
+  },
+  {
+    "insertId": "691f2de800094bc659351b68",
+    "httpRequest": {
+      "requestMethod": "POST",
+      "requestUrl": "https://us-central1-m-padelweb.cloudfunctions.net/sendPushNotificationHttp",
+      "requestSize": "1519",
+      "status": 200,
+      "responseSize": "326",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+      "remoteIp": "2001:b07:5d37:5daf:9104:6c70:591d:fb24",
+      "referer": "http://localhost:5173/",
+      "serverIp": "2001:4860:4802:36::36",
+      "latency": "0.006332272s",
+      "protocol": "HTTP/1.1"
+    },
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "location": "us-central1",
+        "service_name": "sendpushnotificationhttp",
+        "project_id": "m-padelweb",
+        "revision_name": "sendpushnotificationhttp-00003-lel",
+        "configuration_name": "sendpushnotificationhttp"
+      }
+    },
+    "timestamp": "2025-11-20T15:04:08.601384Z",
+    "severity": "INFO",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Frequests",
+    "trace": "projects/m-padelweb/traces/868f79b55dbd077922c4ad13c532073e",
+    "receiveTimestamp": "2025-11-20T15:04:08.771270137Z",
+    "spanId": "5e75613d6935b7bf"
+  },
+  {
+    "textPayload": "[sendPushNotificationHttp] Sending test notification... { firebaseUid: 'T64pDpqP9nUsDOk5SDQauIq1p6x2' }\n",
+    "insertId": "691f2de80009454a76eb7341",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T15:04:08.607562Z",
+    "labels": {
+      "goog-drz-cloudfunctions-location": "us-central1",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "execution_id": "7kaqhqzgkc2c",
+      "goog-managed-by": "cloudfunctions",
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:04:08.611696414Z",
+    "spanId": "6806453328226400191"
+  },
+  {
+    "textPayload": "[sendPushNotificationHttp] Test notification endpoint called {\n  firebaseUid: 'T64pDpqP9nUsDOk5SDQauIq1p6x2',\n  notificationTitle: '🎾 Nuova Prenotazione'\n}\n",
+    "insertId": "691f2de80009472387c6aff9",
+    "resource": {
+      "type": "cloud_run_revision",
+      "labels": {
+        "project_id": "m-padelweb",
+        "configuration_name": "sendpushnotificationhttp",
+        "service_name": "sendpushnotificationhttp",
+        "location": "us-central1",
+        "revision_name": "sendpushnotificationhttp-00003-lel"
+      }
+    },
+    "timestamp": "2025-11-20T15:04:08.608035Z",
+    "labels": {
+      "firebase-functions-hash": "5c6c714506d8f424c6aefa9363e0bb88959c99b8",
+      "run.googleapis.com/base_image_versions": "us-docker.pkg.dev/serverless-runtimes/google-22-full/runtimes/nodejs22:nodejs22_20251102_22_20_0_RC00",
+      "instanceId": "001477829616a7877e8c16f6d786a3a9a24b11fb14cfc78bbff4f91009eb822bb27e778279631f78b220dfbc350355d61effa9c0fde2c240849222088c85df7d8c1d2bb405a908e128e5ce89b3e9",
+      "execution_id": "7kaqhqzgkc2c",
+      "goog-drz-cloudfunctions-id": "sendpushnotificationhttp",
+      "goog-managed-by": "cloudfunctions",
+      "goog-drz-cloudfunctions-location": "us-central1"
+    },
+    "logName": "projects/m-padelweb/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-11-20T15:04:08.946663204Z",
+    "spanId": "6806453328226400191"
+  }
+]

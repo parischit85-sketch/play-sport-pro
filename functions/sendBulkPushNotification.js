@@ -41,17 +41,41 @@ export const sendBulkPushNotification = onCall(
       throw new HttpsError('unauthenticated', 'Autenticazione richiesta');
     }
 
-    // TODO: Verifica che l'utente sia admin
-    // Per ora accettiamo qualsiasi utente autenticato
-
+    // Verifica ruolo utente
+    const userDoc = await db.collection('users').doc(auth.uid).get();
+    const userData = userDoc.data();
+    
+    const isSuperAdmin = userData?.role === 'admin' || userData?.role === 'super_admin' || auth.token.role === 'super_admin';
+    
     const { title, body, targetType = 'all', targetClubId = null, url = null } = data || {};
 
     if (!title || !body) {
       throw new HttpsError('invalid-argument', 'title e body sono richiesti');
     }
 
-    if (targetType === 'club' && !targetClubId) {
-      throw new HttpsError('invalid-argument', 'targetClubId richiesto per targetType=club');
+    if (targetType === 'all') {
+        if (!isSuperAdmin) {
+             throw new HttpsError('permission-denied', 'Solo i super admin possono inviare notifiche a tutti');
+        }
+    } else if (targetType === 'club') {
+        if (!targetClubId) {
+             throw new HttpsError('invalid-argument', 'targetClubId richiesto per targetType=club');
+        }
+        
+        if (!isSuperAdmin) {
+            // Verifica se è admin del club specifico
+            const affiliationSnap = await db.collection('affiliations')
+                .where('userId', '==', auth.uid)
+                .where('clubId', '==', targetClubId)
+                .where('role', 'in', ['admin', 'club_admin'])
+                .where('status', '==', 'approved')
+                .limit(1)
+                .get();
+                
+            if (affiliationSnap.empty) {
+                 throw new HttpsError('permission-denied', 'Devi essere admin di questo club per inviare notifiche');
+            }
+        }
     }
 
     logger.info('📣 [sendBulkPushNotification] Starting...', {

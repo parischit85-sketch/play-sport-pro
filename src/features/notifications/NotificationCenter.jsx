@@ -10,6 +10,8 @@ import { useAuth } from '@contexts/AuthContext';
 import { useNotifications } from '@contexts/NotificationContext';
 import { useNavigate } from 'react-router-dom';
 import { themeTokens } from '@lib/theme';
+import BookingDetailModal from '@ui/BookingDetailModal.jsx';
+import { getBooking } from '@services/unified-booking-service.js';
 
 // Stili CSS per animazioni e scrollbar personalizzata
 const customStyles = `
@@ -76,6 +78,10 @@ export default function NotificationCenter({ T, onClose }) {
   const [clubName, setClubName] = useState(null);
   const [clubLogo, setClubLogo] = useState(null);
   const [clubPhone, setClubPhone] = useState(null);
+  
+  // State per il modal della prenotazione
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedBookingForModal, setSelectedBookingForModal] = useState(null);
 
   const functions = getFunctions();
   const db = getFirestore();
@@ -251,6 +257,26 @@ export default function NotificationCenter({ T, onClose }) {
     setClubPhone(null);
   };
 
+  // Gestione apertura modal prenotazione
+  const handleOpenBookingModal = async (bookingId) => {
+    if (!bookingId) return;
+    
+    try {
+      // Mostra loading o feedback se necessario
+      const booking = await getBooking(bookingId);
+      if (booking) {
+        setSelectedBookingForModal(booking);
+        setShowBookingModal(true);
+        closeNotificationPopup(); // Chiudi il popup della notifica
+      } else {
+        showError('Prenotazione non trovata');
+      }
+    } catch (error) {
+      console.error('Error fetching booking:', error);
+      showError('Impossibile caricare i dettagli della prenotazione');
+    }
+  };
+
   // Azione dal popup (vai all'URL o apri WhatsApp)
   const handleNotificationAction = () => {
     // Per notifiche certificato, apri WhatsApp
@@ -262,6 +288,16 @@ export default function NotificationCenter({ T, onClose }) {
       window.open(whatsappUrl, '_blank');
       closeNotificationPopup();
       return;
+    }
+    
+    // Per notifiche prenotazione, apri il modal
+    if (selectedNotification?.type === 'booking') {
+      const bookingId = selectedNotification.metadata?.bookingId || selectedNotification.data?.bookingId;
+      if (bookingId) {
+        console.log('📅 [NotificationCenter] Opening booking modal:', bookingId);
+        handleOpenBookingModal(bookingId);
+        return;
+      }
     }
     
     // Per altre notifiche, vai all'URL
@@ -764,6 +800,20 @@ export default function NotificationCenter({ T, onClose }) {
             </div>
           </div>
         </div>,
+        document.body
+      )}
+      
+      {/* Modal Dettaglio Prenotazione */}
+      {showBookingModal && selectedBookingForModal && createPortal(
+        <BookingDetailModal
+          booking={selectedBookingForModal}
+          isOpen={showBookingModal}
+          onClose={() => {
+            setShowBookingModal(false);
+            setSelectedBookingForModal(null);
+          }}
+          T={T}
+        />,
         document.body
       )}
     </div>

@@ -1,5 +1,5 @@
 // Service Worker per PlaySport Pro - Enhanced Performance Optimization
-const CACHE_VERSION = 'v20251120115122';
+const CACHE_VERSION = 'v20251121092523';
 const STATIC_CACHE = `playsport-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `playsport-dynamic-${CACHE_VERSION}`;
 const API_CACHE = `playsport-api-${CACHE_VERSION}`;
@@ -469,6 +469,17 @@ async function trackNotificationAnalytics(eventData) {
 // Gestione ricezione push notifications con supporto rich notifications
 self.addEventListener('push', (event) => {
   console.log('[SW] Push notification received');
+
+  // 📨 RELAY LOG TO MAIN THREAD (DEBUGGING)
+  self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+    clients.forEach((client) => {
+      client.postMessage({
+        type: 'DEBUG_LOG',
+        message: '[SW] Push received!',
+        data: event.data ? event.data.text() : 'no-data'
+      });
+    });
+  });
 
   let data = {};
   try {

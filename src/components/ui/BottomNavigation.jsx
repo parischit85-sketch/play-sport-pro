@@ -356,17 +356,6 @@ export default function BottomNavigation({
       }))
     : [];
 
-  // Find profile/auth tab (always present)
-  const profileTab = navigation.find((nav) => nav.id === 'profile' || nav.id === 'auth');
-  const profileNavItem = profileTab
-    ? {
-        id: profileTab.id,
-        label: profileTab.label,
-        path: profileTab.path,
-        icon: getIconForNavItem(profileTab.id),
-      }
-    : null;
-
   // Mobile nav shows:
   // - For admins: 3 public tabs + hamburger (4 total) - profile è in alto a destra
   // - For normal users in club mode: tutti i public tabs (incluso Prenota) - profile è in alto a destra
@@ -380,9 +369,7 @@ export default function BottomNavigation({
     mobileNavItems = [...publicNavItems];
   }
 
-  // Determine grid columns based on number of items + hamburger menu
-  const totalItems = mobileNavItems.length + (isAdmin && hamburgerMenuItems.length > 0 ? 1 : 0);
-  const gridColsClass = totalItems === 4 ? 'grid-cols-4' : 'grid-cols-5';
+  // Note: Grid columns are dynamically set in className below
 
   return (
     <div

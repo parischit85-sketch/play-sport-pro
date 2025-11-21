@@ -505,12 +505,18 @@ if ('serviceWorker' in navigator) {
   console.warn('⚠️ Service Worker non supportato da questo browser');
 }
 
-// Development utility: Load backfill function
+// Development utilities: Load backfill + push test functions
 if (import.meta.env.DEV) {
+  // Backfill utility
   import('./utils/backfillPublicIndex.js').then(module => {
     window.backfillPublicTournamentsIndex = module.backfillPublicTournamentsIndex;
     console.log('💡 Dev utility loaded: window.backfillPublicTournamentsIndex()');
   }).catch(err => console.warn('Could not load backfill utility:', err));
+  
+  // Push notification test utilities
+  import('./utils/test-push-subscription.js').catch(err => 
+    console.warn('Could not load push test utilities:', err)
+  );
 }
 
 createRoot(container).render(

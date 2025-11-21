@@ -19,16 +19,18 @@ import { db } from './firebase.js';
 // Club ID principale
 const MAIN_CLUB_ID = 'sporting-cat';
 
+// ...existing code...
 // Funzione helper per ottenere il percorso bookings del club
 // AGGIORNATO: usa la collection root-level "bookings" come unified-booking-service
-const getBookingsCollection = (clubId = MAIN_CLUB_ID) => {
+const getBookingsCollection = (_clubId = MAIN_CLUB_ID) => {
   return collection(db, 'bookings'); // Root-level collection
 };
 
 // Funzione helper per ottenere un documento booking
-const getBookingDoc = (bookingId, clubId = MAIN_CLUB_ID) => {
+const getBookingDoc = (bookingId, _clubId = MAIN_CLUB_ID) => {
   return doc(db, 'bookings', bookingId); // Root-level collection
 };
+// ...existing code...
 
 // =============================================
 // FUNZIONI CLOUD PER PRENOTAZIONI
@@ -73,10 +75,14 @@ export async function loadPublicBookings(clubId = MAIN_CLUB_ID) {
  */
 export async function loadUserBookings(userId, clubId = MAIN_CLUB_ID) {
   try {
+    // FIX: Query by userId (which matches security rules isOwner check)
+    // Removed clubId filter to allow viewing bookings across all clubs if clubId is null
+    // Removed createdBy check in favor of userId which is the owner field
     const q = query(
       getBookingsCollection(clubId),
-      where('createdBy', '==', userId),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', userId),
+      orderBy('date', 'desc'),
+      orderBy('time', 'desc')
     );
 
     const snapshot = await getDocs(q);
@@ -95,100 +101,40 @@ export async function loadUserBookings(userId, clubId = MAIN_CLUB_ID) {
 /**
  * Carica prenotazioni attive di un utente
  */
-export async function loadActiveUserBookings(userId, clubId = MAIN_CLUB_ID, userInfo = {}) {
+export async function loadActiveUserBookings(userId, clubId = MAIN_CLUB_ID, _userInfo = {}) {
+  console.log('☁️ [loadActiveUserBookings] Starting for user:', userId);
   try {
-    const today = new Date().toISOString().split('T')[0];
-
     // Calcola la data di 7 giorni fa per includere prenotazioni recenti
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const startDate = sevenDaysAgo.toISOString().split('T')[0];
 
-    // Prepara gli identificatori dell'utente per cercare in più campi
-    const userIdentifiers = {
-      id: userId,
-      name: userInfo.displayName || userInfo.name,
-      email: userInfo.email,
-    };
+    const bookingsRef = getBookingsCollection(clubId);
+    
+    // FIX: Use single query on 'userId' field which is what security rules check (isOwner)
+    // We remove the complex parallel queries because they fail security rules if they don't filter by userId
+    // We remove clubId filter to avoid issues when clubId is null/undefined in Dashboard
+    
+    const q = query(
+      bookingsRef,
+      where('userId', '==', userId),
+      where('status', 'in', ['confirmed', 'pending']),
+      where('date', '>=', startDate),
+      orderBy('date', 'asc'),
+      orderBy('time', 'asc')
+    );
 
-    // Crea multiple query per cercare l'utente in diversi campi
-    const queries = [];
+    const snapshot = await getDocs(q);
+    const bookings = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-    // Query per bookedBy (ID)
-    if (userId) {
-      queries.push(query(getBookingsCollection(clubId), where('bookedBy', '==', userId)));
-    }
-
-    // Query per bookedBy (nome)
-    if (userIdentifiers.name) {
-      queries.push(
-        query(getBookingsCollection(clubId), where('bookedBy', '==', userIdentifiers.name))
-      );
-    }
-
-    // Query per userEmail
-    if (userIdentifiers.email) {
-      queries.push(
-        query(getBookingsCollection(clubId), where('userEmail', '==', userIdentifiers.email))
-      );
-    }
-
-    // Query per createdBy (ID)
-    if (userId) {
-      queries.push(query(getBookingsCollection(clubId), where('createdBy', '==', userId)));
-    }
-
-    // Esegui tutte le query in parallelo
-    const queryResults = await Promise.allSettled(queries.map((q) => getDocs(q)));
-
-    // Unisci tutti i risultati senza duplicati
-    const bookingMap = new Map();
-
-    queryResults.forEach((result, index) => {
-      if (result.status === 'fulfilled') {
-        result.value.docs.forEach((doc) => {
-          const booking = { id: doc.id, ...doc.data() };
-          bookingMap.set(doc.id, booking);
-        });
-      } else {
-        console.warn(`⚠️ [loadActiveUserBookings] Query ${index} failed:`, result.reason);
-      }
-    });
-
-    const allBookings = Array.from(bookingMap.values());
-
-    // Filtra client-side: confirmed + date >= startDate + check if user is in players array
-    const bookings = allBookings
-      .filter((booking) => {
-        // Status confirmed
-        if (booking.status !== 'confirmed') return false;
-
-        // Date >= startDate
-        if (booking.date < startDate) return false;
-
-        // Check if user is involved in this booking
-        const isBookedBy =
-          booking.bookedBy === userId ||
-          booking.bookedBy === userIdentifiers.name ||
-          booking.createdBy === userId;
-        const isInPlayers =
-          booking.players &&
-          (booking.players.includes(userIdentifiers.name) ||
-            booking.players.some((p) => typeof p === 'object' && p?.id === userId));
-        const isUserEmail = booking.userEmail === userIdentifiers.email;
-
-        return isBookedBy || isInPlayers || isUserEmail;
-      })
-      .sort((a, b) => {
-        if (a.date !== b.date) return a.date.localeCompare(b.date);
-        return (a.time || '').localeCompare(b.time || '');
-      });
-
+    console.log(`✅ [loadActiveUserBookings] Found ${bookings.length} bookings for user ${userId}`);
     return bookings;
   } catch (error) {
     console.error('❌ [loadActiveUserBookings] Error:', error);
-    if (error?.code !== 'permission-denied' && error?.code !== 'failed-precondition') {
-      console.warn('Errore caricamento prenotazioni attive:', error);
+    if (error?.code === 'permission-denied') {
+      console.error(
+        '🔒 Permission denied. Ensure firestore.rules allows reading bookings where userId == auth.uid'
+      );
     }
     return [];
   }
@@ -197,9 +143,10 @@ export async function loadBookingHistory(userId, clubId = MAIN_CLUB_ID) {
   try {
     const today = new Date().toISOString().split('T')[0];
 
+    // FIX: Query by userId only
     const q = query(
       getBookingsCollection(clubId),
-      where('createdBy', '==', userId),
+      where('userId', '==', userId),
       where('date', '<', today),
       orderBy('date', 'desc'),
       orderBy('time', 'desc')

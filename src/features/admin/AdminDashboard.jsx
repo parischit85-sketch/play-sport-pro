@@ -8,6 +8,7 @@ import { getClubs, createClub } from '@services/clubs.js';
 import { getAdminStats, getRecentActivity, getPendingAffiliations } from '@services/admin.js';
 import { LoadingSpinner } from '@components/LoadingSpinner.jsx';
 import AdminAnnouncements from './AdminAnnouncements.jsx';
+import AdminPushNotificationsPanel from './AdminPushNotificationsPanel.jsx';
 import { revertTournamentChampionshipPoints } from '@features/tournaments/services/championshipApplyService.js';
 
 const StatCard = ({ title, value, icon, color = 'blue', subtitle, trend }) => {
@@ -517,36 +518,34 @@ const ClubCreateModal = ({ isOpen, onClose, onSubmit }) => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-1">
-                  Telefono
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 border-gray-600 rounded-lg
+            <div>
+              <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-1">
+                Telefono
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 border-gray-600 rounded-lg
                            bg-white bg-gray-700 text-gray-900 text-white
                            focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
+              />
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-1">
-                  Sito Web
-                </label>
-                <input
-                  type="url"
-                  name="website"
-                  value={formData.website}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 border-gray-600 rounded-lg
+            <div>
+              <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-1">
+                Sito Web
+              </label>
+              <input
+                type="url"
+                name="website"
+                value={formData.website}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 border-gray-600 rounded-lg
                            bg-white bg-gray-700 text-gray-900 text-white
                            focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
+              />
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
@@ -577,10 +576,11 @@ const ClubCreateModal = ({ isOpen, onClose, onSubmit }) => {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { userRole, USER_ROLES } = useAuth();
+  const { userRole, USER_ROLES, user: currentUser } = useAuth();
   const [stats, setStats] = useState({});
   const [recentActivity, setRecentActivity] = useState([]);
   const [pendingAffiliations, setPendingAffiliations] = useState([]);
+  const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activityLoading, setActivityLoading] = useState(true);
   const [affiliationsLoading, setAffiliationsLoading] = useState(true);
@@ -588,18 +588,18 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Redirect if not admin
-    if (userRole !== USER_ROLES.ADMIN) {
+    if (userRole !== USER_ROLES.SUPER_ADMIN) {
       navigate('/');
       return;
     }
 
     loadDashboardData();
-  }, [userRole, navigate]);
+  }, [userRole, navigate, USER_ROLES]);
 
   const loadDashboardData = async () => {
     try {
       // Load all data in parallel
-      const [statsData, activityData, affiliationsData] = await Promise.all([
+      const [statsData, activityData, affiliationsData, clubsData] = await Promise.all([
         getAdminStats().catch((err) => {
           console.error('Error loading stats:', err);
           return {};
@@ -614,11 +614,16 @@ const AdminDashboard = () => {
           setAffiliationsLoading(false);
           return [];
         }),
+        getClubs().catch((err) => {
+          console.error('Error loading clubs:', err);
+          return [];
+        }),
       ]);
 
       setStats(statsData);
       setRecentActivity(activityData);
       setPendingAffiliations(affiliationsData);
+      setClubs(clubsData);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
@@ -767,7 +772,7 @@ const AdminDashboard = () => {
     }
   };
 
-  if (userRole !== USER_ROLES.ADMIN) {
+  if (userRole !== USER_ROLES.SUPER_ADMIN) {
     return null; // Will redirect
   }
 
@@ -826,10 +831,15 @@ const AdminDashboard = () => {
           <StatCard
             title="Affiliazioni Pending"
             value={stats.pendingAffiliations || 0}
-            icon="�"
+            icon=""
             color={stats.pendingAffiliations > 0 ? 'orange' : 'green'}
             subtitle={`${stats.totalAffiliations || 0} totali`}
           />
+        </div>
+
+        {/* Push Notifications Panel */}
+        <div className="mb-8">
+          <AdminPushNotificationsPanel />
         </div>
 
         {/* Migration Warning Banner */}

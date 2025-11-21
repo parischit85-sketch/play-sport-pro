@@ -97,6 +97,11 @@ service cloud.firestore {
       
       // Delete: Only admins (FIXED: was missing in original)
       allow delete: if isAdmin();
+      
+      // Subcollection: clubViews (for analytics)
+      match /clubViews/{viewId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
     }
     
     // ==========================================
@@ -147,11 +152,15 @@ service cloud.firestore {
                      isAdmin() ||
                      (isClubAdmin() && resource.data.clubId != null && isClubAdminOf(resource.data.clubId));
       
-      // Create: Authenticated users only, must be own booking, valid timestamp, status pending
+      // Create: Authenticated users only, must be own booking OR admin/club_admin
       allow create: if isAuthenticated() && 
-                       request.resource.data.userId == request.auth.uid &&
-                       isValidFutureTimestamp(request.resource.data.startTime) &&
-                       request.resource.data.status == 'pending' &&
+                       (
+                         (request.resource.data.userId == request.auth.uid && 
+                          request.resource.data.status == 'pending' &&
+                          isValidFutureTimestamp(request.resource.data.startTime)) ||
+                         isAdmin() ||
+                         (isClubAdmin() && request.resource.data.clubId != null && isClubAdminOf(request.resource.data.clubId))
+                       ) &&
                        isWithinSizeLimit(10000);
       
       // Update: Owner can update limited fields, club admin can update club bookings, admin can update anything

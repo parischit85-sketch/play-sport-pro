@@ -8,11 +8,15 @@ import {
   getAvailableDays,
   calculatePrice,
   calculateLessonPrice,
+} from '@services/bookings.js';
+import {
   updateBooking,
   cancelBooking,
-  getAdminBookings,
-  BOOKING_STATUS,
-} from '@services/bookings.js';
+  getPublicBookings,
+  CONSTANTS
+} from '@services/unified-booking-service.js';
+
+const { BOOKING_STATUS } = CONSTANTS;
 
 function BookingAdmin({ user, T }) {
   const ds = createDSClasses(T);
@@ -40,8 +44,8 @@ function BookingAdmin({ user, T }) {
     applyFilters();
   }, [bookings, selectedDate, statusFilter, courtFilter, applyFilters]);
 
-  const loadBookingsData = () => {
-    const allBookings = getAdminBookings();
+  const loadBookingsData = async () => {
+    const allBookings = await getPublicBookings({ forceRefresh: true });
     setBookings(allBookings);
   };
 
@@ -77,7 +81,7 @@ function BookingAdmin({ user, T }) {
 
     setIsSubmitting(true);
     try {
-      const cancelled = cancelBooking(bookingId, user);
+      const cancelled = await cancelBooking(bookingId, user);
       if (cancelled) {
         loadBookingsData();
         setMessage({
@@ -98,7 +102,7 @@ function BookingAdmin({ user, T }) {
   const handleUpdateBooking = async (bookingId, updates) => {
     setIsSubmitting(true);
     try {
-      const updated = updateBooking(bookingId, updates, user);
+      const updated = await updateBooking(bookingId, updates, user);
       if (updated) {
         loadBookingsData();
         setEditingBooking(null);

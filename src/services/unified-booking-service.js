@@ -26,6 +26,11 @@ import {
   emitBookingDeleted,
 } from '@utils/bookingEvents.js';
 import { calculateCertificateStatus } from './medicalCertificates.js';
+import {
+  sendBookingCreatedNotification,
+  sendBookingUpdatedNotification,
+  sendBookingDeletedNotification,
+} from './booking-notifications.js';
 
 // =============================================
 // CONSTANTS
@@ -190,6 +195,21 @@ function setupRealtimeSubscriptions(clubId = null) {
           // Filter out cancelled bookings on client side
           let filtered = bookings.filter((b) => b.status !== BOOKING_STATUS.CANCELLED);
           
+          // 🆕 MERGE FIX: Add local bookings that failed to sync to cloud
+          try {
+            const localBookings = loadLocalBookings();
+            const localOnly = localBookings.filter(lb => 
+              !filtered.some(cb => cb.id === lb.id) && 
+              (!clubId || lb.clubId === clubId)
+            );
+            if (localOnly.length > 0) {
+              console.log('⚠️ [onSnapshot] Merging', localOnly.length, 'local-only bookings');
+              filtered = [...filtered, ...localOnly];
+            }
+          } catch (err) {
+            console.warn('Failed to merge local bookings in snapshot:', err);
+          }
+
           // Additional client-side filter for legacy bookings without clubId
           if (clubId) {
             const beforeFilter = filtered.length;
@@ -216,6 +236,24 @@ function setupRealtimeSubscriptions(clubId = null) {
         },
         (error) => {
           console.error('❌ [onSnapshot] Subscription error for', subKey, ':', error);
+          
+          // 🆕 FIX: If permission error, load from localStorage as fallback
+          if (error.code === 'permission-denied') {
+            console.warn('⚠️ [onSnapshot] Permission denied - loading from localStorage as fallback');
+            try {
+              const localBookings = loadLocalBookings();
+              const filtered = clubId 
+                ? localBookings.filter(b => b.clubId === clubId)
+                : localBookings;
+              
+              bookingCache.set(subKey, filtered);
+              emit('bookingsUpdated', { type: subKey, bookings: filtered });
+              console.log('✅ [onSnapshot] Loaded', filtered.length, 'bookings from localStorage');
+            } catch (err) {
+              console.error('❌ [onSnapshot] Failed to load from localStorage:', err);
+            }
+            return; // Don't retry
+          }
           
           // If index not ready, retry with simplified query
           if (error.code === 'failed-precondition' && !useSimplifiedQuery && clubId) {
@@ -263,26 +301,51 @@ export async function createBooking(bookingData, user, options = {}) {
   let certificateStatus = null;
   let certificateWarning = null;
   
-  if (user?.uid && clubId && clubId !== 'default-club') {
+  if (clubId && clubId !== 'default-club') {
     try {
-      // Cerca il giocatore nel club tramite linkedAccountId
-      const playersRef = collection(db, 'clubs', clubId, 'players');
-      const playerQuery = query(playersRef, where('linkedAccountId', '==', user.uid));
-      const playerSnapshot = await getDocs(playerQuery);
+      // 🎯 FIX: Cerca prima tra i giocatori passati nel booking (player objects con linkedAccountId)
+      const players = Array.isArray(bookingData.players) ? bookingData.players : [];
+      let playerToCheck = null;
+      
+      // Cerca un giocatore con linkedAccountId uguale all'utente corrente
+      if (user?.uid) {
+        playerToCheck = players.find(p => p.linkedAccountId === user.uid);
+      }
+      
+      // Se non trovato nei players del booking, cerca per linkedAccountId nel database
+      if (!playerToCheck && user?.uid) {
+        const playersRef = collection(db, 'clubs', clubId, 'players');
+        const playerQuery = query(playersRef, where('linkedAccountId', '==', user.uid));
+        const playerSnapshot = await getDocs(playerQuery);
 
-      if (!playerSnapshot.empty) {
-        const playerDoc = playerSnapshot.docs[0];
-        const player = playerDoc.data();
+        if (!playerSnapshot.empty) {
+          const playerDoc = playerSnapshot.docs[0];
+          playerToCheck = { id: playerDoc.id, ...playerDoc.data() };
+        }
+      }
+      
+      // Se ancora non trovato, cerca per ID del giocatore passato nel booking
+      if (!playerToCheck && players.length > 0) {
+        const firstPlayerWithId = players.find(p => p.id);
+        if (firstPlayerWithId?.id) {
+          const playersRef = collection(db, 'clubs', clubId, 'players');
+          const playerDoc = await getDocs(query(playersRef, where('__name__', '==', firstPlayerWithId.id)));
+          if (!playerDoc.empty) {
+            playerToCheck = { id: playerDoc.docs[0].id, ...playerDoc.docs[0].data() };
+          }
+        }
+      }
 
+      if (playerToCheck) {
         // Controlla il certificato
-        const hasCertificate = player.medicalCertificates?.current?.expiryDate;
+        const hasCertificate = playerToCheck.medicalCertificates?.current?.expiryDate;
         
         if (!hasCertificate) {
           certificateStatus = 'missing';
           certificateWarning = '⚠️ Certificato medico non presente. Contatta il circolo per caricarlo.';
         } else {
           const certStatus = calculateCertificateStatus(
-            player.medicalCertificates.current.expiryDate
+            playerToCheck.medicalCertificates.current.expiryDate
           );
 
           if (certStatus.isExpired) {
@@ -301,9 +364,9 @@ export async function createBooking(bookingData, user, options = {}) {
           }
         }
       } else {
-        // Nessun player profile trovato
-        certificateStatus = 'no_profile';
-        certificateWarning = '⚠️ Profilo giocatore non trovato. Prenotazione effettuata come utente generico.';
+        // Nessun player profile trovato - OK per prenotazioni admin o ospiti
+        console.log('ℹ️ [Certificate Check] Nessun profilo giocatore trovato - prenotazione generica');
+        certificateStatus = null; // Non mostrare warning se admin sta prenotando per un ospite
       }
     } catch (error) {
       // Errore durante la verifica (es. permission denied)
@@ -313,17 +376,31 @@ export async function createBooking(bookingData, user, options = {}) {
     }
   }
 
-  // 🔗 CROSS-CLUB BOOKING VISIBILITY - Aggiungi bookedForUserId se prenotazione per giocatore collegato
+  // 🔗 CROSS-CLUB BOOKING VISIBILITY - Determina l'utente target della prenotazione
   let bookedForUserId = null;
-  if (user?.uid && clubId && clubId !== 'default-club') {
+  let primaryUserId = user?.uid; // Default: chi crea la prenotazione
+  
+  // Se ci sono giocatori specificati, usa il primo come userId principale
+  if (bookingData.players && bookingData.players.length > 0) {
+    const firstPlayer = bookingData.players[0];
+    // Se il giocatore ha un linkedFirebaseUid, quello è l'utente target
+    if (firstPlayer.linkedFirebaseUid) {
+      primaryUserId = firstPlayer.linkedFirebaseUid;
+      bookedForUserId = firstPlayer.linkedFirebaseUid;
+    } else if (firstPlayer.uid) {
+      primaryUserId = firstPlayer.uid;
+      bookedForUserId = firstPlayer.uid;
+    }
+  }
+  
+  // Fallback: verifica se l'utente corrente è collegato a un giocatore
+  if (!bookedForUserId && user?.uid && clubId && clubId !== 'default-club') {
     try {
-      // Cerca se c'è un giocatore collegato all'utente corrente
       const playersRef = collection(db, 'clubs', clubId, 'players');
       const playerQuery = query(playersRef, where('linkedAccountId', '==', user.uid));
       const playerSnapshot = await getDocs(playerQuery);
 
       if (!playerSnapshot.empty) {
-        // L'utente sta prenotando per un giocatore collegato - includi il suo userId per cross-visibility
         bookedForUserId = user.uid;
       }
     } catch (error) {
@@ -388,7 +465,7 @@ export async function createBooking(bookingData, user, options = {}) {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     clubId: clubId || 'default-club',
-    userId: user?.uid,
+    userId: primaryUserId, // 🎯 FIX: userId è il giocatore target, non l'admin che crea
     startTime: new Date(`${bookingData.date}T${bookingData.time}:00`).getTime(),
 
     // CRITICITÀ 2: Admin booking metadata
@@ -409,6 +486,18 @@ export async function createBooking(bookingData, user, options = {}) {
     finalClubId: booking.clubId,
     userUid: user?.uid,
     courtId: booking.courtId,
+  });
+
+  console.log('🎯 [createBooking] USER ID ASSIGNMENT:', {
+    primaryUserId,
+    adminUid: user?.uid,
+    playersCount: bookingData.players?.length || 0,
+    firstPlayer: bookingData.players?.[0],
+    hasLinkedFirebaseUid: !!bookingData.players?.[0]?.linkedFirebaseUid,
+    hasUid: !!bookingData.players?.[0]?.uid,
+    linkedFirebaseUid: bookingData.players?.[0]?.linkedFirebaseUid,
+    uid: bookingData.players?.[0]?.uid,
+    finalBookingUserId: booking.userId,
   });
 
   let result;
@@ -432,6 +521,12 @@ export async function createBooking(bookingData, user, options = {}) {
 
   // Emit event for real-time updates
   emitBookingCreated(result);
+  
+  // 📬 Invia notifiche push ai partecipanti
+  sendBookingCreatedNotification(result, user).catch(err => {
+    console.warn('⚠️ [createBooking] Failed to send push notifications:', err);
+    // Non bloccare la creazione per errori di notifica
+  });
   
   // Return booking with certificate warning if present
   return {
@@ -506,6 +601,14 @@ export async function updateBooking(bookingId, updates, user) {
     updatedBy: user?.uid || null,
   };
 
+  // 📸 Recupera la prenotazione PRIMA dell'update per confrontare i valori
+  let oldBooking = null;
+  try {
+    oldBooking = await getBooking(bookingId);
+  } catch (err) {
+    console.warn('⚠️ [updateBooking] Could not fetch old booking for comparison:', err);
+  }
+
   let result;
 
   if (useCloudStorage && user) {
@@ -525,6 +628,62 @@ export async function updateBooking(bookingId, updates, user) {
 
   if (result) {
     emitBookingUpdated({ id: bookingId, booking: result });
+
+    // 🔇 Skip notification if only bookedBy is being updated (admin name update after creation)
+    const isSilentUpdate = Object.keys(updates).length === 1 && updates.bookedBy !== undefined;
+    
+    if (isSilentUpdate) {
+      console.log('🔇 [updateBooking] Silent update (only bookedBy), skipping notification');
+      if (user?.uid) {
+        invalidateUserBookingsCache(user.uid);
+      }
+      return result;
+    }
+
+    // 📬 Invia notifiche push ai partecipanti con dettagli delle modifiche
+    console.log('🔔 [updateBooking] Preparing to send update notification:', {
+      hasOldBooking: !!oldBooking,
+      hasResult: !!result,
+      hasUser: !!user,
+      updateKeys: Object.keys(updates),
+    });
+
+    if (oldBooking) {
+      // Costruisci oggetto changes dettagliato confrontando vecchi e nuovi valori
+      const detailedChanges = {};
+      
+      if (updates.date && updates.date !== oldBooking.date) {
+        detailedChanges.date = { old: oldBooking.date, new: updates.date };
+      }
+      if (updates.time && updates.time !== oldBooking.time) {
+        detailedChanges.time = { old: oldBooking.time, new: updates.time };
+      }
+      if (updates.courtId && updates.courtId !== oldBooking.courtId) {
+        detailedChanges.courtName = { old: oldBooking.courtName, new: updates.courtName };
+      }
+      if (updates.players && JSON.stringify(updates.players) !== JSON.stringify(oldBooking.players)) {
+        detailedChanges.players = { old: oldBooking.players, new: updates.players };
+      }
+      
+      console.log('📊 [updateBooking] Detected changes:', {
+        changesCount: Object.keys(detailedChanges).length,
+        changes: JSON.stringify(detailedChanges),
+      });
+
+      // Invia sempre la notifica, anche se detailedChanges è vuoto
+      // (potrebbero esserci altre modifiche non tracciate)
+      sendBookingUpdatedNotification(result, user, detailedChanges).catch(err => {
+        console.warn('⚠️ [updateBooking] Failed to send push notifications:', err);
+        // Non bloccare l'aggiornamento per errori di notifica
+      });
+    } else {
+      console.log('⚠️ [updateBooking] No old booking found, sending with raw updates');
+      // Fallback: invia notifica con solo le modifiche ricevute
+      sendBookingUpdatedNotification(result, user, updates).catch(err => {
+        console.warn('⚠️ [updateBooking] Failed to send push notifications:', err);
+        // Non bloccare l'aggiornamento per errori di notifica
+      });
+    }
 
     // Invalidate user bookings cache to ensure UI updates immediately
     if (user?.uid) {
@@ -551,9 +710,74 @@ export async function cancelBooking(bookingId, user) {
 }
 
 /**
+ * Get a single booking by ID
+ */
+export async function getBooking(bookingId) {
+  if (useCloudStorage) {
+    try {
+      const docRef = doc(db, COLLECTIONS.BOOKINGS, bookingId);
+      const docSnap = await getDoc(docRef);
+      
+      if (!docSnap.exists()) {
+        // Try local storage before throwing
+        const localBookings = loadLocalBookings();
+        const localBooking = localBookings.find(b => b.id === bookingId);
+        if (localBooking) {
+          console.log(`⚠️ [getBooking] Booking ${bookingId} not found in cloud, found in local storage`);
+          return localBooking;
+        }
+        throw new Error(`Booking ${bookingId} not found`);
+      }
+      
+      const raw = docSnap.data();
+      const customId = raw.id;
+      const legacyId = raw.legacyId;
+      const { id, ...rest } = raw; // eslint-disable-line no-unused-vars
+      
+      return {
+        ...rest,
+        id: customId || docSnap.id,
+        firestoreId: docSnap.id,
+        legacyId: legacyId || customId,
+        createdAt: raw.createdAt?.toDate?.()?.toISOString() || raw.createdAt,
+        updatedAt: raw.updatedAt?.toDate?.()?.toISOString() || raw.updatedAt,
+        start: raw.date && raw.time ? `${raw.date}T${raw.time}:00` : raw.start,
+      };
+    } catch (error) {
+      console.error('❌ [getBooking] Failed to fetch booking:', error);
+      
+      // Try local storage on error too
+      const localBookings = loadLocalBookings();
+      const localBooking = localBookings.find(b => b.id === bookingId);
+      if (localBooking) {
+        console.log(`⚠️ [getBooking] Error fetching from cloud, found in local storage: ${bookingId}`);
+        return localBooking;
+      }
+      
+      throw error;
+    }
+  } else {
+    const bookings = loadLocalBookings();
+    const booking = bookings.find((b) => b.id === bookingId);
+    if (!booking) {
+      throw new Error(`Booking ${bookingId} not found in local storage`);
+    }
+    return booking;
+  }
+}
+
+/**
  * Delete a booking permanently (admin only)
  */
 export async function deleteBooking(bookingId, user) {
+  // Fetch booking data before deletion for notification purposes
+  let bookingToDelete = null;
+  try {
+    bookingToDelete = await getBooking(bookingId);
+  } catch (err) {
+    console.warn('⚠️ [deleteBooking] Could not fetch booking for notifications:', err);
+  }
+
   if (useCloudStorage && user) {
     try {
       await deleteCloudBooking(bookingId);
@@ -572,6 +796,14 @@ export async function deleteBooking(bookingId, user) {
   }
 
   emitBookingDeleted({ id: bookingId });
+
+  // 📬 Invia notifiche push ai partecipanti
+  if (bookingToDelete) {
+    sendBookingDeletedNotification(bookingToDelete, user).catch(err => {
+      console.warn('⚠️ [deleteBooking] Failed to send push notifications:', err);
+      // Non bloccare l'eliminazione per errori di notifica
+    });
+  }
 }
 
 // =============================================
@@ -621,6 +853,21 @@ export async function getPublicBookings(options = {}) {
       // CRITICAL FIX: Pass clubId to loadCloudBookings for security rules compliance
       // Club admins can only read bookings with matching clubId filter
       bookings = await loadCloudBookings(clubId);
+      
+      // 🆕 MERGE FIX: Add local bookings that failed to sync to cloud
+      try {
+        const localBookings = loadLocalBookings();
+        const localOnly = localBookings.filter(lb => 
+          !bookings.some(cb => cb.id === lb.id) && 
+          (!clubId || lb.clubId === clubId)
+        );
+        if (localOnly.length > 0) {
+          console.log('⚠️ [getPublicBookings] Merging', localOnly.length, 'local-only bookings');
+          bookings = [...bookings, ...localOnly];
+        }
+      } catch (err) {
+        console.warn('Failed to merge local bookings:', err);
+      }
     } catch {
       // Fallback to local storage on cloud error
       bookings = loadLocalBookings();
@@ -671,23 +918,16 @@ export async function getUserBookings(user, options = {}) {
   // Query ottimizzata: prenotazioni dell'utente (create o per cui è stato prenotato)
   const bookingsRef = collection(db, 'bookings');
 
-  // Query 1: Prenotazioni create dall'utente
-  let q1 = query(bookingsRef, where('createdBy', '==', user.uid));
+  // FIX: Query by userId (matches security rules isOwner check)
+  // We use a single query because security rules require userId == auth.uid
+  let q = query(bookingsRef, where('userId', '==', user.uid));
 
-  // Query 2: Prenotazioni fatte per l'utente (cross-club visibility)
-  let q2 = query(bookingsRef, where('bookedForUserId', '==', user.uid));
-
-  // Filtra per club se specificato (richiede indici composti per entrambe le query)
+  // Filtra per club se specificato (richiede indici composti)
   if (clubId) {
-    q1 = query(bookingsRef, where('createdBy', '==', user.uid), where('clubId', '==', clubId));
-    q2 = query(
-      bookingsRef,
-      where('bookedForUserId', '==', user.uid),
-      where('clubId', '==', clubId)
-    );
+    q = query(bookingsRef, where('userId', '==', user.uid), where('clubId', '==', clubId));
   }
 
-  const [snapshot1, snapshot2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+  const snapshot = await getDocs(q);
 
   // Unisci i risultati rimuovendo duplicati
   const bookingMap = new Map();
@@ -708,8 +948,7 @@ export async function getUserBookings(user, options = {}) {
     });
   };
 
-  processSnapshot(snapshot1);
-  processSnapshot(snapshot2);
+  processSnapshot(snapshot);
 
   let userBookings = Array.from(bookingMap.values());
 
@@ -827,22 +1066,33 @@ async function updateCloudBooking(bookingId, updates) {
     }
   }
 
-  // Update localStorage with the changes
-  const localBookings = loadLocalBookings();
-  const localIndex = localBookings.findIndex((b) => b.id === bookingId);
+  // Fetch the updated booking from Firestore to ensure we have the latest data
+  let updatedBooking = null;
+  try {
+    updatedBooking = await getBooking(bookingId);
+    console.log('✅ [updateCloudBooking] Fetched updated booking from Firestore:', {
+      bookingId,
+      hasData: !!updatedBooking,
+    });
+  } catch (err) {
+    console.warn('⚠️ [updateCloudBooking] Could not fetch updated booking, using local data:', err);
+    
+    // Fallback to local data
+    const localBookings = loadLocalBookings();
+    const localIndex = localBookings.findIndex((b) => b.id === bookingId);
 
-  if (localIndex !== -1) {
-    // Update the local booking with the new data
-    localBookings[localIndex] = { ...localBookings[localIndex], ...updates };
-    saveLocalBookings(localBookings);
+    if (localIndex !== -1) {
+      // Update the local booking with the new data
+      localBookings[localIndex] = { ...localBookings[localIndex], ...updates };
+      saveLocalBookings(localBookings);
+      updatedBooking = localBookings[localIndex];
+    }
   }
 
   // Schedule sync to ensure consistency
   scheduleSync(1000); // Sync after 1 second
 
-  // Return the updated booking
-  const updatedBooking = localBookings.find((b) => b.id === bookingId);
-  return updatedBooking ? { ...updatedBooking, ...updates } : null;
+  return updatedBooking;
 }
 
 async function deleteCloudBooking(bookingId) {
@@ -939,6 +1189,7 @@ async function loadCloudBookings(clubId = null) {
 // LOCAL STORAGE OPERATIONS
 // =============================================
 function createLocalBooking(booking) {
+  console.log('💾 [createLocalBooking] Saving booking to localStorage:', booking.id);
   const bookings = loadLocalBookings();
   bookings.push(booking);
   saveLocalBookings(bookings);
@@ -946,6 +1197,7 @@ function createLocalBooking(booking) {
 }
 
 function updateLocalBooking(bookingId, updates) {
+  console.log('💾 [updateLocalBooking] Updating booking in localStorage:', bookingId);
   const bookings = loadLocalBookings();
   const index = bookings.findIndex((b) => b.id === bookingId);
 
@@ -959,6 +1211,7 @@ function updateLocalBooking(bookingId, updates) {
 }
 
 function deleteLocalBooking(bookingId) {
+  console.log('💾 [deleteLocalBooking] Deleting booking from localStorage:', bookingId);
   // Carica TUTTE le prenotazioni (senza filtri) per poterle eliminare
   const saved = localStorage.getItem(STORAGE_KEY);
   const allBookings = saved ? JSON.parse(saved) : [];
@@ -978,6 +1231,8 @@ function loadLocalBookings() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     const allBookings = saved ? JSON.parse(saved) : [];
+    
+    // console.log('📂 [loadLocalBookings] Loaded', allBookings.length, 'bookings from localStorage');
 
     // Filtra prenotazioni cancellate (considera anche booking senza status come confirmed)
     const activeBookings = allBookings.filter((booking) => {
@@ -998,6 +1253,7 @@ function loadLocalBookings() {
 async function syncLocalWithCloud() {
   if (!useCloudStorage || migrationInProgress) return;
   try {
+    console.log('🔄 [syncLocalWithCloud] Starting sync...');
     // This will fail for club_admin users (no global read access)
     // Only super admins can read all bookings without clubId filter
     const cloudBookings = await loadCloudBookings(); // No clubId = all bookings
@@ -1005,11 +1261,14 @@ async function syncLocalWithCloud() {
       (b) => (b.status || BOOKING_STATUS.CONFIRMED) !== BOOKING_STATUS.CANCELLED
     );
     localStorage.setItem(STORAGE_KEY, JSON.stringify(activeCloudBookings));
+    console.log('✅ [syncLocalWithCloud] Synced', activeCloudBookings.length, 'bookings from cloud');
   } catch (error) {
     // Expected for club_admin users - they don't have global read access
     // Only log if it's NOT a permission error
     if (error?.code !== 'permission-denied') {
       console.error('❌ [syncLocalWithCloud] Unexpected error:', error);
+    } else {
+      console.log('⚠️ [syncLocalWithCloud] Permission denied (expected for club admin)');
     }
   }
 }
@@ -1531,27 +1790,17 @@ export async function getActiveUserBookings(userId) {
   }
 
   try {
-    // Query 1: Prenotazioni create dall'utente
-    const q1 = query(
+    // FIX: Query by userId only (matches security rules isOwner check)
+    const q = query(
       collection(db, COLLECTIONS.BOOKINGS),
-      where('createdBy', '==', userId),
+      where('userId', '==', userId),
       where('status', '==', BOOKING_STATUS.CONFIRMED),
       where('date', '>=', today),
       orderBy('date', 'asc'),
       orderBy('time', 'asc')
     );
 
-    // Query 2: Prenotazioni fatte per l'utente (cross-club visibility)
-    const q2 = query(
-      collection(db, COLLECTIONS.BOOKINGS),
-      where('bookedForUserId', '==', userId),
-      where('status', '==', BOOKING_STATUS.CONFIRMED),
-      where('date', '>=', today),
-      orderBy('date', 'asc'),
-      orderBy('time', 'asc')
-    );
-
-    const [snapshot1, snapshot2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+    const snapshot = await getDocs(q);
 
     // Unisci i risultati rimuovendo duplicati
     const bookingMap = new Map();
@@ -1572,8 +1821,7 @@ export async function getActiveUserBookings(userId) {
       });
     };
 
-    processSnapshot(snapshot1);
-    processSnapshot(snapshot2);
+    processSnapshot(snapshot);
 
     return Array.from(bookingMap.values());
   } catch (error) {
@@ -1598,25 +1846,16 @@ export async function getUserBookingHistory(userId) {
   }
 
   try {
-    // Query 1: Prenotazioni create dall'utente
-    const q1 = query(
+    // FIX: Query by userId only (matches security rules isOwner check)
+    const q = query(
       collection(db, COLLECTIONS.BOOKINGS),
-      where('createdBy', '==', userId),
+      where('userId', '==', userId),
       where('date', '<', today),
       orderBy('date', 'desc'),
       orderBy('time', 'desc')
     );
 
-    // Query 2: Prenotazioni fatte per l'utente (cross-club visibility)
-    const q2 = query(
-      collection(db, COLLECTIONS.BOOKINGS),
-      where('bookedForUserId', '==', userId),
-      where('date', '<', today),
-      orderBy('date', 'desc'),
-      orderBy('time', 'desc')
-    );
-
-    const [snapshot1, snapshot2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+    const snapshot = await getDocs(q);
 
     // Unisci i risultati rimuovendo duplicati
     const bookingMap = new Map();
@@ -1637,8 +1876,7 @@ export async function getUserBookingHistory(userId) {
       });
     };
 
-    processSnapshot(snapshot1);
-    processSnapshot(snapshot2);
+    processSnapshot(snapshot);
 
     return Array.from(bookingMap.values()).sort(
       (a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time)

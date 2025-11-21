@@ -1,0 +1,479 @@
+// =====================================================
+// Firestore Security Rules - PRODUCTION READY (CHK-311)
+// Data: 2025-11-11
+// FIXED VERSION: Addresses RBAC audit findings
+// 
+// Changes from CHK-310:
+// 1. Added isClubAdminOf(clubId) function for club scoping
+// 2. Fixed catch-all rule to allow admin access to new collections
+// 3. Fixed booking read access (privacy: users can only see own bookings)
+// 4. Fixed club_admin restrictions to prevent cross-club access
+// 5. Added Super Admin payment delete permission
+// 6. Added Super Admin notification delete permission
+// 7. Added public leaderboard and statistics collections
+// =====================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==========================================
+    // HELPER FUNCTIONS
+    // ==========================================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user is admin (Super Admin)
+    function isAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Check if user is club admin
+    function isClubAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'club_admin';
+    }
+    
+    // Check if user is admin of SPECIFIC club (prevents cross-club access)
+    // SIMPLIFIED: Uses clubId from user profile instead of club document lookup
+    function isClubAdminOf(clubId) {
+      return isClubAdmin() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.clubId == clubId;
+    }
+    
+    // Check if user is instructor
+    function isInstructor() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'instructor';
+    }
+    
+    // Check if user owns the resource
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Check if user is club owner
+    function isClubOwner(clubId) {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/clubs/$(clubId)).data.ownerId == request.auth.uid;
+    }
+    
+    // Validate email format
+    function isValidEmail(email) {
+      return email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
+    }
+    
+    // Validate timestamp is not in the past (with 5 min tolerance)
+    function isValidFutureTimestamp(ts) {
+      return ts > request.time.toMillis() - 300000;
+    }
+    
+    // Check if data size is within limit (prevent abuse)
+    function isWithinSizeLimit(maxSize) {
+      return request.resource.size() < maxSize;
+    }
+    
+    // ==========================================
+    // USERS COLLECTION
+    // ==========================================
+    match /users/{userId} {
+      // Read: User can read own profile, admins can read all
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Create: Only during sign-up, must match auth uid
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == userId &&
+                       isValidEmail(request.resource.data.email) &&
+                       isWithinSizeLimit(10000);
+      
+      // Update: User can update own profile (except role), admins can update all
+      allow update: if (isOwner(userId) && 
+                       !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role', 'uid'])) ||
+                       isAdmin();
+      
+      // Delete: Only admins (FIXED: was missing in original)
+      allow delete: if isAdmin();
+      
+      // Subcollection: clubViews (for analytics)
+      match /clubViews/{viewId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
+    }
+    
+    // ==========================================
+    // CLUBS COLLECTION
+    // ==========================================
+    match /clubs/{clubId} {
+      // Read: Public (all clubs visible)
+      allow read: if true;
+      
+      // Create: Only admins can create clubs
+      allow create: if isAdmin() && 
+                       isWithinSizeLimit(50000);
+      
+      // Update: Club admin of THIS club, club owner, or super admin
+      allow update: if (isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin()) &&
+                       isWithinSizeLimit(50000);
+      
+      // Delete: Only admins
+      allow delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // COURTS COLLECTION
+    // ==========================================
+    match /courts/{courtId} {
+      // Read: Public (all courts visible)
+      allow read: if true;
+      
+      // Create: Only admins or instructors (FIXED: removed unsecured club admin access)
+      allow create: if (isInstructor() || isAdmin()) &&
+                       isWithinSizeLimit(20000);
+      
+      // Update: Only admins or instructors
+      allow update: if (isInstructor() || isAdmin()) &&
+                       isWithinSizeLimit(20000);
+      
+      // Delete: Only admins
+      allow delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // BOOKINGS COLLECTION
+    // ==========================================
+    match /bookings/{bookingId} {
+      // Read: Users can read OWN bookings, club admins can read their CLUB bookings, admins see all
+      // FIXED: Added club admin access to their club bookings
+      allow read: if isOwner(resource.data.userId) || 
+                     isAdmin() ||
+                     (isClubAdmin() && resource.data.clubId != null && isClubAdminOf(resource.data.clubId));
+      
+      // Create: Authenticated users only, must be own booking OR admin/club_admin
+      allow create: if isAuthenticated() && 
+                       (
+                         (request.resource.data.userId == request.auth.uid && 
+                          request.resource.data.status == 'pending' &&
+                          isValidFutureTimestamp(request.resource.data.startTime)) ||
+                         isAdmin() ||
+                         (isClubAdmin() && request.resource.data.clubId != null && isClubAdminOf(request.resource.data.clubId))
+                       ) &&
+                       isWithinSizeLimit(10000);
+      
+      // Update: Owner can update limited fields, club admin can update club bookings, admin can update anything
+      // FIXED: Added club admin access with club verification
+      allow update: if (isOwner(resource.data.userId) && 
+                         request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'notes']) == false) ||
+                       isAdmin() ||
+                       (isClubAdmin() && resource.data.clubId != null && isClubAdminOf(resource.data.clubId));
+      
+      // Delete: Owner, club admin (for their club), or admin
+      allow delete: if isOwner(resource.data.userId) || 
+                       isAdmin() ||
+                       (isClubAdmin() && resource.data.clubId != null && isClubAdminOf(resource.data.clubId));
+    }
+    
+    // ==========================================
+    // PAYMENTS COLLECTION
+    // ==========================================
+    match /payments/{paymentId} {
+      // Read: User can read own payments, admins can read all
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      
+      // Create: System only (via Cloud Functions)
+      allow create: if false;
+      
+      // Update: Admins only
+      allow update: if isAdmin();
+      
+      // Delete: Admins only (FIXED: was never allowing deletion)
+      allow delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // LEAGUES COLLECTION
+    // ==========================================
+    match /leagues/{leagueId} {
+      // Read: Public
+      allow read: if true;
+      
+      // Create: Admins only
+      allow create: if isAdmin() && 
+                       isWithinSizeLimit(50000);
+      
+      // Update: Admins only
+      allow update: if isAdmin() &&
+                       isWithinSizeLimit(50000);
+      
+      // Delete: Admins only
+      allow delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // TOURNAMENTS COLLECTION
+    // ==========================================
+    match /tournaments/{tournamentId} {
+      // Read: Public
+      allow read: if true;
+      
+      // Create: Admins only (FIXED: removed unsecured club_admin access)
+      allow create: if isAdmin() &&
+                       isWithinSizeLimit(50000);
+      
+      // Update: Admins only (FIXED: removed unsecured club_admin access)
+      allow update: if isAdmin() &&
+                       isWithinSizeLimit(50000);
+      
+      // Delete: Admins only
+      allow delete: if isAdmin();
+    }
+    
+    // ==========================================
+    // PUBLIC TOURNAMENTS INDEX (for "Tornei Live")
+    // ==========================================
+    match /publicTournaments/{indexId} {
+  // Read: Public (anyone can see the list of live tournaments)
+  allow read: if true;
+      
+      // Write: Admins and club admins (via Cloud Functions/admin panel)
+      allow write: if isAdmin() || isClubAdmin();
+    }
+    
+    // ==========================================
+    // NOTIFICATIONS COLLECTION (Legacy)
+    // ==========================================
+    match /notifications/{notificationId} {
+      // Read: User can read own notifications
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      
+      // Create: System only (via Cloud Functions)
+      allow create: if false;
+      
+      // Update: User can mark as read
+      allow update: if isOwner(resource.data.userId) ||
+                       isAdmin();
+      
+      // Delete: User can delete own notifications, admin can delete any (FIXED: was missing admin permission)
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+
+    // ==========================================
+    // USER NOTIFICATIONS COLLECTION (NEW - In-App Notifications)
+    // ==========================================
+    match /userNotifications/{notificationId} {
+      // Read: User can read own notifications
+      allow read: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Create: Cloud Functions only
+      allow create: if false;
+      
+      // Update: User can mark as read or archive own notifications
+      allow update: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+      
+      // Delete: User can delete own notifications
+      allow delete: if isAuthenticated() && 
+                       resource.data.userId == request.auth.uid;
+    }
+    
+    // ==========================================
+    // PUBLIC LEADERBOARDS COLLECTION (NEW)
+    // ==========================================
+    // Public leaderboards accessible by all authenticated users
+    match /leaderboards/{leaderboardId} {
+      // Read: Public - all authenticated users can read
+      allow read: if isAuthenticated();
+      
+      // Write: Admins only
+      allow write: if isAdmin();
+    }
+    
+    // ==========================================
+    // PUBLIC STATISTICS COLLECTION (NEW)
+    // ==========================================
+    // Public player statistics accessible by all authenticated users
+    match /statistics/{statId} {
+      // Read: Public - all authenticated users can read
+      allow read: if isAuthenticated();
+      
+      // Write: Admins or instructors
+      allow write: if isAdmin() || isInstructor();
+    }
+    
+    // ==========================================
+    // ANALYTICS COLLECTION (Admin only)
+    // ==========================================
+    match /analytics/{documentId} {
+      allow read: if isAdmin();
+      allow write: if false; // Written by Cloud Functions only
+    }
+    
+    // ==========================================
+    // AUDIT_LOGS COLLECTION (Admin only)
+    // ==========================================
+    match /audit_logs/{logId} {
+      allow read: if isAdmin();
+      allow write: if false; // Written by Cloud Functions only
+    }
+    
+    // ==========================================
+    // FEATURE_FLAGS COLLECTION
+    // ==========================================
+    match /feature_flags/{flagId} {
+      allow read: if isAuthenticated(); // All users can read flags
+      allow write: if isAdmin(); // Only admins can modify
+    }
+    
+    // ==========================================
+    // EXPERIMENTS COLLECTION
+    // ==========================================
+    match /experiments/{experimentId} {
+      allow read: if isAuthenticated(); // All users can read experiments
+      allow write: if isAdmin(); // Only admins can modify
+    }
+    
+    // ==========================================
+    // PUSH NOTIFICATIONS SYSTEM
+    // ==========================================
+    match /pushSubscriptions/{subscriptionId} {
+      allow read: if isOwner(resource.data.userId) || isAdmin();
+      allow create, update: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+    
+    match /scheduledNotifications/{notificationId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    
+    match /notificationEvents/{eventId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    
+    match /notificationDeliveries/{deliveryId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    
+    // ==========================================
+    // INSTRUCTORS, PROFILES, AFFILIATIONS
+    // ==========================================
+    match /instructors/{instructorId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdmin() || isAdmin();
+    }
+    
+    match /profiles/{profileId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdmin() || isAdmin();
+    }
+    
+    match /affiliations/{affiliationId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdmin() || isAdmin();
+    }
+    
+    // ==========================================
+    // CLUBS SUBCOLLECTIONS
+    // ==========================================
+    match /clubs/{clubId}/players/{playerId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+    }
+    
+    match /clubs/{clubId}/matches/{matchId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+    }
+    
+    match /clubs/{clubId}/tournaments/{tournamentId} {
+      // Public read allowed ONLY if tournament has publicView.enabled == true
+      allow read: if isAuthenticated() || resource.data.publicView.enabled == true;
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+      
+      // Tournament subcollections: standings, matches, teams
+      match /standings/{standingId} {
+        // Public read if parent tournament public view is enabled
+        allow read: if isAuthenticated() || get(/databases/$(database)/documents/clubs/$(clubId)/tournaments/$(tournamentId)).data.publicView.enabled == true;
+        allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+      }
+      
+      match /matches/{matchId} {
+        // Public read if parent tournament public view is enabled
+        allow read: if isAuthenticated() || get(/databases/$(database)/documents/clubs/$(clubId)/tournaments/$(tournamentId)).data.publicView.enabled == true;
+        allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+      }
+      
+      match /teams/{teamId} {
+        // Public read if parent tournament public view is enabled
+        allow read: if isAuthenticated() || get(/databases/$(database)/documents/clubs/$(clubId)/tournaments/$(tournamentId)).data.publicView.enabled == true;
+        allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+      }
+    }
+    
+    match /clubs/{clubId}/profiles/{profileId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+    }
+    
+    match /clubs/{clubId}/users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+    }
+    
+    match /clubs/{clubId}/courts/{courtId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+    }
+    
+    match /clubs/{clubId}/statsCache/{statId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+    }
+    
+    match /clubs/{clubId}/instructors/{instructorId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+    }
+    
+    match /clubs/{clubId}/timeSlots/{slotId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+    }
+    
+    match /clubs/{clubId}/settings/{settingId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+    }
+    
+    match /clubs/{clubId}/applied/{appliedId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+    }
+    
+    match /clubs/{clubId}/leaderboard/{playerId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+      
+      // Leaderboard entries subcollection
+      match /entries/{entryId} {
+        allow read: if isAuthenticated();
+        allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+      }
+    }
+    
+    // ==========================================
+    // CATCH-ALL RULE (FIXED)
+    // ==========================================
+    // FIXED: Allow admins to access any new/unlisted collections
+    // Previously: allow read, write: if false;  (blocked all)
+    match /{document=**} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

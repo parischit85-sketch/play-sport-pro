@@ -9,7 +9,7 @@ import { useUI } from '@contexts/UIContext.jsx';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClubSettings } from '@hooks/useClubSettings.js';
 import PrenotazioneCampi from '@features/prenota/PrenotazioneCampi.jsx';
-import Extra from '@features/extra/Extra.jsx';
+import ClubSettings from '@features/clubs/ClubSettings.jsx';
 import { db } from '@services/firebase.js';
 import { writeBatch, doc, collection } from 'firebase/firestore';
 
@@ -65,14 +65,9 @@ export default function AdminBookingsPage() {
         <h3 className={`text-xl font-bold mb-2 ${T.text}`}>Modalità Club Richiesta</h3>
         <p className={`${T.subtext} mb-4`}>
           {userRole === 'super_admin' || (user && user.userProfile?.role === 'admin')
-            ? 'Per accedere alla gestione campi, devi prima sbloccare la modalità club nella sezione Extra.'
+            ? 'Per accedere alla gestione campi, devi attivare la modalità club.'
             : 'Per accedere alla gestione campi, è necessario avere privilegi di amministratore del club.'}
         </p>
-        {(userRole === 'super_admin' || (user && user.userProfile?.role === 'admin')) && (
-          <button onClick={() => navigate('/extra')} className={`${T.btnPrimary} px-6 py-3`}>
-            Vai a Extra per sbloccare
-          </button>
-        )}
       </div>
     );
   }
@@ -114,7 +109,7 @@ export default function AdminBookingsPage() {
               </button>
             </div>
             <div className="p-4">
-              <Extra
+              <ClubSettings
                 T={T}
                 state={{ players, matches, courts: localCourts, bookingConfig }}
                 setState={async (newState) => {

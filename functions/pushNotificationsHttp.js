@@ -9,6 +9,8 @@ import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import cors from 'cors';
 import crypto from 'crypto';
+import webpush from 'web-push';
+import { saveUserNotification } from './userNotifications.js';
 
 // Inizializza Admin SDK
 if (getApps().length === 0) {
@@ -186,7 +188,7 @@ export const removePushSubscriptionHttp = onRequest(
 );
 
 /**
- * HTTP endpoint per inviare push notification di test
+ * HTTP endpoint per inviare push notification
  */
 export const sendPushNotificationHttp = onRequest(
   {
@@ -218,20 +220,133 @@ export const sendPushNotificationHttp = onRequest(
           return;
         }
 
-        console.log('[sendPushNotificationHttp] Sending test notification...', { firebaseUid });
-
-        // Per ora, ritorniamo successo - l'implementazione completa richiederebbe
-        // l'integrazione con web-push o Firebase Cloud Messaging
-        // Questo è solo un endpoint di test
-        console.log('[sendPushNotificationHttp] Test notification endpoint called', {
+        console.log('[sendPushNotificationHttp] Sending notification...', {
           firebaseUid,
-          notificationTitle: notification.title,
+          title: notification.title,
+        });
+
+        // Save in-app notification (once per user)
+        try {
+          await saveUserNotification({
+            userId: firebaseUid,
+            title: notification.title,
+            body: notification.body,
+            type: notification.data?.category || 'info',
+            metadata: notification.data || {},
+            icon: notification.icon,
+            actionUrl: notification.data?.url || notification.click_action,
+            priority: notification.data?.priority || 'normal',
+          });
+          console.log('[sendPushNotificationHttp] In-app notification saved');
+        } catch (saveError) {
+          console.error('[sendPushNotificationHttp] Failed to save in-app notification:', saveError);
+          // Don't fail the request if saving fails, just log it
+        }
+
+        // Get VAPID keys from environment (secrets are injected as env vars)
+        const vapidPublicKey = (process.env.VAPID_PUBLIC_KEY || '').trim();
+        const vapidPrivateKey = (process.env.VAPID_PRIVATE_KEY || '').trim();
+
+        if (!vapidPublicKey || !vapidPrivateKey) {
+          throw new Error('VAPID keys not configured');
+        }
+
+        webpush.setVapidDetails('mailto:paris.andrea@live.it', vapidPublicKey, vapidPrivateKey);
+
+        // Query subscriptions per userId
+        const subsSnap = await db
+          .collection('pushSubscriptions')
+          .where('firebaseUid', '==', firebaseUid)
+          .get();
+
+        console.log('[sendPushNotificationHttp] Subscriptions found:', subsSnap.size);
+
+        if (subsSnap.empty) {
+          res.status(404).json({
+            error: 'Nessuna sottoscrizione push trovata per questo utente',
+          });
+          return;
+        }
+
+        // Filtra subscriptions valide
+        const now = new Date().toISOString();
+        const validDocs = subsSnap.docs.filter((doc) => {
+          const data = doc.data();
+          const isActive = data.isActive === true || data.active === true;
+          const notExpired = !data.expiresAt || data.expiresAt > now;
+          return isActive && notExpired;
+        });
+
+        console.log('[sendPushNotificationHttp] Valid subscriptions:', validDocs.length);
+
+        if (validDocs.length === 0) {
+          res.status(404).json({
+            error: 'Nessuna sottoscrizione attiva trovata',
+          });
+          return;
+        }
+
+        const payload = JSON.stringify(notification);
+        const invalidDocs = [];
+
+        // Invia a tutte le subscriptions valide
+        const results = await Promise.allSettled(
+          validDocs.map(async (doc) => {
+            const data = doc.data();
+            const sub = {
+              endpoint: data.endpoint || data.subscription?.endpoint,
+              keys: data.keys || data.subscription?.keys,
+            };
+
+            console.log('[sendPushNotificationHttp] Sending to:', {
+              docId: doc.id,
+              endpoint: sub.endpoint?.substring(0, 50) + '...',
+            });
+
+            try {
+              await webpush.sendNotification(sub, payload);
+              console.log('[sendPushNotificationHttp] ✅ Sent successfully');
+
+              // Aggiorna lastUsedAt
+              await doc.ref.update({
+                lastUsedAt: new Date().toISOString(),
+              });
+            } catch (err) {
+              console.error('[sendPushNotificationHttp] ❌ Send failed:', err.message);
+
+              // Segna per eliminazione se non valida
+              const statusCode = err?.statusCode || err?.status;
+              if (statusCode === 404 || statusCode === 410) {
+                console.log('[sendPushNotificationHttp] Marking invalid:', doc.id);
+                invalidDocs.push(doc.id);
+              }
+              throw err;
+            }
+          })
+        );
+
+        // Pulisci subscriptions invalide
+        if (invalidDocs.length > 0) {
+          await Promise.all(
+            invalidDocs.map((id) => db.collection('pushSubscriptions').doc(id).delete())
+          );
+        }
+
+        const successCount = results.filter((r) => r.status === 'fulfilled').length;
+        const failureCount = results.filter((r) => r.status === 'rejected').length;
+
+        console.log('[sendPushNotificationHttp] Results:', {
+          total: results.length,
+          success: successCount,
+          failed: failureCount,
         });
 
         res.status(200).json({
           result: {
-            success: true,
-            message: 'Test notification endpoint - implementation pending',
+            success: successCount > 0,
+            sent: successCount,
+            failed: failureCount,
+            removed: invalidDocs.length,
           },
         });
       } catch (error) {

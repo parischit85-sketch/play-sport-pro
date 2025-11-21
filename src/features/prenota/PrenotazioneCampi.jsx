@@ -14,7 +14,6 @@ import { calculateLessonPrice } from '@services/bookings.js';
 import { useUnifiedBookings } from '@hooks/useUnifiedBookings.js';
 import { PLAYER_CATEGORIES } from '@features/players/types/playerTypes.js';
 import { useNotifications } from '@contexts/NotificationContext';
-import { sendBookingConfirmationPush } from '@/services/push-notifications-integration';
 import { ds } from '@lib/design-system.js';
 
 // Componente calendario personalizzato
@@ -246,7 +245,14 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
             start: startIso,
             duration: Number(b.duration) || 60,
             players: [],
-            playerNames: Array.isArray(b.players) ? b.players : [],
+            // 🎯 FIX: Normalizza players - estrai solo nomi (supporta sia stringhe che oggetti)
+            playerNames: Array.isArray(b.players) 
+              ? b.players.map(p => {
+                  if (typeof p === 'string') return p;
+                  if (typeof p === 'object' && p !== null) return p.name || '';
+                  return '';
+                })
+              : [],
             guestNames: [],
             price: b.price ?? null,
             note: b.notes || '',
@@ -509,7 +515,10 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     console.log('✏️ openEdit called', booking.id);
     setEditingId(booking.id);
     const start = new Date(booking.start);
-    const namesFromIds = (booking.players || []).map(playersNameById);
+    const namesFromIds = (booking.players || []).map(p => {
+      if (typeof p === 'object' && p !== null) return p.name || '';
+      return playersNameById(p);
+    });
     let playerNames =
       booking.playerNames && booking.playerNames.length ? booking.playerNames : namesFromIds;
 
@@ -665,8 +674,27 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     }
 
     const pNames = [form.p1Name, form.p2Name, form.p3Name, form.p4Name]
-      .map((s) => (s || '').trim())
+      .map((s) => {
+        if (typeof s === 'string') return s.trim();
+        if (typeof s === 'object' && s !== null) return (s.name || '').trim();
+        return '';
+      })
       .filter(Boolean);
+    
+    // 🎯 FIX: Converti nomi giocatori in oggetti strutturati con linkedFirebaseUid
+    const playerObjects = pNames.map(name => {
+      const player = players?.find(p => p.name === name);
+      if (player) {
+        return {
+          name: player.name,
+          uid: player.userId || player.id, // Player internal ID
+          linkedFirebaseUid: player.linkedFirebaseUid || null, // ✅ Corretto: usa linkedFirebaseUid
+        };
+      }
+      // Se non trovato nella lista, è un nome custom (ospite)
+      return { name };
+    });
+    
     const bookedByName = (form.bookedBy && form.bookedBy.trim()) || pNames[0] || '';
 
     // Calcolo prezzo dinamico: lezioni vs partite
@@ -715,7 +743,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           lighting: !!form.useLighting,
           heating: !!form.useHeating,
           price,
-          players: pNames,
+          players: playerObjects, // 🎯 FIX: Pass oggetti strutturati invece di stringhe
           notes: form.note?.trim() || '',
           type: 'court',
           color: form.color, // Add custom color
@@ -751,18 +779,8 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           await updateUnifiedBooking(created.id, { bookedBy: bookedByName });
         }
 
-        // Send push notification for new booking
-        if (user?.uid) {
-          try {
-            await sendBookingConfirmationPush(user.uid, {
-              ...bookingData,
-              id: created.id,
-              start: start,
-            });
-          } catch (pushError) {
-            console.log('Push notification failed (non-blocking):', pushError);
-          }
-        }
+        // Push notifications are handled automatically by booking-notifications.js
+        // via BOOKING_CREATED event - sends to all participants (players), not creator
       } else {
         // Update existing booking using unified service
         const updateData = {
@@ -774,7 +792,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
           lighting: !!form.useLighting,
           heating: !!form.useHeating,
           price,
-          players: pNames,
+          players: playerObjects, // 🎯 FIX: Pass oggetti strutturati anche in update
           notes: form.note?.trim() || '',
           color: form.color, // Add custom color
           isLessonBooking: form.bookingType === 'lezione',
@@ -1180,9 +1198,15 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
     const labelPlayers = (
       hit.playerNames && hit.playerNames.length
         ? hit.playerNames
-        : (hit.players || []).map((pid) => playersById?.[pid]?.name || '—')
+        : (hit.players || []).map((p) => {
+            // Handle case where players are stored as objects {name, uid}
+            if (typeof p === 'object' && p !== null) return p.name || '—';
+            // Handle case where players are stored as ID strings
+            return playersById?.[p]?.name || '—';
+          })
     )
       .concat(hit.guestNames || [])
+      .map(p => (typeof p === 'object' && p !== null) ? (p.name || '—') : p) // Ensure all items are strings
       .slice(0, 4);
 
     // Icone semplici emoji senza sfondo
