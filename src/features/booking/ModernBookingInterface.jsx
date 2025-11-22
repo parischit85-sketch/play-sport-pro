@@ -88,6 +88,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
   // Stato dati prenotazioni
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
+  const [lastBookingDetails, setLastBookingDetails] = useState(null);
 
   // Initialize players with current user when user is available
   useEffect(() => {
@@ -534,10 +535,19 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         // setState((s) => ({ ...s, bookings: [...(s.bookings || []), toAppBooking] }));
       }
 
+      // Salva i dettagli per il popup di successo prima di resettare il form
+      setLastBookingDetails({
+        date: selectedDate,
+        time: selectedTime,
+        courtName: selectedCourt?.name,
+        duration: duration,
+      });
+
       // Mostra animazione di successo
       setShowSuccessAnimation(true);
       setTimeout(() => {
         setShowSuccessAnimation(false);
+        setLastBookingDetails(null);
       }, 3000);
 
       // Ripristina il modulo
@@ -1462,7 +1472,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       )}
 
       {/* Success Animation - Premium Redesign */}
-      {showSuccessAnimation && (
+      {showSuccessAnimation && lastBookingDetails && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           {/* Backdrop with blur */}
           <div className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in" />
@@ -1513,8 +1523,8 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       d="M5 13l4 4L19 7"
                       style={{
                         strokeDasharray: 24,
-                        strokeDashoffset: 0,
-                        animation: 'drawCheck 0.6s ease-out 0.2s backwards',
+                        strokeDashoffset: 24,
+                        animation: 'drawCheck 0.6s cubic-bezier(0.65, 0, 0.45, 1) 0.2s forwards',
                       }}
                     />
                   </svg>
@@ -1541,7 +1551,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       Data
                     </div>
                     <div className="text-white font-medium">
-                      {new Date(selectedDate).toLocaleDateString('it-IT', {
+                      {new Date(lastBookingDetails.date).toLocaleDateString('it-IT', {
                         weekday: 'short',
                         day: 'numeric',
                         month: 'short',
@@ -1552,7 +1562,9 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                     <div className="text-xs text-gray-400 uppercase tracking-wider font-semibold">
                       Orario
                     </div>
-                    <div className="text-emerald-400 font-bold text-lg">{selectedTime}</div>
+                    <div className="text-emerald-400 font-bold text-lg">
+                      {lastBookingDetails.time}
+                    </div>
                   </div>
                 </div>
 
@@ -1562,7 +1574,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       Campo
                     </div>
                     <div className="text-white font-medium truncate max-w-[140px]">
-                      {selectedCourt?.name}
+                      {lastBookingDetails.courtName}
                     </div>
                   </div>
                   <div className="text-right">
