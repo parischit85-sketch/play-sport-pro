@@ -87,51 +87,114 @@ class UpdateService {
     document.body.appendChild(updateBanner);
   }
 
-  // Crea banner di aggiornamento
+  // Crea banner di aggiornamento (Popup modale)
   createUpdateBanner() {
+    // Rimuovi eventuali banner esistenti
+    const existing = document.getElementById('update-banner');
+    if (existing) existing.remove();
+
     const banner = document.createElement('div');
     banner.id = 'update-banner';
+
+    // Overlay style
     banner.style.cssText = `
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 12px 16px;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
       z-index: 10000;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      animation: fadeIn 0.3s ease-out;
     `;
 
+    // Add keyframes for animation if not present
+    if (!document.getElementById('update-keyframes')) {
+      const style = document.createElement('style');
+      style.id = 'update-keyframes';
+      style.innerHTML = `
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      `;
+      document.head.appendChild(style);
+    }
+
     banner.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-        </svg>
-        <span>Nuova versione disponibile!</span>
+      <div style="
+        background: white;
+        padding: 24px;
+        border-radius: 16px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        width: 90%;
+        max-width: 320px;
+        text-align: center;
+        animation: slideUp 0.3s ease-out;
+        border: 1px solid rgba(0,0,0,0.1);
+      ">
+        <div style="
+          width: 48px;
+          height: 48px;
+          background: #eff6ff;
+          color: #3b82f6;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 0 auto 16px auto;
+        ">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </div>
+        
+        <h3 style="
+          margin: 0 0 8px 0;
+          color: #111827;
+          font-size: 18px;
+          font-weight: 600;
+        ">Aggiornamento Disponibile</h3>
+        
+        <p style="
+          margin: 0 0 20px 0;
+          color: #6b7280;
+          font-size: 14px;
+          line-height: 1.5;
+        ">È disponibile una nuova versione dell'app. Aggiorna per ottenere le ultime funzionalità.</p>
+        
+        <button id="update-btn" style="
+          width: 100%;
+          background: #2563eb;
+          color: white;
+          border: none;
+          padding: 12px;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 14px;
+          cursor: pointer;
+          transition: background 0.2s;
+        ">
+          Aggiorna Ora
+        </button>
       </div>
-      <button id="update-btn" style="
-        background: rgba(255,255,255,0.2);
-        border: 1px solid rgba(255,255,255,0.3);
-        color: white;
-        padding: 6px 12px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 500;
-      ">Aggiorna</button>
     `;
 
     // Gestisci click aggiornamento
-    banner.querySelector('#update-btn').addEventListener('click', () => {
+    const btn = banner.querySelector('#update-btn');
+    btn.addEventListener('click', () => {
+      btn.innerHTML = 'Aggiornamento in corso...';
+      btn.style.opacity = '0.7';
       this.applyUpdate();
-      banner.remove();
+      // Non rimuoviamo il banner subito per dare feedback visivo
     });
+
+    // Hover effect via JS
+    btn.addEventListener('mouseenter', () => (btn.style.background = '#1d4ed8'));
+    btn.addEventListener('mouseleave', () => (btn.style.background = '#2563eb'));
 
     return banner;
   }
