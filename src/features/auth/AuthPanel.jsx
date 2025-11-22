@@ -10,12 +10,12 @@ import {
   sendMagicLink,
   completeMagicLinkIfPresent,
   logout,
-  saveUserProfile,
+  updateUserProfile,
   setDisplayName,
 } from '@services/auth.jsx';
 
 export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
-  const { showSuccess, showError, showWarning, showInfo } = useNotifications();
+  const { showError, showWarning, showInfo } = useNotifications();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [sending, setSending] = useState(false);
@@ -147,7 +147,7 @@ export default function AuthPanel({ T, user, userProfile, setUserProfile }) {
         email: user.email,
       };
 
-      await saveUserProfile(user.uid, updatedProfile);
+      await updateUserProfile(user.uid, updatedProfile);
 
       // Aggiorna il display name
       const displayName = [profileForm.firstName, profileForm.lastName].filter(Boolean).join(' ');

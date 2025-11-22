@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '@contexts/NotificationContext';
 import Section from '@ui/Section.jsx';
-import { auth, getUserProfile, saveUserProfile, setDisplayName } from '@services/auth';
+import { auth, getUserProfile, updateUserProfile, setDisplayName } from '@services/auth';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 // import { useUI } from '@contexts/UIContext.jsx'; // Rimosso - tema scuro forzato
@@ -57,27 +57,6 @@ export default function Profile({ T }) {
   const urlParams = new URLSearchParams(window.location.search);
   const forceNormalProfile = urlParams.get('normal') === 'true';
 
-  // If user is admin and not forcing normal profile, render admin profile
-  if (isActuallyAdmin && actualClubId && !forceNormalProfile) {
-    return (
-      <div className="space-y-4">
-        <div className={`flex justify-between items-center ${T.cardBg} border border-blue-500/30 p-4 rounded-xl`}>
-          <div className="text-sm">
-            <strong>👔 Modalità Admin</strong> - Stai visualizzando l'interfaccia di gestione del
-            club
-          </div>
-          <button
-            onClick={() => (window.location.href = '/profile?normal=true')}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
-          >
-            👤 Profilo Utente
-          </button>
-        </div>
-        <ClubAdminProfile T={T} club={club} clubId={actualClubId} />
-      </div>
-    );
-  }
-
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -115,10 +94,33 @@ export default function Profile({ T }) {
     };
   }, [user]);
 
+  // If user is admin and not forcing normal profile, render admin profile
+  if (isActuallyAdmin && actualClubId && !forceNormalProfile) {
+    return (
+      <div className="space-y-4">
+        <div
+          className={`flex justify-between items-center ${T.cardBg} border border-blue-500/30 p-4 rounded-xl`}
+        >
+          <div className="text-sm">
+            <strong>👔 Modalità Admin</strong> - Stai visualizzando l&apos;interfaccia di gestione
+            del club
+          </div>
+          <button
+            onClick={() => (window.location.href = '/profile?normal=true')}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+          >
+            👤 Profilo Utente
+          </button>
+        </div>
+        <ClubAdminProfile T={T} club={club} clubId={actualClubId} />
+      </div>
+    );
+  }
+
   const handleSaveProfile = async () => {
     try {
       setSaving(true);
-      await saveUserProfile(user.uid, form);
+      await updateUserProfile(user.uid, form);
       const name = [form.firstName, form.lastName].filter(Boolean).join(' ');
       if (name) await setDisplayName(user, name);
 
@@ -255,7 +257,9 @@ export default function Profile({ T }) {
       <Section title="Profilo Utente 👤" T={T}>
         <div className={`${T.cardBg} ${T.border} rounded-3xl p-6 space-y-6 shadow-2xl`}>
           {/* Header con avatar e info principali */}
-          <div className={`flex items-center gap-6 p-6 ${T.cardBg} border border-blue-500/30 rounded-2xl`}>
+          <div
+            className={`flex items-center gap-6 p-6 ${T.cardBg} border border-blue-500/30 rounded-2xl`}
+          >
             {user.photoURL ? (
               <img
                 src={user.photoURL}
@@ -281,11 +285,11 @@ export default function Profile({ T }) {
                     ? getProviderName(user.providerData[0].providerId)
                     : 'Email'}
                 </span>
-                <div className={`flex items-center gap-1 ${T.cardBg} border border-emerald-500/30 px-3 py-1 rounded-full`}>
+                <div
+                  className={`flex items-center gap-1 ${T.cardBg} border border-emerald-500/30 px-3 py-1 rounded-full`}
+                >
                   <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                  <span className={`text-xs font-medium text-emerald-400`}>
-                    Online
-                  </span>
+                  <span className={`text-xs font-medium text-emerald-400`}>Online</span>
                 </div>
               </div>
             </div>
@@ -295,28 +299,24 @@ export default function Profile({ T }) {
           <PushNotificationPanel />
 
           {/* Stato Account */}
-          <div className={`flex items-center justify-between p-4 ${T.cardBg} border border-emerald-500/30 rounded-2xl`}>
+          <div
+            className={`flex items-center justify-between p-4 ${T.cardBg} border border-emerald-500/30 rounded-2xl`}
+          >
             <div className="flex items-center gap-3">
               <div className="w-4 h-4 bg-emerald-500 rounded-full shadow-lg"></div>
-              <span className="text-lg font-bold text-emerald-400">
-                Account Attivo
-              </span>
+              <span className="text-lg font-bold text-emerald-400">Account Attivo</span>
             </div>
-            <div className={`flex items-center gap-2 ${T.cardBg} border border-emerald-500/30 px-3 py-1 rounded-full`}>
-              <svg
-                className="w-4 h-4 text-emerald-400"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
+            <div
+              className={`flex items-center gap-2 ${T.cardBg} border border-emerald-500/30 px-3 py-1 rounded-full`}
+            >
+              <svg className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                   clipRule="evenodd"
                 />
               </svg>
-              <span className="text-sm font-medium text-emerald-400">
-                Email verificata
-              </span>
+              <span className="text-sm font-medium text-emerald-400">Email verificata</span>
             </div>
           </div>
 
@@ -380,7 +380,7 @@ export default function Profile({ T }) {
                   d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                 />
               </svg>
-              Esci dall'account
+              Esci dall&apos;account
             </button>
           </div>
         </div>
@@ -397,8 +397,11 @@ export default function Profile({ T }) {
             <div className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-2">
-                  <label className={`text-sm font-semibold ${T.text}`}>Nome *</label>
+                  <label htmlFor="firstName" className={`text-sm font-semibold ${T.text}`}>
+                    Nome *
+                  </label>
                   <input
+                    id="firstName"
                     className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.firstName}
                     onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
@@ -406,8 +409,11 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className={`text-sm font-semibold ${T.text}`}>Cognome</label>
+                  <label htmlFor="lastName" className={`text-sm font-semibold ${T.text}`}>
+                    Cognome
+                  </label>
                   <input
+                    id="lastName"
                     className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.lastName}
                     onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
@@ -415,8 +421,11 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className={`text-sm font-semibold ${T.text}`}>Telefono *</label>
+                  <label htmlFor="phone" className={`text-sm font-semibold ${T.text}`}>
+                    Telefono *
+                  </label>
                   <input
+                    id="phone"
                     className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.phone}
                     onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
@@ -424,8 +433,11 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className={`text-sm font-semibold ${T.text}`}>Codice Fiscale</label>
+                  <label htmlFor="fiscalCode" className={`text-sm font-semibold ${T.text}`}>
+                    Codice Fiscale
+                  </label>
                   <input
+                    id="fiscalCode"
                     className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.fiscalCode}
                     onChange={(e) => setForm((f) => ({ ...f, fiscalCode: e.target.value }))}
@@ -433,8 +445,11 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className={`text-sm font-semibold ${T.text}`}>Data di nascita</label>
+                  <label htmlFor="birthDate" className={`text-sm font-semibold ${T.text}`}>
+                    Data di nascita
+                  </label>
                   <input
+                    id="birthDate"
                     type="date"
                     className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.birthDate}
@@ -442,8 +457,11 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col space-y-2">
-                  <label className={`text-sm font-semibold ${T.text}`}>Email</label>
+                  <label htmlFor="email" className={`text-sm font-semibold ${T.text}`}>
+                    Email
+                  </label>
                   <input
+                    id="email"
                     type="email"
                     className={`px-4 py-3 ${T.inputBg} ${T.border} rounded-xl ${T.subtext} cursor-not-allowed`}
                     value={user.email || ''}
@@ -451,8 +469,11 @@ export default function Profile({ T }) {
                   />
                 </div>
                 <div className="flex flex-col sm:col-span-2 space-y-2">
-                  <label className={`text-sm font-semibold ${T.text}`}>Indirizzo</label>
+                  <label htmlFor="address" className={`text-sm font-semibold ${T.text}`}>
+                    Indirizzo
+                  </label>
                   <input
+                    id="address"
                     className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
                     value={form.address}
                     onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}

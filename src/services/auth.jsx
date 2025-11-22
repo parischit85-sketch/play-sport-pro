@@ -1,7 +1,7 @@
 // =============================================
 // FILE: src/services/auth.jsx
 // =============================================
-import { auth, db } from './firebase.js';
+import { auth } from './firebase.js';
 import { resetClubsCooldowns } from './clubs.js';
 // import { console.error, console.log } from "../lib/sentry.js";
 import { trackAuth } from '../lib/analytics.js';
@@ -23,10 +23,6 @@ import {
   updateProfile,
   sendEmailVerification,
 } from 'firebase/auth';
-import { collection, getDocs, query, limit as qLimit } from 'firebase/firestore';
-
-// Costante per il club principale
-const MAIN_CLUB_ID = 'sporting-cat';
 
 // Cache variables (moved from old profiles system)
 // eslint-disable-next-line no-unused-vars
@@ -154,7 +150,7 @@ async function createOrUpdateUserProfile(user) {
         ...existingProfile, // mantieni i dati esistenti
       };
 
-      await saveUserProfile(user.uid, profileData);
+      await updateUserProfile(user.uid, profileData);
     }
   } catch (error) {
     console.warn('Errore creazione/aggiornamento profilo:', error);
@@ -322,7 +318,7 @@ export async function completeMagicLinkIfPresent() {
           ...existingProfile, // mantieni i dati esistenti
         };
 
-        await saveUserProfile(res.user.uid, profileData);
+        await updateUserProfile(res.user.uid, profileData);
       }
     }
 
