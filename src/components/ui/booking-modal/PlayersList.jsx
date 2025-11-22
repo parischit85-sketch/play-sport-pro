@@ -29,16 +29,53 @@ export default function PlayersList({
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Load recent players on mount
+  // Load recent players on mount and refresh their status
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('psp_recent_players');
-      if (saved) {
-        setRecentPlayers(JSON.parse(saved));
+    const loadAndRefreshRecentPlayers = async () => {
+      try {
+        const saved = localStorage.getItem('psp_recent_players');
+        if (saved) {
+          const players = JSON.parse(saved);
+          let hasUpdates = false;
+
+          // Check for guests that might have registered
+          const updatedPlayers = await Promise.all(
+            players.map(async (p) => {
+              // Only check if guest and has phone
+              if (p.isGuest && p.phone) {
+                try {
+                  const user = await getUserByPhone(p.phone);
+                  if (user) {
+                    hasUpdates = true;
+                    return {
+                      name: user.displayName || user.firstName || p.name,
+                      email: user.email || p.email,
+                      phone: user.phone || p.phone,
+                      uid: user.uid,
+                      avatar: user.avatar || p.avatar,
+                      isGuest: false,
+                    };
+                  }
+                } catch (err) {
+                  console.warn('Error checking user status:', err);
+                }
+              }
+              return p;
+            })
+          );
+
+          setRecentPlayers(updatedPlayers);
+
+          if (hasUpdates) {
+            localStorage.setItem('psp_recent_players', JSON.stringify(updatedPlayers));
+          }
+        }
+      } catch (e) {
+        console.error('Error loading recent players:', e);
       }
-    } catch (e) {
-      console.error('Error loading recent players:', e);
-    }
+    };
+
+    loadAndRefreshRecentPlayers();
   }, []);
 
   // Debounced search for PlaySport users inside Modal
