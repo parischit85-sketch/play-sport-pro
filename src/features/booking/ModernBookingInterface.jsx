@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import Section from '@ui/Section.jsx';
 import Badge from '@ui/Badge.jsx';
+import PlayersList from '@ui/booking-modal/PlayersList.jsx';
 import { createDSClasses } from '@lib/design-system.js';
-import { floorToSlot, addMinutes, sameDay, overlaps } from '@lib/date.js';
 import { computePrice, getRateInfo, isCourtBookableAt } from '@lib/pricing.js';
 import { getDefaultBookingConfig } from '@data/seed.js';
 // Legacy LeagueContext rimosso: bookingConfig ora proviene da club settings
 import { useClub } from '@contexts/ClubContext.jsx';
 import { useClubSettings } from '@hooks/useClubSettings.js';
-import { useUnifiedBookings, useUserBookings, BOOKING_STATUS } from '@hooks/useUnifiedBookings.js';
-import UnifiedBookingService, {
+import { useUnifiedBookings, BOOKING_STATUS } from '@hooks/useUnifiedBookings.js';
+import {
   wouldCreateHalfHourHole as checkHoleCreation,
   isTimeSlotTrapped as checkSlotTrapped,
 } from '@services/unified-booking-service.js';
@@ -25,15 +24,12 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
   // Use unified booking service with ALL bookings (court + lesson) for availability checks
   const {
     bookings: allBookings,
-    loading: bookingsLoading,
     createBooking: createUnifiedBooking,
   } = useUnifiedBookings({
     autoLoadUser: false,
     autoLoadLessons: true,
     clubId: clubId || selectedClub?.id,
   });
-
-  const { userBookings, activeUserBookings } = useUserBookings();
 
   // Configurazione prenotazioni per club (fallback minimale se non pronta)
   const cfg = useMemo(() => {
@@ -50,11 +46,13 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       : defaults;
   }, [bookingConfig]);
   // Courts preferiti dal ClubContext (realtime). Fallback a state.courts legacy se vuoto.
-  const courtsFromState = clubCourts?.length
-    ? clubCourts
-    : Array.isArray(state?.courts)
-      ? state.courts
-      : [];
+  const courtsFromState = useMemo(() => {
+    return clubCourts?.length
+      ? clubCourts
+      : Array.isArray(state?.courts)
+        ? state.courts
+        : [];
+  }, [clubCourts, state?.courts]);
   // Durate consentite dalla configurazione (fallback 60/90/120)
   const allowedDurations = useMemo(() => {
     let list = cfg?.defaultDurations;
@@ -88,8 +86,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
   const [heating, setHeating] = useState(false);
   const [userPhone, setUserPhone] = useState('');
   const [notes, setNotes] = useState('');
-  const [additionalPlayers, setAdditionalPlayers] = useState([]);
-  const [newPlayerName, setNewPlayerName] = useState('');
+  const [players, setPlayers] = useState([]);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [showErrorAnimation, setShowErrorAnimation] = useState(false);
@@ -98,6 +95,21 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
   // Stato dati prenotazioni
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
+
+  // Initialize players with current user when user is available
+  useEffect(() => {
+    if (user && players.length === 0) {
+      setPlayers([{
+        id: user.uid || 'me',
+        name: user.displayName || user.email,
+        email: user.email,
+        phone: user.phone,
+        uid: user.uid,
+        avatar: user.photoURL,
+        isGuest: false
+      }]);
+    }
+  }, [user]);
 
   // Mantieni la durata selezionata entro quelle consentite
   useEffect(() => {
@@ -385,7 +397,7 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
           slots.push({
             time: timeStr,
             isAvailable,
-            availableCourts: 0,
+            availableCourts: availableCourtsCount,
             totalCourts: courtsFromState.length,
             reason,
           });
@@ -513,9 +525,9 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
           selectedCourt.id,
           courtsFromState
         ),
-        userPhone: '',
-        notes: '',
-        players: [user.displayName || user.email, ...additionalPlayers.map((p) => p.name)],
+        userPhone: userPhone,
+        notes: notes,
+        players: players.map((p) => p.name),
         type: 'court',
       };
 
@@ -531,25 +543,6 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
 
       // Update App state for immediate reflection
       if (state && setState) {
-        const toAppBooking = {
-          id: `booking-${Date.now()}`,
-          courtId: bookingData.courtId,
-          start: new Date(`${bookingData.date}T${bookingData.time}:00`).toISOString(),
-          duration: bookingData.duration,
-          players: [],
-          playerNames: additionalPlayers.map((p) => p.name),
-          guestNames: additionalPlayers.map((p) => p.name),
-          price: bookingData.price,
-          note: bookingData.notes || '',
-          bookedByName: user.displayName || user.email || '',
-          addons: {
-            lighting: !!bookingData.lighting,
-            heating: !!bookingData.heating,
-          },
-          status: 'booked',
-          createdAt: Date.now(),
-        };
-
         // Il servizio unificato gestisce automaticamente lo stato
         // setState((s) => ({ ...s, bookings: [...(s.bookings || []), toAppBooking] }));
       }
@@ -567,8 +560,16 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       setHeating(false);
       setUserPhone('');
       setNotes('');
-      setAdditionalPlayers([]);
-      setNewPlayerName('');
+      // Reset players to just the user
+      setPlayers([{
+        id: user.uid || 'me',
+        name: user.displayName || user.email,
+        email: user.email,
+        phone: user.phone,
+        uid: user.uid,
+        avatar: user.photoURL,
+        isGuest: false,
+      }]);
       setShowBookingModal(false);
 
       setMessage({
@@ -663,24 +664,6 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
       setSelectedCourt(availableCourts[0]);
       setShowBookingModal(true);
     }
-  };
-
-  // Gestisce l'aggiunta e rimozione di giocatori
-  const addPlayer = () => {
-    if (newPlayerName.trim() && additionalPlayers.length < 3) {
-      setAdditionalPlayers([
-        ...additionalPlayers,
-        {
-          id: Date.now(),
-          name: newPlayerName.trim(),
-        },
-      ]);
-      setNewPlayerName('');
-    }
-  };
-
-  const removePlayer = (playerId) => {
-    setAdditionalPlayers(additionalPlayers.filter((p) => p.id !== playerId));
   };
 
   const totalPrice =
@@ -1103,72 +1086,83 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         )}
       </div>
 
-      {/* Booking Modal - Completamente ridisegnato per mobile */}
+      {/* Booking Modal - Premium Redesign */}
       {showBookingModal && selectedCourt && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 backdrop-fade">
-          {/* Mobile: Full screen bottom sheet */}
-          <div className="bg-gray-800 w-full h-auto max-h-[95vh] sm:max-w-md sm:max-h-[90vh] sm:rounded-lg rounded-t-2xl sm:rounded-t-lg flex flex-col slide-up-mobile sm:animate-none shadow-2xl border-t border-emerald-600">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 animate-fade-in">
+          {/* Mobile: Full screen bottom sheet with glass effect */}
+          <div className="bg-slate-900 w-full h-auto max-h-[95vh] sm:max-w-md sm:max-h-[90vh] sm:rounded-2xl rounded-t-3xl flex flex-col slide-up-mobile sm:animate-none shadow-2xl shadow-black/50 border border-white/10 ring-1 ring-white/5">
             {/* Mobile handle bar */}
-            <div className="flex justify-center pt-2 pb-1 sm:hidden">
-              <div className="w-10 h-1 bg-gray-300 rounded-full"></div>
+            <div className="flex justify-center pt-3 pb-1 sm:hidden">
+              <div className="w-12 h-1.5 bg-white/20 rounded-full"></div>
             </div>
 
-            {/* Header fisso */}
-            <div className="px-4 py-3 sm:p-6 border-b border-gray-600 flex-shrink-0 touch-select-none">
-              <div className="flex justify-between items-center">
-                <h3 className="text-lg sm:text-xl font-semibold text-white">
-                  Conferma Prenotazione
+            {/* Header Premium Compact */}
+            <div className="px-4 py-2 border-b border-white/5 flex-shrink-0 flex justify-between items-center bg-slate-900/80 backdrop-blur-md sticky top-0 z-20">
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-4 bg-emerald-500 rounded-full"></div>
+                <h3 className="text-base font-bold text-white tracking-tight">
+                  Riepilogo Prenotazione
                 </h3>
-                <button
-                  onClick={() => setShowBookingModal(false)}
-                  className="w-8 h-8 sm:w-6 sm:h-6 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600 touch-manipulation tap-highlight-transparent text-gray-400 hover:text-gray-300"
-                >
-                  <span className="text-lg sm:text-base">✕</span>
-                </button>
               </div>
+              <button
+                onClick={() => setShowBookingModal(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors text-gray-400 hover:text-white touch-manipulation"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
 
             {/* Contenuto scrollabile */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 sm:p-6">
-              {/* Riepilogo con design più accattivante */}
-              <div className="bg-gradient-to-r from-blue-900/30 to-blue-800/30 p-4 rounded-xl mb-6 border border-blue-700">
-                <div className="flex items-center gap-3 mb-3">
-                  <h4 className="font-semibold text-white text-lg">{selectedCourt.name}</h4>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm text-gray-300">
-                  <div className="flex items-center gap-2">
-                    <svg className={`w-4 h-4 ${ds.info}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span>
-                      {new Date(selectedDate).toLocaleDateString('it-IT', {
-                        weekday: 'short',
-                        day: 'numeric',
-                        month: 'short',
-                      })}
-                    </span>
+            <div className="flex-1 overflow-y-auto px-5 py-4 sm:p-6 custom-scrollbar">
+              {/* Riepilogo Card - BookingHeader Style */}
+              <div className="relative overflow-hidden rounded-xl bg-gray-800 border border-gray-700 shadow-lg group mb-6">
+                {/* Background Glow Effect */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full -mr-10 -mt-10 pointer-events-none transition-opacity group-hover:opacity-70" />
+
+                {/* Left Accent Bar */}
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-blue-500 to-blue-600" />
+
+                <div className="p-4 pl-6 flex items-center justify-between relative z-10">
+                  {/* Left: Time, Date, Court */}
+                  <div className="flex-1 min-w-0 mr-4">
+                    <div className="flex items-baseline gap-2.5 mb-1">
+                      <span className="text-3xl font-bold text-white tracking-tight leading-none">
+                        {selectedTime}
+                      </span>
+                      <span className="text-sm font-medium text-gray-400 uppercase tracking-wide">
+                        {new Date(selectedDate).toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' })}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-gray-300">
+                      <h2 className="font-medium text-sm truncate text-gray-200">{selectedCourt.name}</h2>
+                      <span className="text-gray-600 text-xs">•</span>
+                      <span className="text-xs text-gray-400 font-medium">{duration} min</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <svg className={`w-4 h-4 ${ds.info}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <circle cx={12} cy={12} r={10} />
-                      <polyline points="12,6 12,12 16,14" />
-                    </svg>
-                    <span>{selectedTime}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <svg className={`w-4 h-4 ${ds.info}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <circle cx={12} cy={12} r={10} />
-                      <polyline points="12,6 12,12 16,14" />
-                      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 6.34l1.41 1.41M15.24 15.24l1.41 1.41" />
-                    </svg>
-                    <span>{duration} min</span>
+
+                  {/* Right: Price */}
+                  <div className="flex flex-col items-end gap-2">
+                    <div className="text-xl font-bold text-blue-400">
+                      €{computePrice(
+                          new Date(`${selectedDate}T${selectedTime}:00`),
+                          duration,
+                          cfg,
+                          { lighting, heating },
+                          selectedCourt.id,
+                          courtsFromState
+                        )}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Durata - Design più moderno e touch-friendly */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold mb-3 text-white">
+              {/* Durata - Card Style Selection */}
+              <div className="mb-8">
+                <label className="text-sm font-bold mb-4 text-white flex items-center gap-2">
+                  <span className="w-1 h-4 bg-emerald-500 rounded-full"></span>
                   Durata partita
                 </label>
                 <div className="grid grid-cols-3 gap-3">
@@ -1186,43 +1180,37 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                       .toFixed(1)
                       .replace('.', ',');
                     const isAllowedDuration = allowedDurations.includes(dur);
-
-                    // Use the comprehensive booking validation logic
                     const isBookableDuration = isAllowedDuration && isDurationOptionBookable(dur);
+                    const isSelected = duration === dur;
 
                     return (
                       <button
                         key={dur}
                         onClick={() => isBookableDuration && setDuration(dur)}
                         disabled={!isBookableDuration}
-                        className={`p-4 rounded-xl border-2 text-center transition-all touch-manipulation ${
+                        className={`relative p-3 rounded-xl border transition-all duration-200 touch-manipulation group overflow-hidden ${
                           !isBookableDuration
-                            ? 'bg-red-900/30 border-red-700 text-red-400 cursor-not-allowed'
-                            : duration === dur
-                              ? 'bg-blue-500 text-white border-blue-500 shadow-lg scale-105'
-                              : 'bg-gray-800 border-emerald-600 hover:border-blue-500 hover:bg-blue-900/30 active:bg-blue-900/50 text-gray-100'
+                            ? 'bg-slate-800/50 border-slate-700/50 text-slate-500 cursor-not-allowed opacity-60'
+                            : isSelected
+                              ? 'bg-emerald-600 text-white border-emerald-500 shadow-lg shadow-emerald-900/50 ring-2 ring-emerald-500/50 ring-offset-2 ring-offset-slate-900'
+                              : 'bg-slate-800 text-slate-300 border-white/10 hover:bg-slate-700 hover:border-white/20'
                         }`}
-                        title={
-                          !isBookableDuration
-                            ? 'Questa durata creerebbe un buco di 30 minuti non utilizzabile'
-                            : ''
-                        }
                       >
                         {!isBookableDuration ? (
-                          <>
-                            <div className="font-bold text-lg">{dur}min</div>
-                            <div className="text-sm font-bold mt-1 text-red-400">
-                              Non Disponibile
+                          <div className="flex flex-col items-center justify-center h-full py-1">
+                            <div className="font-bold text-lg">{dur}'</div>
+                            <div className="text-[10px] font-bold mt-1 text-red-400 uppercase tracking-wide">
+                              Occupato
                             </div>
-                          </>
+                          </div>
                         ) : (
-                          <>
-                            <div className="font-bold text-lg">{dur}min</div>
-                            <div className="text-lg font-bold mt-1">{price}€</div>
-                            <div className="text-xs opacity-75 mt-1">
-                              {pricePerPerson}€/Giocatore
+                          <div className="flex flex-col items-center justify-center h-full py-1">
+                            <div className="font-bold text-xl mb-0.5">{dur}'</div>
+                            <div className={`text-sm font-bold ${isSelected ? 'text-emerald-100' : 'text-emerald-400'}`}>{price}€</div>
+                            <div className={`text-[10px] mt-1 ${isSelected ? 'text-emerald-200' : 'text-slate-400'}`}>
+                              {pricePerPerson}€/p
                             </div>
-                          </>
+                          </div>
                         )}
                       </button>
                     );
@@ -1230,168 +1218,144 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
                 </div>
               </div>
 
-              {/* Servizi Extra - Design migliorato */}
+              {/* Servizi Extra - Modern Toggles */}
               {(cfg.addons?.lightingEnabled || cfg.addons?.heatingEnabled) && (
-                <div className="mb-6">
-                  <label className="block text-sm font-semibold mb-3 text-white">
+                <div className="mb-8">
+                  <label className="text-sm font-bold mb-4 text-white flex items-center gap-2">
+                    <span className="w-1 h-4 bg-yellow-500 rounded-full"></span>
                     Servizi Extra
                   </label>
                   <div className="space-y-3">
                     {cfg.addons?.lightingEnabled && (
-                      <label className="flex items-center gap-3 p-3 bg-gray-700 rounded-xl cursor-pointer hover:bg-gray-600 touch-manipulation">
-                        <input
-                          type="checkbox"
-                          checked={lighting}
-                          onChange={(e) => setLighting(e.target.checked)}
-                          className="rounded w-5 h-5 text-blue-500"
-                        />
+                      <label className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border ${
+                        lighting 
+                          ? 'bg-yellow-500/10 border-yellow-500/50 shadow-lg shadow-yellow-900/20' 
+                          : 'bg-slate-800 border-white/5 hover:bg-slate-700'
+                      }`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${
+                          lighting ? 'bg-yellow-500 text-white' : 'bg-slate-700 text-slate-400'
+                        }`}>
+                          💡
+                        </div>
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-100">Illuminazione</div>
-                          <div className="text-xs text-gray-400">
-                            +{cfg.addons?.lightingFee || 0}€
+                          <div className={`font-semibold ${lighting ? 'text-yellow-400' : 'text-white'}`}>Illuminazione</div>
+                          <div className="text-xs text-slate-400">
+                            Supplemento di +{cfg.addons?.lightingFee || 0}€
                           </div>
                         </div>
-                        <span className="text-2xl">
-                          <svg className={`w-6 h-6 ${ds.warning}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                          </svg>
-                        </span>
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            checked={lighting}
+                            onChange={(e) => setLighting(e.target.checked)}
+                            className="sr-only"
+                          />
+                          <div className={`w-12 h-7 rounded-full transition-colors ${lighting ? 'bg-yellow-500' : 'bg-slate-600'}`}></div>
+                          <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${lighting ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                        </div>
                       </label>
                     )}
                     {cfg.addons?.heatingEnabled && selectedCourt?.hasHeating && (
-                      <label className="flex items-center gap-3 p-3 bg-gray-700 rounded-xl cursor-pointer hover:bg-gray-600 touch-manipulation">
-                        <input
-                          type="checkbox"
-                          checked={heating}
-                          onChange={(e) => setHeating(e.target.checked)}
-                          className="rounded w-5 h-5 text-blue-500"
-                        />
+                      <label className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border ${
+                        heating 
+                          ? 'bg-orange-500/10 border-orange-500/50 shadow-lg shadow-orange-900/20' 
+                          : 'bg-slate-800 border-white/5 hover:bg-slate-700'
+                      }`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${
+                          heating ? 'bg-orange-500 text-white' : 'bg-slate-700 text-slate-400'
+                        }`}>
+                          🔥
+                        </div>
                         <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-100">Riscaldamento</div>
-                          <div className="text-xs text-gray-400">
-                            +{cfg.addons?.heatingFee || 0}€
+                          <div className={`font-semibold ${heating ? 'text-orange-400' : 'text-white'}`}>Riscaldamento</div>
+                          <div className="text-xs text-slate-400">
+                            Supplemento di +{cfg.addons?.heatingFee || 0}€
                           </div>
                         </div>
-                        <span className="text-2xl">
-                          <svg className={`w-6 h-6 ${ds.warning}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
-                          </svg>
-                        </span>
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            checked={heating}
+                            onChange={(e) => setHeating(e.target.checked)}
+                            className="sr-only"
+                          />
+                          <div className={`w-12 h-7 rounded-full transition-colors ${heating ? 'bg-orange-500' : 'bg-slate-600'}`}></div>
+                          <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${heating ? 'translate-x-5' : 'translate-x-0'}`}></div>
+                        </div>
                       </label>
                     )}
                   </div>
                 </div>
               )}
 
-              {/* Giocatori - Design completamente rinnovato */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold mb-3 text-white">
-                  Giocatori ({1 + additionalPlayers.length}/4)
+              {/* Giocatori - PlayersList Integration */}
+              <div className="mb-8">
+                <label className="text-sm font-bold mb-4 text-white flex items-center gap-2">
+                  <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
+                  Giocatori
                 </label>
-
-                {/* Organizzatore */}
-                <div className="mb-3 p-4 bg-blue-900/30 rounded-xl border-l-4 border-blue-500">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l14 9-14 9V3z" />
-                      </svg>
-                    </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-semibold text-white">
-                        {user?.displayName || user?.email}
-                      </div>
-                      <div className="text-xs text-blue-400 font-medium">Organizzatore</div>
-                    </div>
-                  </div>
+                <div className="bg-slate-800/50 rounded-xl border border-white/5 p-1">
+                  <PlayersList
+                    booking={{
+                      userName: user?.displayName || user?.email || 'Organizzatore',
+                      players: players
+                    }}
+                    isEditingPlayers={true}
+                    editedPlayers={players}
+                    setEditedPlayers={setPlayers}
+                    hideEditControls={true}
+                  />
                 </div>
-
-                {/* Giocatori aggiuntivi */}
-                <div className="space-y-2 mb-4">
-                  {additionalPlayers.map((player, index) => (
-                    <div
-                      key={player.id}
-                      className="p-3 bg-gray-700 rounded-xl flex items-center gap-3"
-                    >
-                      <div className="w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-gray-100">{player.name}</div>
-                        <div className="text-xs text-gray-400">Giocatore {index + 2}</div>
-                      </div>
-                      <button
-                        onClick={() => removePlayer(player.id)}
-                        className="w-8 h-8 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-full flex items-center justify-center touch-manipulation transition-colors"
-                      >
-                        <span className="text-sm">✕</span>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Aggiungi giocatore */}
-                {additionalPlayers.length < 3 && (
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
-                      value={newPlayerName}
-                      onChange={(e) => setNewPlayerName(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
-                      placeholder="Nome nuovo giocatore"
-                      className="flex-1 p-3 border-2 border-emerald-600 rounded-xl text-sm focus:border-blue-500 focus:outline-none bg-gray-800 text-gray-100 placeholder-gray-400"
-                    />
-                    <button
-                      onClick={addPlayer}
-                      disabled={!newPlayerName.trim()}
-                      className="px-6 py-3 bg-blue-500 text-white rounded-xl text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation hover:bg-blue-600 transition-colors"
-                    >
-                      Aggiungi
-                    </button>
-                  </div>
-                )}
               </div>
 
-              {/* Prezzo finale - Design premium */}
-              <div className="bg-gradient-to-r from-green-900/30 to-green-800/30 p-4 rounded-xl border border-green-700 mb-6">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold text-white">Totale partita</span>
-                  <span className="text-2xl font-bold text-green-400">{totalPrice}€</span>
+              {/* Prezzo finale - Premium Gradient */}
+              <div className="bg-gradient-to-r from-emerald-900/40 to-teal-900/40 p-5 rounded-2xl border border-emerald-500/30 mb-6 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-full h-full bg-[url('/patterns/grid.svg')] opacity-10"></div>
+                
+                <div className="flex justify-between items-end mb-3 relative z-10">
+                  <div>
+                    <span className="block text-sm text-emerald-200/70 font-medium mb-1">Totale da pagare</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold text-emerald-400">{totalPrice}</span>
+                      <span className="text-xl font-semibold text-emerald-500">€</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="block text-xs text-emerald-200/70 mb-1">Quota a persona</span>
+                    <span className="text-lg font-semibold text-emerald-300">
+                      {(totalPrice / Math.max(1, selectedCourt?.maxPlayers || 4))
+                        .toFixed(1)
+                        .replace('.', ',')}
+                      €
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-300">Costo per giocatore</span>
-                  <span className="text-lg font-semibold text-green-400">
-                    {(totalPrice / Math.max(1, selectedCourt?.maxPlayers || 4))
-                      .toFixed(1)
-                      .replace('.', ',')}
-                    € x {selectedCourt?.maxPlayers || 4} Giocatori
-                  </span>
-                </div>
-                <div className="mt-2 pt-2 border-t border-green-700">
-                  <div className="text-xs text-green-300 font-medium">
-                    <svg className={`w-4 h-4 inline mr-1 ${ds.success}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                
+                <div className="mt-3 pt-3 border-t border-emerald-500/20 flex items-center justify-between relative z-10">
+                  <div className="text-xs text-emerald-300/80 font-medium flex items-center gap-1.5">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    Pagamento in loco
+                    Pagamento in struttura
+                  </div>
+                  <div className="text-xs text-emerald-300/80 font-medium">
+                    {selectedCourt?.maxPlayers || 4} Giocatori
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Spazio per evitare overlap con bottoni fluttuanti su mobile */}
-            <div className="p-4 sm:p-6 border-t border-gray-600 bg-gray-800 flex-shrink-0 lg:hidden">
+            <div className="p-4 sm:p-6 border-t border-white/5 bg-slate-900 flex-shrink-0 lg:hidden">
               <div className="h-24"></div>
             </div>
 
             {/* Footer per desktop - nascosto su mobile */}
-            <div className="p-4 sm:p-6 border-t border-gray-600 bg-gray-800 flex-shrink-0 hidden lg:block">
+            <div className="p-4 sm:p-6 border-t border-white/5 bg-slate-900 flex-shrink-0 hidden lg:block rounded-b-2xl">
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowBookingModal(false)}
-                  className="flex-1 py-4 px-4 border-2 border-gray-300 rounded-xl text-sm font-semibold hover:bg-gray-50 touch-manipulation transition-colors"
+                  className="flex-1 py-4 px-4 border-2 border-gray-600 rounded-xl text-sm font-semibold text-gray-300 hover:bg-gray-800 touch-manipulation transition-colors"
                 >
                   Annulla
                 </button>

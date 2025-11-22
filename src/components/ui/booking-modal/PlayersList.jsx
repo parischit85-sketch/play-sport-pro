@@ -12,6 +12,7 @@ export default function PlayersList({
   editedPlayers,
   setEditedPlayers,
   onToggleEdit,
+  hideEditControls = false,
 }) {
   // eslint-disable-next-line no-unused-vars
   const [isAdding, setIsAdding] = useState(false);
@@ -552,7 +553,7 @@ export default function PlayersList({
             ? 'Dettagli Lezione'
             : `Giocatori (${currentPlayers?.length || 1}/${maxPlayers})`}
         </div>
-        {!isLessonBooking && (
+        {!isLessonBooking && !hideEditControls && (
           <button
             onClick={onToggleEdit}
             className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors bg-blue-500/10 px-2 py-1 rounded-lg"

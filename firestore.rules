@@ -146,11 +146,9 @@ service cloud.firestore {
     // BOOKINGS COLLECTION
     // ==========================================
     match /bookings/{bookingId} {
-      // Read: Users can read OWN bookings, club admins can read their CLUB bookings, admins see all
-      // FIXED: Added club admin access to their club bookings
-      allow read: if isOwner(resource.data.userId) || 
-                     isAdmin() ||
-                     (isClubAdmin() && resource.data.clubId != null && isClubAdminOf(resource.data.clubId));
+      // Read: Allow authenticated users to read bookings (needed for availability check)
+      // Privacy note: Client-side should mask sensitive details for non-owners
+      allow read: if isAuthenticated();
       
       // Create: Authenticated users only, must be own booking OR admin/club_admin
       allow create: if isAuthenticated() && 
