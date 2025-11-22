@@ -1461,158 +1461,122 @@ function ModernBookingInterface({ user, T, state, setState, clubId }) {
         </div>
       )}
 
-      {/* Success Animation */}
+      {/* Success Animation - Premium Redesign */}
       {showSuccessAnimation && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-4 z-[60] backdrop-blur-sm">
-          <div className="bg-gray-800 rounded-3xl p-8 max-w-sm w-full text-center border border-gray-600 shadow-2xl transform animate-pulse">
-            {/* Floating particles effect */}
-            <div className="absolute inset-0 overflow-hidden rounded-3xl">
-              {[...Array(8)].map((_, i) => (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          {/* Backdrop with blur */}
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md animate-fade-in" />
+
+          {/* Custom Styles for Animations */}
+          <style>{`
+            @keyframes scaleUp {
+              from { transform: scale(0.9); opacity: 0; }
+              to { transform: scale(1); opacity: 1; }
+            }
+            @keyframes drawCheck {
+              from { stroke-dashoffset: 24; }
+              to { stroke-dashoffset: 0; }
+            }
+            @keyframes float {
+              0%, 100% { transform: translateY(0); }
+              50% { transform: translateY(-10px); }
+            }
+          `}</style>
+
+          {/* Card */}
+          <div
+            className="relative bg-gray-900 border border-white/10 rounded-3xl p-8 max-w-sm w-full shadow-2xl shadow-emerald-900/20 overflow-hidden"
+            style={{ animation: 'scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}
+          >
+            {/* Background Effects */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-emerald-500/10 to-transparent pointer-events-none" />
+            <div className="absolute -top-20 -right-20 w-64 h-64 bg-emerald-500/20 blur-[100px] rounded-full pointer-events-none" />
+
+            {/* Content */}
+            <div className="relative z-10 flex flex-col items-center text-center">
+              {/* Animated Checkmark Circle */}
+              <div className="mb-6 relative">
                 <div
-                  key={i}
-                  className="absolute w-2 h-2 bg-green-400 rounded-full animate-ping opacity-75"
-                  style={{
-                    left: `${20 + i * 10}%`,
-                    top: `${15 + (i % 3) * 25}%`,
-                    animationDelay: `${i * 0.2}s`,
-                    animationDuration: '2s',
-                  }}
-                />
-              ))}
-            </div>
-
-            {/* Main content */}
-            <div className="relative z-10">
-              <div className="mb-6">
-                <div className="mx-auto w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center shadow-xl transform animate-bounce">
-                  <div className="relative">
-                    {/* Check mark with animated draw effect */}
-                    <svg
-                      className="w-10 h-10 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      style={{
-                        strokeDasharray: '24',
-                        strokeDashoffset: '0',
-                        animation: 'drawCheck 0.8s ease-in-out',
-                      }}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={3}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    {/* Sparkle effect */}
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-300 rounded-full animate-ping"></div>
-                    <div
-                      className="absolute -bottom-1 -left-1 w-2 h-2 bg-blue-300 rounded-full animate-ping"
-                      style={{ animationDelay: '0.3s' }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-white animate-fade-in">
+                  className="w-24 h-24 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30"
+                  style={{ animation: 'float 3s ease-in-out infinite' }}
+                >
                   <svg
-                    className={`w-8 h-8 inline mr-2 ${ds.success}`}
+                    className="w-12 h-12 text-white drop-shadow-md"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    strokeWidth={3}
                   >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                      d="M5 13l4 4L19 7"
+                      style={{
+                        strokeDasharray: 24,
+                        strokeDashoffset: 0,
+                        animation: 'drawCheck 0.6s ease-out 0.2s backwards',
+                      }}
                     />
                   </svg>
-                  Fantastico!
-                </h3>
-                <div className="bg-gradient-to-r from-green-900/20 to-emerald-900/20 p-4 rounded-xl border border-green-700">
-                  <p className="text-green-200 font-semibold">Prenotazione confermata!</p>
-                  <p className="text-green-300 text-sm mt-1">
-                    Il tuo campo è stato riservato con successo
-                  </p>
+                </div>
+                {/* Ripple rings */}
+                <div
+                  className="absolute inset-0 rounded-full border-2 border-emerald-500/30 animate-ping"
+                  style={{ animationDuration: '2s' }}
+                />
+              </div>
+
+              <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">
+                Prenotazione Confermata!
+              </h3>
+              <p className="text-gray-400 text-sm mb-8">Il campo è tuo. Buon divertimento!</p>
+
+              {/* Ticket/Receipt Style Details */}
+              <div className="w-full bg-white/5 rounded-2xl p-4 border border-white/5 backdrop-blur-sm relative overflow-hidden group">
+                <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500" />
+
+                <div className="flex justify-between items-center mb-3 pb-3 border-b border-white/5">
+                  <div className="text-left">
+                    <div className="text-xs text-gray-400 uppercase tracking-wider font-semibold">
+                      Data
+                    </div>
+                    <div className="text-white font-medium">
+                      {new Date(selectedDate).toLocaleDateString('it-IT', {
+                        weekday: 'short',
+                        day: 'numeric',
+                        month: 'short',
+                      })}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-gray-400 uppercase tracking-wider font-semibold">
+                      Orario
+                    </div>
+                    <div className="text-emerald-400 font-bold text-lg">{selectedTime}</div>
+                  </div>
                 </div>
 
-                {/* Campo info recap */}
-                <div className="bg-gray-700 p-3 rounded-xl">
-                  <div className="flex items-center justify-center gap-2 text-sm text-gray-300">
-                    <span>
-                      <svg
-                        className={`w-4 h-4 inline mr-1 ${ds.info}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                      {new Date(selectedDate).toLocaleDateString('it-IT', {
-                        weekday: 'short',
-                        day: 'numeric',
-                        month: 'short',
-                      })}
-                    </span>
-                    <span>
-                      {new Date(selectedDate).toLocaleDateString('it-IT', {
-                        weekday: 'short',
-                        day: 'numeric',
-                        month: 'short',
-                      })}
-                    </span>
-                    <span>•</span>
-                    <span>
-                      <svg
-                        className={`w-4 h-4 inline mr-1 ${ds.info}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle cx={12} cy={12} r={10} />
-                        <polyline points="12,6 12,12 16,14" />
-                      </svg>
-                      🕐 {selectedTime}
-                    </span>
-                    <span>•</span>
-                    <span>
-                      <svg
-                        className={`w-4 h-4 inline mr-1 ${ds.success}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle cx={12} cy={12} r={10} />
-                        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-                        <path d="M12 17.5c.276 0 .5-.224.5-.5s-.224-.5-.5-.5-.5.224-.5.5.224.5.5.5z" />
-                      </svg>
+                <div className="flex justify-between items-center">
+                  <div className="text-left">
+                    <div className="text-xs text-gray-400 uppercase tracking-wider font-semibold">
+                      Campo
+                    </div>
+                    <div className="text-white font-medium truncate max-w-[140px]">
                       {selectedCourt?.name}
-                    </span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-500/20">
+                      CONFERMATO
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 text-xs text-gray-500 animate-fade-in">
-                <div className="flex items-center justify-center gap-1">
-                  <div className="w-1 h-1 bg-gray-400 rounded-full animate-pulse"></div>
-                  <div
-                    className="w-1 h-1 bg-gray-400 rounded-full animate-pulse"
-                    style={{ animationDelay: '0.2s' }}
-                  ></div>
-                  <div
-                    className="w-1 h-1 bg-gray-400 rounded-full animate-pulse"
-                    style={{ animationDelay: '0.4s' }}
-                  ></div>
-                </div>
-                <p className="mt-2">Chiusura automatica in corso...</p>
+              {/* Auto-close indicator */}
+              <div className="mt-8 flex items-center gap-2 text-xs text-gray-500 font-medium">
+                <div className="w-4 h-4 rounded-full border-2 border-gray-600 border-t-emerald-500 animate-spin" />
+                Reindirizzamento in corso...
               </div>
             </div>
           </div>
