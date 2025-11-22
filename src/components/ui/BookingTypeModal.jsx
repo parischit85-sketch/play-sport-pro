@@ -5,7 +5,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../contexts/AuthContext.jsx';
-import { getUserMostViewedClubs } from '../../services/club-analytics.js';
+import { getUserBookings } from '../../services/unified-booking-service.js';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../services/firebase.js';
 import { getClubCoordinates, calculateDistance } from '../../utils/maps-utils.js';
@@ -83,36 +83,50 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
 
       setClubs(allClubs);
 
-      // Carica anche i più visualizzati
-      const viewedClubs = await getUserMostViewedClubs(user.uid, 10);
-      if (viewedClubs.length > 0) {
-        let clubsData = viewedClubs
-          .filter((v) => v.club !== null && v.club.isActive === true) // Filter active clubs
-          .map((v) => v.club);
+      // Carica i circoli più prenotati (invece dei più visualizzati)
+      try {
+        const allBookings = await getUserBookings(user, { includeHistory: true });
 
-        // 🌍 Add distances to viewed clubs too
-        if (userLocation) {
-          const clubsWithDistances = await Promise.all(
-            clubsData.map(async (club) => {
-              const coords = await getClubCoordinates(club);
-              if (!coords) return { ...club, distance: Infinity };
+        // Conta le prenotazioni per ogni club
+        const clubCounts = {};
+        allBookings.forEach((booking) => {
+          if (booking.status === 'cancelled') return;
+          const cId = booking.clubId || 'default-club';
+          const normalizedId = cId === 'default-club' ? 'sporting-cat' : cId;
+          clubCounts[normalizedId] = (clubCounts[normalizedId] || 0) + 1;
+        });
 
-              const distance = calculateDistance(
-                userLocation.lat,
-                userLocation.lng,
-                coords.latitude,
-                coords.longitude
-              );
+        const sortedClubIds = Object.entries(clubCounts)
+          .sort(([, countA], [, countB]) => countB - countA)
+          .map(([id]) => id);
 
-              return { ...club, distance };
-            })
-          );
+        if (sortedClubIds.length > 0) {
+          // Filtra i club caricati che sono nella lista dei più prenotati
+          // Mantenendo l'ordine di prenotazione
+          const bookedClubs = [];
+          sortedClubIds.forEach((id) => {
+            const club = allClubs.find((c) => c.id === id);
+            if (club) {
+              bookedClubs.push({
+                ...club,
+                bookingCount: clubCounts[id],
+              });
+            }
+          });
 
-          clubsData = clubsWithDistances.sort((a, b) => a.distance - b.distance);
+          // Aggiungi eventuali altri club non prenotati in fondo (opzionale, qui mostriamo solo i prenotati come default)
+          // Se l'utente non ha prenotazioni, mostriamo tutti i club (gestito sotto)
+
+          if (bookedClubs.length > 0) {
+            setFilteredClubs(bookedClubs);
+          } else {
+            setFilteredClubs(allClubs);
+          }
+        } else {
+          setFilteredClubs(allClubs);
         }
-
-        setFilteredClubs(clubsData);
-      } else {
+      } catch (err) {
+        console.warn('Error loading booking history:', err);
         setFilteredClubs(allClubs);
       }
     } catch (error) {
@@ -202,19 +216,8 @@ export default function BookingTypeModal({ isOpen, onClose, onSelectType, clubId
       // Mostra tutti i circoli
       setFilteredClubs(clubs);
     } else {
-      // Torna ai circoli preferiti
-      try {
-        const viewedClubs = await getUserMostViewedClubs(user.uid, 10);
-        if (viewedClubs.length > 0) {
-          const clubsData = viewedClubs.filter((v) => v.club !== null).map((v) => v.club);
-          setFilteredClubs(clubsData);
-        } else {
-          setFilteredClubs(clubs);
-        }
-      } catch (error) {
-        console.error('Error loading viewed clubs:', error);
-        setFilteredClubs(clubs);
-      }
+      // Torna ai circoli preferiti (ricarica logica prenotazioni)
+      loadClubs();
     }
   };
 

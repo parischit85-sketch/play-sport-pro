@@ -1,15 +1,23 @@
 // =============================================
 // FILE: src/components/ui/RecentClubsCard.jsx
-// Card per mostrare i circoli più visualizzati dall'utente
+// Card per mostrare i circoli preferiti (più prenotati) dall'utente
 // =============================================
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUserMostViewedClubs } from '../../services/club-analytics.js';
+import { getUserBookings } from '@services/unified-booking-service.js';
+import { getClub } from '@services/clubs.js';
 
-const ClubCard = React.memo(({ club, onClubClick }) => {
+const ClubCard = React.memo(({ club, onClubClick, bookingCount }) => {
   return (
     <div
       onClick={() => onClubClick(club.id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          onClubClick(club.id);
+        }
+      }}
+      role="button"
+      tabIndex={0}
       className="min-w-[240px] max-w-[260px] flex-shrink-0 bg-[#1e293b] hover:bg-[#2d3b52] rounded-2xl p-3.5 cursor-pointer transition-all duration-300 group border border-gray-700/50 hover:border-gray-600"
     >
       <div className="flex items-center gap-3">
@@ -71,6 +79,11 @@ const ClubCard = React.memo(({ club, onClubClick }) => {
               {club.location?.city || club.city || club.address?.city || 'Località'}
             </span>
           </div>
+          {bookingCount > 0 && (
+            <div className="text-xs text-blue-400 mt-1 font-medium">
+              {bookingCount} {bookingCount === 1 ? 'prenotazione' : 'prenotazioni'}
+            </div>
+          )}
         </div>
 
         {/* Freccia navigazione */}
@@ -93,7 +106,7 @@ ClubCard.displayName = 'ClubCard';
 
 export default function RecentClubsCard({ user }) {
   const navigate = useNavigate();
-  const [recentClubs, setRecentClubs] = useState([]);
+  const [favoriteClubs, setFavoriteClubs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -102,33 +115,64 @@ export default function RecentClubsCard({ user }) {
       return;
     }
 
-    const loadRecentClubs = async () => {
+    const loadFavoriteClubs = async () => {
       setLoading(true);
       try {
-        // 🆕 NUOVO SISTEMA: Carica i top 3 circoli più visualizzati
-        // Usa getUserMostViewedClubs da club-analytics.js
-        const mostViewedClubs = await getUserMostViewedClubs(user.uid, 3);
+        // 1. Recupera tutte le prenotazioni dell'utente (incluse passate)
+        const allBookings = await getUserBookings(user, { includeHistory: true });
 
-        // Filtra solo circoli che hanno dati validi E sono attivi
-        const clubsData = mostViewedClubs
-          .filter((viewData) => viewData.club !== null && viewData.club.isActive === true) // Solo club esistenti e attivi
-          .map((viewData) => ({
-            id: viewData.clubId,
-            viewCount: viewData.viewCount, // Numero di visualizzazioni
-            lastViewedAt: viewData.lastViewedAt,
-            ...viewData.club, // Spread dei dati completi del club
-          }));
+        // 2. Conta le prenotazioni per ogni club
+        const clubCounts = {};
+        allBookings.forEach((booking) => {
+          // Ignora prenotazioni cancellate se non già filtrate
+          if (booking.status === 'cancelled') return;
 
-        setRecentClubs(clubsData);
+          const clubId = booking.clubId || 'default-club';
+          // Normalizza ID legacy se necessario
+          const normalizedId = clubId === 'default-club' ? 'sporting-cat' : clubId;
+
+          clubCounts[normalizedId] = (clubCounts[normalizedId] || 0) + 1;
+        });
+
+        // 3. Ordina i club per numero di prenotazioni (decrescente)
+        const sortedClubIds = Object.entries(clubCounts)
+          .sort(([, countA], [, countB]) => countB - countA)
+          .slice(0, 5) // Prendi i top 5
+          .map(([id]) => id);
+
+        if (sortedClubIds.length === 0) {
+          setFavoriteClubs([]);
+          return;
+        }
+
+        // 4. Recupera i dettagli dei club
+        const clubsPromises = sortedClubIds.map(async (clubId) => {
+          try {
+            const clubData = await getClub(clubId);
+            return {
+              ...clubData,
+              bookingCount: clubCounts[clubId],
+            };
+          } catch (err) {
+            console.warn(`Impossibile caricare dettagli club ${clubId}:`, err);
+            return null;
+          }
+        });
+
+        const clubsDetails = (await Promise.all(clubsPromises)).filter(
+          (club) => club !== null && club.isActive === true
+        ); // Filtra null e club non attivi
+
+        setFavoriteClubs(clubsDetails);
       } catch (error) {
-        console.error('❌ [RecentClubsCard] Error loading most viewed clubs:', error);
-        setRecentClubs([]);
+        console.error('❌ [RecentClubsCard] Error loading favorite clubs:', error);
+        setFavoriteClubs([]);
       } finally {
         setLoading(false);
       }
     };
 
-    loadRecentClubs();
+    loadFavoriteClubs();
   }, [user]);
 
   const handleClubClick = (clubId) => {
@@ -172,7 +216,7 @@ export default function RecentClubsCard({ user }) {
     );
   }
 
-  if (recentClubs.length === 0) {
+  if (favoriteClubs.length === 0) {
     return (
       <div className="bg-transparent">
         <div className="flex items-center gap-3 mb-4 px-1">
@@ -209,8 +253,10 @@ export default function RecentClubsCard({ user }) {
               />
             </svg>
           </div>
-          <h3 className="font-semibold text-lg mb-2 text-white">Nessun circolo visitato</h3>
-          <p className="text-sm text-gray-400 mb-4">Inizia a esplorare i circoli disponibili</p>
+          <h3 className="font-semibold text-lg mb-2 text-white">Nessuna prenotazione recente</h3>
+          <p className="text-sm text-gray-400 mb-4">
+            Prenota un campo per vedere qui i tuoi circoli preferiti
+          </p>
         </div>
       </div>
     );
@@ -235,8 +281,13 @@ export default function RecentClubsCard({ user }) {
 
       {/* Cards circoli - Scroll orizzontale */}
       <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide px-1 -mx-1">
-        {recentClubs.map((club) => (
-          <ClubCard key={club.id} club={club} onClubClick={handleClubClick} />
+        {favoriteClubs.map((club) => (
+          <ClubCard
+            key={club.id}
+            club={club}
+            onClubClick={handleClubClick}
+            bookingCount={club.bookingCount}
+          />
         ))}
       </div>
     </div>
