@@ -21,14 +21,13 @@ import PWAInstallPrompt from '@ui/PWAInstallPrompt.jsx';
 import BookingTypeModal from '@ui/BookingTypeModal.jsx';
 import AppDownloadModal from '@ui/AppDownloadModal.jsx';
 import CertificateExpiryAlert from '@features/players/components/CertificateExpiryAlert.jsx';
-import { logout } from '@services/auth.jsx';
 import { logger } from '@/utils/logger';
 import { useUnreadNotifications } from '@hooks/useUnreadNotifications';
 
 function AppLayoutInner() {
   const { user, userRole, isClubAdmin, getFirstAdminClub } = useAuth();
   const { clubMode, loading } = useUI();
-  const { clubId, club, hasClub, exitClub } = useClub();
+  const { clubId, club, hasClub } = useClub();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -86,7 +85,7 @@ function AppLayoutInner() {
         }
 
         // If denied we do nothing now (user can trigger manually in flows)
-        if (permission === 'denied') {
+        if (permissionState === 'denied') {
           logger.debug('Geolocation already denied. Skipping auto prompt.');
           return;
         }
@@ -186,16 +185,6 @@ function AppLayoutInner() {
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      // Forza il reindirizzamento alla landing page dopo logout
-      navigate('/', { replace: true });
-    } catch (error) {
-      logger.error('Errore durante il logout:', error);
-    }
-  };
 
   // Check if user is admin of current club or any club
   const firstAdminClubId = getFirstAdminClub ? getFirstAdminClub() : null;
@@ -402,7 +391,7 @@ function AppLayoutInner() {
   const isDashboard = currentPath === '/dashboard' || currentPath === '/';
   return (
     <div
-      className={`min-h-screen safe-area-top safe-area-bottom ${T.text} ${isDashboard ? 'bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900' : T.pageBg}`}
+      className={`min-h-screen safe-area-bottom ${T.text} ${isDashboard ? 'bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900' : T.pageBg}`}
     >
       {/* Header */}
       <header
@@ -447,7 +436,7 @@ function AppLayoutInner() {
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
             {/* Notification Button - Visible only for logged users */}
             <NotificationButton />
-            
+
             {/* Profile Button - Always visible on the right */}
             <ProfileButton />
 
