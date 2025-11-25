@@ -4,4 +4,5 @@
     <string name="title_activity_main">Play Sport Pro</string>
     <string name="package_name">com.playsportpro.app</string>
     <string name="custom_url_scheme">com.playsportpro.app</string>
+    <string name="server_client_id">1004722051733-70tcjn7ermucm07jibslelk719eblv3f.apps.googleusercontent.com</string>
 </resources>

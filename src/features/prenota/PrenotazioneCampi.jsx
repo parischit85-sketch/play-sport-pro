@@ -687,7 +687,7 @@ export default function PrenotazioneCampi({ state, setState, players, playersByI
       if (player) {
         return {
           name: player.name,
-          uid: player.userId || player.id, // Player internal ID
+          uid: player.userId || player.id || null, // Player internal ID
           linkedFirebaseUid: player.linkedFirebaseUid || null, // ✅ Corretto: usa linkedFirebaseUid
         };
       }

@@ -3,10 +3,11 @@
 // =============================================
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, initializeFirestore, connectFirestoreEmulator } from 'firebase/firestore';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
+import { getAuth, connectAuthEmulator, initializeAuth, indexedDBLocalPersistence } from 'firebase/auth';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
+import { Capacitor } from '@capacitor/core';
 
 const isTest =
   (typeof globalThis !== 'undefined' &&
@@ -62,7 +63,17 @@ try {
     db = {};
   }
 }
-const auth = getAuth(app);
+
+// Initialize Auth with persistence handling for Capacitor
+let auth;
+if (Capacitor.isNativePlatform()) {
+  auth = initializeAuth(app, {
+    persistence: indexedDBLocalPersistence,
+  });
+} else {
+  auth = getAuth(app);
+}
+
 const storage = getStorage(app);
 const functions = getFunctions(app, 'us-central1'); // Explicitly set region for callable functions
 

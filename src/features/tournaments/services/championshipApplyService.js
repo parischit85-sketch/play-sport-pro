@@ -347,6 +347,10 @@ export async function applyTournamentChampionshipPoints(clubId, tournament, opti
         version: 1,
       });
 
+      // Update tournament document to reflect applied status (for UI badges)
+      const tournamentRef = doc(db, 'clubs', clubId, COLLECTIONS.TOURNAMENTS, tournament.id);
+      tx.update(tournamentRef, { championshipPointsApplied: true });
+
       return { success: true, alreadyApplied: false };
     });
 
@@ -456,6 +460,10 @@ export async function revertTournamentChampionshipPoints(clubId, tournamentId) {
 
       // Remove audit doc last
       tx.delete(appliedRef);
+
+      // Update tournament document to remove applied status
+      const tournamentRef = doc(db, 'clubs', clubId, COLLECTIONS.TOURNAMENTS, tournamentId);
+      tx.update(tournamentRef, { championshipPointsApplied: false });
 
       return { success: true, alreadyReverted: false };
     });

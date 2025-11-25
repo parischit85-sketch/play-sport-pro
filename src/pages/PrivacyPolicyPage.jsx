@@ -33,27 +33,30 @@ export default function PrivacyPolicyPage() {
             <section>
               <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>1. Introduzione</h2>
               <p className={`${T.subtext}`}>
-                Play-Sport.pro gestisce la piattaforma play-sport.pro. Questa pagina ti informa delle nostre
-                politiche riguardanti la raccolta, l'uso e la divulgazione dei dati personali quando utilizzi
-                il Servizio.
+                Play-Sport.pro ("noi", "nostro" o "ci") gestisce la piattaforma play-sport.pro e l'applicazione mobile Play Sport Pro. 
+                Questa pagina ti informa delle nostre politiche riguardanti la raccolta, l'uso e la divulgazione dei dati personali quando utilizzi il nostro Servizio.
+                Utilizzando il Servizio, accetti la raccolta e l'utilizzo delle informazioni in conformità con questa politica.
               </p>
             </section>
 
             <section>
               <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>2. Raccolta e Utilizzo dei Dati</h2>
-              <p className={`${T.subtext} mb-3`}>Raccogliamo diversi tipi di informazioni per vari scopi:</p>
+              <p className={`${T.subtext} mb-3`}>Raccogliamo diversi tipi di informazioni per fornire e migliorare il nostro Servizio:</p>
+              
+              <h3 className={`text-xl font-semibold mb-2 ${T.text}`}>Dati Personali</h3>
+              <ul className={`list-disc pl-6 space-y-2 ${T.subtext} mb-4`}>
+                <li><strong>Informazioni di Account:</strong> Nome, cognome, indirizzo email, numero di telefono, data di nascita (per categorie di età), sesso (per categorie di tornei).</li>
+                <li><strong>Dati Sportivi:</strong> Livello di gioco, risultati delle partite, affiliazioni ai club.</li>
+              </ul>
+
+              <h3 className={`text-xl font-semibold mb-2 ${T.text}`}>Permessi del Dispositivo Mobile</h3>
+              <p className={`${T.subtext} mb-2`}>L'applicazione potrebbe richiedere l'accesso a specifiche funzionalità del dispositivo:</p>
               <ul className={`list-disc pl-6 space-y-2 ${T.subtext}`}>
-                <li>
-                  <strong>Informazioni di Account:</strong> Nome, email, numero di telefono, data di nascita,
-                  indirizzo
-                </li>
-                <li>
-                  <strong>Informazioni sulla Navigazione:</strong> Pagine visitate, tempo trascorso, azioni
-                  intraprese
-                </li>
-                <li>
-                  <strong>Informazioni di Dispositivo:</strong> Tipo di dispositivo, sistema operativo, browser
-                </li>
+                <li><strong>Fotocamera:</strong> Utilizzata esclusivamente per scansionare codici QR (es. per l'accesso ai tornei o check-in) o per caricare la foto profilo.</li>
+                <li><strong>Posizione (Opzionale):</strong> Potrebbe essere richiesta per aiutarti a trovare club sportivi nelle vicinanze.</li>
+                <li><strong>Archiviazione/Galleria:</strong> Per permetterti di caricare immagini del profilo o certificati medici.</li>
+                <li><strong>Contatti (Opzionale):</strong> Utilizzato per facilitare l'invito di amici alle partite o ai tornei direttamente dalla tua rubrica. I dati dei contatti non vengono salvati sui nostri server se non esplicitamente invitati.</li>
+                <li><strong>Notifiche Push:</strong> Per inviarti aggiornamenti su prenotazioni, partite e comunicazioni dal club.</li>
               </ul>
             </section>
 
@@ -61,62 +64,44 @@ export default function PrivacyPolicyPage() {
               <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>3. Utilizzo dei Dati</h2>
               <p className={`${T.subtext} mb-3`}>Utilizziamo i dati raccolti per:</p>
               <ul className={`list-disc pl-6 space-y-2 ${T.subtext}`}>
-                <li>Fornire e mantenere il Servizio</li>
-                <li>Notificarti di modifiche al Servizio</li>
-                <li>Fornire assistenza ai clienti</li>
-                <li>Migliorare il Servizio</li>
-                <li>Rilevare e prevenire frodi</li>
+                <li>Fornire e mantenere il Servizio (gestione prenotazioni, tornei, classifiche).</li>
+                <li>Notificarti di modifiche al Servizio o aggiornamenti sulle tue attività.</li>
+                <li>Fornire assistenza ai clienti.</li>
+                <li>Monitorare l'utilizzo del Servizio per rilevare, prevenire e risolvere problemi tecnici.</li>
               </ul>
             </section>
 
             <section>
-              <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>4. Sicurezza dei Dati</h2>
+              <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>4. Conservazione e Sicurezza dei Dati</h2>
               <p className={`${T.subtext}`}>
-                Cerchiamo di utilizzare mezzi commercialmente accettabili per proteggere i tuoi dati personali,
-                non possiamo garantire la sua assoluta sicurezza.
+                I tuoi dati sono conservati su server sicuri (Google Firebase) e adottiamo misure di sicurezza commercialmente accettabili per proteggerli.
+                Conserveremo i tuoi dati personali solo per il tempo necessario agli scopi indicati in questa Privacy Policy.
               </p>
             </section>
 
             <section>
               <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>5. Condivisione dei Dati</h2>
               <p className={`${T.subtext}`}>
-                Non vendiamo o trasferimmo i tuoi dati personali a terze parti. Possiamo divulgare i tuoi dati
-                se richiesto dalla legge.
+                I tuoi dati (nome, livello, risultati) sono visibili agli amministratori dei club a cui ti affili.
+                Non vendiamo i tuoi dati personali a terze parti. Possiamo divulgare i tuoi dati se richiesto dalla legge.
               </p>
             </section>
 
             <section>
-              <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>6. Cookie e Tecnologie Simili</h2>
+              <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>6. Eliminazione dei Dati (GDPR)</h2>
               <p className={`${T.subtext}`}>
-                Utilizziamo cookie e tecnologie di tracciamento simili per monitorare l'attività sul nostro
-                Servizio. Puoi istruire il tuo browser a rifiutare tutti i cookie.
+                Hai il diritto di richiedere la cancellazione del tuo account e di tutti i dati associati.
+                Puoi farlo direttamente dalle impostazioni del tuo profilo nell'app ("Elimina Account") o inviando una richiesta a info@play-sport.pro.
+                Alla ricezione della richiesta, provvederemo a eliminare i tuoi dati personali dai nostri sistemi entro 30 giorni, salvo obblighi legali di conservazione.
               </p>
             </section>
 
             <section>
-              <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>7. I Tuoi Diritti</h2>
-              <p className={`${T.subtext} mb-3`}>Hai il diritto di:</p>
-              <ul className={`list-disc pl-6 space-y-2 ${T.subtext}`}>
-                <li>Accedere ai dati personali che conserviamo su di te</li>
-                <li>Correggere dati inesatti</li>
-                <li>Richiedere l'eliminazione dei tuoi dati</li>
-                <li>Richiedere la portabilità dei dati</li>
-              </ul>
-            </section>
-
-            <section>
-              <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>8. Conformità GDPR</h2>
-              <p className={`${T.subtext}`}>
-                Se sei un residente dell'UE, hai diritto alle protezioni del GDPR. Elaboriamo i tuoi dati
-                personali solo quando abbiamo una base legale.
-              </p>
-            </section>
-
-            <section>
-              <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>9. Contatti</h2>
+              <h2 className={`text-2xl font-bold mb-4 ${T.text}`}>7. Contatti</h2>
               <div className={`${T.inputBg} rounded-lg p-4 border ${T.border}`}>
                 <p className={`${T.text} font-medium`}>Play-Sport.pro - Privacy Team</p>
-                <p className={`${T.subtext}`}>Email: privacy@play-sport.pro</p>
+                <p className={`${T.subtext}`}>Per domande su questa Privacy Policy, contattaci:</p>
+                <p className={`${T.subtext}`}>Email: info@play-sport.pro</p>
               </div>
             </section>
           </div>

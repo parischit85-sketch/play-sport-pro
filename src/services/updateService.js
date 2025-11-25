@@ -82,6 +82,12 @@ class UpdateService {
 
   // Mostra notifica aggiornamento disponibile
   showUpdateAvailable() {
+    // In localhost, evita il banner fastidioso
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      console.log('[UpdateService] Aggiornamento disponibile rilevato (Banner nascosto in localhost)');
+      return;
+    }
+
     // Mostra un banner/toast per informare l'utente
     const updateBanner = this.createUpdateBanner();
     document.body.appendChild(updateBanner);

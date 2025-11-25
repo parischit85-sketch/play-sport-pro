@@ -19,11 +19,14 @@ import PlayerCard from './components/PlayerCard';
 import PlayerDetails from './components/PlayerDetails';
 import PlayerForm from './components/PlayerForm';
 import CRMTools from './components/CRMTools';
+import PlayersStatsHeader from './components/PlayersStatsHeader';
+import PlayersFilterBar from './components/PlayersFilterBar';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { PlayerCardSkeleton } from '@ui/SkeletonLoader.jsx';
 import { useDebounce } from '@hooks/useDebounce.js';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '@services/firebase.js';
+import OrphanProfilesLinkingModal from './components/OrphanProfilesLinkingModal';
 
 export default function PlayersCRM({
   state,
@@ -48,11 +51,7 @@ export default function PlayersCRM({
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [showLinkOrphan, setShowLinkOrphan] = useState(false);
   const [orphanProfiles, setOrphanProfiles] = useState([]);
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectedOrphan, setSelectedOrphan] = useState(null);
-  const [selectedFirebaseUser, setSelectedFirebaseUser] = useState(null);
   const [loadingOrphans, setLoadingOrphans] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [linking, setLinking] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [showTools, setShowTools] = useState(false);
@@ -360,185 +359,65 @@ export default function PlayersCRM({
     }
   };
 
-  const handleSearchFirebaseUsers = async () => {
-    if (!searchQuery || searchQuery.trim().length < 3) {
-      toast.error('Inserisci almeno 3 caratteri per la ricerca');
-      return;
-    }
-
-    try {
-      console.log('🔍 [PlayersCRM] Ricerca utenti Firebase', {
-        clubId: state?.clubId,
-        searchQuery: searchQuery.trim(),
-        timestamp: new Date().toISOString()
-      });
-      
-      setLoadingOrphans(true);
-      const callable = httpsCallable(functions, 'searchFirebaseUsers');
-      const result = await callable({ clubId: state?.clubId, searchQuery: searchQuery.trim() });
-      
-      console.log('✅ [PlayersCRM] Risultati ricerca Firebase users', {
-        total: result.data.total,
-        results: result.data.results?.map(u => ({
-          uid: u.uid,
-          email: u.email,
-          displayName: u.displayName,
-          matchType: u.matchType
-        }))
-      });
-      
-      setSearchResults(result.data.results || []);
-      if (result.data.total === 0) {
-        toast.warning('Nessun utente Firebase trovato con questi criteri');
-      }
-    } catch (error) {
-      console.error('❌ [PlayersCRM] Errore ricerca Firebase users:', {
-        error: error.message,
-        code: error.code,
-        searchQuery: searchQuery.trim()
-      });
-      toast.error('Errore nella ricerca utenti. Riprova.');
-    } finally {
-      setLoadingOrphans(false);
-    }
-  };
-
-  const handleLinkOrphan = async () => {
-    if (!selectedOrphan || !selectedFirebaseUser) {
-      toast.error('Seleziona sia un profilo orfano che un utente Firebase');
-      return;
-    }
+  const handleLinkOrphan = async (orphanId, firebaseUid, firebaseEmail) => {
+    const orphan = orphanProfiles.find(p => p.id === orphanId || p.userId === orphanId);
+    
+    if (!orphan) return;
 
     if (!window.confirm(
       `Confermi di voler collegare:\n\n` +
-      `Profilo orfano: ${selectedOrphan.name} (${selectedOrphan.email})\n` +
-      `→ Utente Firebase: ${selectedFirebaseUser.displayName} (${selectedFirebaseUser.email})\n\n` +
-      `Questa operazione aggiornerà il campo userId e tutte le reference (bookings, matches, ecc.)`
+      `Profilo orfano: ${orphan.firstName || orphan.name} (${orphan.email})\n` +
+      `→ Utente Firebase: ${firebaseEmail}\n\n` +
+      `Questa operazione aggiornerà il campo userId e tutte le reference.`
     )) {
       return;
     }
 
     try {
       setLinking(true);
-      
-      console.log('🔗 [PlayersCRM] Inizio collegamento profilo', {
-        clubId: state?.clubId,
-        orphanPlayerId: selectedOrphan.userId,
-        orphanName: selectedOrphan.name,
-        orphanEmail: selectedOrphan.email,
-        firebaseUid: selectedFirebaseUser.uid,
-        firebaseEmail: selectedFirebaseUser.email,
-        firebaseDisplayName: selectedFirebaseUser.displayName,
-        timestamp: new Date().toISOString()
-      });
-      
       const callable = httpsCallable(functions, 'linkOrphanProfile');
-      const result = await callable({
+      await callable({
         clubId: state?.clubId,
-        orphanPlayerId: selectedOrphan.userId,
-        firebaseUid: selectedFirebaseUser.uid,
+        orphanPlayerId: orphan.userId,
+        firebaseUid: firebaseUid,
       });
 
-      console.log('✅ [PlayersCRM] Collegamento completato con successo', {
-        result: result.data,
-        linkedProfile: result.data.linkedProfile,
-        message: result.data.message,
-        timestamp: new Date().toISOString()
-      });
-
-      toast.success(`✅ ${result.data.message}! Profilo collegato correttamente.`);
-      
-      // Reset e ricarica
-      setSelectedOrphan(null);
-      setSelectedFirebaseUser(null);
-      setSearchQuery('');
-      setSearchResults([]);
-      
-      console.log('🔄 [PlayersCRM] Ricaricamento profili orfani...');
+      toast.success('Profilo collegato con successo!');
       
       // Ricarica profili orfani
       const callable2 = httpsCallable(functions, 'getOrphanProfiles');
       const result2 = await callable2({ clubId: state?.clubId });
       setOrphanProfiles(result2.data.orphans || []);
       
-      console.log('📊 [PlayersCRM] Profili orfani aggiornati', {
-        totalOrphans: result2.data.orphans?.length || 0,
-        orphans: result2.data.orphans?.map(o => ({ userId: o.userId, name: o.name }))
-      });
-      
-      // Ricarica players per aggiornare la lista
-      if (typeof state?.onRefresh === 'function') {
-        console.log('🔄 [PlayersCRM] Ricaricamento lista players...');
-        await state.onRefresh();
-        console.log('✅ [PlayersCRM] Lista players ricaricata');
+      if (result2.data.total === 0) {
+        setShowLinkOrphan(false);
       }
+
     } catch (error) {
-      console.error('❌ [PlayersCRM] Errore collegamento profilo:', {
-        error: error.message,
-        code: error.code,
-        details: error.details,
-        stack: error.stack,
-        orphanPlayerId: selectedOrphan?.userId,
-        firebaseUid: selectedFirebaseUser?.uid
-      });
-      toast.error(`Errore nel collegamento: ${error.message}`);
+      console.error('Error linking:', error);
+      toast.error('Errore: ' + error.message);
     } finally {
       setLinking(false);
-      console.log('🏁 [PlayersCRM] Fine processo collegamento');
     }
   };
+
 
   return (
     <>
       <Section title="CRM Giocatori" T={T}>
-        {/* Header con statistiche e azioni */}
-        <div className={`${T.cardBg} ${T.border} rounded-xl p-4 xl:p-3 mb-6`}>
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            {/* Statistiche */}
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 xl:gap-3 flex-1">
-              <div className="text-center">
-                <div className={`text-2xl xl:text-xl font-bold ${T.accentInfo}`}>
-                  {stats.filtered}
-                  {stats.total !== stats.filtered && (
-                    <span className={`text-sm ${T.subtext}`}>/{stats.total}</span>
-                  )}
-                </div>
-                <div className={`text-xs ${T.subtext}`}>
-                  {stats.total !== stats.filtered ? 'Filtrati' : 'Totale'}
-                  {activeFiltersCount > 0 && (
-                    <span className={`ml-1 ${T.accentWarning}`}>({activeFiltersCount})</span>
-                  )}
-                </div>
-              </div>
-              <div className="text-center">
-                <div className={`text-2xl xl:text-xl font-bold ${T.accentSuccess}`}>
-                  {stats.members}
-                </div>
-                <div className={`text-xs ${T.subtext}`}>Membri</div>
-              </div>
-              <div className="text-center">
-                <div className={`text-2xl xl:text-xl font-bold ${T.accentWarning}`}>
-                  {stats.active}
-                </div>
-                <div className={`text-xs ${T.subtext}`}>Attivi</div>
-              </div>
-              <div className="text-center">
-                <div className={`text-2xl xl:text-xl font-bold ${T.accentInfo}`}>
-                  {stats.withAccount}
-                </div>
-                <div className={`text-xs ${T.subtext}`}>Con Account</div>
-              </div>
-              <div className="text-center">
-                <div className={`text-2xl xl:text-xl font-bold ${T.accentInfo}`}>
-                  {filteredPlayers.filter((p) => p.tournamentData?.isParticipant).length}
-                </div>
-                <div className={`text-xs ${T.subtext}`}>Torneo</div>
-              </div>
-            </div>
+        {/* Nuova Header Statistiche */}
+        <PlayersStatsHeader 
+          stats={{
+            ...stats,
+            tournamentParticipants: filteredPlayers.filter((p) => p.tournamentData?.isParticipant).length
+          }}
+          activeFiltersCount={activeFiltersCount}
+          T={T}
+        />
 
-            {/* Azioni principali */}
-            <div className="flex gap-2 flex-wrap">
-              <button
+        {/* Barra Azioni */}
+        <div className="flex flex-wrap justify-end gap-2 mb-4">
+           <button
                 onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
                 className={`${T.btnSecondary} px-3 py-2 text-sm`}
                 title={viewMode === 'grid' ? 'Passa a vista lista' : 'Passa a vista griglia'}
@@ -577,138 +456,33 @@ export default function PlayersCRM({
               >
                 📥 Esporta
               </button>
-            </div>
-          </div>
         </div>
 
         {/* Filtri e ricerca */}
-        <div className="space-y-4 mb-6">
-          {/* Riga principale: ricerca e filtri base */}
-          <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Cerca per nome, email, telefono..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className={`${T.input} w-full`}
-              />
-            </div>
-            <div className="flex gap-2 shrink-0">
-              <select
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
-                className={`${T.input} min-w-[150px]`}
-              >
-                <option value="all">Tutte le categorie</option>
-                <option value={PLAYER_CATEGORIES.MEMBER}>Membri</option>
-                <option value={PLAYER_CATEGORIES.NON_MEMBER}>Non Membri</option>
-                <option value={PLAYER_CATEGORIES.GUEST}>Ospiti</option>
-                <option value={PLAYER_CATEGORIES.VIP}>VIP</option>
-              </select>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className={`${T.input} min-w-[140px]`}
-              >
-                <option value="name">Ordina per Nome</option>
-                <option value="registration">Data Registrazione</option>
-                <option value="lastActivity">Ultimo Accesso</option>
-                <option value="rating">Rating</option>
-              </select>
-              <button
-                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                className={`${T.btnSecondary} px-3 py-2 text-sm whitespace-nowrap`}
-              >
-                🔍 Filtri {showAdvancedFilters ? '▲' : '▼'}
-              </button>
-            </div>
-          </div>
-
-          {/* Filtri avanzati espandibili */}
-          {showAdvancedFilters && (
-            <div className={`${T.cardBg} ${T.border} rounded-lg p-4`}>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Stato */}
-                <div>
-                  <label
-                    htmlFor="filter-status"
-                    className={`text-sm font-medium ${T.text} mb-2 block`}
-                  >
-                    Stato Account
-                  </label>
-                  <select
-                    id="filter-status"
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className={`${T.input} w-full`}
-                  >
-                    <option value="all">Tutti</option>
-                    <option value="active">Attivi</option>
-                    <option value="inactive">Inattivi</option>
-                  </select>
-                </div>
-
-                {/* Data registrazione */}
-                <div>
-                  <label
-                    htmlFor="filter-registration"
-                    className={`text-sm font-medium ${T.text} mb-2 block`}
-                  >
-                    Registrazione
-                  </label>
-                  <select
-                    id="filter-registration"
-                    value={filterRegistrationDate}
-                    onChange={(e) => setFilterRegistrationDate(e.target.value)}
-                    className={`${T.input} w-full`}
-                  >
-                    <option value="all">Tutte le date</option>
-                    <option value="today">Oggi</option>
-                    <option value="week">Questa settimana</option>
-                    <option value="month">Questo mese</option>
-                  </select>
-                </div>
-
-                {/* Ultimo accesso */}
-                <div>
-                  <label
-                    htmlFor="filter-last-activity"
-                    className={`text-sm font-medium ${T.text} mb-2 block`}
-                  >
-                    Ultimo Accesso
-                  </label>
-                  <select
-                    id="filter-last-activity"
-                    value={filterLastActivity}
-                    onChange={(e) => setFilterLastActivity(e.target.value)}
-                    className={`${T.input} w-full`}
-                  >
-                    <option value="all">Tutti</option>
-                    <option value="today">Oggi</option>
-                    <option value="week">Questa settimana</option>
-                    <option value="month">Questo mese</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Pulsante reset filtri */}
-              <div className="flex justify-end mt-4">
-                <button
-                  onClick={() => {
-                    setFilterStatus('all');
-                    setFilterRegistrationDate('all');
-                    setFilterLastActivity('all');
-                    setSearchTerm('');
-                  }}
-                  className={`${T.btnSecondary} px-4 py-2 text-sm`}
-                >
-                  🗑️ Reset Filtri
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        <PlayersFilterBar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          filterCategory={filterCategory}
+          setFilterCategory={setFilterCategory}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          showAdvancedFilters={showAdvancedFilters}
+          setShowAdvancedFilters={setShowAdvancedFilters}
+          filterStatus={filterStatus}
+          setFilterStatus={setFilterStatus}
+          filterRegistrationDate={filterRegistrationDate}
+          setFilterRegistrationDate={setFilterRegistrationDate}
+          filterLastActivity={filterLastActivity}
+          setFilterLastActivity={setFilterLastActivity}
+          onResetFilters={() => {
+            setFilterStatus('all');
+            setFilterRegistrationDate('all');
+            setFilterLastActivity('all');
+            setSearchTerm('');
+          }}
+          activeFiltersCount={activeFiltersCount}
+          T={T}
+        />
 
         {/* Lista giocatori */}
         <div className="space-y-4">
@@ -795,7 +569,8 @@ export default function PlayersCRM({
             // Virtualized grid per molti giocatori (>1000)
             <VirtualizedList
               items={filteredPlayers}
-              itemHeight={280} // Altezza stimata del PlayerCard in griglia
+              itemHeight={280 // Altezza stimata del PlayerCard in griglia
+              }
               containerHeight={800}
               className="border border-gray-700 rounded-lg"
               T={T}
@@ -902,174 +677,11 @@ export default function PlayersCRM({
 
       {/* Modal Collega Profili Orfani */}
       {showLinkOrphan && (
-        <Modal
-          isOpen={showLinkOrphan}
-          onClose={() => {
-            setShowLinkOrphan(false);
-            setSelectedOrphan(null);
-            setSelectedFirebaseUser(null);
-            setSearchQuery('');
-            setSearchResults([]);
-          }}
-          title="🔗 Collega Profili Orfani"
-          maxWidth="4xl"
-        >
-          <div className="space-y-6">
-            {/* Info */}
-            <div className={`${T.cardBg} ${T.border} rounded-lg p-4`}>
-              <p className={`text-sm ${T.subtext}`}>
-                I profili orfani sono giocatori registrati nel club che non hanno un account Firebase.
-                Collegali a utenti Firebase esistenti per permettere loro di ricevere notifiche push e accedere all'app.
-              </p>
-            </div>
-
-            {/* Profili Orfani */}
-            <div>
-              <h4 className={`text-lg font-semibold ${T.text} mb-3`}>
-                Profili Orfani ({orphanProfiles.length})
-              </h4>
-              {loadingOrphans && orphanProfiles.length === 0 ? (
-                <div className="text-center py-8">
-                  <span className="inline-block animate-spin text-2xl">⏳</span>
-                  <p className={`mt-2 ${T.subtext}`}>Caricamento...</p>
-                </div>
-              ) : orphanProfiles.length === 0 ? (
-                <div className={`${T.cardBg} ${T.border} rounded-lg p-8 text-center`}>
-                  <p className={T.subtext}>✅ Nessun profilo orfano - tutti i giocatori hanno account Firebase!</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-60 overflow-y-auto">
-                  {orphanProfiles.map((orphan) => (
-                    <div
-                      key={orphan.userId}
-                      onClick={() => {
-                        console.log('📌 [PlayersCRM] Profilo orfano selezionato', {
-                          userId: orphan.userId,
-                          name: orphan.name,
-                          email: orphan.email,
-                          docId: orphan.docId,
-                          timestamp: new Date().toISOString()
-                        });
-                        setSelectedOrphan(orphan);
-                      }}
-                      className={`${T.cardBg} ${T.border} rounded-lg p-4 cursor-pointer transition-all ${
-                        selectedOrphan?.userId === orphan.userId
-                          ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                          : 'hover:border-blue-400'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <strong className={T.text}>{orphan.name}</strong>
-                          {orphan.email && <div className={`text-sm ${T.subtext}`}>{orphan.email}</div>}
-                          {orphan.phoneNumber && <div className={`text-sm ${T.subtext}`}>📱 {orphan.phoneNumber}</div>}
-                        </div>
-                        {selectedOrphan?.userId === orphan.userId && (
-                          <span className="text-green-500 text-xl">✓</span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Ricerca Utenti Firebase */}
-            {selectedOrphan && (
-              <div>
-                <h4 className={`text-lg font-semibold ${T.text} mb-3`}>Cerca Utente Firebase</h4>
-                <div className="flex gap-2 mb-4">
-                  <input
-                    type="text"
-                    placeholder="Cerca per email, telefono, nome o cognome..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSearchFirebaseUsers()}
-                    className={`${T.input} flex-1`}
-                    disabled={loadingOrphans}
-                  />
-                  <button
-                    onClick={handleSearchFirebaseUsers}
-                    disabled={loadingOrphans || !searchQuery.trim()}
-                    className={`${T.btnPrimary} px-6`}
-                  >
-                    {loadingOrphans ? '⏳' : '🔍 Cerca'}
-                  </button>
-                </div>
-
-                {/* Risultati Ricerca */}
-                {searchResults.length > 0 && (
-                  <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {searchResults.map((user) => (
-                      <div
-                        key={user.uid}
-                        onClick={() => {
-                          console.log('📌 [PlayersCRM] Utente Firebase selezionato', {
-                            uid: user.uid,
-                            email: user.email,
-                            displayName: user.displayName,
-                            matchType: user.matchType,
-                            emailVerified: user.emailVerified,
-                            timestamp: new Date().toISOString()
-                          });
-                          setSelectedFirebaseUser(user);
-                        }}
-                        className={`${T.cardBg} ${T.border} rounded-lg p-4 cursor-pointer transition-all ${
-                          selectedFirebaseUser?.uid === user.uid
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                            : 'hover:border-blue-400'
-                        }`}
-                      >
-                        <div className="flex justify-between items-center">
-                          <div className="flex gap-3 items-center">
-                            {user.photoURL && (
-                              <img src={user.photoURL} alt="" className="w-10 h-10 rounded-full" />
-                            )}
-                            <div>
-                              <strong className={T.text}>{user.displayName || 'Senza nome'}</strong>
-                              {user.email && <div className={`text-sm ${T.subtext}`}>{user.email}</div>}
-                              {user.phoneNumber && <div className={`text-sm ${T.subtext}`}>📱 {user.phoneNumber}</div>}
-                              <div className={`text-xs ${T.subtext} italic`}>Trovato via: {user.matchType}</div>
-                            </div>
-                          </div>
-                          {selectedFirebaseUser?.uid === user.uid && (
-                            <span className="text-blue-500 text-xl">✓</span>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Azione Collegamento */}
-            {selectedOrphan && selectedFirebaseUser && (
-              <div className={`${T.cardBg} border-2 border-blue-500 rounded-lg p-6`}>
-                <div className="flex items-center justify-center gap-6 mb-4">
-                  <div className="text-center flex-1">
-                    <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">Profilo Orfano</div>
-                    <div className={`font-bold ${T.text}`}>{selectedOrphan.name}</div>
-                    <div className={`text-sm ${T.subtext}`}>{selectedOrphan.email}</div>
-                  </div>
-                  <div className="text-3xl text-blue-500">→</div>
-                  <div className="text-center flex-1">
-                    <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-1">Utente Firebase</div>
-                    <div className={`font-bold ${T.text}`}>{selectedFirebaseUser.displayName}</div>
-                    <div className={`text-sm ${T.subtext}`}>{selectedFirebaseUser.email}</div>
-                  </div>
-                </div>
-                <button
-                  onClick={handleLinkOrphan}
-                  disabled={linking}
-                  className={`${T.btnPrimary} w-full py-3 text-lg ${linking ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {linking ? '⏳ Collegamento in corso...' : '🔗 Collega Profilo'}
-                </button>
-              </div>
-            )}
-          </div>
-        </Modal>
+        <OrphanProfilesLinkingModal
+          orphanProfiles={orphanProfiles}
+          onLink={handleLinkOrphan}
+          onClose={() => setShowLinkOrphan(false)}
+        />
       )}
 
       {/* Modal Form Giocatore */}

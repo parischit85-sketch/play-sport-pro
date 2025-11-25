@@ -129,22 +129,67 @@ export function useUserBookingsFast(options = {}) {
     };
   }, [loadBookings]);
 
-  // Background refresh
+  // Real-time subscription instead of polling
   useEffect(() => {
     if (!enableBackground || !user?.uid) return;
 
-    intervalRef.current = setInterval(() => {
-      if (mountedRef.current && document.visibilityState === 'visible') {
-        loadBookings(true);
-      }
-    }, refreshInterval);
+    let unsubscribe = null;
 
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+    const setupSubscription = async () => {
+      try {
+        const { subscribeToActiveUserBookings } = await import('@services/cloud-bookings.js');
+        
+        unsubscribe = subscribeToActiveUserBookings(user.uid, (newBookings) => {
+          console.log('🔄 [useUserBookingsFast] Real-time update received:', newBookings.length);
+          
+          if (mountedRef.current) {
+            // Filter future bookings logic
+            const now = new Date();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const futureBookings = newBookings
+              .filter((booking) => {
+                const bookingDate = new Date(booking.date);
+                const isToday = bookingDate.toDateString() === today.toDateString();
+                const isFuture = bookingDate > today;
+
+                if (isFuture) return true;
+                if (isToday && booking.time) {
+                  const bookingDateTime = new Date(`${booking.date}T${booking.time}`);
+                  return bookingDateTime > now;
+                }
+                return false;
+              })
+              .sort((a, b) => {
+                const dateA = new Date(`${a.date}T${a.time || '00:00'}:00`);
+                const dateB = new Date(`${b.date}T${b.time || '00:00'}:00`);
+                return dateA - dateB;
+              });
+
+            setBookings(futureBookings);
+            setLastUpdate(Date.now());
+            setLoading(false);
+            
+            // Update cache
+            if (cacheKey) {
+              bookingCache.set(cacheKey, { data: futureBookings, timestamp: Date.now() });
+            }
+          }
+        });
+      } catch (err) {
+        console.error('❌ [useUserBookingsFast] Subscription error:', err);
       }
     };
-  }, [loadBookings, refreshInterval, enableBackground, user?.uid]);
+
+    setupSubscription();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [enableBackground, user?.uid, cacheKey]);
 
   // Memoized values - no additional filtering since loadUserBookingsOptimized already filters
   const activeBookings = bookings;

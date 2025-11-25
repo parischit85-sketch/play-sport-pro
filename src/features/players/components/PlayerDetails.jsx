@@ -5,11 +5,14 @@
 // FASE 2: 2025-10-16 - Added permissions & security
 // =============================================
 
-import React, { useMemo, useReducer, useEffect, useCallback, lazy, Suspense } from 'react';
+import React, { useMemo, useReducer, useEffect, useCallback, lazy, Suspense, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { listAllUserProfiles } from '@services/auth.jsx';
+import { listAllUserProfiles, getUserProfile } from '@services/auth.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { computeClubRanking } from '@lib/ranking-club.js';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '@services/firebase.js';
+import { useDebounce } from '@hooks/useDebounce.js';
 
 // Hooks
 import { usePlayerPermissions } from '../hooks/usePlayerPermissions';
@@ -18,6 +21,7 @@ import { useNotifications } from '../../../contexts/NotificationContext'; // FAS
 // Componenti refactored (sempre caricati - necessari per initial render)
 import PlayerDetailsHeader from './PlayerDetails/PlayerDetailsHeader';
 import PlayerAccountLinking from './PlayerDetails/PlayerAccountLinking';
+import PlayerAccountLinkingModal from './PlayerDetails/PlayerAccountLinkingModal';
 import PlayerEditMode from './PlayerDetails/PlayerEditMode';
 import PlayerOverviewTab from './PlayerDetails/PlayerOverviewTab';
 import PlayerDataExport from './PlayerDetails/PlayerDataExport'; // FASE 2: GDPR Export
@@ -68,6 +72,33 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
 
   // 🎯 State management con useReducer (sostituisce 15+ useState)
   const [state, dispatch] = useReducer(playerDetailsReducer, createInitialState(player));
+
+  // 🆔 Fetch Psp ID for linked players
+  const [pspId, setPspId] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    const fetchPspId = async () => {
+      // Determine the linked user ID from various possible fields - PRIORITIZE EXPLICIT LINKS
+      const linkedId = player?.linkedAccountId || player?.linkedFirebaseUid || player?.firebaseUid || player?.userId;
+      const isLinked = player?.isAccountLinked || !!linkedId;
+
+      if (isLinked && linkedId) {
+        try {
+          // console.log('🔍 [PlayerDetails] Fetching Psp ID for linked user:', linkedId);
+          const profile = await getUserProfile(linkedId);
+          if (active && profile?.pspId) {
+            // console.log('✅ [PlayerDetails] Found Psp ID:', profile.pspId);
+            setPspId(profile.pspId);
+          }
+        } catch (err) {
+          console.warn('Failed to fetch Psp ID', err);
+        }
+      }
+    };
+    fetchPspId();
+    return () => { active = false; };
+  }, [player?.isAccountLinked, player?.linkedAccountId, player?.userId, player?.firebaseUid, player?.linkedFirebaseUid]);
 
   // Note: ESC handling is managed by the parent Modal for consistency across the app
 
@@ -141,6 +172,32 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
       ),
     [players, player.id]
   );
+
+  // 🔍 Search handling
+  const debouncedSearch = useDebounce(state.linking.search, 500);
+
+  useEffect(() => {
+    const performSearch = async () => {
+      if (!debouncedSearch || debouncedSearch.trim().length < 3) {
+        dispatch({ type: ACTIONS.SET_SEARCH_RESULTS, payload: [] });
+        return;
+      }
+
+      dispatch({ type: ACTIONS.SET_LOADING, payload: { loadingAccounts: true } });
+      try {
+        const callable = httpsCallable(functions, 'searchFirebaseUsers');
+        const result = await callable({ clubId, searchQuery: debouncedSearch.trim() });
+        dispatch({ type: ACTIONS.SET_SEARCH_RESULTS, payload: result.data.results || [] });
+      } catch (error) {
+        console.error('Error searching users:', error);
+        // Don't show error toast for search failures to avoid spamming
+      } finally {
+        dispatch({ type: ACTIONS.SET_LOADING, payload: { loadingAccounts: false } });
+      }
+    };
+
+    performSearch();
+  }, [debouncedSearch, clubId]);
 
   // 🔄 Handlers with useCallback
   const handleToggleEditMode = useCallback(async () => {
@@ -292,15 +349,118 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
     dispatch({ type: ACTIONS.SET_LOADING, payload: { loadingAccounts: true } });
 
     try {
-      const res = await listAllUserProfiles(500);
-      dispatch({ type: ACTIONS.SET_ACCOUNTS, payload: res || [] });
-      dispatch({ type: ACTIONS.START_LINKING });
+      console.log('🔍 [PlayerDetails] Avvio ricerca automatica account per:', {
+        name: player.name,
+        email: player.email,
+        phone: player.phone
+      });
+
+      // 1. Carica utenti recenti (base)
+      const recentUsersPromise = listAllUserProfiles(100).catch(e => {
+        console.warn('Recent users fetch failed', e);
+        return [];
+      });
+
+      // 2. Ricerche mirate basate sui dati del player (Email, Nome, Telefono)
+      const searchPromises = [];
+      const callable = httpsCallable(functions, 'searchFirebaseUsers');
+
+      // Normalize player data for search
+      const searchEmail = (player.email || player.userEmail || '').trim().toLowerCase();
+      // Normalize phone: remove spaces, dashes, parens, plus
+      const searchPhone = (player.phone || player.phoneNumber || player.userPhone || '').replace(/[\s\-+()]/g, '');
+      
+      // Robust name calculation: prefer firstName+lastName, fallback to name/displayName
+      let searchName = `${player.firstName || ''} ${player.lastName || ''}`.trim();
+      if (searchName.length < 2 && (player.name || player.displayName)) {
+        searchName = (player.name || player.displayName || '').trim();
+      }
+
+      // Search by Email
+      if (searchEmail && searchEmail.includes('@')) {
+        console.log('🔍 [PlayerDetails] Searching by email:', searchEmail);
+        searchPromises.push(
+          callable({ clubId, searchQuery: searchEmail })
+            .then((r) => {
+              console.log('✅ [PlayerDetails] Email search results:', r.data.results?.length);
+              return r.data.results || [];
+            })
+            .catch((e) => {
+              console.warn('❌ [PlayerDetails] Email search failed', e);
+              return [];
+            })
+        );
+      }
+
+      // Search by Name
+      if (searchName.length > 2) {
+        console.log('🔍 [PlayerDetails] Searching by name:', searchName);
+        searchPromises.push(
+          callable({ clubId, searchQuery: searchName })
+            .then((r) => {
+              console.log('✅ [PlayerDetails] Name search results:', r.data.results?.length);
+              if (r.data.results?.length > 0) {
+                 console.log('📄 [PlayerDetails] First name result:', r.data.results[0]);
+              }
+              return r.data.results || [];
+            })
+            .catch((e) => {
+              console.warn('❌ [PlayerDetails] Name search failed', e);
+              return [];
+            })
+        );
+      }
+
+      // Search by Phone
+      if (searchPhone.length > 5) {
+        console.log('🔍 [PlayerDetails] Searching by phone:', searchPhone);
+        searchPromises.push(
+          callable({ clubId, searchQuery: searchPhone })
+            .then((r) => {
+              console.log('✅ [PlayerDetails] Phone search results:', r.data.results?.length);
+              return r.data.results || [];
+            })
+            .catch((e) => {
+              console.warn('❌ [PlayerDetails] Phone search failed', e);
+              return [];
+            })
+        );
+      }
+
+      // Esegui tutto in parallelo
+      const [recentUsers, ...searchResultsArrays] = await Promise.all([
+        recentUsersPromise,
+        ...searchPromises,
+      ]);
+
+      // Merge and deduplicate
+      const allAccountsMap = new Map();
+
+      // Add recent users
+      (recentUsers || []).forEach((acc) => allAccountsMap.set(acc.uid, acc));
+
+      // Add search results (priority to search results)
+      searchResultsArrays.flat().forEach((acc) => {
+        if (!allAccountsMap.has(acc.uid)) {
+          allAccountsMap.set(acc.uid, acc);
+        } else {
+          // Update existing with potentially more details from search?
+          // Usually search result is leaner, so maybe keep recentUser if exists.
+          // But let's ensure we have the user.
+        }
+      });
+
+      const allAccounts = Array.from(allAccountsMap.values());
+      console.log('📊 [PlayerDetails] Totale account trovati:', allAccounts.length);
+
+      dispatch({ type: ACTIONS.START_LINKING, payload: { accounts: allAccounts } });
     } catch (error) {
+      console.error('❌ [PlayerDetails] Error in openAccountsPicker:', error);
       showError(`Errore caricamento account: ${error.message}`);
     } finally {
       dispatch({ type: ACTIONS.SET_LOADING, payload: { loadingAccounts: false } });
     }
-  }, [showError]);
+  }, [showError, player, clubId]);
 
   // 🎨 Tabs configuration con counter dinamici
   const tabs = [
@@ -385,6 +545,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
         onCancelEdit={handleToggleEditMode}
         onToggleStatus={handleToggleStatus}
         onClose={onClose}
+        pspId={pspId}
         T={theme}
       />
 
@@ -393,24 +554,30 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
         <div className="px-4 sm:px-6 py-4">
           <PlayerAccountLinking
             player={player}
-            isLinking={state.linking.isOpen}
+            loadingUnlink={state.loading.unlinking}
+            permissions={permissions}
+            onOpenPicker={openAccountsPicker}
+            onUnlinkAccount={handleUnlinkAccount}
+            T={theme}
+          />
+
+          <PlayerAccountLinkingModal
+            isOpen={state.linking.isOpen}
+            onClose={() => dispatch({ type: ACTIONS.CANCEL_LINKING })}
+            player={player}
             linkEmail={state.linking.email}
             accountSearch={state.linking.search}
             accounts={state.linking.accounts}
+            searchResults={state.linking.searchResults}
             linkedEmailsSet={linkedEmailsSet}
             linkedIdsSet={linkedIdsSet}
             loadingAccounts={state.loading.loadingAccounts}
             loadingLink={state.loading.linking}
-            loadingUnlink={state.loading.unlinking}
-            permissions={permissions}
-            onOpenPicker={openAccountsPicker}
-            onClosePicker={() => dispatch({ type: ACTIONS.CANCEL_LINKING })}
             onSearchChange={(value) =>
               dispatch({ type: ACTIONS.SET_ACCOUNT_SEARCH, payload: value })
             }
             onEmailChange={(value) => dispatch({ type: ACTIONS.SET_LINK_EMAIL, payload: value })}
             onLinkAccount={handleLinkAccount}
-            onUnlinkAccount={handleUnlinkAccount}
             T={theme}
           />
         </div>

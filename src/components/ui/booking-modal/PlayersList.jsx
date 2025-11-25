@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Capacitor } from '@capacitor/core';
 import { Contacts } from '@capacitor-community/contacts';
-import { getUserByPhone, searchUsers } from '@services/users.js';
+import { getUserByPhone } from '@services/users.js';
 import { isMobileNumber } from '@utils/validators/phoneValidator.js';
 
 export default function PlayersList({
@@ -26,8 +26,145 @@ export default function PlayersList({
   const [showContactModal, setShowContactModal] = useState(false);
   // eslint-disable-next-line no-unused-vars
   const [deviceContacts, setDeviceContacts] = useState([]);
+  const [isLoadingContacts, setIsLoadingContacts] = useState(false);
+  const [contactsPermission, setContactsPermission] = useState('prompt');
+  const [debugError, setDebugError] = useState('');
+  const [matchedContacts, setMatchedContacts] = useState({}); // Map phone -> userData
 
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Check if filtered contacts are registered users
+  useEffect(() => {
+    const checkContactsRegistration = async () => {
+      if (!searchTerm || filteredDeviceContacts.length === 0) return;
+      
+      // Only check top 10 results to avoid spamming DB
+      const contactsToCheck = filteredDeviceContacts.slice(0, 10);
+      const newMatches = { ...matchedContacts };
+      let hasUpdates = false;
+
+      await Promise.all(
+        contactsToCheck.map(async (contact) => {
+          // Skip if already checked
+          if (newMatches[contact.phone]) return;
+
+          try {
+            const user = await getUserByPhone(contact.phone);
+            if (user) {
+              newMatches[contact.phone] = user;
+              hasUpdates = true;
+            } else {
+              // Mark as checked but not found (null) to avoid re-checking
+              newMatches[contact.phone] = null;
+              hasUpdates = true;
+            }
+          } catch (err) {
+            console.warn('Error checking contact:', contact.phone, err);
+          }
+        })
+      );
+
+      if (hasUpdates) {
+        setMatchedContacts(newMatches);
+      }
+    };
+
+    const timer = setTimeout(checkContactsRegistration, 500); // Debounce check
+    return () => clearTimeout(timer);
+  }, [searchTerm, deviceContacts]); // Re-run when search or contacts change
+
+  const fetchContacts = async () => {
+    setDebugError('');
+    setIsLoadingContacts(true);
+
+    // ---------------------------------------------------------
+    // 1. LOCAL DEV / BROWSER MODE (Mock Data)
+    // ---------------------------------------------------------
+    if (!Capacitor.isNativePlatform()) {
+      console.log('Browser detected: Loading mock contacts...');
+      setTimeout(() => {
+        setDeviceContacts([
+          { id: 'mock1', name: 'Contatto Test 1', phone: '333 1111111' },
+          { id: 'mock2', name: 'Mario Rossi', phone: '+39 333 2222222' },
+          { id: 'mock3', name: 'Luigi Verdi', phone: '3333333333' },
+          { id: 'mock4', name: 'Mamma', phone: '333 4444444' },
+        ]);
+        setContactsPermission('granted');
+        setIsLoadingContacts(false);
+      }, 800);
+      return;
+    }
+
+    // ---------------------------------------------------------
+    // 2. NATIVE DEVICE MODE
+    // ---------------------------------------------------------
+    try {
+      // Attempt direct fetch first
+      const result = await Contacts.getContacts({
+        projection: {
+          name: true,
+          phones: true,
+        },
+      });
+
+      setContactsPermission('granted');
+      
+      if (result && result.contacts) {
+        const mappedContacts = result.contacts
+          .filter((c) => c.phones && c.phones.length > 0)
+          .map((c) => ({
+            id: c.contactId || String(Date.now() + Math.random()),
+            name: c.displayName || (c.name ? c.name.display || c.name.given : 'Sconosciuto'),
+            phone: c.phones[0].number,
+          }));
+        
+        setDeviceContacts(mappedContacts);
+      }
+    } catch (err) {
+      console.warn('Direct fetch failed, requesting permissions...', err);
+      
+      // Fallback: Request permissions explicitly
+      try {
+        const perm = await Contacts.requestPermissions();
+        setContactsPermission(perm.contacts);
+
+        if (perm.contacts === 'granted') {
+          const result = await Contacts.getContacts({
+            projection: {
+              name: true,
+              phones: true,
+            },
+          });
+          
+          if (result && result.contacts) {
+            const mappedContacts = result.contacts
+              .filter((c) => c.phones && c.phones.length > 0)
+              .map((c) => ({
+                id: c.contactId || String(Date.now() + Math.random()),
+                name: c.displayName || (c.name ? c.name.display || c.name.given : 'Sconosciuto'),
+                phone: c.phones[0].number,
+              }));
+            
+            setDeviceContacts(mappedContacts);
+          }
+        } else {
+          setDebugError('Permesso negato dall\'utente');
+        }
+      } catch (permErr) {
+        console.error('Permission flow error:', permErr);
+        setDebugError(`Err: ${permErr.message || JSON.stringify(permErr)}`);
+      }
+    } finally {
+      setIsLoadingContacts(false);
+    }
+  };
+
+  // Load device contacts when modal opens
+  useEffect(() => {
+    if (showContactModal) {
+      fetchContacts();
+    }
+  }, [showContactModal]);
 
   // Load recent players on mount and refresh their status
   useEffect(() => {
@@ -78,28 +215,12 @@ export default function PlayersList({
     loadAndRefreshRecentPlayers();
   }, []);
 
-  // Debounced search for PlaySport users inside Modal
+  // Debounced search for PlaySport users inside Modal - REMOVED
+  /*
   useEffect(() => {
-    const searchTimer = setTimeout(async () => {
-      if (searchTerm.length >= 2) {
-        try {
-          const results = await searchUsers(searchTerm);
-          // Filter out already added players
-          const currentPlayersList = isEditingPlayers ? editedPlayers : booking.players;
-          const currentIds = (currentPlayersList || []).map((p) => p.uid || p.id).filter(Boolean);
-          const filtered = results.filter((u) => !currentIds.includes(u.uid));
-
-          setSearchResults(filtered);
-        } catch (err) {
-          console.error('Search error:', err);
-        }
-      } else {
-        setSearchResults([]);
-      }
-    }, 300);
-
-    return () => clearTimeout(searchTimer);
-  }, [searchTerm, isEditingPlayers, editedPlayers, booking.players]);
+     // ... removed global search ...
+  }, []);
+  */
 
   const addPlayersToRecent = (players) => {
     const playersList = Array.isArray(players) ? players : [players];
@@ -134,28 +255,25 @@ export default function PlayersList({
     });
   };
 
-  // Debounced search for PlaySport users inside Modal
+  // Debounced search for PlaySport users inside Modal - REMOVED
+  /*
   useEffect(() => {
-    const searchTimer = setTimeout(async () => {
-      if (searchTerm.length >= 2) {
-        try {
-          const results = await searchUsers(searchTerm);
-          // Filter out already added players
-          const currentPlayersList = isEditingPlayers ? editedPlayers : booking.players;
-          const currentIds = (currentPlayersList || []).map((p) => p.uid || p.id).filter(Boolean);
-          const filtered = results.filter((u) => !currentIds.includes(u.uid));
+     // ... removed global search ...
+  }, []);
+  */
 
-          setSearchResults(filtered);
-        } catch (err) {
-          console.error('Search error:', err);
-        }
-      } else {
-        setSearchResults([]);
-      }
-    }, 300);
-
-    return () => clearTimeout(searchTimer);
-  }, [searchTerm, isEditingPlayers, editedPlayers, booking.players]);
+  const handleRemoveRecent = (e, playerToRemove) => {
+    e.stopPropagation();
+    setRecentPlayers((prev) => {
+      const updated = prev.filter((p) => {
+        if (playerToRemove.uid && p.uid === playerToRemove.uid) return false;
+        if (!playerToRemove.uid && p.name === playerToRemove.name) return false;
+        return true;
+      });
+      localStorage.setItem('psp_recent_players', JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   const getPlayerDisplayName = (player) => {
     if (!player) return '';
@@ -190,29 +308,10 @@ export default function PlayersList({
 
   const handleNativeContactPick = async () => {
     setIsSearching(true);
-    // Don't close modal immediately, wait for result
     try {
-      // 1. Try Web Contact Picker API (Android Chrome / PWA)
-      if ('contacts' in navigator && 'ContactsManager' in window) {
-        const props = ['name', 'tel'];
-        const opts = { multiple: true }; // Allow selecting multiple contacts
-
-        const contacts = await navigator.contacts.select(props, opts);
-
-        if (contacts && contacts.length > 0) {
-          await processSelectedContacts(
-            contacts.map((c) => ({
-              name: c.name ? c.name[0] : 'Sconosciuto',
-              phone: c.tel ? c.tel[0] : '',
-            }))
-          );
-        }
-      }
-      // 2. Try Capacitor Plugin (Native iOS/Android)
-      else if (Capacitor.isNativePlatform()) {
-        const permission = await Contacts.requestPermissions();
-        if (permission.contacts === 'granted') {
-          // Use pickContact for single selection flow which is standard on native
+      // Native Platform Logic
+      if (Capacitor.isNativePlatform()) {
+        try {
           const result = await Contacts.pickContact({
             projection: {
               name: true,
@@ -225,17 +324,41 @@ export default function PlayersList({
             const phone = c.phones && c.phones.length > 0 ? c.phones[0].number : '';
             const name = c.displayName || (c.name ? c.name.display || c.name.given : 'Sconosciuto');
 
-            await processSelectedContacts([{ name, phone }]);
+            if (phone) {
+              await processSelectedContacts([{ name, phone }]);
+            } else {
+              // If picked contact has no phone, show modal to let them search/add manually
+              setShowContactModal(true);
+            }
           }
+        } catch (pickError) {
+          console.warn('Pick contact failed or cancelled:', pickError);
+          // Just show the modal if picker fails/cancels
+          setShowContactModal(true);
+        }
+      } 
+      // Web/PWA Logic
+      else if ('contacts' in navigator && 'ContactsManager' in window) {
+        const props = ['name', 'tel'];
+        const opts = { multiple: true };
+
+        const contacts = await navigator.contacts.select(props, opts);
+
+        if (contacts && contacts.length > 0) {
+          await processSelectedContacts(
+            contacts.map((c) => ({
+              name: c.name ? c.name[0] : 'Sconosciuto',
+              phone: c.tel ? c.tel[0] : '',
+            }))
+          );
         }
       } else {
         // Fallback to manual input
-        setIsAdding(true);
+        setShowContactModal(true);
       }
     } catch (error) {
       console.error('Error picking contact:', error);
-      // Fallback to manual input on error
-      setIsAdding(true);
+      setShowContactModal(true);
     } finally {
       setIsSearching(false);
     }
@@ -299,11 +422,7 @@ export default function PlayersList({
 
   const handleOpenAddPlayer = () => {
     setShowContactModal(true);
-
-    // Auto-open picker ONLY on Native App (not PWA/Web)
-    if (Capacitor.isNativePlatform()) {
-      handleNativeContactPick();
-    }
+    // Native picker auto-open removed to favor integrated search
   };
 
   // Render logic
@@ -317,9 +436,21 @@ export default function PlayersList({
     .filter((p) => !searchTerm || (p.name || '').toLowerCase().includes(searchTerm.toLowerCase()));
 
   // Filter device contacts
-  const filteredDeviceContacts = deviceContacts.filter(
-    (c) => !searchTerm || (c.name || '').toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredDeviceContacts = deviceContacts.filter((c) => {
+    if (!searchTerm) return true;
+    
+    const searchLower = searchTerm.toLowerCase();
+    const nameMatch = (c.name || '').toLowerCase().includes(searchLower);
+    
+    // Aggressive phone matching: strip all non-digits
+    const phoneClean = (c.phone || '').replace(/\D/g, '');
+    const searchClean = searchTerm.replace(/\D/g, '');
+    
+    // Only match phone if user typed at least 3 digits
+    const phoneMatch = searchClean.length >= 3 && phoneClean.includes(searchClean);
+    
+    return nameMatch || phoneMatch;
+  });
 
   return (
     <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/30 rounded-2xl p-4 shadow-lg shadow-gray-900/20 relative">
@@ -358,60 +489,7 @@ export default function PlayersList({
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-6 pb-20">
-              {/* PlaySport Search Results */}
-              {searchResults.length > 0 && (
-                <div className="space-y-2">
-                  <div className="px-1 text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
-                    <span>Risultati Globali</span>
-                    <span className="bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded text-[10px]">
-                      {searchResults.length}
-                    </span>
-                  </div>
-                  <div className="bg-gray-800/30 rounded-2xl overflow-hidden border border-gray-800">
-                    {searchResults.map((user, idx) => (
-                      <button
-                        key={user.uid}
-                        onClick={() =>
-                          handleAddPlayer({
-                            name: user.displayName || user.firstName,
-                            email: user.email,
-                            phone: user.phone,
-                            uid: user.uid,
-                            avatar: user.avatar,
-                            isGuest: false,
-                          })
-                        }
-                        className={`w-full flex items-center gap-4 p-3 hover:bg-gray-800 transition-colors text-left group ${
-                          idx !== searchResults.length - 1 ? 'border-b border-gray-800/50' : ''
-                        }`}
-                      >
-                        <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-sm text-blue-400 font-bold shrink-0 ring-2 ring-blue-500/10">
-                          {user.avatar ? (
-                            <img
-                              src={user.avatar}
-                              alt={user.displayName}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          ) : (
-                            (user.displayName || user.firstName || '?').charAt(0).toUpperCase()
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-base text-white font-medium truncate">
-                            {user.displayName || user.firstName}
-                          </div>
-                          <div className="text-sm text-gray-400 truncate">
-                            {user.email || user.phone}
-                          </div>
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
-                          <img src="/play-sport-pro_icon_only.svg" alt="PS" className="w-4 h-4" />
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* PlaySport Search Results - REMOVED as per user request */}
 
               {/* Recent Players Section */}
               {filteredRecentPlayers.length > 0 && (
@@ -466,10 +544,19 @@ export default function PlayersList({
                             {player.phone || player.email}
                           </div>
                         </div>
-                        <div className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center group-hover:border-blue-500 group-hover:bg-blue-500/20">
-                          <span className="text-blue-400 opacity-0 group-hover:opacity-100 text-xl leading-none">
-                            +
-                          </span>
+                        <div className="flex items-center gap-1">
+                          <div
+                            onClick={(e) => handleRemoveRecent(e, player)}
+                            className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-500/20 text-gray-600 hover:text-red-400 transition-colors z-10"
+                            title="Rimuovi dai recenti"
+                          >
+                            ✕
+                          </div>
+                          <div className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center group-hover:border-blue-500 group-hover:bg-blue-500/20">
+                            <span className="text-blue-400 opacity-0 group-hover:opacity-100 text-xl leading-none">
+                              +
+                            </span>
+                          </div>
                         </div>
                       </button>
                     ))}
@@ -477,50 +564,125 @@ export default function PlayersList({
                 </div>
               )}
 
-              {/* Device Contacts Section (Native Only) */}
+              {/* Device Contacts Section */}
+              {isLoadingContacts && (
+                <div className="p-4 text-center text-gray-400 text-sm flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  Caricamento rubrica...
+                </div>
+              )}
+
+              {!isLoadingContacts && contactsPermission !== 'granted' && Capacitor.isNativePlatform() && (
+                <div className="p-4 text-center">
+                  <p className="text-gray-400 text-sm mb-2">
+                    Permesso contatti necessario per la ricerca
+                  </p>
+                  <button
+                    onClick={fetchContacts}
+                    className="text-blue-400 text-sm font-bold hover:underline px-4 py-2 bg-blue-500/10 rounded-lg"
+                  >
+                    Abilita Accesso / Riprova
+                  </button>
+                </div>
+              )}
+
+              {/* Debug Error Display */}
+              {debugError && (
+                <div className="mx-4 mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                  <div className="text-xs font-bold text-red-400 mb-1">Errore Contatti:</div>
+                  <div className="text-[10px] text-red-300 font-mono break-all">
+                    {debugError}
+                  </div>
+                </div>
+              )}
+
               {filteredDeviceContacts.length > 0 && (
                 <div className="space-y-2">
                   <div className="px-1 text-xs font-bold text-gray-400 uppercase tracking-wider">
                     Rubrica Telefono
                   </div>
                   <div className="bg-gray-800/30 rounded-2xl overflow-hidden border border-gray-800">
-                    {filteredDeviceContacts.map((contact, idx) => (
-                      <button
-                        key={contact.id || idx}
-                        onClick={() =>
-                          handleAddPlayer({
-                            name: contact.name,
-                            phone: contact.phone,
-                            isGuest: true,
-                          })
-                        }
-                        className={`w-full flex items-center gap-4 p-3 hover:bg-gray-800 transition-colors text-left group ${
-                          idx !== filteredDeviceContacts.length - 1
-                            ? 'border-b border-gray-800/50'
-                            : ''
-                        }`}
-                      >
-                        <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center shadow-sm ring-2 ring-gray-600 relative">
-                          <span className="text-white text-sm font-bold">
-                            {(contact.name || '?').charAt(0).toUpperCase()}
-                          </span>
-                          <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full border border-gray-800 p-[2px] w-4 h-4 flex items-center justify-center shadow-sm">
-                            <span className="text-[8px] text-white">📞</span>
+                    {filteredDeviceContacts.map((contact, idx) => {
+                      const matchedUser = matchedContacts[contact.phone];
+                      
+                      return (
+                        <button
+                          key={contact.id || idx}
+                          onClick={() =>
+                            handleAddPlayer(
+                              matchedUser
+                                ? {
+                                    name: matchedUser.displayName || matchedUser.firstName || contact.name,
+                                    email: matchedUser.email,
+                                    phone: matchedUser.phone,
+                                    uid: matchedUser.uid,
+                                    avatar: matchedUser.avatar,
+                                    isGuest: false,
+                                  }
+                                : {
+                                    name: contact.name,
+                                    phone: contact.phone,
+                                    isGuest: true,
+                                  }
+                            )
+                          }
+                          className={`w-full flex items-center gap-4 p-3 hover:bg-gray-800 transition-colors text-left group ${
+                            idx !== filteredDeviceContacts.length - 1
+                              ? 'border-b border-gray-800/50'
+                              : ''
+                          }`}
+                        >
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-sm ring-2 relative ${
+                            matchedUser ? 'bg-blue-500/20 ring-blue-500/30' : 'bg-gray-700 ring-gray-600'
+                          }`}>
+                            {matchedUser && matchedUser.avatar ? (
+                              <img
+                                src={matchedUser.avatar}
+                                alt={matchedUser.displayName}
+                                className="w-full h-full rounded-full object-cover"
+                              />
+                            ) : (
+                              <span className={`text-sm font-bold ${matchedUser ? 'text-blue-400' : 'text-white'}`}>
+                                {(contact.name || '?').charAt(0).toUpperCase()}
+                              </span>
+                            )}
+                            
+                            {/* Badge Icon */}
+                            <div className={`absolute -bottom-1 -right-1 rounded-full border border-gray-800 p-[2px] w-4 h-4 flex items-center justify-center shadow-sm ${
+                              matchedUser ? 'bg-blue-500' : 'bg-green-500'
+                            }`}>
+                              {matchedUser ? (
+                                <img src="/play-sport-pro_icon_only.svg" alt="PS" className="w-full h-full object-contain" />
+                              ) : (
+                                <span className="text-[8px] text-white">📞</span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-base text-white font-medium truncate">
-                            {contact.name}
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <div className={`text-base font-medium truncate ${matchedUser ? 'text-blue-100' : 'text-white'}`}>
+                                {contact.name}
+                              </div>
+                              {matchedUser && (
+                                <span className="text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded border border-blue-500/20">
+                                  Registrato
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-400 truncate">
+                              {matchedUser ? matchedUser.displayName : contact.phone}
+                            </div>
                           </div>
-                          <div className="text-sm text-gray-400 truncate">{contact.phone}</div>
-                        </div>
-                        <div className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center group-hover:border-blue-500 group-hover:bg-blue-500/20">
-                          <span className="text-blue-400 opacity-0 group-hover:opacity-100 text-xl leading-none">
-                            +
-                          </span>
-                        </div>
-                      </button>
-                    ))}
+                          
+                          <div className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center group-hover:border-blue-500 group-hover:bg-blue-500/20">
+                            <span className="text-blue-400 opacity-0 group-hover:opacity-100 text-xl leading-none">
+                              +
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -554,31 +716,7 @@ export default function PlayersList({
               )}
 
               {/* Device Contacts Section */}
-              <div className="pt-2">
-                <div className="px-1 text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-                  Altre Opzioni
-                </div>
-                <button
-                  onClick={handleNativeContactPick}
-                  className="w-full flex items-center gap-4 p-4 bg-gradient-to-r from-gray-800 to-gray-800/50 hover:from-gray-700 hover:to-gray-700/50 border border-gray-700 rounded-2xl transition-all text-left group shadow-lg"
-                >
-                  <div className="w-12 h-12 rounded-full bg-gray-700/50 flex items-center justify-center group-hover:bg-gray-600 transition-colors border border-gray-600">
-                    <span className="text-2xl">📒</span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-base text-gray-100 font-bold">Apri Rubrica Telefono</div>
-                    <div className="text-sm text-gray-400">
-                      Seleziona dai contatti del dispositivo
-                    </div>
-                  </div>
-                  <div className="text-gray-500 group-hover:translate-x-1 transition-transform">
-                    →
-                  </div>
-                </button>
-                <p className="text-xs text-gray-500 px-2 mt-3 text-center">
-                  Verranno importati solo i contatti con numero di cellulare valido.
-                </p>
-              </div>
+              {/* Removed 'Open Contacts' button as requested, integrated into search */}
             </div>
           </div>,
           document.body

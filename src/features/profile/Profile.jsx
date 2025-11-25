@@ -273,8 +273,13 @@ export default function Profile({ T }) {
             )}
 
             <div className="flex-1 min-w-0">
-              <h3 className={`text-2xl font-bold ${T.text} truncate mb-1`}>
+              <h3 className={`text-2xl font-bold ${T.text} truncate mb-1 flex items-center gap-2`}>
                 {user.displayName || 'Utente'}
+                {userProfile?.pspId && (
+                  <span className="text-sm font-mono bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30">
+                    #{userProfile.pspId}
+                  </span>
+                )}
               </h3>
               <p className={`${T.accentInfo} text-lg truncate mb-2`}>{user.email}</p>
               <div className="flex items-center gap-3">

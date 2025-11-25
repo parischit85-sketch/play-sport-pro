@@ -1,5 +1,6 @@
 import React from 'react';
 import { ACTIONS } from './reducers/playerDetailsReducer';
+import { PLAYER_CATEGORIES } from '../../types/playerTypes';
 
 /**
  * PlayerEditMode - Form per modifica dati giocatore
@@ -193,13 +194,15 @@ const PlayerEditMode = ({ state, dispatch, T }) => {
             <div>
               <label className={`block text-sm font-medium ${T.text} mb-1`}>Categoria</label>
               <select
-                value={editFormData.category || 'adult'}
+                value={editFormData.category || PLAYER_CATEGORIES.NON_MEMBER}
                 onChange={(e) => handleFieldChange('category', e.target.value)}
                 className={`${T.input} w-full`}
               >
-                <option value="adult">👨 Adulto</option>
-                <option value="junior">👦 Giovane</option>
-                <option value="senior">👴 Senior</option>
+                <option value={PLAYER_CATEGORIES.NON_MEMBER}>Non Membro</option>
+                <option value={PLAYER_CATEGORIES.MEMBER}>Socio</option>
+                <option value={PLAYER_CATEGORIES.GUEST}>Ospite</option>
+                <option value={PLAYER_CATEGORIES.VIP}>VIP</option>
+                <option value={PLAYER_CATEGORIES.INSTRUCTOR}>Istruttore</option>
               </select>
             </div>
 

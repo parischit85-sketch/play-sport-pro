@@ -72,7 +72,7 @@ export default function BookingDetailModal({
 
   // Cancellation/Edit rules
   const hoursUntilBooking = (bookingDateTime - now) / (1000 * 60 * 60);
-  const canCancel = hoursUntilBooking > 30;
+  const canCancel = hoursUntilBooking > 24;
   const canEdit = !isPast;
 
   let dateLabel;
@@ -112,7 +112,7 @@ export default function BookingDetailModal({
       {/* Close Button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-20 p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-full transition-all backdrop-blur-sm"
+        className="absolute top-12 right-4 z-20 p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 rounded-full transition-all backdrop-blur-sm"
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -124,7 +124,7 @@ export default function BookingDetailModal({
         </svg>
       </button>
 
-      <div className="space-y-4 pt-8">
+      <div className="space-y-4 pt-20">
         {/* Club Info */}
         <ClubInfoCard clubInfo={clubInfo} />
 

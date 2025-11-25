@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from './Modal.jsx';
+import { Capacitor } from '@capacitor/core';
 
 // Funzione per rilevare il sistema operativo
 const getOperatingSystem = () => {
@@ -146,11 +147,14 @@ export default function AppDownloadModal() {
       // Controlla se siamo in modalità standalone (PWA già installata)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
                           window.navigator.standalone === true;
+      
+      // Controlla se siamo su app nativa (Capacitor)
+      const isNative = Capacitor.isNativePlatform();
 
-      console.log('Checking if should show modal:', { isStandalone, deferredPrompt: !!deferredPrompt });
+      console.log('Checking if should show modal:', { isStandalone, isNative, deferredPrompt: !!deferredPrompt });
 
-      // Non mostrare se è già una PWA installata
-      if (!isStandalone) {
+      // Non mostrare se è già una PWA installata o se siamo su app nativa
+      if (!isStandalone && !isNative) {
         setIsOpen(true);
       }
     }, 2000);

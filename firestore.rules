@@ -29,7 +29,8 @@ service cloud.firestore {
     // Check if user is admin (Super Admin)
     function isAdmin() {
       return isAuthenticated() && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+             (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' || 
+              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'SUPER_ADMIN');
     }
     
     // Check if user is club admin
@@ -161,10 +162,10 @@ service cloud.firestore {
                        ) &&
                        isWithinSizeLimit(10000);
       
-      // Update: Owner can update limited fields, club admin can update club bookings, admin can update anything
-      // FIXED: Added club admin access with club verification
+      // Update: Owner can update limited fields (status for cancellation, notes, players), club admin can update club bookings, admin can update anything
+      // FIXED: Added club admin access with club verification and fixed owner update permissions
       allow update: if (isOwner(resource.data.userId) && 
-                         request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'notes']) == false) ||
+                         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'notes', 'players', 'cancelledAt', 'cancelledBy', 'updatedAt', 'updatedBy'])) ||
                        isAdmin() ||
                        (isClubAdmin() && resource.data.clubId != null && isClubAdminOf(resource.data.clubId));
       
@@ -379,6 +380,11 @@ service cloud.firestore {
     // ==========================================
     // CLUBS SUBCOLLECTIONS
     // ==========================================
+    match /clubs/{clubId}/affiliations/{affiliationId} {
+      allow read: if isAuthenticated();
+      allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();
+    }
+
     match /clubs/{clubId}/players/{playerId} {
       allow read: if isAuthenticated();
       allow write: if isClubAdminOf(clubId) || isClubOwner(clubId) || isAdmin();

@@ -23,6 +23,9 @@ import AppDownloadModal from '@ui/AppDownloadModal.jsx';
 import CertificateExpiryAlert from '@features/players/components/CertificateExpiryAlert.jsx';
 import { logger } from '@/utils/logger';
 import { useUnreadNotifications } from '@hooks/useUnreadNotifications';
+import { Capacitor } from '@capacitor/core';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { Contacts } from '@capacitor-community/contacts';
 
 function AppLayoutInner() {
   const { user, userRole, isClubAdmin, getFirstAdminClub } = useAuth();
@@ -38,6 +41,41 @@ function AppLayoutInner() {
 
   // Booking modal state
   const [showBookingModal, setShowBookingModal] = React.useState(false);
+
+  // Native Permissions Request on Startup
+  React.useEffect(() => {
+    const requestNativePermissions = async () => {
+      if (Capacitor.isNativePlatform()) {
+        try {
+          logger.debug('📱 [AppLayout] Requesting native permissions...');
+
+          // 1. Push Notifications
+          try {
+            const pushStatus = await PushNotifications.checkPermissions();
+            if (pushStatus.receive !== 'granted') {
+              await PushNotifications.requestPermissions();
+            }
+          } catch (e) {
+            logger.warn('⚠️ [AppLayout] Push permission error:', e);
+          }
+
+          // 2. Contacts (Pre-request to avoid delay later)
+          try {
+            const contactsStatus = await Contacts.checkPermissions();
+            if (contactsStatus.contacts !== 'granted') {
+              await Contacts.requestPermissions();
+            }
+          } catch (e) {
+            logger.warn('⚠️ [AppLayout] Contacts permission error:', e);
+          }
+        } catch (error) {
+          console.error('Error requesting native permissions:', error);
+        }
+      }
+    };
+
+    requestNativePermissions();
+  }, []);
 
   // One-time geolocation permission preflight on first app access
   React.useEffect(() => {

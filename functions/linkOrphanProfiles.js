@@ -62,12 +62,42 @@ export const searchFirebaseUsers = onCall(
         }
       }
 
+      // 1.5 Cerca per Psp ID (esatto, 6 caratteri)
+      if (query.length === 6) {
+        try {
+          // Cerca case-insensitive (anche se pspId è salvato uppercase)
+          const pspIdUpper = query.toUpperCase();
+          const pspIdSnapshot = await db.collection('users')
+            .where('pspId', '==', pspIdUpper)
+            .limit(1)
+            .get();
+
+          if (!pspIdSnapshot.empty) {
+            const doc = pspIdSnapshot.docs[0];
+            const userData = doc.data();
+            results.push({
+              uid: doc.id,
+              email: userData.email || null,
+              phoneNumber: userData.phoneNumber || null,
+              displayName: userData.displayName || `${userData.firstName || ''} ${userData.lastName || ''}`.trim(),
+              firstName: userData.firstName || null,
+              lastName: userData.lastName || null,
+              photoURL: userData.photoURL || null,
+              matchType: 'pspId',
+              pspId: userData.pspId
+            });
+          }
+        } catch (err) {
+          console.warn('Error searching by Psp ID:', err);
+        }
+      }
+
       // 2. Cerca per telefono (se inizia con +)
       if (query.startsWith('+')) {
         try {
           const userRecord = await auth.getUserByPhoneNumber(query);
           results.push(formatUserResult(userRecord, 'phone'));
-        } catch (err) {
+        } catch (_) {
           // User non trovato per telefono
         }
       }

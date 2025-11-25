@@ -8,7 +8,6 @@ import { DEFAULT_RATING } from '@lib/ids.js';
 import { calculateCertificateStatus } from '@services/medicalCertificates.js';
 import { getEffectiveRanking } from '../utils/playerRanking.js';
 import PlayerAvatar from './PlayerAvatar';
-import PlayerBadges from './PlayerBadges';
 import PlayerInfo from './PlayerInfo';
 import PlayerStats from './PlayerStats';
 import PlayerActions from './PlayerActions';
@@ -32,10 +31,7 @@ const PlayerCard = ({ player, playersById, onEdit, onDelete, onView, onStats, T 
           <PlayerAvatar player={player} size="sm" />
 
           {/* Info base */}
-          <PlayerInfo player={player} onView={onView} T={T} layout="desktop" />
-
-          {/* Badges (certificato, stato) */}
-          <PlayerBadges player={player} certStatus={certStatus} />
+          <PlayerInfo player={player} onView={onView} T={T} layout="desktop" certStatus={certStatus} />
 
           {/* Stats */}
           <PlayerStats player={player} liveRating={liveRating} T={T} layout="desktop" />
@@ -61,10 +57,7 @@ const PlayerCard = ({ player, playersById, onEdit, onDelete, onView, onStats, T 
           <PlayerAvatar player={player} size="sm" />
 
           {/* Info base */}
-          <PlayerInfo player={player} onView={onView} T={T} layout="mobile" />
-
-          {/* Badges */}
-          <PlayerBadges player={player} certStatus={certStatus} />
+          <PlayerInfo player={player} onView={onView} T={T} layout="mobile" certStatus={certStatus} />
 
           {/* Ranking */}
           <div className="text-right">

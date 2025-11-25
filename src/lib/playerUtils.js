@@ -29,13 +29,15 @@ export const formatLastActivity = (date) => {
 export const getCategoryStyle = (category) => {
   switch (category) {
     case PLAYER_CATEGORIES.MEMBER:
-      return 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300';
+      return 'bg-emerald-500 text-white shadow-sm';
     case PLAYER_CATEGORIES.VIP:
-      return 'bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300';
+      return 'bg-purple-600 text-white shadow-sm';
     case PLAYER_CATEGORIES.GUEST:
-      return 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300';
+      return 'bg-blue-500 text-white shadow-sm';
+    case PLAYER_CATEGORIES.INSTRUCTOR:
+      return 'bg-orange-500 text-white shadow-sm';
     default:
-      return 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300';
+      return 'bg-gray-500 text-white shadow-sm';
   }
 };
 
@@ -47,11 +49,13 @@ export const getCategoryStyle = (category) => {
 export const getCategoryLabel = (category) => {
   switch (category) {
     case PLAYER_CATEGORIES.MEMBER:
-      return 'Membro';
+      return 'Socio';
     case PLAYER_CATEGORIES.VIP:
-      return 'VIP';
+      return 'Vip';
     case PLAYER_CATEGORIES.GUEST:
       return 'Ospite';
+    case PLAYER_CATEGORIES.INSTRUCTOR:
+      return 'Istruttore';
     case PLAYER_CATEGORIES.NON_MEMBER:
       return 'Non Membro';
     default:

@@ -5,6 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePWA } from '../../hooks/usePWA.js';
 import { usePermissions } from '../../hooks/usePermissions.js';
+import { Capacitor } from '@capacitor/core';
 
 export default function PWAInstallPrompt() {
   const { isInstallable, isInstalled, installApp, browserInfo, installInstructions } = usePWA();
@@ -24,8 +25,9 @@ export default function PWAInstallPrompt() {
   // Mostra il prompt dopo 3 secondi se l'app non è installata
   useEffect(() => {
     const hasSeenToday = localStorage.getItem('pwa-prompt-date') === new Date().toDateString();
+    const isNative = Capacitor.isNativePlatform();
 
-    if (!isInstalled && !hasSeenToday && isInstallable) {
+    if (!isInstalled && !hasSeenToday && isInstallable && !isNative) {
       const timer = setTimeout(() => {
         setShowPrompt(true);
         localStorage.setItem('pwa-install-prompt-shown', 'true');
@@ -113,11 +115,11 @@ export default function PWAInstallPrompt() {
   return (
     <>
       {/* Overlay */}
-      <div className="fixed inset-0 bg-black/60 bg-black/80 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-fadeIn">
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-fadeIn">
         {/* Modal */}
-        <div className="bg-white bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-slideUp">
+        <div className="bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-slideUp">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 from-blue-500 to-indigo-500 p-6 text-white">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
@@ -192,7 +194,7 @@ export default function PWAInstallPrompt() {
                   <div className="text-6xl mb-4">
                     {browserInfo?.isIOS ? '📱' : browserInfo?.isAndroid ? '🤖' : '💻'}
                   </div>
-                  <p className="text-gray-600 text-gray-300">
+                  <p className="text-gray-300">
                     Installa l&apos;app per accedere rapidamente e godere di tutte le funzionalità
                     anche offline.
                   </p>
@@ -200,39 +202,39 @@ export default function PWAInstallPrompt() {
 
                 {/* Benefici */}
                 <div className="space-y-3">
-                  <div className="flex items-start gap-3 p-3 bg-blue-50 bg-blue-900/20 rounded-lg">
+                  <div className="flex items-start gap-3 p-3 bg-blue-900/20 rounded-lg">
                     <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">
                       ✓
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 text-white">Accesso istantaneo</h4>
-                      <p className="text-sm text-gray-600 text-gray-300">
+                      <h4 className="font-semibold text-white">Accesso istantaneo</h4>
+                      <p className="text-sm text-gray-300">
                         Apri l&apos;app direttamente dalla home screen
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-3 bg-green-50 bg-green-900/20 rounded-lg">
+                  <div className="flex items-start gap-3 p-3 bg-green-900/20 rounded-lg">
                     <div className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">
                       ✓
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 text-white">Funziona offline</h4>
-                      <p className="text-sm text-gray-600 text-gray-300">
+                      <h4 className="font-semibold text-white">Funziona offline</h4>
+                      <p className="text-sm text-gray-300">
                         Visualizza dati e statistiche senza connessione
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-3 bg-purple-50 bg-purple-900/20 rounded-lg">
+                  <div className="flex items-start gap-3 p-3 bg-purple-900/20 rounded-lg">
                     <div className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">
                       ✓
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900 text-white">
+                      <h4 className="font-semibold text-white">
                         Notifiche in tempo reale
                       </h4>
-                      <p className="text-sm text-gray-600 text-gray-300">
+                      <p className="text-sm text-gray-300">
                         Aggiornamenti su prenotazioni e partite
                       </p>
                     </div>
@@ -244,7 +246,7 @@ export default function PWAInstallPrompt() {
             {/* Step: Permissions */}
             {currentStep === 'permissions' && (
               <div className="space-y-4">
-                <p className="text-gray-600 text-gray-300 text-center mb-6">
+                <p className="text-gray-300 text-center mb-6">
                   Per offrirti la migliore esperienza abbiamo bisogno di alcuni permessi:
                 </p>
 
@@ -252,43 +254,43 @@ export default function PWAInstallPrompt() {
                 <div className="space-y-3">
                   {/* Notifiche */}
                   {capabilities.hasNotifications && (
-                    <div className="flex items-start gap-3 p-4 bg-gray-50 bg-gray-700/50 rounded-lg border border-gray-200 border-gray-600">
+                    <div className="flex items-start gap-3 p-4 bg-gray-700/50 rounded-lg border border-gray-600">
                       <div className="text-2xl">🔔</div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 text-white">Notifiche</h4>
-                        <p className="text-sm text-gray-600 text-gray-300">
+                        <h4 className="font-semibold text-white">Notifiche</h4>
+                        <p className="text-sm text-gray-300">
                           Ricevi aggiornamenti su prenotazioni, partite e tornei
                         </p>
                       </div>
                       {permissions.notifications === 'granted' && (
-                        <span className="text-green-600 text-green-400">✓</span>
+                        <span className="text-green-400">✓</span>
                       )}
                     </div>
                   )}
 
                   {/* Geolocalizzazione */}
                   {capabilities.hasGeolocation && (
-                    <div className="flex items-start gap-3 p-4 bg-gray-50 bg-gray-700/50 rounded-lg border border-gray-200 border-gray-600">
+                    <div className="flex items-start gap-3 p-4 bg-gray-700/50 rounded-lg border border-gray-600">
                       <div className="text-2xl">📍</div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 text-white">Posizione</h4>
-                        <p className="text-sm text-gray-600 text-gray-300">
+                        <h4 className="font-semibold text-white">Posizione</h4>
+                        <p className="text-sm text-gray-300">
                           Trova i campi più vicini a te
                         </p>
                       </div>
                       {permissions.geolocation === 'granted' && (
-                        <span className="text-green-600 text-green-400">✓</span>
+                        <span className="text-green-400">✓</span>
                       )}
                     </div>
                   )}
 
                   {/* Contatti */}
                   {capabilities.hasContacts && (
-                    <div className="flex items-start gap-3 p-4 bg-gray-50 bg-gray-700/50 rounded-lg border border-gray-200 border-gray-600">
+                    <div className="flex items-start gap-3 p-4 bg-gray-700/50 rounded-lg border border-gray-600">
                       <div className="text-2xl">👥</div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 text-white">Contatti</h4>
-                        <p className="text-sm text-gray-600 text-gray-300">
+                        <h4 className="font-semibold text-white">Contatti</h4>
+                        <p className="text-sm text-gray-300">
                           Invita facilmente gli amici a giocare
                         </p>
                       </div>
@@ -297,8 +299,8 @@ export default function PWAInstallPrompt() {
                   )}
                 </div>
 
-                <div className="bg-blue-50 bg-blue-900/20 border border-blue-200 border-blue-700 rounded-lg p-3 mt-4">
-                  <p className="text-sm text-blue-800 text-blue-300">
+                <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-3 mt-4">
+                  <p className="text-sm text-blue-300">
                     ℹ️ Puoi modificare i permessi in qualsiasi momento dalle impostazioni del
                     browser
                   </p>
@@ -309,9 +311,9 @@ export default function PWAInstallPrompt() {
             {/* Step: Complete */}
             {currentStep === 'complete' && (
               <div className="text-center py-6">
-                <div className="w-20 h-20 bg-green-100 bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-20 h-20 bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg
-                    className="w-10 h-10 text-green-600 text-green-400"
+                    className="w-10 h-10 text-green-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -324,8 +326,8 @@ export default function PWAInstallPrompt() {
                     />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 text-white mb-2">Sei pronto! 🎾</h3>
-                <p className="text-gray-600 text-gray-300">
+                <h3 className="text-xl font-bold text-white mb-2">Sei pronto! 🎾</h3>
+                <p className="text-gray-300">
                   Ora puoi goderti al meglio Play Sport Pro con tutte le funzionalità attive.
                 </p>
               </div>
@@ -334,13 +336,13 @@ export default function PWAInstallPrompt() {
 
           {/* Footer */}
           {currentStep !== 'complete' && (
-            <div className="p-6 bg-gray-50 bg-gray-700/50 border-t border-gray-200 border-gray-600">
+            <div className="p-6 bg-gray-700/50 border-t border-gray-600">
               <div className="flex gap-3">
                 {currentStep === 'install' && (
                   <>
                     <button
                       onClick={handleSkip}
-                      className="flex-1 px-4 py-3 bg-gray-600 text-gray-200 rounded-lg font-medium hover:bg-gray-500 transition-colors border border-gray-300 border-gray-500"
+                      className="flex-1 px-4 py-3 bg-gray-600 text-gray-200 rounded-lg font-medium hover:bg-gray-500 transition-colors border border-gray-500"
                     >
                       Più tardi
                     </button>
@@ -380,7 +382,7 @@ export default function PWAInstallPrompt() {
                   <>
                     <button
                       onClick={handleSkip}
-                      className="flex-1 px-4 py-3 bg-gray-600 text-gray-200 rounded-lg font-medium hover:bg-gray-500 transition-colors border border-gray-300 border-gray-500"
+                      className="flex-1 px-4 py-3 bg-gray-600 text-gray-200 rounded-lg font-medium hover:bg-gray-500 transition-colors border border-gray-500"
                     >
                       Salta
                     </button>
@@ -401,11 +403,11 @@ export default function PWAInstallPrompt() {
 
       {/* Instructions Modal */}
       {showInstructions && installInstructions?.show && (
-        <div className="fixed inset-0 bg-black/60 bg-black/80 backdrop-blur-sm z-[100000] flex items-center justify-center p-4">
-          <div className="bg-white bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 border border-gray-600">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100000] flex items-center justify-center p-4">
+          <div className="bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 border border-gray-600">
             <div className="text-center mb-6">
               <div className="text-6xl mb-4">{installInstructions.icon || '📱'}</div>
-              <h3 className="text-xl font-bold text-gray-900 text-white mb-2">
+              <h3 className="text-xl font-bold text-white mb-2">
                 {installInstructions.title || 'Come installare'}
               </h3>
             </div>
@@ -416,7 +418,7 @@ export default function PWAInstallPrompt() {
                   <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                     {index + 1}
                   </div>
-                  <p className="text-sm text-gray-700 text-gray-300 pt-1">{instruction}</p>
+                  <p className="text-sm text-gray-300 pt-1">{instruction}</p>
                 </div>
               ))}
             </div>

@@ -232,7 +232,9 @@ function setupRealtimeSubscriptions(clubId = null) {
               `🔍 [onSnapshot] Client-side filter for legacy bookings:`,
               beforeFilter,
               '→',
-              filtered.length
+              filtered.length,
+              'Filtered out:',
+              beforeFilter - filtered.length
             );
           }
 
@@ -313,11 +315,15 @@ function setupRealtimeSubscriptions(clubId = null) {
  */
 export async function createBooking(bookingData, user, options = {}) {
   const clubId = bookingData.clubId || options.clubId || null;
+  
+  // 🚨 CRITICAL FIX: Prevent "ghost bookings" by enforcing clubId
   if (!clubId) {
-    console.warn(
-      '[UnifiedBookingService] createBooking senza clubId - fallback default-club (fase compat transitoria)'
+    console.error(
+      '❌ [UnifiedBookingService] CRITICAL: Attempted to create booking without clubId'
     );
+    throw new Error('Club ID is required for creating a booking. Please refresh and try again.');
   }
+
   if (bookingData.time) bookingData.time = normalizeTime(bookingData.time);
 
   // 🏥 CHECK CERTIFICATO MEDICO - Verifica e salva stato (non blocca prenotazione)
@@ -494,7 +500,7 @@ export async function createBooking(bookingData, user, options = {}) {
     createdBy: user?.uid || null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    clubId: clubId || 'default-club',
+    clubId: clubId, // 🔒 Enforced at start of function
     userId: primaryUserId, // 🎯 FIX: userId è il giocatore target, non l'admin che crea
     startTime: new Date(`${bookingData.date}T${bookingData.time}:00`).getTime(),
 
@@ -528,6 +534,18 @@ export async function createBooking(bookingData, user, options = {}) {
     linkedFirebaseUid: bookingData.players?.[0]?.linkedFirebaseUid,
     uid: bookingData.players?.[0]?.uid,
     finalBookingUserId: booking.userId,
+  });
+
+  // 🔍 DEBUG: Log payload before saving
+  console.log('💾 [createBooking] PAYLOAD DEBUG:', {
+    clubId: booking.clubId,
+    date: booking.date,
+    time: booking.time,
+    userId: booking.userId,
+    status: booking.status,
+    courtId: booking.courtId,
+    isAdminCreated: booking.isAdminCreated,
+    fullPayload: JSON.stringify(booking),
   });
 
   let result;
@@ -933,6 +951,7 @@ export async function getPublicBookings(options = {}) {
   // Filter by clubId if provided
   if (clubId) {
     const isLegacyClub = ['sporting-cat', 'default-club'].includes(clubId);
+    const beforeFilter = bookings.length;
     bookings = bookings.filter(
       (b) =>
         b.clubId === clubId ||
@@ -942,6 +961,12 @@ export async function getPublicBookings(options = {}) {
         // If filtering for default-club, also include sporting-cat bookings
         (clubId === 'default-club' && b.clubId === 'sporting-cat')
     );
+    console.log('🔍 [getPublicBookings] Filtered by clubId:', {
+      clubId,
+      before: beforeFilter,
+      after: bookings.length,
+      removed: beforeFilter - bookings.length,
+    });
   }
 
   if (!includeLesson) {
@@ -1073,6 +1098,8 @@ async function createCloudBooking(booking) {
     updatedAt: serverTimestamp(),
   });
 
+  console.log('☁️ [createCloudBooking] Sending to Firestore:', JSON.stringify(cleanedData));
+
   const docRef = await addDoc(collection(db, COLLECTIONS.BOOKINGS), cleanedData);
   return {
     ...rest,
@@ -1177,6 +1204,7 @@ async function loadCloudBookings(clubId = null) {
       totalDocs: snapshot.docs.length,
       collectionPath: COLLECTIONS.BOOKINGS,
       clubIdFilter: clubId || 'none',
+      docIds: snapshot.docs.map((d) => d.id).slice(0, 5), // Log first 5 IDs
     });
 
     const allBookings = snapshot.docs.map((d) => {
@@ -1433,15 +1461,38 @@ export function generateBookingId() {
   return `booking-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-// Clean undefined fields before sending to Firestore
+// Clean undefined fields before sending to Firestore (Recursive)
 function cleanBookingData(data) {
-  const cleaned = {};
-  for (const [key, value] of Object.entries(data)) {
-    if (value !== undefined && value !== null) {
-      cleaned[key] = value;
-    }
+  if (data === undefined) return undefined;
+  if (data === null) return null;
+
+  if (Array.isArray(data)) {
+    return data.map((v) => cleanBookingData(v)).filter((v) => v !== undefined);
   }
-  return cleaned;
+
+  if (typeof data === 'object') {
+    // Preserve Date objects
+    if (data instanceof Date) return data;
+
+    // Preserve Firestore FieldValues (heuristic: check if it's a plain object)
+    // If it's a class instance (like FieldValue), return as is
+    const isPlainObject =
+      Object.prototype.toString.call(data) === '[object Object]' &&
+      (!data.constructor || data.constructor.name === 'Object');
+
+    if (!isPlainObject) return data;
+
+    const cleaned = {};
+    for (const [key, value] of Object.entries(data)) {
+      const cleanedValue = cleanBookingData(value);
+      if (cleanedValue !== undefined) {
+        cleaned[key] = cleanedValue;
+      }
+    }
+    return cleaned;
+  }
+
+  return data;
 }
 
 export const CONSTANTS = {

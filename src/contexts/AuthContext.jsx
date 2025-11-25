@@ -52,7 +52,7 @@ export function AuthProvider({ children }) {
     }
 
     // Check profile role for Super Admin
-    if (profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN') {
+    if (profile?.role === 'ADMIN' || profile?.role === 'SUPER_ADMIN' || profile?.role === 'admin') {
       return USER_ROLES.SUPER_ADMIN;
     }
 

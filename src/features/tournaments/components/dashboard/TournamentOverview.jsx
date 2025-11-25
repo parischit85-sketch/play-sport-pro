@@ -392,7 +392,7 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
   // Admin può completare il torneo in qualsiasi fase (non solo dalla fase a eliminazione)
   const canComplete =
     tournament.status !== TOURNAMENT_STATUS.COMPLETED &&
-    tournament.status !== TOURNAMENT_STATUS.DRAFT;
+    tournament.status !== TOURNAMENT_STATUS.CANCELLED;
   // Admin può riattivare un torneo completato
   const canReactivate = tournament.status === TOURNAMENT_STATUS.COMPLETED;
 
@@ -582,6 +582,14 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
                     : 'Basato su Ranking'}
                 </span>
               </div>
+              <div>
+                <span className="text-gray-400">Stato Punti:</span>
+                <span
+                  className={`ml-2 font-medium ${applyInfo.applied ? 'text-orange-400' : 'text-gray-400'}`}
+                >
+                  {applyInfo.applied ? 'Applicati' : 'Non applicati'}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -680,27 +688,37 @@ function TournamentOverview({ tournament, onUpdate, clubId }) {
                       Genera Partite Gironi
                     </button>
 
-                    {allGroupMatchesCompleted && (
-                      <>
-                        <div className="inline-flex items-center text-sm text-gray-400 px-2">
-                          Tutti i risultati inseriti - Genera tabellone:
+                    {/* Generazione Tabellone Manuale - Sempre visibile con warning se partite incomplete */}
+                    <div className="flex items-center gap-2">
+                      {!allGroupMatchesCompleted && totalGroupMatches > 0 && (
+                        <div className="hidden sm:inline-flex items-center text-sm text-amber-400 px-2 py-1 bg-amber-900/20 rounded-lg">
+                          ⚠️ Partite incomplete ({completedGroupMatches}/{totalGroupMatches})
                         </div>
-                        <button
-                          onClick={() => setShowManualBracket(true)}
-                          disabled={loading}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                          title="Configura manualmente il tabellone a eliminazione diretta"
-                        >
-                          Genera Tabellone Manuale
-                        </button>
-                      </>
-                    )}
-                    {!allGroupMatchesCompleted && totalGroupMatches > 0 && (
-                      <div className="inline-flex items-center text-sm text-amber-400 px-2 py-1 bg-amber-900/20 rounded-lg">
-                        ⏳ Inserisci i risultati di tutte le partite ({completedGroupMatches}/
-                        {totalGroupMatches}) per sbloccare il tabellone
-                      </div>
-                    )}
+                      )}
+                      <button
+                        onClick={() => {
+                          if (!allGroupMatchesCompleted && totalGroupMatches > 0) {
+                            if (
+                              !window.confirm(
+                                'Attenzione: non tutte le partite dei gironi sono state completate.\n\nVuoi procedere comunque alla creazione del tabellone? Le classifiche potrebbero essere parziali.'
+                              )
+                            ) {
+                              return;
+                            }
+                          }
+                          setShowManualBracket(true);
+                        }}
+                        disabled={loading}
+                        className={`inline-flex items-center gap-2 px-4 py-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed ${
+                          allGroupMatchesCompleted
+                            ? 'bg-green-600 hover:bg-green-700'
+                            : 'bg-amber-600 hover:bg-amber-700'
+                        }`}
+                        title="Configura manualmente il tabellone a eliminazione diretta"
+                      >
+                        Genera Tabellone Manuale
+                      </button>
+                    </div>
                     {/* Rimosso in fase Gironi: Ricalcola Classifiche / Configura Tabellone Manuale / Inizia Fase a Eliminazione */}
                   </>
                 )}

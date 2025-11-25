@@ -204,6 +204,11 @@ function TournamentDetailsPage({ clubId }) {
               >
                 {formatTournamentStatus(tournament.status)}
               </span>
+              {pointsApplied && (
+                <span className="hidden sm:inline-block px-3 py-1 rounded-full text-sm font-medium bg-orange-900/50 text-orange-300 border border-orange-700/50">
+                  Punti Assegnati
+                </span>
+              )}
               {/* Mobile: status as dot */}
               <div
                 className={`sm:hidden w-2 h-2 rounded-full ${statusColor.includes('green') ? 'bg-green-500' : statusColor.includes('blue') ? 'bg-blue-500' : statusColor.includes('yellow') ? 'bg-yellow-500' : statusColor.includes('purple') ? 'bg-purple-500' : 'bg-gray-500'}`}

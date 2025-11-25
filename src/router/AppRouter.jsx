@@ -12,6 +12,7 @@ import { ProtectedRoute, PublicRoute, AuthAwareRoute } from '@components/Protect
 import AppLayout from '@layouts/AppLayout.jsx';
 import { trackPageView } from '@lib/analytics.js';
 import { AutoPushSubscription } from '@components/AutoPushSubscription.jsx';
+import AutoLocationPermission from '@components/AutoLocationPermission.jsx';
 
 // Lazy load pages for better performance
 const LoginPage = React.lazy(() => import('@pages/LoginPage.jsx'));
@@ -105,6 +106,7 @@ export default function AppRouter() {
         <AnalyticsPageTracker />
         <AuthProvider>
           <AutoPushSubscription />
+          <AutoLocationPermission />
           <UIProvider>
             <Suspense fallback={<LoadingPage />}>
               <Routes>

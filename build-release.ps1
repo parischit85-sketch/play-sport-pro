@@ -41,16 +41,21 @@ Write-Host "✅ Sync completato`n" -ForegroundColor Green
 
 # Step 4: Build AAB/APK
 Write-Host "📋 Step 4/5: Generazione $BuildType firmato..." -ForegroundColor Yellow
+
+# Leggi versione da package.json
+$packageJson = Get-Content "package.json" | ConvertFrom-Json
+$version = $packageJson.version
+
 Push-Location "android"
 
 if ($BuildType -eq "aab") {
     .\gradlew.bat bundleRelease --warning-mode none
     $outputPath = "app/build/outputs/bundle/release/app-release.aab"
-    $outputName = "PlaySportPro-v1.0.5-release.aab"
+    $outputName = "PlaySportPro-v$version-release.aab"
 } else {
     .\gradlew.bat assembleRelease --warning-mode none
     $outputPath = "app/build/outputs/apk/release/app-release.apk"
-    $outputName = "PlaySportPro-v1.0.5-release.apk"
+    $outputName = "PlaySportPro-v$version-release.apk"
 }
 
 Pop-Location

@@ -4,6 +4,8 @@
 // Creato: 2025-10-15 - Refactoring PlayerDetails (Task 1.2)
 // =============================================
 
+import { PLAYER_CATEGORIES } from '../../../types/playerTypes';
+
 /**
  * Action types per reducer
  */
@@ -22,6 +24,7 @@ export const ACTIONS = {
   START_LINKING: 'START_LINKING',
   CANCEL_LINKING: 'CANCEL_LINKING',
   SET_ACCOUNTS: 'SET_ACCOUNTS',
+  SET_SEARCH_RESULTS: 'SET_SEARCH_RESULTS', // New action type
   SET_ACCOUNT_SEARCH: 'SET_ACCOUNT_SEARCH',
   SET_LINK_EMAIL: 'SET_LINK_EMAIL',
 
@@ -53,6 +56,7 @@ export const createInitialState = (player) => ({
     email: '',
     search: '',
     accounts: [],
+    searchResults: [], // New field for server-side search results
   },
 
   // Loading states
@@ -139,7 +143,7 @@ export function playerDetailsReducer(state, action) {
             email: resolvedEmail,
             phone: resolvedPhone,
             dateOfBirth: player.dateOfBirth || '',
-            category: player.category || 'adult',
+            category: player.category || PLAYER_CATEGORIES.NON_MEMBER,
             gender: player.gender || 'male',
             fiscalCode: player.fiscalCode || '',
             address: {
@@ -231,6 +235,7 @@ export function playerDetailsReducer(state, action) {
           email: '',
           search: '',
           accounts: [],
+          searchResults: [], // Reset search results on cancel
         },
       };
 
@@ -240,6 +245,15 @@ export function playerDetailsReducer(state, action) {
         linking: {
           ...state.linking,
           accounts: action.payload,
+        },
+      };
+
+    case ACTIONS.SET_SEARCH_RESULTS: // New action
+      return {
+        ...state,
+        linking: {
+          ...state.linking,
+          searchResults: action.payload,
         },
       };
 

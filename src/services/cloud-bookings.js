@@ -316,6 +316,39 @@ export function subscribeToUserBookings(userId, callback) {
   );
 }
 
+/**
+ * Sottoscrivi alle prenotazioni attive di un utente in tempo reale
+ */
+export function subscribeToActiveUserBookings(userId, callback) {
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const startDate = sevenDaysAgo.toISOString().split('T')[0];
+
+  const q = query(
+    collection(db, 'bookings'),
+    where('userId', '==', userId),
+    where('status', 'in', ['confirmed', 'pending']),
+    where('date', '>=', startDate),
+    orderBy('date', 'asc'),
+    orderBy('time', 'asc')
+  );
+
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const bookings = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      callback(bookings);
+    },
+    (error) => {
+      console.error('Errore sottoscrizione prenotazioni attive utente:', error);
+      // Fallback silenzioso o gestione errore
+    }
+  );
+}
+
 // =============================================
 // CARICAMENTO PRENOTAZIONI PER GIOCATORE (CRM)
 // =============================================

@@ -91,12 +91,28 @@ export async function createUser(uid, userData) {
 
   const now = serverTimestamp();
 
+  // Generate unique Psp ID
+  let pspId = userData.pspId;
+  if (!pspId) {
+    let isUnique = false;
+    let attempts = 0;
+    while (!isUnique && attempts < 5) {
+      pspId = generateRandomPspId();
+      isUnique = await isPspIdUnique(pspId);
+      attempts++;
+    }
+    if (!isUnique) throw new Error('Failed to generate unique Psp ID');
+  }
+
   const newUser = {
     // Required fields
     email: userData.email || '',
     displayName: userData.displayName || userData.firstName || 'Utente',
     firstName: userData.firstName || '',
     lastName: userData.lastName || '',
+    
+    // Identity Code
+    pspId: pspId,
 
     // System fields
     globalRole: userData.globalRole || USER_GLOBAL_ROLES.USER,
@@ -421,6 +437,32 @@ export async function getAllUsers(maxResults = 500) {
 // =============================================
 // UTILITIES
 // =============================================
+
+/**
+ * Generate a random 6-character alphanumeric code (Psp ID)
+ * Excludes ambiguous characters (0, O, I, 1)
+ * @returns {string} The generated code
+ */
+function generateRandomPspId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+/**
+ * Check if a Psp ID is unique in the database
+ * @param {string} pspId - The code to check
+ * @returns {Promise<boolean>} True if unique
+ */
+async function isPspIdUnique(pspId) {
+  const usersRef = collection(db, 'users');
+  const q = query(usersRef, where('pspId', '==', pspId), limit(1));
+  const snapshot = await getDocs(q);
+  return snapshot.empty;
+}
 
 /**
  * Extract first name from display name

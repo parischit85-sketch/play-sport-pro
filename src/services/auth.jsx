@@ -6,12 +6,15 @@ import { resetClubsCooldowns } from './clubs.js';
 // import { console.error, console.log } from "../lib/sentry.js";
 import { trackAuth } from '../lib/analytics.js';
 import { sanitizeAuthError, safeError } from '../utils/sanitizer.js';
+import { Capacitor } from '@capacitor/core';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import {
   onAuthStateChanged,
   GoogleAuthProvider,
   FacebookAuthProvider,
   signInWithPopup,
   signInWithRedirect,
+  signInWithCredential,
   getRedirectResult,
   signOut,
   sendSignInLinkToEmail,
@@ -63,6 +66,41 @@ export function onAuth(callback) {
 
 // ---- Login con provider ----
 export async function loginWithGoogle() {
+  // 1. Native Login (Android/iOS)
+  if (Capacitor.isNativePlatform()) {
+    try {
+      console.log('📱 [Auth] Starting Native Google Sign-In...');
+      trackAuth.loginAttempt('google_native');
+
+      // Initialize (required for some versions)
+      await GoogleAuth.initialize();
+
+      const googleUser = await GoogleAuth.signIn();
+      console.log('✅ [Auth] Native Google Sign-In success', googleUser);
+
+      // Create credential from ID token
+      const credential = GoogleAuthProvider.credential(googleUser.authentication.idToken);
+      
+      // Sign in with credential
+      const result = await signInWithCredential(auth, credential);
+      console.log('✅ [Auth] Firebase Native Sign-In success', result.user.uid);
+      
+      trackAuth.loginSuccess('google_native', result.user.uid);
+      
+      // Create/Update profile
+      if (result && result.user) {
+        await createOrUpdateUserProfile(result.user);
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('❌ [Auth] Native Google Sign-In error:', error);
+      trackAuth.loginFailed('google_native', error.message);
+      throw error;
+    }
+  }
+
+  // 2. Web Login
   const provider = new GoogleAuthProvider();
 
   // Aggiungi scopes per ottenere informazioni aggiuntive

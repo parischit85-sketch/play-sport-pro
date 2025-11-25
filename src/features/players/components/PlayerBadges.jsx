@@ -44,13 +44,6 @@ const PlayerBadges = ({ player, certStatus, _compact = false }) => {
         {certLabel}
       </span>
 
-      {/* Account collegato */}
-      {player.isAccountLinked && (
-        <span className="text-green-500" title="Account collegato">
-          🔗
-        </span>
-      )}
-
       {/* Stato inattivo */}
       {!player.isActive && (
         <span className="text-red-500" title="Inattivo">

@@ -753,6 +753,16 @@ export function ClubProvider({ children }) {
           if (updates.email !== undefined) clubUserUpdates.userEmail = updates.email;
           if (updates.phone !== undefined) clubUserUpdates.userPhone = updates.phone;
 
+          // 🔗 Handle linking updates (from PlayerDetails)
+          if (updates.isAccountLinked !== undefined) {
+            clubUserUpdates.isLinked = updates.isAccountLinked;
+          }
+          if (updates.linkedAccountId !== undefined) {
+            clubUserUpdates.linkedFirebaseUid = updates.linkedAccountId;
+            // Also update linkedUserId for legacy compatibility
+            clubUserUpdates.linkedUserId = updates.linkedAccountId;
+          }
+
           // Prepare profile data updates
           const profileUpdates = {};
           if (updates.name) {

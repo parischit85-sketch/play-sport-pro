@@ -46,6 +46,11 @@ function TournamentList({ tournaments, onRefresh: _onRefresh }) {
                 >
                   {formatTournamentStatus(tournament.status)}
                 </span>
+                {tournament.championshipPointsApplied && (
+                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-orange-900/50 text-orange-300 border border-orange-700/50">
+                    Punti Assegnati
+                  </span>
+                )}
               </div>
 
               {/* Description */}

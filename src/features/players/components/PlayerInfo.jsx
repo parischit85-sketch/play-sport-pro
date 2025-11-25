@@ -5,8 +5,9 @@
 
 import React from 'react';
 import { getPlayerFullName, getCategoryStyle, getCategoryLabel } from '@lib/playerUtils.js';
+import PlayerBadges from './PlayerBadges';
 
-const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
+const PlayerInfo = ({ player, onView, T, layout = 'desktop', certStatus }) => {
   const tags = player.tags || [];
   const notesCount = player.notes?.length || 0;
   const subscription = player.subscriptions?.[player.subscriptions?.length - 1];
@@ -21,7 +22,7 @@ const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
           >
             {getPlayerFullName(player)}
           </button>
-          {/* Badges will be rendered separately */}
+          <PlayerBadges player={player} certStatus={certStatus} />
         </div>
 
         <div className="text-sm text-gray-400 mb-2 break-words">
@@ -54,19 +55,7 @@ const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
             >
               {getPlayerFullName(player)}
             </button>
-            {/* Badges will be rendered separately */}
-          </div>
-
-          <div className="flex items-center gap-3 text-sm text-gray-400 min-w-0">
-            <span className="truncate max-w-[200px]">
-              {player.email || 'Email non disponibile'}
-            </span>
-            {player.phone && (
-              <>
-                <span>•</span>
-                <span className="truncate max-w-[120px]">{player.phone}</span>
-              </>
-            )}
+            <PlayerBadges player={player} certStatus={certStatus} />
           </div>
         </div>
       </div>
@@ -88,31 +77,6 @@ const PlayerInfo = ({ player, onView, T, layout = 'desktop' }) => {
         ) : (
           <span className={`text-[11px] ${T.subtext}`}>Nessun abbonamento</span>
         )}
-      </div>
-
-      {/* Note e Tag */}
-      <div className="min-w-[180px] flex-1">
-        <div className="flex items-center gap-2 text-xs mb-1">
-          <span className={`${notesCount > 0 ? 'text-orange-400' : T.subtext}`}>
-            📝 {notesCount} note
-          </span>
-          <span className={`${tags.length > 0 ? 'text-blue-400' : T.subtext}`}>
-            🏷️ {tags.length} tag
-          </span>
-        </div>
-        <div className="flex gap-1 flex-wrap">
-          {tags.slice(0, 2).map((tag, i) => (
-            <span
-              key={i}
-              className="px-2 py-0.5 bg-gray-800 text-gray-300 rounded-full text-[11px] break-words max-w-[10rem]"
-            >
-              {tag}
-            </span>
-          ))}
-          {tags.length > 2 && (
-            <span className={`text-[11px] ${T.subtext}`}>+{tags.length - 2}</span>
-          )}
-        </div>
       </div>
     </>
   );
