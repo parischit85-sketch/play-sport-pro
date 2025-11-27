@@ -3,10 +3,15 @@
  * Rileva comportamenti sospetti e potenziali attacchi
  */
 
-const { Firestore } = require('@google-cloud/firestore');
-const { auditLogger, SEVERITY, EVENT_TYPES } = require('../services/auditLogger');
+import { getFirestore } from 'firebase-admin/firestore';
+import { getApps, initializeApp } from 'firebase-admin/app';
+import { auditLogger, SEVERITY, EVENT_TYPES } from '../services/auditLogger.js';
 
-const firestore = new Firestore();
+if (getApps().length === 0) {
+  initializeApp();
+}
+
+const db = getFirestore();
 
 /**
  * Pattern sospetti
@@ -200,7 +205,7 @@ async function detectAnomalies(ip, userId, endpoint) {
 
   // Controlla failed logins recenti
   if (userId) {
-    const failedLogins = await firestore
+    const failedLogins = await db
       .collection('auditLogs')
       .where('eventType', '==', EVENT_TYPES.AUTH_FAILED)
       .where('userId', '==', userId)
@@ -217,7 +222,7 @@ async function detectAnomalies(ip, userId, endpoint) {
   }
 
   // Controlla request rate (IP)
-  const recentRequests = await firestore
+  const recentRequests = await db
     .collection('auditLogs')
     .where('ip', '==', ip)
     .where('timestamp', '>=', oneHourAgo)
@@ -234,7 +239,7 @@ async function detectAnomalies(ip, userId, endpoint) {
 
   // Controlla diversità endpoint (possibile scanning)
   const recentEndpoints = new Set();
-  const recentDocs = await firestore
+  const recentDocs = await db
     .collection('auditLogs')
     .where('ip', '==', ip)
     .where('timestamp', '>=', fiveMinutesAgo)
@@ -263,9 +268,9 @@ async function detectAnomalies(ip, userId, endpoint) {
  * Threat Score per IP
  */
 async function incrementThreatScore(ip, points) {
-  const docRef = firestore.collection('threatScores').doc(ip);
+  const docRef = db.collection('threatScores').doc(ip);
   
-  await firestore.runTransaction(async (transaction) => {
+  await db.runTransaction(async (transaction) => {
     const doc = await transaction.get(docRef);
     
     if (!doc.exists) {
@@ -285,7 +290,7 @@ async function incrementThreatScore(ip, points) {
 }
 
 async function getThreatScore(ip) {
-  const doc = await firestore.collection('threatScores').doc(ip).get();
+  const doc = await db.collection('threatScores').doc(ip).get();
   
   if (!doc.exists) {
     return 0;
@@ -300,14 +305,14 @@ async function getThreatScore(ip) {
 }
 
 async function resetThreatScore(ip) {
-  await firestore.collection('threatScores').doc(ip).delete();
+  await db.collection('threatScores').doc(ip).delete();
 }
 
 /**
  * Blocca IP
  */
 async function blockIP(ip, reason, duration = 24 * 60 * 60 * 1000) {
-  await firestore.collection('blockedIPs').doc(ip).set({
+  await db.collection('blockedIPs').doc(ip).set({
     reason,
     blockedAt: Date.now(),
     expiresAt: Date.now() + duration,
@@ -329,7 +334,7 @@ async function blockIP(ip, reason, duration = 24 * 60 * 60 * 1000) {
 async function getSecurityReport(days = 7) {
   const startTime = Date.now() - (days * 24 * 60 * 60 * 1000);
   
-  const securityLogs = await firestore
+  const securityLogs = await db
     .collection('auditLogs')
     .where('eventType', '>=', 'security.')
     .where('eventType', '<', 'security.z')
@@ -362,7 +367,7 @@ async function getSecurityReport(days = 7) {
   });
 
   // Blocked IPs
-  const blockedIPs = await firestore
+  const blockedIPs = await db
     .collection('blockedIPs')
     .where('active', '==', true)
     .get();
@@ -370,7 +375,7 @@ async function getSecurityReport(days = 7) {
   report.blockedIPs = blockedIPs.size;
 
   // Top threat scores
-  const threatScores = await firestore
+  const threatScores = await db
     .collection('threatScores')
     .orderBy('score', 'desc')
     .limit(10)
@@ -391,7 +396,7 @@ async function getSecurityReport(days = 7) {
   return report;
 }
 
-module.exports = {
+export {
   intrusionDetection,
   detectSuspiciousPatterns,
   detectAnomalies,

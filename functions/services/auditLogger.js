@@ -3,8 +3,14 @@
  * Sistema centralizzato per logging azioni critiche e sicurezza
  */
 
-import { Firestore } from '@google-cloud/firestore';
-const firestore = new Firestore();
+import { getApps, initializeApp } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+
+if (getApps().length === 0) {
+  initializeApp();
+}
+
+const firestore = getFirestore();
 
 /**
  * Livelli di severità log
@@ -339,9 +345,7 @@ class AuditLogger {
       const data = doc.data();
 
       stats.bySeverity[data.severity] = (stats.bySeverity[data.severity] || 0) + 1;
-
       stats.byEventType[data.eventType] = (stats.byEventType[data.eventType] || 0) + 1;
-
       if (data.userId) {
         stats.byUser[data.userId] = (stats.byUser[data.userId] || 0) + 1;
       }
@@ -361,7 +365,6 @@ class AuditLogger {
     const cutoff = Date.now() - daysToKeep * 24 * 60 * 60 * 1000;
 
     const snapshot = await this.collection.where('timestamp', '<', cutoff).limit(500).get();
-
     const batch = firestore.batch();
     let count = 0;
 

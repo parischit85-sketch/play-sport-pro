@@ -4,6 +4,7 @@
 // =============================================
 
 import { onDocumentCreated, onDocumentUpdated, onDocumentDeleted } from 'firebase-functions/v2/firestore';
+import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import emailService from './emailService.js';
 import {
@@ -13,6 +14,9 @@ import {
   addedToBookingTemplate,
 } from './emailTemplates.js';
 
+if (getApps().length === 0) {
+  initializeApp();
+}
 const db = getFirestore();
 
 /**

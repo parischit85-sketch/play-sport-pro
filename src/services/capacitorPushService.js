@@ -7,7 +7,7 @@
 
 import { Capacitor } from '@capacitor/core';
 import { db } from '@services/firebase.js';
-import { doc, setDoc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, setDoc, deleteDoc, collection, query, where, getDocs, getDoc } from 'firebase/firestore';
 
 // Lazy import dei plugin Capacitor (evita errori in web context)
 let PushNotifications = null;
@@ -106,70 +106,107 @@ export async function registerNativePush(userId) {
     throw new Error('Push notification permissions denied');
   }
 
-  // 2. Registra il device
-  console.log('[CapacitorPush] Registering device for push...');
-  await PushNotifications.register();
-
-  // 3. Ottieni il token (promessa che si risolve quando il token arriva)
-  return new Promise((resolve, reject) => {
+  // 2. Ottieni il token (promessa che si risolve quando il token arriva)
+  return new Promise(async (resolve, reject) => {
     const timeout = setTimeout(() => {
       reject(new Error('Push registration timeout - token not received'));
     }, 30000); // 30 secondi timeout
 
-    // Listener per successo registrazione
-    PushNotifications.addListener('registration', async (token) => {
-      clearTimeout(timeout);
+    try {
+      // Rimuovi listener precedenti per evitare duplicati
+      await PushNotifications.removeAllListeners();
 
-      try {
-        console.log('[CapacitorPush] ✅ Registration successful!');
-        console.log('[CapacitorPush] Token:', token.value);
+      // Listener per successo registrazione - DEFINITI PRIMA DI REGISTER()
+      await PushNotifications.addListener('registration', async (token) => {
+        clearTimeout(timeout);
 
-        const platform = Capacitor.getPlatform();
-        const deviceId = await generateDeviceId();
+        try {
+          console.log('[CapacitorPush] ✅ Registration successful!');
+          console.log('[CapacitorPush] Token:', token.value);
 
-        // 4. Salva token su Firestore
-        const subscriptionData = {
-          userId,
-          deviceId,
-          platform, // 'android' | 'ios'
-          type: 'native',
-          createdAt: new Date().toISOString(),
-          lastUsedAt: new Date().toISOString(),
-          expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 giorni
-          isActive: true,
-        };
+          const platform = Capacitor.getPlatform();
+          const deviceId = await generateDeviceId();
 
-        // Token specifico per piattaforma
-        if (platform === 'android') {
-          subscriptionData.fcmToken = token.value;
-        } else if (platform === 'ios') {
-          subscriptionData.apnsToken = token.value;
+          console.log('[CapacitorPush] Device info:', {
+            platform,
+            deviceId,
+            tokenPrefix: token.value.substring(0, 30) + '...',
+          });
+
+          // 4. Salva token su Firestore
+          const subscriptionData = {
+            userId,
+            firebaseUid: userId, // Aggiunto per compatibilità con backend
+            deviceId,
+            platform, // 'android' | 'ios'
+            type: 'native',
+            active: true, // ← CAMPO RICHIESTO dalla Cloud Function per filtrare subscription attive
+            isActive: true, // ← Mantenuto per compatibilità
+            createdAt: new Date().toISOString(),
+            lastUsedAt: new Date().toISOString(),
+            expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(), // 90 giorni
+          };
+
+          // Token specifico per piattaforma + endpoint univoco
+          if (platform === 'android') {
+            subscriptionData.fcmToken = token.value;
+            // Crea endpoint univoco per compatibilità con sistema web-push
+            subscriptionData.endpoint = `fcm://android/${token.value.substring(0, 50)}`;
+          } else if (platform === 'ios') {
+            subscriptionData.apnsToken = token.value;
+            subscriptionData.endpoint = `apns://ios/${token.value.substring(0, 50)}`;
+          }
+
+          // Salva in Firestore (usa userId_deviceId come doc ID per unicità)
+          const docId = `${userId}_${deviceId}`;
+
+          console.log('[CapacitorPush] Saving subscription to Firestore:', {
+            docId,
+            path: `pushSubscriptions/${docId}`,
+            data: {
+              ...subscriptionData,
+              fcmToken: subscriptionData.fcmToken ? `${subscriptionData.fcmToken.substring(0, 20)}...` : undefined,
+              apnsToken: subscriptionData.apnsToken ? `${subscriptionData.apnsToken.substring(0, 20)}...` : undefined,
+            }
+          });
+
+          await setDoc(doc(db, 'pushSubscriptions', docId), subscriptionData);
+
+          console.log('[CapacitorPush] ✅ Token saved to Firestore successfully:', {
+            docId,
+            platform: subscriptionData.platform,
+            type: subscriptionData.type,
+            active: subscriptionData.active,
+            hasEndpoint: !!subscriptionData.endpoint,
+          });
+
+          resolve({
+            token: token.value,
+            deviceId,
+            platform,
+            subscriptionId: docId,
+          });
+        } catch (error) {
+          console.error('[CapacitorPush] Error saving token:', error);
+          reject(error);
         }
+      });
 
-        // Salva in Firestore (usa userId_deviceId come doc ID per unicità)
-        const docId = `${userId}_${deviceId}`;
-        await setDoc(doc(db, 'pushSubscriptions', docId), subscriptionData);
+      // Listener per errori registrazione
+      await PushNotifications.addListener('registrationError', (error) => {
+        clearTimeout(timeout);
+        console.error('[CapacitorPush] ❌ Registration error:', error);
+        reject(new Error(`Registration failed: ${error.error}`));
+      });
 
-        console.log('[CapacitorPush] ✅ Token saved to Firestore:', docId);
+      // 3. Registra il device (DOPO aver settato i listener)
+      console.log('[CapacitorPush] Registering device for push...');
+      await PushNotifications.register();
 
-        resolve({
-          token: token.value,
-          deviceId,
-          platform,
-          subscriptionId: docId,
-        });
-      } catch (error) {
-        console.error('[CapacitorPush] Error saving token:', error);
-        reject(error);
-      }
-    });
-
-    // Listener per errori registrazione
-    PushNotifications.addListener('registrationError', (error) => {
-      clearTimeout(timeout);
-      console.error('[CapacitorPush] ❌ Registration error:', error);
-      reject(new Error(`Registration failed: ${error.error}`));
-    });
+    } catch (err) {
+      console.error('[CapacitorPush] Setup failed:', err);
+      reject(err);
+    }
   });
 }
 
@@ -302,6 +339,28 @@ export async function getUserNativeSubscriptions(userId) {
 }
 
 /**
+ * Verifica se esiste una subscription attiva per il device corrente
+ * @param {string} userId - ID dell'utente Firebase
+ * @returns {Promise<boolean>} true se esiste subscription
+ */
+export async function hasActiveSubscription(userId) {
+  const pluginsReady = await initializePlugins();
+  if (!pluginsReady) return false;
+
+  try {
+    const deviceId = await generateDeviceId();
+    const docId = `${userId}_${deviceId}`;
+    const docRef = doc(db, 'pushSubscriptions', docId);
+    const docSnap = await getDoc(docRef);
+    
+    return docSnap.exists() && docSnap.data().active === true;
+  } catch (error) {
+    console.error('[CapacitorPush] Error checking subscription:', error);
+    return false;
+  }
+}
+
+/**
  * Traccia evento notifica per analytics
  * @private
  */
@@ -375,4 +434,5 @@ export default {
   getPushPermissionStatus,
   getUserNativeSubscriptions,
   scheduleLocalNotification,
+  hasActiveSubscription,
 };

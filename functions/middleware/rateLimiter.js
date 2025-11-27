@@ -3,8 +3,14 @@
  * Protegge le API da abusi e attacchi DDoS
  */
 
-const { Firestore } = require('@google-cloud/firestore');
-const firestore = new Firestore();
+import { getFirestore } from 'firebase-admin/firestore';
+import { getApps, initializeApp } from 'firebase-admin/app';
+
+if (getApps().length === 0) {
+  initializeApp();
+}
+
+const db = getFirestore();
 
 /**
  * Configurazione limiti per endpoint
@@ -62,12 +68,12 @@ async function rateLimiter(req, res, next) {
     const key = generateKey(ip, userId, endpoint);
     
     // Riferimento documento in Firestore
-    const docRef = firestore.collection('rateLimits').doc(key);
+    const docRef = db.collection('rateLimits').doc(key);
     const now = Date.now();
     const windowStart = now - limit.windowMs;
     
     // Transazione atomica per incremento contatore
-    const result = await firestore.runTransaction(async (transaction) => {
+    const result = await db.runTransaction(async (transaction) => {
       const doc = await transaction.get(docRef);
       
       if (!doc.exists) {
@@ -145,7 +151,7 @@ async function rateLimiter(req, res, next) {
  */
 async function logRateLimitViolation(ip, userId, endpoint, limit) {
   try {
-    await firestore.collection('securityLogs').add({
+    await db.collection('securityLogs').add({
       type: 'RATE_LIMIT_VIOLATION',
       ip,
       userId,
@@ -167,13 +173,13 @@ async function cleanupOldRateLimits() {
   const maxAge = 24 * 60 * 60 * 1000; // 24 ore
   const cutoff = Date.now() - maxAge;
   
-  const snapshot = await firestore
+  const snapshot = await db
     .collection('rateLimits')
     .where('createdAt', '<', cutoff)
     .limit(500)
     .get();
   
-  const batch = firestore.batch();
+  const batch = db.batch();
   let count = 0;
   
   snapshot.docs.forEach(doc => {
@@ -193,7 +199,7 @@ async function cleanupOldRateLimits() {
  * Ottieni statistiche rate limiting per un IP o user
  */
 async function getRateLimitStats(ip = null, userId = null) {
-  let query = firestore.collection('rateLimits');
+  let query = db.collection('rateLimits');
   
   if (ip) {
     query = query.where('ip', '==', ip);
@@ -249,7 +255,7 @@ async function getRateLimitStats(ip = null, userId = null) {
  * Blocca IP specifico (blacklist)
  */
 async function blockIP(ip, reason, duration = 24 * 60 * 60 * 1000) {
-  await firestore.collection('blockedIPs').doc(ip).set({
+  await db.collection('blockedIPs').doc(ip).set({
     reason,
     blockedAt: Date.now(),
     expiresAt: Date.now() + duration,
@@ -261,7 +267,7 @@ async function blockIP(ip, reason, duration = 24 * 60 * 60 * 1000) {
  * Verifica se IP è bloccato
  */
 async function isIPBlocked(ip) {
-  const doc = await firestore.collection('blockedIPs').doc(ip).get();
+  const doc = await db.collection('blockedIPs').doc(ip).get();
   
   if (!doc.exists) {
     return false;
@@ -291,7 +297,7 @@ async function ipBlocker(req, res, next) {
              'unknown';
   
   if (await isIPBlocked(ip)) {
-    await firestore.collection('securityLogs').add({
+    await db.collection('securityLogs').add({
       type: 'BLOCKED_IP_ACCESS',
       ip,
       path: req.path,
@@ -308,7 +314,7 @@ async function ipBlocker(req, res, next) {
   next();
 }
 
-module.exports = {
+export {
   rateLimiter,
   cleanupOldRateLimits,
   getRateLimitStats,

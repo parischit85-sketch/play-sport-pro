@@ -3,7 +3,7 @@
 // HOOK REACT PER IL SERVIZIO UNIFICATO
 // =============================================
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useAuth } from '@contexts/AuthContext.jsx';
+import { useAuth } from '../contexts/AuthContext.jsx';
 import UnifiedBookingService from '@services/unified-booking-service.js';
 
 const { BOOKING_STATUS } = UnifiedBookingService.CONSTANTS;

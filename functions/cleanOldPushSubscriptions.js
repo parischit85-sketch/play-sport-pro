@@ -3,9 +3,12 @@
 // Scheduled Cloud Function per pulizia automatica subscriptions vecchie/inattive
 // =============================================
 import { onSchedule } from 'firebase-functions/v2/scheduler';
+import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
-// Inizializza Firestore (usa l'istanza admin già inizializzata)
+if (getApps().length === 0) {
+  initializeApp();
+}
 const db = getFirestore();
 
 /**

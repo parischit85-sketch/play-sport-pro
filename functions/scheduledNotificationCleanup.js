@@ -14,14 +14,12 @@
  */
 
 import { onSchedule } from 'firebase-functions/v2/scheduler';
-import { initializeApp } from 'firebase-admin/app';
+import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 
 // Initialize Firebase Admin if not already initialized
-try {
+if (getApps().length === 0) {
   initializeApp();
-} catch (error) {
-  // App already initialized
 }
 
 const db = getFirestore();

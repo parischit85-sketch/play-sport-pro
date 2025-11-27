@@ -1,36 +1,20 @@
+import 'dotenv/config';
+import * as functions from 'firebase-functions/v1';
+import { sendPushNotificationToUser, sendPushNotificationToUserHTTP } from './sendPushNotificationToUser.js';
+import { sendBulkNotifications, sendBulkNotificationsHTTP } from './sendBulkNotifications.js';
+
 // =============================================
-// Firebase Cloud Functions - Entry Point
+// RESTORED FUNCTIONS FROM BACKUP
 // =============================================
 
 // Scheduled Functions
 export { dailyCertificateCheck } from './scheduledCertificateReminders.js';
-export {
-  cleanupExpiredSubscriptions,
-  cleanupInactiveSubscriptions,
-} from './cleanupExpiredSubscriptions.js';
+export { cleanupExpiredSubscriptions, cleanupInactiveSubscriptions } from './cleanupExpiredSubscriptions.js';
 export { scheduledNotificationCleanup, getCleanupStatus } from './scheduledNotificationCleanup.js';
-export { cleanOldPushSubscriptions } from './cleanOldPushSubscriptions.js';
+export { pruneInactiveSubscriptions } from './pruneSubscriptions.js';
 
 // Callable Functions
 export { sendBulkCertificateNotifications } from './sendBulkNotifications.clean.js';
-export { sendBulkPushNotification } from './sendBulkPushNotification.js';
-export { getPushStatusForPlayers, sendTestPush } from './sendBulkNotifications.clean.js';
-export {
-  savePushSubscription,
-  sendPushNotification,
-  removePushSubscription,
-} from './sendBulkNotifications.clean.js';
-
-// HTTP Functions for Push (CORS-enabled for custom domains)
-export {
-  savePushSubscriptionHttp,
-  sendPushNotificationHttp,
-  removePushSubscriptionHttp,
-} from './pushNotificationsHttp.js';
-export { sendClubEmail } from './sendClubEmail.js';
-export { submitProvisionalMatchResult } from './submitProvisionalMatchResult.js';
-export { updateLiveScorePublic } from './updateLiveScorePublic.js';
-export { recordFinalResultPublic } from './recordFinalResultPublic.js';
 
 // Email Notification Triggers (CHK-401)
 export { onBookingCreated, onBookingDeleted } from './sendBookingEmail.js';
@@ -49,22 +33,161 @@ export {
 // Unknown Users Cleanup (✅ New - Sprint 1)
 export { cleanupUnknownUsers } from './cleanupUnknownUsers.js';
 
-// Admin Audit Logging (✅ New)
-export { logAdminAction } from './logAdminAction.js';
+// =============================================
+// USER NOTIFICATIONS & ORPHAN PROFILES
+// =============================================
 
-// RBAC: Set User Role (✅ Bootstrap/admin) - DISABLED: missing BOOTSTRAP_ADMIN_TOKEN secret
-// export { setUserRole } from './setUserRole.js';
-
-// Link Orphan Profiles (✅ Admin tool)
-export { searchFirebaseUsers, linkOrphanProfile, getOrphanProfiles } from './linkOrphanProfiles.js';
-
-// Push Subscriptions Cleanup (⚠️ One-time migration)
-export { deleteAllPushSubscriptions } from './deleteAllPushSubscriptions.js';
-
-// User Notifications System (✅ In-app notifications)
 export {
   getUserNotifications,
   markNotificationsAsRead,
   archiveNotifications,
   cleanupOldNotifications,
 } from './userNotifications.js';
+
+export {
+  getOrphanProfiles,
+  searchFirebaseUsers,
+  linkOrphanProfile,
+  restorePlayerProfile,
+} from './linkOrphanProfiles.js';
+
+export { logAdminAction } from './logAdminAction.js';
+export { deleteAllPushSubscriptions } from './deleteAllPushSubscriptions.js';
+
+// =============================================
+// RESTORED LEGACY FUNCTIONS (2025-11-26)
+// =============================================
+
+export { cleanOldPushSubscriptions } from './cleanOldPushSubscriptions.js';
+export { sendBulkPushNotification } from './sendBulkPushNotification.js';
+
+// HTTP Functions for Push (Legacy - CORS-enabled for custom domains)
+export {
+  savePushSubscriptionHttp,
+  sendPushNotificationHttp,
+  removePushSubscriptionHttp,
+} from './pushNotificationsHttp.js';
+
+export { sendClubEmail } from './sendClubEmail.js';
+export { submitProvisionalMatchResult } from './submitProvisionalMatchResult.js';
+export { updateLiveScorePublic } from './updateLiveScorePublic.js';
+export { recordFinalResultPublic } from './recordFinalResultPublic.js';
+
+// RBAC: Set User Role (Bootstrap/admin)
+// export { setUserRole } from './setUserRole.js';
+
+// =============================================
+// NEW PUSH NOTIFICATION FUNCTIONS (V2)
+// =============================================
+
+/**
+ * Callable function - Invia push a singolo utente
+ * Uso: firebase.functions().httpsCallable('sendPushToUser')({ userId, payload })
+ */
+export const sendPushToUser = functions
+  .region('europe-west1')
+  .https.onCall(async (data, context) => {
+    // Verifica autenticazione
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        'unauthenticated',
+        'User must be authenticated'
+      );
+    }
+
+    const { userId, payload } = data;
+
+    if (!userId || !payload) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'Missing required fields: userId, payload'
+      );
+    }
+
+    try {
+      const result = await sendPushNotificationToUser(userId, payload);
+      return result;
+    } catch (error) {
+      console.error('Error in sendPushToUser:', error);
+      throw new functions.https.HttpsError('internal', error.message);
+    }
+  });
+
+/**
+ * HTTP function - Invia push a singolo utente
+ * Uso: POST https://REGION-PROJECT_ID.cloudfunctions.net/sendPushToUserHTTP
+ */
+export const sendPushToUserHTTP = functions
+  .region('europe-west1')
+  .https.onRequest(sendPushNotificationToUserHTTP);
+
+/**
+ * Callable function - Invia push a multipli utenti
+ * Uso: firebase.functions().httpsCallable('sendBulkPush')({ userIds, payload })
+ */
+export const sendBulkPush = functions
+  .region('europe-west1')
+  .runWith({
+    timeoutSeconds: 540,
+    memory: '1GB',
+  })
+  .https.onCall(async (data, context) => {
+    // Verifica autenticazione e permessi admin
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        'unauthenticated',
+        'User must be authenticated'
+      );
+    }
+
+    // Verifica se utente è admin (opzionale - personalizza secondo le tue regole)
+    const isAdmin = context.auth.token.admin === true ||
+                    context.auth.token.role === 'admin' ||
+                    context.auth.token.superAdmin === true;
+
+    if (!isAdmin) {
+      throw new functions.https.HttpsError(
+        'permission-denied',
+        'Only admins can send bulk notifications'
+      );
+    }
+
+    const { userIds, payload } = data;
+
+    if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'Missing or invalid userIds array'
+      );
+    }
+
+    if (!payload || !payload.title || !payload.body) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        'Missing required payload fields: title, body'
+      );
+    }
+
+    try {
+      const result = await sendBulkNotifications(userIds, payload);
+      return result;
+    } catch (error) {
+      console.error('Error in sendBulkPush:', error);
+      throw new functions.https.HttpsError('internal', error.message);
+    }
+  });
+
+/**
+ * HTTP function - Invia push a multipli utenti
+ * Uso: POST https://REGION-PROJECT_ID.cloudfunctions.net/sendBulkPushHTTP
+ */
+export const sendBulkPushHTTP = functions
+  .region('europe-west1')
+  .runWith({
+    timeoutSeconds: 540,
+    memory: '1GB',
+  })
+  .https.onRequest(sendBulkNotificationsHTTP);
+
+console.log('✅ Cloud Functions loaded successfully (Restored + V2)');
+

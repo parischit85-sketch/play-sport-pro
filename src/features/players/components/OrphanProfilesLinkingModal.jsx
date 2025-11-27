@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '@services/firebase.js';
-import { useClub } from '@contexts/ClubContext.jsx';
 import { useDebounce } from '@hooks/useDebounce.js';
 import { Search, Link, User, Phone, Mail, AlertCircle, Check, X, Loader2, ArrowRight, Sparkles } from 'lucide-react';
 import { listAllUserProfiles } from '@services/auth.jsx';
 
-export default function OrphanProfilesLinkingModal({ orphanProfiles, onLink, onClose }) {
-  const { clubId } = useClub();
+export default function OrphanProfilesLinkingModal({ orphanProfiles, clubId, onLink, onClose }) {
   
   // Helper to get a stable ID for an orphan
   const getOrphanId = (orphan) => orphan.id || orphan.userId || orphan.docId;
@@ -142,7 +140,7 @@ export default function OrphanProfilesLinkingModal({ orphanProfiles, onLink, onC
     return matchesMap.get(getOrphanId(selectedOrphan)) || [];
   }, [selectedOrphan, matchesMap]);
 
-  // Manual search effect
+  // Manual search effect (CLIENT-SIDE - evita CORS)
   useEffect(() => {
     const performManualSearch = async () => {
       if (!debouncedManualSearch || debouncedManualSearch.trim().length < 3) {
@@ -152,11 +150,37 @@ export default function OrphanProfilesLinkingModal({ orphanProfiles, onLink, onC
 
       setLoadingManualSearch(true);
       try {
-        const callable = httpsCallable(functions, 'searchFirebaseUsers');
-        const result = await callable({ clubId, searchQuery: debouncedManualSearch.trim() });
-        setManualSearchResults(result.data.results || []);
+        console.log('🔍 [OrphanLinking] Client-side search for:', debouncedManualSearch.trim());
+        
+        // Carica tutti gli utenti e filtra client-side (come PlayerDetails)
+        const allUsers = await listAllUserProfiles(1000);
+        const searchLower = debouncedManualSearch.trim().toLowerCase();
+        
+        const filtered = allUsers.filter(user => {
+          const email = (user.email || '').toLowerCase();
+          const displayName = (user.displayName || '').toLowerCase();
+          const firstName = (user.firstName || '').toLowerCase();
+          const lastName = (user.lastName || '').toLowerCase();
+          const phone = (user.phoneNumber || '').replace(/[\s\-+()]/g, '');
+          const pspId = (user.pspId || '').toLowerCase();
+          const searchPhone = searchLower.replace(/[\s\-+()]/g, '');
+          
+          return (
+            email.includes(searchLower) ||
+            displayName.includes(searchLower) ||
+            firstName.includes(searchLower) ||
+            lastName.includes(searchLower) ||
+            (searchPhone.length > 5 && phone.includes(searchPhone)) ||
+            pspId.includes(searchLower)
+          );
+        });
+        
+        console.log('✅ [OrphanLinking] Client-side search results:', filtered.length);
+        setManualSearchResults(filtered.slice(0, 20)); // Limita a 20 risultati
+        
       } catch (error) {
-        console.error('Error searching users:', error);
+        console.error('❌ [OrphanLinking] Search failed:', error);
+        setManualSearchResults([]);
       } finally {
         setLoadingManualSearch(false);
       }
@@ -338,10 +362,15 @@ export default function OrphanProfilesLinkingModal({ orphanProfiles, onLink, onC
                                 {account.displayName?.[0]?.toUpperCase() || '?'}
                               </div>
                               <div>
-                                <div className="font-bold text-white text-lg group-hover:text-blue-300 transition-colors">
+                                <div className="font-bold text-white text-lg group-hover:text-blue-300 transition-colors flex items-center gap-2">
                                   {account.firstName && account.lastName 
                                     ? `${account.firstName} ${account.lastName}` 
                                     : (account.displayName || 'Utente senza nome')}
+                                  {account.pspId && (
+                                    <span className="text-xs bg-blue-900/50 text-blue-300 px-2 py-0.5 rounded border border-blue-800 font-mono font-normal">
+                                      {account.pspId}
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="flex flex-col text-sm text-gray-400 gap-1 mt-1">
                                   <span className="flex items-center gap-2">
@@ -400,7 +429,7 @@ export default function OrphanProfilesLinkingModal({ orphanProfiles, onLink, onC
                       type="text"
                       value={manualSearchQuery}
                       onChange={(e) => setManualSearchQuery(e.target.value)}
-                      placeholder="Cerca per nome, email o telefono..."
+                      placeholder="Cerca per nome, email, telefono o Psp ID..."
                       className="w-full bg-gray-800 border border-gray-700 rounded-xl py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
                     />
                   </div>
@@ -419,7 +448,14 @@ export default function OrphanProfilesLinkingModal({ orphanProfiles, onLink, onC
                               {account.displayName?.[0]?.toUpperCase() || '?'}
                             </div>
                             <div>
-                              <div className="font-medium text-white">{account.displayName || 'Utente senza nome'}</div>
+                              <div className="font-medium text-white flex items-center gap-2">
+                                {account.displayName || 'Utente senza nome'}
+                                {account.pspId && (
+                                  <span className="text-xs bg-blue-900/50 text-blue-300 px-1.5 py-0.5 rounded border border-blue-800 font-mono">
+                                    {account.pspId}
+                                  </span>
+                                )}
+                              </div>
                               <div className="text-xs text-gray-400">{account.email}</div>
                             </div>
                           </div>

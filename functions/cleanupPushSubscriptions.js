@@ -1,11 +1,11 @@
-const { onSchedule } = require('firebase-functions/v2/scheduler');
-const { initializeApp } = require('firebase-admin/app');
-const { getFirestore } = require('firebase-admin/firestore');
+import { onSchedule } from 'firebase-functions/v2/scheduler';
+import { initializeApp, getApps } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+import webpush from 'web-push';
 
 // Inizializza Firebase Admin
-if (!global.firebaseAdminApp) {
+if (getApps().length === 0) {
   initializeApp();
-  global.firebaseAdminApp = true;
 }
 
 const db = getFirestore();
@@ -13,7 +13,7 @@ const db = getFirestore();
 // =============================================
 // SCHEDULED FUNCTION: cleanupExpiredPushSubscriptions
 // =============================================
-exports.cleanupExpiredPushSubscriptions = onSchedule(
+export const cleanupExpiredPushSubscriptions = onSchedule(
   {
     schedule: '0 */6 * * *', // Ogni 6 ore
     region: 'us-central1',
@@ -161,7 +161,7 @@ exports.cleanupExpiredPushSubscriptions = onSchedule(
 // =============================================
 // SCHEDULED FUNCTION: validatePushSubscriptions
 // =============================================
-exports.validatePushSubscriptions = onSchedule(
+export const validatePushSubscriptions = onSchedule(
   {
     schedule: '0 2 * * *', // Ogni giorno alle 2:00
     region: 'us-central1',
@@ -193,8 +193,7 @@ exports.validatePushSubscriptions = onSchedule(
       // se l'endpoint è ancora raggiungibile.
 
       const validationBatch = db.batch();
-      const webpush = require('web-push');
-
+      
       // Configura VAPID (se disponibili)
       const vapidPublicKey = process.env.VAPID_PUBLIC_KEY;
       const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY;

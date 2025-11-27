@@ -3,19 +3,20 @@
  * Protezione da Cross-Site Request Forgery
  */
 
-const crypto = require('crypto');
+import crypto from 'crypto';
+import process from 'process';
 
 /**
  * Genera token CSRF sicuro
  */
-function generateCSRFToken() {
+export function generateCSRFToken() {
   return crypto.randomBytes(32).toString('hex');
 }
 
 /**
  * Middleware CSRF per Express
  */
-function csrfProtection(options = {}) {
+export function csrfProtection(options = {}) {
   const {
     cookieName = 'XSRF-TOKEN',
     headerName = 'X-XSRF-TOKEN',
@@ -62,7 +63,7 @@ function csrfProtection(options = {}) {
 /**
  * Security Headers Middleware
  */
-function securityHeaders(req, res, next) {
+export function securityHeaders(req, res, next) {
   // Content Security Policy
   res.setHeader(
     'Content-Security-Policy',
@@ -114,7 +115,7 @@ function securityHeaders(req, res, next) {
 /**
  * Sanitizza input per prevenire XSS
  */
-function sanitizeInput(input) {
+export function sanitizeInput(input) {
   if (typeof input !== 'string') {
     return input;
   }
@@ -130,7 +131,7 @@ function sanitizeInput(input) {
 /**
  * Middleware sanitizzazione body
  */
-function sanitizeBody(req, res, next) {
+export function sanitizeBody(req, res, next) {
   if (req.body && typeof req.body === 'object') {
     req.body = sanitizeObject(req.body);
   }
@@ -156,7 +157,7 @@ function sanitizeObject(obj) {
   return sanitized;
 }
 
-module.exports = {
+export default {
   generateCSRFToken,
   csrfProtection,
   securityHeaders,

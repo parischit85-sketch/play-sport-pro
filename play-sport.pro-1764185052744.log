@@ -1,0 +1,50 @@
+/dashboard:1 Access to fetch at 'https://us-central1-m-padelweb.cloudfunctions.net/getUserNotifications' from origin 'https://play-sport.pro' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+index-mif0da9a-B5iHtKsk.js:5159  POST https://us-central1-m-padelweb.cloudfunctions.net/getUserNotifications net::ERR_FAILED
+i @ index-mif0da9a-B5iHtKsk.js:5159
+Vx @ index-mif0da9a-B5iHtKsk.js:5159
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:5159
+await in (anonymous)
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:5159
+r @ index-mif0da9a-B5iHtKsk.js:5159
+r @ index-mif0da9a-B5iHtKsk.js:5529
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:5529
+ic @ index-mif0da9a-B5iHtKsk.js:20
+Sl @ index-mif0da9a-B5iHtKsk.js:20
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:20
+_ @ index-mif0da9a-B5iHtKsk.js:11
+T @ index-mif0da9a-B5iHtKsk.js:11
+/dashboard:1 Access to fetch at 'https://us-central1-m-padelweb.cloudfunctions.net/getUserNotifications' from origin 'https://play-sport.pro' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+index-mif0da9a-B5iHtKsk.js:5159  POST https://us-central1-m-padelweb.cloudfunctions.net/getUserNotifications net::ERR_FAILED
+i @ index-mif0da9a-B5iHtKsk.js:5159
+Vx @ index-mif0da9a-B5iHtKsk.js:5159
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:5159
+await in (anonymous)
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:5159
+r @ index-mif0da9a-B5iHtKsk.js:5159
+r @ index-mif0da9a-B5iHtKsk.js:5529
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:5529
+ic @ index-mif0da9a-B5iHtKsk.js:20
+Sl @ index-mif0da9a-B5iHtKsk.js:20
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:20
+_ @ index-mif0da9a-B5iHtKsk.js:11
+T @ index-mif0da9a-B5iHtKsk.js:11
+/club/sporting-cat/players:1 Access to fetch at 'https://us-central1-m-padelweb.cloudfunctions.net/getOrphanProfiles' from origin 'https://play-sport.pro' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+index-mif0da9a-B5iHtKsk.js:5159  POST https://us-central1-m-padelweb.cloudfunctions.net/getOrphanProfiles net::ERR_FAILED
+i @ index-mif0da9a-B5iHtKsk.js:5159
+Vx @ index-mif0da9a-B5iHtKsk.js:5159
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:5159
+await in (anonymous)
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:5159
+r @ index-mif0da9a-B5iHtKsk.js:5159
+onClick @ PlayersPage-mif0da9a-B1fCXQa7.js:8
+Me @ index-mif0da9a-B5iHtKsk.js:20
+Be @ index-mif0da9a-B5iHtKsk.js:20
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:20
+zr @ index-mif0da9a-B5iHtKsk.js:20
+Ur @ index-mif0da9a-B5iHtKsk.js:20
+(anonymous) @ index-mif0da9a-B5iHtKsk.js:20
+dl @ index-mif0da9a-B5iHtKsk.js:20
+Pe @ index-mif0da9a-B5iHtKsk.js:20
+Wr @ index-mif0da9a-B5iHtKsk.js:20
+Kt @ index-mif0da9a-B5iHtKsk.js:20
+Wt @ index-mif0da9a-B5iHtKsk.js:20

@@ -96,8 +96,7 @@ export class UnifiedPushService {
   async isSubscribed(userId) {
     try {
       if (this.isNative) {
-        const subscriptions = await capacitorPushService.getUserNativeSubscriptions(userId);
-        return subscriptions.length > 0;
+        return await capacitorPushService.hasActiveSubscription(userId);
       } else {
         return await isPushSubscribed();
       }

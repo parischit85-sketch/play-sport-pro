@@ -5,7 +5,12 @@
 // =============================================
 
 import { onRequest } from 'firebase-functions/v2/https';
+import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+
+if (getApps().length === 0) {
+  initializeApp();
+}
 
 /**
  * HTTP Cloud Function to migrate profiles from subcollections to affiliations

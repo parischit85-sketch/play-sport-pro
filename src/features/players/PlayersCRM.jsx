@@ -24,8 +24,7 @@ import PlayersFilterBar from './components/PlayersFilterBar';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { PlayerCardSkeleton } from '@ui/SkeletonLoader.jsx';
 import { useDebounce } from '@hooks/useDebounce.js';
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '@services/firebase.js';
+import { listAllUserProfiles } from '@services/auth.jsx';
 import OrphanProfilesLinkingModal from './components/OrphanProfilesLinkingModal';
 
 export default function PlayersCRM({
@@ -330,30 +329,55 @@ export default function PlayersCRM({
       
       setLoadingOrphans(true);
       setShowLinkOrphan(true);
-      const callable = httpsCallable(functions, 'getOrphanProfiles');
-      const result = await callable({ clubId: state?.clubId });
       
-      console.log('✅ [PlayersCRM] Profili orfani caricati', {
-        total: result.data.total,
-        orphans: result.data.orphans?.map(o => ({
+      // ✅ NUOVO APPROCCIO: Identifica orfani client-side (come PlayerDetails)
+      console.log('🔍 [PlayersCRM] Identificazione profili orfani client-side...');
+      
+      // 1. Carica tutti gli utenti Firebase registrati
+      const registeredUsers = await listAllUserProfiles(1000);
+      const registeredUids = new Set(registeredUsers.map(u => u.uid));
+      
+      console.log('📊 [PlayersCRM] Utenti Firebase registrati:', registeredUsers.length);
+      
+      // 2. Identifica giocatori senza account Firebase collegato
+      const orphans = players.filter(player => {
+        const linkedUid = player.linkedAccountId || player.linkedFirebaseUid || player.firebaseUid;
+        const userId = player.userId;
+        
+        // È orfano se:
+        // - Non ha linkedAccountId/linkedFirebaseUid valido, OPPURE
+        // - Ha userId ma non esiste in Firebase Auth
+        const hasValidLink = linkedUid && registeredUids.has(linkedUid);
+        const userIdExistsInAuth = userId && registeredUids.has(userId);
+        
+        return !hasValidLink && !userIdExistsInAuth;
+      });
+      
+      console.log('✅ [PlayersCRM] Profili orfani identificati:', {
+        total: orphans.length,
+        orphans: orphans.slice(0, 5).map(o => ({
           userId: o.userId,
-          name: o.name,
+          name: `${o.firstName} ${o.lastName}`,
           email: o.email,
-          docId: o.docId
+          hasLinkedAccountId: !!o.linkedAccountId
         }))
       });
       
-      setOrphanProfiles(result.data.orphans || []);
-      if (result.data.total === 0) {
+      setOrphanProfiles(orphans);
+      
+      if (orphans.length === 0) {
         toast.success('✅ Nessun profilo orfano - tutti i giocatori hanno account Firebase!');
+      } else {
+        toast.info(`📋 Trovati ${orphans.length} profili senza account Firebase`);
       }
+      
     } catch (error) {
-      console.error('❌ [PlayersCRM] Errore caricamento profili orfani:', {
+      console.error('❌ [PlayersCRM] Errore identificazione profili orfani:', {
         error: error.message,
-        code: error.code,
+        stack: error.stack,
         clubId: state?.clubId
       });
-      toast.error('Errore nel caricamento profili orfani. Riprova.');
+      toast.error(`Errore: ${error.message || 'Riprova'}`);
     } finally {
       setLoadingOrphans(false);
     }
@@ -375,22 +399,33 @@ export default function PlayersCRM({
 
     try {
       setLinking(true);
-      const callable = httpsCallable(functions, 'linkOrphanProfile');
-      await callable({
-        clubId: state?.clubId,
-        orphanPlayerId: orphan.userId,
-        firebaseUid: firebaseUid,
+      
+      // ✅ PATTERN REPLICATO DA PlayerDetails: usa onUpdatePlayer invece di Cloud Function
+      await handleUpdatePlayer(orphan.id, {
+        isAccountLinked: true,
+        linkedAccountId: firebaseUid,
+        linkedAccountEmail: firebaseEmail,
       });
 
       toast.success('Profilo collegato con successo!');
       
-      // Ricarica profili orfani
-      const callable2 = httpsCallable(functions, 'getOrphanProfiles');
-      const result2 = await callable2({ clubId: state?.clubId });
-      setOrphanProfiles(result2.data.orphans || []);
+      // ✅ Ricarica profili orfani CLIENT-SIDE (come all'apertura)
+      const registeredUsers = await listAllUserProfiles(1000);
+      const registeredUids = new Set(registeredUsers.map(u => u.uid));
       
-      if (result2.data.total === 0) {
+      const updatedOrphans = players.filter(player => {
+        const linkedUid = player.linkedAccountId || player.linkedFirebaseUid || player.firebaseUid;
+        const userId = player.userId;
+        const hasValidLink = linkedUid && registeredUids.has(linkedUid);
+        const userIdExistsInAuth = userId && registeredUids.has(userId);
+        return !hasValidLink && !userIdExistsInAuth;
+      });
+      
+      setOrphanProfiles(updatedOrphans);
+      
+      if (updatedOrphans.length === 0) {
         setShowLinkOrphan(false);
+        toast.success('✅ Tutti i profili sono stati collegati!');
       }
 
     } catch (error) {
@@ -679,6 +714,7 @@ export default function PlayersCRM({
       {showLinkOrphan && (
         <OrphanProfilesLinkingModal
           orphanProfiles={orphanProfiles}
+          clubId={state?.clubId}
           onLink={handleLinkOrphan}
           onClose={() => setShowLinkOrphan(false)}
         />

@@ -8,18 +8,21 @@ import { usePushNotifications } from '../hooks/usePushNotifications';
 export default function PushTestPanel() {
   const {
     permission,
+    subscription,
     isSupported,
     requestPermission,
     sendTestNotification,
+    unsubscribe,
+    subscribeToPush,
     isGranted,
   } = usePushNotifications();
 
   const handleEnablePush = async () => {
     console.log('🚀 [TEST] Starting push notification test...');
     console.log('📊 [TEST] Current permission:', permission);
-    
+
     const result = await requestPermission();
-    
+
     console.log('📊 [TEST] Request result:', result);
     console.log('📊 [TEST] Check Firestore Console → pushSubscriptions');
     console.log('📊 [TEST] Should see new subscription with your userId');
@@ -30,12 +33,40 @@ export default function PushTestPanel() {
     await sendTestNotification();
   };
 
+  const handleDisablePush = async () => {
+    console.log('🔴 [TEST] Disabling push notifications...');
+    const result = await unsubscribe();
+    if (result) {
+      console.log('✅ [TEST] Push notifications disabled successfully');
+      console.log('📊 [TEST] Check Firestore Console → pushSubscriptions');
+      console.log('📊 [TEST] Subscription should be removed or marked inactive');
+    } else {
+      console.error('❌ [TEST] Failed to disable push notifications');
+    }
+  };
+
+  const handleReEnablePush = async () => {
+    console.log('🔄 [TEST] Re-enabling push notifications...');
+    try {
+      const result = await subscribeToPush();
+      if (result) {
+        console.log('✅ [TEST] Push notifications re-enabled successfully');
+        console.log('📊 [TEST] Check Firestore Console → pushSubscriptions');
+        console.log('📊 [TEST] New subscription should be created');
+      } else {
+        console.error('❌ [TEST] Failed to re-enable push notifications');
+      }
+    } catch (error) {
+      console.error('❌ [TEST] Error re-enabling push:', error);
+    }
+  };
+
   if (!isSupported) {
     return (
-      <div style={{ 
-        padding: '20px', 
-        background: '#7f1d1d', 
-        border: '2px solid #dc2626', 
+      <div style={{
+        padding: '20px',
+        background: '#7f1d1d',
+        border: '2px solid #dc2626',
         margin: '20px',
         borderRadius: '8px',
         color: '#fef2f2'
@@ -47,10 +78,10 @@ export default function PushTestPanel() {
   }
 
   return (
-    <div style={{ 
-      padding: '20px', 
-      background: '#1e293b', 
-      border: '2px solid #3b82f6', 
+    <div style={{
+      padding: '20px',
+      background: '#1e293b',
+      border: '2px solid #3b82f6',
       margin: '0',
       marginBottom: '24px',
       borderRadius: '12px',
@@ -59,16 +90,16 @@ export default function PushTestPanel() {
       <h2 style={{ marginBottom: '16px', color: '#f1f5f9', fontSize: '20px', fontWeight: 'bold' }}>
         🧪 Push Notifications Test Panel
       </h2>
-      
-      <div style={{ 
-        marginBottom: '16px', 
-        padding: '12px', 
-        background: '#334155', 
+
+      <div style={{
+        marginBottom: '16px',
+        padding: '12px',
+        background: '#334155',
         borderRadius: '8px',
         border: '1px solid #475569'
       }}>
         <div style={{ color: '#cbd5e1', lineHeight: '1.8' }}>
-          <strong style={{ color: '#f1f5f9' }}>Status:</strong> <span style={{ 
+          <strong style={{ color: '#f1f5f9' }}>Status:</strong> <span style={{
             color: permission === 'granted' ? '#34d399' : permission === 'denied' ? '#f87171' : '#fbbf24',
             fontWeight: '600'
           }}>{permission}</span>
@@ -100,12 +131,52 @@ export default function PushTestPanel() {
           </button>
         )}
 
-        {isGranted && (
+        {isGranted && subscription && (
+          <>
+            <button
+              onClick={handleTestNotif}
+              style={{
+                padding: '12px 24px',
+                background: '#f59e0b',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '14px'
+              }}
+              onMouseOver={(e) => e.target.style.background = '#d97706'}
+              onMouseOut={(e) => e.target.style.background = '#f59e0b'}
+            >
+              🧪 Invia Test Notification
+            </button>
+
+            <button
+              onClick={handleDisablePush}
+              style={{
+                padding: '12px 24px',
+                background: '#ef4444',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '14px'
+              }}
+              onMouseOver={(e) => e.target.style.background = '#dc2626'}
+              onMouseOut={(e) => e.target.style.background = '#ef4444'}
+            >
+              🔴 Disattiva Notifiche
+            </button>
+          </>
+        )}
+
+        {isGranted && !subscription && (
           <button
-            onClick={handleTestNotif}
+            onClick={handleReEnablePush}
             style={{
               padding: '12px 24px',
-              background: '#f59e0b',
+              background: '#3b82f6',
               color: 'white',
               border: 'none',
               borderRadius: '8px',
@@ -113,18 +184,18 @@ export default function PushTestPanel() {
               fontWeight: 'bold',
               fontSize: '14px'
             }}
-            onMouseOver={(e) => e.target.style.background = '#d97706'}
-            onMouseOut={(e) => e.target.style.background = '#f59e0b'}
+            onMouseOver={(e) => e.target.style.background = '#2563eb'}
+            onMouseOut={(e) => e.target.style.background = '#3b82f6'}
           >
-            🧪 Invia Test Notification
+            🔄 Riattiva Notifiche
           </button>
         )}
       </div>
 
-      <div style={{ 
-        marginTop: '20px', 
-        padding: '16px', 
-        background: '#334155', 
+      <div style={{
+        marginTop: '20px',
+        padding: '16px',
+        background: '#334155',
         borderRadius: '8px',
         fontSize: '14px',
         border: '1px solid #475569'
@@ -133,19 +204,23 @@ export default function PushTestPanel() {
         <ol style={{ marginTop: '12px', paddingLeft: '20px', color: '#cbd5e1', lineHeight: '1.8' }}>
           <li>Fai login nell'app</li>
           <li>Apri DevTools Console (F12)</li>
-          <li>Click su "Attiva Push Notifications"</li>
+          <li><strong>Attivazione:</strong> Click su "Attiva Push Notifications"</li>
           <li>Concedi permesso nel browser</li>
           <li>Verifica console per log "✅ Subscription saved"</li>
           <li>Apri Firebase Console → Firestore → pushSubscriptions</li>
           <li>Dovresti vedere nuova subscription con il tuo userId</li>
-          <li>Click "Invia Test Notification" per verificare ricezione</li>
+          <li><strong>Test:</strong> Click "Invia Test Notification" per verificare ricezione</li>
+          <li><strong>Disattivazione:</strong> Click "Disattiva Notifiche" per rimuovere subscription</li>
+          <li>Verifica Firestore: subscription dovrebbe essere rimossa o inactive</li>
+          <li><strong>Riattivazione:</strong> Click "Riattiva Notifiche" per creare nuova subscription</li>
+          <li>Verifica Firestore: nuova subscription creata con active: true</li>
         </ol>
       </div>
 
-      <div style={{ 
-        marginTop: '16px', 
-        padding: '12px', 
-        background: '#0f172a', 
+      <div style={{
+        marginTop: '16px',
+        padding: '12px',
+        background: '#0f172a',
         borderRadius: '8px',
         fontSize: '12px',
         fontFamily: 'monospace',

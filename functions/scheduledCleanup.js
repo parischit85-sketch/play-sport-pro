@@ -7,11 +7,11 @@
  * Schedule: Ogni giorno alle 2:00 AM
  */
 
-const functions = require('firebase-functions');
-const admin = require('firebase-admin');
+import * as functions from 'firebase-functions/v1';
+import admin from 'firebase-admin';
 
 // Initialize Firebase Admin (se non già fatto)
-if (!admin.apps.length) {
+if (admin.apps.length === 0) {
   admin.initializeApp();
 }
 
@@ -21,7 +21,7 @@ const db = admin.firestore();
  * Scheduled Cloud Function - Cleanup giornaliero
  * Runs every day at 2:00 AM UTC
  */
-exports.scheduledNotificationCleanup = functions
+export const scheduledNotificationCleanup = functions
   .runWith({
     timeoutSeconds: 540, // 9 minuti (max)
     memory: '1GB'
@@ -194,7 +194,7 @@ async function cleanupOldDeliveryLogs(retentionDays) {
 /**
  * Manual trigger endpoint (per testing)
  */
-exports.triggerCleanupManually = functions
+export const triggerCleanupManually = functions
   .runWith({
     timeoutSeconds: 540,
     memory: '1GB'

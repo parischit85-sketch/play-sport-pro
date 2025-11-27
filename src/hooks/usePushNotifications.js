@@ -4,6 +4,8 @@
 // =============================================
 import { useState, useEffect } from 'react';
 import { getAuth } from 'firebase/auth';
+import { Capacitor } from '@capacitor/core';
+import capacitorPushService from '../services/capacitorPushService.js';
 
 export function usePushNotifications() {
   const [permission, setPermission] = useState('default');
@@ -12,13 +14,44 @@ export function usePushNotifications() {
 
   useEffect(() => {
     // Verifica supporto notifiche
-    const checkSupport = () => {
-      const supported =
-        'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
-      setIsSupported(supported);
+    const checkSupport = async () => {
+      if (Capacitor.isNativePlatform()) {
+        setIsSupported(true);
+        const status = await capacitorPushService.getPushPermissionStatus();
+        setPermission(status);
 
-      if (supported) {
-        setPermission(Notification.permission);
+        // Check existing subscription for Native
+        if (status === 'granted') {
+          const auth = getAuth();
+          const user = auth.currentUser;
+          if (user) {
+            const hasSub = await capacitorPushService.hasActiveSubscription(user.uid);
+            if (hasSub) {
+              setSubscription({ type: 'native', active: true });
+            }
+          }
+        }
+      } else {
+        const supported =
+          'Notification' in window && 'serviceWorker' in navigator && 'PushManager' in window;
+        setIsSupported(supported);
+
+        if (supported) {
+          setPermission(Notification.permission);
+          
+          // Check existing subscription for Web
+          if (Notification.permission === 'granted') {
+            try {
+              const registration = await navigator.serviceWorker.ready;
+              const sub = await registration.pushManager.getSubscription();
+              if (sub) {
+                setSubscription(sub);
+              }
+            } catch (e) {
+              console.error('Error checking web subscription:', e);
+            }
+          }
+        }
       }
     };
 
@@ -33,16 +66,27 @@ export function usePushNotifications() {
     }
 
     try {
-      const permission = await Notification.requestPermission();
-      setPermission(permission);
-
-      if (permission === 'granted') {
-        // console.log('✅ Push notification permission granted');
-        await subscribeToPush();
-        return true;
-      } else {
-        // console.log('❌ Push notification permission denied');
+      if (Capacitor.isNativePlatform()) {
+        const granted = await capacitorPushService.requestPushPermissions();
+        setPermission(granted ? 'granted' : 'denied');
+        if (granted) {
+          const sub = await subscribeToPush();
+          // Ritorna true solo se la sottoscrizione è avvenuta con successo
+          return !!sub;
+        }
         return false;
+      } else {
+        const permission = await Notification.requestPermission();
+        setPermission(permission);
+
+        if (permission === 'granted') {
+          // console.log('✅ Push notification permission granted');
+          await subscribeToPush();
+          return true;
+        } else {
+          // console.log('❌ Push notification permission denied');
+          return false;
+        }
       }
     } catch (error) {
       console.error('Push notification permission request failed:', error);
@@ -54,45 +98,62 @@ export function usePushNotifications() {
   const subscribeToPush = async () => {
     // console.log('🔔 [subscribeToPush] Starting...', { isSupported, permission });
 
-    if (!isSupported || permission !== 'granted') {
-      console.warn('⚠️ [subscribeToPush] Cannot subscribe:', { isSupported, permission });
+    if (!isSupported) {
+      console.warn('⚠️ [subscribeToPush] Cannot subscribe: Not supported');
       return null;
     }
 
     try {
-      // console.log('🔔 [subscribeToPush] Getting service worker registration...');
-      const registration = await navigator.serviceWorker.ready;
-      // console.log('✅ [subscribeToPush] Service worker ready');
+      if (Capacitor.isNativePlatform()) {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (!user) {
+          console.warn('⚠️ [subscribeToPush] User not authenticated');
+          return null;
+        }
+        const result = await capacitorPushService.registerNativePush(user.uid);
+        setSubscription(result);
+        return result;
+      } else {
+        if (permission !== 'granted') {
+          console.warn('⚠️ [subscribeToPush] Cannot subscribe: Permission not granted');
+          return null;
+        }
 
-      // Verifica se esiste già una subscription
-      let sub = await registration.pushManager.getSubscription();
-      // console.log('🔍 [subscribeToPush] Existing subscription:', sub ? 'FOUND' : 'NOT FOUND');
+        // console.log('🔔 [subscribeToPush] Getting service worker registration...');
+        const registration = await navigator.serviceWorker.ready;
+        // console.log('✅ [subscribeToPush] Service worker ready');
 
-      if (!sub) {
-        // Crea nuova subscription
-        // console.log('🔔 [subscribeToPush] Creating new subscription...');
-        const vapidPublicKey = getVapidPublicKey();
+        // Verifica se esiste già una subscription
+        let sub = await registration.pushManager.getSubscription();
+        // console.log('🔍 [subscribeToPush] Existing subscription:', sub ? 'FOUND' : 'NOT FOUND');
 
-        sub = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+        if (!sub) {
+          // Crea nuova subscription
+          // console.log('🔔 [subscribeToPush] Creating new subscription...');
+          const vapidPublicKey = getVapidPublicKey();
+
+          sub = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+          });
+
+          // console.log('✅ [subscribeToPush] Push subscription created');
+        }
+
+        // 🔧 FIX: Aggiorna stato solo se subscription è cambiata (evita loop)
+        setSubscription((prev) => {
+          if (!prev || prev.endpoint !== sub.endpoint) {
+            return sub;
+          }
+          return prev; // Mantieni riferimento precedente per evitare re-render
         });
 
-        // console.log('✅ [subscribeToPush] Push subscription created');
+        // Invia subscription al server (con debounce: salva solo se necessario)
+        await sendSubscriptionToServer(sub);
+
+        return sub;
       }
-
-      // 🔧 FIX: Aggiorna stato solo se subscription è cambiata (evita loop)
-      setSubscription((prev) => {
-        if (!prev || prev.endpoint !== sub.endpoint) {
-          return sub;
-        }
-        return prev; // Mantieni riferimento precedente per evitare re-render
-      });
-
-      // Invia subscription al server (con debounce: salva solo se necessario)
-      await sendSubscriptionToServer(sub);
-
-      return sub;
     } catch (error) {
       console.error('❌ [subscribeToPush] Failed:', error);
       return null;
@@ -101,18 +162,28 @@ export function usePushNotifications() {
 
   // Disattiva le notifiche
   const unsubscribe = async () => {
-    if (!subscription) return true;
+    if (!subscription && !Capacitor.isNativePlatform()) return true;
 
     try {
-      const success = await subscription.unsubscribe();
-      if (success) {
+      if (Capacitor.isNativePlatform()) {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          await capacitorPushService.unregisterNativePush(user.uid);
+        }
         setSubscription(null);
-        // console.log('✅ Push subscription cancelled');
+        return true;
+      } else {
+        const success = await subscription.unsubscribe();
+        if (success) {
+          setSubscription(null);
+          // console.log('✅ Push subscription cancelled');
 
-        // Rimuovi subscription dal server
-        await removeSubscriptionFromServer(subscription);
+          // Rimuovi subscription dal server
+          await removeSubscriptionFromServer(subscription);
+        }
+        return success;
       }
-      return success;
     } catch (error) {
       console.error('Push unsubscribe failed:', error);
       return false;

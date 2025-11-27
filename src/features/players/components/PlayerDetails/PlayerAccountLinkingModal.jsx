@@ -171,14 +171,14 @@ export default function PlayerAccountLinkingModal({
           
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <span className="text-gray-500">🔍</span>
+              <span className="text-gray-400">🔍</span>
             </div>
             <input
               type="text"
               value={accountSearch}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Cerca per nome, email, telefono o Psp ID..."
-              className={`w-full pl-10 pr-4 py-2.5 border ${T.border} rounded-lg ${T.bg} ${T.text} text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all`}
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-600 rounded-lg bg-gray-800 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               autoFocus={suggestions.length === 0}
             />
           </div>

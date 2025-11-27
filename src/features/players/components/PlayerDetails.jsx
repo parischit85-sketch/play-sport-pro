@@ -10,8 +10,6 @@ import { useSearchParams } from 'react-router-dom';
 import { listAllUserProfiles, getUserProfile } from '@services/auth.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { computeClubRanking } from '@lib/ranking-club.js';
-import { httpsCallable } from 'firebase/functions';
-import { functions } from '@services/firebase.js';
 import { useDebounce } from '@hooks/useDebounce.js';
 
 // Hooks
@@ -173,7 +171,7 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
     [players, player.id]
   );
 
-  // 🔍 Search handling
+  // 🔍 Search handling (CLIENT-SIDE - evita CORS)
   const debouncedSearch = useDebounce(state.linking.search, 500);
 
   useEffect(() => {
@@ -185,12 +183,37 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
 
       dispatch({ type: ACTIONS.SET_LOADING, payload: { loadingAccounts: true } });
       try {
-        const callable = httpsCallable(functions, 'searchFirebaseUsers');
-        const result = await callable({ clubId, searchQuery: debouncedSearch.trim() });
-        dispatch({ type: ACTIONS.SET_SEARCH_RESULTS, payload: result.data.results || [] });
+        console.log('🔍 [PlayerDetails] Client-side search for:', debouncedSearch.trim());
+        
+        // Carica tutti gli utenti e filtra client-side
+        const allUsers = await listAllUserProfiles(1000);
+        const searchLower = debouncedSearch.trim().toLowerCase();
+        
+        const filtered = allUsers.filter(user => {
+          const email = (user.email || '').toLowerCase();
+          const displayName = (user.displayName || '').toLowerCase();
+          const firstName = (user.firstName || '').toLowerCase();
+          const lastName = (user.lastName || '').toLowerCase();
+          const phone = (user.phoneNumber || '').replace(/[\s\-+()]/g, '');
+          const pspId = (user.pspId || '').toLowerCase();
+          const searchPhone = searchLower.replace(/[\s\-+()]/g, '');
+          
+          return (
+            email.includes(searchLower) ||
+            displayName.includes(searchLower) ||
+            firstName.includes(searchLower) ||
+            lastName.includes(searchLower) ||
+            (searchPhone.length > 5 && phone.includes(searchPhone)) ||
+            pspId.includes(searchLower)
+          );
+        });
+        
+        console.log('✅ [PlayerDetails] Client-side search results:', filtered.length);
+        dispatch({ type: ACTIONS.SET_SEARCH_RESULTS, payload: filtered.slice(0, 20) });
+        
       } catch (error) {
-        console.error('Error searching users:', error);
-        // Don't show error toast for search failures to avoid spamming
+        console.error('❌ [PlayerDetails] Search failed:', error);
+        dispatch({ type: ACTIONS.SET_SEARCH_RESULTS, payload: [] });
       } finally {
         dispatch({ type: ACTIONS.SET_LOADING, payload: { loadingAccounts: false } });
       }
@@ -349,118 +372,28 @@ export default function PlayerDetails({ player, onUpdate, onClose, T }) {
     dispatch({ type: ACTIONS.SET_LOADING, payload: { loadingAccounts: true } });
 
     try {
-      console.log('🔍 [PlayerDetails] Avvio ricerca automatica account per:', {
+      console.log('🔍 [PlayerDetails] Caricamento utenti per suggerimenti automatici:', {
         name: player.name,
         email: player.email,
         phone: player.phone
       });
 
-      // 1. Carica utenti recenti (base)
-      const recentUsersPromise = listAllUserProfiles(100).catch(e => {
-        console.warn('Recent users fetch failed', e);
+      // ✅ SEMPLIFICATO: Carica solo utenti recenti, i suggerimenti sono calcolati client-side nel modal
+      const allUsers = await listAllUserProfiles(1000).catch(e => {
+        console.warn('❌ [PlayerDetails] Users fetch failed', e);
         return [];
       });
 
-      // 2. Ricerche mirate basate sui dati del player (Email, Nome, Telefono)
-      const searchPromises = [];
-      const callable = httpsCallable(functions, 'searchFirebaseUsers');
+      console.log('✅ [PlayerDetails] Totale utenti caricati:', allUsers.length);
 
-      // Normalize player data for search
-      const searchEmail = (player.email || player.userEmail || '').trim().toLowerCase();
-      // Normalize phone: remove spaces, dashes, parens, plus
-      const searchPhone = (player.phone || player.phoneNumber || player.userPhone || '').replace(/[\s\-+()]/g, '');
-      
-      // Robust name calculation: prefer firstName+lastName, fallback to name/displayName
-      let searchName = `${player.firstName || ''} ${player.lastName || ''}`.trim();
-      if (searchName.length < 2 && (player.name || player.displayName)) {
-        searchName = (player.name || player.displayName || '').trim();
-      }
-
-      // Search by Email
-      if (searchEmail && searchEmail.includes('@')) {
-        console.log('🔍 [PlayerDetails] Searching by email:', searchEmail);
-        searchPromises.push(
-          callable({ clubId, searchQuery: searchEmail })
-            .then((r) => {
-              console.log('✅ [PlayerDetails] Email search results:', r.data.results?.length);
-              return r.data.results || [];
-            })
-            .catch((e) => {
-              console.warn('❌ [PlayerDetails] Email search failed', e);
-              return [];
-            })
-        );
-      }
-
-      // Search by Name
-      if (searchName.length > 2) {
-        console.log('🔍 [PlayerDetails] Searching by name:', searchName);
-        searchPromises.push(
-          callable({ clubId, searchQuery: searchName })
-            .then((r) => {
-              console.log('✅ [PlayerDetails] Name search results:', r.data.results?.length);
-              if (r.data.results?.length > 0) {
-                 console.log('📄 [PlayerDetails] First name result:', r.data.results[0]);
-              }
-              return r.data.results || [];
-            })
-            .catch((e) => {
-              console.warn('❌ [PlayerDetails] Name search failed', e);
-              return [];
-            })
-        );
-      }
-
-      // Search by Phone
-      if (searchPhone.length > 5) {
-        console.log('🔍 [PlayerDetails] Searching by phone:', searchPhone);
-        searchPromises.push(
-          callable({ clubId, searchQuery: searchPhone })
-            .then((r) => {
-              console.log('✅ [PlayerDetails] Phone search results:', r.data.results?.length);
-              return r.data.results || [];
-            })
-            .catch((e) => {
-              console.warn('❌ [PlayerDetails] Phone search failed', e);
-              return [];
-            })
-        );
-      }
-
-      // Esegui tutto in parallelo
-      const [recentUsers, ...searchResultsArrays] = await Promise.all([
-        recentUsersPromise,
-        ...searchPromises,
-      ]);
-
-      // Merge and deduplicate
-      const allAccountsMap = new Map();
-
-      // Add recent users
-      (recentUsers || []).forEach((acc) => allAccountsMap.set(acc.uid, acc));
-
-      // Add search results (priority to search results)
-      searchResultsArrays.flat().forEach((acc) => {
-        if (!allAccountsMap.has(acc.uid)) {
-          allAccountsMap.set(acc.uid, acc);
-        } else {
-          // Update existing with potentially more details from search?
-          // Usually search result is leaner, so maybe keep recentUser if exists.
-          // But let's ensure we have the user.
-        }
-      });
-
-      const allAccounts = Array.from(allAccountsMap.values());
-      console.log('📊 [PlayerDetails] Totale account trovati:', allAccounts.length);
-
-      dispatch({ type: ACTIONS.START_LINKING, payload: { accounts: allAccounts } });
+      dispatch({ type: ACTIONS.START_LINKING, payload: { accounts: allUsers } });
     } catch (error) {
       console.error('❌ [PlayerDetails] Error in openAccountsPicker:', error);
       showError(`Errore caricamento account: ${error.message}`);
     } finally {
       dispatch({ type: ACTIONS.SET_LOADING, payload: { loadingAccounts: false } });
     }
-  }, [showError, player, clubId]);
+  }, [showError, player]);
 
   // 🎨 Tabs configuration con counter dinamici
   const tabs = [

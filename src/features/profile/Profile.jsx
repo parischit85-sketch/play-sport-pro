@@ -11,7 +11,7 @@ import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 // import { useUI } from '@contexts/UIContext.jsx'; // Rimosso - tema scuro forzato
 import ClubAdminProfile from './ClubAdminProfile.jsx';
-import PushNotificationPanel from '@components/debug/PushNotificationPanel.jsx';
+import NotificationSettings from '@components/NotificationSettings.jsx';
 import CertificateExpiryAlert from './CertificateExpiryAlert.jsx';
 import UserGDPRPanel from './UserGDPRPanel.jsx';
 
@@ -301,7 +301,7 @@ export default function Profile({ T }) {
           </div>
 
           {/* Push Notifications Panel */}
-          <PushNotificationPanel />
+          <NotificationSettings />
 
           {/* Stato Account */}
           <div

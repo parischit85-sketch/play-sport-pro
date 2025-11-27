@@ -5,8 +5,13 @@
 // =============================================
 
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
+import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
+
+if (getApps().length === 0) {
+  initializeApp();
+}
 
 /**
  * Cleanup Unknown Users

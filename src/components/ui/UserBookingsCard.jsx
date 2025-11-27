@@ -5,7 +5,6 @@ import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { BOOKING_CONFIG } from '@services/bookings.js';
 import { updateBooking, getUserBookings, cancelBooking, initialize as initBookingService } from '@services/unified-booking-service.js';
-import { getClub } from '@services/clubs.js';
 import { useUserBookingsFast } from '@hooks/useBookingPerformance.js';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useNotifications } from '@contexts/NotificationContext.jsx';
@@ -13,16 +12,11 @@ import BookingDetailModal from '@ui/BookingDetailModal.jsx';
 import { bookingEvents, BOOKING_EVENTS } from '@utils/bookingEvents.js';
 
 // Memoized booking card component
-const BookingCard = React.memo(({ booking, onBookingClick, courts, user, clubDetails }) => {
+const BookingCard = React.memo(({ booking, onBookingClick, courts, user }) => {
   const court = courts?.find((c) => c.id === booking.courtId);
   const bookingDate = new Date(booking.date);
   const isToday = bookingDate.toDateString() === new Date().toDateString();
   const isTomorrow = bookingDate.toDateString() === new Date(Date.now() + 86400000).toDateString();
-
-  // Get club details
-  const club = clubDetails?.[booking.clubId];
-  const clubLogo = club?.logoUrl || booking.clubLogo || '/icons/icon-192x192.png';
-  const clubName = club?.name || booking.clubName || 'Sporting Cat';
 
   // Determina se è una prenotazione di lezione
   const isLessonBooking = booking.isLessonBooking || booking.type === 'lesson';
@@ -68,115 +62,125 @@ const BookingCard = React.memo(({ booking, onBookingClick, courts, user, clubDet
       }}
       role="button"
       tabIndex={0}
-      className="relative group min-w-[280px] h-36 sm:min-w-0 sm:h-auto flex-shrink-0 sm:flex-shrink transform hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+      className={`${cardColors.background} backdrop-blur-xl border-2 ${cardColors.border}
+        hover:bg-gray-800 ${cardColors.hoverBorder} 
+        hover:shadow-2xl ${cardColors.hoverShadow} 
+        p-4 rounded-2xl cursor-pointer transition-all duration-300 group
+        min-w-[240px] h-32 sm:min-w-0 sm:h-auto flex-shrink-0 sm:flex-shrink
+        transform hover:scale-[1.02] flex flex-col justify-between
+        shadow-xl ${cardColors.shadow} ring-1 ${cardColors.ring}`}
     >
-      {/* Glow Effect */}
-      <div className={`absolute -inset-1 bg-gradient-to-r ${isLessonBooking ? 'from-green-500 to-emerald-500' : 'from-blue-600 to-indigo-600'} rounded-2xl blur opacity-40 group-hover:opacity-80 transition duration-500`}></div>
-
-      {/* Card Content */}
-      <div className={`relative h-full flex flex-row p-3 rounded-2xl ${cardColors.background} backdrop-blur-xl border-2 ${cardColors.border} hover:bg-gray-800 ${cardColors.hoverBorder} shadow-xl ${cardColors.shadow} ring-1 ${cardColors.ring}`}>
-      {/* Left Side: Players List */}
-      <div className="w-1/2 flex flex-col justify-center border-r border-gray-500/50 pr-2 space-y-1.5">
-        {/* Players List & Empty Slots */}
-        {Array.from({ length: 4 }).map((_, idx) => {
-          const player = booking.players && booking.players[idx];
-          
-          if (player) {
-             const hasPhoto = typeof player !== 'string' && player.photoURL;
-             const displayName = typeof player === 'string' ? player : (player.name || 'Giocatore');
-             const initials = typeof player === 'string' ? player.charAt(0).toUpperCase() : (player.name?.charAt(0).toUpperCase() || 'G');
-
-             return (
-               <div key={idx} className="flex items-center gap-2">
-                 {hasPhoto ? (
-                   <img 
-                     src={player.photoURL} 
-                     alt={displayName}
-                     className="w-6 h-6 rounded-full object-cover border border-white/10 flex-shrink-0"
-                     onError={(e) => {
-                       e.target.onerror = null;
-                       e.target.src = `https://ui-avatars.com/api/?name=${displayName}&background=random&color=fff`;
-                     }}
-                   />
-                 ) : (
-                   <div className={`w-6 h-6 rounded-full ${idx === 0 ? (isLessonBooking ? 'bg-green-500' : 'bg-blue-500') : 'bg-gray-600'} flex items-center justify-center text-[10px] font-bold text-white border border-white/10 flex-shrink-0`}>
-                     {initials}
-                   </div>
-                 )}
-                 <span className={`text-[10px] ${idx === 0 ? 'text-gray-200' : 'text-gray-400'} truncate font-medium leading-tight`}>
-                   {displayName}
-                 </span>
-               </div>
-             );
-          } else {
-             // Empty slot
-             return (
-               <div key={idx} className="flex items-center gap-2">
-                 <div className="w-6 h-6 rounded-full bg-gray-800/50 border border-dashed border-gray-500/80 flex items-center justify-center text-[10px] text-gray-500 flex-shrink-0">
-                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                 </div>
-                 <span className="text-[10px] text-gray-500 truncate font-medium leading-tight italic">
-                   Libero
-                 </span>
-               </div>
-             );
-          }
-        })}
-        
-        {/* More players indicator */}
-        {booking.players && booking.players.length > 4 && (
-           <div className="text-[9px] text-gray-500 pl-8">
-             +{booking.players.length - 4} altri
-           </div>
-        )}
-      </div>
-
-      {/* Right Side: Info */}
-      <div className="flex-1 flex flex-col justify-between pl-3 py-0.5 items-end text-right">
-        {/* Top: Club Info */}
-        <div className="flex items-center gap-2 justify-end">
-           <span className="text-xs font-bold text-white truncate">
-             {clubName.replace(/club/i, '').trim()}
-           </span>
-           <div className="w-6 h-6 rounded-full bg-white p-0.5 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
-              <img 
-                src={clubLogo} 
-                alt="Club" 
-                className="w-full h-full object-cover" 
-                onError={(e) => {
-                  e.target.onerror = null; 
-                  e.target.src = '/icons/icon-192x192.png';
-                }} 
-              />
-           </div>
+      {/* Header con data/ora e campo */}
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="text-xs font-medium text-gray-400 uppercase tracking-tight mb-1">
+            {dateLabel}
+          </div>
+          <div className="text-lg font-bold text-white leading-none mb-1">
+            {booking.time.substring(0, 5)}
+          </div>
+          <div className="text-xs text-gray-400">
+            {isLessonBooking
+              ? `${booking.lessonType || 'Lezione'} • ${booking.duration || 60}min`
+              : `${court?.name || 'Padel 1'} • ${booking.duration || 60}min`}
+          </div>
         </div>
-
-        {/* Middle: Court & Duration */}
-        <div className="flex flex-col items-end justify-center flex-grow">
-           <span className="text-xs font-medium text-gray-300 truncate">
-             {isLessonBooking
-              ? `${booking.lessonType || 'Lezione'}`
-              : `${booking.courtName || court?.name || 'Campo'}`}
-           </span>
-           <span className="text-sm font-bold text-gray-200 mt-0.5">
-             {booking.duration || 90} min
-           </span>
-        </div>
-
-        {/* Bottom: Date & Time */}
-        <div className="mt-auto flex flex-col items-end">
-           <div className="text-[10px] uppercase text-gray-500 font-semibold tracking-wider mb-0.5">
-             {dateLabel}
-           </div>
-           <div className="flex items-center gap-2">
-             {/* Status Dot */}
-             <div className={`w-2 h-2 rounded-full ${isToday ? 'bg-green-500' : 'bg-gray-600'}`}></div>
-             <span className="text-2xl font-bold text-white leading-none">
-               {booking.time.substring(0, 5)}
-             </span>
-           </div>
+        <div className="flex items-center gap-1">
+          {isToday && <div className="w-2 h-2 bg-orange-400 rounded-full"></div>}
+          {isLessonBooking && (
+            <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+              <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Footer con players e prezzo */}
+      <div className="flex items-center justify-between">
+        <div className="flex-1 min-w-0">
+          {/* Nomi partecipanti o maestro per lezioni */}
+          <div className="text-[10px] text-gray-400 truncate mb-1">
+            {isLessonBooking ? (
+              <>
+                {booking.bookedBy && <span className="font-medium">{booking.bookedBy}</span>}
+                {booking.instructor && <span> • Maestro: {booking.instructor}</span>}
+              </>
+            ) : (
+              <>
+                {booking.bookedBy && <span className="font-medium">{booking.bookedBy}</span>}
+                {booking.players && booking.players.length > 0 && (
+                  <span>
+                    {booking.bookedBy ? ' + ' : ''}
+                    {booking.players.slice(0, 2).map((player, idx) => (
+                      <span key={idx}>
+                        {player.name || player}
+                        {idx < booking.players.slice(0, 2).length - 1 ? ', ' : ''}
+                      </span>
+                    ))}
+                    {booking.players.length > 2 && (
+                      <span> +{booking.players.length - 2} altri</span>
+                    )}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Avatar mini */}
+          <div className="flex -space-x-0.5">
+            <div
+              className={`w-5 h-5 rounded-full ${isLessonBooking ? 'bg-green-500' : 'bg-blue-500'} flex items-center justify-center text-xs font-bold text-white border border-white`}
+            >
+              <span className="text-[9px]">
+                {user?.displayName?.charAt(0).toUpperCase() || 'U'}
+              </span>
+            </div>
+
+            {isLessonBooking ? (
+              // Per lezioni: mostra icona maestro se presente
+              booking.instructor && (
+                <div className="w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center text-xs font-bold text-white border border-white">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.84L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.84l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                  </svg>
+                </div>
+              )
+            ) : (
+              // Per partite: mostra gli altri giocatori come prima
+              <>
+                {(booking.players?.length || 0) > 0 && (
+                  <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white border border-white">
+                    <span className="text-[8px]">+{booking.players.length}</span>
+                  </div>
+                )}
+
+                {(booking.players?.length || 0) + 1 < 4 && (
+                  <div className="w-5 h-5 rounded-full bg-gray-600 border border-gray-700 flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 bg-gray-300 rounded-full"></div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Prezzo e status */}
+        <div className="text-right">
+          {booking.price && (
+            <div className="text-xs font-bold text-green-400">€{booking.price}</div>
+          )}
+          <div className="text-[9px] text-gray-400">
+            {isLessonBooking
+              ? booking.status === 'confirmed'
+                ? 'Confermata'
+                : 'In attesa'
+              : (booking.players?.length || 0) + 1 < 4
+                ? 'Aperta'
+                : 'Completa'}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -201,7 +205,6 @@ export default function UserBookingsCard({ user, state, T, compact: _compact, on
   const navigate = useNavigate();
   const { user: authUser } = useAuth();
   const mountedRef = useRef(true);
-  const [clubDetails, setClubDetails] = useState({});
 
   // Use high-performance booking hook per le prenotazioni dei campi
   const {
@@ -517,43 +520,6 @@ export default function UserBookingsCard({ user, state, T, compact: _compact, on
     return filtered;
   }, [allBookings]);
 
-  // Fetch club details for bookings
-  useEffect(() => {
-    const fetchClubDetails = async () => {
-      if (!displayBookings.length) return;
-
-      const uniqueClubIds = [...new Set(displayBookings.map(b => b.clubId).filter(Boolean))];
-      // Add default club if needed
-      if (uniqueClubIds.length === 0) uniqueClubIds.push('sporting-cat');
-
-      const newDetails = { ...clubDetails };
-      let hasChanges = false;
-
-      for (const clubId of uniqueClubIds) {
-        if (!newDetails[clubId]) {
-          try {
-            const club = await getClub(clubId);
-            newDetails[clubId] = club;
-            hasChanges = true;
-          } catch (error) {
-            console.error(`Error fetching club details for ${clubId}:`, error);
-            // Fallback for default club
-            if (clubId === 'sporting-cat') {
-               newDetails[clubId] = { name: 'Sporting Cat', logoUrl: '/icons/icon-192x192.png' };
-               hasChanges = true;
-            }
-          }
-        }
-      }
-
-      if (hasChanges && mountedRef.current) {
-        setClubDetails(newDetails);
-      }
-    };
-
-    fetchClubDetails();
-  }, [displayBookings]);
-
   // Early return per performance - no loading skeleton if we have cached data
   if (!user) {
     return (
@@ -680,7 +646,6 @@ export default function UserBookingsCard({ user, state, T, compact: _compact, on
                 onBookingClick={handleBookingClick}
                 courts={courts}
                 user={user}
-                clubDetails={clubDetails}
               />
             );
           })}

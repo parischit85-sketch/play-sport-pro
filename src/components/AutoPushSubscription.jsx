@@ -114,20 +114,27 @@ export function AutoPushSubscription() {
           // console.log(`🔔 [AutoPush] Attempt ${attempt}/${MAX_RETRIES} - Will request permission after delay...`);
 
           // Aspetta prima di chiedere (più lungo al primo tentativo)
-          const initialDelay = attempt === 1 ? 3000 : 2000;
+          // AUMENTATO a 8s per permettere a AutoLocationPermission di chiedere prima (Contatti -> Posizione -> Notifiche)
+          const initialDelay = attempt === 1 ? 8000 : 2000;
 
           retryTimeoutRef.current = setTimeout(async () => {
             try {
               // console.log(`🔔 [AutoPush] Attempt ${attempt}/${MAX_RETRIES} - Requesting permission...`);
-              const granted = await requestPermissionRef.current();
+              const success = await requestPermissionRef.current();
 
-              if (granted) {
+              if (success) {
                 hasAttemptedRef.current = true;
                 return; // Success
               } else {
-                // console.log('ℹ️ [AutoPush] User denied push permission');
-                hasAttemptedRef.current = true;
-                return; // User explicitly denied - don't retry
+                // Se fallisce (permesso negato O errore sottoscrizione), controlla se dobbiamo riprovare
+                // Se il permesso è negato esplicitamente, non riprovare
+                if (permission === 'denied') {
+                   hasAttemptedRef.current = true;
+                   return;
+                }
+                
+                // Se il permesso è granted ma la sottoscrizione è fallita (success=false), riprova
+                throw new Error('Permission granted but subscription failed');
               }
             } catch (error) {
               console.error(`❌ [AutoPush] Attempt ${attempt} - Permission request failed:`, error);

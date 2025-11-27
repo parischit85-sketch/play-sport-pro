@@ -4,27 +4,29 @@
 // =============================================
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@contexts/AuthContext.jsx';
-import { useClub } from '@contexts/ClubContext.jsx';
+// Fix: Use relative import to avoid potential alias resolution issues causing duplicate contexts
+import { useAuth } from '../../../contexts/AuthContext.jsx';
+import { useClub } from '../../../contexts/ClubContext.jsx';
 import { calculateCertificateStatus } from '@services/medicalCertificates.js';
 import { themeTokens } from '@lib/theme.js';
 
 export default function CertificateExpiryAlert() {
-  const { currentUser } = useAuth();
+  // Fix: AuthContext provides 'user', not 'currentUser'
+  const { user } = useAuth();
   const { clubId, players } = useClub();
   const [certStatus, setCertStatus] = useState(null);
   const [dismissed, setDismissed] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const loadPlayerCertificate = React.useCallback(async () => {
-    if (!currentUser?.uid || !clubId || !players || players.length === 0) {
+    if (!user?.uid || !clubId || !players || players.length === 0) {
       setLoading(false);
       return;
     }
 
     try {
       // Trova il giocatore corrente nel contesto del club
-      const currentPlayer = players.find((player) => player.id === currentUser.uid);
+      const currentPlayer = players.find((player) => player.id === user.uid);
 
       if (currentPlayer) {
         const status = calculateCertificateStatus(
@@ -42,7 +44,7 @@ export default function CertificateExpiryAlert() {
     } finally {
       setLoading(false);
     }
-  }, [currentUser, clubId, players]);
+  }, [user, clubId, players]);
 
   useEffect(() => {
     loadPlayerCertificate();
@@ -64,46 +66,7 @@ export default function CertificateExpiryAlert() {
 
   // Determina il tipo di alert
   const getAlertConfig = () => {
-    if (certStatus.isExpired) {
-      return {
-        type: 'error',
-        icon: '🚫',
-        title: 'Certificato Medico Scaduto',
-        message: `Il tuo certificato medico è scaduto da ${Math.abs(certStatus.daysUntilExpiry)} ${Math.abs(certStatus.daysUntilExpiry) === 1 ? 'giorno' : 'giorni'}. Non puoi effettuare prenotazioni fino al rinnovo.`,
-        bgClass: 'bg-red-50 bg-red-900/20',
-        borderClass: 'border-red-500',
-        textClass: 'text-red-800 text-red-200',
-        dismissable: false,
-      };
-    }
-
-    if (certStatus.daysUntilExpiry <= 7) {
-      return {
-        type: 'critical',
-        icon: '🚨',
-        title: 'Certificato in Scadenza Urgente',
-        message: `Il tuo certificato medico scade ${certStatus.daysUntilExpiry === 0 ? 'OGGI' : certStatus.daysUntilExpiry === 1 ? 'DOMANI' : `tra ${certStatus.daysUntilExpiry} giorni`}. Rinnovalo subito!`,
-        bgClass: 'bg-orange-50 bg-orange-900/20',
-        borderClass: 'border-orange-500',
-        textClass: 'text-orange-800 text-orange-200',
-        dismissable: false,
-      };
-    }
-
-    if (certStatus.daysUntilExpiry <= 30) {
-      return {
-        type: 'warning',
-        icon: '⏰',
-        title: 'Certificato in Scadenza',
-        message: `Il tuo certificato medico scade tra ${certStatus.daysUntilExpiry} giorni. Ricordati di rinnovarlo.`,
-        bgClass: 'bg-yellow-50 bg-yellow-900/20',
-        borderClass: 'border-yellow-500',
-        textClass: 'text-yellow-800 text-yellow-200',
-        dismissable: true,
-      };
-    }
-
-    if (certStatus.status === 'missing') {
+    if (certStatus.status === 'missing' || certStatus.daysUntilExpiry === null) {
       return {
         type: 'info',
         icon: '📄',
@@ -117,6 +80,9 @@ export default function CertificateExpiryAlert() {
       };
     }
 
+    // Avvisi di scadenza disabilitati
+    return null;
+
     return null;
   };
 
@@ -124,7 +90,7 @@ export default function CertificateExpiryAlert() {
   if (!config) return null;
 
   // Trova il giocatore corrente per ottenere la data di scadenza
-  const currentPlayer = players?.find((player) => player.id === currentUser?.uid);
+  const currentPlayer = players?.find((player) => player.id === user?.uid);
   const expiryDate = currentPlayer?.medicalCertificates?.current?.expiryDate;
 
   return (
