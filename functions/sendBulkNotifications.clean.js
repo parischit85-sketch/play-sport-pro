@@ -1,15 +1,17 @@
 // =============================================
 // FILE: functions/sendBulkNotifications.clean.js
-// Cloud Function callable per invio manuale notifiche certificati
+// Cloud Function callable per invio notifiche certificati con fallback intelligente
+// Supporta: email, push, auto (determina automaticamente il canale migliore)
+// VERSION: 2.1.0 - Optimized queries (userId + orderBy only)
 // =============================================
 
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { getMessaging } from 'firebase-admin/messaging';
+import webpush from 'web-push';
 import sgMail from '@sendgrid/mail';
 import nodemailer from 'nodemailer';
-import webpush from 'web-push';
-import { saveUserNotification } from './userNotifications.js';
 
 // Inizializza Admin SDK una sola volta
 if (getApps().length === 0) {
@@ -18,43 +20,57 @@ if (getApps().length === 0) {
 const db = getFirestore();
 
 // =============================================
-// CONFIGURAZIONE EMAIL (opzionale)
+// CONFIGURAZIONE EMAIL (runtime, dopo che i secrets sono caricati)
 // =============================================
-const SENDGRID_ENABLED = !!process.env.SENDGRID_API_KEY;
-if (SENDGRID_ENABLED) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+let emailConfig = null;
+
+function getEmailConfig() {
+  if (!emailConfig) {
+    const SENDGRID_ENABLED = !!process.env.SENDGRID_API_KEY;
+    const NODEMAILER_ENABLED = !!(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD);
+    const EMAIL_USER = process.env.EMAIL_USER || '';
+    const FROM_EMAIL = process.env.FROM_EMAIL || EMAIL_USER || 'noreply@play-sport.pro';
+    
+    // Detect provider: Register.it for @play-sport.pro, Gmail otherwise
+    const emailUser = String(EMAIL_USER).toLowerCase();
+    const fromEmail = String(FROM_EMAIL).toLowerCase();
+    const useRegisterIt = emailUser.endsWith('@play-sport.pro') || fromEmail.endsWith('@play-sport.pro');
+    
+    console.log('🔧 [Email Config]', {
+      sendgridEnabled: SENDGRID_ENABLED,
+      nodemailerEnabled: NODEMAILER_ENABLED,
+      fromEmail: FROM_EMAIL,
+      provider: useRegisterIt ? 'Register.it' : 'Gmail',
+    });
+
+    if (SENDGRID_ENABLED) {
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    }
+
+    let transporter = null;
+    if (NODEMAILER_ENABLED) {
+      // Always use Gmail for Google Cloud Functions (Register.it may be blocked/timeout)
+      // In production with proper network configuration, can switch back to Register.it
+      transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+      
+      console.log('📧 [Email Provider] Using Gmail via Nodemailer (optimal for Google Cloud Functions)');
+    }
+
+    emailConfig = {
+      sendgridEnabled: SENDGRID_ENABLED,
+      nodemailerEnabled: NODEMAILER_ENABLED,
+      fromEmail: FROM_EMAIL,
+      transporter,
+    };
+  }
+  return emailConfig;
 }
-
-const NODEMAILER_ENABLED = !!(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD);
-let transporter = null;
-if (NODEMAILER_ENABLED) {
-  // Default intelligenti per provider comuni: Register.it per @play-sport.pro, altrimenti Gmail
-  const emailUser = String(process.env.EMAIL_USER || '').toLowerCase();
-  const fromEmailEnv = String(process.env.FROM_EMAIL || '').toLowerCase();
-  const useRegisterIt =
-    emailUser.endsWith('@play-sport.pro') || fromEmailEnv.endsWith('@play-sport.pro');
-
-  const host = process.env.SMTP_HOST || (useRegisterIt ? 'smtp.register.it' : 'smtp.gmail.com');
-  const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : (useRegisterIt ? 465 : 465);
-  // Se SMTP_SECURE non è specificato: true per porta 465; false altrimenti
-  const secure = process.env.SMTP_SECURE
-    ? process.env.SMTP_SECURE === 'true'
-    : port === 465;
-
-  transporter = nodemailer.createTransport({
-    host,
-    port,
-    secure,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-}
-
-// Preferire l'EMAIL_USER come mittente predefinito quando si usa Nodemailer/Gmail
-const FROM_EMAIL = process.env.FROM_EMAIL || process.env.EMAIL_USER || 'noreplay@play-sport.pro';
-const FROM_NAME = 'Play-Sport.pro';
 
 // =============================================
 // CONFIGURAZIONE WEB PUSH (VAPID)
@@ -108,6 +124,171 @@ if (WEB_PUSH_ENABLED) {
 }
 
 // =============================================
+// HELPER: determina canale ottimale per utente
+// =============================================
+async function determineOptimalChannel(userId, hasEmail) {
+  console.log('🔍 [determineOptimalChannel] Checking for user:', userId, 'hasEmail:', hasEmail);
+  console.log('🔍 [determineOptimalChannel] Starting pushSubscriptions query...');
+  
+  try {
+    // Verifica se l'utente ha subscriptions push attive
+    // Query semplificata per evitare problemi con indici compositi
+    const subsSnap = await db
+      .collection('pushSubscriptions')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .limit(1)
+      .get();
+
+    console.log('🔍 [determineOptimalChannel] Query completed. Docs found:', subsSnap.size);
+
+    // Filtra in memoria per isActive e expiresAt
+    const now = new Date().toISOString();
+    const hasPushSubscription = !subsSnap.empty && subsSnap.docs.some(doc => {
+      const data = doc.data();
+      console.log('🔍 [determineOptimalChannel] Doc data:', {
+        id: doc.id,
+        isActive: data.isActive,
+        expiresAt: data.expiresAt,
+        now,
+        isValid: data.isActive === true && (data.expiresAt || '') > now
+      });
+      return data.isActive === true && (data.expiresAt || '') > now;
+    });
+    
+    console.log('🔍 [determineOptimalChannel] hasPushSubscription:', hasPushSubscription, 'subs found:', subsSnap.size);
+
+    // Logica di priorità per canale:
+    // 1. Push (se disponibile) - migliore UX
+    // 2. Email (se disponibile)
+    // 3. Nessuno
+
+    if (hasPushSubscription) {
+      console.log('🔍 [determineOptimalChannel] Returning: push');
+      return 'push';
+    } else if (hasEmail && EMAIL_PROVIDER !== 'none') {
+      console.log('🔍 [determineOptimalChannel] Returning: email (EMAIL_PROVIDER:', EMAIL_PROVIDER, ')');
+      return 'email';
+    } else {
+      console.log('🔍 [determineOptimalChannel] Returning: null (no channel available)');
+      return null; // Nessun canale disponibile
+    }
+  } catch (error) {
+    console.error('❌ [determineOptimalChannel] Query error:', error);
+    console.error('❌ [determineOptimalChannel] Error details:', {
+      code: error.code,
+      message: error.message,
+      stack: error.stack?.substring(0, 500)
+    });
+    // In caso di errore, fallback a email se disponibile
+    if (hasEmail && EMAIL_PROVIDER !== 'none') {
+      console.log('🔍 [determineOptimalChannel] Fallback to email due to push query error');
+      return 'email';
+    }
+    return null;
+  }
+}// =============================================
+// HELPER: lifecycle management subscriptions
+// =============================================
+async function cleanupExpiredSubscriptions() {
+  try {
+    const now = new Date().toISOString();
+    console.log('🧹 [Cleanup] Starting expired subscriptions cleanup at:', now);
+
+    // Trova subscriptions scadute (più vecchie di 7 giorni)
+    const expiredSubs = await db
+      .collection('pushSubscriptions')
+      .where('expiresAt', '<', now)
+      .where('isActive', '==', true)
+      .get();
+
+    console.log('🧹 [Cleanup] Found', expiredSubs.size, 'expired subscriptions');
+
+    if (!expiredSubs.empty) {
+      const batch = db.batch();
+      expiredSubs.docs.forEach(doc => {
+        batch.update(doc.ref, {
+          isActive: false,
+          deactivatedAt: now,
+          deactivationReason: 'expired'
+        });
+      });
+
+      await batch.commit();
+      console.log('🧹 [Cleanup] Deactivated', expiredSubs.size, 'expired subscriptions');
+    }
+
+    // Trova subscriptions duplicate per user/device (mantieni solo la più recente)
+    const usersSnap = await db.collection('pushSubscriptions').where('isActive', '==', true).get();
+    const userDevices = new Map();
+
+    usersSnap.docs.forEach(doc => {
+      const data = doc.data();
+      const key = `${data.userId}-${data.deviceId}`;
+
+      if (!userDevices.has(key)) {
+        userDevices.set(key, []);
+      }
+      userDevices.get(key).push({ id: doc.id, ...data });
+    });
+
+    let duplicatesRemoved = 0;
+    const duplicateBatch = db.batch();
+
+    for (const [key, subs] of userDevices) {
+      if (subs.length > 1) {
+        // Ordina per lastUsedAt (più recente prima)
+        subs.sort((a, b) => new Date(b.lastUsedAt || b.createdAt) - new Date(a.lastUsedAt || a.createdAt));
+
+        // Mantieni solo la prima (più recente), disattiva le altre
+        for (let i = 1; i < subs.length; i++) {
+          duplicateBatch.update(db.collection('pushSubscriptions').doc(subs[i].id), {
+            isActive: false,
+            deactivatedAt: now,
+            deactivationReason: 'duplicate-device'
+          });
+          duplicatesRemoved++;
+        }
+      }
+    }
+
+    if (duplicatesRemoved > 0) {
+      await duplicateBatch.commit();
+      console.log('🧹 [Cleanup] Removed', duplicatesRemoved, 'duplicate subscriptions');
+    }
+
+    return {
+      expiredDeactivated: expiredSubs.size,
+      duplicatesRemoved,
+      totalProcessed: usersSnap.size
+    };
+
+  } catch (error) {
+    console.error('🧹 [Cleanup] Error during cleanup:', error);
+    throw error;
+  }
+}
+
+// =============================================
+// HELPER: analytics notifiche
+// =============================================
+async function trackNotificationEvent(eventData) {
+  try {
+    const event = {
+      id: `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date().toISOString(),
+      ...eventData,
+    };
+
+    await db.collection('notificationEvents').add(event);
+    console.log('📊 [Analytics] Tracked event:', event.type, 'for user:', event.userId);
+  } catch (error) {
+    console.error('📊 [Analytics] Failed to track event:', error);
+    // Non bloccare l'invio della notifica per errori di analytics
+  }
+}
+
+// =============================================
 // HELPER: invio email
 // =============================================
 async function sendEmailNotification(player, club, status) {
@@ -116,10 +297,14 @@ async function sendEmailNotification(player, club, status) {
     throw new Error('Email non valida');
   }
 
+  const config = getEmailConfig();
+  if (!config.sendgridEnabled && !config.nodemailerEnabled) {
+    throw new Error('Nessun servizio email configurato');
+  }
+
   const { daysUntilExpiry, expiryDate } = status || {};
   const isMissing = status?.type === 'missing' || expiryDate == null;
   const isExpired = !isMissing && typeof daysUntilExpiry === 'number' && daysUntilExpiry < 0;
-  const isExpiring = !isMissing && typeof daysUntilExpiry === 'number' && daysUntilExpiry >= 0;
 
   let subject;
   let html;
@@ -151,33 +336,28 @@ async function sendEmailNotification(player, club, status) {
     `;
   }
 
-  // Reply-To: prova a usare l'email pubblica del club se disponibile
-  const clubReplyTo =
-    club?.email ||
-    club?.contactEmail ||
-    club?.infoEmail ||
-    club?.supportEmail ||
-    FROM_EMAIL;
+  const fromEmail = club?.email || club?.contactEmail || club?.infoEmail || config.fromEmail;
+  const fromName = club?.name || 'Play-Sport.pro';
 
-  if (SENDGRID_ENABLED) {
+  // Prova SendGrid
+  if (config.sendgridEnabled) {
     await sgMail.send({
       to: email,
-      from: { email: FROM_EMAIL, name: club?.name || FROM_NAME },
-      replyTo: { email: clubReplyTo, name: club?.name || FROM_NAME },
+      from: { email: fromEmail, name: fromName },
       subject,
       html,
     });
-  } else if (NODEMAILER_ENABLED) {
-    await transporter.sendMail({
-      from: `"${club?.name || FROM_NAME}" <${FROM_EMAIL}>`,
-      replyTo: `"${club?.name || FROM_NAME}" <${clubReplyTo}>`,
+    return;
+  }
+
+  // Fallback Nodemailer
+  if (config.nodemailerEnabled) {
+    await config.transporter.sendMail({
+      from: `"${fromName}" <${fromEmail}>`,
       to: email,
       subject,
       html,
     });
-  } else {
-    // In sviluppo potremmo non avere provider
-    throw new Error('Nessun servizio email configurato');
   }
 }
 
@@ -197,7 +377,7 @@ async function sendPushNotificationToUser(userId, notification) {
     console.error('❌ [Push] VAPID keys not configured!', {
       publicKeyPresent: !!VAPID_PUBLIC_KEY,
       privateKeyPresent: !!VAPID_PRIVATE_KEY,
-      envVarsList: Object.keys(process.env).filter(k => k.includes('VAPID')),
+      envVarsList: Object.keys(process.env).filter((k) => k.includes('VAPID')),
     });
     throw new Error('Servizio Push non configurato (VAPID mancante) [push-service-unconfigured]');
   }
@@ -209,25 +389,78 @@ async function sendPushNotificationToUser(userId, notification) {
 
   // Recupera tutte le sottoscrizioni da Firestore (stesso schema usato nelle Netlify Functions)
   console.log('🔍 [Push] Querying subscriptions for userId:', userId);
+  console.log('🔍 [Push] Query details:', {
+    collection: 'pushSubscriptions',
+    where: `userId == ${userId}`,
+    orderBy: 'createdAt desc'
+  });
+  
+  // Query semplificata per evitare problemi con indici compositi
   const subsSnap = await db
     .collection('pushSubscriptions')
     .where('userId', '==', userId)
-    .where('isActive', '==', true)
-    .where('expiresAt', '>', new Date().toISOString()) // Solo subscriptions non scadute
+    .orderBy('createdAt', 'desc')
     .get();
 
-  console.log('📊 [Push] Subscriptions found:', subsSnap.size);
+  console.log('📊 [Push] Query completed:', {
+    totalDocs: subsSnap.size,
+    docIds: subsSnap.docs.map(d => d.id),
+  });
 
-  if (subsSnap.empty) {
-    console.warn('⚠️ [Push] No subscriptions found for user:', userId);
-    throw new Error('Nessuna sottoscrizione push trovata per questo utente [push-no-subscription]');
+  // Filtra in memoria per isActive e expiresAt
+  const now = new Date().toISOString();
+  const validDocs = subsSnap.docs.filter(doc => {
+    const data = doc.data();
+    const isValid = data.isActive === true && (data.expiresAt || '') > now;
+    console.log('🔍 [Push] Checking doc:', {
+      id: doc.id,
+      type: data.type,
+      isActive: data.isActive,
+      expiresAt: data.expiresAt,
+      now,
+      isValid
+    });
+    return isValid;
+  });
+
+  console.log('📊 [Push] Subscriptions found:', subsSnap.size, 'valid:', validDocs.length);
+  
+  if (validDocs.length > 0) {
+    console.log('✅ [Push] Valid subscription IDs:', validDocs.map(d => d.id));
+    validDocs.forEach((doc, i) => {
+      const data = doc.data();
+      console.log(`📄 [Push] Subscription ${i + 1}:`, {
+        id: doc.id,
+        type: data.type,
+        endpoint: data.endpoint?.substring(0, 50) + '...',
+        hasKeys: !!(data.keys?.p256dh && data.keys?.auth),
+        deviceId: data.deviceId
+      });
+    });
+  }
+
+  if (validDocs.length === 0) {
+    console.warn('⚠️ [Push] No active subscriptions found for user:', userId);
+    throw new Error('Nessuna sottoscrizione push attiva trovata per questo utente [push-no-subscription]');
   }
 
   const payload = JSON.stringify(notification);
   const invalidDocs = [];
   const results = await Promise.allSettled(
-    subsSnap.docs.map(async (doc) => {
-      const sub = doc.data().subscription;
+    validDocs.map(async (doc) => {
+      const data = doc.data();
+      // Il database salva endpoint/keys direttamente, non dentro un oggetto "subscription"
+      const sub = {
+        endpoint: data.endpoint,
+        keys: data.keys,
+      };
+      
+      console.log('📤 [Push] Sending to subscription:', {
+        docId: doc.id,
+        endpoint: sub.endpoint?.substring(0, 50) + '...',
+        hasKeys: !!(sub.keys?.p256dh && sub.keys?.auth)
+      });
+      
       try {
         await webpush.sendNotification(sub, payload);
 
@@ -275,6 +508,163 @@ async function sendPushNotificationToUser(userId, notification) {
 }
 
 // =============================================
+// HELPER: invio push nativo (FCM per Android, APNs per iOS)
+// =============================================
+async function sendNativePushNotification(userId, notification) {
+  console.log('📱 [sendNativePush] Starting for user:', userId);
+  
+  // Query native push subscriptions (type: 'native')
+  // Query semplificata per evitare problemi con indici compositi
+  const nativeSubsSnap = await db
+    .collection('pushSubscriptions')
+    .where('userId', '==', userId)
+    .orderBy('createdAt', 'desc')
+    .get();
+
+  // Filtra in memoria per type, isActive e expiresAt
+  const now = new Date().toISOString();
+  const validNativeDocs = nativeSubsSnap.docs.filter(doc => {
+    const data = doc.data();
+    return data.type === 'native' && data.isActive === true && (data.expiresAt || '') > now;
+  });
+
+  console.log('📊 [Native Push] Found subscriptions:', nativeSubsSnap.size, 'valid native:', validNativeDocs.length);
+
+  if (validNativeDocs.length === 0) {
+    console.warn('⚠️ [Native Push] No native subscriptions for user:', userId);
+    throw new Error('Nessuna sottoscrizione nativa trovata [native-push-no-subscription]');
+  }
+
+  const messaging = getMessaging();
+  const results = [];
+  const invalidDocs = [];
+
+  for (const doc of validNativeDocs) {
+    const sub = doc.data();
+    const token = sub.fcmToken || sub.apnsToken;
+    const platform = sub.platform; // 'android' | 'ios'
+
+    if (!token) {
+      console.warn('[Native Push] Missing token in subscription:', doc.id);
+      invalidDocs.push(doc.id);
+      continue;
+    }
+
+    try {
+      // Costruisci messaggio FCM (compatibile con sia Android che iOS)
+      const message = {
+        token,
+        notification: {
+          title: notification.title,
+          body: notification.body,
+        },
+        data: notification.data || {},
+        android: {
+          priority: 'high',
+          notification: {
+            icon: notification.icon || '/icon-192x192.png',
+            color: '#1976d2',
+            tag: notification.tag,
+            clickAction: notification.data?.url || '/',
+          },
+        },
+        apns: {
+          payload: {
+            aps: {
+              badge: 1,
+              sound: 'default',
+              alert: {
+                title: notification.title,
+                body: notification.body,
+              },
+            },
+          },
+          fcmOptions: {
+            imageUrl: notification.icon,
+          },
+        },
+      };
+
+      console.log(`[Native Push] Sending to ${platform} device:`, token.substring(0, 20) + '...');
+      await messaging.send(message);
+
+      // Update lastUsedAt
+      await doc.ref.update({
+        lastUsedAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days
+      });
+
+      results.push({ success: true, platform });
+    } catch (error) {
+      console.error(`[Native Push] Error sending to ${platform}:`, error.message);
+
+      // Handle token errors (invalid/expired)
+      const errorCode = error?.code || error?.errorInfo?.code;
+      if (
+        errorCode === 'messaging/invalid-registration-token' ||
+        errorCode === 'messaging/registration-token-not-registered' ||
+        errorCode === 'messaging/invalid-argument'
+      ) {
+        console.log('[Native Push] Token invalid, marking for deletion:', doc.id);
+        invalidDocs.push(doc.id);
+      }
+
+      results.push({ success: false, platform, error: error.message });
+    }
+  }
+
+  // Cleanup invalid tokens
+  if (invalidDocs.length > 0) {
+    await Promise.all(
+      invalidDocs.map(async (id) => {
+        await db.collection('pushSubscriptions').doc(id).update({
+          isActive: false,
+          deactivatedAt: new Date().toISOString(),
+          deactivationReason: 'invalid-token',
+        });
+      })
+    );
+    console.log('[Native Push] Deactivated', invalidDocs.length, 'invalid subscriptions');
+  }
+
+  const successCount = results.filter((r) => r.success).length;
+  if (successCount === 0) {
+    throw new Error('Tutti gli invii nativi sono falliti [native-push-all-failed]');
+  }
+
+  console.log(`[Native Push] Sent successfully to ${successCount}/${results.length} devices`);
+  return { successCount, totalDevices: results.length, results };
+}
+
+// =============================================
+// HELPER: invio push unificato (prova native, fallback a web push)
+// =============================================
+async function sendUnifiedPushNotification(userId, notification) {
+  console.log('[Unified Push] Attempting to send notification to user:', userId);
+
+  // 1) Try native push first (FCM/APNs)
+  try {
+    const nativeResult = await sendNativePushNotification(userId, notification);
+    console.log('[Unified Push] Native push successful:', nativeResult);
+    return { method: 'native', ...nativeResult };
+  } catch (nativeError) {
+    console.warn('[Unified Push] Native push failed:', nativeError.message);
+
+    // 2) Fallback to Web Push
+    try {
+      await sendPushNotificationToUser(userId, notification);
+      console.log('[Unified Push] Web push fallback successful');
+      return { method: 'web-push-fallback' };
+    } catch (webError) {
+      console.error('[Unified Push] Both native and web push failed');
+      throw new Error(
+        `Push notification failed: Native (${nativeError.message}), Web (${webError.message})`
+      );
+    }
+  }
+}
+
+// =============================================
 // CLOUD FUNCTION: sendBulkCertificateNotifications (callable)
 // =============================================
 export const sendBulkCertificateNotifications = onCall(
@@ -301,8 +691,8 @@ export const sendBulkCertificateNotifications = onCall(
     if (!Array.isArray(playerIds) || playerIds.length === 0) {
       throw new HttpsError('invalid-argument', 'playerIds deve essere un array non vuoto');
     }
-    if (!['email', 'push'].includes(notificationType)) {
-      throw new HttpsError('invalid-argument', 'notificationType deve essere "email" o "push"');
+    if (!['email', 'push', 'auto'].includes(notificationType)) {
+      throw new HttpsError('invalid-argument', 'notificationType deve essere "email", "push" o "auto"');
     }
 
     // Verifica permessi admin
@@ -381,9 +771,10 @@ export const sendBulkCertificateNotifications = onCall(
       throw new HttpsError('permission-denied', 'Permessi insufficienti per questo club');
     }
 
-    // Determina provider email disponibile (per diagnostica veloce)
-  const EMAIL_PROVIDER = SENDGRID_ENABLED ? 'sendgrid' : NODEMAILER_ENABLED ? 'nodemailer' : 'none';
-    const EFFECTIVE_FROM = EMAIL_PROVIDER === 'none' ? null : FROM_EMAIL;
+    // Determina provider email usando getEmailConfig (lazy init dopo secrets load)
+    const config = getEmailConfig();
+    const EMAIL_PROVIDER = config.sendgridEnabled ? 'sendgrid' : (config.nodemailerEnabled ? 'nodemailer' : 'none');
+    const EFFECTIVE_FROM = config.fromEmail;
 
     // Se il tipo è email ma nessun provider è configurato, torna errore chiaro subito
     if (notificationType === 'email' && EMAIL_PROVIDER === 'none') {
@@ -399,8 +790,8 @@ export const sendBulkCertificateNotifications = onCall(
 
     // Elaborazione
     const computedReplyTo =
-      club?.email || club?.contactEmail || club?.infoEmail || club?.supportEmail || FROM_EMAIL || null;
-  const results = { success: false, sent: 0, failed: 0, provider: EMAIL_PROVIDER, from: EFFECTIVE_FROM, replyTo: computedReplyTo, details: [] };
+      club?.email || club?.contactEmail || club?.infoEmail || club?.supportEmail || EFFECTIVE_FROM || null;
+    const results = { success: false, sent: 0, failed: 0, provider: EMAIL_PROVIDER, from: EFFECTIVE_FROM, replyTo: computedReplyTo, details: [] };
 
     for (const playerId of playerIds) {
       try {
@@ -421,14 +812,65 @@ export const sendBulkCertificateNotifications = onCall(
           .doc(playerId)
           .get();
 
+        // 3) ULTIMO FALLBACK: collezione globale users (se non trovato nelle collezioni club)
+        let globalUserDoc = null;
         if (usersSnap.empty && !profileDocSnap.exists) {
+          console.log('🔄 Player not found in club collections, checking global users collection...');
+          globalUserDoc = await db.collection('users').doc(playerId).get();
+          if (globalUserDoc.exists) {
+            console.log('✅ Found player in global users collection, will create club record');
+          }
+        }
+
+        if (usersSnap.empty && !profileDocSnap.exists && !globalUserDoc?.exists) {
           results.failed++;
+          
+          // Track player not found event
+          await trackNotificationEvent({
+            type: 'failed',
+            channel: 'none',
+            userId: playerId,
+            clubId,
+            notificationType: 'certificate',
+            platform: 'unknown',
+            success: false,
+            error: 'Giocatore non trovato nel club',
+            errorCode: 'player-not-found'
+          });
+          
           results.details.push({ playerId, success: false, error: 'Giocatore non trovato nel club' });
           continue;
         }
 
         const clubUser = usersSnap.empty ? null : usersSnap.docs[0].data();
         const profile = profileDocSnap.exists ? profileDocSnap.data() : null;
+        const globalUser = globalUserDoc?.exists ? globalUserDoc.data() : null;
+
+        // Se trovato nella collezione globale ma non in quelle del club, crea un record temporaneo
+        if (globalUser && !clubUser && !profile) {
+          console.log('🔄 Creating temporary club user record from global user data...');
+          try {
+            const clubUserData = {
+              userId: playerId,
+              firstName: globalUser.firstName || '',
+              lastName: globalUser.lastName || '',
+              userEmail: globalUser.email || '',
+              email: globalUser.email || '',
+              userName: globalUser.displayName || `${globalUser.firstName || ''} ${globalUser.lastName || ''}`.trim(),
+              mergedData: {
+                name: globalUser.displayName || `${globalUser.firstName || ''} ${globalUser.lastName || ''}`.trim(),
+                email: globalUser.email || '',
+              },
+              createdAt: new Date(),
+              source: 'global-fallback',
+            };
+
+            await db.collection('clubs').doc(clubId).collection('users').doc(playerId).set(clubUserData);
+            console.log('✅ Created temporary club user record');
+          } catch (createError) {
+            console.warn('⚠️ Failed to create temporary club user record:', createError.message);
+          }
+        }
 
         const player = {
           id: playerId,
@@ -436,17 +878,88 @@ export const sendBulkCertificateNotifications = onCall(
             profile?.name ||
             clubUser?.mergedData?.name ||
             clubUser?.userName ||
-            `${clubUser?.firstName || ''} ${clubUser?.lastName || ''}`.trim() ||
+            globalUser?.displayName ||
+            `${clubUser?.firstName || globalUser?.firstName || ''} ${clubUser?.lastName || globalUser?.lastName || ''}`.trim() ||
             'Giocatore',
-          email: profile?.email || clubUser?.userEmail || clubUser?.email || '',
+          email: profile?.email || clubUser?.userEmail || clubUser?.email || globalUser?.email || '',
         };
 
-        // Certificato: preferisci profiles.medicalCertificates.current.expiryDate, fallback a users.medicalCertificate.expiryDate
+        console.log('👤 [Player Data] for', playerId, ':', {
+          name: player.name,
+          email: player.email,
+          hasProfile: !!profile,
+          hasClubUser: !!clubUser,
+          hasGlobalUser: !!globalUser,
+          profileEmail: profile?.email,
+          clubUserEmail: clubUser?.userEmail || clubUser?.email,
+          globalUserEmail: globalUser?.email,
+          source: globalUser ? 'global-fallback' : clubUser ? 'club-user' : 'club-profile'
+        });
+
+        // Determina il canale da usare
+        let actualChannel = notificationType;
+        if (notificationType === 'auto') {
+          const hasEmail = !!(player.email && player.email.includes('@'));
+          console.log('🤖 [Auto Channel] notificationType=auto, hasEmail:', hasEmail, 'EMAIL_PROVIDER:', EMAIL_PROVIDER);
+          actualChannel = await determineOptimalChannel(playerId, hasEmail);
+          
+          console.log('🤖 [Auto Channel] determined actualChannel:', actualChannel);
+          
+          // Track channel determination for auto mode
+          await trackNotificationEvent({
+            type: 'channel-determined',
+            channel: actualChannel || 'none',
+            userId: playerId,
+            clubId,
+            notificationType: 'certificate',
+            platform: actualChannel === 'push' ? 'web' : actualChannel === 'email' ? 'email' : 'unknown',
+            success: !!actualChannel,
+            metadata: {
+              requestedType: 'auto',
+              determinedChannel: actualChannel,
+              hasEmail,
+              pushAvailable: actualChannel === 'push'
+            }
+          });
+
+          if (!actualChannel) {
+            results.failed++;
+            
+            // Track no channel available event
+            await trackNotificationEvent({
+              type: 'failed',
+              channel: 'none',
+              userId: playerId,
+              clubId,
+              notificationType: 'certificate',
+              platform: 'unknown',
+              success: false,
+              error: 'Nessun canale di notifica disponibile (né push né email)',
+              errorCode: 'no-channel-available',
+              metadata: {
+                hasEmail: !!(player.email && player.email.includes('@')),
+                pushChannelAvailable: false // Will be determined by determineOptimalChannel
+              }
+            });
+            
+            results.details.push({
+              playerId,
+              playerName: player.name,
+              success: false,
+              error: 'Nessun canale di notifica disponibile (né push né email)',
+              code: 'no-channel-available'
+            });
+            continue;
+          }
+        }
+
+        // Certificato: preferisci profiles.medicalCertificates.current.expiryDate, fallback a users.medicalCertificate.expiryDate, poi global user
         const expiryDate =
           profile?.medicalCertificates?.current?.expiryDate ||
-          clubUser?.medicalCertificate?.expiryDate;
+          clubUser?.medicalCertificate?.expiryDate ||
+          globalUser?.medicalCertificate?.expiryDate;
 
-  if (notificationType === 'email') {
+        if (actualChannel === 'email') {
           try {
             let status;
             if (!expiryDate) {
@@ -459,29 +972,25 @@ export const sendBulkCertificateNotifications = onCall(
             }
 
             await sendEmailNotification(player, club, status);
-
-            // Save in-app notification
-            try {
-              await saveUserNotification({
-                userId: playerId,
-                title: status.type === 'missing' ? 'Certificato mancante' : 'Scadenza certificato',
-                body: status.type === 'missing' 
-                  ? 'Non risulta alcun certificato medico caricato a sistema.' 
-                  : `Il tuo certificato scade il ${status.expiryDate}`,
-                type: 'certificate',
-                priority: status.type === 'missing' ? 'urgent' : 'high',
-                metadata: {
-                  clubId,
-                  expiryDate: status.expiryDate,
-                  daysUntilExpiry: status.daysUntilExpiry,
-                  sentVia: 'email'
-                },
-                actionUrl: '/profile'
-              });
-            } catch (notifErr) {
-              console.warn('⚠️ [Email] Could not save in-app notification:', notifErr.message);
-            }
-
+            
+            // Track analytics event
+            await trackNotificationEvent({
+              type: 'sent',
+              channel: 'email',
+              userId: playerId,
+              clubId,
+              notificationType: 'certificate',
+              platform: 'email',
+              success: true,
+              metadata: {
+                hasExpiryDate: !!expiryDate,
+                daysUntilExpiry: status.daysUntilExpiry,
+                isMissing: status.type === 'missing',
+                isExpired: status.daysUntilExpiry < 0,
+                isExpiring: status.daysUntilExpiry >= 0 && status.daysUntilExpiry <= 30
+              }
+            });
+            
             results.sent++;
             results.details.push({ playerId, playerName: player.name, success: true, method: 'email' });
           } catch (err) {
@@ -502,9 +1011,27 @@ export const sendBulkCertificateNotifications = onCall(
                 mappedCode = 'sendgrid-from-not-verified';
               }
             }
+            
+            // Track failed email event
+            await trackNotificationEvent({
+              type: 'failed',
+              channel: 'email',
+              userId: playerId,
+              clubId,
+              notificationType: 'certificate',
+              platform: 'email',
+              success: false,
+              error: err.message,
+              errorCode: mappedCode,
+              metadata: {
+                hasExpiryDate: !!expiryDate,
+                smtpResponseCode: respCode
+              }
+            });
+            
             results.details.push({ playerId, playerName: player.name, success: false, error: err.message, code: mappedCode });
           }
-        } else {
+        } else if (actualChannel === 'push') {
           // Forza il provider corretto per chiarezza nel risultato quando si inviano PUSH
           results.provider = 'push';
           try {
@@ -518,8 +1045,8 @@ export const sendBulkCertificateNotifications = onCall(
                       : new Date(expiryDate).toLocaleDateString('it-IT')
                   }`
                 : 'Certificato mancante. Aggiorna i tuoi documenti.',
-              icon: '/icon-192x192.png',
-              badge: '/badge-72x72.png',
+              icon: '/icons/icon-192x192.png',
+              badge: '/icons/icon-192x192.png',
               tag: `certificate-${playerId}`,
               data: {
                 url: '/profile',
@@ -530,29 +1057,37 @@ export const sendBulkCertificateNotifications = onCall(
               },
             };
 
-            await sendPushNotificationToUser(playerId, pushNotification);
-
-            // Save in-app notification
-            try {
-              await saveUserNotification({
-                userId: playerId,
+            // NUOVO: usa unified push (prova native FCM/APNs poi fallback a Web Push)
+            const pushResult = await sendUnifiedPushNotification(playerId, pushNotification);
+            
+            // Track analytics event
+            await trackNotificationEvent({
+              type: 'sent',
+              channel: 'push',
+              userId: playerId,
+              clubId,
+              notificationType: 'certificate',
+              platform: pushResult.method === 'native' ? 'native' : 'web',
+              success: true,
+              metadata: {
+                hasExpiryDate: !!expiryDate,
+                daysUntilExpiry: status?.daysUntilExpiry,
+                isMissing: !expiryDate,
+                isExpired: status?.daysUntilExpiry < 0,
+                isExpiring: status?.daysUntilExpiry >= 0 && status?.daysUntilExpiry <= 30,
                 title: pushNotification.title,
-                body: pushNotification.body,
-                type: 'certificate',
-                priority: 'high',
-                metadata: {
-                  clubId,
-                  sentVia: 'push',
-                  ...pushNotification.data
-                },
-                actionUrl: '/profile'
-              });
-            } catch (notifErr) {
-              console.warn('⚠️ [Push] Could not save in-app notification:', notifErr.message);
-            }
-
+                tag: pushNotification.tag,
+                pushMethod: pushResult.method,
+              }
+            });
+            
             results.sent++;
-            results.details.push({ playerId, playerName: player.name, success: true, method: 'push' });
+            results.details.push({ 
+              playerId, 
+              playerName: player.name, 
+              success: true, 
+              method: pushResult.method === 'native' ? 'native-push' : 'web-push' 
+            });
           } catch (err) {
             let mappedCode = 'push-send-error';
             const msg = (err?.message || '').toLowerCase();
@@ -575,44 +1110,94 @@ export const sendBulkCertificateNotifications = onCall(
                 }
                 await sendEmailNotification(player, club, status);
                 
-                // Save in-app notification (fallback)
-                try {
-                  await saveUserNotification({
-                    userId: playerId,
-                    title: status.type === 'missing' ? 'Certificato mancante' : 'Scadenza certificato',
-                    body: status.type === 'missing' 
-                      ? 'Non risulta alcun certificato medico caricato a sistema.' 
-                      : `Il tuo certificato scade il ${status.expiryDate}`,
-                    type: 'certificate',
-                    priority: status.type === 'missing' ? 'urgent' : 'high',
-                    metadata: {
-                      clubId,
-                      expiryDate: status.expiryDate,
-                      daysUntilExpiry: status.daysUntilExpiry,
-                      sentVia: 'email-fallback',
-                      fallbackReason: 'push-no-subscription'
-                    },
-                    actionUrl: '/profile'
-                  });
-                } catch (notifErr) {
-                  console.warn('⚠️ [Email Fallback] Could not save in-app notification:', notifErr.message);
-                }
-
+                // Track successful fallback event
+                await trackNotificationEvent({
+                  type: 'sent',
+                  channel: 'email',
+                  userId: playerId,
+                  clubId,
+                  notificationType: 'certificate',
+                  platform: 'email',
+                  success: true,
+                  fallbackFrom: 'push',
+                  fallbackReason: 'push-no-subscription',
+                  metadata: {
+                    hasExpiryDate: !!expiryDate,
+                    daysUntilExpiry: status.daysUntilExpiry,
+                    isMissing: status.type === 'missing',
+                    isExpired: status.daysUntilExpiry < 0,
+                    isExpiring: status.daysUntilExpiry >= 0 && status.daysUntilExpiry <= 30
+                  }
+                });
+                
                 // Conta come inviato via fallback
                 results.sent++;
                 results.details.push({ playerId, playerName: player.name, success: true, method: 'email-fallback', reason: 'push-no-subscription' });
               } catch (emailErr) {
                 results.failed++;
+                
+                // Track failed fallback event
+                await trackNotificationEvent({
+                  type: 'failed',
+                  channel: 'email',
+                  userId: playerId,
+                  clubId,
+                  notificationType: 'certificate',
+                  platform: 'email',
+                  success: false,
+                  fallbackFrom: 'push',
+                  fallbackReason: 'push-no-subscription',
+                  error: emailErr.message,
+                  errorCode: 'email-fallback-error',
+                  metadata: {
+                    originalPushError: mappedCode,
+                    hasExpiryDate: !!expiryDate
+                  }
+                });
+                
                 results.details.push({ playerId, playerName: player.name, success: false, error: emailErr.message, code: 'email-fallback-error', fromPushError: mappedCode, statusCode });
               }
             } else {
               results.failed++;
+              
+              // Track failed push event (no fallback)
+              await trackNotificationEvent({
+                type: 'failed',
+                channel: 'push',
+                userId: playerId,
+                clubId,
+                notificationType: 'certificate',
+                platform: 'web',
+                success: false,
+                error: err.message,
+                errorCode: mappedCode,
+                metadata: {
+                  hasExpiryDate: !!expiryDate,
+                  webPushReady: WEB_PUSH_READY,
+                  statusCode
+                }
+              });
+              
               results.details.push({ playerId, playerName: player.name, success: false, error: err.message, code: mappedCode, statusCode, webPushReady: WEB_PUSH_READY });
             }
           }
         }
       } catch (err) {
         results.failed++;
+        
+        // Track unexpected error event
+        await trackNotificationEvent({
+          type: 'failed',
+          channel: 'unknown',
+          userId: playerId,
+          clubId,
+          notificationType: 'certificate',
+          platform: 'unknown',
+          success: false,
+          error: err.message,
+          errorCode: 'unexpected-error'
+        });
+        
         results.details.push({ playerId, success: false, error: err.message, code: 'unexpected-error' });
       }
     }

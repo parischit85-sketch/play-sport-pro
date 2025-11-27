@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1004722051733",
+    "firebase_url": "https://m-padelweb-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "m-padelweb",
+    "storage_bucket": "m-padelweb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004722051733:android:429f629aaeb8bd1a80999c",
+        "android_client_info": {
+          "package_name": "com.playsportpro.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1004722051733-70tcjn7ermucm07jibslelk719eblv3f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRUfvXXrbAhE8jRThTiOdfLiGw-B1fprw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1004722051733-70tcjn7ermucm07jibslelk719eblv3f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

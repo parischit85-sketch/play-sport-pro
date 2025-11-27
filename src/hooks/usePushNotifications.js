@@ -388,17 +388,19 @@ async function sendSubscriptionToServer(subscription) {
 
       return true;
     } else {
-      // Produzione: usa Netlify Function
-      // console.log('🔗 Calling Netlify Function: /.netlify/functions/save-push-subscription');
-      const response = await fetch('/.netlify/functions/save-push-subscription', {
+      // Produzione: usa Firebase Cloud Function (sostituisce Netlify Function)
+      // console.log('🔗 Calling Firebase Function: savePushSubscriptionHttp');
+      const response = await fetch('https://us-central1-m-padelweb.cloudfunctions.net/savePushSubscriptionHttp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...subscriptionData,
-          // Include anche la subscription completa per compatibilità Netlify function
+          firebaseUid: user.uid,
           subscription: subscription.toJSON(),
+          endpoint: subscription.endpoint,
+          deviceId: subscriptionData.deviceId,
+          ...subscriptionData,
           schemaVersion: 2,
         }),
       });
@@ -407,7 +409,7 @@ async function sendSubscriptionToServer(subscription) {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('❌ Netlify Function error:', errorText);
+        console.error('❌ Firebase Function error:', errorText);
         throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
@@ -445,14 +447,14 @@ async function removeSubscriptionFromServer(subscription) {
     //   deviceId,
     // });
 
-    // Chiama Netlify Function per rimuovere da Firestore
-    const response = await fetch('/.netlify/functions/remove-push-subscription', {
+    // Chiama Firebase Function per rimuovere da Firestore
+    const response = await fetch('https://us-central1-m-padelweb.cloudfunctions.net/removePushSubscriptionHttp', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        userId: user.uid,
+        firebaseUid: user.uid,
         endpoint: subscription.endpoint,
         deviceId,
       }),

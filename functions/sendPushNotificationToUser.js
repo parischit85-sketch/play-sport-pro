@@ -84,13 +84,21 @@ export const sendPushNotificationToUser = async (userId, payload) => {
           // ========================================
           console.log('📱 [Push] Sending NATIVE push via FCM Admin SDK');
 
+          // Ensure all data values are strings (FCM requirement)
+          const stringifiedData = {};
+          if (payload.data) {
+            for (const [key, value] of Object.entries(payload.data)) {
+              stringifiedData[key] = String(value);
+            }
+          }
+
           const message = {
             token: data.fcmToken,
             notification: {
               title: payload.title,
               body: payload.body,
             },
-            data: payload.data || {},
+            data: stringifiedData,
           };
 
           // Configurazione specifica per Android
@@ -100,7 +108,7 @@ export const sendPushNotificationToUser = async (userId, payload) => {
               notification: {
                 channelId: 'default',
                 sound: 'default',
-                clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+                // Rimosso clickAction specifico per Flutter, Capacitor usa default intent
               },
             };
           }

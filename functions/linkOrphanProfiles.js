@@ -24,38 +24,26 @@ export const searchFirebaseUsers = onCall(
   {
     region: 'us-central1',
     timeoutSeconds: 60,
-    invoker: 'public',
+    cors: true,
   },
   async (request) => {
     const { data, auth: authContext } = request;
     const { clubId, searchQuery } = data || {};
 
-    console.log('🔍 [searchFirebaseUsers] Richiesta ricevuta', {
-      clubId,
-      searchQuery,
-      hasAuth: !!authContext?.uid,
-      authUid: authContext?.uid || 'NONE',
-    });
-
-    // ⚠️ TEMPORANEO: Commentato auth check per debug CORS
-    /*
+    // Verifica autenticazione
     if (!authContext?.uid) {
       throw new HttpsError('unauthenticated', 'Autenticazione richiesta');
     }
-    */
 
     // Verifica permessi admin sul club
     if (!clubId) {
       throw new HttpsError('invalid-argument', 'clubId è richiesto');
     }
 
-    // ⚠️ TEMPORANEO: Commentato admin check per debug CORS
-    /*
     const isAdmin = await verifyClubAdmin(authContext.uid, clubId);
     if (!isAdmin) {
       throw new HttpsError('permission-denied', 'Permessi admin richiesti per questo club');
     }
-    */
 
     if (!searchQuery || searchQuery.trim().length < 3) {
       throw new HttpsError('invalid-argument', 'Query di ricerca deve essere almeno 3 caratteri');
@@ -131,16 +119,14 @@ export const searchFirebaseUsers = onCall(
         const lastName = (userData.lastName || '').toLowerCase();
         const fullName = `${firstName} ${lastName}`.trim();
         const phone = userData.phoneNumber || '';
-        const pspId = (userData.pspId || '').toLowerCase();
 
-        // Match per nome, cognome, email parziale, telefono O Psp ID parziale
+        // Match per nome, cognome, email parziale o telefono
         if (
           fullName.includes(searchLower) ||
           firstName.includes(searchLower) ||
           lastName.includes(searchLower) ||
           email.includes(searchLower) ||
-          phone.includes(searchLower) ||
-          pspId.includes(searchLower)
+          phone.includes(searchLower)
         ) {
           results.push({
             uid,
@@ -150,7 +136,6 @@ export const searchFirebaseUsers = onCall(
             firstName: userData.firstName || null,
             lastName: userData.lastName || null,
             photoURL: userData.photoURL || null,
-            pspId: userData.pspId || null,
             matchType: 'firestore',
           });
         }
@@ -179,7 +164,7 @@ export const linkOrphanProfile = onCall(
   {
     region: 'us-central1',
     timeoutSeconds: 60,
-    invoker: 'public',
+    cors: true,
   },
   async (request) => {
     const { data, auth: authContext } = request;
@@ -193,13 +178,11 @@ export const linkOrphanProfile = onCall(
       timestamp: new Date().toISOString(),
     });
 
-    // ⚠️ TEMPORANEO: Commentato auth check per debug CORS
-    /*
+    // Verifica autenticazione
     if (!authContext?.uid) {
       console.error('❌ [linkOrphanProfile] Autenticazione mancante');
       throw new HttpsError('unauthenticated', 'Autenticazione richiesta');
     }
-    */
 
     // Validazione input
     if (!clubId || !orphanPlayerId || !firebaseUid) {
@@ -214,8 +197,7 @@ export const linkOrphanProfile = onCall(
       );
     }
 
-    // ⚠️ TEMPORANEO: Commentato admin check per debug CORS
-    /*
+    // Verifica permessi admin sul club
     const isAdmin = await verifyClubAdmin(authContext.uid, clubId);
     console.log('🔐 [linkOrphanProfile] Verifica permessi admin', {
       adminUid: authContext.uid,
@@ -226,9 +208,6 @@ export const linkOrphanProfile = onCall(
       console.error('❌ [linkOrphanProfile] Permessi insufficienti');
       throw new HttpsError('permission-denied', 'Permessi admin richiesti per questo club');
     }
-    */
-
-    console.log('✅ [linkOrphanProfile] Permessi verificati (debug mode), inizio collegamento');
 
     try {
       // 1. Verifica che firebaseUid esista in Firebase Auth
@@ -454,36 +433,24 @@ export const getOrphanProfiles = onCall(
     region: 'us-central1',
     memory: '512MiB',
     timeoutSeconds: 60,
-    invoker: 'public',
+    cors: true,
   },
   async (request) => {
     const { data, auth: authContext } = request;
     const { clubId } = data || {};
 
-    console.log('🔍 [getOrphanProfiles] Richiesta ricevuta', {
-      clubId,
-      hasAuth: !!authContext?.uid,
-      authUid: authContext?.uid || 'NONE',
-    });
-
-    // ⚠️ TEMPORANEO: Commentato auth check per debug CORS
-    /*
     if (!authContext?.uid) {
       throw new HttpsError('unauthenticated', 'Autenticazione richiesta');
     }
-    */
 
     if (!clubId) {
       throw new HttpsError('invalid-argument', 'clubId è richiesto');
     }
 
-    // ⚠️ TEMPORANEO: Commentato admin check per debug CORS
-    /*
     const isAdmin = await verifyClubAdmin(authContext.uid, clubId);
     if (!isAdmin) {
       throw new HttpsError('permission-denied', 'Permessi admin richiesti');
     }
-    */
 
     try {
       console.log(`🔍 [getOrphanProfiles] Fetching users for club ${clubId}`);

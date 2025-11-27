@@ -20,6 +20,7 @@ import PWAFloatingButton from '@components/PWAFloatingButton.jsx';
 import PWAInstallPrompt from '@ui/PWAInstallPrompt.jsx';
 import BookingTypeModal from '@ui/BookingTypeModal.jsx';
 import AppDownloadModal from '@ui/AppDownloadModal.jsx';
+import CertificateExpiryAlert from '@features/players/components/CertificateExpiryAlert.jsx';
 import { logger } from '@/utils/logger';
 import { useUnreadNotifications } from '@hooks/useUnreadNotifications';
 
@@ -477,6 +478,9 @@ function AppLayoutInner() {
           'pb-20 md:pb-5'
         }`}
       >
+        {/* Alert Certificato Medico */}
+        {user && clubId && <CertificateExpiryAlert />}
+
         <Outlet />
       </main>
 

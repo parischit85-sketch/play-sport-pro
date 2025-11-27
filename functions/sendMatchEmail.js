@@ -7,6 +7,8 @@ import { onDocumentCreated, onDocumentUpdated } from 'firebase-functions/v2/fire
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import emailService from './emailService.js';
+import { sendPushNotificationToUser } from './sendPushNotificationToUser.js';
+import { saveUserNotification } from './userNotifications.js';
 import {
   matchInvitationTemplate,
   matchResultTemplate,
@@ -67,6 +69,38 @@ export const onMatchCreated = onDocumentCreated(
         });
 
         console.log(`✅ [Match Created] Invitation sent to ${player2.email}`);
+
+        // ============================================================
+        // PUSH NOTIFICATION (MATCH INVITE)
+        // ============================================================
+        try {
+          await saveUserNotification({
+            userId: match.player2Id,
+            title: 'Sfida Ricevuta! ⚔️',
+            body: `${player1.displayName} ti ha sfidato a una partita ${match.type || 'Singles'}`,
+            type: 'match',
+            metadata: {
+              matchId,
+              clubId: match.clubId,
+              opponent: player1.displayName
+            },
+            actionUrl: `/matches/${matchId}`
+          });
+
+          await sendPushNotificationToUser(match.player2Id, {
+            title: 'Nuova Sfida! ⚔️',
+            body: `${player1.displayName} vuole giocare contro di te!`,
+            data: {
+              url: `/matches/${matchId}`,
+              type: 'match_invite',
+              matchId
+            }
+          });
+        } catch (pushError) {
+          console.error(`⚠️ [Match Created] Failed to send push:`, pushError);
+        }
+        // ============================================================
+
       }
 
     } catch (error) {
@@ -139,6 +173,24 @@ export const onMatchUpdated = onDocumentUpdated(
           });
 
           console.log(`✅ [Match Updated] Result sent to ${player1.email}`);
+
+          // PUSH NOTIFICATION PLAYER 1
+          try {
+            await saveUserNotification({
+              userId: afterData.player1Id,
+              title: 'Risultato Partita 🏆',
+              body: `Il risultato contro ${player2.displayName} è stato registrato: ${afterData.score}`,
+              type: 'match',
+              metadata: { matchId, winner: winner.displayName },
+              actionUrl: `/matches/${matchId}`
+            });
+
+            await sendPushNotificationToUser(afterData.player1Id, {
+              title: 'Risultato Confermato 🏆',
+              body: `Partita conclusa: ${afterData.score}`,
+              data: { url: `/matches/${matchId}`, type: 'match_result' }
+            });
+          } catch (e) { console.error(e); }
         }
 
         // Invia email a player2
@@ -165,6 +217,24 @@ export const onMatchUpdated = onDocumentUpdated(
           });
 
           console.log(`✅ [Match Updated] Result sent to ${player2.email}`);
+
+          // PUSH NOTIFICATION PLAYER 2
+          try {
+            await saveUserNotification({
+              userId: afterData.player2Id,
+              title: 'Risultato Partita 🏆',
+              body: `Il risultato contro ${player1.displayName} è stato registrato: ${afterData.score}`,
+              type: 'match',
+              metadata: { matchId, winner: winner.displayName },
+              actionUrl: `/matches/${matchId}`
+            });
+
+            await sendPushNotificationToUser(afterData.player2Id, {
+              title: 'Risultato Confermato 🏆',
+              body: `Partita conclusa: ${afterData.score}`,
+              data: { url: `/matches/${matchId}`, type: 'match_result' }
+            });
+          } catch (e) { console.error(e); }
         }
 
       } catch (error) {

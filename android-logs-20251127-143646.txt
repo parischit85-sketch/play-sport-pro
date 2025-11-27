@@ -1,0 +1,36 @@
+
+11-27 14:36:46.353 E/ANDR-PERF-RESOURCEQS( 1610): ANDR-PERF-RESOURCEQS: AddAndApply() 167: Failed to apply optimization [10, 9]
+11-27 14:36:46.426 W/WifiNetworkFactory( 2595): recentFailure: Association Rejection code: 0, last update time: 0
+11-27 14:36:46.451 I/NetGuard.Monitor( 7678): New capabilities network 2364 [type: WIFI[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: , failover: false, available: true, roaming: false]
+11-27 14:36:49.504 W/WifiNetworkFactory( 2595): recentFailure: Association Rejection code: 0, last update time: 0
+11-27 14:36:49.531 I/NetGuard.Monitor( 7678): New capabilities network 2364 [type: WIFI[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: , failover: false, available: true, roaming: false]
+11-27 14:36:52.533 W/WifiNetworkFactory( 2595): recentFailure: Association Rejection code: 0, last update time: 0
+11-27 14:36:52.557 I/NetGuard.Monitor( 7678): New capabilities network 2364 [type: WIFI[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: , failover: false, available: true, roaming: false]
+11-27 14:36:58.580 W/NK_BaseConfig(12665): haf-def-1-255|embedded.e|65353|Set value error, value of core_metrics_data is out of range.
+11-27 14:36:58.600 W/WifiNetworkFactory( 2595): recentFailure: Association Rejection code: 0, last update time: 0
+11-27 14:36:58.622 I/NetGuard.Monitor( 7678): New capabilities network 2364 [type: WIFI[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: , failover: false, available: true, roaming: false]
+11-27 14:36:59.004 I/Dfx_LogUpload Service errorcode(12665): 1600009300|R|I|handleResult resCode:0
+11-27 14:36:59.026 W/NK_BaseConfig(12665): haf-def-1-255|embedded.e|65353|Set value error, value of core_metrics_data is out of range.
+11-27 14:36:59.094 W/NK_BaseConfig(12665): haf-def-1-255|embedded.e|65353|Set value error, value of core_metrics_data is out of range.
+11-27 14:36:59.149 I/Dfx_LogUpload Service errorcode(12665): 1600009300|R|I|handleResult resCode:0
+11-27 14:36:59.167 W/NK_BaseConfig(12665): haf-def-1-255|embedded.e|65353|Set value error, value of core_metrics_data is out of range.
+11-27 14:36:59.883 W/NK_BaseConfig(12665): haf-def-1-255|embedded.e|65353|Set value error, value of core_metrics_data is out of range.
+11-27 14:36:59.938 I/Dfx_LogUpload Service errorcode(12665): 1600009300|R|I|handleResult resCode:0
+11-27 14:36:59.967 W/NK_BaseConfig(12665): haf-def-1-255|embedded.e|65353|Set value error, value of core_metrics_data is out of range.
+11-27 14:37:01.624 W/WifiNetworkFactory( 2595): recentFailure: Association Rejection code: 0, last update time: 0
+11-27 14:37:01.649 I/NetGuard.Monitor( 7678): New capabilities network 2364 [type: WIFI[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: , failover: false, available: true, roaming: false]
+11-27 14:37:02.347 W/droid.bluetooth( 4179): system/main/shim/acl.cc:1693 OnConnectFail: Connection failed classic remote:xx:xx:xx:xx:c3:e1 reason:PAGE_TIMEOUT(0x04)
+11-27 14:37:02.348 W/bluetooth( 4179): system/bta/jv/bta_jv_act.cc:841 bta_jv_start_discovery_cback: Received service discovery callback failed bd_addr:xx:xx:xx:xx:c3:e1 result:SDP_CFG_FAILED
+11-27 14:37:02.348 I/bluetooth( 4179): system/bta/jv/bta_jv_act.cc:845 bta_jv_start_discovery_cback: Issuing service discovery complete callback bd_addr:xx:xx:xx:xx:c3:e1 result:SDP_CFG_FAILED status:tBTA_JV_STATUS::FAILURE scn:0
+11-27 14:37:02.348 E/bt_btif_sock_rfcomm( 4179): system/btif/src/btif_sock_rfc.cc:874 handle_discovery_comp: SDP service discovery completed for slot id: 1551 with the result status: tBTA_JV_STATUS::FAILURE, scn: 0
+11-27 14:37:05.795 W/System  (24645): A resource failed to call SQLiteConnection.close. 
+11-27 14:37:08.347 I/View    (18389): setRequestedFrameRate frameRate=-4.0, this=X.b0t{9c7ac39 VFEDHVC.. .F...... 0,0-1440,2756 aid=2}, caller=X.k1j.Cq5:148 com.android.webview.chromium.WebViewChromium.onDraw:18 android.webkit.WebView.onDraw:2959 android.view.View.draw:26148 android.view.View.updateDisplayListIfDirty:24988 
+11-27 14:37:08.388 I/View    (18389): setRequestedFrameRate frameRate=-4.0, this=X.b0t{9c7ac39 VFEDHVC.. .F...... 0,0-1440,2756 aid=2}, caller=X.k1j.Cq5:148 com.android.webview.chromium.WebViewChromium.onDraw:18 android.webkit.WebView.onDraw:2959 android.view.View.draw:26148 android.view.View.updateDisplayListIfDirty:24988 
+11-27 14:37:10.687 W/WifiNetworkFactory( 2595): recentFailure: Association Rejection code: 0, last update time: 0
+11-27 14:37:10.713 I/NetGuard.Monitor( 7678): New capabilities network 2364 [type: WIFI[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: , failover: false, available: true, roaming: false]
+11-27 14:37:13.701 W/WifiNetworkFactory( 2595): recentFailure: Association Rejection code: 0, last update time: 0
+11-27 14:37:13.721 I/NetGuard.Monitor( 7678): New capabilities network 2364 [type: WIFI[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: , failover: false, available: true, roaming: false]
+11-27 14:37:25.809 W/WifiNetworkFactory( 2595): recentFailure: Association Rejection code: 0, last update time: 0
+11-27 14:37:25.849 I/NetGuard.Monitor( 7678): New capabilities network 2364 [type: WIFI[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: , failover: false, available: true, roaming: false]
+11-27 14:37:28.834 W/WifiNetworkFactory( 2595): recentFailure: Association Rejection code: 0, last update time: 0
+11-27 14:37:28.865 I/NetGuard.Monitor( 7678): New capabilities network 2364 [type: WIFI[], state: CONNECTED/CONNECTED, reason: (unspecified), extra: , failover: false, available: true, roaming: false]

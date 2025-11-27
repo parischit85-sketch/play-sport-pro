@@ -7,11 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '@contexts/NotificationContext';
 import Section from '@ui/Section.jsx';
 import { auth, getUserProfile, updateUserProfile, setDisplayName } from '@services/auth';
+import { uploadProfilePicture } from '@services/users';
 import { useAuth } from '@contexts/AuthContext.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 // import { useUI } from '@contexts/UIContext.jsx'; // Rimosso - tema scuro forzato
 import ClubAdminProfile from './ClubAdminProfile.jsx';
-import NotificationSettings from '@components/NotificationSettings.jsx';
 import CertificateExpiryAlert from './CertificateExpiryAlert.jsx';
 import UserGDPRPanel from './UserGDPRPanel.jsx';
 
@@ -68,6 +68,9 @@ export default function Profile({ T }) {
   const [userProfile, setUserProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+  const [isDataExpanded, setIsDataExpanded] = useState(false);
+  const fileInputRef = React.useRef(null);
 
   useEffect(() => {
     let active = true;
@@ -85,6 +88,8 @@ export default function Profile({ T }) {
             birthDate: data.birthDate || '',
             address: data.address || '',
           }));
+          // Reset dirty state after loading
+          setIsDirty(false);
         }
       }
       setLoading(false);
@@ -93,6 +98,40 @@ export default function Profile({ T }) {
       active = false;
     };
   }, [user]);
+
+  const handleInputChange = (field, value) => {
+    setForm((f) => ({ ...f, [field]: value }));
+    setIsDirty(true);
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setSaving(true);
+      const downloadURL = await uploadProfilePicture(user.uid, file);
+      
+      // Update local state immediately
+      if (userProfile) {
+        setUserProfileData({ ...userProfile, avatar: downloadURL });
+      }
+      
+      // Force reload user data to update context
+      await reloadUserData();
+      
+      showSuccess('Foto profilo aggiornata!');
+    } catch (error) {
+      console.error('Error uploading profile picture:', error);
+      showError('Errore caricamento foto: ' + error.message);
+    } finally {
+      setSaving(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   // If user is admin and not forcing normal profile, render admin profile
   if (isActuallyAdmin && actualClubId && !forceNormalProfile) {
@@ -132,6 +171,8 @@ export default function Profile({ T }) {
       await reloadUserData();
 
       showSuccess('Profilo salvato!');
+      setIsDirty(false);
+      setIsDataExpanded(false);
 
       // Se il profilo è ora completo, naviga alla dashboard
       if (updatedProfile.firstName && updatedProfile.phone) {
@@ -258,30 +299,55 @@ export default function Profile({ T }) {
         <div className={`${T.cardBg} ${T.border} rounded-3xl p-6 space-y-6 shadow-2xl`}>
           {/* Header con avatar e info principali */}
           <div
-            className={`flex items-center gap-6 p-6 ${T.cardBg} border border-blue-500/30 rounded-2xl`}
+            className={`flex items-center gap-6 p-6 ${T.cardBg} border border-blue-500/30 rounded-2xl relative overflow-hidden`}
           >
-            {user.photoURL ? (
-              <img
-                src={user.photoURL}
-                alt="Avatar"
-                className="w-20 h-20 rounded-full object-cover ring-4 ring-blue-500/30 shadow-2xl"
+            <div className="relative group">
+              {userProfile?.avatar || user.photoURL ? (
+                <img
+                  src={userProfile?.avatar || user.photoURL}
+                  alt="Avatar"
+                  className="w-20 h-20 rounded-full object-cover ring-4 ring-blue-500/30 shadow-2xl"
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 ring-4 ring-blue-500/30 flex items-center justify-center text-2xl font-bold text-white shadow-2xl">
+                  {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
+                </div>
+              )}
+              
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full shadow-lg hover:bg-blue-500 transition-colors z-10"
+                title="Cambia foto"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                className="hidden" 
+                accept="image/*"
               />
-            ) : (
-              <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 ring-4 ring-blue-500/30 flex items-center justify-center text-2xl font-bold text-white shadow-2xl">
-                {(user.displayName || user.email || 'U').charAt(0).toUpperCase()}
-              </div>
-            )}
+            </div>
 
             <div className="flex-1 min-w-0">
-              <h3 className={`text-2xl font-bold ${T.text} truncate mb-1 flex items-center gap-2`}>
+              <h3 className={`text-2xl font-bold ${T.text} truncate mb-1`}>
                 {user.displayName || 'Utente'}
-                {userProfile?.pspId && (
-                  <span className="text-sm font-mono bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30">
-                    #{userProfile.pspId}
-                  </span>
-                )}
               </h3>
-              <p className={`${T.accentInfo} text-lg truncate mb-2`}>{user.email}</p>
+              
+              {userProfile?.pspId && (
+                <div className="mb-2">
+                  <span className="inline-flex items-center gap-1 text-sm font-mono bg-blue-500/20 text-blue-400 px-2 py-1 rounded-lg border border-blue-500/30">
+                    <span className="opacity-70">ID:</span>
+                    <span className="font-bold">#{userProfile.pspId}</span>
+                  </span>
+                </div>
+              )}
+
+              <p className={`${T.accentInfo} text-sm truncate mb-2`}>{user.email}</p>
               <div className="flex items-center gap-3">
                 {user.providerData[0] && getProviderIcon(user.providerData[0].providerId)}
                 <span className={`text-sm font-medium ${T.subtext}`}>
@@ -299,9 +365,6 @@ export default function Profile({ T }) {
               </div>
             </div>
           </div>
-
-          {/* Push Notifications Panel */}
-          <NotificationSettings />
 
           {/* Stato Account */}
           <div
@@ -325,23 +388,37 @@ export default function Profile({ T }) {
             </div>
           </div>
 
-          {/* Statistiche account */}
-          <div className={`grid grid-cols-2 gap-6 pt-6 border-t ${T.border}`}>
-            <div className={`text-center p-4 ${T.cardBg} border border-blue-500/30 rounded-2xl`}>
-              <div className="text-2xl font-bold text-blue-400 mb-1">
-                {user.metadata.creationTime
-                  ? new Date(user.metadata.creationTime).toLocaleDateString('it-IT')
-                  : 'N/A'}
+          {/* Statistiche account compatte */}
+          <div className={`grid grid-cols-2 gap-4 pt-4 border-t ${T.border}`}>
+            <div className={`flex items-center gap-3 p-3 ${T.cardBg} border border-blue-500/20 rounded-xl`}>
+              <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
               </div>
-              <div className={`text-sm font-medium ${T.subtext}`}>Registrato il</div>
+              <div>
+                <div className={`text-xs font-medium ${T.subtext}`}>Registrato</div>
+                <div className="text-sm font-bold text-blue-400">
+                  {user.metadata.creationTime
+                    ? new Date(user.metadata.creationTime).toLocaleDateString('it-IT')
+                    : 'N/A'}
+                </div>
+              </div>
             </div>
-            <div className={`text-center p-4 ${T.cardBg} border border-purple-500/30 rounded-2xl`}>
-              <div className="text-2xl font-bold text-purple-400 mb-1">
-                {user.metadata.lastSignInTime
-                  ? new Date(user.metadata.lastSignInTime).toLocaleDateString('it-IT')
-                  : 'N/A'}
+            <div className={`flex items-center gap-3 p-3 ${T.cardBg} border border-purple-500/20 rounded-xl`}>
+              <div className="p-2 bg-purple-500/10 rounded-lg text-purple-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
-              <div className={`text-sm font-medium ${T.subtext}`}>Ultimo accesso</div>
+              <div>
+                <div className={`text-xs font-medium ${T.subtext}`}>Ultimo accesso</div>
+                <div className="text-sm font-bold text-purple-400">
+                  {user.metadata.lastSignInTime
+                    ? new Date(user.metadata.lastSignInTime).toLocaleDateString('it-IT')
+                    : 'N/A'}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -391,125 +468,177 @@ export default function Profile({ T }) {
         </div>
       </Section>
 
-      {/* Gestione Profilo */}
+      {/* Gestione Profilo - Collapsible */}
       <Section title="Gestione Dati 📝" T={T}>
-        <div className={`${T.cardBg} ${T.border} rounded-3xl p-6 shadow-2xl`}>
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className={`text-sm ${T.subtext}`}>Caricamento profilo...</div>
+        <div className={`${T.cardBg} ${T.border} rounded-3xl overflow-hidden shadow-2xl transition-all duration-300`}>
+          <button 
+            onClick={() => setIsDataExpanded(!isDataExpanded)}
+            className={`w-full flex items-center justify-between p-6 ${isDataExpanded ? 'border-b ' + T.border : ''} hover:bg-white/5 transition-colors`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${isDataExpanded ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-500/10 text-gray-400'}`}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <h3 className={`text-lg font-bold ${T.text}`}>Modifica Dati Personali</h3>
+                <p className={`text-sm ${T.subtext}`}>Aggiorna le tue informazioni di contatto</p>
+              </div>
             </div>
-          ) : (
-            <div className="space-y-6">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="flex flex-col space-y-2">
-                  <label htmlFor="firstName" className={`text-sm font-semibold ${T.text}`}>
-                    Nome *
-                  </label>
-                  <input
-                    id="firstName"
-                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
-                    value={form.firstName}
-                    onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
-                    placeholder="Inserisci il tuo nome"
-                  />
-                </div>
-                <div className="flex flex-col space-y-2">
-                  <label htmlFor="lastName" className={`text-sm font-semibold ${T.text}`}>
-                    Cognome
-                  </label>
-                  <input
-                    id="lastName"
-                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
-                    value={form.lastName}
-                    onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
-                    placeholder="Inserisci il tuo cognome"
-                  />
-                </div>
-                <div className="flex flex-col space-y-2">
-                  <label htmlFor="phone" className={`text-sm font-semibold ${T.text}`}>
-                    Telefono *
-                  </label>
-                  <input
-                    id="phone"
-                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
-                    value={form.phone}
-                    onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-                    placeholder="+39 123 456 7890"
-                  />
-                </div>
-                <div className="flex flex-col space-y-2">
-                  <label htmlFor="fiscalCode" className={`text-sm font-semibold ${T.text}`}>
-                    Codice Fiscale
-                  </label>
-                  <input
-                    id="fiscalCode"
-                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
-                    value={form.fiscalCode}
-                    onChange={(e) => setForm((f) => ({ ...f, fiscalCode: e.target.value }))}
-                    placeholder="RSSMRA80A01H501U"
-                  />
-                </div>
-                <div className="flex flex-col space-y-2">
-                  <label htmlFor="birthDate" className={`text-sm font-semibold ${T.text}`}>
-                    Data di nascita
-                  </label>
-                  <input
-                    id="birthDate"
-                    type="date"
-                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
-                    value={form.birthDate}
-                    onChange={(e) => setForm((f) => ({ ...f, birthDate: e.target.value }))}
-                  />
-                </div>
-                <div className="flex flex-col space-y-2">
-                  <label htmlFor="email" className={`text-sm font-semibold ${T.text}`}>
-                    Email
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    className={`px-4 py-3 ${T.inputBg} ${T.border} rounded-xl ${T.subtext} cursor-not-allowed`}
-                    value={user.email || ''}
-                    disabled
-                  />
-                </div>
-                <div className="flex flex-col sm:col-span-2 space-y-2">
-                  <label htmlFor="address" className={`text-sm font-semibold ${T.text}`}>
-                    Indirizzo
-                  </label>
-                  <input
-                    id="address"
-                    className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
-                    value={form.address}
-                    onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
-                    placeholder="Via, Città, CAP"
-                  />
-                </div>
-              </div>
+            <svg 
+              className={`w-6 h-6 ${T.subtext} transition-transform duration-300 ${isDataExpanded ? 'rotate-180' : ''}`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
 
-              <div className={`flex flex-col sm:flex-row gap-4 pt-6 border-t ${T.border}`}>
-                <button
-                  type="button"
-                  className={`${T.btnPrimary} text-white px-8 py-3 rounded-xl font-semibold ${T.transitionNormal} hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed`}
-                  onClick={handleSaveProfile}
-                  disabled={saving}
-                >
-                  {saving ? (
-                    <span className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      Salvando...
-                    </span>
-                  ) : (
-                    'Salva Modifiche'
-                  )}
-                </button>
-              </div>
+          {isDataExpanded && (
+            <div className="p-6 animate-fadeIn">
+              {loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className={`text-sm ${T.subtext}`}>Caricamento profilo...</div>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col space-y-2">
+                      <label htmlFor="firstName" className={`text-sm font-semibold ${T.text}`}>
+                        Nome *
+                      </label>
+                      <input
+                        id="firstName"
+                        className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
+                        value={form.firstName}
+                        onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        placeholder="Inserisci il tuo nome"
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-2">
+                      <label htmlFor="lastName" className={`text-sm font-semibold ${T.text}`}>
+                        Cognome
+                      </label>
+                      <input
+                        id="lastName"
+                        className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
+                        value={form.lastName}
+                        onChange={(e) => handleInputChange('lastName', e.target.value)}
+                        placeholder="Inserisci il tuo cognome"
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-2">
+                      <label htmlFor="phone" className={`text-sm font-semibold ${T.text}`}>
+                        Telefono *
+                      </label>
+                      <input
+                        id="phone"
+                        className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
+                        value={form.phone}
+                        onChange={(e) => handleInputChange('phone', e.target.value)}
+                        placeholder="+39 123 456 7890"
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-2">
+                      <label htmlFor="fiscalCode" className={`text-sm font-semibold ${T.text}`}>
+                        Codice Fiscale
+                      </label>
+                      <input
+                        id="fiscalCode"
+                        className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
+                        value={form.fiscalCode}
+                        onChange={(e) => handleInputChange('fiscalCode', e.target.value)}
+                        placeholder="RSSMRA80A01H501U"
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-2">
+                      <label htmlFor="birthDate" className={`text-sm font-semibold ${T.text}`}>
+                        Data di nascita
+                      </label>
+                      <input
+                        id="birthDate"
+                        type="date"
+                        className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
+                        value={form.birthDate}
+                        onChange={(e) => handleInputChange('birthDate', e.target.value)}
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-2">
+                      <label htmlFor="email" className={`text-sm font-semibold ${T.text}`}>
+                        Email
+                      </label>
+                      <input
+                        id="email"
+                        type="email"
+                        className={`px-4 py-3 ${T.inputBg} ${T.border} rounded-xl ${T.subtext} cursor-not-allowed`}
+                        value={user.email || ''}
+                        disabled
+                      />
+                    </div>
+                    <div className="flex flex-col sm:col-span-2 space-y-2">
+                      <label htmlFor="address" className={`text-sm font-semibold ${T.text}`}>
+                        Indirizzo
+                      </label>
+                      <input
+                        id="address"
+                        className={`px-4 py-3 ${T.input} rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent ${T.transitionNormal}`}
+                        value={form.address}
+                        onChange={(e) => handleInputChange('address', e.target.value)}
+                        placeholder="Via, Città, CAP"
+                      />
+                    </div>
+                  </div>
 
-              <p className={`text-sm ${T.subtext} italic`}>* Campi obbligatori</p>
+                  <div className={`flex flex-col sm:flex-row gap-4 pt-6 border-t ${T.border}`}>
+                    {/* Standard Save Button (Desktop/Inline) */}
+                    <button
+                      type="button"
+                      className={`${T.btnPrimary} text-white px-8 py-3 rounded-xl font-semibold ${T.transitionNormal} hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto`}
+                      onClick={handleSaveProfile}
+                      disabled={saving}
+                    >
+                      {saving ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Salvando...
+                        </span>
+                      ) : (
+                        'Salva Modifiche'
+                      )}
+                    </button>
+                  </div>
+
+                  <p className={`text-sm ${T.subtext} italic`}>* Campi obbligatori</p>
+                </div>
+              )}
             </div>
           )}
         </div>
       </Section>
+
+      {/* Floating Action Button (FAB) for Saving */}
+      <div 
+        className={`fixed bottom-24 right-6 z-50 transition-all duration-500 transform ${
+          isDirty ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'
+        }`}
+      >
+        <button
+          onClick={handleSaveProfile}
+          disabled={saving}
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-full shadow-2xl hover:shadow-blue-500/50 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 pr-6"
+        >
+          {saving ? (
+            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          ) : (
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+          )}
+          <span className="font-bold">Salva</span>
+        </button>
+      </div>
 
       {/* GDPR - Export & Delete Data */}
       {userProfile && (

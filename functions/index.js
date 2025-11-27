@@ -17,7 +17,7 @@ export { pruneInactiveSubscriptions } from './pruneSubscriptions.js';
 export { sendBulkCertificateNotifications } from './sendBulkNotifications.clean.js';
 
 // Email Notification Triggers (CHK-401)
-export { onBookingCreated, onBookingDeleted } from './sendBookingEmail.js';
+export { onBookingCreated, onBookingDeleted, onBookingUpdated } from './sendBookingEmail.js';
 export { onMatchCreated, onMatchUpdated } from './sendMatchEmail.js';
 
 // Data Migration Functions (✅ Converted to ES6)

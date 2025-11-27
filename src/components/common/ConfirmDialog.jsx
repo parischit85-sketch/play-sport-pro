@@ -53,31 +53,31 @@ export const CONFIRM_VARIANTS = {
 const VARIANT_STYLES = {
   danger: {
     icon: AlertTriangle,
-    iconColor: 'text-red-600 text-red-400',
+    iconColor: 'text-red-400',
     iconBg: 'bg-red-900/30',
     confirmButton: 'bg-red-600 hover:bg-red-700 focus:ring-red-500',
-    title: 'text-red-900 text-red-100',
+    title: 'text-red-100',
   },
   warning: {
     icon: AlertCircle,
-    iconColor: 'text-amber-600 text-amber-400',
-    iconBg: 'bg-amber-100 bg-amber-900/30',
+    iconColor: 'text-amber-400',
+    iconBg: 'bg-amber-900/30',
     confirmButton: 'bg-amber-600 hover:bg-amber-700 focus:ring-amber-500',
-    title: 'text-amber-900 text-amber-100',
+    title: 'text-amber-100',
   },
   info: {
     icon: Info,
-    iconColor: 'text-blue-600 text-blue-400',
+    iconColor: 'text-blue-400',
     iconBg: 'bg-blue-900/30',
     confirmButton: 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500',
-    title: 'text-blue-900 text-blue-100',
+    title: 'text-blue-100',
   },
   success: {
     icon: CheckCircle,
-    iconColor: 'text-green-600 text-green-400',
+    iconColor: 'text-green-400',
     iconBg: 'bg-green-900/30',
     confirmButton: 'bg-green-600 hover:bg-green-700 focus:ring-green-500',
-    title: 'text-green-900 text-green-100',
+    title: 'text-green-100',
   },
 };
 
@@ -179,7 +179,7 @@ const ConfirmDialog = React.memo(function ConfirmDialog({
     >
       <div
         className={`
-          relative w-full max-w-md bg-white bg-gray-900 rounded-lg shadow-2xl
+          relative w-full max-w-md bg-gray-900 border border-gray-800 rounded-lg shadow-2xl
           transition-all duration-300 transform
           ${isVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}
           ${shakeError ? 'animate-shake' : ''}
@@ -188,7 +188,7 @@ const ConfirmDialog = React.memo(function ConfirmDialog({
         {/* Close button */}
         <button
           onClick={handleCancel}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 hover:text-gray-300 transition-colors"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-300 transition-colors"
           aria-label="Chiudi"
         >
           <X size={20} />
@@ -214,7 +214,7 @@ const ConfirmDialog = React.memo(function ConfirmDialog({
           {/* Message */}
           <p
             id="confirm-dialog-description"
-            className="text-gray-600 text-gray-400 text-center mb-6"
+            className="text-gray-400 text-center mb-6"
           >
             {message}
           </p>
@@ -225,9 +225,9 @@ const ConfirmDialog = React.memo(function ConfirmDialog({
           {/* Text Confirmation Input */}
           {requireTextConfirmation && (
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Per confermare, digita esattamente:{' '}
-                <code className="px-2 py-1 bg-gray-100 bg-gray-800 rounded text-red-600 text-red-400 font-mono">
+                <code className="px-2 py-1 bg-gray-800 rounded text-red-400 font-mono">
                   {requireTextConfirmation}
                 </code>
               </label>
@@ -243,9 +243,9 @@ const ConfirmDialog = React.memo(function ConfirmDialog({
                   }
                 }}
                 className="
-                  w-full px-4 py-2 border border-gray-300 border-gray-700
-                  rounded-lg bg-white bg-gray-800
-                  text-gray-900 text-white
+                  w-full px-4 py-2 border border-gray-700
+                  rounded-lg bg-gray-800
+                  text-white
                   focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
                   transition-colors
                 "
@@ -253,7 +253,7 @@ const ConfirmDialog = React.memo(function ConfirmDialog({
                 autoComplete="off"
               />
               {shakeError && (
-                <p className="mt-2 text-sm text-red-600 text-red-400">
+                <p className="mt-2 text-sm text-red-400">
                   Il testo non corrisponde. Riprova.
                 </p>
               )}
@@ -267,9 +267,9 @@ const ConfirmDialog = React.memo(function ConfirmDialog({
               onClick={handleCancel}
               className="
                 flex-1 px-4 py-2.5 rounded-lg font-medium
-                text-gray-700 text-gray-300
-                bg-gray-100 bg-gray-800
-                hover:bg-gray-200 hover:bg-gray-700
+                text-gray-300
+                bg-gray-800
+                hover:bg-gray-700
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500
                 transition-colors
               "

@@ -76,7 +76,7 @@ async function saveUserNotification(data) {
 const getUserNotifications = onCall(
   {
     region: 'us-central1',
-    invoker: 'public',
+    cors: true,
   },
   async (request) => {
     // 1. Defensive logging at the very start
@@ -84,19 +84,11 @@ const getUserNotifications = onCall(
     
     const { auth, data } = request;
 
-    console.log('🔍 [getUserNotifications] Auth check', {
-      hasAuth: !!auth,
-      uid: auth?.uid || 'NONE',
-    });
-
-    // ⚠️ TEMPORANEO: Commentato auth check per debug CORS
-    // Se auth è presente, usa l'uid, altrimenti usa un valore di test
-    /*
+    // 2. Check auth immediately
     if (!auth) {
       console.warn('⚠️ [getUserNotifications] Unauthenticated request');
       throw new HttpsError('unauthenticated', "Devi effettuare l'accesso");
     }
-    */
 
     const {
       limit = 50,
@@ -104,15 +96,9 @@ const getUserNotifications = onCall(
       archived = false,
       type = null,
       startAfter = null, // Pagination cursor (document ID)
-      userId: userIdOverride = null, // ⚠️ TEMP: Allow passing userId for testing
     } = data || {};
 
-    const userId = auth?.uid || userIdOverride;
-    
-    if (!userId) {
-      throw new HttpsError('invalid-argument', 'userId è richiesto (via auth o parametro)');
-    }
-    
+    const userId = auth.uid;
     console.log(`👤 [getUserNotifications] Fetching for user: ${userId}`, { limit, unreadOnly, archived });
 
     try {
@@ -209,7 +195,7 @@ const getUserNotifications = onCall(
 const markNotificationsAsRead = onCall(
   {
     region: 'us-central1',
-    invoker: 'public',
+    cors: true,
   },
   async (request) => {
     const { auth, data } = request;
@@ -286,7 +272,7 @@ const markNotificationsAsRead = onCall(
 const archiveNotifications = onCall(
   {
     region: 'us-central1',
-    invoker: 'public',
+    cors: true,
   },
   async (request) => {
     const { auth, data } = request;

@@ -16,7 +16,8 @@ import {
   limit,
   serverTimestamp,
 } from 'firebase/firestore';
-import { db } from './firebase.js';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { db, storage } from './firebase.js';
 
 // =============================================
 // CONSTANTS
@@ -36,6 +37,105 @@ export const USER_STATUS = {
 // =============================================
 // USER MANAGEMENT
 // =============================================
+
+/**
+ * Upload user profile picture
+ * @param {string} uid - User ID
+ * @param {File} file - File to upload
+ * @returns {Promise<string>} Download URL
+ */
+export async function uploadProfilePicture(uid, file) {
+  if (!uid || !file) throw new Error('UID and file are required');
+
+  try {
+    // Use Cloudinary (same as ClubSettings) to avoid CORS issues
+    const cloudName = 'dlmi2epev';
+    const uploadPreset = 'club_logos'; // Reusing existing preset that works
+
+    // Create FormData
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', uploadPreset);
+    formData.append('folder', `playsport/users/${uid}`);
+    formData.append('public_id', `profile_${Date.now()}`);
+
+    console.log('📤 Uploading profile picture to Cloudinary...');
+    
+    const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      console.error('Cloudinary upload error:', error);
+      throw new Error(error.error?.message || 'Upload failed');
+    }
+
+    const data = await response.json();
+    const imageUrl = data.secure_url;
+
+    console.log('✅ Profile picture uploaded to Cloudinary:', imageUrl);
+
+    // Update user profile with new avatar URL
+    await updateUser(uid, { avatar: imageUrl });
+
+    return imageUrl;
+  } catch (error) {
+    console.error('Error uploading profile picture:', error);
+    
+    // Fallback to Base64 if Cloudinary fails (e.g. network issues)
+    console.warn('⚠️ Cloudinary upload failed, falling back to Base64');
+    try {
+      const base64Image = await compressAndConvertToBase64(file);
+      await updateUser(uid, { avatar: base64Image });
+      return base64Image;
+    } catch (fallbackError) {
+      console.error('Base64 fallback also failed:', fallbackError);
+      throw error;
+    }
+  }
+}
+
+/**
+ * Compress image and convert to Base64
+ * @param {File} file - Image file
+ * @param {number} maxWidth - Max width (default 800px)
+ * @param {number} quality - JPEG quality (0-1, default 0.7)
+ * @returns {Promise<string>} Base64 string
+ */
+function compressAndConvertToBase64(file, maxWidth = 800, quality = 0.7) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert to Base64 (JPEG for better compression)
+        const base64 = canvas.toDataURL('image/jpeg', quality);
+        resolve(base64);
+      };
+      img.onerror = (error) => reject(error);
+    };
+    reader.onerror = (error) => reject(error);
+  });
+}
 
 /**
  * Get user data by UID
