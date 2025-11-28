@@ -369,7 +369,7 @@ const ClubDashboard = () => {
 
         {/* Le Tue Prenotazioni - Stile Compatto con Scroll Orizzontale */}
         <div className="space-y-3 md:space-y-4">
-          <h2 className="text-lg md:text-2xl font-bold text-white flex items-center gap-2 md:gap-3">
+          <h2 className="text-sm md:text-2xl font-bold text-white flex items-center gap-2 md:gap-3">
             <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
               <svg
                 className="w-5 h-5 md:w-6 md:h-6 text-white"
@@ -470,7 +470,7 @@ const ClubDashboard = () => {
                           hover:bg-gray-800 ${cardColors.hoverBorder}
                           hover:shadow-2xl ${cardColors.hoverShadow}
                           p-4 rounded-2xl cursor-pointer transition-all duration-300 group
-                          min-w-[240px] h-32 md:min-w-0 md:h-auto flex-shrink-0 md:flex-shrink
+                          min-w-[240px] h-44 md:min-w-0 md:h-auto flex-shrink-0 md:flex-shrink
                           transform hover:scale-[1.02] flex flex-col justify-between
                           shadow-xl ${cardColors.shadow} ring-1 ${cardColors.ring}`}
                       >
@@ -599,7 +599,7 @@ const ClubDashboard = () => {
                     className="bg-gradient-to-br from-blue-900/50 to-blue-800/50
                       hover:from-blue-800/60 hover:to-blue-700/60
                       backdrop-blur-sm border-2 border-dashed border-blue-500/90 border-blue-400/80 rounded-2xl cursor-pointer
-                      min-w-[240px] h-32 flex-shrink-0 flex flex-col items-center justify-center
+                      min-w-[240px] h-44 flex-shrink-0 flex flex-col items-center justify-center
                       transition-all duration-300 hover:border-blue-600 hover:border-blue-300 group
                       hover:shadow-xl hover:shadow-blue-200/40 hover:shadow-blue-900/30 transform hover:scale-[1.02]
                       ring-1 ring-blue-400/60 ring-blue-500/60"
