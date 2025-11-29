@@ -2,20 +2,20 @@
 // FILE: src/features/classifica/Classifica.jsx
 // FUTURISTIC REDESIGN: Glassmorphism design with dark mode support
 // =============================================
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '@services/firebase.js';
 import Section from '@components/ui/Section.jsx';
-import ShareButtons from '@components/ui/ShareButtons.jsx';
 import { TrendArrow } from '@components/ui/TrendArrow.jsx';
 import ModernAreaChart from '@components/ui/charts/ModernAreaChart.jsx';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { DEFAULT_RATING } from '@lib/ids.js';
+import ShareRankingCard from './ShareRankingCard.jsx';
 
 export default function Classifica({ players, matches, onOpenStats, T }) {
-  const classificaRef = useRef(null);
   const [showAllPlayers, setShowAllPlayers] = useState(false);
-  const { playersById, matches: clubMatches, clubId, tournamentMatches } = useClub();
+  const [showShareModal, setShowShareModal] = useState(false);
+  const { playersById, matches: clubMatches, clubId, tournamentMatches, club } = useClub();
 
   // State per champEntries di tutti i giocatori
   const [allChampEntries, setAllChampEntries] = useState({});
@@ -601,35 +601,30 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
     return { podiumTimeline: combinedData, topPlayers };
   }, [rows, clubMatches, allChampEntries, matches]);
 
-  const buildCaption = () => {
-    const lines = [
-      'Classifica Sporting Cat',
-      ...rows.slice(0, 10).map((p, i) => `${i + 1}. ${p.name} — ${Math.round(p.rating)} pt`),
-      '#SportingCat #Padel',
-    ];
-    return lines.join('\n');
-  };
-  const shareUrl =
-    typeof window !== 'undefined'
-      ? `${window.location.origin}${window.location.pathname}#classifica`
-      : '';
-
   return (
     <Section
       title="Dashboard Classifiche"
       right={
-        <ShareButtons
-          size="sm"
-          title="Classifica Sporting Cat"
-          url={shareUrl}
-          captureRef={classificaRef}
-          captionBuilder={buildCaption}
-          T={T}
-        />
+        <button
+          onClick={() => setShowShareModal(true)}
+          className="group relative px-4 py-2 text-sm font-medium rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-105 active:scale-95"
+        >
+          {/* Gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-90 group-hover:opacity-100 transition-opacity"></div>
+          {/* Glow effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 blur-lg opacity-0 group-hover:opacity-50 transition-opacity"></div>
+          {/* Content */}
+          <span className="relative flex items-center gap-2 text-white">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            Condividi
+          </span>
+        </button>
       }
       T={T}
     >
-      <div ref={classificaRef} className="space-y-8">
+      <div className="space-y-8">
         {/* Ranking RPA Card - Futuristic Design */}
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-3xl blur-xl"></div>
@@ -643,16 +638,36 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                   Ranking RPA
                 </h3>
               </div>
-              <button
-                onClick={() => setShowAllPlayers(!showAllPlayers)}
-                className={`px-4 py-2 text-sm rounded-xl border backdrop-blur-sm transition-all duration-300 transform hover:scale-105 ${
-                  showAllPlayers
-                    ? 'bg-blue-500/30 border-blue-400/50 text-blue-300 shadow-lg shadow-blue-500/20'
-                    : 'bg-gray-600/70 border-gray-600/50 text-gray-300 hover:bg-gray-600/70 shadow-lg'
-                }`}
-              >
-                {showAllPlayers ? '📊 Mostra Top 10' : '📋 Mostra Tutti'}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowAllPlayers(!showAllPlayers)}
+                  className="group relative px-4 py-2 text-sm font-medium rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-105 active:scale-95"
+                >
+                  {/* Glow effect */}
+                  <div className={`absolute inset-0 rounded-xl blur-lg transition-opacity duration-300 ${
+                    showAllPlayers 
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500 opacity-50 group-hover:opacity-70' 
+                      : 'bg-gray-700 opacity-0 group-hover:opacity-40'
+                  }`} />
+                  {/* Background */}
+                  <div className={`absolute inset-0 rounded-xl transition-all duration-300 ${
+                    showAllPlayers 
+                      ? 'bg-gradient-to-r from-blue-500 to-cyan-500' 
+                      : 'bg-gray-800 border border-gray-600/50 group-hover:bg-gray-700'
+                  }`} />
+                  {/* Content */}
+                  <span className={`relative flex items-center gap-2 ${showAllPlayers ? 'text-white' : 'text-blue-400 group-hover:text-blue-300'}`}>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      {showAllPlayers ? (
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                      ) : (
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                      )}
+                    </svg>
+                    {showAllPlayers ? 'Solo Top 10' : 'Mostra tutti'}
+                  </span>
+                </button>
+              </div>
             </div>
 
             <div className="overflow-x-auto mb-6">
@@ -707,9 +722,19 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
                 <div className="mt-4 text-center">
                   <button
                     onClick={() => setShowAllPlayers(true)}
-                    className="text-sm text-gray-400 hover:text-gray-300 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-700/30"
+                    className="group relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-105 active:scale-95"
                   >
-                    ... e altri {rows.length - 10} giocatori
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
+                    {/* Background */}
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 group-hover:from-amber-500 group-hover:to-orange-500 transition-all duration-300" />
+                    {/* Content */}
+                    <span className="relative flex items-center gap-2 text-amber-300 group-hover:text-white transition-colors duration-300">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
+                      Altri {rows.length - 10} giocatori
+                    </span>
                   </button>
                 </div>
               )}
@@ -1110,6 +1135,20 @@ export default function Classifica({ players, matches, onOpenStats, T }) {
           </div>
         </div>
       </div>
+
+      {/* Modal condivisione classifiche */}
+      {showShareModal && (
+        <ShareRankingCard
+          clubName={club?.name || 'Play Sport Pro'}
+          clubLogo={club?.logo || club?.logoUrl || null}
+          onClose={() => setShowShareModal(false)}
+          rpaData={rows}
+          coppieData={couplesStats}
+          efficienzaData={efficiencyStats}
+          streakData={streakStats.positive}
+          ingiocabiliData={streakStats.ingiocabili}
+        />
+      )}
     </Section>
   );
 }

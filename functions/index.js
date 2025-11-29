@@ -13,6 +13,9 @@ export { cleanupExpiredSubscriptions, cleanupInactiveSubscriptions } from './cle
 export { scheduledNotificationCleanup, getCleanupStatus } from './scheduledNotificationCleanup.js';
 export { pruneInactiveSubscriptions } from './pruneSubscriptions.js';
 
+// Ranking Notifications (Weekly digest + overtake alerts)
+export { weeklyRankingDigest, onRankingChange } from './rankingNotifications.js';
+
 // Callable Functions
 export { sendBulkCertificateNotifications } from './sendBulkNotifications.clean.js';
 
