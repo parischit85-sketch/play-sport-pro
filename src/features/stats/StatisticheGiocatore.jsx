@@ -4,7 +4,6 @@
 // =============================================
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Section from '@ui/Section.jsx';
-import ShareButtons from '@ui/ShareButtons.jsx';
 import FormulaModal from '@components/modals/FormulaModal.jsx';
 import ModernAreaChart from '@ui/charts/ModernAreaChart.jsx';
 import { byPlayerFirstAlpha, surnameOf, IT_COLLATOR } from '@lib/names.js';
@@ -12,6 +11,7 @@ import { DEFAULT_RATING } from '@lib/ids.js';
 import { useClub } from '@contexts/ClubContext.jsx';
 import { db } from '@services/firebase.js';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import SharePlayerStats from './SharePlayerStats.jsx';
 
 export default function StatisticheGiocatore({
   players,
@@ -30,6 +30,7 @@ export default function StatisticheGiocatore({
   const [showRpaModal, setShowRpaModal] = useState(false);
   const [currentMatchForRpa, setCurrentMatchForRpa] = useState(null);
   const [champEntries, setChampEntries] = useState([]);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // DEBUG: Log quando il componente monta/aggiorna
   useEffect(() => {
@@ -427,13 +428,16 @@ export default function StatisticheGiocatore({
       return null;
     }
 
+    // Per avgDelta usiamo solo partite normali (NO tornei)
+    const normalMatches = playerMatches.filter((m) => !m.isTournamentMatch);
+
     let maxWinStreak = 0;
     let maxLoseStreak = 0;
     let currentWinStreak = 0;
     let currentLoseStreak = 0;
     let wins = 0;
     let losses = 0;
-    let totalDelta = 0;
+    let totalDelta = 0; // Solo per partite normali
     let gamesWon = 0;
     let gamesLost = 0;
     let closeMatches = 0;
@@ -444,8 +448,11 @@ export default function StatisticheGiocatore({
     sortedMatches.forEach((m) => {
       const isA = (m.teamA || []).includes(pid);
       const won = (isA && m.winner === 'A') || (!isA && m.winner === 'B');
-      const delta = isA ? m.deltaA || 0 : m.deltaB || 0;
-      totalDelta += delta;
+      // Delta solo per partite normali (NO tornei)
+      if (!m.isTournamentMatch) {
+        const delta = isA ? m.deltaA || 0 : m.deltaB || 0;
+        totalDelta += delta;
+      }
       if (won) {
         wins++;
         currentWinStreak++;
@@ -488,7 +495,8 @@ export default function StatisticheGiocatore({
       }
     }
 
-    const avgDelta = totalDelta / playerMatches.length;
+    // avgDelta calcolato solo su partite normali (NO tornei)
+    const avgDelta = normalMatches.length > 0 ? totalDelta / normalMatches.length : 0;
     const gameEfficiency = gamesWon + gamesLost > 0 ? (gamesWon / (gamesWon + gamesLost)) * 100 : 0;
     const dominanceRate = wins > 0 ? (dominantWins / wins) * 100 : 0;
     const clutchRate = closeMatches > 0 ? ((wins - dominantWins) / closeMatches) * 100 : 0;
@@ -571,20 +579,34 @@ export default function StatisticheGiocatore({
     return { mates, opps, topMates, worstMates, topOpps, worstOpps };
   }, [pid, allMatchesIncludingTournaments, nameById]);
 
-  const buildCaption = () => {
-    const lines = [
-      `Statistiche — ${player ? player.name : ''}`,
-      `Ranking: ${player ? Math.round(getEffectiveRating(player.id)) : '-'}`,
-      `Record: ${advancedStats?.wins || 0}–${advancedStats?.losses || 0} (${Math.round(advancedStats?.winRate || 0)}%)`,
-      `Game Eff.: ${advancedStats ? advancedStats.gameEfficiency : 0}% • Δ medio: ${advancedStats ? advancedStats.avgDelta : 0}`,
-      '#SportingCat #Padel',
-    ];
-    return lines.join('\n');
-  };
-  const shareUrl =
-    typeof window !== 'undefined'
-      ? `${window.location.origin}${window.location.pathname}#stats-${pid || ''}`
-      : '';
+  // Recent items for the selected player: match normali + punti torneo (NO partite torneo)
+  // Stesso formato di combinedItems ma limitato agli ultimi 2
+  const recentCombinedItems = useMemo(() => {
+    if (!pid) return [];
+    const toDate = (d) => {
+      if (!d) return null;
+      if (typeof d === 'number') return new Date(d);
+      if (d?.toDate) return d.toDate();
+      return new Date(d);
+    };
+    // Solo match normali (NO tornei - filtriamo isTournamentMatch)
+    const matchItems = (filteredMatches || [])
+      .filter((m) => 
+        ((m.teamA || []).includes(pid) || (m.teamB || []).includes(pid)) &&
+        !m.isTournamentMatch
+      )
+      .map((m) => ({ type: 'match', date: toDate(m.date) || new Date(m.date), m }));
+    // Punti torneo (champEntries)
+    const entryItems = (champEntries || []).map((e) => ({
+      type: 'champ',
+      date: toDate(e.createdAt) || toDate(e.appliedAt) || new Date(),
+      e,
+    }));
+    const all = [...matchItems, ...entryItems];
+    return all
+      .sort((a, b) => (b.date?.getTime?.() || 0) - (a.date?.getTime?.() || 0))
+      .slice(0, 2);
+  }, [pid, filteredMatches, champEntries]);
 
   // Combined history items (matches + tournament entries)
   const combinedItems = useMemo(() => {
@@ -636,17 +658,38 @@ export default function StatisticheGiocatore({
     <Section
       title="📊 Statistiche Giocatore"
       right={
-        <ShareButtons
-          size="sm"
-          title={`Statistiche — ${player ? player.name : ''}`}
-          url={shareUrl}
-          captureRef={statsRef}
-          captionBuilder={buildCaption}
-          T={T}
-        />
+        <button
+          onClick={() => setShowShareModal(true)}
+          className="group relative px-4 py-2 text-sm font-medium rounded-xl overflow-hidden transition-all duration-300 transform hover:scale-105 active:scale-95"
+        >
+          {/* Glow effect */}
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-300" />
+          {/* Background */}
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500" />
+          {/* Content */}
+          <span className="relative flex items-center gap-2 text-white">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            Condividi
+          </span>
+        </button>
       }
       T={T}
     >
+      {/* Share Modal */}
+      <SharePlayerStats
+        player={player}
+        position={position}
+        advancedStats={advancedStats}
+        partnerAndOppStats={partnerAndOppStats}
+        recentItems={recentCombinedItems}
+        players={players}
+        getEffectiveRating={getEffectiveRating}
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+      />
+
       <div ref={statsRef} className="space-y-8">
         {/* Header con controlli - Futuristic Design */}
         <div className={`${T.card} p-6 shadow-2xl`}>
